@@ -14,8 +14,9 @@
 
 import { Component, ContentChild, Input, Output, TemplateRef, EventEmitter } from '@angular/core';
 
-import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
+import { CoreSiteBasicInfo } from '@services/sites';
 import { CoreAccountsList } from '@features/login/services/login-helper';
+import { CoreSitesFactory } from '@services/sites-factory';
 
 /**
  * Component to display a list of sites (accounts).
@@ -84,7 +85,7 @@ export class CoreSitesListComponent<T extends CoreSiteBasicInfo> {
      * @returns Whether to display URL.
      */
     displaySiteUrl(site: CoreSiteBasicInfo): boolean {
-        return CoreSites.shouldDisplayInformativeLinks(site.siteUrl);
+        return CoreSitesFactory.makeSite(site.id, site.siteUrl, '', { info: site.info }).shouldDisplayInformativeLinks();
     }
 
 }

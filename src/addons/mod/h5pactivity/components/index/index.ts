@@ -16,7 +16,7 @@ import { Component, Optional, OnInit, OnDestroy, Output, EventEmitter } from '@a
 import { IonContent } from '@ionic/angular';
 
 import { CoreConstants } from '@/core/constants';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreH5PDisplayOptions } from '@features/h5p/classes/core';

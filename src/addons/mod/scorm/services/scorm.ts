@@ -15,7 +15,7 @@
 import { CoreConstants } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFilepool } from '@services/filepool';
@@ -31,6 +31,7 @@ import { CoreEvents } from '@singletons/events';
 import { CorePath } from '@singletons/path';
 import { AddonModScormOffline } from './scorm-offline';
 import { AddonModScormAutoSyncEventData, AddonModScormSyncProvider } from './scorm-sync';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 // Private constants.
 const VALID_STATUSES = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'];

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { CoreSiteInfo } from '@classes/site';
+import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
 import { IonRouterOutlet } from '@ionic/angular';

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreNetwork } from '@services/network';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -50,6 +50,7 @@ import {
 } from '@features/reminders/services/reminders';
 import { CoreReminderDBRecord } from '@features/reminders/services/database/reminders';
 import { CoreEvents } from '@singletons/events';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 const ROOT_CACHE_KEY = 'mmaCalendar:';
 

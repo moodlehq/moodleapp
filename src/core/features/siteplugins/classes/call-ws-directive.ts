@@ -15,7 +15,7 @@
 import { Input, OnInit, OnDestroy, ElementRef, Output, EventEmitter, Directive } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { CoreSitePlugins } from '../services/siteplugins';
 import { CoreLogger } from '@singletons/logger';

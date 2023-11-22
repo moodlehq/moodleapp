@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
@@ -26,6 +26,7 @@ import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWar
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModChoiceOffline } from './choice-offline';
 import { AddonModChoiceAutoSyncData, AddonModChoiceSyncProvider } from './choice-sync';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 const ROOT_CACHE_KEY = 'mmaModChoice:';
 

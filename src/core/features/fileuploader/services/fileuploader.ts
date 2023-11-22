@@ -28,7 +28,7 @@ import { CoreWSFile, CoreWSFileUploadOptions, CoreWSUploadFileResult } from '@se
 import { makeSingleton, Translate, MediaCapture, Camera } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';

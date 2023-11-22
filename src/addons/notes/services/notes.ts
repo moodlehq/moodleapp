@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
@@ -22,6 +22,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonNotesOffline } from './notes-offline';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 const ROOT_CACHE_KEY = 'mmaNotes:';
 

@@ -16,7 +16,7 @@ import { Injectable, ViewContainerRef } from '@angular/core';
 
 import { CoreFilterHandler } from '../filter-delegate';
 import { CoreFilterFilter, CoreFilterFormatTextOptions } from '../filter';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 
 /**
  * Default handler used when the module doesn't have a specific implementation.

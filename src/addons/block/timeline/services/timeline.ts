@@ -24,7 +24,7 @@ import {
 } from '@addons/calendar/services/calendar';
 import moment from 'moment-timezone';
 import { makeSingleton } from '@singletons';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 // Cache key was maintained from block myoverview when blocks were splitted.
 const ROOT_CACHE_KEY = 'myoverview:';

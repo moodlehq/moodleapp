@@ -17,7 +17,7 @@ import { schoolBarbaraSite } from '@/assets/storybook/sites/schoolbarbara';
 import { schoolJefferySite } from '@/assets/storybook/sites/schooljeffery';
 import { CoreSiteFixture, CoreSiteStub } from '@/storybook/stubs/classes/site';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { SiteDBEntry } from '@services/database/sites';
 import { CoreSiteBasicInfo, CoreSitesProvider } from '@services/sites';
 import { makeSingleton } from '@singletons';

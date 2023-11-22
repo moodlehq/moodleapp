@@ -18,7 +18,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreEvents } from '@singletons/events';
 import { CoreFilepool } from '@services/filepool';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';

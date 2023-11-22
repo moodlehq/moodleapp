@@ -17,7 +17,7 @@ import { Component } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 
 /**
  * App settings about menu page.

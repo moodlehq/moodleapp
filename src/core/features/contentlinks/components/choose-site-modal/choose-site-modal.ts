@@ -20,6 +20,7 @@ import { CoreContentLinksAction } from '../../services/contentlinks-delegate';
 import { CoreContentLinksHelper } from '../../services/contentlinks-helper';
 import { CoreError } from '@classes/errors/error';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSitesFactory } from '@services/sites-factory';
 
 /**
  * Page to display the list of sites to choose one to perform a content link action.
@@ -73,7 +74,7 @@ export class CoreContentLinksChooseSiteModalComponent implements OnInit {
             this.sites = await CoreSites.getSites(siteIds);
 
             // All sites have the same URL, use the first one.
-            this.displaySiteUrl = CoreSites.shouldDisplayInformativeLinks(this.sites[0].siteUrl);
+            this.displaySiteUrl = CoreSitesFactory.makeUnauthenticatedSite(this.sites[0].siteUrl).shouldDisplayInformativeLinks();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.contentlinks.errornosites', true);
             this.closeModal();

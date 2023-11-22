@@ -16,13 +16,14 @@ import { Injectable } from '@angular/core';
 
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreFilterDelegate } from './filter-delegate';
 import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 /**
  * Service to provide filter functionalities.

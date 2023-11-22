@@ -19,7 +19,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEvents } from '@singletons/events';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';

@@ -34,7 +34,7 @@ import {
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarEventTypeOption, AddonCalendarHelper } from '../../services/calendar-helper';
 import { AddonCalendarSync, AddonCalendarSyncProvider } from '../../services/calendar-sync';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { Translate } from '@singletons';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { AddonCalendarOfflineEventDBRecord } from '../../services/database/calendar-offline';

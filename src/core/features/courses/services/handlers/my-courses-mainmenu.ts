@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSiteInfoUserHomepage } from '@classes/site';
+import { CoreSiteInfoUserHomepage } from '@classes/sites/unauthenticated-site';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreSiteHomeHomeHandler } from '@features/sitehome/services/handlers/sitehome-home';
 import { CoreSites } from '@services/sites';

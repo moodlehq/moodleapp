@@ -26,7 +26,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlParams, CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
-import { CoreSite, CoreSiteIdentityProvider, CoreSitePublicConfigResponse, CoreSiteQRCodeType, TypeOfLogin } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { DomSanitizer, makeSingleton, Translate } from '@singletons';
@@ -41,10 +41,21 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { SafeHtml } from '@angular/platform-browser';
 import { CoreLoginError } from '@classes/errors/loginerror';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
-
-const PASSWORD_RESETS_CONFIG_KEY = 'password-resets';
-
-export const GET_STARTED_URL = 'https://moodle.com';
+import {
+    CoreSiteIdentityProvider,
+    CoreSitePublicConfigResponse,
+    CoreSiteQRCodeType,
+    CoreUnauthenticatedSite,
+    TypeOfLogin,
+} from '@classes/sites/unauthenticated-site';
+import {
+    EMAIL_SIGNUP_FEATURE_NAME,
+    FAQ_QRCODE_IMAGE_HTML,
+    FAQ_QRCODE_INFO_DONE,
+    FORGOTTEN_PASSWORD_FEATURE_NAME,
+    IDENTITY_PROVIDERS_FEATURE_NAME,
+    IDENTITY_PROVIDER_FEATURE_NAME_PREFIX,
+} from '../constants';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -52,10 +63,7 @@ export const GET_STARTED_URL = 'https://moodle.com';
 @Injectable({ providedIn: 'root' })
 export class CoreLoginHelperProvider {
 
-    static readonly ONBOARDING_DONE = 'onboarding_done';
-    static readonly FAQ_QRCODE_INFO_DONE = 'qrcode_info_done';
-    static readonly FAQ_URL_IMAGE_HTML = '<img src="assets/img/login/faq_url.png" role="presentation" alt="">';
-    static readonly FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation" alt="">';
+    protected static readonly PASSWORD_RESETS_CONFIG_KEY = 'password-resets';
 
     protected logger: CoreLogger;
     protected sessionExpiredCheckingSite: Record<string, boolean> = {};
@@ -232,6 +240,7 @@ export class CoreLoginHelperProvider {
      *
      * @param config Site public config.
      * @returns Disabled features.
+     * @deprecated since 4.4. No longer needed.
      */
     getDisabledFeatures(config?: CoreSitePublicConfigResponse): string {
         const disabledFeatures = config?.tool_mobile_disabledfeatures;
@@ -301,6 +310,7 @@ export class CoreLoginHelperProvider {
      *
      * @param config Site public config.
      * @returns Logo URL.
+     * @deprecated since 4.4. Please use getLogoUrl in a site instance.
      */
     getLogoUrl(config: CoreSitePublicConfigResponse): string | undefined {
         return !CoreConstants.CONFIG.forceLoginLogo && config ? (config.logourl || config.compactlogourl) : undefined;
@@ -397,14 +407,56 @@ export class CoreLoginHelperProvider {
      * Get the valid identity providers from a site config.
      *
      * @param siteConfig Site's public config.
-     * @param disabledFeatures List of disabled features already treated. If not provided it will be calculated.
      * @returns Valid identity providers.
+     * @deprecated since 4.4. Please use getValidIdentityProvidersForSite instead.
      */
-    getValidIdentityProviders(siteConfig?: CoreSitePublicConfigResponse, disabledFeatures?: string): CoreSiteIdentityProvider[] {
+    getValidIdentityProviders(siteConfig?: CoreSitePublicConfigResponse): CoreSiteIdentityProvider[] {
         if (!siteConfig) {
             return [];
         }
-        if (this.isFeatureDisabled('NoDelegate_IdentityProviders', siteConfig, disabledFeatures)) {
+        // eslint-disable-next-line deprecation/deprecation
+        if (this.isFeatureDisabled(IDENTITY_PROVIDERS_FEATURE_NAME, siteConfig)) {
+            // Identity providers are disabled, return an empty list.
+            return [];
+        }
+
+        const validProviders: CoreSiteIdentityProvider[] = [];
+        const httpUrl = CorePath.concatenatePaths(siteConfig.wwwroot, 'auth/oauth2/');
+        const httpsUrl = CorePath.concatenatePaths(siteConfig.httpswwwroot, 'auth/oauth2/');
+
+        if (siteConfig.identityproviders && siteConfig.identityproviders.length) {
+            siteConfig.identityproviders.forEach((provider) => {
+                const urlParams = CoreUrlUtils.extractUrlParams(provider.url);
+
+                if (
+                    provider.url &&
+                    (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1) &&
+                    !this.isFeatureDisabled( // eslint-disable-line deprecation/deprecation
+                        IDENTITY_PROVIDER_FEATURE_NAME_PREFIX + urlParams.id,
+                        siteConfig,
+                    )
+                ) {
+                    validProviders.push(provider);
+                }
+            });
+        }
+
+        return validProviders;
+    }
+
+    /**
+     * Get the valid identity providers from a site config.
+     *
+     * @param site Site instance.
+     * @returns Valid identity providers.
+     */
+    async getValidIdentityProvidersForSite(site: CoreUnauthenticatedSite): Promise<CoreSiteIdentityProvider[]> {
+        const siteConfig = await CoreUtils.ignoreErrors(site.getPublicConfig());
+        if (!siteConfig) {
+            return [];
+        }
+
+        if (site.isFeatureDisabled(IDENTITY_PROVIDERS_FEATURE_NAME)) {
             // Identity providers are disabled, return an empty list.
             return [];
         }
@@ -418,7 +470,7 @@ export class CoreLoginHelperProvider {
                 const urlParams = CoreUrlUtils.extractUrlParams(provider.url);
 
                 if (provider.url && (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1) &&
-                        !this.isFeatureDisabled('NoDelegate_IdentityProvider_' + urlParams.id, siteConfig, disabledFeatures)) {
+                        !site.isFeatureDisabled(IDENTITY_PROVIDER_FEATURE_NAME_PREFIX + urlParams.id)) {
                     validProviders.push(provider);
                 }
             });
@@ -511,11 +563,12 @@ export class CoreLoginHelperProvider {
      * Given a site public config, check if email signup is disabled.
      *
      * @param config Site public config.
-     * @param disabledFeatures List of disabled features already treated. If not provided it will be calculated.
      * @returns Whether email signup is disabled.
+     * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
-    isEmailSignupDisabled(config?: CoreSitePublicConfigResponse, disabledFeatures?: string): boolean {
-        return this.isFeatureDisabled('CoreLoginEmailSignup', config, disabledFeatures);
+    isEmailSignupDisabled(config?: CoreSitePublicConfigResponse): boolean {
+        // eslint-disable-next-line deprecation/deprecation
+        return this.isFeatureDisabled(EMAIL_SIGNUP_FEATURE_NAME, config);
     }
 
     /**
@@ -523,17 +576,12 @@ export class CoreLoginHelperProvider {
      *
      * @param feature Feature to check.
      * @param config Site public config.
-     * @param disabledFeatures List of disabled features already treated. If not provided it will be calculated.
      * @returns Whether email signup is disabled.
+     * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
-    isFeatureDisabled(feature: string, config?: CoreSitePublicConfigResponse, disabledFeatures?: string): boolean {
-        if (disabledFeatures === undefined) {
-            disabledFeatures = this.getDisabledFeatures(config);
-        }
-
-        const regEx = new RegExp('(,|^)' + feature + '(,|$)', 'g');
-
-        return !!disabledFeatures.match(regEx);
+    isFeatureDisabled(feature: string, config?: CoreSitePublicConfigResponse): boolean {
+        // eslint-disable-next-line deprecation/deprecation
+        return this.isFeatureDisabled(feature, config);
     }
 
     /**
@@ -561,11 +609,12 @@ export class CoreLoginHelperProvider {
      * Given a site public config, check if forgotten password is disabled.
      *
      * @param config Site public config.
-     * @param disabledFeatures List of disabled features already treated. If not provided it will be calculated.
      * @returns Whether it's disabled.
+     * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
-    isForgottenPasswordDisabled(config?: CoreSitePublicConfigResponse, disabledFeatures?: string): boolean {
-        return this.isFeatureDisabled('NoDelegate_ForgottenPassword', config, disabledFeatures);
+    isForgottenPasswordDisabled(config?: CoreSitePublicConfigResponse): boolean {
+        // eslint-disable-next-line deprecation/deprecation
+        return this.isFeatureDisabled(FORGOTTEN_PASSWORD_FEATURE_NAME, config);
     }
 
     /**
@@ -1242,14 +1291,14 @@ export class CoreLoginHelperProvider {
      * @returns Promise resolved if the user accepts to scan QR.
      */
     async showScanQRInstructions(): Promise<void> {
-        const dontShowWarning = await CoreConfig.get(CoreLoginHelperProvider.FAQ_QRCODE_INFO_DONE, 0);
+        const dontShowWarning = await CoreConfig.get(FAQ_QRCODE_INFO_DONE, 0);
         if (dontShowWarning) {
             return;
         }
 
         const message = Translate.instant(
             'core.login.faqwhereisqrcodeanswer',
-            { $image: '<div class="text-center">'+ CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML + '</div>' },
+            { $image: '<div class="text-center">'+ FAQ_QRCODE_IMAGE_HTML + '</div>' },
         );
         const header = Translate.instant('core.login.faqwhereisqrcode');
 
@@ -1263,7 +1312,7 @@ export class CoreLoginHelperProvider {
             );
 
             if (dontShowAgain) {
-                CoreConfig.set(CoreLoginHelperProvider.FAQ_QRCODE_INFO_DONE, 1);
+                CoreConfig.set(FAQ_QRCODE_INFO_DONE, 1);
             }
         } catch {
             // User canceled.
@@ -1432,7 +1481,7 @@ export class CoreLoginHelperProvider {
 
         passwordResets[siteUrl] = Date.now();
 
-        await CoreConfig.set(PASSWORD_RESETS_CONFIG_KEY, JSON.stringify(passwordResets));
+        await CoreConfig.set(CoreLoginHelperProvider.PASSWORD_RESETS_CONFIG_KEY, JSON.stringify(passwordResets));
     }
 
     /**
@@ -1464,9 +1513,9 @@ export class CoreLoginHelperProvider {
         }
 
         if (Object.values(passwordResets).length === 0) {
-            await CoreConfig.delete(PASSWORD_RESETS_CONFIG_KEY);
+            await CoreConfig.delete(CoreLoginHelperProvider.PASSWORD_RESETS_CONFIG_KEY);
         } else {
-            await CoreConfig.set(PASSWORD_RESETS_CONFIG_KEY, JSON.stringify(passwordResets));
+            await CoreConfig.set(CoreLoginHelperProvider.PASSWORD_RESETS_CONFIG_KEY, JSON.stringify(passwordResets));
         }
     }
 
@@ -1510,26 +1559,9 @@ export class CoreLoginHelperProvider {
      * @returns Password resets.
      */
     protected async getPasswordResets(): Promise<Record<string, number>> {
-        const passwordResetsJson = await CoreConfig.get(PASSWORD_RESETS_CONFIG_KEY, '{}');
+        const passwordResetsJson = await CoreConfig.get(CoreLoginHelperProvider.PASSWORD_RESETS_CONFIG_KEY, '{}');
 
         return CoreTextUtils.parseJSON<Record<string, number>>(passwordResetsJson, {});
-    }
-
-    /**
-     * Check if a URL belongs to the demo mode site.
-     *
-     * @returns Whether the URL belongs to the demo mode site.
-     */
-    isDemoModeSite(url: string): boolean {
-        const demoSiteData = CoreLoginHelper.getDemoModeSiteInfo();
-        if (!demoSiteData) {
-            return false;
-        }
-
-        const demoSiteUrl = CoreTextUtils.addEndingSlash(CoreUrlUtils.removeProtocolAndWWW(demoSiteData.url));
-        url = CoreTextUtils.addEndingSlash(CoreUrlUtils.removeProtocolAndWWW(url));
-
-        return demoSiteUrl.indexOf(url) === 0;
     }
 
 }

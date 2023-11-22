@@ -14,7 +14,7 @@
 
 import { Component, OnInit, OnDestroy, Input, ViewChild, HostBinding } from '@angular/core';
 
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
     CoreCourseModuleSummaryResult,
     CoreCourseModuleSummaryComponent,

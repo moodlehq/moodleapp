@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSite, CoreSiteConfigSupportAvailability } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreSites } from '@services/sites';
 import { CoreUserSupportConfig } from './support-config';
+import { CoreSiteConfigSupportAvailability } from '@classes/sites/unauthenticated-site';
+import { CoreAuthenticatedSite } from '@classes/sites/authenticated-site';
 
 /**
  * Support config for an authenticated user.
@@ -30,9 +32,9 @@ export class CoreUserAuthenticatedSupportConfig extends CoreUserSupportConfig {
         return new CoreUserAuthenticatedSupportConfig(CoreSites.getRequiredCurrentSite());
     }
 
-    private site: CoreSite;
+    private site: CoreSite | CoreAuthenticatedSite;
 
-    constructor(site: CoreSite) {
+    constructor(site: CoreSite | CoreAuthenticatedSite) {
         super();
 
         this.site = site;
@@ -47,7 +49,7 @@ export class CoreUserAuthenticatedSupportConfig extends CoreUserSupportConfig {
         }
 
         if (this.site.isVersionGreaterEqualThan('4.1')) {
-            if (!this.site.config || !('supportavailability' in this.site.config)) {
+            if (!('config' in this.site) || !this.site.config || !('supportavailability' in this.site.config)) {
                 return false;
             }
 
@@ -77,8 +79,10 @@ export class CoreUserAuthenticatedSupportConfig extends CoreUserSupportConfig {
      * @inheritdoc
      */
     protected buildSupportPageUrl(): string {
-        return this.site.config?.supportpage?.trim()
-            || `${this.site.config?.httpswwwroot ?? this.site.config?.wwwroot ?? this.site.siteUrl}/user/contactsitesupport.php`;
+        const config = 'config' in this.site ? this.site.config : undefined;
+
+        return config?.supportpage?.trim()
+            || `${config?.httpswwwroot ?? config?.wwwroot ?? this.site.siteUrl}/user/contactsitesupport.php`;
     }
 
 }

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
@@ -25,6 +25,7 @@ import { CoreWSExternalFile, CoreWSExternalWarning, CoreWSStoredFile } from '@se
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModFeedbackOffline } from './feedback-offline';
 import { AddonModFeedbackAutoSyncData, AddonModFeedbackSyncProvider } from './feedback-sync';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 const ROOT_CACHE_KEY = 'AddonModFeedback:';
 

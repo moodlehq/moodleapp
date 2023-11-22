@@ -15,7 +15,7 @@
 import { TestingBehatDomUtils } from './behat-dom';
 import { TestingBehatBlocking } from './behat-blocking';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
-import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { ONBOARDING_DONE } from '@features/login/constants';
 import { CoreConfig } from '@services/config';
 import { EnvironmentConfig } from '@/types/config';
 import { LocalNotifications, makeSingleton, NgZone } from '@singletons';
@@ -77,7 +77,7 @@ export class TestingBehatRuntimeService {
         TestingBehatBlocking.init();
 
         if (options.skipOnBoarding) {
-            CoreConfig.set(CoreLoginHelperProvider.ONBOARDING_DONE, 1);
+            CoreConfig.set(ONBOARDING_DONE, 1);
         }
 
         if (options.configOverrides) {

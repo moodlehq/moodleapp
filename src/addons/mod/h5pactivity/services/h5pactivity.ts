@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { CoreH5PDisplayOptions } from '@features/h5p/classes/core';
@@ -27,6 +27,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreError } from '@classes/errors/error';
 import { AddonModH5PActivityAutoSyncData, AddonModH5PActivitySyncProvider } from './h5pactivity-sync';
 import { CoreTime } from '@singletons/time';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 export const MOD_H5PACTIVITY_STATE_ID = 'state';
 

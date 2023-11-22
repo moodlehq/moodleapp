@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreConstants } from '@/core/constants';
@@ -23,6 +23,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 const ROOT_CACHE_KEY = 'mmaModUrl:';
 

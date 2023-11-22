@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreTagItem } from '@features/tag/services/tag';
@@ -28,6 +28,7 @@ import { CoreEvents } from '@singletons/events';
 import { AddonModWikiPageDBRecord } from './database/wiki';
 import { AddonModWikiOffline } from './wiki-offline';
 import { AddonModWikiAutoSyncData, AddonModWikiManualSyncData, AddonModWikiSyncProvider } from './wiki-sync';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 const ROOT_CACHE_KEY = 'mmaModWiki:';
 

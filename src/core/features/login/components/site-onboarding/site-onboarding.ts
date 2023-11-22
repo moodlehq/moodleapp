@@ -16,7 +16,7 @@ import { Component } from '@angular/core';
 
 import { CoreConfig } from '@services/config';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreLoginHelperProvider, GET_STARTED_URL } from '@features/login/services/login-helper';
+import { GET_STARTED_URL, ONBOARDING_DONE } from '@features/login/constants';
 import { ModalController } from '@singletons';
 
 /**
@@ -88,7 +88,7 @@ export class CoreLoginSiteOnboardingComponent {
      * Saves the onboarding has finished.
      */
     protected saveOnboardingDone(): void {
-        CoreConfig.set(CoreLoginHelperProvider.ONBOARDING_DONE, 1);
+        CoreConfig.set(ONBOARDING_DONE, 1);
     }
 
 }

@@ -23,7 +23,7 @@ import { SQLiteDB } from '@classes/sqlitedb';
 
 import { APP_SCHEMA, CoreStorageRecord, TABLE_NAME } from './database/storage';
 import { CoreSites } from './sites';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 
 /**
  * Service to store data using key-value pairs.

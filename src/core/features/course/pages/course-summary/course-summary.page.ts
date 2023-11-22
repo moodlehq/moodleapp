@@ -138,7 +138,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         const currentSiteUrl = CoreSites.getRequiredCurrentSite().getURL();
         this.enrolUrl = CorePath.concatenatePaths(currentSiteUrl, 'enrol/index.php?id=' + this.courseId);
         this.courseUrl = CorePath.concatenatePaths(currentSiteUrl, 'course/view.php?id=' + this.courseId);
-        this.displayOpenInBrowser = CoreSites.shouldDisplayInformativeLinks();
+        this.displayOpenInBrowser = CoreSites.getRequiredCurrentSite().shouldDisplayInformativeLinks();
 
         await this.getCourse();
     }

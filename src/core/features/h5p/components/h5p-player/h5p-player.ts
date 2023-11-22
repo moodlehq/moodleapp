@@ -21,7 +21,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreConstants } from '@/core/constants';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreH5P } from '@features/h5p/services/h5p';

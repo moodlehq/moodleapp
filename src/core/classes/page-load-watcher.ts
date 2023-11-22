@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
 import { AsyncDirective } from './async-directive';
 import { PageLoadsManager } from './page-loads-manager';
 import { CorePromisedValue } from './promised-value';
-import { WSObservable } from './site';
+import { WSObservable } from './sites/authenticated-site';
 
 /**
  * Class to watch requests from a page load (including requests from page sub-components).

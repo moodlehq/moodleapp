@@ -19,7 +19,7 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourseListItem, CoreCourses } from '@features/courses/services/courses';
 import { CoreUserWithAvatar } from '@components/user-avatar/user-avatar';
 import { CoreUser } from '@features/user/services/user';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 
 declare module '@singletons/events' {
 

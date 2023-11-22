@@ -19,7 +19,7 @@
 </ion-header>
 <ion-content class="ion-padding" (keydown)="keyDown($event)" (keyup)="keyUp($event)">
     <core-loading [hideUntil]="!showLoading">
-        <div class="list-item-limited-width">
+        <div class="list-item-limited-width" *ngIf="site">
             <ion-card *ngIf="!isLoggedOut" class="core-warning-card core-login-reconnect-warning">
                 <ion-item>
                     <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
@@ -31,16 +31,14 @@
 
             <div class="ion-text-wrap ion-text-center core-login-info-box">
                 <div class="core-login-site">
-                    <div class="core-login-site-logo" *ngIf="!showUserAvatar">
-                        <!-- Show site logo or a default image. -->
-                        <img *ngIf="logoUrl" [src]="logoUrl" role="presentation" onError="this.src='assets/img/login_logo.png'" alt="">
-                        <img *ngIf="!logoUrl" src="assets/img/login_logo.png" role="presentation" alt="">
+                    <div class="core-login-site-logo" *ngIf="!showUserAvatar && logoUrl">
+                        <img [src]="logoUrl" role="presentation" onError="this.src='assets/img/login_logo.png'" alt="">
                     </div>
 
                     <p *ngIf="siteInfo?.siteName" class="ion-no-margin ion-no-padding core-sitename">
                         <core-format-text [text]="siteInfo?.siteName" [filter]="false"></core-format-text>
                     </p>
-                    <p class="core-siteurl" *ngIf="displaySiteUrl">{{siteUrl}}</p>
+                    <p class="core-siteurl" *ngIf="displaySiteUrl">{{site.siteUrl}}</p>
                 </div>
 
                 <div class="core-login-user">
@@ -90,7 +88,7 @@
                 </ng-container>
 
                 <!-- Additional Login methods -->
-                <core-login-methods *ngIf="siteConfig" [siteConfig]="siteConfig" [reconnect]="true" [siteUrl]="siteUrl"
+                <core-login-methods *ngIf="siteConfig" [siteConfig]="siteConfig" [reconnect]="true" [siteUrl]="site.siteUrl"
                     [redirectData]="redirectData"></core-login-methods>
             </div>
         </div>

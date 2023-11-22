@@ -15,11 +15,12 @@
 import { Subject } from 'rxjs';
 
 import { CoreLogger } from '@singletons/logger';
-import { CoreSite, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreFilepoolComponentFileEventData } from '@services/filepool';
 import { CoreRedirectPayload } from '@services/navigator';
 import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 import { CoreScreenOrientation } from '@services/screen';
+import { CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 
 /**
  * Observer instance to stop listening to an event.

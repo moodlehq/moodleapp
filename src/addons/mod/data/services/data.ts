@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreRatingInfo } from '@features/rating/services/rating';
@@ -29,6 +29,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { AddonModDataFieldsDelegate } from './data-fields-delegate';
 import { AddonModDataOffline } from './data-offline';
 import { AddonModDataAutoSyncData, AddonModDataSyncProvider } from './data-sync';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 const ROOT_CACHE_KEY = 'mmaModData:';
 

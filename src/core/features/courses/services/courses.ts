@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreSite, CoreSiteWSPreSets, WSObservable } from '@classes/site';
+import { CoreSite  } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';
 import { CoreWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { CoreEvents } from '@singletons/events';
@@ -25,6 +25,7 @@ import { map } from 'rxjs/operators';
 import { AddonEnrolGuest, AddonEnrolGuestInfo } from '@addons/enrol/guest/services/guest';
 import { AddonEnrolSelf } from '@addons/enrol/self/services/self';
 import { CoreEnrol, CoreEnrolEnrolmentInfo, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
+import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 
 const ROOT_CACHE_KEY = 'mmCourses:';
 

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesProvider } from '@features/grades/services/grades';
@@ -28,6 +28,7 @@ import { CoreEvents } from '@singletons/events';
 import { AddonModLessonPasswordDBRecord, PASSWORD_TABLE_NAME } from './database/lesson';
 import { AddonModLessonOffline, AddonModLessonPageAttemptRecord } from './lesson-offline';
 import { AddonModLessonAutoSyncData, AddonModLessonSyncProvider } from './lesson-sync';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 const ROOT_CACHE_KEY = 'mmaModLesson:';
 

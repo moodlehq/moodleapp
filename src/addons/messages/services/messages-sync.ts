@@ -31,7 +31,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreUser } from '@features/user/services/user';
 import { CoreError } from '@classes/errors/error';
 import { CoreTextErrorObject, CoreTextUtils } from '@services/utils/text';
-import { CoreSiteWSPreSets } from '@classes/site';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 /**
  * Service to sync messages.

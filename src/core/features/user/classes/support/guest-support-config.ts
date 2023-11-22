@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSiteConfigSupportAvailability, CoreSitePublicConfigResponse } from '@classes/site';
-import { CoreLoginHelper } from '@features/login/services/login-helper';
+import {
+    CoreSiteConfigSupportAvailability,
+    CoreSitePublicConfigResponse,
+    CoreUnauthenticatedSite,
+} from '@classes/sites/unauthenticated-site';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreUserSupportConfig } from './support-config';
+import { CoreSitesFactory } from '@services/sites-factory';
 
 /**
  * Support config for a guest user.
@@ -37,14 +41,16 @@ export class CoreUserGuestSupportConfig extends CoreUserSupportConfig {
             return new CoreUserNullSupportConfig();
         }
 
-        return new CoreUserGuestSupportConfig(siteConfig);
+        return new CoreUserGuestSupportConfig(CoreSitesFactory.makeUnauthenticatedSite(siteUrl, siteConfig), siteConfig);
     }
 
+    private site: CoreUnauthenticatedSite;
     private config: CoreSitePublicConfigResponse;
 
-    constructor(config: CoreSitePublicConfigResponse) {
+    constructor(site: CoreUnauthenticatedSite, config: CoreSitePublicConfigResponse) {
         super();
 
+        this.site = site;
         this.config = config;
     }
 
@@ -52,7 +58,7 @@ export class CoreUserGuestSupportConfig extends CoreUserSupportConfig {
      * @inheritdoc
      */
     canContactSupport(): boolean {
-        if (CoreLoginHelper.isFeatureDisabled('NoDelegate_CoreUserSupport', this.config)) {
+        if (this.site.isFeatureDisabled('NoDelegate_CoreUserSupport')) {
             return false;
         }
 

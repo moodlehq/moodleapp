@@ -26,12 +26,8 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import {
     CoreSite,
-    CoreSiteWSPreSets,
-    CoreSiteInfo,
     CoreSiteConfig,
-    CoreSitePublicConfigResponse,
-    CoreSiteInfoResponse,
-} from '@classes/site';
+} from '@classes/sites/site';
 import { SQLiteDB, SQLiteDBRecordValues, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 import { CoreLoginError, CoreLoginErrorOptions } from '@classes/errors/loginerror';
@@ -67,6 +63,8 @@ import { CoreNative } from '@features/native/services/native';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreAutoLogoutType, CoreAutoLogout } from '@features/autologout/services/autologout';
 import { CoreCacheManager } from '@services/cache-manager';
+import { CoreSiteInfo, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -273,7 +271,7 @@ export class CoreSitesProvider {
         siteUrl = siteUrl.replace(/^https?:\/\//i, protocol);
 
         // Create a temporary site to fetch site info.
-        let temporarySite = CoreSitesFactory.makeSite(undefined, siteUrl);
+        const temporarySite = CoreSitesFactory.makeUnauthenticatedSite(siteUrl);
         let config: CoreSitePublicConfigResponse | undefined;
 
         try {
@@ -285,7 +283,7 @@ export class CoreSitesProvider {
             }
 
             // Try to add or remove 'www'.
-            temporarySite = CoreSitesFactory.makeSite(undefined, CoreUrlUtils.addOrRemoveWWW(siteUrl));
+            temporarySite.setURL(CoreUrlUtils.addOrRemoveWWW(temporarySite.getURL()));
 
             try {
                 config = await temporarySite.getPublicConfig();
@@ -307,7 +305,7 @@ export class CoreSitesProvider {
         // Check that the user can authenticate.
         if (!config.enablewebservices) {
             throw this.createCannotConnectLoginError(config.httpswwwroot || config.wwwroot, {
-                supportConfig: new CoreUserGuestSupportConfig(config),
+                supportConfig: new CoreUserGuestSupportConfig(temporarySite, config),
                 errorcode: 'webservicesnotenabled',
                 errorDetails: Translate.instant('core.login.webservicesnotenabled'),
                 critical: true,
@@ -316,7 +314,7 @@ export class CoreSitesProvider {
 
         if (!config.enablemobilewebservice) {
             throw this.createCannotConnectLoginError(config.httpswwwroot || config.wwwroot, {
-                supportConfig: new CoreUserGuestSupportConfig(config),
+                supportConfig: new CoreUserGuestSupportConfig(temporarySite, config),
                 errorcode: 'mobileservicesnotenabled',
                 errorDetails: Translate.instant('core.login.mobileservicesnotenabled'),
                 critical: true,
@@ -516,12 +514,12 @@ export class CoreSitesProvider {
             login = true;
         }
 
-        // Create a "candidate" site to fetch the site info.
-        let candidateSite = CoreSitesFactory.makeSite(undefined, siteUrl, token, undefined, privateToken);
+        // Validate the site.
+        const authSite = CoreSitesFactory.makeAuthenticatedSite(siteUrl, token, { privateToken });
         let isNewSite = true;
 
         try {
-            const info = await candidateSite.fetchSiteInfo();
+            const info = await authSite.fetchSiteInfo();
 
             const result = this.isValidMoodleVersion(info);
             if (result !== CoreSitesProvider.VALID_VERSION) {
@@ -531,33 +529,33 @@ export class CoreSitesProvider {
             const siteId = this.createSiteID(info.siteurl, info.username);
 
             // Check if the site already exists.
-            const site = await CoreUtils.ignoreErrors<CoreSite>(this.getSite(siteId));
+            const storedSite = await CoreUtils.ignoreErrors(this.getSite(siteId));
+            let site: CoreSite;
 
-            if (site) {
-                // Site already exists, update its data and use it.
+            if (storedSite) {
+                // Site already exists.
                 isNewSite = false;
-                candidateSite = site;
-                candidateSite.setToken(token);
-                candidateSite.setPrivateToken(privateToken);
-                candidateSite.setInfo(info);
-                candidateSite.setOAuthId(oauthId);
-                candidateSite.setLoggedOut(false);
+                site = storedSite;
+                site.setToken(token);
+                site.setPrivateToken(privateToken);
+                site.setInfo(info);
+                site.setOAuthId(oauthId);
+                site.setLoggedOut(false);
             } else {
                 // New site, set site ID and info.
                 isNewSite = true;
-                candidateSite.setId(siteId);
-                candidateSite.setInfo(info);
-                candidateSite.setOAuthId(oauthId);
+                site = CoreSitesFactory.makeSite(siteId, siteUrl, token, { info, privateToken });
+                site.setOAuthId(oauthId);
 
                 // Create database tables before login and before any WS call.
-                await this.migrateSiteSchemas(candidateSite);
+                await this.migrateSiteSchemas(site);
             }
 
             // Try to get the site config.
             let config: CoreSiteConfig | undefined;
 
             try {
-                config = await this.getSiteConfig(candidateSite);
+                config = await this.getSiteConfig(site);
             } catch (error) {
                 // Ignore errors if it's not a new site, we'll use the config already stored.
                 if (isNewSite) {
@@ -566,16 +564,15 @@ export class CoreSitesProvider {
             }
 
             if (config !== undefined) {
-                candidateSite.setConfig(config);
+                site.setConfig(config);
             }
 
             // Add site to sites list.
             await this.addSite(siteId, siteUrl, token, info, privateToken, config, oauthId);
-            this.sites[siteId] = candidateSite;
+            this.sites[siteId] = site;
 
             if (login) {
-                // Turn candidate site into current site.
-                this.currentSite = candidateSite;
+                this.currentSite = site;
                 // Store session.
                 await this.login(siteId);
             } else if (this.currentSite && this.currentSite.getId() == siteId) {
@@ -1174,10 +1171,12 @@ export class CoreSitesProvider {
             entry.id,
             entry.siteUrl,
             entry.token,
-            info,
-            entry.privateToken,
-            config,
-            entry.loggedOut == 1,
+            {
+                info,
+                privateToken: entry.privateToken,
+                config,
+                loggedOut: entry.loggedOut == 1,
+            },
         );
         site.setOAuthId(entry.oauthId || undefined);
 
@@ -1243,13 +1242,15 @@ export class CoreSitesProvider {
      * @param ids IDs of sites to return, undefined to return them all.
      * @returns Sites basic info.
      */
-    protected siteDBRecordsToBasicInfo(sites: SiteDBEntry[], ids?: string[]): CoreSiteBasicInfo[] {
+    protected async siteDBRecordsToBasicInfo(sites: SiteDBEntry[], ids?: string[]): Promise<CoreSiteBasicInfo[]> {
         const formattedSites: CoreSiteBasicInfo[] = [];
 
-        sites.forEach((site) => {
+        await Promise.all(sites.map(async (site) => {
             if (!ids || ids.indexOf(site.id) > -1) {
-                const isDemoModeSite = CoreLoginHelper.isDemoModeSite(site.siteUrl);
                 const siteInfo = site.info ? <CoreSiteInfo> CoreTextUtils.parseJSON(site.info) : undefined;
+                const siteInstance = CoreSitesFactory.makeSite(site.id, site.siteUrl, site.token, { info: siteInfo });
+
+                const siteName = await siteInstance.getSiteName();
 
                 const basicInfo: CoreSiteBasicInfo = {
                     id: site.id,
@@ -1259,14 +1260,15 @@ export class CoreSitesProvider {
                     fullname: siteInfo?.fullname,
                     firstname: siteInfo?.firstname,
                     lastname: siteInfo?.lastname,
-                    siteName: isDemoModeSite ? CoreConstants.CONFIG.appname : siteInfo?.sitename,
+                    siteName,
                     userpictureurl: siteInfo?.userpictureurl,
                     siteHomeId: siteInfo?.siteid || 1,
                     loggedOut: !!site.loggedOut,
+                    info: siteInfo,
                 };
                 formattedSites.push(basicInfo);
             }
-        });
+        }));
 
         return formattedSites;
     }
@@ -1666,7 +1668,7 @@ export class CoreSitesProvider {
      * @returns Promise resolved with the public config.
      */
     getSitePublicConfig(siteUrl: string): Promise<CoreSitePublicConfigResponse> {
-        const temporarySite = CoreSitesFactory.makeSite(undefined, siteUrl);
+        const temporarySite = CoreSitesFactory.makeUnauthenticatedSite(siteUrl);
 
         return temporarySite.getPublicConfig();
     }
@@ -2066,33 +2068,9 @@ export class CoreSitesProvider {
 
         await Promise.all(
             sites
-                .map(site => CoreSitesFactory.makeSite(site.id, site.siteUrl))
+                .map(site => CoreSitesFactory.makeSite(site.id, site.siteUrl, ''))
                 .map(site => site.invalidateCaches()),
         );
-    }
-
-    /**
-     * Check whether informative links should be displayed for a certain site, or current site.
-     *
-     * @param siteOrUrl Site instance or site URL. If not defined, current site.
-     * @returns Whether informative links should be displayed.
-     */
-    shouldDisplayInformativeLinks(siteOrUrl?: CoreSite | string): boolean {
-        if (CoreConstants.CONFIG.hideInformativeLinks) {
-            return false;
-        }
-
-        // Don't display informative links for demo sites either.
-        siteOrUrl = siteOrUrl ?? this.getCurrentSite();
-        if (!siteOrUrl) {
-            return true;
-        }
-
-        if (typeof siteOrUrl === 'string') {
-            return !CoreLoginHelper.isDemoModeSite(siteOrUrl);
-        } else {
-            return !siteOrUrl.isDemoModeSite();
-        }
     }
 
 }
@@ -2160,6 +2138,7 @@ export type CoreSiteBasicInfo = {
     badge?: number; // Badge to display in the site.
     siteHomeId?: number; // Site home ID.
     loggedOut: boolean; // If Site is logged out.
+    info?: CoreSiteInfo; // Site info.
 };
 
 /**

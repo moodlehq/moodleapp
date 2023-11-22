@@ -15,13 +15,12 @@
 import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 
-import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreCountry, CoreUtils } from '@services/utils/utils';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { Translate } from '@singletons';
-import { CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
 
 import {
@@ -34,7 +33,8 @@ import { CoreForms } from '@singletons/form';
 import { CoreRecaptchaComponent } from '@components/recaptcha/recaptcha';
 import { CorePath } from '@singletons/path';
 import { CoreDom } from '@singletons/dom';
-import { CoreConstants } from '@/core/constants';
+import { CoreSitesFactory } from '@services/sites-factory';
+import { EMAIL_SIGNUP_FEATURE_NAME } from '@features/login/constants';
 
 /**
  * Page to signup using email.
@@ -51,8 +51,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
     @ViewChild('signupFormEl') signupFormElement?: ElementRef;
 
     signupForm: FormGroup;
-    siteUrl!: string;
-    isDemoModeSite = false;
+    site!: CoreUnauthenticatedSite;
     displaySiteUrl = false;
     siteConfig?: CoreSitePublicConfigResponse;
     siteName?: string;
@@ -129,9 +128,8 @@ export class CoreLoginEmailSignupPage implements OnInit {
             return;
         }
 
-        this.siteUrl = siteUrl;
-        this.isDemoModeSite = CoreLoginHelper.isDemoModeSite(this.siteUrl);
-        this.displaySiteUrl = CoreSites.shouldDisplayInformativeLinks(this.siteUrl);
+        this.site = CoreSitesFactory.makeUnauthenticatedSite(siteUrl);
+        this.displaySiteUrl = this.site.shouldDisplayInformativeLinks();
 
         // Fetch the data.
         this.fetchData().finally(() => {
@@ -165,10 +163,11 @@ export class CoreLoginEmailSignupPage implements OnInit {
     protected async fetchData(): Promise<void> {
         try {
             // Get site config.
-            this.siteConfig = await CoreSites.getSitePublicConfig(this.siteUrl);
+            this.siteConfig = await this.site.getPublicConfig();
             this.signupUrl = CorePath.concatenatePaths(this.siteConfig.httpswwwroot, 'login/signup.php');
 
-            if (this.treatSiteConfig()) {
+            const configValid = await this.treatSiteConfig();
+            if (configValid) {
                 // Check content verification.
                 if (this.ageDigitalConsentVerification === undefined) {
 
@@ -176,7 +175,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
                         CoreWS.callAjax<IsAgeVerificationEnabledWSResponse>(
                             'core_auth_is_age_digital_consent_verification_enabled',
                             {},
-                            { siteUrl: this.siteUrl },
+                            { siteUrl: this.site.getURL() },
                         ),
                     );
 
@@ -203,7 +202,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         this.settings = await CoreWS.callAjax<AuthEmailSignupSettings>(
             'auth_email_get_signup_settings',
             {},
-            { siteUrl: this.siteUrl },
+            { siteUrl: this.site.getURL() },
         );
 
         if (CoreUserProfileFieldDelegate.hasRequiredUnsupportedField(this.settings.profilefields)) {
@@ -238,9 +237,10 @@ export class CoreLoginEmailSignupPage implements OnInit {
      *
      * @returns True if success.
      */
-    protected treatSiteConfig(): boolean {
-        if (this.siteConfig?.registerauth == 'email' && !CoreLoginHelper.isEmailSignupDisabled(this.siteConfig)) {
-            this.siteName = this.isDemoModeSite ? CoreConstants.CONFIG.appname : this.siteConfig.sitename;
+    protected async treatSiteConfig(): Promise<boolean> {
+        if (this.siteConfig?.registerauth == 'email' && !this.site.isFeatureDisabled(EMAIL_SIGNUP_FEATURE_NAME)) {
+            this.siteName = await this.site.getSiteName();
+
             this.authInstructions = this.siteConfig.authinstructions;
             this.ageDigitalConsentVerification = this.siteConfig.agedigitalconsentverification;
             this.supportName = this.siteConfig.supportname;
@@ -306,7 +306,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         };
 
         if (this.siteConfig?.launchurl) {
-            params.redirect = CoreLoginHelper.prepareForSSOLogin(this.siteUrl, undefined, this.siteConfig.launchurl);
+            params.redirect = CoreLoginHelper.prepareForSSOLogin(this.site.getURL(), undefined, this.siteConfig.launchurl);
         }
 
         // Get the recaptcha response (if needed).
@@ -326,7 +326,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
             const result = await CoreWS.callAjax<SignupUserWSResult>(
                 'auth_email_signup_user',
                 params,
-                { siteUrl: this.siteUrl },
+                { siteUrl: this.site.getURL() },
             );
 
             if (result.success) {
@@ -381,7 +381,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      */
     showContactOnSite(): void {
         CoreUtils.openInBrowser(
-            CorePath.concatenatePaths(this.siteUrl, '/login/verify_age_location.php'),
+            CorePath.concatenatePaths(this.site.getURL(), '/login/verify_age_location.php'),
             { showBrowserWarning: false },
         );
     }
@@ -409,7 +409,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         params.age = parseInt(params.age, 10); // Use just the integer part.
 
         try {
-            const result = await CoreWS.callAjax<IsMinorWSResult>('core_auth_is_minor', params, { siteUrl: this.siteUrl });
+            const result = await CoreWS.callAjax<IsMinorWSResult>('core_auth_is_minor', params, { siteUrl: this.site.getURL() });
 
             CoreForms.triggerFormSubmittedEvent(this.ageFormElement, true);
 

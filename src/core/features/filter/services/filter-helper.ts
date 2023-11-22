@@ -29,7 +29,7 @@ import { CoreCourses } from '@features/courses/services/courses';
 import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { firstValueFrom } from '@/core/utils/rxjs';
 

@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreConstants } from '@/core/constants';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreApp } from '@services/app';
@@ -32,6 +32,7 @@ import { CoreSitePluginsModuleHandler } from '../classes/handlers/module-handler
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 import { CoreEnrolAction, CoreEnrolInfoIcon } from '@features/enrol/services/enrol-delegate';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 const ROOT_CACHE_KEY = 'CoreSitePlugins:';
 

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
@@ -28,6 +28,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModGlossaryEntryDBRecord, ENTRIES_TABLE_NAME } from './database/glossary';
 import { AddonModGlossaryOffline } from './glossary-offline';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 export const GLOSSARY_ENTRY_ADDED = 'addon_mod_glossary_entry_added';
 export const GLOSSARY_ENTRY_UPDATED = 'addon_mod_glossary_entry_updated';

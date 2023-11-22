@@ -13,8 +13,10 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreAuthenticatedSite, CoreAuthenticatedSiteOptionalData } from '@classes/sites/authenticated-site';
 
-import { CoreSite, CoreSiteConfig, CoreSiteInfo } from '@classes/site';
+import { CoreSite, CoreSiteOptionalData } from '@classes/sites/site';
+import { CoreUnauthenticatedSite, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { makeSingleton } from '@singletons';
 
 /*
@@ -24,27 +26,44 @@ import { makeSingleton } from '@singletons';
 export class CoreSitesFactoryService {
 
     /**
-     * Make a site object.
+     * Create a site instance.
      *
      * @param id Site ID.
      * @param siteUrl Site URL.
      * @param token Site's WS token.
-     * @param info Site info.
-     * @param privateToken Private token.
-     * @param config Site public config.
-     * @param loggedOut Whether user is logged out.
+     * @param otherData Other data.
      * @returns Site instance.
      */
     makeSite(
-        id: string | undefined,
+        id: string,
         siteUrl: string,
-        token?: string,
-        info?: CoreSiteInfo,
-        privateToken?: string,
-        config?: CoreSiteConfig,
-        loggedOut?: boolean,
+        token: string,
+        otherData: CoreSiteOptionalData = {},
     ): CoreSite {
-        return new CoreSite(id, siteUrl, token, info, privateToken, config, loggedOut);
+        return new CoreSite(id, siteUrl, token, otherData);
+    }
+
+    /**
+     * Create an authenticated site instance.
+     *
+     * @param siteUrl Site URL.
+     * @param token Site's WS token.
+     * @param options Other options.
+     * @returns Authenticated site instance.
+     */
+    makeAuthenticatedSite(siteUrl: string, token: string, options: CoreAuthenticatedSiteOptionalData = {}): CoreAuthenticatedSite {
+        return new CoreAuthenticatedSite(siteUrl, token, options);
+    }
+
+    /**
+     * Create an unauthenticated site instance.
+     *
+     * @param siteUrl Site URL.
+     * @param publicConfig Site public config.
+     * @returns Unauthenticated site instance.
+     */
+    makeUnauthenticatedSite(siteUrl: string, publicConfig?: CoreSitePublicConfigResponse): CoreUnauthenticatedSite {
+        return new CoreUnauthenticatedSite(siteUrl, publicConfig);
     }
 
 }
