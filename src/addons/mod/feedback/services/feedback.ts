@@ -25,7 +25,7 @@ import { CoreWSExternalFile, CoreWSExternalWarning, CoreWSStoredFile } from '@se
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModFeedbackOffline } from './feedback-offline';
 import { AddonModFeedbackAutoSyncData, AddonModFeedbackSyncProvider } from './feedback-sync';
-import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 const ROOT_CACHE_KEY = 'AddonModFeedback:';
 

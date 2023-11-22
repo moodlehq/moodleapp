@@ -23,7 +23,7 @@ import { CoreFilterDelegate } from './filter-delegate';
 import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
-import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 /**
  * Service to provide filter functionalities.

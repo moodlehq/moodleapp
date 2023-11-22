@@ -15,7 +15,7 @@
 import { Directive, Input, OnInit, ElementRef, Optional } from '@angular/core';
 import { Md5 } from 'ts-md5';
 
-import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';

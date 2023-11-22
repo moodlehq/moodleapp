@@ -21,7 +21,7 @@ import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { map } from 'rxjs/operators';
 import { asyncObservable, firstValueFrom } from '@/core/utils/rxjs';
-import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/candidate-site';
+import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 
 const ROOT_CACHE_KEY = 'CoreCoursesDashboard:';
 

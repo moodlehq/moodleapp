@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreCandidateSite, CoreCandidateSiteOptionalData } from '@classes/sites/candidate-site';
+import { CoreAuthenticatedSite, CoreAuthenticatedSiteOptionalData } from '@classes/sites/authenticated-site';
 
 import { CoreSite, CoreSiteOptionalData } from '@classes/sites/site';
 import { CoreUnauthenticatedSite, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
@@ -26,7 +26,7 @@ import { makeSingleton } from '@singletons';
 export class CoreSitesFactoryService {
 
     /**
-     * Make a site object.
+     * Create a site instance.
      *
      * @param id Site ID.
      * @param siteUrl Site URL.
@@ -44,15 +44,15 @@ export class CoreSitesFactoryService {
     }
 
     /**
-     * Create a candidate site instance.
+     * Create an authenticated site instance.
      *
      * @param siteUrl Site URL.
      * @param token Site's WS token.
      * @param options Other options.
-     * @returns Candidate site instance.
+     * @returns Authenticated site instance.
      */
-    makeCandidateSite(siteUrl: string, token: string, options: CoreCandidateSiteOptionalData = {}): CoreCandidateSite {
-        return new CoreCandidateSite(siteUrl, token, options);
+    makeAuthenticatedSite(siteUrl: string, token: string, options: CoreAuthenticatedSiteOptionalData = {}): CoreAuthenticatedSite {
+        return new CoreAuthenticatedSite(siteUrl, token, options);
     }
 
     /**

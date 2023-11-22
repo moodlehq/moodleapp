@@ -28,7 +28,7 @@ import { CoreEvents } from '@singletons/events';
 import { AddonModWikiPageDBRecord } from './database/wiki';
 import { AddonModWikiOffline } from './wiki-offline';
 import { AddonModWikiAutoSyncData, AddonModWikiManualSyncData, AddonModWikiSyncProvider } from './wiki-sync';
-import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 const ROOT_CACHE_KEY = 'mmaModWiki:';
 

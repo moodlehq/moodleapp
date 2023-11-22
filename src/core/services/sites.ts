@@ -64,7 +64,7 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 import { CoreAutoLogoutType, CoreAutoLogout } from '@features/autologout/services/autologout';
 import { CoreCacheManager } from '@services/cache-manager';
 import { CoreSiteInfo, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
-import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -514,12 +514,12 @@ export class CoreSitesProvider {
             login = true;
         }
 
-        // Create a "candidate" site to fetch the site info.
-        const candidateSite = CoreSitesFactory.makeCandidateSite(siteUrl, token, { privateToken });
+        // Validate the site.
+        const authSite = CoreSitesFactory.makeAuthenticatedSite(siteUrl, token, { privateToken });
         let isNewSite = true;
 
         try {
-            const info = await candidateSite.fetchSiteInfo();
+            const info = await authSite.fetchSiteInfo();
 
             const result = this.isValidMoodleVersion(info);
             if (result !== CoreSitesProvider.VALID_VERSION) {
@@ -572,7 +572,6 @@ export class CoreSitesProvider {
             this.sites[siteId] = site;
 
             if (login) {
-                // Turn candidate site into current site.
                 this.currentSite = site;
                 // Store session.
                 await this.login(siteId);

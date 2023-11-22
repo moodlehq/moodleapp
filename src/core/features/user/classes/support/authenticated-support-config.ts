@@ -16,7 +16,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreSites } from '@services/sites';
 import { CoreUserSupportConfig } from './support-config';
 import { CoreSiteConfigSupportAvailability } from '@classes/sites/unauthenticated-site';
-import { CoreCandidateSite } from '@classes/sites/candidate-site';
+import { CoreAuthenticatedSite } from '@classes/sites/authenticated-site';
 
 /**
  * Support config for an authenticated user.
@@ -32,9 +32,9 @@ export class CoreUserAuthenticatedSupportConfig extends CoreUserSupportConfig {
         return new CoreUserAuthenticatedSupportConfig(CoreSites.getRequiredCurrentSite());
     }
 
-    private site: CoreSite | CoreCandidateSite;
+    private site: CoreSite | CoreAuthenticatedSite;
 
-    constructor(site: CoreSite | CoreCandidateSite) {
+    constructor(site: CoreSite | CoreAuthenticatedSite) {
         super();
 
         this.site = site;

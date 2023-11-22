@@ -25,7 +25,7 @@ import { map } from 'rxjs/operators';
 import { AddonEnrolGuest, AddonEnrolGuestInfo } from '@addons/enrol/guest/services/guest';
 import { AddonEnrolSelf } from '@addons/enrol/self/services/self';
 import { CoreEnrol, CoreEnrolEnrolmentInfo, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
-import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/candidate-site';
+import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 
 const ROOT_CACHE_KEY = 'mmCourses:';
 

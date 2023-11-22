@@ -28,7 +28,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModGlossaryEntryDBRecord, ENTRIES_TABLE_NAME } from './database/glossary';
 import { AddonModGlossaryOffline } from './glossary-offline';
-import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 export const GLOSSARY_ENTRY_ADDED = 'addon_mod_glossary_entry_added';
 export const GLOSSARY_ENTRY_UPDATED = 'addon_mod_glossary_entry_updated';

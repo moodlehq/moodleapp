@@ -51,13 +51,13 @@ import { map } from 'rxjs/operators';
 import { firstValueFrom } from '../../utils/rxjs';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSiteInfo } from './unauthenticated-site';
-import { CoreCandidateSite, CoreCandidateSiteOptionalData, CoreSiteWSPreSets, WSObservable } from './candidate-site';
+import { CoreAuthenticatedSite, CoreAuthenticatedSiteOptionalData, CoreSiteWSPreSets, WSObservable } from './authenticated-site';
 
 /**
  * Class that represents a site (combination of site + user).
  * It will have all the site data and provide utility functions regarding a site.
  */
-export class CoreSite extends CoreCandidateSite {
+export class CoreSite extends CoreAuthenticatedSite {
 
     id: string;
     config?: CoreSiteConfig;
@@ -920,7 +920,7 @@ export class CoreSite extends CoreCandidateSite {
 /**
  * Optional data to create a site.
  */
-export type CoreSiteOptionalData = CoreCandidateSiteOptionalData & {
+export type CoreSiteOptionalData = CoreAuthenticatedSiteOptionalData & {
     info?: CoreSiteInfo;
     config?: CoreSiteConfig;
     loggedOut?: boolean;

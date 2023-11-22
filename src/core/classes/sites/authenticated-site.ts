@@ -48,7 +48,7 @@ import { CoreErrorLogs } from '@singletons/error-logs';
  * Class that represents a site (combination of site + user) where the user has authenticated but the site hasn't been validated
  * yet, it might be a site not supported by the app.
  */
-export class CoreCandidateSite extends CoreUnauthenticatedSite {
+export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
     static readonly REQUEST_QUEUE_FORCE_WS = false; // Use "tool_mobile_call_external_functions" even for calling a single function.
 
@@ -112,11 +112,11 @@ export class CoreCandidateSite extends CoreUnauthenticatedSite {
     constructor(
         siteUrl: string,
         token: string,
-        otherData: CoreCandidateSiteOptionalData = {},
+        otherData: CoreAuthenticatedSiteOptionalData = {},
     ) {
         super(siteUrl, otherData.publicConfig);
 
-        this.logger = CoreLogger.getInstance('CoreCandidateSite');
+        this.logger = CoreLogger.getInstance('CoreAuthenticaedSite');
         this.token = token;
         this.privateToken = otherData.privateToken;
     }
@@ -387,7 +387,7 @@ export class CoreCandidateSite extends CoreUnauthenticatedSite {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     requestObservable<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets): WSObservable<T> {
-        if (this.isLoggedOut() && !CoreCandidateSite.ALLOWED_LOGGEDOUT_WS.includes(method)) {
+        if (this.isLoggedOut() && !CoreAuthenticatedSite.ALLOWED_LOGGEDOUT_WS.includes(method)) {
             // Site is logged out, it cannot call WebServices.
             this.triggerSiteEvent(CoreEvents.SESSION_EXPIRED, {});
 
@@ -879,7 +879,7 @@ export class CoreCandidateSite extends CoreUnauthenticatedSite {
         const requests = this.requestQueue;
         this.requestQueue = [];
 
-        if (requests.length == 1 && !CoreCandidateSite.REQUEST_QUEUE_FORCE_WS) {
+        if (requests.length == 1 && !CoreAuthenticatedSite.REQUEST_QUEUE_FORCE_WS) {
             // Only one request, do a regular web service call.
             try {
                 const data = await CoreWS.call(requests[0].method, requests[0].data, requests[0].wsPreSets);
@@ -1329,8 +1329,9 @@ export class CoreCandidateSite extends CoreUnauthenticatedSite {
                 try {
                     const config = await this.requestPublicConfig();
 
-                    this.saveToCache(method, {}, config, cachePreSets);
-                    this.setPublicConfig(config);
+                    if (cachePreSets.saveToCache) {
+                        this.saveToCache(method, {}, config, cachePreSets);
+                    }
 
                     return config;
                 } catch (error) {
@@ -1453,9 +1454,9 @@ export class CoreCandidateSite extends CoreUnauthenticatedSite {
             return 0;
         }
 
-        if (CoreCandidateSite.MOODLE_RELEASES[data.major] === undefined) {
+        if (CoreAuthenticatedSite.MOODLE_RELEASES[data.major] === undefined) {
             // Major version not found. Use the last one.
-            const major = Object.keys(CoreCandidateSite.MOODLE_RELEASES).pop();
+            const major = Object.keys(CoreAuthenticatedSite.MOODLE_RELEASES).pop();
             if (!major) {
                 return 0;
             }
@@ -1463,7 +1464,7 @@ export class CoreCandidateSite extends CoreUnauthenticatedSite {
             data.major = major;
         }
 
-        return CoreCandidateSite.MOODLE_RELEASES[data.major] + data.minor;
+        return CoreAuthenticatedSite.MOODLE_RELEASES[data.major] + data.minor;
     }
 
     /**
@@ -1493,7 +1494,7 @@ export class CoreCandidateSite extends CoreUnauthenticatedSite {
      */
     protected getNextMajorVersionNumber(version: string): number {
         const data = this.getMajorAndMinor(version);
-        const releases = Object.keys(CoreCandidateSite.MOODLE_RELEASES);
+        const releases = Object.keys(CoreAuthenticatedSite.MOODLE_RELEASES);
 
         if (!data) {
             // Invalid version.
@@ -1504,10 +1505,10 @@ export class CoreCandidateSite extends CoreUnauthenticatedSite {
 
         if (position == -1 || position == releases.length - 1) {
             // Major version not found or it's the last one. Use the last one.
-            return CoreCandidateSite.MOODLE_RELEASES[releases[position]];
+            return CoreAuthenticatedSite.MOODLE_RELEASES[releases[position]];
         }
 
-        return CoreCandidateSite.MOODLE_RELEASES[releases[position + 1]];
+        return CoreAuthenticatedSite.MOODLE_RELEASES[releases[position + 1]];
     }
 
     /**
@@ -1517,9 +1518,9 @@ export class CoreCandidateSite extends CoreUnauthenticatedSite {
      * @returns Expiration delay.
      */
     getExpirationDelay(updateFrequency?: number): number {
-        updateFrequency = updateFrequency || CoreCandidateSite.FREQUENCY_USUALLY;
-        let expirationDelay = CoreCandidateSite.UPDATE_FREQUENCIES[updateFrequency] ||
-            CoreCandidateSite.UPDATE_FREQUENCIES[CoreCandidateSite.FREQUENCY_USUALLY];
+        updateFrequency = updateFrequency || CoreAuthenticatedSite.FREQUENCY_USUALLY;
+        let expirationDelay = CoreAuthenticatedSite.UPDATE_FREQUENCIES[updateFrequency] ||
+        CoreAuthenticatedSite.UPDATE_FREQUENCIES[CoreAuthenticatedSite.FREQUENCY_USUALLY];
 
         if (CoreNetwork.isNetworkAccessLimited()) {
             // Not WiFi, increase the expiration delay a 50% to decrease the data usage in this case.
@@ -1609,9 +1610,9 @@ export function chainRequests<T, O extends ObservableInput<any>>(
 }
 
 /**
- * Optional data to create a candidate site.
+ * Optional data to create an authenticated site.
  */
-export type CoreCandidateSiteOptionalData = {
+export type CoreAuthenticatedSiteOptionalData = {
     privateToken?: string;
     publicConfig?: CoreSitePublicConfigResponse;
 };

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Directive, Input, ElementRef, Optional } from '@angular/core';
-import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
 import { Md5 } from 'ts-md5';

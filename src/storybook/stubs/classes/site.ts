@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/candidate-site';
+import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreSite, CoreSiteConfigResponse } from '@classes/sites/site';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { of } from 'rxjs';

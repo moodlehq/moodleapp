@@ -24,7 +24,7 @@ import { CoreXAPIItemAgent } from '../classes/item-agent';
 import { CoreXAPIIRI } from '../classes/iri';
 import { CoreError } from '@classes/errors/error';
 import { CoreLogger } from '@singletons/logger';
-import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 export const XAPI_STATE_DELETED = 'STATE_DELETED';
 

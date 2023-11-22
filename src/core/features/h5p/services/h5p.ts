@@ -29,7 +29,7 @@ import { CoreH5PValidator } from '../classes/validator';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CorePath } from '@singletons/path';
-import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
+import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
 /**
  * Service to provide H5P functionalities.
