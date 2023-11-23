@@ -656,8 +656,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     /**
      * Replace tags for a11y.
      *
-     * @param originTag      Origin tags to be replaced.
-     * @param destinationTag Destination tags to replace.
+     * @param originTags      Origin tags to be replaced.
+     * @param destinationTags Destination tags to replace.
      */
     protected replaceTags(originTags: string[], destinationTags: string[]): void {
         if (!this.editorElement) {

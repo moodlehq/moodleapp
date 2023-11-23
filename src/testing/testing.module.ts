@@ -21,6 +21,11 @@ type AutomatedTestsWindow = Window & {
     behat?: TestingBehatRuntimeService;
 };
 
+/**
+ * Initialize automated tests.
+ *
+ * @param window Window.
+ */
 function initializeAutomatedTests(window: AutomatedTestsWindow) {
     if (!CoreAppProvider.isAutomated()) {
         return;

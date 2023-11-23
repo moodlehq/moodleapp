@@ -77,6 +77,8 @@ export function asyncObservable<T>(createObservable: () => Promise<Observable<T>
     });
 }
 
+export function ignoreErrors<Result>(observable: Observable<Result>): Observable<Result | undefined>;
+export function ignoreErrors<Result, Fallback>(observable: Observable<Result>, fallback: Fallback): Observable<Result | Fallback>;
 /**
  * Ignore errors from an observable, returning a certain value instead.
  *
@@ -84,8 +86,6 @@ export function asyncObservable<T>(createObservable: () => Promise<Observable<T>
  * @param fallback Value to return if the observer errors.
  * @returns Observable with ignored errors, returning the fallback result if provided.
  */
-export function ignoreErrors<Result>(observable: Observable<Result>): Observable<Result | undefined>;
-export function ignoreErrors<Result, Fallback>(observable: Observable<Result>, fallback: Fallback): Observable<Result | Fallback>;
 export function ignoreErrors<Result, Fallback>(
     observable: Observable<Result>,
     fallback?: Fallback,

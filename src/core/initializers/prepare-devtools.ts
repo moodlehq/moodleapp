@@ -29,6 +29,11 @@ type DevelopmentWindow = Window & {
     pushNotifications?: CorePushNotificationsProvider;
 };
 
+/**
+ * Initializes the development window with necessary providers and configurations.
+ *
+ * @param window The development window object to be initialized.
+ */
 function initializeDevelopmentWindow(window: DevelopmentWindow) {
     window.browser = CoreBrowser;
     window.appProvider = CoreApp.instance;
@@ -38,6 +43,9 @@ function initializeDevelopmentWindow(window: DevelopmentWindow) {
     window.pushNotifications = CorePushNotifications.instance;
 }
 
+/**
+ * Initializes the development tools if enabled by CoreConstants.
+ */
 export default function(): void {
     if (!CoreConstants.enableDevTools()) {
         return;

@@ -24,10 +24,24 @@ type User = {
     surname: string;
 };
 
+/**
+ * Checks if a user object matches specified conditions.
+ *
+ * @param user The user object to be checked.
+ * @param conditions The conditions to match against the user object.
+ * @returns Returns true if the user matches the conditions, false otherwise.
+ */
 function userMatches(user: User, conditions: Partial<User>) {
     return !Object.entries(conditions).some(([column, value]) => user[column] !== value);
 }
 
+/**
+ * Prepares stubs for testing with a mock database configuration.
+ *
+ * @param config The partial CoreDatabaseConfiguration to use for the mock database.
+ * @returns An array containing a mock user records array, a mock SQLite database,
+ * and a CoreDatabaseTable instance for the 'users' table.
+ */
 function prepareStubs(config: Partial<CoreDatabaseConfiguration> = {}): [User[], SQLiteDB, CoreDatabaseTable<User>] {
     const records: User[] = [];
     const database = mock<SQLiteDB>({
@@ -68,6 +82,12 @@ function prepareStubs(config: Partial<CoreDatabaseConfiguration> = {}): [User[],
     return [records, database, table];
 }
 
+/**
+ * Test function for finding items in the database.
+ *
+ * @param records An array of user records to use for testing.
+ * @param table The CoreDatabaseTable instance to test.
+ */
 async function testFindItems(records: User[], table: CoreDatabaseTable<User>) {
     const john = { id: 1, name: 'John', surname: 'Doe' };
     const amy = { id: 2, name: 'Amy', surname: 'Doe' };
@@ -83,6 +103,13 @@ async function testFindItems(records: User[], table: CoreDatabaseTable<User>) {
     await expect(table.getOneByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
 }
 
+/**
+ * Tests the insertion of items into a database table.
+ *
+ * @param records An array of User records.
+ * @param database The SQLite database instance.
+ * @param table The database table instance.
+ */
 async function testInsertItems(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
     // Arrange.
     const john = { id: 1, name: 'John', surname: 'Doe' };
@@ -98,6 +125,13 @@ async function testInsertItems(records: User[], database: SQLiteDB, table: CoreD
     await expect(table.getOneByPrimaryKey({ id: 1 })).resolves.toEqual(john);
 }
 
+/**
+ * Tests the deletion of items from a database table based on a condition.
+ *
+ * @param records An array of User records.
+ * @param database The SQLite database instance.
+ * @param table The database table instance.
+ */
 async function testDeleteItems(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
     // Arrange.
     const john = { id: 1, name: 'John', surname: 'Doe' };
@@ -121,6 +155,13 @@ async function testDeleteItems(records: User[], database: SQLiteDB, table: CoreD
     await expect(table.getOneByPrimaryKey({ id: 3 })).resolves.toEqual(jane);
 }
 
+/**
+ * Tests the deletion of items from a database table based on primary key values.
+ *
+ * @param records An array of User records.
+ * @param database The SQLite database instance.
+ * @param table The database table instance.
+ */
 async function testDeleteItemsByPrimaryKey(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
     // Arrange.
     const john = { id: 1, name: 'John', surname: 'Doe' };
