@@ -53,7 +53,8 @@ import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CorePlatform } from '@services/platform';
-import { asyncObservable, firstValueFrom } from '@/core/utils/rxjs';
+import { asyncObservable } from '@/core/utils/rxjs';
+import { firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 

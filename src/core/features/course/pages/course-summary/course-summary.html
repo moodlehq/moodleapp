@@ -26,7 +26,7 @@
             <div class="list-item-limited-width">
                 <ion-item class="ion-text-wrap course-name">
                     <ion-label>
-                        <p *ngIf="course.displayname && course.shortname && course.fullname != course.displayname"
+                        <p *ngIf="course.displayname && course.shortname && course.fullname !== course.displayname"
                             class="core-course-shortname">
                             <core-format-text [text]="course.shortname" contextLevel="course" [contextInstanceId]="course.id">
                             </core-format-text>

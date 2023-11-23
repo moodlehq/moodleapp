@@ -13,9 +13,7 @@
 // limitations under the License.
 
 import { FormControl } from '@angular/forms';
-import { CoreError } from '@classes/errors/error';
-import { CoreSubscriptions } from '@singletons/subscriptions';
-import { BehaviorSubject, Observable, of, OperatorFunction, Subscription } from 'rxjs';
+import { Observable, of, OperatorFunction, Subscription } from 'rxjs';
 import { catchError, filter } from 'rxjs/operators';
 
 /**
@@ -76,27 +74,6 @@ export function asyncObservable<T>(createObservable: () => Promise<Observable<T>
         promise
             .then(observable => observable.subscribe(subscriber)) // rxjs will automatically handle unsubscribes.
             .catch(error => subscriber.error(error));
-    });
-}
-
-/**
- * Create a Promise resolved with the first value returned from an observable. The difference with toPromise is that
- * this function returns the value as soon as it's emitted, it doesn't wait until the observable completes.
- * This function can be removed when the app starts using rxjs v7.
- *
- * @param observable Observable.
- * @returns Promise resolved with the first value returned.
- */
-export function firstValueFrom<T>(observable: Observable<T>): Promise<T> {
-    return new Promise((resolve, reject) => {
-        CoreSubscriptions.once(observable, resolve, reject, () => {
-            // Subscription is completed, check if we can get its value.
-            if (observable instanceof BehaviorSubject) {
-                resolve(observable.getValue());
-            }
-
-            reject(new CoreError('Couldn\'t get first value from observable because it\'s already completed'));
-        });
     });
 }
 

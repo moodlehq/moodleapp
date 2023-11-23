@@ -32,7 +32,7 @@
                 class="ion-no-padding ion-text-wrap">
                 <!-- Parent question (Category header) -->
                 <ng-container *ngIf="question.multiArray?.length">
-                    <h3 class="ion-padding-horizontal" [class.ion-padding-top]="questionIndex == 1">{{ question.text }}</h3>
+                    <h3 class="ion-padding-horizontal" [class.ion-padding-top]="questionIndex === 1">{{ question.text }}</h3>
                     <ion-row class="ion-align-items-center ion-hide-md-down ion-padding">
                         <ion-col size="7" class="ion-padding">{{ 'addon.mod_survey.responses' | translate }}</ion-col>
                         <ion-col size="1" class="ion-text-center option-name"
@@ -81,7 +81,7 @@
                 </ng-container>
 
                 <!-- Single question (don't belong to a category) -->
-                <ng-container *ngIf="(!question.multiArray || question.multiArray.length == 0) && question.parent === 0">
+                <ng-container *ngIf="(!question.multiArray || question.multiArray.length === 0) && question.parent === 0">
                     <ion-row class="ion-align-items-center ion-padding" *ngIf="question.type > 0" [class.even]="isEven">
                         <ion-col size="7">
                             <span id="addon-mod_survey-{{question.name}}" [core-mark-required]="question.required">

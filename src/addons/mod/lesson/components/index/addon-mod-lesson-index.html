@@ -88,39 +88,39 @@
 
                                 <ion-col class="ion-text-center">
                                     <p class="item-heading">{{ 'addon.mod_lesson.highscore' | translate }}</p>
-                                    <p *ngIf="overview.highscore != null">
+                                    <p *ngIf="overview.highscore !== null">
                                         {{ 'core.percentagenumber' | translate:{$a: overview.highscore} }}
                                     </p>
-                                    <p *ngIf="overview.highscore == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    <p *ngIf="overview.highscore === null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                 </ion-col>
 
                                 <ion-col class="ion-text-center">
                                     <p class="item-heading">{{ 'addon.mod_lesson.lowscore' | translate }}</p>
-                                    <p *ngIf="overview.lowscore != null">
+                                    <p *ngIf="overview.lowscore !== null">
                                         {{ 'core.percentagenumber' | translate:{$a: overview.lowscore} }}
                                     </p>
-                                    <p *ngIf="overview.lowscore == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    <p *ngIf="overview.lowscore === null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                 </ion-col>
                             </ion-row>
                             <ion-row>
                                 <ion-col class="ion-text-center">
                                     <p class="item-heading">{{ 'addon.mod_lesson.averagetime' | translate }}</p>
-                                    <p *ngIf="overview.avetime != null && overview.numofattempts">{{ avetimeReadable }}</p>
-                                    <p *ngIf="overview.avetime == null || !overview.numofattempts">
+                                    <p *ngIf="overview.avetime !== null && overview.numofattempts">{{ avetimeReadable }}</p>
+                                    <p *ngIf="overview.avetime === null || !overview.numofattempts">
                                         {{ 'addon.mod_lesson.notcompleted' | translate }}
                                     </p>
                                 </ion-col>
 
                                 <ion-col class="ion-text-center">
                                     <p class="item-heading">{{ 'addon.mod_lesson.hightime' | translate }}</p>
-                                    <p *ngIf="overview.hightime != null">{{ hightimeReadable }}</p>
-                                    <p *ngIf="overview.hightime == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    <p *ngIf="overview.hightime !== null">{{ hightimeReadable }}</p>
+                                    <p *ngIf="overview.hightime === null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                 </ion-col>
 
                                 <ion-col class="ion-text-center">
                                     <p class="item-heading">{{ 'addon.mod_lesson.lowtime' | translate }}</p>
-                                    <p *ngIf="overview.lowtime != null">{{ lowtimeReadable }}</p>
-                                    <p *ngIf="overview.lowtime == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    <p *ngIf="overview.lowtime !== null">{{ lowtimeReadable }}</p>
+                                    <p *ngIf="overview.lowtime === null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                 </ion-col>
                             </ion-row>
                         </ion-grid>
@@ -138,8 +138,8 @@
 
                                 <ion-col [ngClass]="{'ion-text-center': overview.lessonscored}">
                                     <p class="item-heading">{{ 'addon.mod_lesson.averagetime' | translate }}</p>
-                                    <p *ngIf="overview.avetime != null && overview.numofattempts">{{ avetimeReadable }}</p>
-                                    <p *ngIf="overview.avetime == null || !overview.numofattempts">
+                                    <p *ngIf="overview.avetime !== null && overview.numofattempts">{{ avetimeReadable }}</p>
+                                    <p *ngIf="overview.avetime === null || !overview.numofattempts">
                                         {{ 'addon.mod_lesson.notcompleted' | translate }}
                                     </p>
                                 </ion-col>
@@ -147,31 +147,31 @@
                             <ion-row>
                                 <ion-col class="ion-text-center" *ngIf="overview.lessonscored">
                                     <p class="item-heading">{{ 'addon.mod_lesson.highscore' | translate }}</p>
-                                    <p *ngIf="overview.highscore != null">
+                                    <p *ngIf="overview.highscore !== null">
                                         {{ 'core.percentagenumber' | translate:{$a: overview.highscore} }}
                                     </p>
-                                    <p *ngIf="overview.highscore == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    <p *ngIf="overview.highscore === null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                 </ion-col>
 
                                 <ion-col [ngClass]="{'ion-text-center': overview.lessonscored}">
                                     <p class="item-heading">{{ 'addon.mod_lesson.hightime' | translate }}</p>
-                                    <p *ngIf="overview.hightime != null">{{ hightimeReadable }}</p>
-                                    <p *ngIf="overview.hightime == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    <p *ngIf="overview.hightime !== null">{{ hightimeReadable }}</p>
+                                    <p *ngIf="overview.hightime === null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                 </ion-col>
                             </ion-row>
                             <ion-row>
                                 <ion-col class="ion-text-center" *ngIf="overview.lessonscored">
                                     <p class="item-heading">{{ 'addon.mod_lesson.lowscore' | translate }}</p>
-                                    <p *ngIf="overview.lowscore != null">
+                                    <p *ngIf="overview.lowscore !== null">
                                         {{ 'core.percentagenumber' | translate:{$a: overview.lowscore} }}
                                     </p>
-                                    <p *ngIf="overview.lowscore == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    <p *ngIf="overview.lowscore === null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                 </ion-col>
 
                                 <ion-col [ngClass]="{'ion-text-center': overview.lessonscored}">
                                     <p class="item-heading">{{ 'addon.mod_lesson.lowtime' | translate }}</p>
-                                    <p *ngIf="overview.lowtime != null">{{ lowtimeReadable }}</p>
-                                    <p *ngIf="overview.lowtime == null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
+                                    <p *ngIf="overview.lowtime !== null">{{ lowtimeReadable }}</p>
+                                    <p *ngIf="overview.lowtime === null">{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                 </ion-col>
                             </ion-row>
                         </ion-grid>

@@ -147,7 +147,7 @@ export class VideoJSOgvJS extends Tech {
         if (el.hasOwnProperty(name)) {
             el[name] = value;
         }
-    };
+    }
 
     /**
      * Check if browser/device is supported by Ogv.JS.
@@ -156,7 +156,7 @@ export class VideoJSOgvJS extends Tech {
      */
     static isSupported(): boolean {
         return OGVCompat.supported('OGVPlayer');
-    };
+    }
 
     /**
      * Check if the tech can support the given type.
@@ -166,7 +166,7 @@ export class VideoJSOgvJS extends Tech {
      */
     static canPlayType(type: string): string {
         return (type.indexOf('/ogg') !== -1 || type.indexOf('/webm')) ? 'maybe' : '';
-    };
+    }
 
     /**
      * Check if the tech can support the given source.
@@ -176,7 +176,7 @@ export class VideoJSOgvJS extends Tech {
      */
     static canPlaySource(srcObj: TechSourceObject): string {
         return VideoJSOgvJS.canPlayType(srcObj.type);
-    };
+    }
 
     /**
      * Check if the volume can be changed in this browser/device.
@@ -194,7 +194,7 @@ export class VideoJSOgvJS extends Tech {
 
         // eslint-disable-next-line no-prototype-builtins
         return player.hasOwnProperty('volume');
-    };
+    }
 
     /**
      * Check if the volume can be muted in this browser/device.
@@ -203,7 +203,7 @@ export class VideoJSOgvJS extends Tech {
      */
     static canMuteVolume(): boolean {
         return true;
-    };
+    }
 
     /**
      * Check if the playback rate can be changed in this browser/device.
@@ -212,7 +212,7 @@ export class VideoJSOgvJS extends Tech {
      */
     static canControlPlaybackRate(): boolean {
         return true;
-    };
+    }
 
     /**
      * Check to see if native 'TextTracks' are supported by this browser/device.
@@ -221,7 +221,7 @@ export class VideoJSOgvJS extends Tech {
      */
     static supportsNativeTextTracks(): boolean {
         return false;
-    };
+    }
 
     /**
      * Check if the fullscreen resize is supported by this browser/device.
@@ -230,7 +230,7 @@ export class VideoJSOgvJS extends Tech {
      */
     static supportsFullscreenResize(): boolean {
         return true;
-    };
+    }
 
     /**
      * Check if the progress events is supported by this browser/device.
@@ -239,7 +239,7 @@ export class VideoJSOgvJS extends Tech {
      */
     static supportsProgressEvents(): boolean {
         return true;
-    };
+    }
 
     /**
      * Check if the time update events is supported by this browser/device.
@@ -248,7 +248,7 @@ export class VideoJSOgvJS extends Tech {
      */
     static supportsTimeupdateEvents(): boolean {
         return true;
-    };
+    }
 
     /**
      * Create the 'OgvJS' Tech's DOM element.

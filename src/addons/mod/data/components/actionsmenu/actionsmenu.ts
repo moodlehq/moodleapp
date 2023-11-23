@@ -42,4 +42,4 @@ export interface AddonModDataActionsMenuItem {
     text: string;
     icon: string;
     action: () => void;
-};
+}

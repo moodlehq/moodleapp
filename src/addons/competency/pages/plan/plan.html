@@ -75,7 +75,7 @@
                 <ion-card-title>{{ 'addon.competency.learningplancompetencies' | translate }}</ion-card-title>
             </ion-card-header>
             <ion-list>
-                <ion-item class="ion-text-wrap" *ngIf="plan.competencycount == 0">
+                <ion-item class="ion-text-wrap" *ngIf="plan.competencycount === 0">
                     <ion-label>
                         <p>{{ 'addon.competency.nocompetencies' | translate }}</p>
                     </ion-label>

@@ -13,7 +13,7 @@
             <p *ngIf="access.canviewallsubmissions && showGrade(assessment.gradinggradeover)" class="core-overriden-grade">
                 {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{assessment.gradinggradeover}}
             </p>
-            <p *ngIf="assessment.weight && assessment.weight != 1">
+            <p *ngIf="assessment.weight && assessment.weight !== 1">
                 {{ 'addon.mod_workshop.weightinfo' | translate:{$a: assessment.weight } }}
             </p>
             <ion-badge *ngIf="!assessment.grade" color="danger">{{ 'addon.mod_workshop.notassessed' | translate }}</ion-badge>

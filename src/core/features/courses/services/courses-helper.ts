@@ -26,8 +26,8 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 import moment from 'moment-timezone';
-import { of } from 'rxjs';
-import { firstValueFrom, zipIncludingComplete } from '@/core/utils/rxjs';
+import { of, firstValueFrom } from 'rxjs';
+import { zipIncludingComplete } from '@/core/utils/rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { chainRequests, WSObservable } from '@classes/sites/authenticated-site';
 

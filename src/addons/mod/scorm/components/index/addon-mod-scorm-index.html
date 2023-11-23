@@ -34,7 +34,7 @@
                             <p class="item-heading">{{ 'addon.mod_scorm.noattemptsallowed' | translate }}</p>
                         </ion-label>
                         <p slot="end">
-                            <span *ngIf="scorm.maxattempt == 0">{{ 'core.unlimited' | translate }}</span>
+                            <span *ngIf="scorm.maxattempt === 0">{{ 'core.unlimited' | translate }}</span>
                             <span *ngIf="scorm.maxattempt! > 0">{{ scorm.maxattempt }}</span>
                         </p>
                     </ion-item>
@@ -59,8 +59,8 @@
                                 <p class="item-heading">{{ 'addon.mod_scorm.gradeforattempt' | translate }} {{attempt.num}}</p>
                             </ion-label>
                             <p slot="end">
-                                <span *ngIf="attempt.grade != -1">{{ attempt.gradeFormatted }}</span>
-                                <span *ngIf="attempt.grade == -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</span>
+                                <span *ngIf="attempt.grade !== -1">{{ attempt.gradeFormatted }}</span>
+                                <span *ngIf="attempt.grade === -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</span>
                             </p>
                         </ion-item>
                     </ng-container>
@@ -76,8 +76,8 @@
                         </p>
                     </ion-label>
                     <p slot="end">
-                        <span *ngIf="attempt.grade != -1">{{ attempt.gradeFormatted }}</span>
-                        <span *ngIf="attempt.grade == -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</span>
+                        <span *ngIf="attempt.grade !== -1">{{ attempt.gradeFormatted }}</span>
+                        <span *ngIf="attempt.grade === -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</span>
                     </p>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="scorm.displayattemptstatus && gradeMethodReadable">
@@ -91,8 +91,8 @@
                         <p class="item-heading">{{ 'addon.mod_scorm.gradereported' | translate }}</p>
                     </ion-label>
                     <p slot="end">
-                        <span *ngIf="grade != -1">{{ gradeFormatted }}</span>
-                        <span *ngIf="grade == -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</span>
+                        <span *ngIf="grade !== -1">{{ gradeFormatted }}</span>
+                        <span *ngIf="grade === -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</span>
                     </p>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="syncTime">
@@ -174,7 +174,7 @@
             </ng-container>
 
             <!-- Warning that user doesn't have any more attempts. -->
-            <ion-card *ngIf="!errorMessage && attemptsLeft == 0" class="core-danger-card">
+            <ion-card *ngIf="!errorMessage && attemptsLeft === 0" class="core-danger-card">
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <p>{{ 'addon.mod_scorm.exceededmaxattempts' | translate }}</p>

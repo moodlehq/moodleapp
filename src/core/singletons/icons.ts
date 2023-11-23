@@ -16,6 +16,7 @@ import { Http } from '@singletons';
 import { CoreConstants } from '../constants';
 import { CoreLogger } from './logger';
 import aliases from '@/assets/fonts/font-awesome/aliases.json';
+import { firstValueFrom } from 'rxjs';
 
 /**
  * Singleton with helper functions for icon management.
@@ -65,8 +66,7 @@ export class CoreIcons {
         }
 
         if (!(src in CoreIcons.DEV_ICONS_STATUS)) {
-            CoreIcons.DEV_ICONS_STATUS[src] = Http.get(src, { responseType: 'text' })
-                .toPromise()
+            CoreIcons.DEV_ICONS_STATUS[src] = firstValueFrom(Http.get(src, { responseType: 'text' }))
                 .then(() => true)
                 .catch(() => false);
         }

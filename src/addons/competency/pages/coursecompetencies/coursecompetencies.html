@@ -58,7 +58,7 @@
                 </ion-label>
             </ion-item>
         </ion-card>
-        <core-empty-box *ngIf="courseCompetencies && courseCompetencies.statistics.competencycount == 0" icon="fas-award"
+        <core-empty-box *ngIf="courseCompetencies && courseCompetencies.statistics.competencycount === 0" icon="fas-award"
             message="{{ 'addon.competency.nocompetenciesincourse' | translate }}">
         </core-empty-box>
 
@@ -121,7 +121,7 @@
                         </div>
                         <div>
                             <p class="item-heading">{{ 'addon.competency.activities' | translate }}</p>
-                            <p *ngIf="competency.coursemodules.length == 0">
+                            <p *ngIf="competency.coursemodules.length === 0">
                                 {{ 'addon.competency.noactivities' | translate }}
                             </p>
                             <ion-item class="ion-text-wrap core-course-module-handler" [attr.aria-label]="activity.name" core-link
@@ -137,7 +137,7 @@
                         </div>
                         <div *ngIf="competency.plans">
                             <p class="item-heading">{{ 'addon.competency.userplans' | translate }}</p>
-                            <p *ngIf="competency.plans.length == 0">
+                            <p *ngIf="competency.plans.length === 0">
                                 {{ 'addon.competency.nouserplanswithcompetency' | translate }}
                             </p>
                             <ion-item class="ion-text-wrap" *ngFor="let plan of competency.plans" [href]="plan.url"

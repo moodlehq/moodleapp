@@ -51,7 +51,7 @@
                     </ion-badge>
 
                     <ion-badge class="ion-text-wrap" color="primary"
-                        *ngIf="message.userid != currentUserId && message.beep == currentUserId">
+                        *ngIf="message.userid !== currentUserId && message.beep === currentUserId">
                         <span>
                             <ion-icon name="fas-bell" aria-hidden="true"></ion-icon>
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}

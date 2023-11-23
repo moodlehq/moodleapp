@@ -14,7 +14,6 @@
 
 import {
     asyncObservable,
-    firstValueFrom,
     formControlValue,
     ignoreErrors,
     resolved,
@@ -23,7 +22,7 @@ import {
 } from '@/core/utils/rxjs';
 import { mock } from '@/testing/utils';
 import { FormControl } from '@angular/forms';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { TestScheduler } from 'rxjs/testing';
 
 describe('RXJS Utils', () => {
@@ -154,35 +153,6 @@ describe('RXJS Utils', () => {
                 done();
             },
         });
-    });
-
-    it('firstValueFrom returns first value emitted by an observable', async () => {
-        const subject = new Subject();
-        setTimeout(() => subject.next('foo'), 10);
-
-        await expect(firstValueFrom(subject)).resolves.toEqual('foo');
-
-        // Check that running it again doesn't get last value, it gets the new one.
-        setTimeout(() => subject.next('bar'), 10);
-        await expect(firstValueFrom(subject)).resolves.toEqual('bar');
-
-        // Check we cannot get first value if a subject is already completed.
-        subject.complete();
-        await expect(firstValueFrom(subject)).rejects.toThrow();
-
-        // Check that we get last value when using BehaviourSubject.
-        const behaviorSubject = new BehaviorSubject('baz');
-        await expect(firstValueFrom(behaviorSubject)).resolves.toEqual('baz');
-
-        // Check we get last value even if behaviour subject is completed.
-        behaviorSubject.complete();
-        await expect(firstValueFrom(behaviorSubject)).resolves.toEqual('baz');
-
-        // Check that Promise is rejected if the observable emits an error.
-        const errorSubject = new Subject();
-        setTimeout(() => errorSubject.error('foo error'), 10);
-
-        await expect(firstValueFrom(errorSubject)).rejects.toMatch('foo error');
     });
 
     it('ignoreErrors ignores observable errors', (done) => {

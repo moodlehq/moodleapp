@@ -14,7 +14,7 @@
     <nav>
         <ion-list>
             <ion-item *ngFor="let item of items" (click)="loadItem(item.href)"
-                [attr.aria-current]="selected == item.href ? 'page' : 'false'" button [detail]="false">
+                [attr.aria-current]="selected === item.href ? 'page' : 'false'" button [detail]="false">
                 <ion-label [class.core-bold]="!item.href">
                     <p class="item-heading">
                         <span class="ion-padding-start" *ngFor="let i of getNumberForPadding(item.level)"></span>

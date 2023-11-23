@@ -86,7 +86,7 @@
             <ion-item class="ion-text-wrap" *ngIf="coursemodules">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.competency.activities' | translate }}</p>
-                    <p *ngIf="coursemodules.length == 0">
+                    <p *ngIf="coursemodules.length === 0">
                         {{ 'addon.competency.noactivities' | translate }}
                     </p>
                     <ion-item class="ion-text-wrap" *ngFor="let activity of coursemodules" [href]="activity.url"
@@ -130,7 +130,7 @@
 
         <div *ngIf="competency">
             <h2 class="ion-margin-horizontal">{{ 'addon.competency.evidence' | translate }}</h2>
-            <p class="ion-margin-horizontal" *ngIf="competency.evidence.length == 0">
+            <p class="ion-margin-horizontal" *ngIf="competency.evidence.length === 0">
                 {{ 'addon.competency.noevidence' | translate }}
             </p>
             <ion-card *ngFor="let evidence of competency.evidence">

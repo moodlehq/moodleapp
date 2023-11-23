@@ -20,10 +20,10 @@
             <ion-label>{{ 'addon.blog.showonlyyourentries' | translate }}</ion-label>
             <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)" slot="end"></ion-toggle>
         </ion-item>
-        <core-empty-box *ngIf="entries && entries.length == 0" icon="far-newspaper" [message]="'addon.blog.noentriesyet' | translate">
+        <core-empty-box *ngIf="entries && entries.length === 0" icon="far-newspaper" [message]="'addon.blog.noentriesyet' | translate">
         </core-empty-box>
         <ng-container *ngFor="let entry of entries">
-            <ion-card *ngIf="!onlyMyEntries || entry.userid == currentUserId">
+            <ion-card *ngIf="!onlyMyEntries || entry.userid === currentUserId">
                 <ion-item class="ion-text-wrap">
                     <core-user-avatar [user]="entry.user" slot="start" [courseId]="entry.courseid"></core-user-avatar>
                     <ion-label>

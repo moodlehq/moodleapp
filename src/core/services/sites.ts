@@ -65,6 +65,7 @@ import { CoreAutoLogoutType, CoreAutoLogout } from '@features/autologout/service
 import { CoreCacheManager } from '@services/cache-manager';
 import { CoreSiteInfo, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { firstValueFrom } from 'rxjs';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -441,7 +442,7 @@ export class CoreSitesProvider {
         let data: CoreSitesLoginTokenResponse;
 
         try {
-            data = await Http.post(loginUrl, params).pipe(timeout(CoreWS.getRequestTimeout())).toPromise();
+            data = await firstValueFrom(Http.post(loginUrl, params).pipe(timeout(CoreWS.getRequestTimeout())));
         } catch (error) {
             throw new CoreError(
                 this.isLoggedIn()

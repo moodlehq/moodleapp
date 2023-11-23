@@ -43,7 +43,7 @@
                         <ion-item class="ion-text-wrap addon-messages-conversation-item"
                             *ngIf="contact.profileimageurl || contact.profileimageurlsmall" [attr.aria-label]="contact.fullname"
                             (click)="gotoDiscussion(contact.id)" [detail]="true" button
-                            [attr.aria-current]="contact.id == discussionUserId ? 'page' : 'false'">
+                            [attr.aria-current]="contact.id === discussionUserId ? 'page' : 'false'">
                             <core-user-avatar [user]="contact" slot="start" [checkOnline]="contact.showonlinestatus"></core-user-avatar>
                             <ion-label>
                                 <p class="item-heading">{{ contact.fullname }}</p>

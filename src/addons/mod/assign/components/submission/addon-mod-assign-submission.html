@@ -45,11 +45,11 @@
                     <ion-item class="ion-text-wrap" *ngIf="currentAttempt && !isGrading">
                         <ion-label>
                             <p class="item-heading">{{ 'addon.mod_assign.attemptnumber' | translate }}</p>
-                            <p *ngIf="assign!.maxattempts == unlimitedAttempts">
+                            <p *ngIf="assign!.maxattempts === unlimitedAttempts">
                                 {{ 'addon.mod_assign.outof' | translate :
                                 {'$a': {'current': currentAttempt, 'total': maxAttemptsText} } }}
                             </p>
-                            <p *ngIf="assign!.maxattempts != unlimitedAttempts">
+                            <p *ngIf="assign!.maxattempts !== unlimitedAttempts">
                                 {{ 'addon.mod_assign.outof' | translate :
                                 {'$a': {'current': currentAttempt, 'total': assign!.maxattempts} } }}
                             </p>
@@ -128,7 +128,7 @@
 
                     <!-- Last modified. -->
                     <ion-item class="ion-text-wrap"
-                        *ngIf="userSubmission && userSubmission!.status != statusNew && userSubmission!.timemodified">
+                        *ngIf="userSubmission && userSubmission!.status !== statusNew && userSubmission!.timemodified">
                         <ion-label>
                             <p class="item-heading">{{ 'addon.mod_assign.timemodified' | translate }}</p>
                             <p>{{ userSubmission!.timemodified * 1000 | coreFormatDate }}</p>
@@ -175,7 +175,7 @@
                                     </ion-button>
                                     <!-- If no submission or is new, show add submission. -->
                                     <ion-button expand="block" class="ion-text-wrap" (click)="goToEdit()" *ngIf="!hasOffline &&
-                                        (!userSubmission || !userSubmission!.status || userSubmission!.status == statusNew)">
+                                        (!userSubmission || !userSubmission!.status || userSubmission!.status === statusNew)">
                                         <ng-container *ngIf="!assign?.timelimit || userSubmission?.timestarted">
                                             {{ 'addon.mod_assign.addsubmission' | translate }}
                                         </ng-container>
@@ -184,7 +184,7 @@
                                         </ng-container>
                                     </ion-button>
                                     <!-- If reopened, show addfromprevious and addnewattempt. -->
-                                    <ng-container *ngIf="!hasOffline && userSubmission?.status == statusReopened">
+                                    <ng-container *ngIf="!hasOffline && userSubmission?.status === statusReopened">
                                         <ion-button *ngIf="!isPreviousAttemptEmpty" expand="block" class="ion-text-wrap"
                                             (click)="copyPrevious()">
                                             {{ 'addon.mod_assign.addnewattemptfromprevious' | translate }}
@@ -195,8 +195,8 @@
                                     </ng-container>
                                     <!-- Else show editsubmission. -->
                                     <ion-button expand="block" class="ion-text-wrap" *ngIf="!hasOffline && userSubmission &&
-                                        userSubmission!.status && userSubmission!.status != statusNew &&
-                                        userSubmission!.status != statusReopened" (click)="goToEdit()">
+                                        userSubmission!.status && userSubmission!.status !== statusNew &&
+                                        userSubmission!.status !== statusReopened" (click)="goToEdit()">
                                         {{ 'addon.mod_assign.editsubmission' | translate }}
                                     </ion-button>
                                 </ng-container>
@@ -367,15 +367,15 @@
                     </ion-item>
 
                     <!-- Attempt status. -->
-                    <ng-container *ngIf="isGrading && assign!.attemptreopenmethod != attemptReopenMethodNone">
+                    <ng-container *ngIf="isGrading && assign!.attemptreopenmethod !== attemptReopenMethodNone">
                         <ion-item class="ion-text-wrap">
                             <ion-label>
                                 <p class="item-heading">{{ 'addon.mod_assign.attemptsettings' | translate }}</p>
-                                <p *ngIf="assign!.maxattempts == unlimitedAttempts">
+                                <p *ngIf="assign!.maxattempts === unlimitedAttempts">
                                     {{ 'addon.mod_assign.outof' | translate :
                                     {'$a': {'current': currentAttempt, 'total': maxAttemptsText} } }}
                                 </p>
-                                <p *ngIf="assign!.maxattempts != unlimitedAttempts">
+                                <p *ngIf="assign!.maxattempts !== unlimitedAttempts">
                                     {{ 'addon.mod_assign.outof' | translate :
                                     {'$a': {'current': currentAttempt, 'total': assign!.maxattempts} } }}
                                 </p>

@@ -63,9 +63,9 @@
                                     [adaptImg]="false">
                                 </core-format-text>
                             </p>
-                            <ion-badge [color]="section.downloadStatus == statusDownloaded ? 'success' : 'light'"
+                            <ion-badge [color]="section.downloadStatus === statusDownloaded ? 'success' : 'light'"
                                 *ngIf="!section.calculatingSize && section.totalSize > 0">
-                                <ion-icon name="fam-cloud-done" *ngIf="section.downloadStatus == statusDownloaded"
+                                <ion-icon name="fam-cloud-done" *ngIf="section.downloadStatus === statusDownloaded"
                                     [attr.aria-label]="'core.downloaded' | translate">
                                 </ion-icon>{{ section.totalSize | coreBytesToSize }}
                             </ion-badge>
@@ -74,14 +74,14 @@
                             </ion-badge>
                             <!-- Download progress. -->
                             <p *ngIf="downloadEnabled && section.isDownloading">
-                                <core-progress-bar [progress]="section.total == 0 ? -1 : section.count / section.total">
+                                <core-progress-bar [progress]="section.total === 0 ? -1 : section.count / section.total">
                                 </core-progress-bar>
                             </p>
                         </ion-label>
                         <div class="storage-buttons" slot="end"
                             *ngIf="(!section.calculatingSize && section.totalSize > 0) || downloadEnabled">
                             <div *ngIf="downloadEnabled" slot="end" class="core-button-spinner">
-                                <core-download-refresh *ngIf="!section.isDownloading && section.downloadStatus != statusDownloaded"
+                                <core-download-refresh *ngIf="!section.isDownloading && section.downloadStatus !== statusDownloaded"
                                     [status]="section.downloadStatus" [enabled]="true" (action)="prefecthSection(section)"
                                     [loading]="section.isDownloading || section.isCalculating" [canTrustDownload]="true">
                                 </core-download-refresh>
@@ -116,9 +116,9 @@
                                             [contextInstanceId]="module.id" [adaptImg]="false">
                                         </core-format-text>
                                     </p>
-                                    <ion-badge [color]="module.downloadStatus == statusDownloaded ? 'success' : 'light'"
+                                    <ion-badge [color]="module.downloadStatus === statusDownloaded ? 'success' : 'light'"
                                         *ngIf="!module.calculatingSize && module.totalSize > 0">
-                                        <ion-icon name="fam-cloud-done" *ngIf="module.downloadStatus == statusDownloaded"
+                                        <ion-icon name="fam-cloud-done" *ngIf="module.downloadStatus === statusDownloaded"
                                             [attr.aria-label]="'core.downloaded' | translate">
                                         </ion-icon>{{ module.totalSize | coreBytesToSize }}
                                     </ion-badge>
@@ -129,7 +129,7 @@
 
                                 <div class="storage-buttons" slot="end">
                                     <core-download-refresh *ngIf="downloadEnabled && module.handlerData?.showDownloadButton &&
-                                        module.downloadStatus != statusDownloaded" [status]="module.downloadStatus" [enabled]="true"
+                                        module.downloadStatus !== statusDownloaded" [status]="module.downloadStatus" [enabled]="true"
                                         [canTrustDownload]="true" [loading]="module.spinner || module.handlerData.spinner"
                                         (action)="prefetchModule(module)">
                                     </core-download-refresh>

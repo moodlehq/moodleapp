@@ -59,7 +59,7 @@
             </ion-item>
         </ion-card>
 
-        <core-empty-box *ngIf="notes && notes.length == 0" icon="fas-receipt" [message]="'addon.notes.nonotes' | translate">
+        <core-empty-box *ngIf="notes && notes.length === 0" icon="fas-receipt" [message]="'addon.notes.nonotes' | translate">
         </core-empty-box>
 
         <ng-container *ngIf="notes && notes.length > 0">

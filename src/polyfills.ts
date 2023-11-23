@@ -16,7 +16,7 @@
 window.__Zone_disable_customElements = true;
 
 // Zone JS is required by default for Angular itself.
-import 'zone.js/dist/zone';
+import 'zone.js';
 
 // Platform polyfills
 import 'core-js/es/array/includes';

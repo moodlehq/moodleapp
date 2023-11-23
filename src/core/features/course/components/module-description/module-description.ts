@@ -49,6 +49,6 @@ export class CoreCourseModuleDescriptionComponent {
 
     @HostBinding('class.deprecated') get isDeprecated(): boolean {
         return true;
-    };
+    }
 
 }
