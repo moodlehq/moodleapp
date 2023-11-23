@@ -14,7 +14,7 @@
     <nav>
         <ion-list>
             <ion-item button class="ion-text-wrap {{question.stateClass}}" *ngFor="let question of navigation"
-                [attr.aria-current]="!summaryShown && currentPage == question.page ? 'page' : 'false'"
+                [attr.aria-current]="!summaryShown && currentPage === question.page ? 'page' : 'false'"
                 (click)="loadPage(question.page, question.slot)" [detail]="false">
 
                 <ion-label class="ion-text-wrap">
@@ -38,8 +38,8 @@
                     [attr.aria-label]="question.status" slot="end">
                 </ion-icon>
                 <ion-icon *ngIf="question.stateClass === 'core-question-incorrect' ||
-                    question.stateClass === 'core-question-notanswered'" name="fas-xmark" color="danger" [attr.aria-label]="question.status"
-                    slot="end">
+                    question.stateClass === 'core-question-notanswered'" name="fas-xmark" color="danger"
+                    [attr.aria-label]="question.status" slot="end">
                 </ion-icon>
             </ion-item>
         </ion-list>

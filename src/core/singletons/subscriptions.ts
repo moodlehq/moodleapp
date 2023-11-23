@@ -57,20 +57,20 @@ export class CoreSubscriptions {
             subscription?.unsubscribe();
         };
 
-        subscription = subscribable.subscribe(
-            value => {
+        subscription = subscribable.subscribe({
+            next: value => {
                 unsubscribe();
                 runCallback(() => onSuccess(value));
             },
-            error => {
+            error: error => {
                 unsubscribe();
                 runCallback(() => onError?.(error));
             },
-            () => {
+            complete: () => {
                 unsubscribe();
                 runCallback(() => onComplete?.());
             },
-        );
+        });
 
         return () => subscription?.unsubscribe();
     }

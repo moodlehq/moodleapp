@@ -217,7 +217,7 @@
                         <p class="item-heading">{{ relatedBadge.name }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="badge.relatedbadges.length == 0">
+                <ion-item class="ion-text-wrap" *ngIf="badge.relatedbadges.length === 0">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.badges.norelated' | translate}}</p>
                     </ion-label>
@@ -237,7 +237,7 @@
                         <p class="item-heading">{{ alignment.targetname }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="badge.alignment.length == 0">
+                <ion-item class="ion-text-wrap" *ngIf="badge.alignment.length === 0">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.badges.noalignment' | translate}}</p>
                     </ion-label>

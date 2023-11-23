@@ -23,7 +23,7 @@
             {{'core.login.onboardingwelcome' | translate}}
         </h1>
 
-        <div *ngIf="step == 0" class="core-login-onboarding-step">
+        <div *ngIf="step === 0" class="core-login-onboarding-step">
             <ion-button expand="block" (click)="skip($event)" class="ion-margin-bottom" fill="outline">
                 {{'core.login.onboardingimalearner' | translate}}
             </ion-button>
@@ -32,7 +32,7 @@
             </ion-button>
         </div>
 
-        <div *ngIf="step == 1" class="core-login-onboarding-step">
+        <div *ngIf="step === 1" class="core-login-onboarding-step">
             <p class="core-login-onboarding-text">
                 {{ 'core.login.onboardingtoconnect' | translate }}
             </p>
@@ -44,7 +44,7 @@
             </ion-button>
         </div>
 
-        <div *ngIf="step == 2" class="core-login-onboarding-step">
+        <div *ngIf="step === 2" class="core-login-onboarding-step">
             <ul class="core-login-onboarding-text ion-text-start">
                 <li>
                     <ion-icon name="far-circle-check" aria-hidden="true">

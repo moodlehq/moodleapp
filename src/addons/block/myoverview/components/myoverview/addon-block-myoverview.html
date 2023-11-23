@@ -99,7 +99,7 @@
         </ion-col>
     </ion-row>
 
-    <core-empty-box *ngIf="filteredCourses.length == 0" image="assets/img/icons/courses.svg">
+    <core-empty-box *ngIf="filteredCourses.length === 0" image="assets/img/icons/courses.svg">
         <p *ngIf="hasCourses" class="item-heading">
             {{'addon.block_myoverview.noresult' | translate}}
         </p>

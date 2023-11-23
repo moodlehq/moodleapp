@@ -77,7 +77,7 @@
                     {{ 'core.next' | translate }}
                     <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
                 </ion-button>
-                <ion-button expand="block" (click)="changePage(nextPage)" class="ion-text-wrap" *ngIf="nextPage == -1">
+                <ion-button expand="block" (click)="changePage(nextPage)" class="ion-text-wrap" *ngIf="nextPage === -1">
                     {{ 'core.submit' | translate }}
                 </ion-button>
             </ion-col>

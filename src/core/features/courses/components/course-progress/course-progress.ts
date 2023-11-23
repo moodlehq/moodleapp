@@ -37,6 +37,6 @@ export class CoreCoursesCourseProgressComponent {
 
     @HostBinding('class.deprecated') get isDeprecated(): boolean {
         return true;
-    };
+    }
 
 }

@@ -40,7 +40,7 @@
 
         <ion-label>
             <div class="core-course-maininfo">
-                <p *ngIf="course.displayname && course.shortname && course.fullname != course.displayname"
+                <p *ngIf="course.displayname && course.shortname && course.fullname !== course.displayname"
                     class="core-course-shortname core-course-additional-info">
                     <core-format-text [text]="course.shortname" contextLevel="course" [contextInstanceId]="course.id">
                     </core-format-text>
@@ -74,7 +74,7 @@
                     </ion-label>
                 </ion-chip>
 
-                <ion-chip color="info" *ngIf="course.visible == 0"
+                <ion-chip color="info" *ngIf="course.visible === 0"
                     class="core-course-additional-info ion-text-wrap core-course-hidden-message">
                     <ion-label>
                         {{ 'core.course.hiddenfromstudents' | translate }}

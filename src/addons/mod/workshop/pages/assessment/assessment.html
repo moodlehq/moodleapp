@@ -41,7 +41,7 @@
                     class="core-overriden-grade">
                     {{ 'addon.mod_workshop.gradinggradeover' | translate }}: {{assessment.gradinggradeover}}
                 </p>
-                <p *ngIf="assessment && assessment.weight && assessment.weight != 1">
+                <p *ngIf="assessment && assessment.weight && assessment.weight !== 1">
                     {{ 'addon.mod_workshop.weightinfo' | translate:{$a: assessment.weight } }}
                 </p>
                 <ion-badge *ngIf="!assessment || !showGrade(assessment.grade)" color="danger">

@@ -26,6 +26,7 @@ import { CoreSite } from '../classes/sites/site';
 import { CorePlatform } from '@services/platform';
 import { AddonFilterMultilangHandler } from '@addons/filter/multilang/services/handlers/multilang';
 import { AddonFilterMultilang2Handler } from '@addons/filter/multilang2/services/handlers/multilang2';
+import { firstValueFrom } from 'rxjs';
 
 /*
  * Service to handle language features, like changing the current language.
@@ -501,7 +502,7 @@ export class CoreLangProvider {
             responseType: 'json',
         });
 
-        return <Record<string, string>> await observable.toPromise();
+        return <Record<string, string>> await firstValueFrom(observable);
     }
 
     /**

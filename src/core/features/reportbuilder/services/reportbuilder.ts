@@ -264,4 +264,4 @@ export type CoreReportBuilderReportDetailSettingsData = {
     cardviewVisibleColumns: number;
 };
 
-export interface CoreReportBuilderReport extends CoreReportBuilderReportWSResponse {};
+export interface CoreReportBuilderReport extends CoreReportBuilderReportWSResponse {}

@@ -8,7 +8,7 @@
     <core-loading [hideUntil]="loaded">
 
         <!-- Single section. -->
-        <div *ngIf="selectedSection && selectedSection.id != allSectionsId">
+        <div *ngIf="selectedSection && selectedSection.id !== allSectionsId">
             <core-dynamic-component [component]="singleSectionComponent" [data]="data">
                 <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: selectedSection}"></ng-container>
                 <core-empty-box *ngIf="!selectedSection.hasContent" icon="fas-table-cells-large"
@@ -18,7 +18,7 @@
         </div>
 
         <!-- Multiple sections. -->
-        <div *ngIf="selectedSection && selectedSection.id == allSectionsId">
+        <div *ngIf="selectedSection && selectedSection.id === allSectionsId">
             <core-dynamic-component [component]="allSectionsComponent" [data]="data">
                 <ng-container *ngFor="let section of sections; index as i">
                     <ng-container *ngIf="i <= lastShownSectionIndex">
@@ -64,7 +64,7 @@
 
 <!-- Template to render a section. -->
 <ng-template #sectionTemplate let-section="section">
-    <section *ngIf="!section.hiddenbynumsections && section.id != allSectionsId && section.id != stealthModulesSectionId"
+    <section *ngIf="!section.hiddenbynumsections && section.id !== allSectionsId && section.id !== stealthModulesSectionId"
         class="core-course-module-list-wrapper" [id]="section.id"
         [attr.aria-labelledby]="section.name ? 'core-section-name-' + section.id : null">
         <ion-item-divider class="course-section ion-text-wrap" [class.item-dimmed]="section.visible === 0 || section.uservisible === false">

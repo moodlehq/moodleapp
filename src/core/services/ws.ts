@@ -18,7 +18,7 @@ import { HttpResponse, HttpParams, HttpErrorResponse } from '@angular/common/htt
 import { FileEntry } from '@ionic-native/file/ngx';
 import { FileUploadOptions, FileUploadResult } from '@ionic-native/file-transfer/ngx';
 import { Md5 } from 'ts-md5/dist/md5';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 
 import { CoreNativeToAngularHttpResponse } from '@classes/native-to-angular-http';
@@ -691,7 +691,7 @@ export class CoreWSProvider {
         const requestUrl = siteUrl + '&wsfunction=' + method;
 
         // Perform the post request.
-        const promise = Http.post(requestUrl, ajaxData, options).pipe(timeout(this.getRequestTimeout())).toPromise();
+        const promise = firstValueFrom(Http.post(requestUrl, ajaxData, options).pipe(timeout(this.getRequestTimeout())));
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return promise.then(async (data: any) => {
@@ -1178,7 +1178,7 @@ export class CoreWSProvider {
                 observable = observable.pipe(timeout(angularOptions.timeout));
             }
 
-            return observable.toPromise();
+            return firstValueFrom(observable);
         }
     }
 

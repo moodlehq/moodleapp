@@ -48,10 +48,10 @@ import {
     WS_CACHE_TABLE,
 } from '@services/database/sites';
 import { map } from 'rxjs/operators';
-import { firstValueFrom } from '../../utils/rxjs';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSiteInfo } from './unauthenticated-site';
 import { CoreAuthenticatedSite, CoreAuthenticatedSiteOptionalData, CoreSiteWSPreSets, WSObservable } from './authenticated-site';
+import { firstValueFrom } from 'rxjs';
 
 /**
  * Class that represents a site (combination of site + user).

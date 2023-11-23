@@ -60,7 +60,7 @@
                     <!-- The infinite loading cannot be inside the ng-template, it fails because it doesn't find ion-content. -->
                     <core-infinite-loading [enabled]="favourites.canLoadMore" (action)="loadMoreConversations(favourites, $event)"
                         [error]="favourites.loadMoreError"></core-infinite-loading>
-                    <ion-item class="ion-text-wrap" *ngIf="favourites.conversations && favourites.conversations.length == 0">
+                    <ion-item class="ion-text-wrap" *ngIf="favourites.conversations && favourites.conversations.length === 0">
                         <ion-label>
                             <p>{{ 'addon.messages.nofavourites' | translate }}</p>
                         </ion-label>
@@ -94,7 +94,7 @@
                     <!-- The infinite loading cannot be inside the ng-template, it fails because it doesn't find ion-content. -->
                     <core-infinite-loading [enabled]="group.canLoadMore" (action)="loadMoreConversations(group, $event)"
                         [error]="group.loadMoreError"></core-infinite-loading>
-                    <ion-item class="ion-text-wrap" *ngIf="group.conversations && group.conversations.length == 0">
+                    <ion-item class="ion-text-wrap" *ngIf="group.conversations && group.conversations.length === 0">
                         <ion-label>
                             <p>{{ 'addon.messages.nogroupconversations' | translate }}</p>
                         </ion-label>
@@ -128,7 +128,7 @@
                     <!-- The infinite loading cannot be inside the ng-template, it fails because it doesn't find ion-content. -->
                     <core-infinite-loading [enabled]="individual.canLoadMore" (action)="loadMoreConversations(individual, $event)"
                         [error]="individual.loadMoreError"></core-infinite-loading>
-                    <ion-item class="ion-text-wrap" *ngIf="individual.conversations && individual.conversations.length == 0">
+                    <ion-item class="ion-text-wrap" *ngIf="individual.conversations && individual.conversations.length === 0">
                         <ion-label>
                             <p>{{ 'addon.messages.noindividualconversations' | translate }}</p>
                         </ion-label>
@@ -150,17 +150,17 @@
     <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let conversation of conversations" button [detail]="false"
         (click)="gotoConversation(conversation.id, conversation.userid)"
         [attr.aria-current]="((conversation.id &&
-            conversation.id == selectedConversationId) || (conversation.userid && conversation.userid == selectedUserId)) ? 'page': 'false'"
+            conversation.id === selectedConversationId) || (conversation.userid && conversation.userid === selectedUserId)) ? 'page': 'false'"
         id="addon-message-conversation-{{ conversation.id ? conversation.id : 'user-' + conversation.userid }}"
         [attr.aria-label]="conversation.name">
         <!-- Group conversation image. -->
-        <ion-avatar slot="start" *ngIf="conversation.type == typeGroup">
+        <ion-avatar slot="start" *ngIf="conversation.type === typeGroup">
             <img [src]="conversation.imageurl" [alt]="conversation.name" core-external-content
                 onError="this.src='assets/img/group-avatar.svg'">
         </ion-avatar>
 
         <!-- Avatar for individual conversations. -->
-        <core-user-avatar *ngIf="conversation.type != typeGroup" core-user-avatar [user]="conversation.otherUser" [linkProfile]="false"
+        <core-user-avatar *ngIf="conversation.type !== typeGroup" core-user-avatar [user]="conversation.otherUser" [linkProfile]="false"
             [checkOnline]="conversation.showonlinestatus" slot="start"></core-user-avatar>
 
         <ion-label>
@@ -189,7 +189,7 @@
                 <span *ngIf="conversation.sentfromcurrentuser" class="addon-message-last-message-user">
                     {{ 'addon.messages.you' | translate }}
                 </span>
-                <span *ngIf="!conversation.sentfromcurrentuser && conversation.type == typeGroup && conversation.members[0]"
+                <span *ngIf="!conversation.sentfromcurrentuser && conversation.type === typeGroup && conversation.members[0]"
                     class="addon-message-last-message-user">{{ conversation.members[0].fullname + ':' }}</span>
                 <core-format-text clean="true" singleLine="true" [text]="conversation.lastmessage" class="addon-message-last-message-text"
                     contextLevel="system" [contextInstanceId]="0"></core-format-text>

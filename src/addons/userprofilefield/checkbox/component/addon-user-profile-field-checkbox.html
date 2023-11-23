@@ -6,10 +6,10 @@
                 [courseId]="courseId" [wsNotFiltered]="true">
             </core-format-text>
         </p>
-        <p *ngIf="value != '0'">
+        <p *ngIf="value !== '0'">
             {{ 'core.yes' | translate }}
         </p>
-        <p *ngIf="value == '0'">
+        <p *ngIf="value === '0'">
             {{ 'core.no' | translate }}
         </p>
     </ion-label>

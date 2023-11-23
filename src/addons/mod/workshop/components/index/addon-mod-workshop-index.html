@@ -31,7 +31,7 @@
                 <ion-icon slot="start" name="fas-circle-info" color="info" *ngIf="task.completed === 'info'"
                     [attr.aria-label]="'addon.mod_workshop.taskinfo' | translate">
                 </ion-icon>
-                <ion-icon slot="start" name="fas-circle-check" color="success" *ngIf="task.completed == '1'"
+                <ion-icon slot="start" name="fas-circle-check" color="success" *ngIf="task.completed === '1'"
                     [attr.aria-label]="'addon.mod_workshop.taskdone' | translate">
                 </ion-icon>
                 <ion-label>
@@ -45,7 +45,7 @@
     </ion-card>
 
     <!-- Description (setup phase only) -->
-    <ion-card *ngIf="description && workshop && workshop.phase == PHASE_SETUP">
+    <ion-card *ngIf="description && workshop && workshop.phase === PHASE_SETUP">
         <ion-item class="ion-text-wrap">
             <ion-label>
                 <h3 class="item-heading">{{ 'core.description' | translate }}</h3>
@@ -92,7 +92,7 @@
         </ng-container>
 
         <!-- SUBMISSION PHASE -->
-        <ion-card *ngIf="workshop.phase == PHASE_SUBMISSION && workshop.instructauthors">
+        <ion-card *ngIf="workshop.phase === PHASE_SUBMISSION && workshop.instructauthors">
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <h3 class="item-heading">{{ 'addon.mod_workshop.areainstructauthors' | translate }}</h3>
@@ -106,10 +106,10 @@
         <ion-card *ngIf="canSubmit">
             <ion-item-divider class="ion-text-wrap">
                 <ion-label>
-                    <h3 class="item-heading" *ngIf="workshop.phase != PHASE_CLOSED || !submission">
+                    <h3 class="item-heading" *ngIf="workshop.phase !== PHASE_CLOSED || !submission">
                         {{ 'addon.mod_workshop.yoursubmission' | translate }}
                     </h3>
-                    <h3 class="item-heading" *ngIf="workshop.phase == PHASE_CLOSED && submission">
+                    <h3 class="item-heading" *ngIf="workshop.phase === PHASE_CLOSED && submission">
                         {{ 'addon.mod_workshop.yoursubmissionwithassessments' | translate }}
                     </h3>
                 </ion-label>
@@ -142,7 +142,7 @@
 
         <!-- ASSESSMENT PHASE -->
         <ng-container *ngIf="workshop.phase >= PHASE_ASSESSMENT">
-            <ion-card *ngIf="workshop.phase == PHASE_ASSESSMENT && workshop.instructreviewers">
+            <ion-card *ngIf="workshop.phase === PHASE_ASSESSMENT && workshop.instructreviewers">
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <h3 class="item-heading">{{ 'addon.mod_workshop.areainstructreviewers' | translate }}</h3>
@@ -178,7 +178,7 @@
             ((grades && grades.length) || (groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)))">
             <ion-item-divider class="ion-text-wrap">
                 <ion-label>
-                    <h3 class="item-heading" *ngIf="workshop.phase == PHASE_SUBMISSION">{{ 'addon.mod_workshop.submissionsreport' |
+                    <h3 class="item-heading" *ngIf="workshop.phase === PHASE_SUBMISSION">{{ 'addon.mod_workshop.submissionsreport' |
                         translate }}</h3>
                     <h3 class="item-heading" *ngIf="workshop.phase > PHASE_SUBMISSION">{{ 'addon.mod_workshop.gradesreport' | translate }}
                     </h3>

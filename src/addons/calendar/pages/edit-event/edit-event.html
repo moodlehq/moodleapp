@@ -41,7 +41,7 @@
                 <ion-label>
                     <p class="item-heading" [core-mark-required]="true">{{ 'addon.calendar.eventkind' | translate }}</p>
                 </ion-label>
-                <p *ngIf="eventTypes.length == 1" slot="end">{{eventTypes[0].name | translate }}</p>
+                <p *ngIf="eventTypes.length === 1" slot="end">{{eventTypes[0].name | translate }}</p>
                 <ion-select *ngIf="eventTypes.length > 1" formControlName="eventtype" interface="action-sheet"
                     [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'addon.calendar.eventkind' | translate}">
                     <ion-select-option *ngFor="let type of eventTypes" [value]="type.value">
