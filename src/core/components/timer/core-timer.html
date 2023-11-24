@@ -1,12 +1,12 @@
 <ng-container *ngIf="timeLeft !== undefined">
     <ion-item *ngIf="mode !== modeBasic" class="core-timer" role="timer" [attr.aria-label]="timerText">
         <ion-label class="ion-justify-content-{{align}}">
-            <ng-container *ngTemplateOutlet="timerTemplate"></ng-container>
+            <ng-container *ngTemplateOutlet="timerTemplate" />
         </ion-label>
     </ion-item>
 
     <div *ngIf="mode === modeBasic" class="core-timer ion-padding ion-justify-content-{{align}}" role="timer" [attr.aria-label]="timerText">
-        <ng-container *ngTemplateOutlet="timerTemplate"></ng-container>
+        <ng-container *ngTemplateOutlet="timerTemplate" />
     </div>
 
     <ng-template #timerTemplate>

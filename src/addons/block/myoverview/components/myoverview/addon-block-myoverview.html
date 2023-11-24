@@ -7,16 +7,14 @@
         <div *ngIf="downloadCoursesEnabled && filteredCourses.length > 0" class="core-button-spinner">
             <ion-button *ngIf="!prefetchCoursesData.loading" fill="clear" (click)="prefetchCourses()"
                 [attr.aria-label]="prefetchCoursesData.statusTranslatable | translate">
-                <ion-icon [name]="prefetchCoursesData.icon" slot="icon-only" aria-hidden="true">
-                </ion-icon>
+                <ion-icon [name]="prefetchCoursesData.icon" slot="icon-only" aria-hidden="true" />
             </ion-button>
             <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData.badge" role="progressbar"
                 [attr.aria-valuemax]="prefetchCoursesData.total" [attr.aria-valuenow]="prefetchCoursesData.count"
                 [attr.aria-valuetext]="prefetchCoursesData.badgeA11yText">
                 {{prefetchCoursesData.badge}}
             </ion-badge>
-            <ion-spinner *ngIf="prefetchCoursesData.loading" [attr.aria-label]="'core.loading' | translate">
-            </ion-spinner>
+            <ion-spinner *ngIf="prefetchCoursesData.loading" [attr.aria-label]="'core.loading' | translate" />
         </div>
     </div>
 </ion-item-divider>
@@ -26,8 +24,7 @@
         <ion-col>
             <!-- Filter courses. -->
             <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
-                (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate">
-            </ion-searchbar>
+                (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate" />
         </ion-col>
     </ion-row>
     <ion-row class="ion-justify-content-between ion-align-items-center addon-block-myoverview-filter" *ngIf="hasCourses">
@@ -70,8 +67,7 @@
         <ion-col>
             <!-- Filter courses. -->
             <ion-searchbar class="ion-hide-md-down" [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
-                (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate">
-            </ion-searchbar>
+                (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate" />
         </ion-col>
         <ion-col size="auto" *ngIf="sort.enabled">
             <core-combobox [label]="'core.sortby' | translate" [selection]="sort.selected" (onChange)="sortCourses($event)"
@@ -90,11 +86,11 @@
         <ion-col size="auto" *ngIf="isLayoutSwitcherAvailable">
             <ion-button *ngIf="layout === 'card'" fill="outline" (click)="toggleLayout('list')"
                 [attr.aria-label]="'addon.block_myoverview.aria:list' | translate">
-                <ion-icon slot="icon-only" name="fas-list" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-list" aria-hidden="true" />
             </ion-button>
             <ion-button *ngIf="layout === 'list'" fill="outline" (click)="toggleLayout('card')"
                 [attr.aria-label]="'addon.block_myoverview.aria:card' | translate">
-                <ion-icon slot="icon-only" name="fas-table-cells-large" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-table-cells-large" aria-hidden="true" />
             </ion-button>
         </ion-col>
     </ion-row>
@@ -114,8 +110,7 @@
                 {{'addon.block_myoverview.nocoursesenrolleddescription' | translate}}
             </p>
             <ion-button (click)="openSearch()" fill="outline">
-                <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true">
-                </ion-icon>
+                <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true" />
                 {{'addon.block_myoverview.browseallcourses' | translate}}
             </ion-button>
         </ng-container>
@@ -128,8 +123,7 @@
                 <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding" size="12" size-sm="6" size-md="6" size-lg="4"
                     size-xl="3">
                     <core-courses-course-list-item [course]="course" class="core-courseoverview" [showDownload]="downloadCourseEnabled"
-                        [layout]="layout">
-                    </core-courses-course-list-item>
+                        [layout]="layout" />
                 </ion-col>
             </ion-row>
         </ion-grid>

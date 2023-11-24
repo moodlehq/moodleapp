@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.mod_feedback.responses' |translate }}</h1>
@@ -10,13 +10,12 @@
 </ion-header>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshFeedback($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
         <ion-list class="ion-no-margin">
             <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="loadAttempts(selectedGroup)"
-                [courseId]="courseId">
-            </core-group-selector>
+                [courseId]="courseId" />
 
             <ion-item-divider>
                 <ion-label>
@@ -25,7 +24,7 @@
             </ion-item-divider>
             <ng-container *ngIf="total > 0">
                 <ion-item *ngFor="let user of users" class="ion-text-wrap">
-                    <core-user-avatar [user]="user" slot="start"></core-user-avatar>
+                    <core-user-avatar [user]="user" slot="start" />
                     <ion-label>
                         <p class="item-heading">{{ user.fullname }}</p>
                         <p>
@@ -40,8 +39,7 @@
                 </ion-item>
             </ng-container>
 
-            <core-infinite-loading [enabled]="canLoadMore" (action)="loadAttempts(undefined, $event)" [error]="loadMoreError">
-            </core-infinite-loading>
+            <core-infinite-loading [enabled]="canLoadMore" (action)="loadAttempts(undefined, $event)" [error]="loadMoreError" />
         </ion-list>
     </core-loading>
 </ion-content>

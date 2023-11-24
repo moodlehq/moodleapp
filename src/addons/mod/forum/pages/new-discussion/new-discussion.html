@@ -1,41 +1,37 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.mod_forum.addanewdiscussion' | translate }}</h1>
         </ion-title>
-        <ion-buttons slot="end">
-            <!-- The context menu will be added in here. -->
-        </ion-buttons>
+        <ion-buttons slot="end" />
     </ion-toolbar>
 </ion-header>
 <ion-content [core-swipe-navigation]="discussions">
     <ion-refresher slot="fixed" [disabled]="!groupsLoaded" (ionRefresh)="refreshGroups($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="groupsLoaded">
         <form *ngIf="showForm" #newDiscFormEl>
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_forum.subject' | translate }}</ion-label>
                 <ion-input [(ngModel)]="newDiscussion.subject" type="text" [placeholder]="'addon.mod_forum.subject' | translate"
-                    name="subject">
-                </ion-input>
+                    name="subject" />
             </ion-item>
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_forum.message' | translate }}</ion-label>
                 <core-rich-text-editor name="addon_mod_forum_new_discussion" contextLevel="module" elementId="message"
                     [control]="messageControl" [placeholder]="'addon.mod_forum.message' | translate" [component]="component"
                     [componentId]="forum.cmid" [autoSave]="true" [contextInstanceId]="forum.cmid"
-                    (contentChanged)="onMessageChange($event)">
-                </core-rich-text-editor>
+                    (contentChanged)="onMessageChange($event)" />
             </ion-item>
             <ion-item button class="divider ion-text-wrap" (click)="toggleAdvanced()" [detail]="false" [attr.aria-expanded]="advanced"
                 [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate" role="heading"
                 aria-controls="addon-mod-forum-new-discussion-advanced">
                 <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
-                    [class.expandable-status-icon-expanded]="advanced"></ion-icon>
+                    [class.expandable-status-icon-expanded]="advanced" />
                 <ion-label>
                     <h2>{{ 'addon.mod_forum.advanced' | translate }}</h2>
                 </ion-label>
@@ -43,7 +39,7 @@
             <div *ngIf="advanced" id="addon-mod-forum-new-discussion-advanced">
                 <ion-item *ngIf="showGroups && groupIds.length > 1 && accessInfo.cancanposttomygroups">
                     <ion-label>{{ 'addon.mod_forum.posttomygroups' | translate }}</ion-label>
-                    <ion-toggle [(ngModel)]="newDiscussion.postToAllGroups" name="postallgroups" slot="end"></ion-toggle>
+                    <ion-toggle [(ngModel)]="newDiscussion.postToAllGroups" name="postallgroups" slot="end" />
                 </ion-item>
                 <ion-item *ngIf="showGroups" class="core-edit-set-group">
                     <ion-label>{{ 'addon.mod_forum.group' | translate }}</ion-label>
@@ -52,29 +48,27 @@
                         [cancelText]="'core.cancel' | translate" (ionChange)="calculateGroupName()">
                         <ion-select-option *ngFor="let group of groups" [value]="group.id">
                             <core-format-text [text]="group.name" contextLevel="course" [contextInstanceId]="courseId"
-                                [wsNotFiltered]="true"></core-format-text>
+                                [wsNotFiltered]="true" />
                         </ion-select-option>
                     </ion-select>
                 </ion-item>
                 <ion-item>
                     <ion-label>{{ 'addon.mod_forum.discussionsubscription' | translate }}</ion-label>
-                    <ion-toggle [(ngModel)]="newDiscussion.subscribe" name="subscribe" slot="end"></ion-toggle>
+                    <ion-toggle [(ngModel)]="newDiscussion.subscribe" name="subscribe" slot="end" />
                 </ion-item>
                 <ion-item *ngIf="canPin">
                     <ion-label>{{ 'addon.mod_forum.discussionpinned' | translate }}</ion-label>
-                    <ion-toggle [(ngModel)]="newDiscussion.pin" name="pin" slot="end"></ion-toggle>
+                    <ion-toggle [(ngModel)]="newDiscussion.pin" name="pin" slot="end" />
                 </ion-item>
                 <core-attachments *ngIf="canCreateAttachments && forum && forum.maxattachments > 0" [files]="newDiscussion.files"
                     [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [component]="component" [componentId]="forum.cmid"
-                    [allowOffline]="true" [courseId]="courseId">
-                </core-attachments>
+                    [allowOffline]="true" [courseId]="courseId" />
             </div>
             <ion-item *ngIf="showGroups && postInGroupMessage && !newDiscussion.postToAllGroups" class="addon-forum-group-info">
-                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
                 <ion-label>
                     <core-format-text [text]="postInGroupMessage" contextLevel="course" [contextInstanceId]="courseId"
-                        [wsNotFiltered]="true">
-                    </core-format-text>
+                        [wsNotFiltered]="true" />
                 </ion-label>
             </ion-item>
             <ion-item class="addon-forum-new-discussion-buttons">

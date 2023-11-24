@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.mod_chat.messages' | translate }}</h1>
@@ -10,7 +10,7 @@
 </ion-header>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshMessages($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
         <ion-list class="addon-messages-discussion-container">
@@ -23,7 +23,7 @@
                 <div class="ion-text-center addon-mod_chat-notice" *ngIf="message.special">
                     <ion-badge class="ion-text-wrap" color="success" *ngIf="message.issystem && message.message === 'enter'">
                         <span>
-                            <ion-icon name="fas-right-to-bracket" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-right-to-bracket" aria-hidden="true" />
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
                             {{ 'addon.mod_chat.messageenter' | translate:{$a: message.userfullname} }}
                         </span>
@@ -31,7 +31,7 @@
 
                     <ion-badge class="ion-text-wrap" color="danger" *ngIf="message.issystem && message.message === 'exit'">
                         <span>
-                            <ion-icon name="fas-right-from-bracket" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-right-from-bracket" aria-hidden="true" />
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
                             {{ 'addon.mod_chat.messageexit' | translate:{$a: message.userfullname} }}
                         </span>
@@ -39,7 +39,7 @@
 
                     <ion-badge class="ion-text-wrap" color="primary" *ngIf="message.beep === 'all'">
                         <span>
-                            <ion-icon name="fas-bell" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-bell" aria-hidden="true" />
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
                             {{ 'addon.mod_chat.messagebeepseveryone' | translate:{$a: message.userfullname} }}
                         </span>
@@ -48,7 +48,7 @@
                     <ion-badge class="ion-text-wrap" color="primary"
                         *ngIf="message.userid !== currentUserId && message.beep === currentUserId">
                         <span>
-                            <ion-icon name="fas-bell" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-bell" aria-hidden="true" />
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
                             {{ 'addon.mod_chat.messagebeepsyou' | translate:{$a: message.userfullname} }}
                         </span>
@@ -57,7 +57,7 @@
                     <ion-badge class="ion-text-wrap" color="light"
                         *ngIf="message.userid === currentUserId && message.beep && message.beep !== 'all'">
                         <span>
-                            <ion-icon name="fas-bell" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-bell" aria-hidden="true" />
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
                             {{ 'addon.mod_chat.messageyoubeep' | translate:{$a: message.beepWho} }}
                         </span>
@@ -65,19 +65,18 @@
 
                     <ion-badge class="ion-text-wrap" color="info" *ngIf="!message.issystem && !message.beep">
                         <span>
-                            <ion-icon name="fas-asterisk" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-asterisk" aria-hidden="true" />
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
                             <strong>
                                 {{ message.userfullname }} <core-format-text [text]="message.message" contextLevel="module"
-                                    [contextInstanceId]="cmId" [courseId]="courseId"></core-format-text>
+                                    [contextInstanceId]="cmId" [courseId]="courseId" />
                             </strong>
                         </span>
                     </ion-badge>
                 </div>
 
                 <core-message *ngIf="!message.special" [message]="message" [user]="message" [text]="message.message"
-                    [time]="message.timestamp * 1000" contextLevel="module" [instanceId]="cmId" [courseId]="courseId">
-                </core-message>
+                    [time]="message.timestamp * 1000" contextLevel="module" [instanceId]="cmId" [courseId]="courseId" />
             </ng-container>
         </ion-list>
     </core-loading>

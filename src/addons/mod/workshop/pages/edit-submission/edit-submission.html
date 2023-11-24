@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.mod_workshop.editsubmission' | translate }}</h1>
@@ -23,8 +23,7 @@
                     </span>
                 </ion-label>
                 <ion-input name="title" type="text" [placeholder]="'addon.mod_workshop.submissiontitle' | translate"
-                    formControlName="title">
-                </ion-input>
+                    formControlName="title" />
             </ion-item>
 
             <ion-item *ngIf="textAvailable">
@@ -36,13 +35,12 @@
                 <core-rich-text-editor [control]="editForm.controls['content']" name="content"
                     [placeholder]="'addon.mod_workshop.submissioncontent' | translate" [component]="component" [componentId]="componentId"
                     [autoSave]="true" contextLevel="module" [contextInstanceId]="module.id" elementId="content_editor"
-                    [draftExtraParams]="editorExtraParams"></core-rich-text-editor>
+                    [draftExtraParams]="editorExtraParams" />
             </ion-item>
 
             <core-attachments *ngIf="fileAvailable" [files]="attachments" [maxSize]="workshop.maxbytes"
                 [maxSubmissions]="workshop.nattachments" [component]="component" [componentId]="workshop.coursemodule" allowOffline="true"
-                [acceptedTypes]="workshop.submissionfiletypes" [required]="fileRequired" [courseId]="workshop.course">
-            </core-attachments>
+                [acceptedTypes]="workshop.submissionfiletypes" [required]="fileRequired" [courseId]="workshop.course" />
         </form>
     </core-loading>
 </ion-content>

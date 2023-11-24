@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.mod_lesson.detailedstats' | translate }}</h1>
@@ -10,18 +10,17 @@
 </ion-header>
 <ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 
     <core-loading [hideUntil]="loaded">
         <div *ngIf="student">
             <!-- Student data. -->
             <ion-item class="ion-text-wrap" core-user-link [userId]="student.id" [courseId]="courseId" [attr.aria-label]="student.fullname">
-                <core-user-avatar [user]="student" slot="start" [userId]="student.id" [courseId]="courseId" [linkProfile]="false">
-                </core-user-avatar>
+                <core-user-avatar [user]="student" slot="start" [userId]="student.id" [courseId]="courseId" [linkProfile]="false" />
                 <ion-label>
                     <h2>{{student.fullname}}</h2>
-                    <core-progress-bar [progress]="student.bestgrade" a11yText="addon.mod_lesson.grade"></core-progress-bar>
+                    <core-progress-bar [progress]="student.bestgrade" a11yText="addon.mod_lesson.grade" />
                 </ion-label>
             </ion-item>
 
@@ -89,8 +88,7 @@
                             <p>
                                 <core-format-text [component]="component" [componentId]="lesson?.coursemodule" collapsible-item
                                     [text]="page.contents" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
-                                    [courseId]="courseId">
-                                </core-format-text>
+                                    [courseId]="courseId" />
                             </p>
                         </ion-label>
                     </ion-item>
@@ -135,21 +133,18 @@
                                         <p>
                                             <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
                                                 [text]="answer[0].content" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
-                                                [courseId]="courseId">
-                                            </core-format-text>
+                                                [courseId]="courseId" />
                                         </p>
                                         <ion-badge *ngIf="answer[1]" color="dark" class="addon-mod_lesson-answer-stats">
                                             <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
                                                 [text]="answer[1]" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
-                                                [courseId]="courseId">
-                                            </core-format-text>
+                                                [courseId]="courseId" />
                                         </ion-badge>
                                         <ion-badge *ngIf="answer[0].successBadge" color="success" class="addon-mod_lesson-answer-success">
                                             {{ answer[0].successBadge }}
                                         </ion-badge>
                                     </ion-label>
-                                    <ion-checkbox [attr.name]="answer[0].name" [ngModel]="answer[0].checked" [disabled]="true" slot="end">
-                                    </ion-checkbox>
+                                    <ion-checkbox [attr.name]="answer[0].name" [ngModel]="answer[0].checked" [disabled]="true" slot="end" />
                                 </ion-item>
 
                                 <!-- Short answer or numeric. -->
@@ -159,8 +154,7 @@
                                         <ion-badge *ngIf="answer[1]" color="dark">
                                             <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
                                                 [text]="answer[1]" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
-                                                [courseId]="courseId">
-                                            </core-format-text>
+                                                [courseId]="courseId" />
                                         </ion-badge>
                                     </ion-label>
                                 </ion-item>
@@ -174,8 +168,7 @@
                                                     <p>
                                                         <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
                                                             [text]=" answer[0].content" contextLevel="module"
-                                                            [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId">
-                                                        </core-format-text>
+                                                            [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId" />
                                                     </p>
                                                 </ion-col>
                                                 <ion-col>
@@ -183,8 +176,7 @@
                                                     <ion-badge *ngIf="answer[1]" color="dark">
                                                         <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
                                                             [text]="answer[1]" contextLevel="module"
-                                                            [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId">
-                                                        </core-format-text>
+                                                            [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId" />
                                                     </ion-badge>
                                                 </ion-col>
                                             </ion-row>
@@ -198,14 +190,12 @@
                                         <p>
                                             <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
                                                 [text]="answer[0]" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
-                                                [courseId]="courseId">
-                                            </core-format-text>
+                                                [courseId]="courseId" />
                                         </p>
                                         <ion-badge *ngIf="answer[1]" color="dark">
                                             <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
                                                 [text]="answer[1]" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
-                                                [courseId]="courseId">
-                                            </core-format-text>
+                                                [courseId]="courseId" />
                                         </ion-badge>
                                     </ion-label>
                                 </ion-item>
@@ -216,13 +206,11 @@
                                 <ion-label>
                                     <p>
                                         <core-format-text [component]="component" [componentId]="lesson?.coursemodule" [text]="answer[0]"
-                                            contextLevel="module" [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId">
-                                        </core-format-text>
+                                            contextLevel="module" [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId" />
                                     </p>
                                     <ion-badge *ngIf="answer[1]" color="dark">
                                         <core-format-text [component]="component" [componentId]="lesson?.coursemodule" [text]="answer[1]"
-                                            contextLevel="module" [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId">
-                                        </core-format-text>
+                                            contextLevel="module" [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId" />
                                     </ion-badge>
                                 </ion-label>
                             </ion-item>
@@ -234,8 +222,7 @@
                                 <p>
                                     <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
                                         [text]="page.answerdata.response" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
-                                        [courseId]="courseId">
-                                    </core-format-text>
+                                        [courseId]="courseId" />
                                 </p>
                             </ion-label>
                         </ion-item>

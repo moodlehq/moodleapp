@@ -1,17 +1,16 @@
 <span *ngIf="editMode && form">
     <span [core-mark-required]="field.required" class="core-mark-required"></span>
     <core-attachments [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component" [componentId]="componentId"
-        [allowOffline]="true" [courseId]="database?.course">
-    </core-attachments>
-    <core-input-errors *ngIf="error" [errorText]="error"></core-input-errors>
+        [allowOffline]="true" [courseId]="database?.course" />
+    <core-input-errors *ngIf="error" [errorText]="error" />
 </span>
 
 <span *ngIf="searchMode && form" [formGroup]="form">
-    <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name"></ion-input>
+    <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name" />
 </span>
 
 <ng-container *ngIf="displayMode">
     <div>
-        <core-files [files]="files" [component]="component" [componentId]="componentId" [alwaysDownload]="true"></core-files>
+        <core-files [files]="files" [component]="component" [componentId]="componentId" [alwaysDownload]="true" />
     </div>
 </ng-container>

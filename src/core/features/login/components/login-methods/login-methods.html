@@ -5,14 +5,14 @@
 <div class="core-login-methods" *ngIf="loginMethods.length">
     <ion-button [fill]="'outline'" class="ion-text-wrap ion-margin" *ngFor="let method of loginMethods" (click)="method.action()"
         [attr.aria-label]="method.name" expand="block">
-        <ion-icon *ngIf="method.icon" [name]="method.icon" slot="start"></ion-icon>
+        <ion-icon *ngIf="method.icon" [name]="method.icon" slot="start" />
         <ion-label>{{ method.name }}</ion-label>
     </ion-button>
 </div>
 
 <ng-container *ngIf="showScanQR">
     <ion-button expand="block" fill="outline" class="ion-margin core-login-site-qrcode" (click)="showInstructionsAndScanQR()">
-        <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
+        <ion-icon slot="start" name="fas-qrcode" aria-hidden="true" />
         {{ 'core.scanqr' | translate }}
     </ion-button>
 </ng-container>

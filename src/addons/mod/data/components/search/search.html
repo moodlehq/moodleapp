@@ -5,7 +5,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon name="fas-xmark" slot="icon-only" aria-hidden=true></ion-icon>
+                <ion-icon name="fas-xmark" slot="icon-only" aria-hidden=true />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -13,15 +13,14 @@
 <ion-content>
     <ion-item>
         <ion-label>{{ 'addon.mod_data.advancedsearch' | translate }}</ion-label>
-        <ion-toggle [(ngModel)]="search.searchingAdvanced" slot="end"></ion-toggle>
+        <ion-toggle [(ngModel)]="search.searchingAdvanced" slot="end" />
     </ion-item>
     <form (ngSubmit)="searchEntries($event)" [formGroup]="searchForm" #searchFormEl>
         <ion-list class="ion-no-margin">
             <ion-item [hidden]="search.searchingAdvanced">
                 <ion-label class="sr-only">{{ 'addon.mod_data.search' | translate}}</ion-label>
                 <ion-input type="text" placeholder="{{ 'addon.mod_data.search' | translate}}" [(ngModel)]="search.text" name="text"
-                    formControlName="text">
-                </ion-input>
+                    formControlName="text" />
             </ion-item>
             <ion-item class="ion-text-wrap">
                 <ion-label position="stacked">{{ 'core.sortby' | translate }}</ion-label>
@@ -45,21 +44,21 @@
                 <ion-radio-group [(ngModel)]="search.sortDirection" name="sortDirection" formControlName="sortDirection">
                     <ion-item>
                         <ion-label>{{ 'addon.mod_data.ascending' | translate }}</ion-label>
-                        <ion-radio slot="start" value="ASC"></ion-radio>
+                        <ion-radio slot="start" value="ASC" />
                     </ion-item>
                     <ion-item>
                         <ion-label>{{ 'addon.mod_data.descending' | translate }}</ion-label>
-                        <ion-radio slot="start" value="DESC"></ion-radio>
+                        <ion-radio slot="start" value="DESC" />
                     </ion-item>
                 </ion-radio-group>
             </ion-list>
             <div class="ion-padding addon-data-advanced-search" [hidden]="!advancedSearch || !search.searchingAdvanced">
-                <core-compile-html [text]="advancedSearch" [jsData]="jsData" [extraImports]="extraImports"></core-compile-html>
+                <core-compile-html [text]="advancedSearch" [jsData]="jsData" [extraImports]="extraImports" />
             </div>
         </ion-list>
         <div class="ion-padding">
             <ion-button expand="block" type="submit">
-                <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true" />
                 {{ 'addon.mod_data.search' | translate }}
             </ion-button>
         </div>

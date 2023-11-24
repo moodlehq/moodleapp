@@ -5,7 +5,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="close()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -16,8 +16,7 @@
             <ion-item button class="ion-text-wrap divider" (click)="toggle(question)" [attr.aria-expanded]="isOpen(question)"
                 [attr.aria-controls]="'question-' + question.id + '-answer'" role="heading" [detail]="false">
                 <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
-                    [class.expandable-status-icon-expanded]="isOpen(question)">
-                </ion-icon>
+                    [class.expandable-status-icon-expanded]="isOpen(question)" />
                 <ion-label>
                     <h2>{{ question.text }}</h2>
                 </ion-label>
@@ -28,8 +27,7 @@
                 <ion-label>
                     <p *ngIf="question.answer.format === 'text'">{{ question.answer.text }}</p>
                     <p *ngIf="question.answer.format === 'safe-html'" [innerHTML]="question.answer.text"></p>
-                    <core-format-text *ngIf="question.answer.format === 'unsafe-html'" [text]="question.answer.text" [filter]="false">
-                    </core-format-text>
+                    <core-format-text *ngIf="question.answer.format === 'unsafe-html'" [text]="question.answer.text" [filter]="false" />
                 </ion-label>
             </ion-item>
         </ng-container>

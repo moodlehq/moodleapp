@@ -8,8 +8,7 @@
 <input *ngIf="seqCheck" type="hidden" name="{{seqCheck.name}}" value="{{seqCheck.value}}">
 
 <!-- Question behaviour components. -->
-<core-dynamic-component *ngFor="let componentClass of behaviourComponents" [component]="componentClass" [data]="data">
-</core-dynamic-component>
+<core-dynamic-component *ngFor="let componentClass of behaviourComponents" [component]="componentClass" [data]="data" />
 
 <!-- Question validation error. -->
 <ion-item class="ion-text-wrap core-danger-item" *ngIf="validationError">
@@ -22,16 +21,14 @@
 <ion-button *ngFor="let button of question?.behaviourButtons" class="ion-margin-vertical ion-text-wrap" expand="block"
     (click)="buttonClicked.emit(button)" [disabled]="button.disabled">
     <core-format-text [component]="component" [componentId]="componentId" [text]="button.value" [contextLevel]="contextLevel"
-        [contextInstanceId]="contextInstanceId" [courseId]="courseId">
-    </core-format-text>
+        [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
 </ion-button>
 
 <!-- Question feedback. -->
 <ion-item class="ion-text-wrap core-question-feedback-container" *ngIf="question && question.feedbackHtml">
     <ion-label>
         <core-format-text [component]="component" [componentId]="componentId" [text]="question.feedbackHtml" [contextLevel]="contextLevel"
-            [contextInstanceId]="contextInstanceId" [courseId]="courseId">
-        </core-format-text>
+            [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
     </ion-label>
 </ion-item>
 
@@ -39,7 +36,6 @@
 <ion-item class="ion-text-wrap core-question-comment" *ngIf="question && question.commentHtml">
     <ion-label>
         <core-format-text [component]="component" [componentId]="componentId" [text]="question.commentHtml" [contextLevel]="contextLevel"
-            [contextInstanceId]="contextInstanceId" [courseId]="courseId">
-        </core-format-text>
+            [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
     </ion-label>
 </ion-item>

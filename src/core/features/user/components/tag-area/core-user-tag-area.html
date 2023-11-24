@@ -1,6 +1,6 @@
 <ion-card *ngFor="let item of items">
     <ion-item class="ion-text-wrap" core-user-link [userId]="item.user.id">
-        <core-user-avatar [user]="item.user" slot="start" [linkProfile]="false"></core-user-avatar>
+        <core-user-avatar [user]="item.user" slot="start" [linkProfile]="false" />
         <ion-label>
             <p class="item-heading">{{ item.heading }}</p>
         </ion-label>

@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ title }}</h1>
@@ -10,11 +10,10 @@
 </ion-header>
 <ion-content [core-swipe-navigation]="swipeManager">
     <ion-refresher slot="fixed" [disabled]="!columns || !rows" (ionRefresh)="refreshGrades($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <core-empty-box *ngIf="!rows.length" icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate">
-        </core-empty-box>
+        <core-empty-box *ngIf="!rows.length" icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate" />
         <div *ngIf="rows.length" class="core-grades-container">
             <table class="core-grades-table" [class.summary]="showSummary">
                 <thead>
@@ -41,15 +40,12 @@
                                 </td>
                                 <th class="core-grades-table-gradeitem ion-text-start" [attr.colspan]="row.colspan">
                                     <ion-icon *ngIf="row.expandable && showSummary" aria-hidden="true" slot="start" name="fas-chevron-right"
-                                        class="expandable-status-icon" [class.expandable-status-icon-expanded]="row.expanded">
-                                    </ion-icon>
-                                    <ion-icon *ngIf="row.icon" name="{{row.icon}}" slot="start" [attr.aria-label]="row.iconAlt">
-                                    </ion-icon>
+                                        class="expandable-status-icon" [class.expandable-status-icon-expanded]="row.expanded" />
+                                    <ion-icon *ngIf="row.icon" name="{{row.icon}}" slot="start" [attr.aria-label]="row.iconAlt" />
                                     <img *ngIf="row.image && !row.itemmodule" [src]="row.image" slot="start" class="core-module-icon"
                                         [alt]="row.iconAlt" />
                                     <core-mod-icon *ngIf="row.image && row.itemmodule" [modicon]="row.image" slot="start"
-                                        [modname]="row.itemmodule">
-                                    </core-mod-icon>
+                                        [modname]="row.itemmodule" />
                                     <span [innerHTML]="row.gradeitem"></span>
                                 </th>
                                 <ng-container *ngIf="row.itemtype !== 'category'">
@@ -61,13 +57,11 @@
                                         <td *ngIf="column.name === 'feedback' && row.feedback !== undefined"
                                             class="ion-text-start core-grades-table-feedback" [class.ion-hide-md-down]="column.hiddenPhone">
                                             <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
-                                                [contextInstanceId]="courseId">
-                                            </core-format-text>
+                                                [contextInstanceId]="courseId" />
                                         </td>
                                         <td *ngIf="column.name === 'grade'" [class.ion-hide-md-down]="column.hiddenPhone"
                                             class="ion-text-start core-grades-table-grade {{row.gradeClass}}">
-                                            <ion-icon *ngIf="row.gradeIcon" [name]="row.gradeIcon" [attr.aria-label]="row.gradeIconAlt">
-                                            </ion-icon>
+                                            <ion-icon *ngIf="row.gradeIcon" [name]="row.gradeIcon" [attr.aria-label]="row.gradeIconAlt" />
                                             <span [innerHTML]="row[column.name]"></span>
                                         </td>
                                     </ng-container>
@@ -131,8 +125,7 @@
                                             <p class="item-heading">{{ 'core.grades.feedback' | translate}}</p>
                                             <p>
                                                 <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
-                                                    [contextInstanceId]="courseId">
-                                                </core-format-text>
+                                                    [contextInstanceId]="courseId" />
                                             </p>
                                         </ion-label>
                                     </ion-item>
@@ -149,7 +142,7 @@
                     </ng-container>
                 </tbody>
             </table>
-            <core-infinite-loading [enabled]="rowsOnView < rows.length" (action)="loadMore($event)"></core-infinite-loading>
+            <core-infinite-loading [enabled]="rowsOnView < rows.length" (action)="loadMore($event)" />
         </div>
     </core-loading>
 </ion-content>

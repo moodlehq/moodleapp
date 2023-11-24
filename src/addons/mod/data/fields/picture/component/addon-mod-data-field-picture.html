@@ -1,17 +1,15 @@
 <span *ngIf="editMode && form" [formGroup]="form">
     <span [core-mark-required]="field.required" class="core-mark-required"></span>
     <core-attachments [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component" [componentId]="componentId"
-        [allowOffline]="true" acceptedTypes="image" [courseId]="database?.course">
-    </core-attachments>
-    <core-input-errors *ngIf="error" [errorText]="error"></core-input-errors>
+        [allowOffline]="true" acceptedTypes="image" [courseId]="database?.course" />
+    <core-input-errors *ngIf="error" [errorText]="error" />
 
     <ion-label position="stacked">{{ 'addon.mod_data.alttext' | translate }}</ion-label>
-    <ion-input type="text" [formControlName]="'f_'+field.id+'_alttext'" [placeholder]=" 'addon.mod_data.alttext' | translate">
-    </ion-input>
+    <ion-input type="text" [formControlName]="'f_'+field.id+'_alttext'" [placeholder]=" 'addon.mod_data.alttext' | translate" />
 </span>
 
 <span *ngIf="searchMode && form" [formGroup]="form">
-    <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name"></ion-input>
+    <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name" />
 </span>
 
 <button class="as-link" *ngIf="listMode && imageUrl" (click)="navigateEntry()">

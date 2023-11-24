@@ -1,12 +1,11 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1 *ngIf="glossary">
-                <core-format-text [text]="glossary.name" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
-                </core-format-text>
+                <core-format-text [text]="glossary.name" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
             </h1>
         </ion-title>
     </ion-toolbar>
@@ -16,16 +15,14 @@
         <form #editFormEl *ngIf="glossary">
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_glossary.concept' | translate }}</ion-label>
-                <ion-input type="text" [placeholder]="'addon.mod_glossary.concept' | translate" [(ngModel)]="data.concept" name="concept">
-                </ion-input>
+                <ion-input type="text" [placeholder]="'addon.mod_glossary.concept' | translate" [(ngModel)]="data.concept" name="concept" />
             </ion-item>
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_glossary.definition' | translate }}</ion-label>
                 <core-rich-text-editor [control]="definitionControl" (contentChanged)="onDefinitionChange($event)"
                     [placeholder]="'addon.mod_glossary.definition' | translate" name="addon_mod_glossary_edit" [component]="component"
                     [componentId]="cmId" [autoSave]="true" contextLevel="module" [contextInstanceId]="cmId" elementId="definition_editor"
-                    [draftExtraParams]="editorExtraParams">
-                </core-rich-text-editor>
+                    [draftExtraParams]="editorExtraParams" />
             </ion-item>
             <ion-item *ngIf="categories.length > 0">
                 <ion-label position="stacked">
@@ -43,8 +40,7 @@
                 <ion-label position="stacked">
                     {{ 'addon.mod_glossary.aliases' | translate }}
                 </ion-label>
-                <ion-textarea [(ngModel)]="data.aliases" rows="1" [core-auto-rows]="data.aliases" name="aliases">
-                </ion-textarea>
+                <ion-textarea [(ngModel)]="data.aliases" rows="1" [core-auto-rows]="data.aliases" name="aliases" />
             </ion-item>
             <ion-item-divider>
                 <ion-label>
@@ -52,8 +48,7 @@
                 </ion-label>
             </ion-item-divider>
             <core-attachments [files]="data.attachments" [component]="component" [componentId]="glossary.coursemodule" [allowOffline]="true"
-                [courseId]="courseId">
-            </core-attachments>
+                [courseId]="courseId" />
             <ng-container *ngIf="glossary.usedynalink">
                 <ion-item-divider>
                     <ion-label>
@@ -62,16 +57,15 @@
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap">
                     <ion-label>{{ 'addon.mod_glossary.entryusedynalink' | translate }}</ion-label>
-                    <ion-toggle [(ngModel)]="data.usedynalink" name="usedynalink" slot="end"></ion-toggle>
+                    <ion-toggle [(ngModel)]="data.usedynalink" name="usedynalink" slot="end" />
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label>{{ 'addon.mod_glossary.casesensitive' | translate }}</ion-label>
-                    <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.casesensitive" name="casesensitive" slot="end">
-                    </ion-toggle>
+                    <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.casesensitive" name="casesensitive" slot="end" />
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label>{{ 'addon.mod_glossary.fullmatch' | translate }}</ion-label>
-                    <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.fullmatch" name="fullmatch" slot="end"></ion-toggle>
+                    <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.fullmatch" name="fullmatch" slot="end" />
                 </ion-item>
             </ng-container>
             <ion-button class="ion-margin" expand="block" [disabled]="!data.concept || !data.definition" (click)="save()">

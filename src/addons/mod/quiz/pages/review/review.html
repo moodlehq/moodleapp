@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.mod_quiz.review' | translate }}</h1>
@@ -10,14 +10,14 @@
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="navigation.length" [attr.aria-label]="'addon.mod_quiz.opentoc' | translate"
                 (click)="openNavigation()" aria-haspopup="true">
-                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshData($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
 
@@ -70,8 +70,7 @@
                     <ion-label>
                         <p class="item-heading">{{ data.title }}</p>
                         <core-format-text [component]="component" [componentId]="cmId" [text]="data.content" contextLevel="module"
-                            [contextInstanceId]="cmId" [courseId]="courseId">
-                        </core-format-text>
+                            [contextInstanceId]="cmId" [courseId]="courseId" />
                     </ion-label>
                 </ion-item>
             </ion-list>
@@ -103,8 +102,7 @@
                     <!-- Body of the question. -->
                     <core-question class="ion-text-wrap" [question]="question" [component]="component" [componentId]="cmId"
                         [attemptId]="attempt.id" [usageId]="attempt.uniqueid" [offlineEnabled]="false" contextLevel="module"
-                        [contextInstanceId]="cmId" [courseId]="courseId" [review]="true" [preferredBehaviour]="quiz?.preferredbehaviour">
-                    </core-question>
+                        [contextInstanceId]="cmId" [courseId]="courseId" [review]="true" [preferredBehaviour]="quiz?.preferredbehaviour" />
                 </ion-card>
             </div>
         </div>
@@ -114,7 +112,7 @@
                 <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto" *ngIf="!showAll">
                     <ion-button [disabled]="previousPage < 0" fill="clear" [attr.aria-label]="'core.previous' | translate"
                         (click)="changePage(previousPage)">
-                        <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
+                        <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
                     </ion-button>
                 </ion-col>
                 <ion-col class="ion-text-center">
@@ -127,7 +125,7 @@
                 <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto" *ngIf="!showAll">
                     <ion-button [disabled]="nextPage >= numPages" fill="clear" [attr.aria-label]="'core.next' | translate"
                         (click)="changePage(nextPage)">
-                        <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
+                        <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />
                     </ion-button>
                 </ion-col>
             </ion-row>

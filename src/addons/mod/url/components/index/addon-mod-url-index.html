@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
     </ion-button>
 </core-navbar-buttons>
 
@@ -10,11 +10,10 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="displayDescription && description" [component]="component"
-        [componentId]="componentId" [courseId]="courseId" (completionChanged)="onCompletionChange()">
-    </core-course-module-info>
+        [componentId]="componentId" [courseId]="courseId" (completionChanged)="onCompletionChange()" />
 
     <div *ngIf="shouldIframe || (shouldEmbed && isOther)" class="addon-mod_url-embedded-url">
-        <core-iframe [src]="url"></core-iframe>
+        <core-iframe [src]="url" />
     </div>
 
     <ion-list *ngIf="url && !shouldIframe && (!shouldEmbed || !isOther)">
@@ -40,11 +39,10 @@
     <div collapsible-footer appearOnBottom *ngIf="!showLoading" slot="fixed">
         <div class="list-item-limited-width" *ngIf="url && !shouldIframe && (!shouldEmbed || !isOther)">
             <ion-button expand="block" (click)="go()" class="ion-margin ion-text-wrap">
-                <ion-icon name="fas-link" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-link" slot="start" aria-hidden="true" />
                 {{ 'addon.mod_url.accessurl' | translate }}
             </ion-button>
         </div>
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">
-        </core-course-module-navigation>
+        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
     </div>
 </core-loading>

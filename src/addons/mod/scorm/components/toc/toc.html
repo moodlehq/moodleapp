@@ -5,7 +5,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -35,11 +35,9 @@
                     [ngClass]="'core-padding-' + sco.level + ' addon-mod_scorm-type-' + sco.scormtype"
                     [attr.aria-current]="selected === sco.id ? 'page' : 'false'" (click)="loadSco(sco)"
                     [disabled]="!sco.prereq || !sco.launch ? true : null" [button]="sco.prereq && sco.launch">
-                    <ion-icon *ngIf="sco.icon" [name]="sco.icon.icon" [attr.aria-label]="sco.icon.description" slot="start">
-                    </ion-icon>
+                    <ion-icon *ngIf="sco.icon" [name]="sco.icon.icon" [attr.aria-label]="sco.icon.description" slot="start" />
                     <ion-label>
-                        <core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId">
-                        </core-format-text>
+                        <core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId" />
                         <span *ngIf="accessInfo && accessInfo.canviewscores && sco.scoreraw">
                             ({{ 'addon.mod_scorm.score' | translate }}: {{sco.scoreraw}})
                         </span>

@@ -1,25 +1,24 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1 *ngIf="plan">
-                <core-format-text [text]="plan.plan.name" contextLevel="user" [contextInstanceId]="plan.plan.userid">
-                </core-format-text>
+                <core-format-text [text]="plan.plan.name" contextLevel="user" [contextInstanceId]="plan.plan.userid" />
             </h1>
         </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content [core-swipe-navigation]="plans" class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!competencies.loaded" (ionRefresh)="refreshLearningPlan($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="competencies.loaded">
         <ion-card *ngIf="user">
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <core-user-avatar [user]="user" slot="start"></core-user-avatar>
+                    <core-user-avatar [user]="user" slot="start" />
                     <p class="item-heading">{{ user.fullname }}</p>
                 </ion-label>
             </ion-item>
@@ -29,8 +28,7 @@
                 <ion-item class="ion-text-wrap" *ngIf="plan.plan.description">
                     <ion-label>
                         <p>
-                            <core-format-text [text]="plan.plan.description" contextLevel="user" [contextInstanceId]="plan.plan.userid">
-                            </core-format-text>
+                            <core-format-text [text]="plan.plan.description" contextLevel="user" [contextInstanceId]="plan.plan.userid" />
                         </p>
                     </ion-label>
                 </ion-item>
@@ -50,8 +48,7 @@
                     <ion-label>
                         <p class="item-heading">{{ 'addon.competency.template' | translate }}</p>
                         <p>
-                            <core-format-text [text]="plan.plan.template.shortname" contextLevel="system" [contextInstanceId]="0">
-                            </core-format-text>
+                            <core-format-text [text]="plan.plan.template.shortname" contextLevel="system" [contextInstanceId]="0" />
                         </p>
                     </ion-label>
                 </ion-item>
@@ -64,8 +61,7 @@
                         </p>
                         <core-progress-bar [progress]="plan.proficientcompetencypercentage"
                             [text]="plan.proficientcompetencypercentageformatted"
-                            ariaDescribedBy="addon-competency-plan-{{plan.plan.id}}-progress">
-                        </core-progress-bar>
+                            ariaDescribedBy="addon-competency-plan-{{plan.plan.id}}-progress" />
                     </ion-label>
                 </ion-item>
             </ion-list>
@@ -85,8 +81,7 @@
                     <ion-label>
                         <p class="item-heading">
                             <core-format-text [text]="competency.competency.shortname" contextLevel="user"
-                                [contextInstanceId]="plan.plan.userid">
-                            </core-format-text> <em>{{competency.competency.idnumber}}</em>
+                                [contextInstanceId]="plan.plan.userid" /> <em>{{competency.competency.idnumber}}</em>
                         </p>
                     </ion-label>
                     <ion-badge *ngIf="competency.usercompetencyplan" slot="end"

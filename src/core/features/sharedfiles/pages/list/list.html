@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ title }}</h1>
@@ -10,6 +10,5 @@
 </ion-header>
 <ion-content>
     <core-shared-files-list [siteId]="siteId" [mimetypes]="mimetypes" [isModal]="false" [manage]="manage" [pick]="false" [path]="path"
-        [showSitePicker]="showSitePicker" (onPathChanged)="calculateTitle($event)">
-    </core-shared-files-list>
+        [showSitePicker]="showSitePicker" (onPathChanged)="calculateTitle($event)" />
 </ion-content>

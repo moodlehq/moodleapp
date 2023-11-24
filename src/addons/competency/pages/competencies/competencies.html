@@ -1,12 +1,11 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text [text]="title" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId">
-                </core-format-text>
+                <core-format-text [text]="title" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" />
             </h1>
         </ion-title>
     </ion-toolbar>
@@ -14,7 +13,7 @@
 <ion-content>
     <core-split-view>
         <ion-refresher slot="fixed" [disabled]="!competencies.loaded" (ionRefresh)="refreshCompetencies($event.target)">
-            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
         <core-loading [hideUntil]="competencies.loaded">
             <ion-list>
@@ -24,8 +23,7 @@
                     <ion-label>
                         <p class="item-heading">
                             <core-format-text [text]="competency.competency.shortname" [contextLevel]="contextLevel"
-                                [contextInstanceId]="contextInstanceId">
-                            </core-format-text> <em>{{competency.competency.idnumber}}</em>
+                                [contextInstanceId]="contextInstanceId" /> <em>{{competency.competency.idnumber}}</em>
                         </p>
                     </ion-label>
                     <ion-badge slot="end" *ngIf="competency.usercompetency"

@@ -1,7 +1,6 @@
 <swiper-container #swiperRef *ngIf="loaded" (slidechangetransitionstart)="slideWillChange()" (slidechangetransitionend)="slideDidChange()"
     [initialSlide]="options.initialSlide" [runCallbacksOnInit]="options.runCallbacksOnInit">
     <swiper-slide *ngFor="let item of items; index as index" [attr.aria-hidden]="!isActive(index)">
-        <ng-container *ngIf="template" [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{item: item, active: isActive(index)}">
-        </ng-container>
+        <ng-container *ngIf="template" [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{item: item, active: isActive(index)}" />
     </swiper-slide>
 </swiper-container>

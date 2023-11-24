@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.notifications.notifications' | translate }}</h1>
@@ -25,15 +25,14 @@
                         role="presentation" slot="start">
                     <div class="core-notification-icon" *ngIf="!notification.imgUrl" slot="start">
                         <img *ngIf="notification.iconurl" [src]="notification.iconurl" core-external-content alt="" role="presentation">
-                        <ion-icon *ngIf="!notification.iconurl" name="fas-bell" aria-hidden="true"></ion-icon>
+                        <ion-icon *ngIf="!notification.iconurl" name="fas-bell" aria-hidden="true" />
                     </div>
                 </ng-container>
 
                 <ion-label>
                     <p class="item-heading">
                         <core-format-text [text]="notification.subject" contextLevel="system" [contextInstanceId]="0"
-                            [wsNotFiltered]="true">
-                        </core-format-text>
+                            [wsNotFiltered]="true" />
                     </p>
                     <p *ngIf="notification.timecreated > 0">
                         {{ notification.timecreated | coreTimeAgo }}
@@ -43,8 +42,7 @@
             </ion-item>
             <ion-item class="ion-text-wrap core-notification-body">
                 <ion-label>
-                    <core-format-text [text]="notification.mobiletext | coreCreateLinks" contextLevel="system" [contextInstanceId]="0">
-                    </core-format-text>
+                    <core-format-text [text]="notification.mobiletext | coreCreateLinks" contextLevel="system" [contextInstanceId]="0" />
                 </ion-label>
             </ion-item>
         </div>
@@ -52,7 +50,7 @@
         <div collapsible-footer appearOnBottom *ngIf="loaded && actions && actions.length > 0" slot="fixed">
             <div class="list-item-limited-width adaptable-buttons-row">
                 <ion-button expand="block" (click)="action.action()" *ngFor="let action of actions">
-                    <ion-icon slot="start" name="{{action.icon}}" aria-hidden="true"></ion-icon>
+                    <ion-icon slot="start" name="{{action.icon}}" aria-hidden="true" />
                     {{ action.message | translate }}
                 </ion-button>
             </div>

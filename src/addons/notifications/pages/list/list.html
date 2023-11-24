@@ -1,20 +1,20 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.notifications.notifications' | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
-            <core-user-menu-button></core-user-menu-button>
+            <core-user-menu-button />
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content>
     <core-split-view>
         <ion-refresher slot="fixed" [disabled]="!notifications.loaded" (ionRefresh)="refreshNotifications($event.target)">
-            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
         <core-loading [hideUntil]="notifications.loaded">
 
@@ -38,40 +38,36 @@
                         role="presentation" slot="start">
                     <div class="core-notification-icon" *ngIf="!notification.imgUrl" slot="start">
                         <img *ngIf="notification.iconurl" [src]="notification.iconurl" core-external-content alt="" role="presentation">
-                        <ion-icon *ngIf="!notification.iconurl" name="fas-bell" aria-hidden="true"></ion-icon>
+                        <ion-icon *ngIf="!notification.iconurl" name="fas-bell" aria-hidden="true" />
                     </div>
                 </ng-container>
 
                 <ion-label>
                     <p class="item-heading">
                         <core-format-text [text]="notification.subject" contextLevel="system" [contextInstanceId]="0"
-                            [wsNotFiltered]="true">
-                        </core-format-text>
+                            [wsNotFiltered]="true" />
                     </p>
                     <p>{{ notification.timecreated | coreTimeAgo }}<ng-container *ngIf="notification.useridfrom > 0"> · {{
                             notification.userfromfullname }}</ng-container>
                     </p>
                 </ion-label>
                 <ion-note slot="end" *ngIf="!notification.timeread">
-                    <ion-icon name="fas-circle" color="primary" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-circle" color="primary" aria-hidden="true" />
                 </ion-note>
             </ion-item>
 
             <core-empty-box *ngIf="!notifications || notifications.empty" icon="far-bell"
-                [message]="'addon.notifications.therearentnotificationsyet' | translate">
-            </core-empty-box>
+                [message]="'addon.notifications.therearentnotificationsyet' | translate" />
             <core-infinite-loading [enabled]="notifications.loaded && !notifications.completed" (action)="fetchMoreNotifications($event)"
-                [error]="fetchMoreNotificationsFailed">
-            </core-infinite-loading>
+                [error]="fetchMoreNotificationsFailed" />
         </core-loading>
 
 
         <div class="mark-all-as-read" slot="fixed" collapsible-footer appearOnBottom>
             <ion-chip *ngIf="notifications.loaded && canMarkAllNotificationsAsRead" [disabled]="loadingMarkAllNotificationsAsRead"
                 color="info" class="clickable fab-chip" (click)="markAllNotificationsAsRead()">
-                <ion-icon name="fas-eye" aria-hidden="true" *ngIf="!loadingMarkAllNotificationsAsRead"></ion-icon>
-                <ion-spinner [attr.aria-label]="'core.loading' | translate" *ngIf="loadingMarkAllNotificationsAsRead">
-                </ion-spinner>
+                <ion-icon name="fas-eye" aria-hidden="true" *ngIf="!loadingMarkAllNotificationsAsRead" />
+                <ion-spinner [attr.aria-label]="'core.loading' | translate" *ngIf="loadingMarkAllNotificationsAsRead" />
                 {{ 'addon.notifications.markallread' | translate }}
             </ion-chip>
         </div>

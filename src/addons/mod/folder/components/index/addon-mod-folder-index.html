@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
     </ion-button>
 </core-navbar-buttons>
 
@@ -10,28 +10,26 @@
 
     <!-- Activity info. -->
     <core-course-module-info *ngIf="!subfolder" [module]="module" [description]="description" [component]="component"
-        [componentId]="componentId" [courseId]="courseId">
-    </core-course-module-info>
+        [componentId]="componentId" [courseId]="courseId" />
 
     <ion-list *ngIf="contents && (contents.files.length + contents.folders.length > 0)">
         <ng-container *ngFor="let folder of contents.folders">
             <ion-item class="ion-text-wrap item-file item-directory" (click)="openFolder(folder)" [detail]="true" button>
-                <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate"></ion-icon>
+                <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate" />
                 <ion-label>
                     <p class="item-heading">{{folder.filename}}</p>
                 </ion-label>
             </ion-item>
         </ng-container>
         <ng-container *ngFor="let file of contents.files">
-            <core-file [file]="file" [component]="component" [componentId]="componentId"></core-file>
+            <core-file [file]="file" [component]="component" [componentId]="componentId" />
         </ng-container>
     </ion-list>
 
     <core-empty-box *ngIf="!contents || (contents.files.length + contents.folders.length === 0)" icon="far-folder-open"
-        [message]=" 'addon.mod_folder.emptyfilelist' | translate"></core-empty-box>
+        [message]=" 'addon.mod_folder.emptyfilelist' | translate" />
 
 </core-loading>
 
 <core-course-module-navigation collapsible-footer appearOnBottom *ngIf="!subfolder" [hidden]="showLoading" [courseId]="courseId"
-    [currentModuleId]="module.id" (completionChanged)="onCompletionChange()">
-</core-course-module-navigation>
+    [currentModuleId]="module.id" (completionChanged)="onCompletionChange()" />

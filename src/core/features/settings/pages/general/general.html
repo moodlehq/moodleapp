@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
 
         <ion-title>
@@ -57,7 +57,7 @@
                 <p class="item-heading">{{ 'core.settings.enablerichtexteditor' | translate }}</p>
                 <p>{{ 'core.settings.enablerichtexteditordescription' | translate }}</p>
             </ion-label>
-            <ion-toggle [(ngModel)]="richTextEditor" (ionChange)="richTextEditorChanged($event)" slot="end"></ion-toggle>
+            <ion-toggle [(ngModel)]="richTextEditor" (ionChange)="richTextEditorChanged($event)" slot="end" />
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="displayIframeHelp">
             <ion-label>
@@ -73,14 +73,14 @@
                 <p class="item-heading">{{ 'core.settings.debugdisplay' | translate }}</p>
                 <p>{{ 'core.settings.debugdisplaydescription' | translate }}</p>
             </ion-label>
-            <ion-toggle [(ngModel)]="debugDisplay" (ionChange)="debugDisplayChanged($event)" slot="end"></ion-toggle>
+            <ion-toggle [(ngModel)]="debugDisplay" (ionChange)="debugDisplayChanged($event)" slot="end" />
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="analyticsAvailable">
             <ion-label>
                 <p class="item-heading">{{ 'core.settings.enableanalytics' | translate }}</p>
                 <p>{{ 'core.settings.enableanalyticsdescription' | translate }}</p>
             </ion-label>
-            <ion-toggle [(ngModel)]="analyticsEnabled" (ionChange)="analyticsEnabledChanged($event)" slot="end"></ion-toggle>
+            <ion-toggle [(ngModel)]="analyticsEnabled" (ionChange)="analyticsEnabledChanged($event)" slot="end" />
         </ion-item>
     </ion-list>
 </ion-content>

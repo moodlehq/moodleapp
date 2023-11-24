@@ -3,8 +3,7 @@
         <ion-item class="ion-text-wrap">
             <ion-label>
                 <h2>{{ field.dimtitle }}</h2>
-                <core-format-text [text]="field.description" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId">
-                </core-format-text>
+                <core-format-text [text]="field.description" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId" />
             </ion-label>
         </ion-item>
         <ion-list>
@@ -15,20 +14,19 @@
                             {{ 'addon.mod_workshop.yourassessmentfor' | translate : {'$a': field.dimtitle } }}
                         </span>
                     </ion-label>
-                    <core-input-errors *ngIf="edit && fieldErrors['grade_' + n]" [errorText]="fieldErrors['grade_' + n]">
-                    </core-input-errors>
+                    <core-input-errors *ngIf="edit && fieldErrors['grade_' + n]" [errorText]="fieldErrors['grade_' + n]" />
                 </ion-item>
                 <ion-item>
                     <ion-label>
-                        <core-format-text [text]="field.grade0" [filter]="false"></core-format-text>
+                        <core-format-text [text]="field.grade0" [filter]="false" />
                     </ion-label>
-                    <ion-radio slot="start" [value]="-1" [disabled]="!edit"></ion-radio>
+                    <ion-radio slot="start" [value]="-1" [disabled]="!edit" />
                 </ion-item>
                 <ion-item>
                     <ion-label>
-                        <core-format-text [text]="field.grade1" [filter]="false"></core-format-text>
+                        <core-format-text [text]="field.grade1" [filter]="false" />
                     </ion-label>
-                    <ion-radio slot="start" [value]="1" [disabled]="!edit"></ion-radio>
+                    <ion-radio slot="start" [value]="1" [disabled]="!edit" />
                 </ion-item>
             </ion-radio-group>
         </ion-list>
@@ -37,8 +35,7 @@
                 {{ 'addon.mod_workshop_assessment_numerrors.dimensioncommentfor' | translate : {'$a': field.dimtitle } }}
             </ion-label>
             <ion-textarea [(ngModel)]="selectedValues[n].peercomment" [name]="'peercomment_' + n"
-                [core-auto-rows]="selectedValues[n].peercomment">
-            </ion-textarea>
+                [core-auto-rows]="selectedValues[n].peercomment" />
         </ion-item>
         <ion-item *ngIf="!edit" class="ion-text-wrap">
             <ion-label>
@@ -46,8 +43,7 @@
                     } }}</p>
                 <p>
                     <core-format-text [text]="selectedValues[n].peercomment" contextLevel="module" [contextInstanceId]="moduleId"
-                        [courseId]="courseId">
-                    </core-format-text>
+                        [courseId]="courseId" />
                 </p>
             </ion-label>
         </ion-item>

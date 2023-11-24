@@ -9,7 +9,7 @@
     <ion-content>
         <ion-card *ngFor="let course of courses">
             <div class="course-image-wrapper">
-                <core-course-image [course]="course" [fill]="true"></core-course-image>
+                <core-course-image [course]="course" [fill]="true" />
             </div>
             <ion-card-header>
                 <ion-card-title>{{ course.shortname }}</ion-card-title>

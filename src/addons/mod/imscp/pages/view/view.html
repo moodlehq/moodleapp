@@ -1,18 +1,17 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
-                </core-format-text>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
             </h1>
         </ion-title>
 
         <ion-buttons slot="end">
             <ion-button *ngIf="loaded" (click)="showToc()" aria-haspopup="true" [attr.aria-label]="'addon.mod_imscp.toc' | translate">
-                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -23,15 +22,14 @@
 
         <ion-card class="core-warning-card" *ngIf="warning">
             <ion-item>
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
                 <ion-label><span [innerHTML]="warning"></span></ion-label>
             </ion-item>
         </ion-card>
 
-        <core-iframe *ngIf="loaded" [src]="src" [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true"></core-iframe>
+        <core-iframe *ngIf="loaded" [src]="src" [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true" />
     </core-loading>
 
     <core-navigation-bar collapsible-footer appearOnBottom *ngIf="loaded && navigationItems.length > 1" [items]="navigationItems"
-        (action)="loadItem($event)">
-    </core-navigation-bar>
+        (action)="loadItem($event)" />
 </ion-content>
