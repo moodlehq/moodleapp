@@ -69,7 +69,8 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck 
     @Input() data?: Record<string | number, unknown>;
 
     // Get the container where to put the dynamic component.
-    @ViewChild('dynamicComponent', { read: ViewContainerRef }) set dynamicComponent(el: ViewContainerRef) {
+    @ViewChild('dynamicComponent', { read: ViewContainerRef })
+    set dynamicComponent(el: ViewContainerRef) {
         this.container = el;
 
         // Use a timeout to avoid ExpressionChangedAfterItHasBeenCheckedError.
@@ -94,7 +95,7 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck 
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.component && !this.component) {
@@ -108,7 +109,7 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck 
     }
 
     /**
-     * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
+     * @inheritdoc
      */
     ngDoCheck(): void {
         if (this.instance) {

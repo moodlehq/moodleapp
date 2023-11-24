@@ -226,7 +226,6 @@ export const Translate: Omit<CoreSingletonProxy<TranslateService>, 'instant'> & 
 // Async singletons.
 export const AngularFrameworkDelegate = asyncInstance(async () => {
     const injector = await singletonsInjector;
-    const environmentInjector = await injector.get(EnvironmentInjector);
 
-    return AngularDelegate.create(environmentInjector, injector);
+    return AngularDelegate.create(injector.get(EnvironmentInjector), injector);
 });
