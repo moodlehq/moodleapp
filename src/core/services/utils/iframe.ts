@@ -62,8 +62,6 @@ export class CoreIframeUtilsProvider {
      * @returns True if frame is online and the app is offline, false otherwise.
      */
     checkOnlineFrameInOffline(element: CoreFrameElement, isSubframe?: boolean): boolean {
-        // @todo Drop frame tag support to avoid deprecation.
-        // eslint-disable-next-line deprecation/deprecation
         const src = 'src' in element ? element.src : element.data;
 
         if (src && src != 'about:blank' && !CoreUrlUtils.isLocalFileUrl(src) && !CoreNetwork.isOnline()) {
@@ -91,7 +89,7 @@ export class CoreIframeUtilsProvider {
             // Reload the frame.
             if ('src' in element) {
                 // eslint-disable-next-line no-self-assign
-                element.src = element.src; // eslint-disable-line deprecation/deprecation
+                element.src = element.src;
 
             } else {
                 // eslint-disable-next-line no-self-assign
@@ -135,7 +133,6 @@ export class CoreIframeUtilsProvider {
         const canHandleLink = await CoreContentLinksHelper.canHandleLink(src, undefined, username);
 
         if (!canHandleLink) {
-            // @todo The not connected icon isn't seen due to the div's height. Also, it's quite big.
             div.innerHTML = (isSubframe ? '' : '<div class="core-iframe-network-error"></div>') +
                 '<p>' + Translate.instant('core.networkerroriframemsg') + '</p>';
 
@@ -232,21 +229,18 @@ export class CoreIframeUtilsProvider {
      * @returns Window and Document.
      */
     getContentWindowAndDocument(element: CoreFrameElement): { window: Window | null; document: Document | null } {
-        // @todo Drop frame tag support to avoid deprecation.
-        // eslint-disable-next-line deprecation/deprecation
         const src = 'src' in element ? element.src : element.data;
         if (src !== 'about:blank' && !CoreUrlUtils.isLocalFileUrl(src)) {
             // No permissions to access the iframe.
             return { window: null, document: null };
         }
 
-        // eslint-disable-next-line deprecation/deprecation
         let contentWindow: Window | null = 'contentWindow' in element ? element.contentWindow : null;
         let contentDocument: Document | null = null;
 
         try {
-            contentDocument = 'contentDocument' in element && element.contentDocument // eslint-disable-line deprecation/deprecation
-                ? element.contentDocument // eslint-disable-line deprecation/deprecation
+            contentDocument = 'contentDocument' in element && element.contentDocument
+                ? element.contentDocument
                 : contentWindow && contentWindow.document;
         } catch {
             // Ignore errors.
@@ -425,9 +419,8 @@ export class CoreIframeUtilsProvider {
         const scheme = CoreUrlUtils.getUrlScheme(url);
         if (!scheme) {
             // It's a relative URL, use the frame src to create the full URL.
-            // @todo Drop frame tag support to avoid deprecation.
             const src = element
-                ? ('src' in element ? element.src : element.data)  // eslint-disable-line deprecation/deprecation
+                ? ('src' in element ? element.src : element.data)
                 : null;
             if (src) {
                 const dirAndFile = CoreFile.getFileAndDirectoryFromPath(src);

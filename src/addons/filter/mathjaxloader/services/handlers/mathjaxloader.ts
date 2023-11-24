@@ -411,7 +411,7 @@ type MathJaxWindow = Window & {
             _configured: boolean; // eslint-disable-line @typescript-eslint/naming-convention
             // Add the configuration to the head and set the lang.
             configure: (params: Record<string, unknown>) => void;
-            _setLocale: () => void; // eslint-disable-line @typescript-eslint/naming-convention
+            _setLocale: () => void;
             typeset: (container: HTMLElement) => void;
         };
     };

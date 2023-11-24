@@ -59,7 +59,6 @@ import { CoreUtils } from '@services/utils/utils';
     template: '<core-loading [hideUntil]="loaded"><ng-container #dynamicComponent></ng-container></core-loading>',
     styles: [':host { display: contents; }'],
 })
-// eslint-disable-next-line @angular-eslint/no-conflicting-lifecycle
 export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
     @Input() text!: string; // The HTML text to display.
@@ -95,7 +94,6 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     /**
      * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
      */
-    // eslint-disable-next-line @angular-eslint/no-conflicting-lifecycle
     ngDoCheck(): void {
         if (!this.componentInstance || this.creatingComponent) {
             return;
@@ -115,7 +113,6 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     /**
      * Detect changes on input properties.
      */
-    // eslint-disable-next-line @angular-eslint/no-conflicting-lifecycle
     async ngOnChanges(changes: Record<string, SimpleChange>): Promise<void> {
         // Only compile if text/javascript has changed or the forceCompile flag has been set to true.
         if (this.text !== undefined && (changes.text || changes.javascript ||
@@ -153,7 +150,6 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     /**
      * Component destroyed.
      */
-    // eslint-disable-next-line @angular-eslint/no-conflicting-lifecycle
     ngOnDestroy(): void {
         this.componentRef?.destroy();
     }

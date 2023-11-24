@@ -80,7 +80,6 @@ export class CoreViewerImageComponent implements OnInit {
         this.title = this.title || Translate.instant('core.imageviewer');
     }
 
-
     /**
      * Close modal.
      */

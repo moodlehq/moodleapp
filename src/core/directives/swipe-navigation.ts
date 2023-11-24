@@ -35,7 +35,6 @@ const SWIPE_FRICTION = 0.6;
 })
 export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
 
-    // eslint-disable-next-line @angular-eslint/no-input-rename
     @Input('core-swipe-navigation') manager?: CoreSwipeNavigationItemsManager;
 
     protected element: HTMLElement;

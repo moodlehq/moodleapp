@@ -46,6 +46,7 @@ export class ClipboardMock extends Clipboard {
             this.copyTextarea.select();
 
             try {
+                // eslint-disable-next-line deprecation/deprecation
                 if (document.execCommand('copy')) {
                     resolve();
                 } else {
@@ -71,6 +72,7 @@ export class ClipboardMock extends Clipboard {
             this.copyTextarea.select();
 
             try {
+                // eslint-disable-next-line deprecation/deprecation
                 if (document.execCommand('paste')) {
                     resolve(this.copyTextarea.innerHTML);
                 } else {

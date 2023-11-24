@@ -260,7 +260,7 @@ export class CoreWSProvider {
             // Download the file in the tmp file.
             await transfer.download(url, fileEntry.toURL(), true, {
                 headers: {
-                    'User-Agent': navigator.userAgent, // eslint-disable-line @typescript-eslint/naming-convention
+                    'User-Agent': navigator.userAgent,
                 },
             });
 
@@ -995,7 +995,7 @@ export class CoreWSProvider {
         };
         options.chunkedMode = false;
         options.headers = {
-            'User-Agent': navigator.userAgent, // eslint-disable-line @typescript-eslint/naming-convention
+            'User-Agent': navigator.userAgent,
         };
         options['Connection'] = 'close';
 
