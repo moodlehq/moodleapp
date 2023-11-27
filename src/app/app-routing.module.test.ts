@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Route } from '@angular/compiler/src/core';
-import { UrlSegment, UrlSegmentGroup } from '@angular/router';
+import { Route, UrlSegment, UrlSegmentGroup } from '@angular/router';
 
 import { mock } from '@/testing/utils';
 

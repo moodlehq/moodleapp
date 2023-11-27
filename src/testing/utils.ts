@@ -22,16 +22,15 @@ import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { ApplicationInit, CoreSingletonProxy, Translate } from '@singletons';
 import { CoreTextUtilsProvider } from '@services/utils/text';
 
-import { TranslatePipeStub } from './stubs/pipes/translate';
 import { CoreExternalContentDirectiveStub } from './stubs/directives/core-external-content';
 import { CoreNetwork } from '@services/network';
 import { CorePlatform } from '@services/platform';
 import { CoreDB } from '@services/db';
 import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DefaultUrlSerializer, UrlSerializer } from '@angular/router';
 import { CoreUtils, CoreUtilsProvider } from '@services/utils/utils';
 import { Equal } from '@/core/utils/types';
@@ -102,7 +101,8 @@ async function renderAngularComponent<T>(component: Type<T>, config: RenderConfi
         schemas: [CUSTOM_ELEMENTS_SCHEMA],
         imports: [
             BrowserModule,
-            BrowserAnimationsModule,
+            NoopAnimationsModule,
+            TranslateModule.forChild(),
             ...config.imports,
         ],
     });
@@ -146,7 +146,6 @@ function createWrapperComponent<U>(template: string, componentClass: Type<U>): T
  */
 function getDefaultDeclarations(): unknown[] {
     return [
-        TranslatePipeStub,
         CoreExternalContentDirectiveStub,
     ];
 }
