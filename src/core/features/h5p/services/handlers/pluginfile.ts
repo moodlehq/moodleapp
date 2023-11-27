@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFilepoolOnProgressCallback } from '@services/filepool';
 import { CorePluginFileDownloadableResult, CorePluginFileHandler } from '@services/plugin-file-delegate';

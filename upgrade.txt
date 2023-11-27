@@ -8,6 +8,7 @@ For more information about upgrading, read the official documentation: https://m
  - CoreCache has been deprecated, use plain object as in-memory stores instead.
  - Renamed CoreLoginSitesComponent to CoreLoginSitesModalComponent to make it clear that it's a modal and to avoid confusing it with the new CoreSitesListComponent.
  - Removed CoreToLocaleStringPipe deprecated since 3.6.0
+ - With the upgrade to Ionic 7 ion-slides is no longer supported and now you need to use swiper-container and swiper-slide. More info here: https://ionicframework.com/docs/angular/slides
 
 === 4.3.0 ===
 

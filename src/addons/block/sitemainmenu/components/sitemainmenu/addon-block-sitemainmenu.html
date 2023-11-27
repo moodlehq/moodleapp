@@ -8,10 +8,10 @@
         <ion-item class="ion-text-wrap" *ngIf="mainMenuBlock.summary">
             <ion-label>
                 <core-format-text [text]="mainMenuBlock.summary" [component]="component" [componentId]="siteHomeId" contextLevel="course"
-                    [contextInstanceId]="siteHomeId"></core-format-text>
+                    [contextInstanceId]="siteHomeId" />
             </ion-label>
         </ion-item>
 
-        <core-course-module *ngFor="let module of mainMenuBlock.modules" [module]="module" [section]="mainMenuBlock"></core-course-module>
+        <core-course-module *ngFor="let module of mainMenuBlock.modules" [module]="module" [section]="mainMenuBlock" />
     </ion-list>
 </core-loading>

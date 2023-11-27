@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { UrlTree } from '@angular/router';
-import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
+import { NavigationOptions } from '@ionic/angular/common/providers/nav-controller';
 
 declare module '@ionic/angular' {
 

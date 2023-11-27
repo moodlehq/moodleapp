@@ -5,7 +5,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -14,7 +14,7 @@
     <core-loading [hideUntil]="loaded">
         <ion-list *ngIf="ratings.length > 0">
             <ion-item class="ion-text-wrap" *ngFor="let rating of ratings">
-                <core-user-avatar [user]="rating" [courseId]="courseId" slot="start"></core-user-avatar>
+                <core-user-avatar [user]="rating" [courseId]="courseId" slot="start" />
                 <ion-label>
                     <p class="item-heading">{{ rating.userfullname }}</p>
                     <p>{{ rating.rating }}</p>
@@ -24,7 +24,6 @@
                 </ion-note>
             </ion-item>
         </ion-list>
-        <core-empty-box *ngIf="ratings.length === 0" icon="fas-star-half-stroke" [message]="'core.rating.noratings' | translate">
-        </core-empty-box>
+        <core-empty-box *ngIf="ratings.length === 0" icon="fas-star-half-stroke" [message]="'core.rating.noratings' | translate" />
     </core-loading>
 </ion-content>

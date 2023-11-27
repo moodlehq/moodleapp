@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
 
         <ion-title>
@@ -11,10 +11,10 @@
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="accountsList.count > 0" (click)="toggleDelete()"
                 [attr.aria-label]="'core.login.toggleremove' | translate">
-                <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true" />
             </ion-button>
             <ion-button (click)="openSettings()" [attr.aria-label]="'core.settings.appsettings' | translate">
-                <ion-icon slot="icon-only" name="fas-gear" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-gear" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -30,14 +30,14 @@
                 </ion-badge>
                 <ion-button *ngIf="showDelete" slot="end" fill="clear" color="danger" (click)="deleteSite($event, site)"
                     [attr.aria-label]="'core.login.removeaccount' | translate" [@coreSlideInOut]="'fromRight'">
-                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
                 </ion-button>
             </ng-template>
         </core-sites-list>
     </core-loading>
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
         <ion-fab-button (click)="add()" [attr.aria-label]="'core.login.add' | translate">
-            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-plus" aria-hidden="true" />
             <span class="sr-only">{{ 'core.login.add' | translate }}</span>
         </ion-fab-button>
     </ion-fab>

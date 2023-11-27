@@ -1,22 +1,20 @@
 <div *ngIf="question && (question.text || question.text === '')">
     <!-- Content is outside the core-loading to let the script calculate drag items position -->
-    <core-loading [hideUntil]="question.loaded"></core-loading>
+    <core-loading [hideUntil]="question.loaded" />
 
     <div class="fake-ion-item ion-text-wrap" [hidden]="!question.loaded">
         <ion-card *ngIf="!question.readOnly" class="core-info-card">
             <ion-item>
-                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
                 <ion-label>{{ 'core.question.howtodraganddrop' | translate }}</ion-label>
             </ion-item>
         </ion-card>
         <div class="addon-qtype-ddwtos-container">
             <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
-                [contextInstanceId]="contextInstanceId" [courseId]="courseId" #questiontext (afterRender)="textRendered()">
-            </core-format-text>
+                [contextInstanceId]="contextInstanceId" [courseId]="courseId" #questiontext (afterRender)="textRendered()" />
 
             <core-format-text *ngIf="question.answers" [component]="component" [componentId]="componentId" [text]="question.answers"
-                [filter]="false" (afterRender)="answersRendered()">
-            </core-format-text>
+                [filter]="false" (afterRender)="answersRendered()" />
 
             <div class="drags"></div>
         </div>

@@ -1,19 +1,19 @@
 <ion-list class="core-sites-list" *ngIf="accountsList">
     <ion-card *ngIf="accountsList.currentSite">
-        <ng-container *ngTemplateOutlet="siteCardHeader; context: {site: accountsList.currentSite, isCurrentSite: true}"></ng-container>
+        <ng-container *ngTemplateOutlet="siteCardHeader; context: {site: accountsList.currentSite, isCurrentSite: true}" />
 
-        <ng-container *ngTemplateOutlet="siteItem; context: {site: accountsList.currentSite, isCurrentSite: true}"></ng-container>
+        <ng-container *ngTemplateOutlet="siteItem; context: {site: accountsList.currentSite, isCurrentSite: true}" />
 
         <ng-container *ngFor="let site of accountsList.sameSite">
-            <ng-container *ngTemplateOutlet="siteItem; context: {site: site, isCurrentSite: false}"></ng-container>
+            <ng-container *ngTemplateOutlet="siteItem; context: {site: site, isCurrentSite: false}" />
         </ng-container>
     </ion-card>
 
     <ion-card *ngFor="let sites of accountsList.otherSites">
-        <ng-container *ngTemplateOutlet="siteCardHeader; context: {site: sites[0], isCurrentSite: false}"></ng-container>
+        <ng-container *ngTemplateOutlet="siteCardHeader; context: {site: sites[0], isCurrentSite: false}" />
 
         <ng-container *ngFor="let site of sites">
-            <ng-container *ngTemplateOutlet="siteItem; context: {site: site, isCurrentSite: false}"></ng-container>
+            <ng-container *ngTemplateOutlet="siteItem; context: {site: site, isCurrentSite: false}" />
         </ng-container>
     </ion-card>
 
@@ -24,7 +24,7 @@
     <ion-item-divider sticky="true" *ngIf="site" class="core-sites-list-sitename">
         <ion-label>
             <h2>
-                <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>
+                <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id" />
             </h2>
             <p *ngIf="displaySiteUrl(site)">
                 <a [href]="site.siteUrl" core-link [autoLogin]="isCurrentSite ? 'yes' : 'no'">
@@ -40,17 +40,15 @@
     <ion-item [attr.button]="isSiteClickable(isCurrentSite) ? true : null" (click)="siteClicked($event, site, isCurrentSite)"
         [attr.detail]="isSiteClickable(isCurrentSite) ? 'true' : 'false'" [class.item-current]="isCurrentSite">
 
-        <core-user-avatar [site]="site" slot="start" [linkProfile]="false" [siteId]="site.id"></core-user-avatar>
+        <core-user-avatar [site]="site" slot="start" [linkProfile]="false" [siteId]="site.id" />
 
         <ion-label>
             <p class="item-heading">{{site.fullname}}</p>
             <ng-container *ngIf="siteLabelTemplate" [ngTemplateOutlet]="siteLabelTemplate"
-                [ngTemplateOutletContext]="{site: site, isCurrentSite: isCurrentSite}">
-            </ng-container>
+                [ngTemplateOutletContext]="{site: site, isCurrentSite: isCurrentSite}" />
         </ion-label>
 
         <ng-container *ngIf="siteItemTemplate" [ngTemplateOutlet]="siteItemTemplate"
-            [ngTemplateOutletContext]="{site: site, isCurrentSite: isCurrentSite}">
-        </ng-container>
+            [ngTemplateOutletContext]="{site: site, isCurrentSite: isCurrentSite}" />
     </ion-item>
 </ng-template>

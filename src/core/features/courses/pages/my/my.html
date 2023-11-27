@@ -1,23 +1,22 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" class="core-header-sitename">
-                </core-format-text>
+                <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" class="core-header-sitename" />
                 <img src="assets/img/top_logo.png" class="core-header-logo" [alt]="siteName">
             </h1>
         </ion-title>
         <ion-buttons slot="end">
-            <core-user-menu-button></core-user-menu-button>
+            <core-user-menu-button />
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refresh($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
         <ion-item class="ion-text-wrap divider">
@@ -31,8 +30,7 @@
                     <ion-button *ngIf="!myOverviewBlock.prefetchCoursesData.loading" fill="clear"
                         (click)="myOverviewBlock.prefetchCourses()"
                         [attr.aria-label]="myOverviewBlock.prefetchCoursesData.statusTranslatable | translate">
-                        <ion-icon [name]="myOverviewBlock.prefetchCoursesData.icon" slot="icon-only" aria-hidden="true">
-                        </ion-icon>
+                        <ion-icon [name]="myOverviewBlock.prefetchCoursesData.icon" slot="icon-only" aria-hidden="true" />
                     </ion-button>
                     <ion-badge class="core-course-download-courses-progress" *ngIf="myOverviewBlock.prefetchCoursesData.badge"
                         role="progressbar" [attr.aria-valuemax]="myOverviewBlock.prefetchCoursesData.total"
@@ -40,21 +38,18 @@
                         [attr.aria-valuetext]="myOverviewBlock.prefetchCoursesData.badgeA11yText">
                         {{myOverviewBlock.prefetchCoursesData.badge}}
                     </ion-badge>
-                    <ion-spinner *ngIf="myOverviewBlock.prefetchCoursesData.loading" [attr.aria-label]="'core.loading' | translate">
-                    </ion-spinner>
+                    <ion-spinner *ngIf="myOverviewBlock.prefetchCoursesData.loading" [attr.aria-label]="'core.loading' | translate" />
                 </div>
             </div>
         </ion-item>
         <ion-list>
             <core-block *ngIf="loadedBlock?.visible" [block]="loadedBlock" contextLevel="user" [instanceId]="userId"
-                labelledBy="core-courses-my-title"></core-block>
+                labelledBy="core-courses-my-title" />
         </ion-list>
 
         <core-block-side-blocks-button slot="fixed" *ngIf="hasSideBlocks" contextLevel="user" [instanceId]="userId"
-            [myDashboardPage]="myPageCourses">
-        </core-block-side-blocks-button>
+            [myDashboardPage]="myPageCourses" />
 
-        <core-empty-box *ngIf="!loadedBlock" icon="fas-cubes" [message]="'core.course.nocontentavailable' | translate">
-        </core-empty-box>
+        <core-empty-box *ngIf="!loadedBlock" icon="fas-cubes" [message]="'core.course.nocontentavailable' | translate" />
     </core-loading>
 </ion-content>

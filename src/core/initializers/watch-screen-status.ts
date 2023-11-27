@@ -14,6 +14,10 @@
 
 import { CoreScreen } from '@services/screen';
 
+/**
+ * Initializes the application by watching the viewport and orientation changes.
+ * This function should be called to set up necessary event listeners for proper functionality.
+ */
 export default function(): void {
     CoreScreen.watchViewport();
 

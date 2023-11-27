@@ -25,7 +25,7 @@ import {
     AfterViewInit,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { IonTextarea, IonContent, IonSlides } from '@ionic/angular';
+import { IonTextarea, IonContent, IonicSlides } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
@@ -42,6 +42,8 @@ import { CoreScreen } from '@services/screen';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreDom } from '@singletons/dom';
 import { CorePlatform } from '@services/platform';
+import { Swiper } from 'swiper';
+import { SwiperOptions } from 'swiper/types';
 
 /**
  * Component to display a rich text editor if enabled.
@@ -78,7 +80,27 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     @ViewChild('editor') editor?: ElementRef; // WYSIWYG editor.
     @ViewChild('textarea') textarea?: IonTextarea; // Textarea editor.
     @ViewChild('toolbar') toolbar?: ElementRef;
-    @ViewChild(IonSlides) toolbarSlides?: IonSlides;
+    protected toolbarSlides?: Swiper;
+    @ViewChild('swiperRef')
+    set swiperRef(swiperRef: ElementRef) {
+        /**
+         * This setTimeout waits for Ionic's async initialization to complete.
+         * Otherwise, an outdated swiper reference will be used.
+         */
+        setTimeout(() => {
+            if (swiperRef.nativeElement?.swiper) {
+                this.toolbarSlides = swiperRef.nativeElement.swiper as Swiper;
+
+                this.toolbarSlides.changeLanguageDirection(CorePlatform.isRTL ? 'rtl' : 'ltr');
+
+                Object.keys(this.swiperOpts).forEach((key) => {
+                    if (this.toolbarSlides) {
+                        this.toolbarSlides.params[key] = this.swiperOpts[key];
+                    }
+                });
+            }
+        }, 0);
+    }
 
     protected readonly DRAFT_AUTOSAVE_FREQUENCY = 30000;
     protected readonly RESTORE_MESSAGE_CLEAR_TIME = 6000;
@@ -119,7 +141,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     canScanQR = false;
     ariaLabelledBy?: string;
     infoMessage?: string;
-    direction = 'ltr';
     toolbarStyles = {
         strong: 'false',
         em: 'false',
@@ -133,11 +154,11 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         ol: 'false',
     };
 
-    slidesOpts = {
-        initialSlide: 0,
+    swiperOpts: SwiperOptions = {
+        modules: [IonicSlides],
         slidesPerView: 6,
         centerInsufficientSlides: true,
-        watchSlidesVisibility: true,
+        watchSlidesProgress: true,
     };
 
     constructor(
@@ -156,7 +177,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         this.canScanQR = CoreUtils.canScanQR();
         this.isPhone = CoreScreen.isMobile;
         this.toolbarHidden = this.isPhone;
-        this.direction = CorePlatform.isRTL ? 'rtl' : 'ltr';
     }
 
     /**
@@ -265,7 +285,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         // Change the side when the language changes.
         this.languageChangedSubscription = Translate.onLangChange.subscribe(() => {
             setTimeout(() => {
-                this.direction = CorePlatform.isRTL ? 'rtl' : 'ltr';
+                this.toolbarSlides?.changeLanguageDirection(CorePlatform.isRTL ? 'rtl' : 'ltr');
             });
         });
     }
@@ -656,8 +676,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     /**
      * Replace tags for a11y.
      *
-     * @param originTag      Origin tags to be replaced.
-     * @param destinationTag Destination tags to replace.
+     * @param originTags      Origin tags to be replaced.
+     * @param destinationTags Destination tags to replace.
      */
     protected replaceTags(originTags: string[], destinationTags: string[]): void {
         if (!this.editorElement) {
@@ -774,8 +794,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         this.stopBubble(event);
 
         if (!this.toolbarNextHidden) {
-            const currentIndex = await this.toolbarSlides?.getActiveIndex();
-            this.toolbarSlides?.slideTo((currentIndex || 0) + this.slidesOpts.slidesPerView);
+            const currentIndex = this.toolbarSlides?.activeIndex;
+            this.toolbarSlides?.slideTo((currentIndex || 0) + this.toolbarSlides.slidesPerViewDynamic());
         }
 
         await this.updateToolbarArrows();
@@ -792,8 +812,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         this.stopBubble(event);
 
         if (!this.toolbarPrevHidden) {
-            const currentIndex = await this.toolbarSlides?.getActiveIndex();
-            this.toolbarSlides?.slideTo((currentIndex || 0) - this.slidesOpts.slidesPerView);
+            const currentIndex = this.toolbarSlides?.activeIndex;
+            this.toolbarSlides?.slideTo((currentIndex || 0) - this.toolbarSlides.slidesPerViewDynamic());
         }
 
         await this.updateToolbarArrows();
@@ -808,7 +828,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             return;
         }
 
-        const length = await this.toolbarSlides.length();
+        const length = this.toolbarSlides.slides.length;
 
         // Cancel previous one, if any.
         this.buttonsDomPromise?.cancel();
@@ -818,17 +838,16 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         const width = this.toolbar.nativeElement.getBoundingClientRect().width;
 
         if (length > 0 && width > length * this.toolbarButtonWidth) {
-            this.slidesOpts = { ...this.slidesOpts, slidesPerView: length };
+            this.swiperOpts.slidesPerView = length;
             this.toolbarArrows = false;
         } else {
-            const slidesPerView = Math.floor((width - this.toolbarArrowWidth * 2) / this.toolbarButtonWidth);
-            this.slidesOpts = { ...this.slidesOpts, slidesPerView };
+            this.swiperOpts.slidesPerView = Math.floor((width - this.toolbarArrowWidth * 2) / this.toolbarButtonWidth);
             this.toolbarArrows = true;
         }
 
         await CoreUtils.nextTick();
 
-        await this.toolbarSlides.update();
+        this.toolbarSlides.update();
 
         await this.updateToolbarArrows();
     }
@@ -841,10 +860,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             return;
         }
 
-        const currentIndex = await this.toolbarSlides.getActiveIndex();
-        const length = await this.toolbarSlides.length();
+        const currentIndex = this.toolbarSlides.activeIndex;
+        const length = this.toolbarSlides.slides.length;
         this.toolbarPrevHidden = currentIndex <= 0;
-        this.toolbarNextHidden = currentIndex + this.slidesOpts.slidesPerView >= length;
+        this.toolbarNextHidden = currentIndex + this.toolbarSlides.slidesPerViewDynamic() >= length;
     }
 
     /**

@@ -35,7 +35,6 @@ import { Translate } from '@singletons';
 })
 export class CoreMarkRequiredComponent implements OnInit, AfterViewInit {
 
-    // eslint-disable-next-line @angular-eslint/no-input-rename
     @Input('core-mark-required') coreMarkRequired: boolean | string = true;
 
     protected element: HTMLElement;

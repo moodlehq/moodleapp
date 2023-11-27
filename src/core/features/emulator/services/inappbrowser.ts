@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { InAppBrowser, InAppBrowserObject } from '@ionic-native/in-app-browser/ngx';
+import { InAppBrowser, InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser/ngx';
 
 /**
  * Emulates the Cordova InAppBrowser plugin in desktop apps.

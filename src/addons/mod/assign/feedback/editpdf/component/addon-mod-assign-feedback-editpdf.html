@@ -3,8 +3,8 @@
     <ion-label>
         <h2>{{plugin.name}}</h2>
         <ng-container>
-            <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="assign.cmid" [alwaysDownload]="true">
-            </core-file>
+            <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="assign.cmid"
+                [alwaysDownload]="true" />
         </ng-container>
     </ion-label>
 </ion-item>

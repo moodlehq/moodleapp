@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CameraOptions } from '@ionic-native/camera/ngx';
-import { CaptureImageOptions, CaptureVideoOptions, MediaFile } from '@ionic-native/media-capture/ngx';
+import { CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
+import { CaptureImageOptions, CaptureVideoOptions, MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { makeSingleton, ModalController } from '@singletons';

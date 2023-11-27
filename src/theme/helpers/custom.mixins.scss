@@ -248,7 +248,7 @@
 
 // Color mixins.
 @function get_brightness($color) {
-    @return (red($color) + green($color) + blue($color)) / 3;
+    @return math.div(red($color) + green($color) + blue($color), 3);
 }
 
 // Get the better color contrast using WCAG algorythm.
@@ -256,9 +256,9 @@
     $lumiance: luminance($color);
 
     // White lumiance is 1.
-    $whiteContrast: ($lumiance + 0.05) / (1 + 0.05);
+    $whiteContrast: math.div($lumiance + 0.05, 1 + 0.05);
     // White lumiance is 0.
-    $blackContrast: (0.05) / ($lumiance + 0.05);
+    $blackContrast: math.div(0.05, $lumiance + 0.05);
 
     @return if($whiteContrast < $blackContrast, white, black);
 }
@@ -269,7 +269,7 @@
     $g: green($color);
     $b: blue($color);
 
-    $yiq: (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+    $yiq: math.div(($r * 299) + ($g * 587) + ($b * 114), 1000);
 
     @return if($yiq >= 128, $dark, $light);
 }
@@ -280,9 +280,9 @@
     $backgroundLuminance: luminance($background);
 
     @if ($backgroundLuminance < $foregroundLumiance) {
-        @return ($backgroundLuminance + 0.05) / ($foregroundLumiance + 0.05);
+        @return math.div($backgroundLuminance + 0.05, $foregroundLumiance + 0.05);
     } @else {
-        @return ($foregroundLumiance + 0.05) / ($backgroundLuminance + 0.05);
+        @return math.div($foregroundLumiance + 0.05, $backgroundLuminance + 0.05);
     }
 }
 
@@ -299,11 +299,11 @@
 }
 
 @function component-luminance($value) {
-    $value: $value / 255;
+    $value: math.div($value, 255);
 
     @if ($value <= 0.03928) {
-        @return $value / 12.92;
+        @return math.div($value, 12.92);
     } @else {
-        @return math.pow(($value + 0.055) / 1.055, 2.4);
+        @return math.pow(math.div($value + 0.055, 1.055), 2.4);
     }
 }

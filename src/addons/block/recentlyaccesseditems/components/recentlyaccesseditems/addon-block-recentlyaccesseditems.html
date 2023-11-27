@@ -3,8 +3,7 @@
         <h2>{{ 'addon.block_recentlyaccesseditems.pluginname' | translate }}</h2>
     </ion-label>
     <div slot="end">
-        <core-horizontal-scroll-controls #scrollControls [aria-controls]="scrollElementId">
-        </core-horizontal-scroll-controls>
+        <core-horizontal-scroll-controls #scrollControls [aria-controls]="scrollElementId" />
     </div>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded">
@@ -16,18 +15,16 @@
                 <ion-card>
                     <ion-item class="core-course-module-handler ion-text-wrap" [detail]="false" (click)="action($event, item)" button>
                         <core-mod-icon slot="start" *ngIf="item.iconUrl" [modicon]="item.iconUrl" [modname]="item.modname"
-                            [componentId]="item.cmid" [showAlt]="false" [purpose]="item.purpose">
-                        </core-mod-icon>
+                            [componentId]="item.cmid" [showAlt]="false" [purpose]="item.purpose" />
                         <ion-label>
                             <!-- Add the icon title so accessibility tools read it. -->
                             <span class="sr-only" *ngIf="item.iconTitle">{{ item.iconTitle }}</span>
                             <p class="item-heading">
                                 <core-format-text [text]="item.name" contextLevel="module" [contextInstanceId]="item.cmid"
-                                    [courseId]="item.courseid"></core-format-text>
+                                    [courseId]="item.courseid" />
                             </p>
                             <p>
-                                <core-format-text [text]="item.coursename" contextLevel="course" [contextInstanceId]="item.courseid">
-                                </core-format-text>
+                                <core-format-text [text]="item.coursename" contextLevel="course" [contextInstanceId]="item.courseid" />
                             </p>
                         </ion-label>
                     </ion-item>
@@ -38,6 +35,6 @@
     </div>
 
     <core-empty-box *ngIf="items.length <= 0" image="assets/img/icons/activities.svg"
-        [message]="'addon.block_recentlyaccesseditems.noitems' | translate"></core-empty-box>
+        [message]="'addon.block_recentlyaccesseditems.noitems' | translate" />
 
 </core-loading>

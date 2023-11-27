@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.coursecompletion.coursecompletion' | translate }}</h1>
@@ -10,11 +10,11 @@
 </ion-header>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!completionLoaded" (ionRefresh)="refreshCompletion($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="completionLoaded">
         <ion-item class="ion-text-wrap" *ngIf="user">
-            <core-user-avatar [user]="user" [courseId]="courseId" slot="start" [linkProfile]="false"></core-user-avatar>
+            <core-user-avatar [user]="user" [courseId]="courseId" slot="start" [linkProfile]="false" />
             <ion-label>
                 <p class="item-heading">{{user.fullname}}</p>
             </ion-label>
@@ -44,10 +44,10 @@
             <ion-item class="ion-hide-md-up ion-text-wrap" *ngFor="let criteria of completion.completions">
                 <ion-label>
                     <p class="item-heading">
-                        <core-format-text clean="true" [text]="criteria.details.criteria" [filter]="false"></core-format-text>
+                        <core-format-text clean="true" [text]="criteria.details.criteria" [filter]="false" />
                     </p>
                     <p>
-                        <core-format-text clean="true" [text]="criteria.details.requirement" [filter]="false"></core-format-text>
+                        <core-format-text clean="true" [text]="criteria.details.requirement" [filter]="false" />
                     </p>
                 </ion-label>
                 <strong slot="end" *ngIf="criteria.complete">{{ 'core.yes' | translate }}</strong>
@@ -65,23 +65,23 @@
                     </ion-row>
                     <ion-row *ngFor="let criteria of completion.completions">
                         <ion-col>
-                            <core-format-text clean="true" [text]="criteria.details.type" [filter]="false"></core-format-text>
+                            <core-format-text clean="true" [text]="criteria.details.type" [filter]="false" />
                         </ion-col>
                         <ion-col>
-                            <core-format-text clean="true" [text]="criteria.details.criteria" [filter]="false"></core-format-text>
+                            <core-format-text clean="true" [text]="criteria.details.criteria" [filter]="false" />
                         </ion-col>
                         <ion-col>
-                            <core-format-text clean="true" [text]="criteria.details.requirement" [filter]="false"></core-format-text>
+                            <core-format-text clean="true" [text]="criteria.details.requirement" [filter]="false" />
                         </ion-col>
                         <ion-col>
-                            <core-format-text [text]="criteria.details.status" [filter]="false"></core-format-text>
+                            <core-format-text [text]="criteria.details.status" [filter]="false" />
                         </ion-col>
                         <ion-col *ngIf="criteria.complete">{{ 'core.yes' | translate }}</ion-col>
                         <ion-col *ngIf="!criteria.complete">{{ 'core.no' | translate }}</ion-col>
                         <ion-col *ngIf="criteria.timecompleted">
                             {{ criteria.timecompleted * 1000 | coreFormatDate :'strftimedatetimeshort' }}
                         </ion-col>
-                        <ion-col *ngIf="!criteria.timecompleted"></ion-col>
+                        <ion-col *ngIf="!criteria.timecompleted" />
                     </ion-row>
                 </ion-label>
             </ion-item>
@@ -103,7 +103,7 @@
 
         <ion-card class="core-warning-card" *ngIf="!tracked">
             <ion-item>
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
                 <ion-label>{{ 'addon.coursecompletion.nottracked' | translate }}</ion-label>
             </ion-item>
         </ion-card>

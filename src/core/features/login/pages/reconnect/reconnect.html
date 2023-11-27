@@ -2,7 +2,7 @@
     <ion-toolbar>
         <ion-buttons slot="start">
             <ion-button fill="clear" (click)="cancel($event)" [attr.aria-label]="'core.back' | translate" class="ion-back-button">
-                <ion-icon ios="chevron-back" md="arrow-back-sharp" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon ios="chevron-back" md="arrow-back-sharp" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
 
@@ -12,7 +12,7 @@
 
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="showHelp()" [attr.aria-label]="'core.help' | translate">
-                <ion-icon slot="icon-only" name="far-circle-question" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="far-circle-question" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -22,7 +22,7 @@
         <div class="list-item-limited-width" *ngIf="site">
             <ion-card *ngIf="!isLoggedOut" class="core-warning-card core-login-reconnect-warning">
                 <ion-item>
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
                     <ion-label>
                         <p>{{ 'core.lostconnection' | translate }}</p>
                     </ion-label>
@@ -36,7 +36,7 @@
                     </div>
 
                     <p *ngIf="siteInfo?.siteName" class="ion-no-margin ion-no-padding core-sitename">
-                        <core-format-text [text]="siteInfo?.siteName" [filter]="false"></core-format-text>
+                        <core-format-text [text]="siteInfo?.siteName" [filter]="false" />
                     </p>
                     <p class="core-siteurl" *ngIf="displaySiteUrl">{{site.siteUrl}}</p>
                 </div>
@@ -44,9 +44,9 @@
                 <div class="core-login-user">
                     <!-- Show user avatar. -->
                     <core-user-avatar class="large-avatar" *ngIf="showUserAvatar" [site]="siteInfo" [linkProfile]="false"
-                        [siteId]="siteId"></core-user-avatar>
+                        [siteId]="siteId" />
                     <p *ngIf="siteInfo?.fullname" class="core-login-fullname">
-                        <core-format-text [text]="siteInfo?.fullname" [filter]="false"></core-format-text>
+                        <core-format-text [text]="siteInfo?.fullname" [filter]="false" />
                     </p>
                 </div>
                 <core-login-exceeded-attempts *ngIf="exceededAttemptsHTML && supportConfig && reconnectAttempts >= 3"
@@ -62,8 +62,7 @@
                         <core-show-password name="password">
                             <ion-input class="core-ioninput-password" name="password" type="password"
                                 placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false"
-                                autocomplete="current-password" enterkeyhint="go" required="true">
-                            </ion-input>
+                                autocomplete="current-password" enterkeyhint="go" required="true" />
                         </core-show-password>
                     </ion-item>
                     <ion-button type="submit" expand="block" [disabled]="!credForm.valid"
@@ -82,14 +81,14 @@
                     <ion-button expand="block" (click)="openBrowserSSO()"
                         class="ion-margin core-login-login-inbrowser-button ion-text-wrap">
                         {{ 'core.login.loginbutton' | translate }}
-                        <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true"></ion-icon>
+                        <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
                     </ion-button>
                     <p class="text-center core-login-inbrowser">{{ 'core.openinbrowserdescription' | translate }}</p>
                 </ng-container>
 
                 <!-- Additional Login methods -->
                 <core-login-methods *ngIf="siteConfig" [siteConfig]="siteConfig" [reconnect]="true" [siteUrl]="site.siteUrl"
-                    [redirectData]="redirectData"></core-login-methods>
+                    [redirectData]="redirectData" />
             </div>
         </div>
     </core-loading>

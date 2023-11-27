@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { FileEntry, DirectoryEntry, Entry, Metadata, IFile } from '@ionic-native/file/ngx';
+import { FileEntry, DirectoryEntry, Entry, Metadata, IFile } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';

@@ -3,8 +3,7 @@
     <ion-label>
         <p class="item-heading">
             <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                [courseId]="courseId" [wsNotFiltered]="true">
-            </core-format-text>
+                [courseId]="courseId" [wsNotFiltered]="true" />
         </p>
         <p *ngIf="value !== '0'">
             {{ 'core.yes' | translate }}
@@ -20,11 +19,9 @@
     <ion-label>
         <span class="label-text" [core-mark-required]="required">
             <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                [courseId]="courseId" [wsNotFiltered]="true">
-            </core-format-text>
+                [courseId]="courseId" [wsNotFiltered]="true" />
         </span>
-        <core-input-errors [control]="form.controls[modelName]"></core-input-errors>
+        <core-input-errors [control]="form.controls[modelName]" />
     </ion-label>
-    <ion-checkbox item-end [formControlName]="modelName">
-    </ion-checkbox>
+    <ion-checkbox item-end [formControlName]="modelName" />
 </ion-item>

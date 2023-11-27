@@ -18,16 +18,16 @@ import { CoreEmulatorHelper } from './services/emulator-helper';
 import { CoreEmulatorComponentsModule } from './components/components.module';
 
 // Ionic Native services.
-import { Camera } from '@ionic-native/camera/ngx';
-import { Clipboard } from '@ionic-native/clipboard/ngx';
-import { File } from '@ionic-native/file/ngx';
-import { FileOpener } from '@ionic-native/file-opener/ngx';
-import { FileTransfer } from '@ionic-native/file-transfer/ngx';
-import { Geolocation } from '@ionic-native/geolocation/ngx';
-import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
-import { MediaCapture } from '@ionic-native/media-capture/ngx';
-import { Zip } from '@ionic-native/zip/ngx';
+import { Camera } from '@awesome-cordova-plugins/camera/ngx';
+import { Clipboard } from '@awesome-cordova-plugins/clipboard/ngx';
+import { File } from '@awesome-cordova-plugins/file/ngx';
+import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
+import { FileTransfer } from '@awesome-cordova-plugins/file-transfer/ngx';
+import { Geolocation } from '@awesome-cordova-plugins/geolocation/ngx';
+import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
+import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
+import { MediaCapture } from '@awesome-cordova-plugins/media-capture/ngx';
+import { Zip } from '@awesome-cordova-plugins/zip/ngx';
 
 // Mock services.
 import { CameraMock } from './services/camera';

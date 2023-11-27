@@ -59,7 +59,6 @@ import { CoreLogger } from '@singletons/logger';
  * The contents of this component will be displayed if no component is supplied or it cannot be created. In the example above,
  * if no component is supplied then the template will show the message "Cannot render the data.".
  */
-/* eslint-disable @angular-eslint/no-conflicting-lifecycle */
 @Component({
     selector: 'core-dynamic-component',
     templateUrl: 'core-dynamic-component.html',

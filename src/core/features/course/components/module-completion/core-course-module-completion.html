@@ -11,7 +11,7 @@
 
             <ion-button class="completioninfo completion_complete chip" color="success" (click)="completionClicked($event)"
                 *ngIf="completed">
-                <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-check" slot="start" aria-hidden="true" />
                 {{'core.course.done' | translate }}
                 <div class="select-icon" role="presentation" aria-hidden="true">
                     <div class="select-icon-inner"></div>
@@ -22,16 +22,16 @@
         <ng-container *ngIf="!completion.isautomatic">
             <ion-button *ngIf="completed" color="success" [attr.aria-label]="accessibleDescription" (click)="completionClicked($event)"
                 class="completioninfo completion_complete chip">
-                <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-check" slot="start" aria-hidden="true" />
                 {{ 'core.course.completion_manual:done' | translate }}
                 <ion-icon *ngIf="completion.offline" name="fas-arrows-rotate"
-                    [attr.aria-label]="'core.course.manualcompletionnotsynced' | translate" slot="end"></ion-icon>
+                    [attr.aria-label]="'core.course.manualcompletionnotsynced' | translate" slot="end" />
             </ion-button>
             <ion-button *ngIf="!completed" fill="outline" [attr.aria-label]="accessibleDescription" (click)="completionClicked($event)"
                 class="completioninfo completion_incomplete chip">
                 {{ 'core.course.completion_manual:markdone' | translate }}
                 <ion-icon *ngIf="completion.offline" name="fas-arrows-rotate"
-                    [attr.aria-label]="'core.course.manualcompletionnotsynced' | translate" slot="end"></ion-icon>
+                    [attr.aria-label]="'core.course.manualcompletionnotsynced' | translate" slot="end" />
             </ion-button>
         </ng-container>
     </ng-container>

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { InAppBrowserObject, InAppBrowserOptions } from '@ionic-native/in-app-browser';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { InAppBrowserObject, InAppBrowserOptions } from '@awesome-cordova-plugins/in-app-browser';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { Subscription } from 'rxjs';
 
 import { CoreEvents } from '@singletons/events';
@@ -1059,7 +1059,7 @@ export class CoreUtilsProvider {
 
     /**
      * Open a URL using InAppBrowser.
-     * Do not use for files, refer to {@link openFile}.
+     * Do not use for files, refer to {@link CoreUtilsProvider.openFile}.
      *
      * @param url The URL to open.
      * @param options Override default options passed to InAppBrowser.
@@ -1176,7 +1176,7 @@ export class CoreUtilsProvider {
 
     /**
      * Open a URL using a browser.
-     * Do not use for files, refer to {@link openFile}.
+     * Do not use for files, refer to {@link CoreUtilsProvider.openFile}.
      *
      * @param url The URL to open.
      * @param options Options.

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreError } from '@classes/errors/error';
-import { ILocalNotification, ILocalNotificationAction, LocalNotifications } from '@ionic-native/local-notifications/ngx';
+import { ILocalNotification, ILocalNotificationAction, LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { Observable, Subject } from 'rxjs';
 
 /**

@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
-import { InAppBrowserObject } from '@ionic-native/in-app-browser';
+import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';

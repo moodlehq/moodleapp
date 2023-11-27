@@ -1,23 +1,22 @@
 <div *ngIf="question && (question.text || question.text === '')" class="addon-qtype-ddmarker-container">
     <!-- Content is outside the core-loading to let the script calculate drag items position -->
-    <core-loading [hideUntil]="question.loaded"></core-loading>
+    <core-loading [hideUntil]="question.loaded" />
 
     <ion-item class="ion-text-wrap" [hidden]="!question.loaded">
         <ion-label>
             <ion-card *ngIf="!question.readOnly" class="core-info-card">
                 <ion-item>
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
                     <ion-label>{{ 'core.question.howtodraganddrop' | translate }}</ion-label>
                 </ion-item>
             </ion-card>
             <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" #questiontext
-                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" (afterRender)="textRendered()">
-            </core-format-text>
+                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"
+                (afterRender)="textRendered()" />
         </ion-label>
     </ion-item>
     <div class="fake-ion-item ion-text-wrap" [hidden]="!question.loaded">
         <core-format-text *ngIf="question.ddArea" [adaptImg]="false" [component]="component" [componentId]="componentId"
-            [text]="question.ddArea" [filter]="false" (afterRender)="ddAreaRendered()">
-        </core-format-text>
+            [text]="question.ddArea" [filter]="false" (afterRender)="ddAreaRendered()" />
     </div>
 </div>

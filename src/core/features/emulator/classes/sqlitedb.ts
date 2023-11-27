@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { SQLiteDB } from '@classes/sqlitedb';
-import { DbTransaction, SQLiteObject } from '@ionic-native/sqlite/ngx';
+import { DbTransaction, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { CoreDB } from '@services/db';
 
 /**

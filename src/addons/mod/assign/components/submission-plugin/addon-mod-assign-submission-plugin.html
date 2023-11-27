@@ -9,12 +9,10 @@
                 </ion-badge>
                 <p *ngIf="text">
                     <core-format-text [component]="component" [componentId]="assign.cmid" collapsible-item [text]="text"
-                        contextLevel="module" [contextInstanceId]="assign.cmid" [courseId]="assign.course">
-                    </core-format-text>
+                        contextLevel="module" [contextInstanceId]="assign.cmid" [courseId]="assign.course" />
                 </p>
                 <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="assign.cmid"
-                    [alwaysDownload]="true">
-                </core-file>
+                    [alwaysDownload]="true" />
             </ion-label>
         </ion-item>
     </core-loading>

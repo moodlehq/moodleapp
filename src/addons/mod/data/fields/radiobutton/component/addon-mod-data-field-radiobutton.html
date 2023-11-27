@@ -6,7 +6,7 @@
         <ion-select-option value="">{{ 'addon.mod_data.menuchoose' | translate }}</ion-select-option>
         <ion-select-option *ngFor="let option of options" [value]="option">{{option}}</ion-select-option>
     </ion-select>
-    <core-input-errors *ngIf="error && editMode" [control]="form.controls['f_'+field.id]" [errorText]="error"></core-input-errors>
+    <core-input-errors *ngIf="error && editMode" [control]="form.controls['f_'+field.id]" [errorText]="error" />
 </span>
 
 <span *ngIf="displayMode && value && value.content">{{ value.content }}</span>

@@ -1,28 +1,28 @@
 <ion-content>
-    <ion-slides [options]="slidesOpts">
-        <ion-slide>
+    <swiper-container #swiperRef>
+        <swiper-slide>
             <div class="swiper-zoom-container">
                 <img [src]="image" [alt]="title" core-external-content [component]="component" [componentId]="componentId">
             </div>
-        </ion-slide>
-    </ion-slides>
+        </swiper-slide>
+    </swiper-container>
 </ion-content>
 <ion-footer>
     <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding">
         <ion-col size="auto">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon name="fas-xmark" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-xmark" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-col>
-        <ion-col></ion-col>
-        <ion-col size="auto" *ngIf="slidesSwiper">
+        <ion-col />
+        <ion-col size="auto" *ngIf="swiper">
             <ion-button fill="clear" [attr.aria-label]="'core.zoomout' | translate" (click)="zoom(false)">
-                <ion-icon name="fas-magnifying-glass-minus" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-magnifying-glass-minus" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-col>
-        <ion-col size="auto" *ngIf="slidesSwiper">
+        <ion-col size="auto" *ngIf="swiper">
             <ion-button fill="clear" [attr.aria-label]="'core.zoomin' | translate" (click)="zoom(true)">
-                <ion-icon name="fas-magnifying-glass-plus" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-magnifying-glass-plus" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-col>
     </ion-row>

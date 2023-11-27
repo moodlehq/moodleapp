@@ -5,7 +5,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -27,20 +27,16 @@
                 </ion-label>
 
                 <ion-icon *ngIf="question.type === 'description' || !question.questionnumber" name="fas-circle-info" slot="end"
-                    aria-hidden="true"></ion-icon>
+                    aria-hidden="true" />
                 <ion-icon *ngIf="question.stateClass === 'core-question-requiresgrading'" name="fas-circle-question"
-                    [attr.aria-label]="question.status" slot="end">
-                </ion-icon>
+                    [attr.aria-label]="question.status" slot="end" />
                 <ion-icon *ngIf="question.stateClass === 'core-question-correct'" name="fas-check" color="success"
-                    [attr.aria-label]="question.status" slot="end">
-                </ion-icon>
+                    [attr.aria-label]="question.status" slot="end" />
                 <ion-icon *ngIf="question.stateClass === 'core-question-partiallycorrect'" name="fas-square-check" color="warning"
-                    [attr.aria-label]="question.status" slot="end">
-                </ion-icon>
+                    [attr.aria-label]="question.status" slot="end" />
                 <ion-icon *ngIf="question.stateClass === 'core-question-incorrect' ||
                     question.stateClass === 'core-question-notanswered'" name="fas-xmark" color="danger"
-                    [attr.aria-label]="question.status" slot="end">
-                </ion-icon>
+                    [attr.aria-label]="question.status" slot="end" />
             </ion-item>
         </ion-list>
     </nav>

@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.competency.coursecompetencies' | translate }}</h1>
@@ -10,7 +10,7 @@
 </ion-header>
 <ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!competencies.loaded" (ionRefresh)="refreshCourseCompetencies($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="competencies.loaded">
         <ion-card *ngIf="!user && courseCompetencies && courseCompetencies.statistics.competencycount > 0">
@@ -29,8 +29,7 @@
                         {x: courseCompetencies.statistics.proficientcompetencycount, y: courseCompetencies.statistics.competencycount} } }}
                     </span>
                     <core-progress-bar [progress]="courseCompetencies.statistics.proficientcompetencypercentage"
-                        ariaDescribedBy="addon-competency-course-{{courseId}}-progress">
-                    </core-progress-bar>
+                        ariaDescribedBy="addon-competency-course-{{courseId}}-progress" />
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap"
@@ -39,8 +38,8 @@
                     <p class="item-heading">{{ 'addon.competency.competenciesmostoftennotproficientincourse' | translate }}</p>
                     <p *ngFor="let comp of courseCompetencies.statistics.leastproficient">
                         <button class="as-link" (click)="openCompetencySummary(comp.id)">
-                            <core-format-text [text]="comp.shortname" contextLevel="course" [contextInstanceId]="courseId">
-                            </core-format-text> - {{ comp.idnumber }}
+                            <core-format-text [text]="comp.shortname" contextLevel="course" [contextInstanceId]="courseId" /> - {{
+                            comp.idnumber }}
                         </button>
                     </p>
                 </ion-label>
@@ -52,15 +51,14 @@
         </h2>
         <ion-card *ngIf="user">
             <ion-item class="ion-text-wrap">
-                <core-user-avatar [user]="user" slot="start"></core-user-avatar>
+                <core-user-avatar [user]="user" slot="start" />
                 <ion-label>
                     <p class="item-heading">{{ user.fullname }}</p>
                 </ion-label>
             </ion-item>
         </ion-card>
         <core-empty-box *ngIf="courseCompetencies && courseCompetencies.statistics.competencycount === 0" icon="fas-award"
-            message="{{ 'addon.competency.nocompetenciesincourse' | translate }}">
-        </core-empty-box>
+            message="{{ 'addon.competency.nocompetenciesincourse' | translate }}" />
 
         <div *ngIf="competencies.loaded">
             <ion-card *ngFor="let competency of competencies.items">
@@ -68,8 +66,8 @@
                     [attr.aria-label]="competency.competency.shortname" [detail]="true" button>
                     <ion-label>
                         <p class="item-heading">
-                            <core-format-text [text]="competency.competency.shortname" contextLevel="course" [contextInstanceId]="courseId">
-                            </core-format-text> <em>{{competency.competency.idnumber}}</em>
+                            <core-format-text [text]="competency.competency.shortname" contextLevel="course"
+                                [contextInstanceId]="courseId" /> <em>{{competency.competency.idnumber}}</em>
                         </p>
                     </ion-label>
                     <ion-badge slot="end" *ngIf="competency.usercompetencycourse && competency.usercompetencycourse.gradename"
@@ -81,8 +79,7 @@
                     <ion-label>
                         <p *ngIf="competency.competency.description">
                             <core-format-text [text]="competency.competency.description" contextLevel="course"
-                                [contextInstanceId]="courseId">
-                            </core-format-text>
+                                [contextInstanceId]="courseId" />
                         </p>
                         <div>
                             <p class="item-heading">{{ 'addon.competency.path' | translate }}</p>
@@ -90,24 +87,20 @@
                                 <a *ngIf="competency.comppath.showlinks" [href]="getCompetencyFrameworkUrl(competency)" core-link
                                     [title]="competency.comppath.framework.name">
                                     <core-format-text [text]="competency.comppath.framework.name" contextLevel="course"
-                                        [contextInstanceId]="courseId">
-                                    </core-format-text>
+                                        [contextInstanceId]="courseId" />
                                 </a>
                                 <ng-container *ngIf="!competency.comppath.showlinks">
                                     <core-format-text [text]="competency.comppath.framework.name" contextLevel="course"
-                                        [contextInstanceId]="courseId">
-                                    </core-format-text>
+                                        [contextInstanceId]="courseId" />
                                 </ng-container>
                                 &nbsp;/&nbsp;
                                 <ng-container *ngFor="let ancestor of competency.comppath.ancestors">
                                     <button class="as-link" *ngIf="competency.comppath.showlinks"
                                         (click)="openCompetencySummary(ancestor.id)">
-                                        <core-format-text [text]="ancestor.name" contextLevel="course" [contextInstanceId]="courseId">
-                                        </core-format-text>
+                                        <core-format-text [text]="ancestor.name" contextLevel="course" [contextInstanceId]="courseId" />
                                     </button>
                                     <ng-container *ngIf="!competency.comppath.showlinks">
-                                        <core-format-text [text]="ancestor.name" contextLevel="course" [contextInstanceId]="courseId">
-                                        </core-format-text>
+                                        <core-format-text [text]="ancestor.name" contextLevel="course" [contextInstanceId]="courseId" />
                                     </ng-container>
                                     <ng-container *ngIf="!ancestor.last">&nbsp;/&nbsp;</ng-container>
                                 </ng-container>
@@ -126,12 +119,10 @@
                             </p>
                             <ion-item class="ion-text-wrap core-course-module-handler" [attr.aria-label]="activity.name" core-link
                                 *ngFor="let activity of competency.coursemodules" [href]="activity.url" capture="true">
-                                <core-mod-icon slot="start" [modicon]="activity.iconurl" [showAlt]="false" *ngIf="activity.iconurl">
-                                </core-mod-icon>
+                                <core-mod-icon slot="start" [modicon]="activity.iconurl" [showAlt]="false" *ngIf="activity.iconurl" />
                                 <ion-label>
                                     <core-format-text [text]="activity.name" contextLevel="module" [contextInstanceId]="activity.id"
-                                        [courseId]="courseId">
-                                    </core-format-text>
+                                        [courseId]="courseId" />
                                 </ion-label>
                             </ion-item>
                         </div>
@@ -143,8 +134,7 @@
                             <ion-item class="ion-text-wrap" *ngFor="let plan of competency.plans" [href]="plan.url"
                                 [attr.aria-label]="plan.name" core-link capture="true">
                                 <ion-label>
-                                    <core-format-text [text]="plan.name" contextLevel="user" [contextInstanceId]="plan.userid">
-                                    </core-format-text>
+                                    <core-format-text [text]="plan.name" contextLevel="user" [contextInstanceId]="plan.userid" />
                                 </ion-label>
                             </ion-item>
                         </div>

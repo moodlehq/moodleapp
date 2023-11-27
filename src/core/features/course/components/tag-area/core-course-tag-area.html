@@ -1,6 +1,6 @@
 <ion-card *ngFor="let item of items">
     <ion-item class="ion-text-wrap" (click)="openCourse(item.courseId)" [attr.aria-label]="item.courseName" button [detail]="true">
-        <ion-icon name="fas-graduation-cap" slot="start" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-graduation-cap" slot="start" aria-hidden="true" />
         <ion-label>
             <p class="item-heading">{{ item.courseName }}</p>
             <p *ngIf="item.categoryName">{{ 'core.category' | translate }}: {{ item.categoryName }}</p>

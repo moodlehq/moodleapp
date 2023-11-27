@@ -1,13 +1,13 @@
 :host {
-    ion-slides {
+    swiper-container {
         height: 100%;
-    }
 
-    ion-slide {
-        display: block;
-        font-size: inherit;
-        justify-content: start;
-        align-items: start;
-        text-align: start;
+        swiper-slide {
+            display: block;
+            font-size: inherit;
+            justify-content: start;
+            align-items: start;
+            text-align: start;
+        }
     }
 }

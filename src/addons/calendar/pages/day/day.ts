@@ -60,7 +60,7 @@ import { CoreTime } from '@singletons/time';
 })
 export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreSwipeSlidesComponent) slides?: CoreSwipeSlidesComponent<PreloadedDay>;
+    @ViewChild(CoreSwipeSlidesComponent) swipeSlidesComponent?: CoreSwipeSlidesComponent<PreloadedDay>;
 
     protected currentSiteId: string;
 
@@ -434,8 +434,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      */
     async goToCurrentDay(): Promise<void> {
         const manager = this.manager;
-        const slides = this.slides;
-        if (!manager || !slides) {
+        if (!manager || !this.swipeSlidesComponent) {
             return;
         }
 
@@ -448,7 +447,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             // Make sure the day is loaded.
             await manager.getSource().loadItem(currentDay);
 
-            slides.slideToItem(currentDay);
+            this.swipeSlidesComponent.slideToItem(currentDay);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
         } finally {
@@ -460,14 +459,14 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * Load next day.
      */
     async loadNext(): Promise<void> {
-        this.slides?.slideNext();
+        this.swipeSlidesComponent?.slideNext();
     }
 
     /**
      * Load previous day.
      */
     async loadPrevious(): Promise<void> {
-        this.slides?.slidePrev();
+        this.swipeSlidesComponent?.slidePrev();
     }
 
     /**

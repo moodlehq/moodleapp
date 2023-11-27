@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
     </ion-button>
 </core-navbar-buttons>
 
@@ -10,26 +10,25 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
-        [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()">
-    </core-course-module-info>
+        [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()" />
 
     <core-tabs [hideUntil]="tabsReady" [selectedIndex]="firstSelectedTab">
         <core-tab [title]="'addon.mod_feedback.overview' | translate" id="overview" (ionSelect)="tabChanged('overview')">
             <ng-template>
-                <ng-container *ngTemplateOutlet="tabOverview"></ng-container>
+                <ng-container *ngTemplateOutlet="tabOverview" />
             </ng-template>
         </core-tab>
         <core-tab *ngIf="showAnalysis && access && access.canviewreports" id="analysis" [title]="'addon.mod_feedback.analysis' | translate"
             (ionSelect)="tabChanged('analysis')">
             <ng-template>
-                <ng-container *ngTemplateOutlet="tabAnalysis"></ng-container>
+                <ng-container *ngTemplateOutlet="tabAnalysis" />
             </ng-template>
         </core-tab>
 
         <core-tab *ngIf="showAnalysis && access && !access.canviewreports" id="analysis"
             [title]="'addon.mod_feedback.completed_feedbacks' | translate" (ionSelect)="tabChanged('analysis')">
             <ng-template>
-                <ng-container *ngTemplateOutlet="tabAnalysis"></ng-container>
+                <ng-container *ngTemplateOutlet="tabAnalysis" />
             </ng-template>
         </core-tab>
     </core-tabs>
@@ -39,7 +38,7 @@
             *ngIf="access && (access.canedititems || access.canviewreports || !access.isempty)">
             <ion-button *ngIf="access.canedititems || access.canviewreports" expand="block" fill="outline"
                 (click)="gotoAnswerQuestions(true)" class="ion-margin ion-text-wrap">
-                <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true" />
                 {{ 'addon.mod_feedback.preview' | translate }}
             </ion-button>
             <ion-button *ngIf="access.cancomplete && access.cansubmit && access.isopen" expand="block" (click)="gotoAnswerQuestions()"
@@ -53,15 +52,13 @@
             </ion-button>
         </div>
 
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">
-        </core-course-module-navigation>
+        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
     </div>
 </core-loading>
 
 <ng-template #basicInfo>
     <ion-list *ngIf="access && access.canviewanalysis && !access.isempty">
-        <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)" [courseId]="courseId">
-        </core-group-selector>
+        <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)" [courseId]="courseId" />
 
         <ion-item class="ion-text-wrap" (click)="openAttempts()" [class.hide-detail]="!(access.canviewreports && completedCount > 0)"
             [detail]="true" [button]="access.canviewreports && completedCount > 0">
@@ -98,18 +95,18 @@
 <!-- Template to render the overview. -->
 <ng-template #tabOverview>
     <core-loading [hideUntil]="tabsLoaded.overview">
-        <ng-container *ngTemplateOutlet="basicInfo"></ng-container>
+        <ng-container *ngTemplateOutlet="basicInfo" />
 
         <ion-card class="core-info-card" *ngIf="access && access.cancomplete && !access.isopen">
             <ion-item>
-                <ion-icon name="fas-circle-question" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
                 <ion-label>{{ 'addon.mod_feedback.feedback_is_not_open' | translate }}</ion-label>
             </ion-item>
         </ion-card>
 
         <ion-card class="core-success-card" *ngIf="access && access.cancomplete && access.isopen && !access.cansubmit">
             <ion-item>
-                <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-check" slot="start" aria-hidden="true" />
                 <ion-label>{{ 'addon.mod_feedback.this_feedback_is_already_submitted' | translate }}</ion-label>
             </ion-item>
         </ion-card>
@@ -131,8 +128,7 @@
                 <ion-label>
                     <p class="item-heading">{{ 'addon.mod_feedback.page_after_submit' | translate }}</p>
                     <core-format-text [component]="component" [componentId]="componentId" [text]="feedback.page_after_submit"
-                        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-                    </core-format-text>
+                        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
                 </ion-label>
             </ion-item>
             <ng-container *ngIf="!access.isempty">
@@ -151,12 +147,12 @@
 <!-- Template to render the analysis. -->
 <ng-template #tabAnalysis>
     <core-loading [hideUntil]="tabsLoaded.analysis">
-        <ng-container *ngTemplateOutlet="basicInfo"></ng-container>
+        <ng-container *ngTemplateOutlet="basicInfo" />
 
         <ng-container *ngIf="access && (access.canedititems || !access.isempty)">
             <ion-card class="core-info-card" *ngIf="warning">
                 <ion-item>
-                    <ion-icon name="fas-circle-question" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
                     <ion-label>{{ warning }}</ion-label>
                 </ion-item>
             </ion-card>
@@ -166,13 +162,11 @@
                     <ion-label>
                         <p class="item-heading">
                             {{item.num}}. <core-format-text [component]="component" [componentId]="componentId" [text]="item.name"
-                                contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-                            </core-format-text>
+                                contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
                         </p>
                         <p>
                             <core-format-text [component]="component" [componentId]="componentId" [text]="item.label" contextLevel="module"
-                                [contextInstanceId]="module.id" [courseId]="courseId">
-                            </core-format-text>
+                                [contextInstanceId]="module.id" [courseId]="courseId" />
                         </p>
                         <ng-container [ngSwitch]="item.templateName">
                             <ng-container *ngSwitchCase="'numeric'">
@@ -190,8 +184,7 @@
                             </ng-container>
                             <ng-container *ngSwitchCase="'chart'">
                                 <core-chart [type]="item.chartType" [data]="item.chartData" [labels]="item.labels" height="300"
-                                    contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true" [courseId]="courseId">
-                                </core-chart>
+                                    contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true" [courseId]="courseId" />
                                 <p *ngIf="item.average">
                                     {{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}
                                 </p>

@@ -18,7 +18,7 @@ import { CoreSites } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreReminderDBRecord, REMINDERS_TABLE } from './database/reminders';
-import { ILocalNotification } from '@ionic-native/local-notifications';
+import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
 import { CorePlatform } from '@services/platform';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';

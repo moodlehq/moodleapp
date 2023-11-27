@@ -15,6 +15,9 @@
 import { CorePlatform } from '@services/platform';
 import { NativeHttp } from '@singletons';
 
+/**
+ * This function sets the User-Agent header using NativeHttp for mobile platform.
+ */
 export default async function(): Promise<void> {
     if (!CorePlatform.isMobile()) {
         return;

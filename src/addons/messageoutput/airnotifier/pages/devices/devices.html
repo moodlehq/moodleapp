@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.messageoutput_airnotifier.processorsettingsdesc' | translate }}</h1>
@@ -10,7 +10,7 @@
 </ion-header>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshDevices($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
         <ng-container *ngFor="let platform of platformDevices">
@@ -33,8 +33,7 @@
                             </p>
                         </ion-label>
                         <core-button-with-spinner [loading]="device.updating" slot="end">
-                            <ion-toggle [(ngModel)]="device.enable" (ngModelChange)="enableDevice(device, device.enable)">
-                            </ion-toggle>
+                            <ion-toggle [(ngModel)]="device.enable" (ngModelChange)="enableDevice(device, device.enable)" />
                         </core-button-with-spinner>
                     </ion-item>
                 </ion-list>

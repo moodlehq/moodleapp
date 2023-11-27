@@ -5,8 +5,7 @@
         <p *ngIf="words">{{ 'addon.mod_assign.numwords' | translate: {'$a': words} }}</p>
         <p>
             <core-format-text [component]="component" [componentId]="assign.cmid" collapsible-item [text]="text" contextLevel="module"
-                [contextInstanceId]="assign.cmid" [courseId]="assign.course">
-            </core-format-text>
+                [contextInstanceId]="assign.cmid" [courseId]="assign.course" />
         </p>
     </ion-label>
 </ion-item>
@@ -29,7 +28,6 @@
         <core-rich-text-editor [control]="control" [placeholder]="plugin.name" name="onlinetext_editor_text"
             (contentChanged)="onChange($event)" [component]="component" [componentId]="assign.cmid" [autoSave]="true" contextLevel="module"
             [contextInstanceId]="assign.cmid" elementId="onlinetext_editor"
-            [draftExtraParams]="{userid: currentUserId, action: 'editsubmission'}">
-        </core-rich-text-editor>
+            [draftExtraParams]="{userid: currentUserId, action: 'editsubmission'}" />
     </ion-item>
 </div>

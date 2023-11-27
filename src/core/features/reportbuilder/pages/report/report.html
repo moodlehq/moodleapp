@@ -1,16 +1,16 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="openInfo()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-circle-info" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-circle-info" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
         <ion-title *ngIf="reportDetail">
             <h1>
-                <core-format-text [clean]="true" [text]="reportDetail.name" [filter]="false"></core-format-text>
+                <core-format-text [clean]="true" [text]="reportDetail.name" [filter]="false" />
             </h1>
             <p class="subheading"> {{ reportDetail.sourcename }} </p>
         </ion-title>
@@ -18,6 +18,5 @@
 </ion-header>
 
 <ion-content>
-    <core-report-builder-report-detail [isBlock]="false" [reportId]="reportId" (onReportLoaded)="loadReportDetail($event)">
-    </core-report-builder-report-detail>
+    <core-report-builder-report-detail [isBlock]="false" [reportId]="reportId" (onReportLoaded)="loadReportDetail($event)" />
 </ion-content>

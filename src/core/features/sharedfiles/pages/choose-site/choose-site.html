@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'core.sharedfiles.sharedfiles' | translate }}</h1>
@@ -17,8 +17,7 @@
                     <p>{{fileName}}</p>
                 </ion-label>
             </ion-item>
-            <core-sites-list [accountsList]="accountsList" [sitesClickable]="true" (onSiteClicked)="storeInSite($event)">
-            </core-sites-list>
+            <core-sites-list [accountsList]="accountsList" [sitesClickable]="true" (onSiteClicked)="storeInSite($event)" />
         </ion-list>
     </core-loading>
 </ion-content>

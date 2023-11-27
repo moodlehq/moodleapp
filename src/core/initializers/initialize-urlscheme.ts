@@ -16,6 +16,9 @@ import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { NgZone } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 
+/**
+ * Asynchronous function to handle custom URLs when the app is launched.
+ */
 export default async function(): Promise<void> {
     const lastUrls: Record<string, number> = {};
 

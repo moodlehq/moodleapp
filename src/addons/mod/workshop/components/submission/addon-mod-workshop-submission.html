@@ -1,12 +1,11 @@
 <core-loading [hideUntil]="loaded">
     <div *ngIf="!summary">
         <ion-item class="ion-text-wrap addon-workshop-submission-title">
-            <core-user-avatar [user]="profile" [courseId]="courseId" [userId]="profile?.id" slot="start">
-            </core-user-avatar>
+            <core-user-avatar [user]="profile" [courseId]="courseId" [userId]="profile?.id" slot="start" />
             <ion-label>
                 <h2 *ngIf="submission.title">
-                    <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-                    </core-format-text>
+                    <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id"
+                        [courseId]="courseId" />
                 </h2>
                 <p *ngIf="profile && profile?.fullname">{{profile.fullname}}</p>
                 <p *ngIf="showGrade(submission.grade)" [class.addon-has-overriden-grade]="showGrade(submission.gradeover)">
@@ -20,44 +19,42 @@
                 </p>
             </ion-label>
             <ion-note slot="end" *ngIf="!submission.timemodified">
-                <ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'core.notsent' | translate }}
+                <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'core.notsent' | translate }}
             </ion-note>
             <ion-note slot="end" *ngIf="submission.timemodified">
                 {{submission.timemodified | coreDateDayOrTime}}
                 <ng-container *ngIf="submission.offline">
-                    <ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'core.notsent' | translate }}
+                    <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'core.notsent' | translate }}
                 </ng-container>
                 <ng-container *ngIf="submission.deleted">
-                    <ion-icon name="fas-trash" aria-hidden="true"></ion-icon> {{ 'core.deletedoffline' | translate }}
+                    <ion-icon name="fas-trash" aria-hidden="true" /> {{ 'core.deletedoffline' | translate }}
                 </ng-container>
             </ion-note>
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="submission.content">
             <ion-label>
                 <core-format-text [component]="component" [componentId]="componentId" [text]="submission.content" contextLevel="module"
-                    [contextInstanceId]="module.id" [courseId]="courseId">
-                </core-format-text>
+                    [contextInstanceId]="module.id" [courseId]="courseId" />
             </ion-label>
         </ion-item>
-        <core-files [files]="submission.attachmentfiles" [component]="component" [componentId]="componentId"></core-files>
+        <core-files [files]="submission.attachmentfiles" [component]="component" [componentId]="componentId" />
         <ion-item class="ion-text-wrap" *ngIf="viewDetails && submission.feedbackauthor">
             <core-user-avatar *ngIf="evaluateByProfile" [user]="evaluateByProfile" slot="start" [courseId]="courseId"
-                [userId]="evaluateByProfile.id"></core-user-avatar>
+                [userId]="evaluateByProfile.id" />
 
             <ion-label>
                 <p class="item-heading" *ngIf="evaluateByProfile && evaluateByProfile.fullname">
                     {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}
                 </p>
                 <core-format-text [text]="submission.feedbackauthor" contextLevel="module" [contextInstanceId]="module.id"
-                    [courseId]="courseId">
-                </core-format-text>
+                    [courseId]="courseId" />
             </ion-label>
         </ion-item>
         <ion-item *ngIf="viewDetails">
             <ion-label>
                 <ion-button expand="block" (click)="gotoSubmission()">
                     {{ 'core.showmore' | translate }}
-                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
                 </ion-button>
             </ion-label>
         </ion-item>
@@ -65,12 +62,10 @@
 
     <ion-item class="ion-text-wrap" *ngIf="summary" [detail]="submission.timemodified" (click)="gotoSubmission()"
         [button]="submission.timemodified">
-        <core-user-avatar [user]="profile" slot="start" [courseId]="courseId" [userId]="profile?.id">
-        </core-user-avatar>
+        <core-user-avatar [user]="profile" slot="start" [courseId]="courseId" [userId]="profile?.id" />
         <ion-label>
             <h2 *ngIf="submission.title">
-                <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-                </core-format-text>
+                <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
             </h2>
             <p *ngIf="profile && profile.fullname">{{profile.fullname}}</p>
             <p *ngIf="submission.reviewedbydone">
@@ -100,10 +95,10 @@
         <ion-note slot="end" *ngIf="submission.timemodified">
             {{submission.timemodified | coreDateDayOrTime}}
             <div *ngIf="offline">
-                <ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'core.notsent' | translate }}
+                <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'core.notsent' | translate }}
             </div>
             <div *ngIf="submission.deleted">
-                <ion-icon name="fas-trash" aria-hidden="true"></ion-icon> {{ 'core.deletedoffline' | translate }}
+                <ion-icon name="fas-trash" aria-hidden="true" /> {{ 'core.deletedoffline' | translate }}
             </div>
         </ion-note>
     </ion-item>

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ILocalNotification } from '@ionic-native/local-notifications';
+import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
 import { NotificationEventResponse, PushOptions, RegistrationEventResponse } from '@moodlehq/ionic-native-push/ngx';
 
 import { CoreApp } from '@services/app';

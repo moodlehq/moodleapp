@@ -14,6 +14,12 @@
 
 import { APP_INITIALIZER, Provider } from '@angular/core';
 
+/**
+ * Get the providers for the initializers.
+ * Please use the APP_INITIALIZER token to provide the initializers.
+ *
+ * @returns List of providers.
+ */
 export function getInitializerProviders(): Provider[] {
     const context = require.context('./', false, /\.ts$/);
 

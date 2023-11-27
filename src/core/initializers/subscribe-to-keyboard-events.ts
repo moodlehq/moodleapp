@@ -15,6 +15,9 @@
 import { CoreApp } from '@services/app';
 import { NgZone, Keyboard } from '@singletons';
 
+/**
+ * Initializes keyboard event listeners and ensures Angular zone is properly managed for change detection.
+ */
 export default function(): void {
     const zone = NgZone.instance;
     const app = CoreApp.instance;

@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
 
         <ion-title>
@@ -11,7 +11,7 @@
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="authInstructions" (click)="showAuthInstructions()"
                 [attr.aria-label]="'core.login.instructions' | translate">
-                <ion-icon slot="icon-only" name="far-circle-question" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="far-circle-question" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -46,8 +46,7 @@
                         <ion-label position="stacked">
                             <span core-mark-required="true">{{ 'core.whatisyourage' | translate }}</span>
                         </ion-label>
-                        <ion-input type="number" name="age" placeholder="0" formControlName="age" autocapitalize="none" autocorrect="off">
-                        </ion-input>
+                        <ion-input type="number" name="age" placeholder="0" formControlName="age" autocapitalize="none" autocorrect="off" />
                     </ion-item>
 
                     <ion-item class="ion-text-wrap">
@@ -85,7 +84,7 @@
                             <p *ngIf="!siteName && displaySiteUrl" class="ion-padding item-heading">{{site.siteUrl}}</p>
                             <!-- If sitename, show big sitename and small siteurl. -->
                             <p *ngIf="siteName" class="ion-padding item-heading">
-                                <core-format-text [text]="siteName" [filter]="false"></core-format-text>
+                                <core-format-text [text]="siteName" [filter]="false" />
                             </p>
                             <p *ngIf="siteName && displaySiteUrl">{{site.siteUrl}}</p>
                         </ion-label>
@@ -102,9 +101,8 @@
                             <span core-mark-required="true">{{ 'core.login.username' | translate }}</span>
                         </ion-label>
                         <ion-input type="text" name="username" placeholder="{{ 'core.login.username' | translate }}"
-                            formControlName="username" autocapitalize="none" autocorrect="off">
-                        </ion-input>
-                        <core-input-errors [control]="signupForm.controls.username" [errorMessages]="usernameErrors"></core-input-errors>
+                            formControlName="username" autocapitalize="none" autocorrect="off" />
+                        <core-input-errors [control]="signupForm.controls.username" [errorMessages]="usernameErrors" />
                     </ion-item>
                     <ion-item class="ion-text-wrap">
                         <ion-label position="stacked">
@@ -112,13 +110,12 @@
                         </ion-label>
                         <core-show-password name="password">
                             <ion-input name="password" type="password" placeholder="{{ 'core.login.password' | translate }}"
-                                formControlName="password" [clearOnEdit]="false" autocomplete="new-password" required="true">
-                            </ion-input>
+                                formControlName="password" [clearOnEdit]="false" autocomplete="new-password" required="true" />
                         </core-show-password>
                         <p *ngIf="settings.passwordpolicy" class="core-input-footnote">
                             {{settings.passwordpolicy}}
                         </p>
-                        <core-input-errors [control]="signupForm.controls.password" [errorMessages]="passwordErrors"></core-input-errors>
+                        <core-input-errors [control]="signupForm.controls.password" [errorMessages]="passwordErrors" />
                     </ion-item>
 
                     <!-- More details. -->
@@ -132,34 +129,29 @@
                             <span core-mark-required="true">{{ 'core.user.email' | translate }}</span>
                         </ion-label>
                         <ion-input type="email" name="email" placeholder="{{ 'core.user.email' | translate }}" formControlName="email"
-                            autocapitalize="none" autocorrect="off">
-                        </ion-input>
-                        <core-input-errors [control]="signupForm.controls.email" [errorMessages]="emailErrors"></core-input-errors>
+                            autocapitalize="none" autocorrect="off" />
+                        <core-input-errors [control]="signupForm.controls.email" [errorMessages]="emailErrors" />
                     </ion-item>
                     <ion-item class="ion-text-wrap">
                         <ion-label position="stacked">
                             <span core-mark-required="true">{{ 'core.user.emailagain' | translate }}</span>
                         </ion-label>
                         <ion-input type="email" name="email2" placeholder="{{ 'core.user.emailagain' | translate }}" autocapitalize="none"
-                            formControlName="email2" autocorrect="off" [pattern]="escapeMail(signupForm.controls.email.value)">
-                        </ion-input>
-                        <core-input-errors [control]="signupForm.controls.email2" [errorMessages]="email2Errors"></core-input-errors>
+                            formControlName="email2" autocorrect="off" [pattern]="escapeMail(signupForm.controls.email.value)" />
+                        <core-input-errors [control]="signupForm.controls.email2" [errorMessages]="email2Errors" />
                     </ion-item>
                     <ion-item *ngFor="let nameField of settings.namefields" class="ion-text-wrap">
                         <ion-label position="stacked">
                             <span core-mark-required="true">{{ 'core.user.' + nameField | translate }}</span>
                         </ion-label>
                         <ion-input type="text" [name]="nameField" placeholder="{{ 'core.user.' + nameField | translate }}"
-                            formControlName="{{nameField}}" autocorrect="off">
-                        </ion-input>
-                        <core-input-errors [control]="signupForm.controls[nameField]" [errorMessages]="namefieldsErrors![nameField]">
-                        </core-input-errors>
+                            formControlName="{{nameField}}" autocorrect="off" />
+                        <core-input-errors [control]="signupForm.controls[nameField]" [errorMessages]="namefieldsErrors![nameField]" />
                     </ion-item>
                     <ion-item class="ion-text-wrap">
                         <ion-label position="stacked">{{ 'core.user.city' | translate }}</ion-label>
                         <ion-input type="text" name="city" placeholder="{{ 'core.user.city' | translate }}" formControlName="city"
-                            autocorrect="off">
-                        </ion-input>
+                            autocorrect="off" />
                     </ion-item>
                     <ion-item class="ion-text-wrap">
                         <ion-label position="stacked">{{ 'core.user.country' | translate }}</ion-label>
@@ -178,7 +170,7 @@
                             </ion-label>
                         </ion-item-divider>
                         <core-user-profile-field *ngFor="let field of category.fields" [field]="field" [edit]="true" [signup]="true"
-                            registerAuth="email" [form]="signupForm"></core-user-profile-field>
+                            registerAuth="email" [form]="signupForm" />
                     </ng-container>
 
                     <!-- ReCAPTCHA -->
@@ -189,7 +181,7 @@
                             </ion-label>
                         </ion-item-divider>
                         <core-recaptcha [publicKey]="settings.recaptchapublickey" [model]="captcha" [siteUrl]="site.siteUrl"
-                            [showRequiredError]="formSubmitClicked"></core-recaptcha>
+                            [showRequiredError]="formSubmitClicked" />
                     </ng-container>
 
                     <!-- Site policy (if any). -->
@@ -209,10 +201,9 @@
                         <ion-item class="ion-text-wrap">
                             <ion-label>
                                 <span [core-mark-required]="true">{{ 'core.login.policyacceptmandatory' | translate }}</span>
-                                <core-input-errors [control]="signupForm.controls.policyagreed" [errorMessages]="policyErrors">
-                                </core-input-errors>
+                                <core-input-errors [control]="signupForm.controls.policyagreed" [errorMessages]="policyErrors" />
                             </ion-label>
-                            <ion-checkbox slot="end" name="policyagreed" formControlName="policyagreed"></ion-checkbox>
+                            <ion-checkbox slot="end" name="policyagreed" formControlName="policyagreed" />
                         </ion-item>
                     </ng-container>
 
@@ -232,7 +223,7 @@
             <ion-item-divider class="ion-text-wrap">
                 <ion-label>
                     <h2 *ngIf="siteName" class="item-heading ion-padding">
-                        <core-format-text [text]="siteName" [filter]="false"></core-format-text>
+                        <core-format-text [text]="siteName" [filter]="false" />
                     </h2>
                 </ion-label>
             </ion-item-divider>

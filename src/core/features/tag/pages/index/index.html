@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'core.tag.tag' | translate }}: {{ tagName }}</h1>
@@ -12,12 +12,12 @@
 <ion-content>
     <core-split-view>
         <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshData($event.target)">
-            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
         <core-loading [hideUntil]="loaded">
             <ion-list *ngIf="hasUnsupportedAreas || areas.length">
                 <ion-item *ngIf="hasUnsupportedAreas" class="core-warning-item">
-                    <ion-icon slot="start" name="fas-triangle-exclamation" color="warning" aria-hidden="true"></ion-icon>
+                    <ion-icon slot="start" name="fas-triangle-exclamation" color="warning" aria-hidden="true" />
                     <ion-label class="ion-text-wrap">{{ 'core.tag.warningareasnotsupported' | translate }}</ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngFor="let area of areas" [attr.aria-label]="area.nameKey | translate"
@@ -32,7 +32,7 @@
                 </ion-item>
             </ion-list>
             <core-empty-box icon="fas-tag" *ngIf="!hasUnsupportedAreas && (!areas || !areas.length)"
-                [message]="'core.tag.noresultsfor' | translate: { $a: tagName }"></core-empty-box>
+                [message]="'core.tag.noresultsfor' | translate: { $a: tagName }" />
         </core-loading>
     </core-split-view>
 </ion-content>

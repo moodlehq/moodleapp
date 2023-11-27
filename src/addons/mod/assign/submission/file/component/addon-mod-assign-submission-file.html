@@ -3,7 +3,7 @@
     <ion-label>
         <h2>{{ plugin.name }}</h2>
         <div>
-            <core-files [files]="files" [component]="component" [componentId]="assign.cmid" [alwaysDownload]="true"></core-files>
+            <core-files [files]="files" [component]="component" [componentId]="assign.cmid" [alwaysDownload]="true" />
         </div>
     </ion-label>
 </ion-item>
@@ -16,6 +16,5 @@
         </ion-label>
     </ion-item-divider>
     <core-attachments [files]="files" [maxSize]="maxSize" [maxSubmissions]="maxSubmissions" [courseId]="assign.course"
-        [component]="component" [componentId]="assign.cmid" [acceptedTypes]="acceptedTypes" [allowOffline]="allowOffline">
-    </core-attachments>
+        [component]="component" [componentId]="assign.cmid" [acceptedTypes]="acceptedTypes" [allowOffline]="allowOffline" />
 </div>

@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
     </ion-button>
 </core-navbar-buttons>
 
@@ -11,13 +11,12 @@
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="survey && !survey.surveydone && !hasOffline && description"
         [component]="component" [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline"
-        (completionChanged)="onCompletionChange()">
-    </core-course-module-info>
+        (completionChanged)="onCompletionChange()" />
 
     <!-- Survey already done -->
     <ion-card class="core-success-card" *ngIf="survey && survey.surveydone">
         <ion-item>
-            <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-check" slot="start" aria-hidden="true" />
             <ion-label>
                 {{ 'addon.mod_survey.surveycompletednograph' | translate }}
             </ion-label>
@@ -62,8 +61,7 @@
                             <ion-col class="ion-hide-md-down ion-text-center" size="1"
                                 *ngFor="let option of question.optionsArray; let value=index;">
                                 <!-- Empty slot to avoid errors on migration tslint checks -->
-                                <ion-radio [value]="value + 1" [attr.aria-label]="question.num + '. '+question.text + ': ' + option">
-                                </ion-radio>
+                                <ion-radio [value]="value + 1" [attr.aria-label]="question.num + '. '+question.text + ': ' + option" />
                             </ion-col>
                             <ion-col class="ion-hide-md-up" size="5">
                                 <ion-select class="ion-padding" [(ngModel)]="answers[question.name]" [required]="question.required"
@@ -108,8 +106,7 @@
                                 <strong>{{question.num}}.</strong> {{ question.text }}
                             </span>
                         </ion-label>
-                        <ion-textarea [(ngModel)]="answers[question.name]" [name]="question.name" [required]="question.required">
-                        </ion-textarea>
+                        <ion-textarea [(ngModel)]="answers[question.name]" [name]="question.name" [required]="question.required" />
                     </ion-item>
                 </ng-container>
 
@@ -121,7 +118,7 @@
         <div class="list-item-limited-width" *ngIf="survey && (survey.surveydone || (!hasOffline && questions && questions.length))">
             <ion-button class="ion-text-wrap ion-margin" expand="block" [href]="module.url" core-link *ngIf="survey.surveydone">
                 {{ 'addon.mod_survey.results' | translate }}
-                <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
             </ion-button>
 
             <ion-button expand="block" class="ion-text-wrap ion-margin" (click)="submit()" [disabled]="!isValidResponse()"
@@ -130,7 +127,6 @@
             </ion-button>
         </div>
 
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">
-        </core-course-module-navigation>
+        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
     </div>
 </core-loading>

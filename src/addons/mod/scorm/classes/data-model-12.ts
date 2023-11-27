@@ -81,7 +81,6 @@ const ERROR_STRINGS = {
 /**
  * SCORM data model implementation for version 1.2.
  */
-/* eslint-disable @typescript-eslint/naming-convention */
 export class AddonModScormDataModel12 {
 
     protected currentUserData: AddonModScormUserDataMap = {}; // Current user data.

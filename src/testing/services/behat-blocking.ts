@@ -204,7 +204,7 @@ export class TestingBehatBlockingService {
                 return false;
             }
 
-            const slide = element.closest('ion-slide');
+            const slide = element.closest('swiper-slide');
             if (slide && !slide.classList.contains('swiper-slide-active')) {
                 return false;
             }

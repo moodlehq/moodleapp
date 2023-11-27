@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ title }}</h1>
@@ -11,7 +11,7 @@
 <ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!filesLoaded || (!showPrivateFiles && !showSiteFiles)"
         (ionRefresh)="refreshData($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 
     <core-loading [hideUntil]="filesLoaded" *ngIf="showPrivateFiles || showSiteFiles">
@@ -39,22 +39,21 @@
             <ng-container *ngFor="let file of files">
                 <ion-item button *ngIf="file.isdir" class="ion-text-wrap item-file item-directory" (click)="openFolder(file)"
                     [detail]="true">
-                    <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate"></ion-icon>
+                    <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate" />
                     <ion-label>{{file.filename}}</ion-label>
                 </ion-item>
-                <core-file *ngIf="!file.isdir" [file]="file" [component]="component" [componentId]="file.contextid"></core-file>
+                <core-file *ngIf="!file.isdir" [file]="file" [component]="component" [componentId]="file.contextid" />
             </ng-container>
         </ion-list>
 
         <!-- Message telling there are no files. -->
-        <core-empty-box *ngIf="!files || !files.length" icon="far-folder-open" [message]="'addon.privatefiles.emptyfilelist' | translate">
-        </core-empty-box>
+        <core-empty-box *ngIf="!files || !files.length" icon="far-folder-open" [message]="'addon.privatefiles.emptyfilelist' | translate" />
     </core-loading>
 
     <!-- Upload a private file. -->
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="showUpload && root !== 'site' && !path">
         <ion-fab-button (click)="uploadFile()" [attr.aria-label]="'core.fileuploader.uploadafile' | translate">
-            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-plus" aria-hidden="true" />
             <span class="sr-only">{{ 'core.fileuploader.uploadafile' | translate }}</span>
         </ion-fab-button>
     </ion-fab>
