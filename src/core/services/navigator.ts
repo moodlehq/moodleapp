@@ -136,7 +136,7 @@ export class CoreNavigatorService {
             animated: options.animated,
             animation: options.animation,
             animationDirection: options.animationDirection,
-            queryParams: CoreObject.isEmpty(options.params ?? {}) ? null : CoreObject.withoutEmpty(options.params),
+            queryParams: CoreObject.isEmpty(options.params ?? {}) ? null : CoreObject.withoutEmpty(options.params ?? {}),
             relativeTo: path.startsWith('/') ? null : this.getCurrentRoute(),
             replaceUrl: options.replace,
         });

@@ -636,7 +636,10 @@ export class CoreCoursesProvider {
                 ignoreErrors(this.getUserNavigationOptionsObservable(courseIds, options), {}),
                 ignoreErrors(this.getUserAdministrationOptionsObservable(courseIds, options), {}),
             ).pipe(
-                map(([navOptions, admOptions]) => ({ navOptions, admOptions })),
+                map(([navOptions, admOptions]) => ({
+                    navOptions: navOptions as CoreCourseUserAdminOrNavOptionCourseIndexed,
+                    admOptions: admOptions as CoreCourseUserAdminOrNavOptionCourseIndexed,
+                })),
             );
         });
     }

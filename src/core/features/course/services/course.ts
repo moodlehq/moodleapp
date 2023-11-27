@@ -238,11 +238,11 @@ export class CoreCourseProvider {
         }
 
         const course = await CoreCourses.getCourseByField('id', courseId, site.id);
-        const formatOptions = CoreUtils.objectToKeyValueMap<{ indentation?: string }>(
+        const formatOptions = CoreUtils.objectToKeyValueMap(
             course.courseformatoptions ?? [],
             'name',
             'value',
-        );
+        ) as { indentation?: string };
 
         return formatOptions.indentation === '1';
     }

@@ -125,7 +125,7 @@ export class CoreDatabaseTable<
         }
 
         const sorting = options?.sorting
-            && this.normalizedSorting(options.sorting).map(([column, direction]) => `${column} ${direction}`).join(', ');
+            && this.normalizedSorting(options.sorting).map(([column, direction]) => `${column.toString()} ${direction}`).join(', ');
 
         return this.database.getRecords(this.tableName, conditions, sorting, '*', options?.offset, options?.limit);
     }

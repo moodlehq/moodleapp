@@ -1405,7 +1405,7 @@ export class CoreUtilsProvider {
      * @param enumeration Enumeration object.
      * @returns Keys of the enumeration.
      */
-    enumKeys<O, K extends keyof O = keyof O>(enumeration: O): K[] {
+    enumKeys<O extends object, K extends keyof O = keyof O>(enumeration: O): K[] {
         return Object.keys(enumeration).filter(k => Number.isNaN(+k)) as K[];
     }
 
