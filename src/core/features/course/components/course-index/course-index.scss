@@ -81,5 +81,9 @@ ion-item.item {
         &.restricted {
             font-size: var(--text-size);
         }
+        &[role=button] {
+            min-height: auto;
+            min-width: auto;
+        }
     }
 }
