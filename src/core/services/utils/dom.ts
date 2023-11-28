@@ -815,14 +815,20 @@ export class CoreDomUtilsProvider {
      * @returns Promise resolved with the alert modal.
      */
     async showAlertWithOptions(options: AlertOptions = {}, autocloseTime?: number): Promise<HTMLIonAlertElement> {
-        const hasHTMLTags = CoreTextUtils.hasHTMLTags(<string> options.message || '');
+        let message = typeof options.message == 'string'
+            ? options.message
+            : options.message?.value || '';
+
+        const hasHTMLTags = CoreTextUtils.hasHTMLTags(message);
 
         if (hasHTMLTags && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.7')) {
             // Treat multilang.
-            options.message = await CoreLang.filterMultilang(<string> options.message);
+            message = await CoreLang.filterMultilang(message);
         }
 
-        const alertId = <string> Md5.hashAsciiStr((options.header || '') + '#' + (options.message || ''));
+        options.message = message;
+
+        const alertId = Md5.hashAsciiStr((options.header || '') + '#' + (message|| ''));
 
         if (this.displayedAlerts[alertId]) {
             // There's already an alert with the same message and title. Return it.

@@ -459,8 +459,8 @@ export class CoreLoginSitePage implements OnInit {
         });
 
         if (errorDetails) {
+            // Avoid sanitizing JS.
             const containerElement = alertElement.querySelector('.core-error-info-container');
-
             if (containerElement) {
                 containerElement.innerHTML = CoreErrorInfoComponent.render(errorDetails, errorCode);
             }
