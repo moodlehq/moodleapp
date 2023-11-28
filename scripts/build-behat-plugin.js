@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const minimatch = require('minimatch');
+const { minimatch } = require('minimatch');
 const { existsSync, readFileSync, writeFileSync, statSync, renameSync, rmSync } = require('fs');
 const { readdir } = require('fs').promises;
 const { mkdirSync, copySync } = require('fs-extra');
