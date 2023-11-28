@@ -121,7 +121,7 @@ export function setCreateSingletonMethodProxy(method: typeof createSingletonMeth
  * defined using a class or the string used in the `provide` key if it was defined using an object.
  * @returns Singleton proxy.
  */
-export function makeSingleton<Service extends object = object>( // eslint-disable-line @typescript-eslint/ban-types
+export function makeSingleton<Service extends object = object>(
     injectionToken: Type<Service> | AbstractType<Service> | Type<unknown> | string,
 ): CoreSingletonProxy<Service> {
     const singleton = {

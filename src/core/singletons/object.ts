@@ -91,9 +91,9 @@ export class CoreObject {
      * @param keysOrRegex If array is supplied, keys to include. Otherwise, regular expression used to filter keys.
      * @returns New object with only the specified keys.
      */
-    static only<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K>;
-    static only<T>(obj: T, regex: RegExp): Partial<T>;
-    static only<T, K extends keyof T>(obj: T, keysOrRegex: K[] | RegExp): Pick<T, K> | Partial<T> {
+    static only<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K>;
+    static only<T extends object>(obj: T, regex: RegExp): Partial<T>;
+    static only<T extends object, K extends keyof T>(obj: T, keysOrRegex: K[] | RegExp): Pick<T, K> | Partial<T> {
         const newObject: Partial<T> = {};
 
         if (Array.isArray(keysOrRegex)) {
@@ -136,7 +136,7 @@ export class CoreObject {
      * @param obj Objet.
      * @returns New object without empty values.
      */
-    static withoutEmpty<T>(obj: T): CoreObjectWithoutEmpty<T> {
+    static withoutEmpty<T extends object>(obj: T): CoreObjectWithoutEmpty<T> {
         const cleanObj = {};
 
         for (const [key, value] of Object.entries(obj)) {
@@ -156,7 +156,7 @@ export class CoreObject {
      * @param obj Objet.
      * @returns New object without undefined values.
      */
-    static withoutUndefined<T>(obj: T): CoreObjectWithoutUndefined<T> {
+    static withoutUndefined<T extends object>(obj: T): CoreObjectWithoutUndefined<T> {
         const cleanObj = {};
 
         for (const [key, value] of Object.entries(obj)) {
