@@ -27,6 +27,7 @@ import { CorePlatform } from '@services/platform';
 import { AddonFilterMultilangHandler } from '@addons/filter/multilang/services/handlers/multilang';
 import { AddonFilterMultilang2Handler } from '@addons/filter/multilang2/services/handlers/multilang2';
 import { firstValueFrom } from 'rxjs';
+import { CoreLogger } from '@singletons/logger';
 
 /*
  * Service to handle language features, like changing the current language.
@@ -40,6 +41,11 @@ export class CoreLangProvider {
     protected customStrings: CoreLanguageObject = {}; // Strings defined using the admin tool.
     protected customStringsRaw?: string;
     protected sitePluginsStrings: CoreLanguageObject = {}; // Strings defined by site plugins.
+    protected logger: CoreLogger;
+
+    constructor() {
+        this.logger = CoreLogger.getInstance('CoreLang');
+    }
 
     async initialize(): Promise<void> {
         // Set fallback language and language to use until the app determines the right language to use.
@@ -171,13 +177,21 @@ export class CoreLangProvider {
         // Use british english when parent english is loaded.
         moment.locale(language == 'en' ? 'en-gb' : language);
 
+        const previousLanguage = this.currentLanguage ?? this.getDefaultLanguage();
+
         this.currentLanguage = language;
 
         try {
-            await Promise.all([
-                this.reloadLanguageStrings(),
-                CoreConfig.set('current_language', language),
-            ]);
+            await this.reloadLanguageStrings();
+            await CoreConfig.set('current_language', language);
+        } catch (error) {
+            if (language !== previousLanguage) {
+                this.logger.error(`Language ${language} not available, reverting to ${previousLanguage}`, error);
+
+                return this.changeCurrentLanguage(previousLanguage);
+            }
+
+            throw error;
         } finally {
             // Load the custom and site plugins strings for the language.
             if (this.loadLangStrings(this.customStrings, language) || this.loadLangStrings(this.sitePluginsStrings, language)) {

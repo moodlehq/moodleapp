@@ -10,8 +10,5 @@ module.exports = {
         '!src/testing/**/*',
     ],
     transformIgnorePatterns: ['node_modules/(?!@stencil|@angular|@ionic|@moodlehq|@ngx-translate|swiper)'],
-    moduleNameMapper: {
-        ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src/' }),
-        '^!raw-loader!.*': 'jest-raw-loader',
-    },
+    moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src/' }),
 };

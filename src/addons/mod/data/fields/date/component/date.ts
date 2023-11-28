@@ -13,9 +13,7 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { CoreAppProvider } from '@services/app';
 import { CoreTimeUtils } from '@services/utils/time';
-import { Translate } from '@singletons';
 import moment, { Moment } from 'moment-timezone';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 
@@ -28,11 +26,9 @@ import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-fiel
 })
 export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseComponent {
 
-    format!: string;
     displayDate?: number;
     maxDate?: string;
     minDate?: string;
-    displayTimezone?: string;
 
     /**
      * @inheritdoc
@@ -48,23 +44,18 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseC
 
         let momentInstance: Moment;
 
-        // Calculate format to use.
-        this.format = CoreTimeUtils.fixFormatForDatetime(CoreTimeUtils.convertPHPToMoment(
-            Translate.instant('core.strftimedate'),
-        ));
         this.maxDate = CoreTimeUtils.getDatetimeDefaultMax();
         this.minDate = CoreTimeUtils.getDatetimeDefaultMin();
-        this.displayTimezone = CoreAppProvider.getForcedTimezone();
 
-        if (this.searchMode) {
+        if (this.searchMode && this.searchFields) {
             this.addControl('f_' + this.field.id + '_z');
 
-            momentInstance = this.searchFields!['f_' + this.field.id + '_y']
-                ? moment(this.searchFields!['f_' + this.field.id + '_y'] + '-' +
-                    this.searchFields!['f_' + this.field.id + '_m'] + '-' + this.searchFields!['f_' + this.field.id + '_d'])
+            momentInstance = this.searchFields['f_' + this.field.id + '_y']
+                ? moment(this.searchFields['f_' + this.field.id + '_y'] + '-' +
+                    this.searchFields['f_' + this.field.id + '_m'] + '-' + this.searchFields['f_' + this.field.id + '_d'])
                 : moment();
 
-            this.searchFields!['f_' + this.field.id] = CoreTimeUtils.toDatetimeFormat(momentInstance.unix() * 1000);
+            this.searchFields['f_' + this.field.id] = CoreTimeUtils.toDatetimeFormat(momentInstance.unix() * 1000);
         } else {
             momentInstance = this.value?.content
                 ? moment(parseInt(this.value.content, 10) * 1000)
