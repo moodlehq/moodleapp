@@ -20,7 +20,6 @@ import {
     OnChanges,
     DoCheck,
     ViewContainerRef,
-    ComponentFactoryResolver,
     ComponentRef,
     KeyValueDiffers,
     SimpleChange,
@@ -70,7 +69,8 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck 
     @Input() data?: Record<string | number, unknown>;
 
     // Get the container where to put the dynamic component.
-    @ViewChild('dynamicComponent', { read: ViewContainerRef }) set dynamicComponent(el: ViewContainerRef) {
+    @ViewChild('dynamicComponent', { read: ViewContainerRef })
+    set dynamicComponent(el: ViewContainerRef) {
         this.container = el;
 
         // Use a timeout to avoid ExpressionChangedAfterItHasBeenCheckedError.
@@ -85,7 +85,6 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck 
     protected lastComponent?: Type<unknown>;
 
     constructor(
-        protected factoryResolver: ComponentFactoryResolver,
         differs: KeyValueDiffers,
         protected cdr: ChangeDetectorRef,
         protected element: ElementRef,
@@ -96,7 +95,7 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck 
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.component && !this.component) {
@@ -110,7 +109,7 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck 
     }
 
     /**
-     * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
+     * @inheritdoc
      */
     ngDoCheck(): void {
         if (this.instance) {
@@ -172,8 +171,7 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck 
         } else {
             try {
                 // Create the component and add it to the container.
-                const factory = this.factoryResolver.resolveComponentFactory(this.component);
-                const componentRef = this.container.createComponent(factory);
+                const componentRef = this.container.createComponent(this.component);
 
                 this.instance = componentRef.instance;
             } catch (ex) {

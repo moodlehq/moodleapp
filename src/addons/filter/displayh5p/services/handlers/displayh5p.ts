@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
+import { Injectable, ViewContainerRef } from '@angular/core';
 
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
@@ -31,10 +31,6 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
     filterName = 'displayh5p';
 
     protected template = document.createElement('template'); // A template element to convert HTML to element.
-
-    constructor(protected factoryResolver: ComponentFactoryResolver) {
-        super();
-    }
 
     /**
      * @inheritdoc
@@ -95,8 +91,7 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
             const url = placeholder.getAttribute('data-player-src') || '';
 
             // Create the component to display the player.
-            const factory = this.factoryResolver.resolveComponentFactory(CoreH5PPlayerComponent);
-            const componentRef = viewContainerRef.createComponent<CoreH5PPlayerComponent>(factory);
+            const componentRef = viewContainerRef.createComponent<CoreH5PPlayerComponent>(CoreH5PPlayerComponent);
 
             componentRef.instance.src = url;
             componentRef.instance.component = component;

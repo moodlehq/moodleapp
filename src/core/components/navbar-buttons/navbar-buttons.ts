@@ -20,7 +20,6 @@ import {
     ElementRef,
     ViewContainerRef,
     ViewChild,
-    ComponentFactoryResolver,
 } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -78,7 +77,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
     protected mergedContextMenu?: CoreContextMenuComponent;
     protected createdMainContextMenuElement?: HTMLElement;
 
-    constructor(element: ElementRef, protected factoryResolver: ComponentFactoryResolver) {
+    constructor(element: ElementRef) {
         this.element = element.nativeElement;
         this.logger = CoreLogger.getInstance('CoreNavBarButtonsComponent');
 
@@ -186,8 +185,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      * @returns Created component.
      */
     protected createMainContextMenu(): CoreContextMenuComponent {
-        const factory = this.factoryResolver.resolveComponentFactory(CoreContextMenuComponent);
-        const componentRef = this.container.createComponent<CoreContextMenuComponent>(factory);
+        const componentRef = this.container.createComponent(CoreContextMenuComponent);
 
         this.createdMainContextMenuElement = componentRef.location.nativeElement;
 
