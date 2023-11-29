@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 
 import { Badge } from '@awesome-cordova-plugins/badge/ngx';
 import { Camera } from '@awesome-cordova-plugins/camera/ngx';
-import { Chooser } from '@awesome-cordova-plugins/chooser/ngx';
+import { Chooser } from '@features/native/plugins/chooser';
 import { Clipboard } from '@awesome-cordova-plugins/clipboard/ngx';
 import { Device } from '@awesome-cordova-plugins/device/ngx';
 import { Diagnostic } from '@awesome-cordova-plugins/diagnostic/ngx';
@@ -68,7 +68,6 @@ export const CORE_NATIVE_SERVICES = [
     providers: [
         Badge,
         Camera,
-        Chooser,
         Clipboard,
         Device,
         Diagnostic,

@@ -55,7 +55,6 @@
     "@angular/router": "^16.2.0",
     "@awesome-cordova-plugins/badge": "^6.3.0",
     "@awesome-cordova-plugins/camera": "^6.3.0",
-    "@awesome-cordova-plugins/chooser": "^6.3.0",
     "@awesome-cordova-plugins/clipboard": "^6.3.0",
     "@awesome-cordova-plugins/core": "^6.3.0",
     "@awesome-cordova-plugins/device": "^6.3.0",
