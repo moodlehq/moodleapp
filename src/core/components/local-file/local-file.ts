@@ -119,7 +119,7 @@ export class CoreLocalFileComponent implements OnInit {
         e.preventDefault();
         e.stopPropagation();
 
-        if (!isOpenButton && CoreUtils.isTrueOrOne(this.overrideClick) && this.onClick.observers.length) {
+        if (!isOpenButton && CoreUtils.isTrueOrOne(this.overrideClick) && this.onClick.observed) {
             this.onClick.emit();
 
             return;

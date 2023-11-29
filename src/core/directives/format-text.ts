@@ -306,7 +306,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             return;
         }
 
-        if (this.onClick.observers.length > 0) {
+        if (this.onClick.observed) {
             this.onClick.emit();
 
             return;
