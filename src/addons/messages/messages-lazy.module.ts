@@ -28,7 +28,7 @@ import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/comp
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 import { CoreScreen } from '@services/screen';
-import { AddonMessagesIndexGuard } from './guards';
+import { messagesIndexGuard } from './guards';
 
 /**
  * Build module routes.
@@ -120,7 +120,7 @@ function buildRoutes(injector: Injector): Routes {
             loadChildren: () => import('./messages-settings-lazy.module').then(m => m.AddonMessagesSettingsLazyModule),
         },
         ...buildTabMainRoutes(injector, {
-            canActivate: [AddonMessagesIndexGuard],
+            canActivate: [messagesIndexGuard],
         }),
     ];
 }

@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreLoginHasSitesGuard } from './guards/has-sites';
+import { hasSitesGuard } from './guards/has-sites';
 import { CoreLoginComponentsModule } from './components/components.module';
 import { CoreLoginHelper } from './services/login-helper';
 import { CoreLoginForgottenPasswordPage } from '@features/login/pages/forgotten-password/forgotten-password';
@@ -44,8 +44,7 @@ const routes: Routes = [
     {
         path: 'sites',
         component: CoreLoginSitesPage,
-        canLoad: [CoreLoginHasSitesGuard],
-        canActivate: [CoreLoginHasSitesGuard],
+        canActivate: [hasSitesGuard],
     },
     {
         path: 'forgottenpassword',

@@ -12,26 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
-import { CanDeactivate } from '@angular/router';
+import { CanDeactivateFn } from '@angular/router';
 import { CoreUtils } from '@services/utils/utils';
 
-@Injectable({ providedIn: 'root' })
-export class CanLeaveGuard implements CanDeactivate<unknown> {
+/**
+ * Check if a component implements the canLeave interface.
+ *
+ * @param component Component instance to check.
+ * @returns Whether it implements CanLeave interface.
+ */
+const isCanLeave = (component: unknown | null): component is CanLeave =>
+    component !== null && 'canLeave' in <CanLeave> component;
 
-    async canDeactivate(component: unknown | null): Promise<boolean> {
-        if (!this.isCanLeave(component)) {
-            return true;
-        }
-
-        return CoreUtils.ignoreErrors(component.canLeave(), false);
+/**
+ * Guard to check if the user can leave a page.
+ *
+ * @returns True if user has sites, redirect route otherwise.
+ */
+export const canLeaveGuard: CanDeactivateFn<unknown> = async (component: unknown) => {
+    if (!isCanLeave(component)) {
+        return true;
     }
 
-    isCanLeave(component: unknown | null): component is CanLeave {
-        return component !== null && 'canLeave' in <CanLeave> component;
-    }
-
-}
+    return CoreUtils.ignoreErrors(component.canLeave(), false);
+};
 
 export interface CanLeave {
     /**

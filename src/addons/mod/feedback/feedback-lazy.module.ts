@@ -22,7 +22,7 @@ import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 import { AddonModFeedbackAttemptPage } from '@addons/mod/feedback/pages/attempt/attempt';
 import { AddonModFeedbackFormPage } from '@addons/mod/feedback/pages/form/form';
-import { CanLeaveGuard } from '@guards/can-leave';
+import { canLeaveGuard } from '@guards/can-leave';
 import { AddonModFeedbackNonRespondentsPage } from '@addons/mod/feedback/pages/nonrespondents/nonrespondents';
 
 const commonRoutes: Routes = [
@@ -33,7 +33,7 @@ const commonRoutes: Routes = [
     {
         path: ':courseId/:cmId/form',
         component: AddonModFeedbackFormPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
     {
         path: ':courseId/:cmId/nonrespondents',
