@@ -16,13 +16,13 @@ import { NgModule } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { RouterModule, Routes } from '@angular/router';
-import { CanLeaveGuard } from '@guards/can-leave';
+import { canLeaveGuard } from '@guards/can-leave';
 import { AddonModGlossaryEditPage } from '@addons/mod/glossary/pages/edit/edit';
 
 const routes: Routes = [{
     path: '',
     component: AddonModGlossaryEditPage,
-    canDeactivate: [CanLeaveGuard],
+    canDeactivate: [canLeaveGuard],
 }];
 
 @NgModule({

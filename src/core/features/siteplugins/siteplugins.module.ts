@@ -23,7 +23,7 @@ import { CoreSitePluginsComponentsModule } from './components/components.module'
 import { CoreSitePluginsHelper } from './services/siteplugins-helper';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSitePluginsPluginPage } from '@features/siteplugins/pages/plugin/plugin';
-import { CanLeaveGuard } from '@guards/can-leave';
+import { canLeaveGuard } from '@guards/can-leave';
 import { CoreSitePluginsCourseOptionPage } from '@features/siteplugins/pages/course-option/course-option';
 import { CoreSitePluginsModuleIndexPage } from '@features/siteplugins/pages/module-index/module-index';
 
@@ -31,7 +31,7 @@ const routes: Routes = [
     {
         path: 'siteplugins/content/:component/:method/:hash',
         component: CoreSitePluginsPluginPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
 ];
 
@@ -39,7 +39,7 @@ const homeRoutes: Routes = [
     {
         path: 'siteplugins/homecontent/:component/:method',
         component: CoreSitePluginsPluginPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
 ];
 
@@ -47,7 +47,7 @@ const courseIndexRoutes: Routes = [
     {
         path: 'siteplugins/:handlerUniqueName',
         component: CoreSitePluginsCourseOptionPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
 ];
 
@@ -55,7 +55,7 @@ const moduleRoutes: Routes = [
     {
         path: 'siteplugins/module/:courseId/:cmId',
         component: CoreSitePluginsModuleIndexPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
 ];
 

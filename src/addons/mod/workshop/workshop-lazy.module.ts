@@ -14,7 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CanLeaveGuard } from '@guards/can-leave';
+import { canLeaveGuard } from '@guards/can-leave';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModWorkshopIndexPage } from './pages/index/index';
@@ -32,17 +32,17 @@ const routes: Routes = [
     {
         path: ':courseId/:cmId/:submissionId',
         component: AddonModWorkshopSubmissionPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
     {
         path: ':courseId/:cmId/:submissionId/edit',
         component: AddonModWorkshopEditSubmissionPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
     {
         path: ':courseId/:cmId/:submissionId/:assessmentId',
         component: AddonModWorkshopAssessmentPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
 ];
 

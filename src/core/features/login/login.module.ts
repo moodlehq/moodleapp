@@ -17,7 +17,7 @@ import { Routes } from '@angular/router';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
 import { CoreLoginHelper, CoreLoginHelperProvider } from './services/login-helper';
-import { CoreRedirectGuard } from '@guards/redirect';
+import { redirectGuard } from '@guards/redirect';
 import { CoreLoginCronHandler } from './services/handlers/cron';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreEvents } from '@singletons/events';
@@ -30,8 +30,7 @@ const appRoutes: Routes = [
     {
         path: 'login',
         loadChildren: () => import('./login-lazy.module').then(m => m.CoreLoginLazyModule),
-        canActivate: [CoreRedirectGuard],
-        canLoad: [CoreRedirectGuard],
+        canActivate: [redirectGuard],
     },
 ];
 

@@ -12,39 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
 import { Router } from '@singletons';
 import { AddonMessagesMainMenuHandlerService } from '../services/handlers/mainmenu';
 import { AddonMessages } from '../services/messages';
 
 /**
  * Guard to redirect to the right page based on the current Moodle site version.
+ *
+ * @returns Route.
  */
-@Injectable({ providedIn: 'root' })
-export class AddonMessagesIndexGuard implements CanActivate {
+export const messagesIndexGuard: CanActivateFn = async (route: ActivatedRouteSnapshot) => {
+    const enabled = AddonMessages.isGroupMessagingEnabled();
+    const path = `/main/${AddonMessagesMainMenuHandlerService.PAGE_NAME}/` + ( enabled ? 'group-conversations' : 'index');
 
-    /**
-     * @inheritdoc
-     */
-    canActivate(route: ActivatedRouteSnapshot): UrlTree {
-        return this.guard(route);
-    }
+    const newRoute = Router.parseUrl(path);
 
-    /**
-     * Check if there is a pending redirect and trigger it.
-     *
-     * @returns The redirection route.
-     */
-    private guard(route: ActivatedRouteSnapshot): UrlTree {
-        const enabled = AddonMessages.isGroupMessagingEnabled();
-        const path = `/main/${AddonMessagesMainMenuHandlerService.PAGE_NAME}/` + ( enabled ? 'group-conversations' : 'index');
+    newRoute.queryParams = route.queryParams;
 
-        const newRoute = Router.parseUrl(path);
-
-        newRoute.queryParams = route.queryParams;
-
-        return newRoute;
-    }
-
-}
+    return newRoute;
+};

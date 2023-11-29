@@ -12,61 +12,41 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
-import { CanLoad, CanActivate, UrlTree } from '@angular/router';
+import { CanActivateFn } from '@angular/router';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreApp } from '@services/app';
 
 import { CoreSites } from '@services/sites';
 import { Router } from '@singletons';
 
-@Injectable({ providedIn: 'root' })
-export class CoreMainMenuAuthGuard implements CanLoad, CanActivate {
-
-    /**
-     * @inheritdoc
-     */
-    canActivate(): Promise<true | UrlTree> {
-        return this.guard();
+/**
+ * Guard to check if the user is authenticated.
+ *
+ * @returns True if user has sites, redirect route otherwise.
+ */
+export const authGuard: CanActivateFn = async () => {
+    if (!CoreSites.isLoggedIn()) {
+        return Router.parseUrl('/login');
     }
 
-    /**
-     * @inheritdoc
-     */
-    canLoad(): Promise<true | UrlTree> {
-        return this.guard();
-    }
+    if (CoreLoginHelper.isSiteLoggedOut()) {
+        // Send the user to reconnect page.
+        const newRoute = Router.parseUrl('/login/reconnect');
+        const siteId = CoreSites.getCurrentSiteId();
 
-    /**
-     * Check if the current user should be redirected to the authentication page.
-     *
-     * @returns Promise resolved with true if it's not redirected or the redirection route.
-     */
-    private async guard(): Promise<true | UrlTree> {
-        if (!CoreSites.isLoggedIn()) {
-            return Router.parseUrl('/login');
+        // Pass redirect data (if any and belongs to same site).
+        let redirect = CoreApp.consumeMemoryRedirect();
+        if (redirect?.siteId !== siteId) {
+            redirect = null;
         }
 
-        if (CoreLoginHelper.isSiteLoggedOut()) {
-            // Send the user to reconnect page.
-            const newRoute = Router.parseUrl('/login/reconnect');
-            const siteId = CoreSites.getCurrentSiteId();
+        newRoute.queryParams = {
+            siteId,
+            ...redirect,
+        };
 
-            // Pass redirect data (if any and belongs to same site).
-            let redirect = CoreApp.consumeMemoryRedirect();
-            if (redirect?.siteId !== siteId) {
-                redirect = null;
-            }
-
-            newRoute.queryParams = {
-                siteId,
-                ...redirect,
-            };
-
-            return newRoute;
-        }
-
-        return true;
+        return newRoute;
     }
 
-}
+    return true;
+};

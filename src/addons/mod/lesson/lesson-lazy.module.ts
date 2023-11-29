@@ -21,7 +21,7 @@ import { AddonModLessonComponentsModule } from './components/components.module';
 import { AddonModLessonIndexPage } from './pages/index';
 import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { AddonModLessonPlayerPage } from '@addons/mod/lesson/pages/player/player';
-import { CanLeaveGuard } from '@guards/can-leave';
+import { canLeaveGuard } from '@guards/can-leave';
 import { AddonModLessonUserRetakePage } from '@addons/mod/lesson/pages/user-retake/user-retake';
 
 const routes: Routes = [
@@ -32,7 +32,7 @@ const routes: Routes = [
     {
         path: ':courseId/:cmId/player',
         component: AddonModLessonPlayerPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
     {
         path: ':courseId/:cmId/user-retake/:userId',
