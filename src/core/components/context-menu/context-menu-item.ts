@@ -73,7 +73,7 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     ngOnInit(): void {
         // Initialize values.
         this.priority = this.priority || 1;
-        this.hasAction = !!this.action && this.action.observers.length > 0;
+        this.hasAction = !!this.action && this.action.observed;
         this.ariaAction = this.ariaAction || this.content;
 
         if (this.hasAction) {
