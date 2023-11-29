@@ -246,7 +246,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
             cssClass: 'core-modal-lateral core-modal-lateral-sm',
         });
 
-        if (closeAll) {
+        if (thisModal && closeAll) {
             await ModalController.dismiss(undefined, undefined, thisModal.id);
         }
     }

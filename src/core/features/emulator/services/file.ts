@@ -12,8 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/* eslint-disable deprecation/deprecation */
+
 import { Injectable } from '@angular/core';
-import { File, Entry, DirectoryEntry, FileEntry, IWriteOptions, RemoveResult } from '@awesome-cordova-plugins/file/ngx';
+import {
+    File,
+    Entry,
+    FileEntry,
+    FileSystem,
+    IWriteOptions,
+    RemoveResult,
+    DirectoryEntry,
+    DirectoryReader,
+} from '@awesome-cordova-plugins/file/ngx';
 import { CorePath } from '@singletons/path';
 
 /**
@@ -39,6 +50,82 @@ class FileError {
     constructor(
         public code: number,
     ) { }
+
+}
+
+/**
+ * Native APIs used in webkit window.
+ */
+interface WebkitWindow {
+
+    /**
+     * @deprecated
+     * @see https://www.w3.org/TR/2012/WD-file-system-api-20120417/
+     */
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    LocalFileSystem: {
+        readonly TEMPORARY: number;
+        readonly PERSISTENT: number;
+    };
+
+    /**
+     * @deprecated
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/requestFileSystem
+     */
+    requestFileSystem(
+        type: LocalFileSystem,
+        size: number,
+        successCallback: (fileSystem: FileSystem) => void,
+        errorCallback?: (fileError: FileError) => void,
+    ): void;
+
+    /**
+     * @deprecated
+     */
+    webkitRequestFileSystem(
+        type: LocalFileSystem,
+        size: number,
+        successCallback: (fileSystem: FileSystem) => void,
+        errorCallback?: (fileError: FileError) => void,
+    ): void;
+
+    /**
+     * @deprecated
+     * @see https://www.w3.org/TR/2012/WD-file-system-api-20120417/
+     */
+    resolveLocalFileSystemURL(
+        url: string,
+        successCallback: (entry: Entry) => void,
+        errorCallback?: (fileError: FileError) => void,
+    ): void;
+
+    /**
+     * @deprecated
+     */
+    webkitResolveLocalFileSystemURL(
+        url: string,
+        successCallback: (entry: Entry) => void,
+        errorCallback?: (fileError: FileError) => void,
+    ): void;
+
+}
+
+/**
+ * Native APIs used in webkit navigator.
+ */
+interface WebkitNavigator {
+
+    /**
+     * @deprecated
+     * @see https://developer.chrome.com/docs/apps/offline_storage/
+     */
+    webkitPersistentStorage: {
+        requestQuota(
+            newQuotaInBytes: number,
+            successCallback?: (bytesGranted: number) => void,
+            errorCallback?: (error: Error) => void,
+        ): void;
+    };
 
 }
 
@@ -285,39 +372,40 @@ export class FileMock extends File {
      */
     async getFreeDiskSpace(): Promise<number> {
         // Request a file system instance with a minimum size until we get an error.
-        if (window.requestFileSystem) {
-            let iterations = 0;
-            let maxIterations = 50;
-            const calculateByRequest = (size: number, ratio: number): Promise<number> =>
-                new Promise((resolve): void => {
-                    window.requestFileSystem(LocalFileSystem.PERSISTENT, size, () => {
-                        iterations++;
-                        if (iterations > maxIterations) {
-                            resolve(size);
+        const window = this.getEmulatorWindow();
 
-                            return;
-                        }
-                        // eslint-disable-next-line promise/catch-or-return
-                        calculateByRequest(size * ratio, ratio).then(resolve);
-                    }, () => {
-                        resolve(size / ratio);
-                    });
-                });
-
-            // General calculation, base 1MB and increasing factor 1.3.
-            let size = await calculateByRequest(1048576, 1.3);
-
-            // More accurate. Factor is 1.1.
-            iterations = 0;
-            maxIterations = 10;
-
-            size = await calculateByRequest(size, 1.1);
-
-            return size / 1024; // Return size in KB.
-
-        } else {
+        if (!window.requestFileSystem) {
             throw new Error('File system not available.');
         }
+
+        let iterations = 0;
+        let maxIterations = 50;
+        const calculateByRequest = (size: number, ratio: number): Promise<number> =>
+            new Promise((resolve): void => {
+                window.requestFileSystem(LocalFileSystem.PERSISTENT, size, () => {
+                    iterations++;
+                    if (iterations > maxIterations) {
+                        resolve(size);
+
+                        return;
+                    }
+                    // eslint-disable-next-line promise/catch-or-return
+                    calculateByRequest(size * ratio, ratio).then(resolve);
+                }, () => {
+                    resolve(size / ratio);
+                });
+            });
+
+        // General calculation, base 1MB and increasing factor 1.3.
+        let size = await calculateByRequest(1048576, 1.3);
+
+        // More accurate. Factor is 1.1.
+        iterations = 0;
+        maxIterations = 10;
+
+        size = await calculateByRequest(size, 1.1);
+
+        return size / 1024; // Return size in KB.
     }
 
     /**
@@ -342,24 +430,23 @@ export class FileMock extends File {
      */
     load(): Promise<string> {
         return new Promise((resolve, reject): void => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const win = <any> window; // Convert to <any> to be able to use non-standard properties.
+            const window = this.getEmulatorWindow();
 
-            if (win.requestFileSystem === undefined) {
-                win.requestFileSystem = win.webkitRequestFileSystem;
+            if (window.requestFileSystem === undefined) {
+                window.requestFileSystem = window.webkitRequestFileSystem;
             }
-            if (win.resolveLocalFileSystemURL === undefined) {
-                win.resolveLocalFileSystemURL = win.webkitResolveLocalFileSystemURL;
+            if (window.resolveLocalFileSystemURL === undefined) {
+                window.resolveLocalFileSystemURL = window.webkitResolveLocalFileSystemURL;
             }
-            win.LocalFileSystem = {
+            window.LocalFileSystem = {
+                TEMPORARY: 0, // eslint-disable-line @typescript-eslint/naming-convention
                 PERSISTENT: 1, // eslint-disable-line @typescript-eslint/naming-convention
             };
 
             // Request a quota to use. Request 500MB.
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (<any> navigator).webkitPersistentStorage.requestQuota(500 * 1024 * 1024, (granted) => {
-                window.requestFileSystem(LocalFileSystem.PERSISTENT, granted, (entry) => {
-                    resolve(entry.root.toURL());
+            this.getEmulatorNavigator().webkitPersistentStorage.requestQuota(500 * 1024 * 1024, (granted) => {
+                window.requestFileSystem(LocalFileSystem.PERSISTENT, granted, (fileSystem: FileSystem) => {
+                    resolve(fileSystem.root.toURL());
                 }, reject);
             }, reject);
         });
@@ -642,7 +729,7 @@ export class FileMock extends File {
     resolveLocalFilesystemUrl(fileUrl: string): Promise<Entry> {
         return new Promise<Entry>((resolve, reject): void => {
             try {
-                window.resolveLocalFileSystemURL(fileUrl, (entry: Entry) => {
+                this.getEmulatorWindow().resolveLocalFileSystemURL(fileUrl, (entry: Entry) => {
                     resolve(entry);
                 }, (error: FileError) => {
                     this.fillErrorMessageMock(error);
@@ -797,6 +884,24 @@ export class FileMock extends File {
             };
             writeNextChunk();
         });
+    }
+
+    /**
+     * Get emulator window.
+     *
+     * @returns Emulator window.
+     */
+    private getEmulatorWindow(): WebkitWindow {
+        return window as unknown as WebkitWindow;
+    }
+
+    /**
+     * Get emulator navigator.
+     *
+     * @returns Emulator navigator.
+     */
+    private getEmulatorNavigator(): WebkitNavigator {
+        return navigator as unknown as WebkitNavigator;
     }
 
 }

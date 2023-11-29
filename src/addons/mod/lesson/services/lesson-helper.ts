@@ -270,7 +270,7 @@ export class AddonModLessonHelperProvider {
             if (option.checked || multiChoiceQuestion.multi) {
                 // Add the control.
                 const value = multiChoiceQuestion.multi ?
-                    { value: option.checked, disabled: option.disabled } : option.value;
+                    { value: option.checked, disabled: option.disabled } : option.checked;
                 questionForm.addControl(option.name, this.formBuilder.control(value));
                 controlAdded = true;
             }

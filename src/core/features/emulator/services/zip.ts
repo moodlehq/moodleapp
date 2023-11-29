@@ -50,10 +50,11 @@ export class ZipMock extends Zip {
      *
      * @param source Path to the source ZIP file.
      * @param destination Destination folder.
-     * @param onProgress Optional callback to be called on progress update
+     * @param onProgressFunction Optional callback to be called on progress update
      * @returns Promise that resolves with a number. 0 is success, -1 is error.
      */
-    async unzip(source: string, destination: string, onProgress?: (ev: {loaded: number; total: number}) => void): Promise<number> {
+    async unzip(source: string, destination: string, onProgressFunction?: Function): Promise<number> {
+        const onProgress = onProgressFunction as (ev: {loaded: number; total: number}) => void;
 
         // Replace all %20 with spaces.
         source = source.replace(/%20/g, ' ');

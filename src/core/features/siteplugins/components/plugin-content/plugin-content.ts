@@ -235,7 +235,8 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
         this.args = args;
         this.dataLoaded = false;
         this.preSets = preSets || this.preSets;
-        if (jsData) {
+
+        if (this.data && jsData) {
             Object.assign(this.data, jsData);
         }
 

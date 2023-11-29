@@ -56,6 +56,7 @@ import {
     IDENTITY_PROVIDERS_FEATURE_NAME,
     IDENTITY_PROVIDER_FEATURE_NAME_PREFIX,
 } from '../constants';
+import { LazyRoutesModule } from '@/app/app-routing.module';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -1440,7 +1441,7 @@ export class CoreLoginHelperProvider {
      *
      * @returns Reconnect page route module.
      */
-    async getReconnectRouteModule(): Promise<unknown> {
+    async getReconnectRouteModule(): Promise<LazyRoutesModule> {
         return import('@features/login/login-reconnect-lazy.module').then(m => m.CoreLoginReconnectLazyModule);
     }
 
@@ -1449,7 +1450,7 @@ export class CoreLoginHelperProvider {
      *
      * @returns Credentials page route module.
      */
-    async getCredentialsRouteModule(): Promise<unknown> {
+    async getCredentialsRouteModule(): Promise<LazyRoutesModule> {
         return import('@features/login/login-credentials-lazy.module').then(m => m.CoreLoginCredentialsLazyModule);
     }
 
