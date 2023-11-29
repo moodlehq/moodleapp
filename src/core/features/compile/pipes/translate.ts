@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Pipe } from '@angular/core';
+import { Injectable, Pipe, PipeTransform } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
 /**
@@ -25,4 +25,4 @@ import { TranslatePipe } from '@ngx-translate/core';
   pure: false, // required to update the value when the promise is resolved
   standalone: true,
 })
-export class TranslatePipeForCompile extends TranslatePipe {}
+export class TranslatePipeForCompile extends TranslatePipe implements PipeTransform {}
