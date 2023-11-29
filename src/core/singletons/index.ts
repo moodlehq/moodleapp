@@ -58,7 +58,6 @@ import { StatusBar as StatusBarService } from '@awesome-cordova-plugins/status-b
 import { SplashScreen as SplashScreenService } from '@awesome-cordova-plugins/splash-screen/ngx';
 import { SQLite as SQLiteService } from '@awesome-cordova-plugins/sqlite/ngx';
 import { WebIntent as WebIntentService } from '@awesome-cordova-plugins/web-intent/ngx';
-import { Zip as ZipService } from '@awesome-cordova-plugins/zip/ngx';
 
 import { TranslateService } from '@ngx-translate/core';
 
@@ -192,7 +191,6 @@ export const SplashScreen = makeSingleton(SplashScreenService);
 export const SQLite = makeSingleton(SQLiteService);
 export const WebIntent = makeSingleton(WebIntentService);
 export const WebView = makeSingleton(WebViewService);
-export const Zip = makeSingleton(ZipService);
 
 export const Camera = makeSingleton(CameraService);
 

@@ -12,9 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { makeSingleton } from '@singletons';
-import { Chooser as ChooserService } from './chooser';
-import { Zip as ZipService } from './zip';
+/**
+ * Types for file cordova plugin.
+ *
+ * @see https://github.com/moodlemobile/cordova-plugin-zip
+ */
 
-export const Chooser = makeSingleton(ChooserService);
-export const Zip = makeSingleton(ZipService);
+interface Window {
+
+    zip: {
+        unzip(source: string, destination: string, onSuccess: Function, onProgress?: Function): void;
+    };
+
+}
