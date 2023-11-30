@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/tests",
+    "target": "es2016",
     "allowJs": true,
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,

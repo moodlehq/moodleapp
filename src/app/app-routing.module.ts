@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InjectionToken, Injector, ModuleWithProviders, NgModule } from '@angular/core';
+import { InjectionToken, Injector, ModuleWithProviders, NgModule, Type } from '@angular/core';
 import {
     PreloadAllModules,
     RouterModule,
@@ -96,6 +96,12 @@ function buildConditionalUrlMatcher(pathOrMatcher: string | UrlMatcher, conditio
         return { consumed: segments.slice(0, parts.length), posParams };
     };
 }
+
+/**
+ * Type to declare lazy route modules.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type LazyRoutesModule = Type<any>;
 
 /**
  * Build url matcher using a regular expression.

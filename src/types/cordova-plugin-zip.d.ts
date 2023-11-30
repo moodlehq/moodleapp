@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Pipe, PipeTransform } from '@angular/core';
-import { TranslatePipe } from '@ngx-translate/core';
-
 /**
- * Copy of translate pipe to use when compiling a dynamic component.
- * For some reason, when compiling a dynamic component the original translate pipe isn't found so we use this copy instead.
+ * Types for file cordova plugin.
+ *
+ * @see https://github.com/moodlemobile/cordova-plugin-zip
  */
-@Injectable()
-@Pipe({
-  name: 'translate',
-  pure: false, // required to update the value when the promise is resolved
-  standalone: true,
-})
-export class TranslatePipeForCompile extends TranslatePipe implements PipeTransform {}
+
+interface Window {
+
+    zip: {
+        unzip(source: string, destination: string, onSuccess: Function, onProgress?: Function): void;
+    };
+
+}

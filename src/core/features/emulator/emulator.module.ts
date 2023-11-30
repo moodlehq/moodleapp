@@ -27,7 +27,7 @@ import { Geolocation } from '@awesome-cordova-plugins/geolocation/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { MediaCapture } from '@awesome-cordova-plugins/media-capture/ngx';
-import { Zip } from '@awesome-cordova-plugins/zip/ngx';
+import { Zip } from '@features/native/plugins/zip';
 
 // Mock services.
 import { CameraMock } from './services/camera';

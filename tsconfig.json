@@ -5,6 +5,7 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
+    "skipLibCheck": true,
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "strictNullChecks": true,
@@ -14,7 +15,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2015",
+    "target": "es2022",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "lib": [

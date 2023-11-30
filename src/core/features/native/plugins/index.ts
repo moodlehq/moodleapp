@@ -14,5 +14,7 @@
 
 import { makeSingleton } from '@singletons';
 import { Chooser as ChooserService } from './chooser';
+import { Zip as ZipService } from './zip';
 
 export const Chooser = makeSingleton(ChooserService);
+export const Zip = makeSingleton(ZipService);

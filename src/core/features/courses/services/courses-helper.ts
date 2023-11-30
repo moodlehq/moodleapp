@@ -30,6 +30,7 @@ import { of, firstValueFrom } from 'rxjs';
 import { zipIncludingComplete } from '@/core/utils/rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { chainRequests, WSObservable } from '@classes/sites/authenticated-site';
+import { LazyRoutesModule } from '@/app/app-routing.module';
 
 // Id for a course item representing all courses (for example, for course filters).
 export const ALL_COURSES_ID = -1;
@@ -432,7 +433,7 @@ export class CoreCoursesHelperProvider {
      *
      * @returns My courses page module.
      */
-    async getMyRouteModule(): Promise<unknown> {
+    async getMyRouteModule(): Promise<LazyRoutesModule> {
         return import('../courses-my-lazy.module').then(m => m.CoreCoursesMyLazyModule);
     }
 

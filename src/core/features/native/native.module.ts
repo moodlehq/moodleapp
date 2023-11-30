@@ -36,7 +36,7 @@ import { SplashScreen } from '@awesome-cordova-plugins/splash-screen/ngx';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 import { StatusBar } from '@awesome-cordova-plugins/status-bar/ngx';
 import { WebIntent } from '@awesome-cordova-plugins/web-intent/ngx';
-import { Zip } from '@awesome-cordova-plugins/zip/ngx';
+import { Zip } from '@features/native/plugins/zip';
 
 export const CORE_NATIVE_SERVICES = [
     Badge,
@@ -87,7 +87,6 @@ export const CORE_NATIVE_SERVICES = [
         StatusBar,
         WebIntent,
         WebView,
-        Zip,
     ],
 })
 export class CoreNativeModule {}

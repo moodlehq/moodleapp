@@ -218,7 +218,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
      * @returns Formatted data.
      */
     protected formatRetake(retakeData: AddonModLessonGetUserAttemptWSResponse): RetakeToDisplay {
-        const formattedData = <RetakeToDisplay> retakeData;
+        const formattedData = retakeData;
 
         if (formattedData.userstats.gradeinfo) {
             // Completed.
@@ -229,19 +229,23 @@ export class AddonModLessonUserRetakePage implements OnInit {
         // Format pages data.
         formattedData.answerpages.forEach((page) => {
             if (AddonModLesson.answerPageIsContent(page)) {
-                page.isContent = true;
+                const contentPage = page as AnswerPage;
 
-                if (page.answerdata?.answers) {
-                    page.answerdata.answers.forEach((answer) => {
+                contentPage.isContent = true;
+
+                if (contentPage.answerdata?.answers) {
+                    contentPage.answerdata.answers.forEach((answer) => {
                         // Content pages only have 1 valid field in the answer array.
                         answer[0] = AddonModLessonHelper.getContentPageAnswerDataFromHtml(answer[0]);
                     });
                 }
             } else if (AddonModLesson.answerPageIsQuestion(page)) {
-                page.isQuestion = true;
+                const questionPage = page as AnswerPage;
 
-                if (page.answerdata?.answers) {
-                    page.answerdata.answers.forEach((answer) => {
+                questionPage.isQuestion = true;
+
+                if (questionPage.answerdata?.answers) {
+                    questionPage.answerdata.answers.forEach((answer) => {
                         // Only the first field of the answer array requires to be parsed.
                         answer[0] = AddonModLessonHelper.getQuestionPageAnswerDataFromHtml(answer[0]);
                     });

@@ -47,6 +47,7 @@ const appConfig = {
                     Object: {
                         message: 'Use {} instead.',
                     },
+                    Function: false,
                 },
             },
         ],

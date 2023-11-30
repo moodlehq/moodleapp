@@ -933,7 +933,6 @@ export class CoreFileProvider {
         // If destFolder is not set, use same location as ZIP file. We need to use absolute paths (including basePath).
         destFolder = this.addBasePathIfNeeded(destFolder || CoreMimetypeUtils.removeExtension(path));
 
-        // eslint-disable-next-line @typescript-eslint/ban-types
         const result = await Zip.unzip(fileEntry.toURL(), destFolder, onProgress as unknown as Function);
 
         if (result == -1) {
