@@ -30,7 +30,7 @@ import { WebView } from '@awesome-cordova-plugins/ionic-webview/ngx';
 import { Keyboard } from '@awesome-cordova-plugins/keyboard/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { MediaCapture } from '@awesome-cordova-plugins/media-capture/ngx';
-import { Push } from '@moodlehq/ionic-native-push/ngx';
+import { Push } from '@features/native/plugins/push';
 import { QRScanner } from '@ionic-native/qr-scanner/ngx';
 import { SplashScreen } from '@awesome-cordova-plugins/splash-screen/ngx';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
@@ -80,7 +80,6 @@ export const CORE_NATIVE_SERVICES = [
         Keyboard,
         LocalNotifications,
         MediaCapture,
-        Push,
         QRScanner,
         SplashScreen,
         SQLite,
