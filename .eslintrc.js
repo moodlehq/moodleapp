@@ -17,6 +17,7 @@ const appConfig = {
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
         'plugin:@angular-eslint/recommended',
+        'plugin:@angular-eslint/template/process-inline-templates',
         'plugin:promise/recommended',
         'plugin:jsdoc/recommended',
         'plugin:deprecation/recommended',

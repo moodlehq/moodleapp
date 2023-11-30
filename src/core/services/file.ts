@@ -23,11 +23,12 @@ import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 
 import { CoreLogger } from '@singletons/logger';
-import { makeSingleton, File, Zip, WebView } from '@singletons';
+import { makeSingleton, File, WebView } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreText } from '@singletons/text';
 import { CorePlatform } from '@services/platform';
 import { CorePath } from '@singletons/path';
+import { Zip } from '@features/native/plugins';
 
 /**
  * Progress event used when writing a file data into a file.
@@ -933,7 +934,7 @@ export class CoreFileProvider {
         // If destFolder is not set, use same location as ZIP file. We need to use absolute paths (including basePath).
         destFolder = this.addBasePathIfNeeded(destFolder || CoreMimetypeUtils.removeExtension(path));
 
-        const result = await Zip.unzip(fileEntry.toURL(), destFolder, onProgress as unknown as Function);
+        const result = await Zip.unzip(fileEntry.toURL(), destFolder, onProgress);
 
         if (result == -1) {
             throw new CoreError('Unzip failed.');

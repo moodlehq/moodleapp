@@ -52,7 +52,7 @@ const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
  */
 @Component({
     selector: 'core-navbar-buttons',
-    template: '<ng-content></ng-content><template #contextMenuContainer></template>',
+    template: '<ng-content></ng-content><template #contextMenuContainer>-</template>',
     styleUrls: ['navbar-buttons.scss'],
 })
 export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
@@ -62,7 +62,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
     // If the hidden input is true, hide all buttons.
     // eslint-disable-next-line @angular-eslint/no-input-rename
     @Input('hidden') set hidden(value: boolean) {
-        if (typeof value == 'string' && value == '') {
+        if (typeof value === 'string' && value === '') {
             value = true;
         }
         this.allButtonsHidden = value;

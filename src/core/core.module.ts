@@ -14,11 +14,9 @@
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ApplicationInitStatus, Injector, NgModule, Type } from '@angular/core';
-import { HammerModule, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
 
 import { CoreApplicationInitStatus } from './classes/application-init-status';
 import { CoreFeaturesModule } from './features/features.module';
-import { CoreHammerGestureConfig } from './classes/hammer-gesture-config';
 import { CoreInterceptor } from './classes/interceptor';
 import { getDatabaseProviders } from './services/database';
 import { getInitializerProviders } from './initializers';
@@ -84,11 +82,9 @@ export const CORE_SERVICES: Type<unknown>[] = [
 @NgModule({
     imports: [
         CoreFeaturesModule,
-        HammerModule,
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: CoreInterceptor, multi: true },
-        { provide: HAMMER_GESTURE_CONFIG, useClass: CoreHammerGestureConfig },
         { provide: ApplicationInitStatus, useClass: CoreApplicationInitStatus, deps: [Injector] },
         ...getDatabaseProviders(),
         ...getInitializerProviders(),
