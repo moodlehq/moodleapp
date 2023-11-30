@@ -59,4 +59,8 @@ jobs:
         npm run build:prod
         npm run prod --prefix cordova-plugin-moodleapp
     - name: JavaScript code compatibility
-      run: result=$(npx check-es-compat www/*.js 2> /dev/null | grep -v -E "Array\.prototype\.includes|Promise\.prototype\.finally|String\.prototype\.(matchAll|trimRight)|globalThis" | grep -Po "(?<=error).*?(?=\s+ecmascript)" | wc -l); test $result -eq 1
+      # 6 BigInt usage errors are expected, they are fine without polyfill because they are only used if available.
+      # See https://github.com/videojs/mpd-parser/blob/v0.22.1/src/segment/urlType.js
+      run: |
+        result=$(npx check-es-compat www/*.js --polyfills="{Array,String,TypedArray}.prototype.at,Array.prototype.flatMap,Array.prototype.flat,Array.prototype.includes,globalThis,Object.fromEntries,Object.hasOwn,Promise.prototype.finally,String.prototype.matchAll,String.prototype.trimRight" | grep "6 problems (6 errors, 0 warnings)" | wc -l); test $result -eq 1
+        npx check-es-compat cordova-plugin-moodleapp/www/*.js
