@@ -310,7 +310,7 @@ function expectArray (str, cache) {
     throw SyntaxError('Expected }')
   }
 
-  return [ array[0], arrayLiteralBeginMatch?.length ?? 0 + (array[1] as number) + 1 ] // jump over }
+  return [ array[0], (arrayLiteralBeginMatch?.length ?? 0) + (array[1] as number) + 1 ] // jump over }
 }
 
 function expectArrayItems (str, expectedItems = 0, cache) {
