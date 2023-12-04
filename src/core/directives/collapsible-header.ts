@@ -428,19 +428,15 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             return;
         }
 
-        // Wait loadings to finish.
-        await CoreDirectivesRegistry.waitDirectivesReady(this.page, 'core-loading', CoreLoadingComponent);
+        // Make sure elements have been added to the DOM.
+        await CoreUtils.nextTick();
 
-        // Wait tabs to be ready.
-        await CoreDirectivesRegistry.waitDirectivesReady(this.page, 'core-tabs', CoreTabsComponent);
-        await CoreDirectivesRegistry.waitDirectivesReady(this.page, 'core-tabs-outlet', CoreTabsOutletComponent);
-
-        // Wait loadings to finish, inside tabs (if any).
-        await CoreDirectivesRegistry.waitDirectivesReady(
-            this.page,
-            'core-tab core-loading, ion-router-outlet core-loading',
-            CoreLoadingComponent,
-        );
+        // Wait all loadings and tabs to finish loading.
+        await CoreDirectivesRegistry.waitMultipleDirectivesReady(this.page, [
+            { selector: 'core-loading', class: CoreLoadingComponent },
+            { selector: 'core-tabs', class: CoreTabsComponent },
+            { selector: 'core-tabs-outlet', class: CoreTabsOutletComponent },
+        ]);
     }
 
     /**
