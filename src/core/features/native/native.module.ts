@@ -31,7 +31,7 @@ import { Keyboard } from '@awesome-cordova-plugins/keyboard/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { MediaCapture } from '@awesome-cordova-plugins/media-capture/ngx';
 import { Push } from '@features/native/plugins/push';
-import { QRScanner } from '@ionic-native/qr-scanner/ngx';
+import { QRScanner } from './plugins/qrscanner';
 import { SplashScreen } from '@awesome-cordova-plugins/splash-screen/ngx';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 import { StatusBar } from '@awesome-cordova-plugins/status-bar/ngx';
@@ -80,7 +80,6 @@ export const CORE_NATIVE_SERVICES = [
         Keyboard,
         LocalNotifications,
         MediaCapture,
-        QRScanner,
         SplashScreen,
         SQLite,
         StatusBar,
