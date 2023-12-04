@@ -160,8 +160,6 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 import { CoreAutoLogoutService } from '@features/autologout/services/autologout';
 
-import '@angular/compiler';
-
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
  */
@@ -206,6 +204,8 @@ export class CoreCompileProvider {
         viewContainerRef: ViewContainerRef,
         extraImports: any[] = [], // eslint-disable-line @typescript-eslint/no-explicit-any
     ): Promise<ComponentRef<T> | undefined> {
+        // Import the Angular compiler to be able to compile components in runtime.
+        await import('@angular/compiler');
 
         // Create the component using the template and the class.
         const component = Component({ template })(componentClass);
