@@ -142,11 +142,11 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
                 this.updateModuleCourseContent(cmId, alreadyFetched);
             this.jsData.updateCachedContent = () => this.updateCachedContent();
 
-            this.onContentLoaded.emit({ refresh: !!refresh, success: true });
+            this.onContentLoaded.emit({ refresh: !!refresh, success: true, content: this.content });
         } catch (error) {
             // Make it think it's loaded - otherwise it sticks on 'loading' and stops navigation working.
             this.content = '<div></div>';
-            this.onContentLoaded.emit({ refresh: !!refresh, success: false });
+            this.onContentLoaded.emit({ refresh: !!refresh, success: false, content: this.content });
 
             CoreDomUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
         } finally {
@@ -282,4 +282,5 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
 export type CoreSitePluginsPluginContentLoadedData = {
     refresh: boolean;
     success: boolean;
+    content: string;
 };

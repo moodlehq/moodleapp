@@ -114,15 +114,16 @@ export class CoreDirectivesRegistry {
         selector?: string,
         directiveClass?: DirectiveConstructor<T>,
     ): Promise<void> {
-        let elements: Element[] = [];
+        const findElements = (): Element[] => {
+            if (!selector || element.matches(selector)) {
+                // Element to wait is myself.
+                return [element];
+            } else {
+                return Array.from(element.querySelectorAll(selector));
+            }
+        };
 
-        if (!selector || element.matches(selector)) {
-            // Element to wait is myself.
-            elements = [element];
-        } else {
-            elements = Array.from(element.querySelectorAll(selector));
-        }
-
+        const elements = findElements();
         if (!elements.length) {
             return;
         }
@@ -135,6 +136,63 @@ export class CoreDirectivesRegistry {
 
         // Wait for next tick to ensure directives are completely rendered.
         await CoreUtils.nextTick();
+
+        // Check if there are new elements now that the found elements are ready (there could be nested elements).
+        if (elements.length !== findElements().length) {
+            await this.waitDirectivesReady(element, selector, directiveClass);
+        }
+    }
+
+    /**
+     * Get all directive instances (with multiple types) and wait for them to be ready.
+     *
+     * @param element Root element.
+     * @param directives Directives to wait.
+     * @returns Promise resolved when done.
+     */
+    static async waitMultipleDirectivesReady(
+        element: Element,
+        directives: DirectiveData<AsyncDirective>[],
+    ): Promise<void> {
+        const findElements = (selector?: string): Element[] => {
+            if (!selector || element.matches(selector)) {
+                // Element to wait is myself.
+                return [element];
+            } else {
+                return Array.from(element.querySelectorAll(selector));
+            }
+        };
+
+        let allElements: Element[] = [];
+
+        await Promise.all(directives.map(async directive => {
+            const elements = findElements(directive.selector);
+            if (!elements.length) {
+                return;
+            }
+
+            allElements = allElements.concat(elements);
+
+            await Promise.all(elements.map(async element => {
+                const instances = this.resolveAll<AsyncDirective>(element, directive.class);
+
+                await Promise.all(instances.map(instance => instance.ready()));
+            }));
+        }));
+
+        // Wait for next tick to ensure directives are completely rendered.
+        await CoreUtils.nextTick();
+
+        // Check if there are new elements now that the found elements are ready (there could be nested elements).
+        const elementsAfterReady = directives.reduce((elements, directive) => {
+            elements = elements.concat(findElements(directive.selector));
+
+            return elements;
+        }, <Element[]> []);
+
+        if (allElements.length !== elementsAfterReady.length) {
+            await this.waitMultipleDirectivesReady(element, directives);
+        }
     }
 
 }
@@ -144,3 +202,11 @@ export class CoreDirectivesRegistry {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type DirectiveConstructor<T = Directive> = { new(...args: any[]): T };
+
+/**
+ * Data to identify a directive when waiting for ready.
+ */
+type DirectiveData<T extends AsyncDirective> = {
+    selector?: string; // If defined, CSS Selector to wait for.
+    class?: DirectiveConstructor<T>; // Directive class.
+};
