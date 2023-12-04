@@ -24,6 +24,7 @@ import { SQLiteDB } from '@classes/sqlitedb';
 import { APP_SCHEMA, CoreStorageRecord, TABLE_NAME } from './database/storage';
 import { CoreSites } from './sites';
 import { CoreSite } from '@classes/sites/site';
+import { NULL_INJECTION_TOKEN } from '@/core/constants';
 
 /**
  * Service to store data using key-value pairs.
@@ -38,7 +39,7 @@ export class CoreStorageService {
 
     table: AsyncInstance<CoreStorageTable>;
 
-    constructor(@Optional() @Inject(null) lazyTableConstructor?: () => Promise<CoreStorageTable>) {
+    constructor(@Optional() @Inject(NULL_INJECTION_TOKEN) lazyTableConstructor?: () => Promise<CoreStorageTable>) {
         this.table = asyncInstance(lazyTableConstructor);
     }
 
