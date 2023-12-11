@@ -27,6 +27,8 @@ import {
 
 import { CoreArray } from '@singletons/array';
 
+const modulesRoutes: WeakMap<InjectionToken<unknown>, ModuleRoutes> = new WeakMap();
+
 /**
  * Build app routes.
  *
@@ -175,6 +177,10 @@ export function conditionalRoutes(routes: Routes, condition: () => boolean): Rou
  * @returns Routes.
  */
 export function resolveModuleRoutes(injector: Injector, token: InjectionToken<ModuleRoutesConfig[]>): ModuleRoutes {
+    if (modulesRoutes.has(token)) {
+        return modulesRoutes.get(token) as ModuleRoutes;
+    }
+
     const configs = injector.get(token, []);
     const routes = configs.map(config => {
         if (Array.isArray(config)) {
@@ -190,10 +196,14 @@ export function resolveModuleRoutes(injector: Injector, token: InjectionToken<Mo
         };
     });
 
-    return {
+    const moduleRoutes = {
         children: CoreArray.flatten(routes.map(r => r.children)),
         siblings: CoreArray.flatten(routes.map(r => r.siblings)),
     };
+
+    modulesRoutes.set(token, moduleRoutes);
+
+    return moduleRoutes;
 }
 
 export const APP_ROUTES = new InjectionToken('APP_ROUTES');

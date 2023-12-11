@@ -14,7 +14,14 @@
 
 import envJson from '@/assets/env.json';
 import { EnvironmentConfig } from '@/types/config';
+import { InjectionToken } from '@angular/core';
 import { CoreBrowser } from '@singletons/browser';
+
+/**
+ * Injection token used for dependencies marked as optional that will never
+ * be resolved by Angular injectors.
+ */
+export const NULL_INJECTION_TOKEN = new InjectionToken('null');
 
 /**
  * Context levels enumeration.

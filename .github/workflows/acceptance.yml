@@ -16,7 +16,7 @@ on:
         required: true
         default: 'https://github.com/moodle/moodle'
   pull_request:
-    branches: [ main, v*.x ]
+    branches: [ main, ionic7, v*.x ]
 
 jobs:
   behat:
@@ -24,7 +24,7 @@ jobs:
     env:
       MOODLE_DOCKER_DB: pgsql
       MOODLE_DOCKER_BROWSER: chrome
-      MOODLE_DOCKER_PHP_VERSION: '8.0'
+      MOODLE_DOCKER_PHP_VERSION: '8.1'
       MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'master' }}
       MOODLE_REPOSITORY: ${{ github.event.inputs.moodle_repository || 'https://github.com/moodle/moodle' }}
       BEHAT_TAGS: ${{ github.event.inputs.behat_tags || '~@performance' }}

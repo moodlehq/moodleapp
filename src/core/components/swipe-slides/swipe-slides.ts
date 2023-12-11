@@ -50,6 +50,13 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
             if (swiperRef?.nativeElement?.swiper) {
                 this.swiper = swiperRef.nativeElement.swiper as Swiper;
 
+                if (this.options.initialSlide) {
+                    this.swiper.slideTo(this.options.initialSlide, 0, this.options.runCallbacksOnInit);
+                }
+
+                this.swiper.on('slideChangeTransitionStart', () => this.slideWillChange());
+                this.swiper.on('slideChangeTransitionEnd', () => this.slideDidChange());
+
                 Object.keys(this.options).forEach((key) => {
                     if (this.swiper) {
                         this.swiper.params[key] = this.options[key];

@@ -214,10 +214,7 @@ class behat_app extends behat_app_helper {
             return true;
         });
 
-        $this->wait_for_pending_js();
-
-        // Wait scroll animation to finish.
-        $this->getSession()->wait(300);
+        $this->wait_animations_done();
     }
 
     /**
@@ -263,10 +260,7 @@ class behat_app extends behat_app_helper {
             throw new DriverException('Error when swiping - ' . $result);
         }
 
-        $this->wait_for_pending_js();
-
-        // Wait swipe animation to finish.
-        $this->getSession()->wait(300);
+        $this->wait_animations_done();
     }
 
     /**
@@ -689,10 +683,7 @@ class behat_app extends behat_app_helper {
                 return true;
             });
 
-            $this->wait_for_pending_js();
-
-            // Wait for UI to settle after refreshing.
-            $this->getSession()->wait(300);
+            $this->wait_animations_done();
 
             if (is_null($locator)) {
                 return;

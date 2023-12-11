@@ -213,7 +213,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         }
 
         const showDevOptionsOnConfig = await CoreConfig.get('showDevOptions', 0);
-        this.devOptionsForced = CoreConstants.BUILD.isDevelopment || CoreConstants.BUILD.isTesting;
+        this.devOptionsForced = CoreConstants.enableDevTools();
         this.showDevOptions = this.devOptionsForced || showDevOptionsOnConfig == 1;
 
         const publicKey = this.deviceInfo.pushId ?

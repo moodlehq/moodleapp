@@ -641,4 +641,15 @@ EOF;
             return $text;
         }
     }
+
+    /**
+     * Wait until animations have finished.
+     */
+    protected function wait_animations_done() {
+        $this->wait_for_pending_js();
+
+        // Ideally, we wouldn't wait a fixed amount of time. But it is not straightforward to wait for animations
+        // to finish, so for now we'll just wait 300ms.
+        usleep(300000);
+    }
 }

@@ -37,10 +37,6 @@ function buildRoutes(injector: Injector): Routes {
             component: CoreMainMenuPage,
             children: [
                 {
-                    path: '',
-                    pathMatch: 'full',
-                },
-                {
                     path: CoreMainMenuHomeHandlerService.PAGE_NAME,
                     loadChildren: () => import('./mainmenu-home-lazy.module').then(m => m.CoreMainMenuHomeLazyModule),
                 },
