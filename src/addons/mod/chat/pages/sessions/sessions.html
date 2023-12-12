@@ -17,8 +17,9 @@
             <core-group-selector [groupInfo]="groupInfo" [(selected)]="groupId" (selectedChange)="reloadSessions()" [courseId]="courseId" />
 
             <ion-item>
-                <ion-label>{{ 'addon.mod_chat.showincompletesessions' | translate }}</ion-label>
-                <ion-toggle [(ngModel)]="showAll" (ionChange)="reloadSessions()" slot="end" />
+                <ion-toggle [(ngModel)]="showAll" (ionChange)="reloadSessions()">
+                    {{ 'addon.mod_chat.showincompletesessions' | translate }}
+                </ion-toggle>
             </ion-item>
 
             <ion-card *ngFor="let session of sessions.items" (click)="sessions.select(session)" button

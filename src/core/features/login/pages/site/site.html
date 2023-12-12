@@ -22,22 +22,18 @@
         </div>
         <form [formGroup]="siteForm" (ngSubmit)="connect(siteForm.value.siteUrl, $event)" *ngIf="!fixedSites && siteForm" #siteFormEl>
             <!-- Form to input the site URL if there are no fixed sites. -->
-            <ng-container *ngIf=" siteSelector==='url'">
-                <ion-item>
-                    <ion-label position=" stacked">
-                        <h2>{{ 'core.login.siteaddress' | translate }}</h2>
-                    </ion-label>
+            <ng-container *ngIf="siteSelector==='url'">
+                <ion-item lines="inset">
                     <ion-input name="url" type="url" placeholder="{{ 'core.login.siteaddressplaceholder' | translate }}"
-                        formControlName="siteUrl" [core-auto-focus]="showKeyboard && !showScanQR" />
+                        formControlName="siteUrl" [core-auto-focus]="showKeyboard && !showScanQR" labelPlacement="stacked"
+                        [label]="'core.login.siteaddress' | translate" [clearInput]="true" />
                 </ion-item>
             </ng-container>
             <ng-container *ngIf="siteSelector !== 'url'">
-                <ion-item>
-                    <ion-label position="stacked">
-                        <h2>{{ 'core.login.siteaddress' | translate }}</h2>
-                    </ion-label>
+                <ion-item lines="inset">
                     <ion-input name="url" placeholder="{{ 'core.login.siteaddressplaceholder' | translate }}" formControlName="siteUrl"
-                        [core-auto-focus]="showKeyboard && !showScanQR" (ionChange)="searchSite($event, siteForm.value.siteUrl)" />
+                        [core-auto-focus]="showKeyboard && !showScanQR" (ionChange)="searchSite($event, siteForm.value.siteUrl)"
+                        labelPlacement="stacked" [label]="'core.login.siteaddress' | translate" [clearInput]="true" />
                 </ion-item>
 
                 <ion-list [class.hidden]="!hasSites && !enteredSiteUrl" class="core-login-site-list">

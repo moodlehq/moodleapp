@@ -38,10 +38,9 @@
             <form name="addon-mod_assign-edit-form" #editSubmissionForm>
                 <!-- Submission statement. -->
                 <ion-item class="ion-text-wrap" *ngIf="submissionStatement">
-                    <ion-label>
+                    <ion-checkbox name="submissionstatement" [(ngModel)]="submissionStatementAccepted">
                         <core-format-text [text]="submissionStatement" [filter]="false" />
-                    </ion-label>
-                    <ion-checkbox slot="end" name="submissionstatement" [(ngModel)]="submissionStatementAccepted" />
+                    </ion-checkbox>
                     <!-- ion-checkbox doesn't use an input. Create a hidden input to hold the value. -->
                     <input type="hidden" [ngModel]="submissionStatementAccepted" name="submissionstatement">
                 </ion-item>

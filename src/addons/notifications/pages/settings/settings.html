@@ -22,26 +22,22 @@
     <core-loading [hideUntil]="preferencesLoaded">
         <ion-card>
             <ion-item class="ion-text-wrap" *ngIf="preferences">
-                <ion-label>
+                <ion-toggle [(ngModel)]="preferences.enableall" (ngModelChange)="enableAll(preferences.enableall)">
                     <p class="item-heading">{{ 'addon.notifications.allownotifications' | translate }}</p>
-                </ion-label>
-                <ion-toggle [(ngModel)]="preferences.enableall" (ngModelChange)="enableAll(preferences.enableall)" slot="end" />
+                </ion-toggle>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="canChangeSound">
-                <ion-label>
+                <ion-toggle [(ngModel)]="notificationSound" (ngModelChange)="changeNotificationSound(notificationSound)">
                     <p class="item-heading">{{ 'addon.notifications.playsound' | translate }}</p>
-                </ion-label>
-                <ion-toggle [(ngModel)]="notificationSound" (ngModelChange)="changeNotificationSound(notificationSound)" slot="end" />
+                </ion-toggle>
             </ion-item>
         </ion-card>
 
         <ion-card>
-            <ion-item class="ion-text-wrap only-links" *ngIf="preferences?.processors?.length" lines="none" [button]="false">
-                <ion-label class="addon-notification-type-form">
-                    <p class="item-heading">{{ 'addon.notifications.typeofnotification' | translate }}</p>
-                </ion-label>
+            <ion-item class="ion-text-wrap addon-notification-type-form" *ngIf="preferences?.processors?.length" lines="none">
                 <!-- Show processor selector. -->
                 <ion-select [(ngModel)]="currentProcessorName" (ionChange)="changeProcessor($event)" interface="popover">
+                    <p class="item-heading" slot="label">{{ 'addon.notifications.typeofnotification' | translate }}</p>
                     <ion-select-option class="ion-text-wrap" *ngFor="let processor of preferences?.processors" [value]="processor.name">
                         {{ processor.displayname }}
                     </ion-select-option>

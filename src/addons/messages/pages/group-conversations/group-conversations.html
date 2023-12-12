@@ -161,7 +161,8 @@
             <div class="flex-row ion-justify-content-between">
                 <p class="item-heading">
                     <core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="0" />
-                    <ion-icon name="fas-user-slash" *ngIf="conversation.isblocked" [title]="'addon.messages.contactblocked' | translate" />
+                    <ion-icon name="fas-user-slash" *ngIf="conversation.isblocked"
+                        [attr.aria-label]="'addon.messages.contactblocked' | translate" />
                     <ion-icon *ngIf="conversation.ismuted" name="fas-volume-xmark"
                         [title]="'addon.messages.mutedconversation' | translate" />
                 </p>

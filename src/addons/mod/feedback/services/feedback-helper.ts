@@ -251,7 +251,7 @@ export class AddonModFeedbackHelperProvider {
         return Object.assign(item, {
             templateName: 'label',
             value: '',
-            hasTextInput: false,
+            slottedLabel: false,
         });
     }
 
@@ -265,7 +265,7 @@ export class AddonModFeedbackHelperProvider {
         const formItem: AddonModFeedbackFormBasicItem = Object.assign(item, {
             templateName: 'label',
             value: '',
-            hasTextInput: false,
+            slottedLabel: false,
         });
 
         const type = parseInt(formItem.presentation, 10);
@@ -304,7 +304,7 @@ export class AddonModFeedbackHelperProvider {
             value: item.rawValue !== undefined ? Number(item.rawValue) : '',
             rangefrom: typeof rangeFrom == 'number' && !isNaN(rangeFrom) ? range[0] : '',
             rangeto: typeof rangeTo == 'number' && !isNaN(rangeTo) ? rangeTo : '',
-            hasTextInput: true,
+            slottedLabel: true,
         });
         formItem.postfix = this.getNumericBoundariesForDisplay(formItem.rangefrom, formItem.rangeto);
 
@@ -322,7 +322,7 @@ export class AddonModFeedbackHelperProvider {
             templateName: 'textfield',
             length: Number(item.presentation.split(AddonModFeedbackProvider.LINE_SEP)[1]) || 255,
             value: item.rawValue !== undefined ? item.rawValue : '',
-            hasTextInput: true,
+            slottedLabel: true,
         });
     }
 
@@ -336,7 +336,7 @@ export class AddonModFeedbackHelperProvider {
         return Object.assign(item, {
             templateName: 'textarea',
             value: item.rawValue !== undefined ? item.rawValue : '',
-            hasTextInput: true,
+            slottedLabel: true,
         });
     }
 
@@ -356,7 +356,7 @@ export class AddonModFeedbackHelperProvider {
             subtype: subType,
             value: '',
             choices: [],
-            hasTextInput: false,
+            slottedLabel: subType === 'd',
         });
 
         formItem.presentation = parts.length > 1 ? parts[1] : '';
@@ -411,7 +411,7 @@ export class AddonModFeedbackHelperProvider {
         const formItem: AddonModFeedbackCaptchaItem = Object.assign(item, {
             templateName: 'captcha',
             value: '',
-            hasTextInput: false,
+            slottedLabel: false,
         });
 
         const data = <string[]> CoreTextUtils.parseJSON(item.otherdata);
@@ -549,7 +549,7 @@ export type AddonModFeedbackFormItem =
 export type AddonModFeedbackFormBasicItem = AddonModFeedbackItem & {
     templateName: string;
     value: AddonModFeedbackResponseValue;
-    hasTextInput: boolean;
+    slottedLabel: boolean;
     isEmpty?: boolean;
     hasError?: boolean;
 };

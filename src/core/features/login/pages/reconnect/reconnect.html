@@ -57,12 +57,12 @@
 
             <div class="core-login-methods">
                 <form *ngIf="!isBrowserSSO" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>
-                    <ion-item class="ion-margin-bottom">
-                        <ion-label class="sr-only">{{ 'core.login.password' | translate }}</ion-label>
+                    <ion-item class="ion-margin-bottom" lines="inset">
                         <core-show-password name="password">
                             <ion-input class="core-ioninput-password" name="password" type="password"
                                 placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false"
-                                autocomplete="current-password" enterkeyhint="go" required="true" />
+                                autocomplete="current-password" enterkeyhint="go" required="true"
+                                [attr.aria-label]="'core.login.password' | translate" />
                         </core-show-password>
                     </ion-item>
                     <ion-button type="submit" expand="block" [disabled]="!credForm.valid"

@@ -1,17 +1,18 @@
 :host {
     display: contents;
-    .core-input-error-container {
+    &.has-errors {
+        display: block;
         width: 100%;
+    }
 
-        .core-input-error {
-            padding: 4px;
-            color: var(--danger);
-            font-size: 12px;
-            display: none;
+    .core-input-error {
+        padding: 4px;
+        color: var(--danger);
+        font-size: 12px;
+        display: none;
 
-            &:first-child {
-                display: block;
-            }
+        &:first-child {
+            display: block;
         }
     }
 }

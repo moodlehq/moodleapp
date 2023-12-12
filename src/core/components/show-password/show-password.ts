@@ -29,7 +29,7 @@ import { CoreUtils } from '@services/utils/utils';
  *
  * Example:
  *
- * <core-show-password [name]="'password'">
+ * <core-show-password name="password">
  *     <ion-input type="password" name="password"></ion-input>
  * </core-show-password>
  */

@@ -14,8 +14,8 @@
     <core-loading [hideUntil]="loaded">
         <form #editFormEl *ngIf="glossary">
             <ion-item>
-                <ion-label position="stacked">{{ 'addon.mod_glossary.concept' | translate }}</ion-label>
-                <ion-input type="text" [placeholder]="'addon.mod_glossary.concept' | translate" [(ngModel)]="data.concept" name="concept" />
+                <ion-input labelPlacement="stacked" type="text" [placeholder]="'addon.mod_glossary.concept' | translate"
+                    [(ngModel)]="data.concept" name="concept" [label]="'addon.mod_glossary.concept' | translate" />
             </ion-item>
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_glossary.definition' | translate }}</ion-label>
@@ -25,22 +25,20 @@
                     [draftExtraParams]="editorExtraParams" />
             </ion-item>
             <ion-item *ngIf="categories.length > 0">
-                <ion-label position="stacked">
-                    {{ 'addon.mod_glossary.categories' | translate }}
-                </ion-label>
-                <ion-select [(ngModel)]="data.categories" multiple="true" interface="action-sheet"
+
+                <ion-select labelPlacement="stacked" [(ngModel)]="data.categories" multiple="true" interface="action-sheet"
                     [placeholder]="'addon.mod_glossary.categories' | translate" name="categories" [cancelText]="'core.cancel' | translate"
-                    [interfaceOptions]="{header: 'addon.mod_glossary.categories' | translate}">
+                    [interfaceOptions]="{header: 'addon.mod_glossary.categories' | translate}"
+                    [label]="'addon.mod_glossary.categories' | translate">
                     <ion-select-option *ngFor="let category of categories" [value]="category.id">
                         {{ category.name }}
                     </ion-select-option>
                 </ion-select>
             </ion-item>
             <ion-item *ngIf="showAliases">
-                <ion-label position="stacked">
-                    {{ 'addon.mod_glossary.aliases' | translate }}
-                </ion-label>
-                <ion-textarea [(ngModel)]="data.aliases" rows="1" [core-auto-rows]="data.aliases" name="aliases" />
+
+                <ion-textarea labelPlacement="stacked" [(ngModel)]="data.aliases" rows="1" [core-auto-rows]="data.aliases" name="aliases"
+                    [label]="'addon.mod_glossary.aliases' | translate" />
             </ion-item>
             <ion-item-divider>
                 <ion-label>
@@ -56,16 +54,19 @@
                     </ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap">
-                    <ion-label>{{ 'addon.mod_glossary.entryusedynalink' | translate }}</ion-label>
-                    <ion-toggle [(ngModel)]="data.usedynalink" name="usedynalink" slot="end" />
+                    <ion-toggle [(ngModel)]="data.usedynalink" name="usedynalink">
+                        {{ 'addon.mod_glossary.entryusedynalink' | translate }}
+                    </ion-toggle>
                 </ion-item>
                 <ion-item class="ion-text-wrap">
-                    <ion-label>{{ 'addon.mod_glossary.casesensitive' | translate }}</ion-label>
-                    <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.casesensitive" name="casesensitive" slot="end" />
+                    <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.casesensitive" name="casesensitive">
+                        {{ 'addon.mod_glossary.casesensitive' | translate }}
+                    </ion-toggle>
                 </ion-item>
                 <ion-item class="ion-text-wrap">
-                    <ion-label>{{ 'addon.mod_glossary.fullmatch' | translate }}</ion-label>
-                    <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.fullmatch" name="fullmatch" slot="end" />
+                    <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.fullmatch" name="fullmatch">
+                        {{ 'addon.mod_glossary.fullmatch' | translate }}
+                    </ion-toggle>
                 </ion-item>
             </ng-container>
             <ion-button class="ion-margin" expand="block" [disabled]="!data.concept || !data.definition" (click)="save()">

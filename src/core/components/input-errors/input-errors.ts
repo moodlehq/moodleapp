@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChange } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Translate } from '@singletons';
 
@@ -30,7 +30,7 @@ import { Translate } from '@singletons';
  * Example usage:
  *
  * <ion-item class="ion-text-wrap">
- *     <ion-label stacked core-mark-required="true">{{ 'core.login.username' | translate }}</ion-label>
+ *     <ion-label stacked [core-mark-required]="true">{{ 'core.login.username' | translate }}</ion-label>
  *     <ion-input type="text" name="username" formControlName="username"></ion-input>
  *     <core-input-errors [control]="myForm.controls.username" [errorMessages]="usernameErrors"></core-input-errors>
  * </ion-item>
@@ -40,19 +40,32 @@ import { Translate } from '@singletons';
     templateUrl: 'core-input-errors.html',
     styleUrls: ['input-errors.scss'],
 })
-export class CoreInputErrorsComponent implements OnChanges {
+export class CoreInputErrorsComponent implements OnInit, OnChanges {
 
     @Input() control?: FormControl;
-    @Input() errorMessages?: Record<string, string>;
-    @Input() errorText?: string; // Set other non automatic errors.
+    @Input() errorMessages: Record<string, string> = {};
+    @Input() errorText = ''; // Set other non automatic errors.
     errorKeys: string[] = [];
+
+    protected element: HTMLElement;
+
+    @HostBinding('class.has-errors')
+    get hasErrors(): boolean {
+        return (this.control && this.control.dirty && !this.control.valid) || !!this.errorText;
+    }
+
+    @HostBinding('role') role = 'alert';
+
+    constructor(
+        element: ElementRef,
+    ) {
+        this.element = element.nativeElement;
+    }
 
     /**
      * Initialize some common errors if they aren't set.
      */
     protected initErrorMessages(): void {
-        this.errorMessages = this.errorMessages || {};
-
         this.errorMessages.required = this.errorMessages.required || Translate.instant('core.required');
         this.errorMessages.email = this.errorMessages.email || Translate.instant('core.login.invalidemail');
         this.errorMessages.date = this.errorMessages.date || Translate.instant('core.login.invaliddate');
@@ -67,7 +80,14 @@ export class CoreInputErrorsComponent implements OnChanges {
     }
 
     /**
-     * Component being changed.
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        this.element.closest('ion-item')?.classList.add('has-core-input-errors');
+    }
+
+    /**
+     * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if ((changes.control || changes.errorMessages) && this.control) {

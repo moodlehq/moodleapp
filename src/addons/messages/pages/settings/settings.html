@@ -22,21 +22,19 @@
                     </ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p>{{ 'addon.messages.useentertosend' | translate }}</p>
-                    </ion-label>
-                    <ion-toggle [(ngModel)]="sendOnEnter" (ngModelChange)="sendOnEnterChanged()" slot="end" />
+                    <ion-toggle [(ngModel)]="sendOnEnter" (ngModelChange)="sendOnEnterChanged()">
+                        {{ 'addon.messages.useentertosend' | translate }}
+                    </ion-toggle>
                 </ion-item>
             </ion-list>
         </ion-card>
 
         <!-- Contactable privacy. -->
         <ion-card>
-            <ion-item *ngIf="!advancedContactable">
-                <ion-label class="ion-text-wrap">
-                    <p>{{ 'addon.messages.blocknoncontacts' | translate }}</p>
-                </ion-label>
-                <ion-toggle [(ngModel)]="contactablePrivacy" (ngModelChange)="saveContactablePrivacy(contactablePrivacy)" slot="end" />
+            <ion-item *ngIf="!advancedContactable" class="ion-text-wrap">
+                <ion-toggle [(ngModel)]="contactablePrivacy" (ngModelChange)="saveContactablePrivacy(contactablePrivacy)">
+                    {{ 'addon.messages.blocknoncontacts' | translate }}
+                </ion-toggle>
             </ion-item>
 
             <ion-list *ngIf="advancedContactable">
@@ -47,22 +45,19 @@
                         </ion-label>
                     </ion-item-divider>
                     <ion-item class="ion-text-wrap">
-                        <ion-label>
-                            <p>{{ 'addon.messages.contactableprivacy_onlycontacts' | translate }}</p>
-                        </ion-label>
-                        <ion-radio slot="start" [value]="onlyContactsValue" />
+                        <ion-radio labelPlacement="end" justify="start" [value]="onlyContactsValue">
+                            {{ 'addon.messages.contactableprivacy_onlycontacts' | translate }}
+                        </ion-radio>
                     </ion-item>
                     <ion-item class="ion-text-wrap">
-                        <ion-label>
-                            <p>{{ 'addon.messages.contactableprivacy_coursemember' | translate }}</p>
-                        </ion-label>
-                        <ion-radio slot="start" [value]="courseMemberValue" />
+                        <ion-radio labelPlacement="end" justify="start" [value]="courseMemberValue">
+                            {{ 'addon.messages.contactableprivacy_coursemember' | translate }}
+                        </ion-radio>
                     </ion-item>
                     <ion-item *ngIf="allowSiteMessaging" class="ion-text-wrap">
-                        <ion-label>
-                            <p>{{ 'addon.messages.contactableprivacy_site' | translate }}</p>
-                        </ion-label>
-                        <ion-radio slot="start" [value]="siteValue" />
+                        <ion-radio labelPlacement="end" justify="start" [value]="siteValue">
+                            {{ 'addon.messages.contactableprivacy_site' | translate }}
+                        </ion-radio>
                     </ion-item>
                 </ion-radio-group>
             </ion-list>

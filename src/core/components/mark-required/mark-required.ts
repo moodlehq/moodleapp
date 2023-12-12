@@ -26,7 +26,7 @@ import { Translate } from '@singletons';
  *
  * This directive should be applied in the label. Example:
  *
- * <ion-label core-mark-required="{{field.required}}">{{ 'core.login.username' | translate }}</ion-label>
+ * <p slot="label" [core-mark-required]="true">Username</p>
  */
 @Component({
     selector: '[core-mark-required]',
@@ -38,7 +38,7 @@ export class CoreMarkRequiredComponent implements OnInit, AfterViewInit {
     @Input('core-mark-required') coreMarkRequired: boolean | string = true;
 
     protected element: HTMLElement;
-    requiredLabel?: string;
+    requiredLabel = Translate.instant('core.required');
 
     constructor(
         element: ElementRef,
@@ -50,12 +50,11 @@ export class CoreMarkRequiredComponent implements OnInit, AfterViewInit {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.requiredLabel = Translate.instant('core.required');
         this.coreMarkRequired = CoreUtils.isTrueOrOne(this.coreMarkRequired);
     }
 
     /**
-     * Called after the view is initialized.
+     * @inheritdoc
      */
     ngAfterViewInit(): void {
         if (this.coreMarkRequired) {

@@ -23,16 +23,14 @@
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap">
-                <ion-label>{{ 'core.search.allcategories' | translate }}</ion-label>
-                <ion-checkbox slot="end" [(ngModel)]="allSearchAreaCategories" [indeterminate]="allSearchAreaCategories === null"
-                    (ionChange)="allSearchAreaCategoriesUpdated()" />
+                <ion-checkbox labelPlacement="start" [(ngModel)]="allSearchAreaCategories"
+                    [indeterminate]="allSearchAreaCategories === null" (ionChange)="allSearchAreaCategoriesUpdated()">{{
+                    'core.search.allcategories' | translate }}</ion-checkbox>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngFor="let searchAreaCategory of searchAreaCategories">
-                <ion-label>
-                    <core-format-text [text]="searchAreaCategory.name" />
-                </ion-label>
-                <ion-checkbox slot="end" [(ngModel)]="searchAreaCategory.checked"
-                    (ionChange)="onSearchAreaCategoryInputChanged(searchAreaCategory)" />
+                <ion-checkbox labelPlacement="start" [(ngModel)]="searchAreaCategory.checked"
+                    (ionChange)="onSearchAreaCategoryInputChanged(searchAreaCategory)"><core-format-text
+                        [text]="searchAreaCategory.name" /></ion-checkbox>
             </ion-item>
         </ng-container>
         <ng-container *ngIf="!hideCourses && courses.length > 0">
@@ -43,14 +41,13 @@
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap">
-                <ion-label>{{ 'core.search.allcourses' | translate }}</ion-label>
-                <ion-checkbox slot="end" [(ngModel)]="allCourses" [indeterminate]="allCourses === null" (ionChange)="allCoursesUpdated()" />
+                <ion-checkbox labelPlacement="start" [(ngModel)]="allCourses" [indeterminate]="allCourses === null"
+                    (ionChange)="allCoursesUpdated()">
+                    {{ 'core.search.allcourses' | translate }}</ion-checkbox>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngFor="let course of courses">
-                <ion-label>
-                    <core-format-text [text]="course.shortname" />
-                </ion-label>
-                <ion-checkbox slot="end" [(ngModel)]="course.checked" (ionChange)="onCourseInputChanged(course)" />
+                <ion-checkbox labelPlacement="start" [(ngModel)]="course.checked"
+                    (ionChange)="onCourseInputChanged(course)"><core-format-text [text]="course.shortname" /></ion-checkbox>
             </ion-item>
         </ng-container>
     </ion-list>

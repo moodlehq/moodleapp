@@ -24,12 +24,9 @@
                 </ion-label>
             </ion-item-divider>
             <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading">
-                        {{ 'core.settings.syncdatasaver' | translate }}
-                    </p>
-                </ion-label>
-                <ion-toggle slot="end" [(ngModel)]="dataSaver" (ngModelChange)="syncOnlyOnWifiChanged()" />
+                <ion-toggle [(ngModel)]="dataSaver" (ngModelChange)="syncOnlyOnWifiChanged()">
+                    {{ 'core.settings.syncdatasaver' | translate }}
+                </ion-toggle>
             </ion-item>
 
             <ion-card class="core-warning-card" *ngIf="!isOnline || (dataSaver && limitedConnection)">

@@ -58,13 +58,12 @@
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="access?.canallocate">
-                <ion-label position="stacked">
-                    <span core-mark-required="true">
-                        {{ 'addon.mod_workshop.assessmentweight' | translate }}
-                    </span>
-                </ion-label>
-                <ion-select formControlName="weight" required="true" interface="action-sheet" [cancelText]="'core.cancel' | translate"
+                <ion-select labelPlacement="stacked" formControlName="weight" required="true" interface="action-sheet"
+                    [cancelText]="'core.cancel' | translate"
                     [interfaceOptions]="{header: 'addon.mod_workshop.assessmentweight' | translate}">
+                    <div [core-mark-required]="true" slot="label">
+                        {{ 'addon.mod_workshop.assessmentweight' | translate }}
+                    </div>
                     <ion-select-option *ngFor="let w of weights" [value]="w">{{ w }}</ion-select-option>
                 </ion-select>
             </ion-item>
@@ -75,9 +74,10 @@
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="access?.canoverridegrades">
-                <ion-label position="stacked">{{ 'addon.mod_workshop.gradinggradeover' | translate }}</ion-label>
-                <ion-select formControlName="grade" interface="action-sheet" [cancelText]="'core.cancel' | translate"
-                    [interfaceOptions]="{header: 'addon.mod_workshop.gradinggradeover' | translate}">
+                <ion-select labelPlacement="stacked" formControlName="grade" interface="action-sheet"
+                    [cancelText]="'core.cancel' | translate"
+                    [interfaceOptions]="{header: 'addon.mod_workshop.gradinggradeover' | translate}"
+                    [label]="'addon.mod_workshop.gradinggradeover' | translate">
                     <ion-select-option *ngFor="let grade of evaluationGrades" [value]="grade.value">
                         {{grade.label}}
                     </ion-select-option>

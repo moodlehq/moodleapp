@@ -23,7 +23,7 @@
                 <ion-list>
                     <ion-item class="ion-text-wrap" *ngFor="let device of platform.devices" [class.item-current]="device.current">
                         <ion-label>
-                            <p class="item-heading">
+                            <p class="item-heading" id="device-{{device.id}}">
                                 <strong>{{ device.name }} {{ device.model }}</strong> ({{platform.platform}} {{ device.version }})
                             </p>
                             <p *ngIf="device.current"><strong>{{ 'core.currentdevice' | translate }}</strong></p>
@@ -33,7 +33,8 @@
                             </p>
                         </ion-label>
                         <core-button-with-spinner [loading]="device.updating" slot="end">
-                            <ion-toggle [(ngModel)]="device.enable" (ngModelChange)="enableDevice(device, device.enable)" />
+                            <ion-toggle [(ngModel)]="device.enable" (ngModelChange)="enableDevice(device, device.enable)"
+                                [attr.aria-labelledby]="'device-'+ device.id " />
                         </core-button-with-spinner>
                     </ion-item>
                 </ion-list>

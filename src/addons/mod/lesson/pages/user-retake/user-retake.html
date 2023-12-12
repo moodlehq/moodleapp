@@ -26,10 +26,10 @@
 
             <!-- Retake selector if there is more than one retake. -->
             <ion-item class="ion-text-wrap" *ngIf="student.attempts && student.attempts.length > 1">
-                <ion-label>{{ 'addon.mod_lesson.attemptheader' | translate }}</ion-label>
                 <ion-select [(ngModel)]="selectedRetake" (ionChange)="changeRetake(selectedRetake!)"
                     [cancelText]="'core.cancel' | translate" interface="action-sheet"
                     [interfaceOptions]="{header: 'addon.mod_lesson.attemptheader' | translate}">
+                    <p slot="label" class="item-heading">{{ 'addon.mod_lesson.attemptheader' | translate }}</p>
                     <ion-select-option *ngFor="let retake of student.attempts" [value]="retake.try">
                         {{retake.label}}
                     </ion-select-option>
@@ -129,7 +129,7 @@
                                 <!-- Truefalse or multichoice. -->
                                 <ion-item class="ion-text-wrap" *ngIf="answer[0].isCheckbox"
                                     [ngClass]="{'addon-mod_lesson-highlight': answer[0].highlight}">
-                                    <ion-label>
+                                    <ion-checkbox [attr.name]="answer[0].name" [ngModel]="answer[0].checked" [disabled]="true">
                                         <p>
                                             <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
                                                 [text]="answer[0].content" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
@@ -143,8 +143,7 @@
                                         <ion-badge *ngIf="answer[0].successBadge" color="success" class="addon-mod_lesson-answer-success">
                                             {{ answer[0].successBadge }}
                                         </ion-badge>
-                                    </ion-label>
-                                    <ion-checkbox [attr.name]="answer[0].name" [ngModel]="answer[0].checked" [disabled]="true" slot="end" />
+                                    </ion-checkbox>
                                 </ion-item>
 
                                 <!-- Short answer or numeric. -->

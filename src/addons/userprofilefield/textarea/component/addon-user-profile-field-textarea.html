@@ -19,8 +19,8 @@
             <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
                 [courseId]="courseId" [wsNotFiltered]="true" />
         </span>
-        <core-input-errors [control]="control" />
     </ion-label>
     <core-rich-text-editor [control]="control" [placeholder]="field.name" [autoSave]="true" [contextLevel]="contextLevel"
         [contextInstanceId]="contextInstanceId" [elementId]="modelName" />
+    <core-input-errors [control]="control" />
 </ion-item>
