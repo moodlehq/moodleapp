@@ -21,7 +21,7 @@
                     formControlName="name">
                     <div slot="label" [core-mark-required]="true">{{ 'addon.calendar.eventname' | translate }}</div>
                 </ion-input>
-                <core-input-errors [control]="form.controls.name" [errorMessages]="errors" />
+                <core-input-errors [control]="form.controls.name" />
             </ion-item>
 
             <!-- Date. -->
@@ -37,7 +37,7 @@
                         </ion-datetime>
                     </ng-template>
                 </ion-modal>
-                <core-input-errors [control]="form.controls.timestart" [errorMessages]="errors" />
+                <core-input-errors [control]="form.controls.timestart" />
             </ion-item>
 
             <!-- Type. -->

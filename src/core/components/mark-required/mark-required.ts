@@ -37,13 +37,13 @@ export class CoreMarkRequiredComponent implements OnInit, AfterViewInit {
 
     @Input('core-mark-required') coreMarkRequired: boolean | string = true;
 
-    protected element: HTMLElement;
+    protected hostElement: HTMLElement;
     requiredLabel = Translate.instant('core.required');
 
     constructor(
         element: ElementRef,
     ) {
-        this.element = element.nativeElement;
+        this.hostElement = element.nativeElement;
     }
 
     /**
@@ -59,18 +59,21 @@ export class CoreMarkRequiredComponent implements OnInit, AfterViewInit {
     ngAfterViewInit(): void {
         if (this.coreMarkRequired) {
             // Add the "required" to the aria-label.
-            const ariaLabel = this.element.getAttribute('aria-label') ||
-                CoreTextUtils.cleanTags(this.element.innerHTML, { singleLine: true });
+            const ariaLabel = this.hostElement.getAttribute('aria-label') ||
+                CoreTextUtils.cleanTags(this.hostElement.innerHTML, { singleLine: true });
             if (ariaLabel) {
-                this.element.setAttribute('aria-label', ariaLabel + ' ' + this.requiredLabel);
+                this.hostElement.setAttribute('aria-label', ariaLabel + '. ' + this.requiredLabel);
             }
         } else {
             // Remove the "required" from the aria-label.
-            const ariaLabel = this.element.getAttribute('aria-label');
+            const ariaLabel = this.hostElement.getAttribute('aria-label');
             if (ariaLabel) {
-                this.element.setAttribute('aria-label', ariaLabel.replace(' ' + this.requiredLabel, ''));
+                this.hostElement.setAttribute('aria-label', ariaLabel.replace('. ' + this.requiredLabel, ''));
             }
         }
+
+        const input = this.hostElement.closest('ion-input, ion-textarea');
+        input?.setAttribute('required', this.coreMarkRequired ? 'true' : 'false');
     }
 
 }

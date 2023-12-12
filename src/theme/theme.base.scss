@@ -126,6 +126,10 @@ ion-item > .in-item,
     white-space: normal !important;
 }
 
+ion-item .core-input-errors-wrapper {
+    width: 100%;
+}
+
 @each $color-name, $unused in $colors {
     .text-#{$color-name},
     p.text-#{$color-name} {

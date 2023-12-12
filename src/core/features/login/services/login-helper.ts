@@ -253,60 +253,6 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Builds an object with error messages for some common errors.
-     * Please notice that this function doesn't support all possible error types.
-     *
-     * @param requiredMsg Code of the string for required error.
-     * @param emailMsg Code of the string for invalid email error.
-     * @param patternMsg Code of the string for pattern not match error.
-     * @param urlMsg Code of the string for invalid url error.
-     * @param minlengthMsg Code of the string for "too short" error.
-     * @param maxlengthMsg Code of the string for "too long" error.
-     * @param minMsg Code of the string for min value error.
-     * @param maxMsg Code of the string for max value error.
-     * @returns Object with the errors.
-     */
-    getErrorMessages(
-        requiredMsg?: string,
-        emailMsg?: string,
-        patternMsg?: string,
-        urlMsg?: string,
-        minlengthMsg?: string,
-        maxlengthMsg?: string,
-        minMsg?: string,
-        maxMsg?: string,
-    ): Record<string, string> {
-        const errors: Record<string, string> = {};
-
-        if (requiredMsg) {
-            errors.required = errors.requiredTrue = Translate.instant(requiredMsg);
-        }
-        if (emailMsg) {
-            errors.email = Translate.instant(emailMsg);
-        }
-        if (patternMsg) {
-            errors.pattern = Translate.instant(patternMsg);
-        }
-        if (urlMsg) {
-            errors.url = Translate.instant(urlMsg);
-        }
-        if (minlengthMsg) {
-            errors.minlength = Translate.instant(minlengthMsg);
-        }
-        if (maxlengthMsg) {
-            errors.maxlength = Translate.instant(maxlengthMsg);
-        }
-        if (minMsg) {
-            errors.min = Translate.instant(minMsg);
-        }
-        if (maxMsg) {
-            errors.max = Translate.instant(maxMsg);
-        }
-
-        return errors;
-    }
-
-    /**
      * Get logo URL from a site public config.
      *
      * @param config Site public config.
