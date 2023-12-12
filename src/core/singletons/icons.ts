@@ -12,25 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Http } from '@singletons';
 import { CoreConstants } from '../constants';
 import { CoreLogger } from './logger';
 import aliases from '@/assets/fonts/font-awesome/aliases.json';
-import { firstValueFrom } from 'rxjs';
+import { addIcons } from 'ionicons';
+import icons from '@/assets/fonts/icons.json';
 
 /**
  * Singleton with helper functions for icon management.
  */
 export class CoreIcons {
 
-    /**
-     * Object used to store whether icons exist or not during development.
-     */
-    private static readonly DEV_ICONS_STATUS: Record<string, Promise<boolean>> = {};
-
     private static readonly ALIASES = { ...aliases } as unknown as Record<string, string>;
+    private static readonly CUSTOM_ICONS = { ...icons } as unknown as Record<string, string>;
 
     protected static logger = CoreLogger.getInstance('CoreIcons');
+
+    /**
+     * Add custom icons to Ionicons.
+     */
+    static addIconsToIonicons(): void {
+        addIcons(CoreIcons.CUSTOM_ICONS);
+    }
 
     /**
      * Check icon alias and returns the new icon name.
@@ -55,30 +58,24 @@ export class CoreIcons {
     }
 
     /**
-     * Validate that an icon exists, or show warning otherwise (only in development and testing environments).
+     * Validate that an icon exists in the list of custom icons for the app, or show warning otherwise
+     * (only in development and testing environments).
      *
-     * @param name Icon name.
-     * @param src Icon source url.
+     * @param font Font Family.
+     * @param library Library to use.
+     * @param icon Icon Name.
      */
-    static validateIcon(name: string, src: string): void {
+    static validateIcon(font: string, library: string, icon: string): void {
         if (!CoreConstants.BUILD.isDevelopment && !CoreConstants.BUILD.isTesting) {
             return;
         }
 
-        if (!(src in CoreIcons.DEV_ICONS_STATUS)) {
-            CoreIcons.DEV_ICONS_STATUS[src] = firstValueFrom(Http.get(src, { responseType: 'text' }))
-                .then(() => true)
-                .catch(() => false);
+        if (
+            CoreIcons.CUSTOM_ICONS[icon] === undefined &&
+            CoreIcons.CUSTOM_ICONS[CoreIcons.prefixIconName(font, library, icon)] === undefined
+        ) {
+            this.logger.error(`Icon ${icon} not found`);
         }
-
-        // eslint-disable-next-line promise/catch-or-return
-        CoreIcons.DEV_ICONS_STATUS[src].then(exists => {
-            if (exists) {
-                return;
-            }
-
-            return this.logger.error(`Icon ${name} not found`);
-        });
     }
 
     /**
@@ -174,8 +171,7 @@ export class CoreIcons {
 
         newIcon.setAttribute('src', src);
 
-        newIcon.classList.add('faicon');
-        CoreIcons.validateIcon(iconName, src);
+        CoreIcons.validateIcon('font-awesome', library, iconName);
 
         icon.parentElement?.insertBefore(newIcon, icon);
         icon.remove();
@@ -193,6 +189,36 @@ export class CoreIcons {
      */
     static getIconSrc(font: string, library: string, icon: string): string {
         return `assets/fonts/${font}/${library}/${icon}.svg`;
+    }
+
+    /**
+     * Prefix an icon name using the library prefix.
+     *
+     * @param font Font Family.
+     * @param library Library to use.
+     * @param icon Icon Name.
+     * @returns Prefixed icon name.
+     */
+    static prefixIconName(font: string, library: string, icon: string): string {
+        const prefixes = CoreConstants.CONFIG.iconsPrefixes?.[font]?.[library];
+        if (!prefixes || !prefixes.length) {
+            return icon;
+        }
+
+        return `${prefixes[0]}-${icon}`;
+    }
+
+    /**
+     * Check if an icon name contains any of the prefixes configured for icons.
+     * If it doesn't then it probably is an Ionicon.
+     *
+     * @param icon Icon Name.
+     * @returns Whether icon is prefixed.
+     */
+    static isIconNamePrefixed(icon: string): boolean {
+        return Object.values(CoreConstants.CONFIG.iconsPrefixes ?? {})
+            .some(library => Object.values(library)
+            .some(prefixes => prefixes.some(prefix => icon.startsWith(`${prefix}-`))));
     }
 
 }

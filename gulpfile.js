@@ -15,6 +15,7 @@
 const BuildLangTask = require('./gulp/task-build-lang');
 const BuildBehatPluginTask = require('./gulp/task-build-behat-plugin');
 const BuildEnvTask = require('./gulp/task-build-env');
+const BuildIconsJsonTask = require('./gulp/task-build-icons-json');
 const PushTask = require('./gulp/task-push');
 const OverrideLangTask = require('./gulp/task-override-lang');
 const Utils = require('./gulp/utils');
@@ -47,6 +48,10 @@ gulp.task('env', (done) => {
     new BuildEnvTask().run(done);
 });
 
+gulp.task('icons', (done) => {
+    new BuildIconsJsonTask().run(done);
+});
+
 // Build a Moodle plugin to run Behat tests.
 if (BuildBehatPluginTask.isBehatConfigured()) {
     gulp.task('behat', (done) => {
@@ -63,6 +68,7 @@ gulp.task(
     gulp.parallel([
         'lang',
         'env',
+        'icons',
         ...(BuildBehatPluginTask.isBehatConfigured() ? ['behat'] : [])
     ]),
 );

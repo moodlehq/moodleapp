@@ -111,5 +111,16 @@
         "long": 3500,
         "sticky": 0
     },
-    "disableTokenFile": false
+    "disableTokenFile": false,
+    "iconsPrefixes": {
+        "font-awesome": {
+            "brands": ["fab"],
+            "regular": ["far"],
+            "solid": ["fa", "fas"]
+        },
+        "moodle": {
+            "font-awesome": ["fam"],
+            "moodle": ["moodle"]
+        }
+    }
 }

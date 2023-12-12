@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants } from '@/core/constants';
 import { CoreIcons } from '@singletons/icons';
 
 describe('CoreIcons singleton', () => {
@@ -79,6 +80,45 @@ describe('CoreIcons singleton', () => {
         icon.className = 'fa fa-check-square';
         expect((await CoreIcons.replaceCSSIcon(icon))?.getAttribute('src'))
             .toEqual('assets/fonts/font-awesome/solid/square-check.svg');
+    });
+
+    it('prefixes icons names', () => {
+        // Arrange.
+        CoreConstants.CONFIG.iconsPrefixes = {
+            foo: {
+                bar: ['fo', 'for'],
+                baz: ['foz'],
+            },
+            lorem: {
+                ipsum: ['lorip'],
+            },
+        };
+
+        // Act and assert.
+        expect(CoreIcons.prefixIconName('foo', 'bar', 'myicon')).toEqual('fo-myicon');
+        expect(CoreIcons.prefixIconName('foo', 'baz', 'myicon')).toEqual('foz-myicon');
+        expect(CoreIcons.prefixIconName('lorem', 'ipsum', 'myicon')).toEqual('lorip-myicon');
+        expect(CoreIcons.prefixIconName('invalid', 'invalid', 'myicon')).toEqual('myicon');
+    });
+
+    it('check if an icon is prefixed', () => {
+        // Arrange.
+        CoreConstants.CONFIG.iconsPrefixes = {
+            foo: {
+                bar: ['fo', 'for'],
+                baz: ['foz'],
+            },
+            lorem: {
+                ipsum: ['lorip'],
+            },
+        };
+
+        // Act and assert.
+        expect(CoreIcons.isIconNamePrefixed('fo-myicon')).toEqual(true);
+        expect(CoreIcons.isIconNamePrefixed('foz-myicon')).toEqual(true);
+        expect(CoreIcons.isIconNamePrefixed('lorip-myicon')).toEqual(true);
+        expect(CoreIcons.isIconNamePrefixed('myicon')).toEqual(false);
+        expect(CoreIcons.isIconNamePrefixed('fox-myicon')).toEqual(false);
     });
 
 });
