@@ -28,11 +28,11 @@
                 <ion-card *ngIf="askPassword">
                     <form (ngSubmit)="submitPassword($event, passwordinput)" #passwordForm>
                         <ion-item class="ion-text-wrap">
-                            <ion-label position="stacked">{{ 'addon.mod_lesson.enterpassword' | translate }}</ion-label>
-                            <core-show-password name="password">
-                                <ion-input name="password" type="password" placeholder="{{ 'core.login.password' | translate }}"
-                                    core-auto-focus #passwordinput [clearOnEdit]="false" />
-                            </core-show-password>
+                            <ion-input labelPlacement="stacked" name="password" type="password"
+                                placeholder="{{ 'core.login.password' | translate }}" core-auto-focus #passwordinput [clearOnEdit]="false"
+                                [label]="'addon.mod_lesson.enterpassword' | translate">
+                                <core-show-password slot="end" />
+                            </ion-input>
                         </ion-item>
                         <ion-button expand="block" type="submit">
                             {{ 'addon.mod_lesson.continue' | translate }}

@@ -104,13 +104,12 @@
                         <core-input-errors [control]="signupForm.controls.username" [errorMessages]="usernameErrors" />
                     </ion-item>
                     <ion-item class="ion-text-wrap">
-                        <ion-label position="stacked">
-                            <p [core-mark-required]="true">{{ 'core.login.password' | translate }}</p>
-                        </ion-label>
-                        <core-show-password name="password">
-                            <ion-input name="password" type="password" placeholder="{{ 'core.login.password' | translate }}"
-                                formControlName="password" [clearOnEdit]="false" autocomplete="new-password" required="true" />
-                        </core-show-password>
+                        <ion-input labelPlacement="stacked" name="password" type="password"
+                            placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false"
+                            autocomplete="new-password" required="true">
+                            <div slot="label" [core-mark-required]="true">{{ 'core.login.password' | translate }}</div>
+                            <core-show-password slot="end" />
+                        </ion-input>
                         <p *ngIf="settings.passwordpolicy" class="core-input-footnote">
                             {{settings.passwordpolicy}}
                         </p>
