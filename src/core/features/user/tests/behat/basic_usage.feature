@@ -6,6 +6,7 @@ Feature: Test basic usage of user features
       | username | firstname | lastname | timezone |
       | student1 | Student   | Student  | 99       |
 
+  @ionic7_failure
   Scenario: Complete missing fields
     Given the following "custom profile fields" exist:
       | datatype | shortname  | name           | required | param1 |

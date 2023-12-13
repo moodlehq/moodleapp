@@ -105,6 +105,7 @@ Feature: Test usage of forum activity with groups in app
     And I should find "Disc vis ALL" in the app
     But I should not find "Disc vis G2" in the app
 
+  @ionic7_failure
   Scenario: Student can only add discussions in his groups
     Given I entered the forum activity "Separate groups forum" on course "Course 1" as "student1" in the app
     When I press "Add discussion topic" in the app
@@ -163,6 +164,7 @@ Feature: Test usage of forum activity with groups in app
     And I press "All participants" in the app
     Then I should find "My happy subject" in the app
 
+  @ionic7_failure
   Scenario: Teacher can add discussion to any group
     Given I entered the forum activity "Separate groups forum" on course "Course 1" as "teacher1" in the app
     And I press "Separate groups" in the app

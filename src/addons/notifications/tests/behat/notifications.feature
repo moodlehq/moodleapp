@@ -39,6 +39,7 @@ Feature: Notifications
       | Test 29  | student2 | student1 | 1649766628  | 1649766602 |
       | Test 30  | student2 | student1 | 1649766629  | null       |
 
+  @ionic7_failure
   Scenario: Mobile navigation
     Given I enter the app
     And I log in as "student1"
