@@ -231,10 +231,17 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             return;
         }
 
-        const updateArialabelledBy = () => this.ariaLabelledBy = label.getAttribute('id') ?? undefined;
+        const updateArialabelledBy = () => {
+            this.ariaLabelledBy = label.getAttribute('id') ?? undefined;
+        };
 
         this.labelObserver = new MutationObserver(updateArialabelledBy);
         this.labelObserver.observe(label, { attributes: true, attributeFilter: ['id'] });
+
+        // Usually the label won't have an id, so we need to add one.
+        if (!label.getAttribute('id')) {
+            label.setAttribute('id', 'rte-'+CoreUtils.getUniqueId('CoreEditorRichTextEditor'));
+        }
 
         updateArialabelledBy();
     }

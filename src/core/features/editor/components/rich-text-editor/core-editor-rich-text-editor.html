@@ -6,7 +6,7 @@
     </div>
 
     <ion-textarea [hidden]="rteEnabled" #textarea class="core-textarea" role="textbox" [attr.name]="name" ngControl="control"
-        [placeholder]="placeholder" [attr.aria-label]="placeholder" (ionChange)="onChange()" (ionFocus)="showToolbar($event)"
+        [placeholder]="placeholder" [attr.aria-labelledby]="ariaLabelledBy" (ionChange)="onChange()" (ionFocus)="showToolbar($event)"
         (ionBlur)="hideToolbar($event)" />
 
     <div class="core-rte-info-message" *ngIf="infoMessage">
