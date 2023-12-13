@@ -39,17 +39,16 @@ export class CoreIcons {
      * Check icon alias and returns the new icon name.
      *
      * @param icon Icon name.
+     * @param isAppIcon Whether the icon is in the app's code, false if it's in some user generated content.
      * @returns New icon name and new library if changed.
      */
-    static async getFontAwesomeIconFileName(icon: string): Promise<{fileName: string; newLibrary?: string}> {
-        let newLibrary: string | undefined = undefined;
-        if (icon.endsWith('-o')) {
-            newLibrary = 'regular';
-            icon = icon.substring(0, icon.length - 2);
-        }
+    static async getFontAwesomeIconFileName(icon: string, isAppIcon = true): Promise<{fileName: string; newLibrary?: string}> {
+        const newLibrary = icon.endsWith('-o') ? 'regular' : undefined;
 
         if (CoreIcons.ALIASES[icon]) {
-            this.logger.error(`Icon ${icon} is an alias of ${CoreIcons.ALIASES[icon]}, please use the new name.`);
+            if (isAppIcon) {
+                this.logger.error(`Icon ${icon} is an alias of ${CoreIcons.ALIASES[icon]}, please use the new name.`);
+            }
 
             return { newLibrary, fileName: CoreIcons.ALIASES[icon] };
         }
@@ -161,7 +160,7 @@ export class CoreIcons {
             newIcon.setAttribute('aria-hidden', 'true');
         }
 
-        const { fileName, newLibrary } = await CoreIcons.getFontAwesomeIconFileName(iconName);
+        const { fileName, newLibrary } = await CoreIcons.getFontAwesomeIconFileName(iconName, false);
         if (newLibrary) {
             library = newLibrary;
         }
