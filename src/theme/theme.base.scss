@@ -970,6 +970,15 @@ ion-content.limited-width > :not([slot]) {
     min-height: 100%;
 }
 
+.limited-width > core-loading:not([slot]),
+.menu > core-loading:not([slot]) {
+    &.core-loading-loaded {
+        --contents-display: flex;
+        flex-direction: column;
+    }
+    min-height: 100%;
+}
+
 ion-toolbar h1 img.core-bar-button-image,
 ion-toolbar h1 .core-bar-button-image img {
     padding: 4px;
