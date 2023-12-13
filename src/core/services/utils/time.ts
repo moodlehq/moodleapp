@@ -208,7 +208,11 @@ export class CoreTimeUtilsProvider {
      * @returns Formatted time.
      */
     toDatetimeFormat(timestamp?: number): string {
-        return moment(timestamp || Date.now()).toISOString();
+        const isoString = moment(timestamp || Date.now()).toISOString(true);
+
+        // Remove milliseconds and timezone for consistency with the values used by ion-datetime.
+        // ion-datetime no longer uses timezone, it always uses UTC.
+        return isoString.substring(0, isoString.indexOf('.'));
     }
 
     /**
