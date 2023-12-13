@@ -118,6 +118,7 @@ Feature: Report builder
       | username | firstname   | lastname | email              | city     |
       | student1 | Lionel      | Smith    | lionel@example.com | Bilbao   |
 
+  @ionic7_failure
   Scenario: Open report in mobile
     Given I enter the app
     And I log in as "student1"
@@ -131,6 +132,7 @@ Feature: Report builder
     And I should find "Lionel Smith" in the app
     But I should not find "My report 02" in the app
 
+  @ionic7_failure
   Scenario: Open report in tablet
     Given I enter the app
     And I change viewport size to "1200x640" in the app

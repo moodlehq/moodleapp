@@ -8,6 +8,7 @@ Feature: Test signup in app
       | auth_instructions | These are the authentication instructions. |
       | passwordpolicy | 0 |
 
+  @ionic7_failure
   Scenario: View auth instructions even if signup is disabled
     Given the following config values are set as admin:
       | registerauth |  |
@@ -18,6 +19,7 @@ Feature: Test signup in app
     And I should find "These are the authentication instructions." in the app
     But I should not find "Create new account" in the app
 
+  @ionic7_failure
   Scenario: Basic signup
     When I launch the app
 
@@ -79,7 +81,7 @@ Feature: Test signup in app
     Then I should find "Spain" in the app
     And I should find "u1@u1.com" in the app
 
-  @lms_from3.10
+  @ionic7_failure @lms_from3.10
   Scenario: Check password policy in signup
     Given the following config values are set as admin:
       | passwordpolicy | 1 |
@@ -114,6 +116,7 @@ Feature: Test signup in app
     And I press "Create my new account" in the app
     Then I should find "An email should have been sent to your address" in the app
 
+  @ionic7_failure
   Scenario: Signup with custom profile fields
     # Use default options Yes/No for menu field because it's not possible to add new lines. See MDL-75788.
     Given the following "custom profile fields" exist:

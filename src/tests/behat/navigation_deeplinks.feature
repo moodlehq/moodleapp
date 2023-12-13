@@ -23,6 +23,7 @@ Feature: It navigates properly using deep links.
       | forcelogout     | 1 | tool_mobile |
       | defaulthomepage | 0 |             |
 
+  @ionic7_failure
   Scenario: Receive a push notification
     Given I entered the app as "student2"
     When I log out in the app

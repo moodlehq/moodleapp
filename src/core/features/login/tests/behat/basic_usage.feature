@@ -25,6 +25,7 @@ Feature: Test basic usage of login in app
     Then I should not find "Skip" in the app
     And I should find "Connect to Moodle" in the app
 
+  @ionic7_failure
   Scenario: Add a new account in the app & Site name in displayed when adding a new account
     When I launch the app
     And I set the field "Your site" to "$WWWROOT" in the app
@@ -41,12 +42,14 @@ Feature: Test basic usage of login in app
     And the UI should match the snapshot
     But I should not find "Log in" in the app
 
+  @ionic7_failure
   Scenario: Add a non existing account
     When I launch the app
     And I set the field "Your site" to "wrongsiteaddress" in the app
     And I press "Connect to your site" in the app
     Then I should find "Can't connect to site" in the app
 
+  @ionic7_failure
   Scenario: Add a non existing account from accounts switcher
     When I enter the app
     And I log in as "student1"
@@ -75,6 +78,7 @@ Feature: Test basic usage of login in app
     Then I should find "Connect to Moodle" in the app
     But I should not find "Acceptance test site" in the app
 
+  @ionic7_failure
   Scenario: Require minium (previous) version of the app for a site
     # Log in with a previous required version
     Given the following config values are set as admin:
@@ -82,6 +86,7 @@ Feature: Test basic usage of login in app
     When I enter the app
     Then I should not find "App update required" in the app
 
+  @ionic7_failure
   Scenario: Require minium (future) version of the app for a site
     # Log in with a future required version
     Given the following config values are set as admin:
@@ -89,6 +94,7 @@ Feature: Test basic usage of login in app
     When I enter the app
     Then I should find "App update required" in the app
 
+  @ionic7_failure
   Scenario: Force password change
     Given I force a password change for user "student1"
     When I enter the app
@@ -138,7 +144,7 @@ Feature: Test basic usage of login in app
     When I press "Reconnect" in the app
     Then I should find "Acceptance test site" in the app
 
-  @lms_from4.1
+  @ionic7_failure @lms_from4.1
   Scenario: Forgot password
     Given the following config values are set as admin:
       | supportavailability | 2 |

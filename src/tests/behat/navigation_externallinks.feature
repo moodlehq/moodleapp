@@ -18,6 +18,7 @@ Feature: It opens external links properly.
       | forum      | user     | name        | message       |
       | Test forum | student1 | Forum topic | See <a href="https://moodle.org/">moodle.org external link</a> |
 
+  @ionic7_failure
   Scenario: Click an external link
     Given I entered the forum activity "Test forum" on course "Course 1" as "student1" in the app
     When I press "Forum topic" in the app

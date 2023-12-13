@@ -50,6 +50,7 @@ Feature: Test basic usage of forum activity in app
     Then I should find "My happy subject" in the app
     And I should find "An awesome message" inside the split-view content in the app
 
+  @ionic7_failure
   Scenario: Reply a post
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I replace "/.*/" within ".addon-mod-forum-discussion-author p" with "[Publication date]"
@@ -178,6 +179,7 @@ Feature: Test basic usage of forum activity in app
     And I press "Save changes" in the app
     Then I should find "Auto-test message edited" in the app
 
+  @ionic7_failure
   Scenario: Delete a forum post (only online)
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I press "Add discussion topic" in the app
