@@ -77,16 +77,25 @@ export class TestingBehatDomUtilsService {
      *
      * @param element Element.
      * @param container Container.
+     * @param firstCall Whether this is the first call of the function.
      * @returns Whether the element is selected or not.
      */
-    isElementSelected(element: HTMLElement, container: HTMLElement): boolean {
+    isElementSelected(element: HTMLElement, container: HTMLElement, firstCall = true): boolean {
         const ariaCurrent = element.getAttribute('aria-current');
-        if (
-            (ariaCurrent && ariaCurrent !== 'false') ||
-            (element.getAttribute('aria-selected') === 'true') ||
-            (element.getAttribute('aria-checked') === 'true')
-        ) {
-            return true;
+        const ariaSelected = element.getAttribute('aria-selected');
+        const ariaChecked = element.getAttribute('aria-checked');
+
+        if (ariaCurrent || ariaSelected || ariaChecked) {
+            return (!!ariaCurrent && ariaCurrent !== 'false') ||
+                (!!ariaSelected && ariaSelected === 'true') ||
+                (!!ariaChecked && ariaChecked === 'true');
+        }
+
+        if (firstCall) {
+            const inputElement =  element.closest('ion-checkbox, ion-radio, ion-toggle')?.querySelector('input');
+            if (inputElement) {
+                return inputElement.value === 'on';
+            }
         }
 
         const parentElement = this.getParentElement(element);
@@ -94,7 +103,7 @@ export class TestingBehatDomUtilsService {
             return false;
         }
 
-        return this.isElementSelected(parentElement, container);
+        return this.isElementSelected(parentElement, container, false);
     }
 
     /**
