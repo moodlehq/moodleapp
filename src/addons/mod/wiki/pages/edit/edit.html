@@ -20,8 +20,8 @@
     <core-loading [hideUntil]="loaded">
         <form [formGroup]="pageForm" #editPageForm *ngIf="loaded">
             <ion-item class="ion-text-wrap" *ngIf="canEditTitle">
-                <ion-label class="sr-only">{{ 'addon.mod_wiki.newpagetitle' | translate }}</ion-label>
-                <ion-input name="title" type="text" [placeholder]="'addon.mod_wiki.newpagetitle' | translate" formControlName="title" />
+                <ion-input [attr.aria-label]="'addon.mod_wiki.newpagetitle' | translate" name="title" type="text"
+                    [placeholder]="'addon.mod_wiki.newpagetitle' | translate" formControlName="title" />
             </ion-item>
 
             <ion-item>

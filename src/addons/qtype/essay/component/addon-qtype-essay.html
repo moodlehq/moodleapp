@@ -11,19 +11,18 @@
     <ng-container *ngIf="!review">
         <!-- Textarea. -->
         <ion-item *ngIf="question.textarea && (!question.hasDraftFiles || uploadFilesSupported)">
-            <ion-label class="sr-only">{{ 'core.question.answer' | translate }}</ion-label>
             <!-- "Format" and draftid hidden inputs -->
             <input *ngIf="question.formatInput" type="hidden" [name]="question.formatInput.name" [value]="question.formatInput.value">
             <input *ngIf="question.answerDraftIdInput" type="hidden" [name]="question.answerDraftIdInput.name"
                 [value]="question.answerDraftIdInput.value">
             <!-- Plain text textarea. -->
-            <ion-textarea *ngIf="question.isPlainText" class="core-question-textarea" [ngClass]='{"core-monospaced": question.isMonospaced}'
-                placeholder="{{ 'core.question.answer' | translate }}" [attr.name]="question.textarea.name"
-                [ngModel]="question.textarea.text" />
+            <ion-textarea *ngIf="question.isPlainText" [attr.aria-label]="'core.question.answer' | translate" class="core-question-textarea"
+                [ngClass]='{"core-monospaced": question.isMonospaced}' placeholder="{{ 'core.question.answer' | translate }}"
+                [attr.name]="question.textarea.name" [ngModel]="question.textarea.text" />
             <!-- Rich text editor. -->
-            <core-rich-text-editor *ngIf="!question.isPlainText" placeholder="{{ 'core.question.answer' | translate }}"
-                [control]="formControl" [name]="question.textarea.name" [component]="component" [componentId]="componentId"
-                [autoSave]="false" />
+            <core-rich-text-editor *ngIf="!question.isPlainText" [attr.aria-label]="'core.question.answer' | translate"
+                placeholder="{{ 'core.question.answer' | translate }}" [control]="formControl" [name]="question.textarea.name"
+                [component]="component" [componentId]="componentId" [autoSave]="false" />
         </ion-item>
 
         <!-- Draft files not supported. -->

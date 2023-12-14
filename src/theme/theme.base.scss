@@ -66,75 +66,68 @@ body {
 .font-lg { font-size: 1.7rem; }
 .font-sm { font-size: 1.2rem; }
 
-// Headings.
+// Item Headings.
 // Some styles taken from ion-label
-.md ion-label .item-heading,
-.ios ion-label .item-heading {
-    text-overflow: inherit;
-    overflow: inherit;
-    --color: initial;
-    color: var(--color);
-    line-height: 20px;
-
-    &.item-heading-secondary {
+.item > ion-label,
+.fake-ion-item > ion-label,
+ion-item .in-item {
+    p {
         --color: var(--subdued-text-color);
+        color: var(--color);
+        @include margin(2px, 0);
+        font-size: 0.875rem;
     }
-}
 
-.ios ion-label > p,
-.md ion-label > p {
-    --color: var(--subdued-text-color);
-    color: var(--color);
-}
-
-.md ion-label .item-heading {
-    @include margin(2px, 0);
-
-    font-size: 16px;
-    font-weight: normal;
-
-    &.item-heading-secondary {
+    .item-heading {
         @include margin(2px, 0);
 
-        font-size: var(--text-size);
+        font-size: 1rem;
         font-weight: normal;
 
-        line-height: normal;
-    }
-}
+        text-overflow: inherit;
+        overflow: inherit;
+        --color: initial;
+        color: var(--color);
 
-.ios ion-label .item-heading {
-    @include margin(0, 0, 2px);
+        &.item-heading-secondary {
+            @include margin(2px, 0);
 
-    font-size: 17px;
-    font-weight: normal;
+            font-size: var(--text-size);
+            font-weight: normal;
+            line-height: normal;
 
-    &.item-heading-secondary {
-        @include margin(0, 0, 3px);
-
-        font-size: var(--text-size);
-        font-weight: normal;
-
-        line-height: normal;
+            --color: var(--subdued-text-color);
+        }
     }
 }
 
 // Correctly inherit ion-text-wrap onto labels.
-.item ion-label core-format-text > *:not(pre),
-.fake-ion-item core-format-text > *:not(pre) {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.item > ion-label,
+.fake-ion-item {
+    core-format-text,
+    core-format-text > *:not(pre) {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 
-.item.ion-text-wrap > ion-label core-format-text > *:not(pre),
-.fake-ion-item.ion-text-wrap core-format-text > *:not(pre) {
-    white-space: normal;
-    overflow: inherit;
+.item.ion-text-wrap > ion-label,
+ion-item > .in-item,
+.fake-ion-item.ion-text-wrap {
+    core-format-text,
+    core-format-text > *:not(pre) {
+        white-space: normal;
+        overflow: inherit;
+    }
 }
 
 .item.ion-text-wrap > ion-label {
     white-space: normal !important;
+}
+
+ion-item .core-input-errors-wrapper {
+    width: 100%;
 }
 
 @each $color-name, $unused in $colors {
@@ -977,6 +970,15 @@ ion-content.limited-width > :not([slot]) {
     min-height: 100%;
 }
 
+.limited-width > core-loading:not([slot]),
+.menu > core-loading:not([slot]) {
+    &.core-loading-loaded {
+        --contents-display: flex;
+        flex-direction: column;
+    }
+    min-height: 100%;
+}
+
 ion-toolbar h1 img.core-bar-button-image,
 ion-toolbar h1 .core-bar-button-image img {
     padding: 4px;
@@ -1124,12 +1126,16 @@ input[type=checkbox] {
 }
 
 // Select.
-ion-select::part(text) {
-    white-space: normal;
-}
-
-ion-select::part(icon) {
-    opacity: 1;
+ion-select {
+    &::part(text) {
+        white-space: normal;
+    }
+    &::part(icon) {
+        opacity: 1;
+    }
+    &::part(label) {
+        max-width: none;
+    }
 }
 
 ion-select-popover {
@@ -1401,7 +1407,7 @@ audio.core-media-adapt-width {
 }
 
 ion-item {
-    font-size: var(--text-size);
+    // font-size: var(--text-size);
     --inner-border-width: 0px;
 }
 
@@ -1411,7 +1417,7 @@ ion-item.item-lines-full {
 }
 
 ion-item.item-lines-inset {
-    --inner-border-width: 1px;
+    --inner-border-width: 0 0 1px 0;
     --border-width: 0px;
 }
 
@@ -1983,4 +1989,16 @@ ion-item.item-label-stacked ion-datetime-button {
     margin-top: 8px;
     margin-bottom: 8px;
     align-self: self-end;
+}
+
+// Development styles. Most of them temporary.
+html.development {
+    ion-checkbox.legacy-checkbox,
+    ion-radio.legacy-radio,
+    ion-select.legacy-select,
+    ion-toggle.legacy-toggle,
+    ion-textarea.legacy-textarea,
+    ion-input.legacy-input {
+        background: red !important;
+    }
 }

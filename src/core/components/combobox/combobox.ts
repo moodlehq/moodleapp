@@ -51,7 +51,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 })
 export class CoreComboboxComponent implements ControlValueAccessor {
 
-    @ViewChild(IonSelect) select!: IonSelect;
+    @ViewChild(IonSelect) select?: IonSelect;
 
     @Input() interface: 'popover' | 'modal' = 'popover';
     @Input() label = Translate.instant('core.show'); // Aria label.
@@ -118,7 +118,7 @@ export class CoreComboboxComponent implements ControlValueAccessor {
     async openSelect(event?: UIEvent): Promise<void> {
         this.touch();
 
-        if (this.interface == 'modal') {
+        if (this.interface === 'modal') {
             if (this.expanded || !this.modalOptions) {
                 return;
             }

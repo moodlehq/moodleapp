@@ -14,12 +14,11 @@
 
 <!-- Edit. -->
 <ion-item *ngIf="edit && field && field.shortname && form" class="ion-text-wrap" [formGroup]="form">
-    <ion-label position="stacked">
-        <span [core-mark-required]="required">
+    <ion-input labelPlacement="stacked" type="text" [formControlName]="modelName" [placeholder]="field.name">
+        <div [core-mark-required]="required" slot="label">
             <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
                 [courseId]="courseId" [wsNotFiltered]="true" />
-        </span>
-    </ion-label>
-    <ion-input type="text" [formControlName]="modelName" [placeholder]="field.name" />
+        </div>
+    </ion-input>
     <core-input-errors [control]="form.controls[modelName]" />
 </ion-item>

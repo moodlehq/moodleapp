@@ -26,37 +26,40 @@
                     <ng-container *ngIf="item.typ !== 'pagebreak'">
                         <ion-item class="ion-text-wrap addon-mod_feedback-item" [color]="item.dependitem > 0 ? 'light' : ''"
                             [class.core-danger-item]="item.isEmpty || item.hasError">
-                            <ion-label [position]="item.hasTextInput ? 'stacked' : undefined">
-                                <p *ngIf="item.name" [core-mark-required]="item.required">
-                                    <span *ngIf="feedback!.autonumbering && item.itemnumber">{{item.itemnumber}}. </span>
-                                    <core-format-text [component]="component" [componentId]="cmId" [text]="item.name" contextLevel="module"
-                                        [contextInstanceId]="cmId" [courseId]="courseId" [wsNotFiltered]="true" />
-                                    <span *ngIf="item.postfix" class="addon-mod_feedback-postfix">{{item.postfix}}</span>
-                                </p>
+                            <ion-label *ngIf="!item.slottedLabel">
+                                <ng-container *ngTemplateOutlet="label; context: {item: item}" />
                                 <p *ngIf="item.templateName === 'label'">
                                     <core-format-text [component]="component" [componentId]="cmId" [text]="item.presentation"
                                         contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId" />
                                 </p>
                             </ion-label>
 
-                            <ion-input *ngIf="item.templateName === 'textfield'" type="text" [(ngModel)]="item.value" autocorrect="off"
-                                name="{{item.typ}}_{{item.id}}" maxlength="{{item.length}}" [required]="item.required" />
+                            <ion-input labelPlacement="stacked" *ngIf="item.templateName === 'textfield'" type="text"
+                                [(ngModel)]="item.value" autocorrect="off" name="{{item.typ}}_{{item.id}}" maxlength="{{item.length}}"
+                                [required]="item.required">
+                                <ng-container *ngTemplateOutlet="label; context: {item: item}" />
+                            </ion-input>
 
                             <ng-container *ngIf="item.templateName === 'numeric'">
-                                <ion-input type="number" [(ngModel)]="item.value" name="{{item.typ}}_{{item.id}}"
-                                    [required]="item.required" />
+                                <ion-input labelPlacement="stacked" type="number" [(ngModel)]="item.value" name="{{item.typ}}_{{item.id}}"
+                                    [required]="item.required">
+                                    <ng-container *ngTemplateOutlet="label; context: {item: item}" />
+                                </ion-input>
                                 <ion-text *ngIf="item.hasError" color="danger" class="addon-mod_feedback-item-error">
                                     {{ 'addon.mod_feedback.numberoutofrange' | translate }} [{{item.rangefrom}}
                                     <span *ngIf="item.rangefrom && item.rangeto">, </span>{{item.rangeto}}]
                                 </ion-text>
                             </ng-container>
 
-                            <ion-textarea *ngIf="item.templateName === 'textarea'" [required]="item.required"
-                                name="{{item.typ}}_{{item.id}}" [(ngModel)]="item.value" />
+                            <ion-textarea labelPlacement="stacked" *ngIf="item.templateName === 'textarea'" [required]="item.required"
+                                name="{{item.typ}}_{{item.id}}" [(ngModel)]="item.value">
+                                <ng-container *ngTemplateOutlet="label; context: {item: item}" />
+                            </ion-textarea>
 
-                            <ion-select *ngIf="item.templateName === 'multichoice-d'" [required]="item.required"
+                            <ion-select labelPlacement="stacked" *ngIf="item.templateName === 'multichoice-d'" [required]="item.required"
                                 name="{{item.typ}}_{{item.id}}" [(ngModel)]="item.value" interface="action-sheet"
                                 [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: item.name}">
+                                <ng-container *ngTemplateOutlet="label; context: {item: item}" />
                                 <ion-select-option *ngFor="let option of item.choices" [value]="option.value">
                                     <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
                                         contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId" />
@@ -66,23 +69,21 @@
 
                         <ion-radio-group *ngIf="item.templateName === 'multichoice-r'" [(ngModel)]="item.value" [required]="item.required"
                             name="{{item.typ}}_{{item.id}}">
-                            <ion-item *ngFor="let option of item.choices">
-                                <ion-label>
+                            <ion-item *ngFor="let option of item.choices" class="ion-text-wrap">
+                                <ion-radio [value]="option.value">
                                     <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
                                         contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId" />
-                                </ion-label>
-                                <ion-radio slot="start" [value]="option.value" />
+                                </ion-radio>
                             </ion-item>
                         </ion-radio-group>
 
                         <ng-container *ngIf="item.templateName === 'multichoice-c'">
                             <ion-item *ngFor="let option of item.choices">
-                                <ion-label>
+                                <ion-checkbox [required]="item.required" name="{{item.typ}}_{{item.id}}" [(ngModel)]="option.checked"
+                                    value="option.value">
                                     <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
                                         contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId" />
-                                </ion-label>
-                                <ion-checkbox [required]="item.required" name="{{item.typ}}_{{item.id}}" [(ngModel)]="option.checked"
-                                    value="option.value" />
+                                </ion-checkbox>
                             </ion-item>
                         </ng-container>
 
@@ -152,3 +153,13 @@
         </div>
     </core-loading>
 </ion-content>
+
+
+<ng-template #label let-item="item">
+    <p *ngIf="item.name" [core-mark-required]="item.required" [slot]="item.slottedLabel ? 'label' : undefined">
+        <span *ngIf="feedback!.autonumbering && item.itemnumber">{{item.itemnumber}}. </span>
+        <core-format-text [component]="component" [componentId]="cmId" [text]="item.name" contextLevel="module" [contextInstanceId]="cmId"
+            [courseId]="courseId" [wsNotFiltered]="true" />
+        <span *ngIf="item.postfix" class="addon-mod_feedback-postfix">{{item.postfix}}</span>
+    </p>
+</ng-template>

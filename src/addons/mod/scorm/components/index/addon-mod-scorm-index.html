@@ -110,10 +110,10 @@
             </ion-card-header>
             <ion-list>
                 <ion-item class="ion-text-wrap" *ngIf="organizations.length > 1">
-                    <ion-label>{{ 'addon.mod_scorm.organizations' | translate }}</ion-label>
                     <ion-select [(ngModel)]="currentOrganization.identifier" (ionChange)="loadOrganization()"
                         [cancelText]="'core.cancel' | translate" interface="action-sheet"
                         [interfaceOptions]="{header: 'addon.mod_scorm.organizations' | translate}">
+                        <p class="item-heading" slot="label">{{ 'addon.mod_scorm.organizations' | translate }}</p>
                         <ion-select-option *ngFor="let org of organizations" [value]="org.identifier">
                             {{ org.title }}
                         </ion-select-option>
@@ -182,8 +182,9 @@
                 <ng-container *ngIf="!downloading && !skip">
                     <!-- Create new attempt -->
                     <ion-item class="ion-text-wrap" *ngIf="!scorm.forcenewattempt && numAttempts > 0 && !incomplete && attemptsLeft > 0">
-                        <ion-label>{{ 'addon.mod_scorm.newattempt' | translate }}</ion-label>
-                        <ion-checkbox slot="end" name="newAttempt" [(ngModel)]="startNewAttempt" />
+                        <ion-checkbox name="newAttempt" [(ngModel)]="startNewAttempt">
+                            {{ 'addon.mod_scorm.newattempt' | translate }}
+                        </ion-checkbox>
                     </ion-item>
 
                     <ion-item *ngIf="statusMessage">

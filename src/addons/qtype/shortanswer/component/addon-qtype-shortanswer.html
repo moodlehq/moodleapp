@@ -7,9 +7,9 @@
     </ion-item>
     <ion-item *ngIf="question.input && !question.input.isInline"
         class="ion-text-wrap addon-qtype-shortanswer-input core-{{question.input.correctIconColor}}-item">
-        <ion-label position="stacked">{{ 'addon.mod_quiz.answercolon' | translate }}</ion-label>
-        <ion-input type="text" [placeholder]="question.input.readOnly ? '' : 'core.question.answer' | translate"
-            [attr.name]="question.input.name" [value]="question.input.value" autocorrect="off" [disabled]="question.input.readOnly" />
+        <ion-input labelPlacement="stacked" type="text" [placeholder]="question.input.readOnly ? '' : 'core.question.answer' | translate"
+            [attr.name]="question.input.name" [value]="question.input.value" autocorrect="off" [disabled]="question.input.readOnly"
+            [label]="'addon.mod_quiz.answercolon' | translate" />
         <ion-icon *ngIf="question.input.correctIcon" class="core-correct-icon" slot="end" [name]="question.input.correctIcon"
             [color]="[question.input.correctIconColor]" />
     </ion-item>

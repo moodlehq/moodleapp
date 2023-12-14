@@ -16,6 +16,12 @@
 
         .addon-data-latlong {
             display: flex;
+
+            .input-units {
+                flex-grow: 1;
+                white-space: nowrap;
+                align-self: center;
+            }
         }
     }
 

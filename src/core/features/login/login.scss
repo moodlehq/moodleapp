@@ -18,14 +18,8 @@
 
     ion-button.core-button-as-link {
         --color: var(--core-login-text-color);
-        text-decoration-color: var(--core-login-text-color);
-
-        ion-label {
-            color: var(--core-login-text-color);
-        }
+        text-decoration-color: var(--color);
     }
-
-
 
     .core-login-reconnect-warning {
         margin: 0px 0px 32px 0px;

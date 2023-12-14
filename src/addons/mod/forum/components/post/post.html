@@ -94,9 +94,9 @@
     </ng-container>
 
     <form *ngIf="showForm" [id]="'addon-forum-reply-edit-form-' + uniqueId" #replyFormEl>
-        <ion-item>
-            <ion-label position="stacked">{{ 'addon.mod_forum.subject' | translate }}</ion-label>
-            <ion-input type="text" [placeholder]="'addon.mod_forum.subject' | translate" [(ngModel)]="formData.subject" name="subject" />
+        <ion-item class="ion-text-wrap">
+            <ion-input labelPlacement="stacked" type="text" [placeholder]="'addon.mod_forum.subject' | translate"
+                [(ngModel)]="formData.subject" name="subject" [label]="'addon.mod_forum.subject' | translate" />
         </ion-item>
         <ion-item>
             <ion-label position="stacked">{{ 'addon.mod_forum.message' | translate }}</ion-label>
@@ -106,8 +106,9 @@
                 [draftExtraParams]="{reply: post.id}" (contentChanged)="onMessageChange($event)" />
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="accessInfo.canpostprivatereply">
-            <ion-label>{{ 'addon.mod_forum.privatereply' | translate }}</ion-label>
-            <ion-checkbox slot="end" [(ngModel)]="formData.isprivatereply" name="isprivatereply" />
+            <ion-checkbox [(ngModel)]="formData.isprivatereply" name="isprivatereply">
+                {{ 'addon.mod_forum.privatereply' | translate }}
+            </ion-checkbox>
         </ion-item>
         <ng-container *ngIf="forum.id && forum.maxattachments > 0">
             <ion-item button class="divider ion-text-wrap" (click)="toggleAdvanced()" [detail]="false" [attr.aria-expanded]="advanced"

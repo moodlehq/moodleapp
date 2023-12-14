@@ -105,15 +105,14 @@ export class CoreLoginEmailSignupPage implements OnInit {
         });
 
         // Setup validation errors.
-        this.usernameErrors = CoreLoginHelper.getErrorMessages('core.login.usernamerequired');
-        this.passwordErrors = CoreLoginHelper.getErrorMessages('core.login.passwordrequired');
-        this.emailErrors = CoreLoginHelper.getErrorMessages('core.login.missingemail');
-        this.policyErrors = CoreLoginHelper.getErrorMessages('core.login.policyagree');
-        this.email2Errors = CoreLoginHelper.getErrorMessages(
-            'core.login.missingemail',
-            undefined,
-            'core.login.emailnotmatch',
-        );
+        this.usernameErrors = { required: 'core.login.usernamerequired' };
+        this.passwordErrors = { required: 'core.login.passwordrequired' };
+        this.emailErrors = { required: 'core.login.missingemail' };
+        this.policyErrors = { required: 'core.login.policyagree' };
+        this.email2Errors = {
+            required: 'core.login.missingemail',
+            pattern: 'core.login.emailnotmatch',
+        };
     }
 
     /**
@@ -224,7 +223,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         const namefieldsErrors = {};
         if (this.settings.namefields) {
             this.settings.namefields.forEach((field) => {
-                namefieldsErrors[field] = CoreLoginHelper.getErrorMessages('core.login.missing' + field);
+                namefieldsErrors[field] = { required: 'core.login.missing' + field };
             });
         }
         this.namefieldsErrors = namefieldsErrors;

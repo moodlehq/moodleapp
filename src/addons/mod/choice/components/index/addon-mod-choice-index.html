@@ -48,18 +48,16 @@
     <ion-card *ngIf="options.length && choice">
         <ng-container *ngIf="choice.allowmultiple">
             <ion-item class="ion-text-wrap" *ngFor="let option of options">
-                <ion-label>
+                <ion-checkbox [(ngModel)]="option.checked" [disabled]="option.disabled || !canEdit">
                     <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option: option}" />
-                </ion-label>
-                <ion-checkbox slot="end" [(ngModel)]="option.checked" [disabled]="option.disabled || !canEdit" />
+                </ion-checkbox>
             </ion-item>
         </ng-container>
         <ion-radio-group *ngIf="!choice.allowmultiple" [(ngModel)]="selectedOption.id">
             <ion-item class="ion-text-wrap" *ngFor="let option of options">
-                <ion-label>
+                <ion-radio [value]="option.id" [disabled]="option.disabled || !canEdit">
                     <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option: option}" />
-                </ion-label>
-                <ion-radio slot="end" [value]="option.id" [disabled]="option.disabled || !canEdit" />
+                </ion-radio>
             </ion-item>
         </ion-radio-group>
     </ion-card>
@@ -147,7 +145,7 @@
 
 <!-- Template to render a choice option label. -->
 <ng-template #optionLabelTemplate let-option="option">
-    <p>
+    <p class="item-heading">
         <core-format-text [text]="option.text" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
         <span *ngIf="choice!.limitanswers && option.countanswers >= option.maxanswers">
             {{ 'addon.mod_choice.full' | translate }}

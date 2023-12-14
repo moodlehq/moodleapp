@@ -69,7 +69,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     groups: CoreGroup[] = [];
     loadingGroups = false;
     courseGroupSet = false;
-    errors: Record<string, string>;
     error = false;
     eventRepeatId?: number;
     otherEventsCount = 0;
@@ -100,9 +99,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     ) {
         this.currentSite = CoreSites.getRequiredCurrentSite();
         this.remindersEnabled = CoreReminders.isEnabled();
-        this.errors = {
-            required: Translate.instant('core.required'),
-        };
 
         this.form = new FormGroup({});
 

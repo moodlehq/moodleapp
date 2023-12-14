@@ -10,9 +10,10 @@
     </ion-modal>
     <core-input-errors *ngIf="error && editMode" [control]="form.controls['f_'+field.id]" [errorText]="error" />
 
-    <ion-item *ngIf="searchMode">
-        <ion-label>{{ 'addon.mod_data.usedate' | translate }}</ion-label>
-        <ion-checkbox slot="end" [formControlName]="'f_'+field.id+'_z'" [(ngModel)]="searchFields['f_'+field.id+'_z']" />
+    <ion-item *ngIf="searchMode" class="ion-text-wrap">
+        <ion-checkbox [formControlName]="'f_'+field.id+'_z'" [(ngModel)]="searchFields['f_'+field.id+'_z']">
+            {{ 'addon.mod_data.usedate' | translate }}
+        </ion-checkbox>
     </ion-item>
 </span>
 

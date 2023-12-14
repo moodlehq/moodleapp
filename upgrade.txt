@@ -10,6 +10,7 @@ For more information about upgrading, read the official documentation: https://m
  - Removed CoreToLocaleStringPipe deprecated since 3.6.0
  - With the upgrade to Ionic 7 ion-slides is no longer supported and now you need to use swiper-container and swiper-slide. More info here: https://ionicframework.com/docs/angular/slides
  - With the upgrade to Ionic7 ion-datetime has changed its usage. We recommend using ion-datetime-button. More info here: https://ionicframework.com/docs/updating/6-0#datetime
+ - CoreLoginHelper.getErrorMessages has been removed. Please create the messages object yourself.
 
 === 4.3.0 ===
 

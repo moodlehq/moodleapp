@@ -4,8 +4,8 @@
         [allowOffline]="true" acceptedTypes="image" [courseId]="database?.course" />
     <core-input-errors *ngIf="error" [errorText]="error" />
 
-    <ion-label position="stacked">{{ 'addon.mod_data.alttext' | translate }}</ion-label>
-    <ion-input type="text" [formControlName]="'f_'+field.id+'_alttext'" [placeholder]=" 'addon.mod_data.alttext' | translate" />
+    <ion-input [label]="'addon.mod_data.alttext' | translate" labelPlacement="stacked" type="text"
+        [formControlName]="'f_'+field.id+'_alttext'" [placeholder]=" 'addon.mod_data.alttext' | translate" />
 </span>
 
 <span *ngIf="searchMode && form" [formGroup]="form">
