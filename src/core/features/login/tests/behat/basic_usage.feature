@@ -51,8 +51,7 @@ Feature: Test basic usage of login in app
 
   @ionic7_failure
   Scenario: Add a non existing account from accounts switcher
-    When I enter the app
-    And I log in as "student1"
+    Given I entered the app as "student1"
     And I press the user menu button in the app
     And I press "Switch account" in the app
     And I press "Add" in the app
