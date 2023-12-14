@@ -18,7 +18,7 @@ import { CoreFile } from '@services/file';
 import { File, makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { FileMock } from './file';
-import { FileTransferErrorMock } from './file-transfer';
+import { FileTransferErrorMock, FileTransferMock } from './file-transfer';
 
 /**
  * Helper service for the emulator feature. It also acts as an init handler.
@@ -39,6 +39,7 @@ export class CoreEmulatorHelperProvider {
      */
     async load(): Promise<void> {
         window.FileTransferError = FileTransferErrorMock;
+        window.FileTransfer = FileTransferMock;
 
         const fileService = File.instance;
 

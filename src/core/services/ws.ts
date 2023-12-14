@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { HttpResponse, HttpParams, HttpErrorResponse } from '@angular/common/http';
 
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
-import { FileUploadOptions, FileUploadResult } from '@awesome-cordova-plugins/file-transfer/ngx';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Observable, firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
@@ -29,7 +28,7 @@ import { CoreTextErrorObject, CoreTextUtils } from '@services/utils/text';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreInterceptor } from '@classes/interceptor';
-import { makeSingleton, Translate, FileTransfer, Http, NativeHttp } from '@singletons';
+import { makeSingleton, Translate, Http, NativeHttp } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
@@ -254,14 +253,25 @@ export class CoreWSProvider {
             // Create the tmp file as an empty file.
             const fileEntry = await CoreFile.createFile(tmpPath);
 
-            const transfer = FileTransfer.create();
-            onProgress && transfer.onProgress(onProgress);
+            const transfer = new window.FileTransfer();
+
+            if (onProgress) {
+                transfer.onprogress = onProgress;
+            }
 
             // Download the file in the tmp file.
-            await transfer.download(url, CoreFile.getFileEntryURL(fileEntry), true, {
-                headers: {
-                    'User-Agent': navigator.userAgent,
-                },
+            const fileDownloaded = await new Promise<{
+                entry: globalThis.FileEntry;
+                headers: Record<string, string> | undefined;
+            }>((resolve, reject) => {
+                transfer.download(
+                    url,
+                    CoreFile.getFileEntryURL(fileEntry),
+                    (result) => resolve(result),
+                    (error: FileTransferError) => reject(error),
+                    true,
+                    { headers: { 'User-Agent': navigator.userAgent } },
+                );
             });
 
             let extension = '';
@@ -271,8 +281,10 @@ export class CoreWSProvider {
 
                 // Google Drive extensions will be considered invalid since Moodle usually converts them.
                 if (!extension || ['gdoc', 'gsheet', 'gslides', 'gdraw', 'php'].includes(extension)) {
+
                     // Not valid, get the file's mimetype.
-                    const mimetype = await this.getRemoteFileMimeType(url);
+                    const requestContentType = fileDownloaded.headers?.['Content-Type']?.split(';')[0];
+                    const mimetype = requestContentType ?? await this.getRemoteFileMimeType(url);
 
                     if (mimetype) {
                         const remoteExtension = CoreMimetypeUtils.getExtension(mimetype, url);
@@ -983,9 +995,11 @@ export class CoreWSProvider {
         }
 
         const uploadUrl = preSets.siteUrl + '/webservice/upload.php';
-        const transfer = FileTransfer.create();
+        const transfer = new window.FileTransfer();
 
-        onProgress && transfer.onProgress(onProgress);
+        if (onProgress) {
+            transfer.onprogress = onProgress;
+        }
 
         options.httpMethod = 'POST';
         options.params = {
@@ -1002,7 +1016,8 @@ export class CoreWSProvider {
         let success: FileUploadResult;
 
         try {
-            success = await transfer.upload(filePath, uploadUrl, options, true);
+            success = await new Promise((resolve, reject) =>
+                transfer.upload( filePath, uploadUrl, (result) => resolve(result), (error) => reject(error), options, true));
         } catch (error) {
             this.logger.error('Error while uploading file', filePath, error);
 

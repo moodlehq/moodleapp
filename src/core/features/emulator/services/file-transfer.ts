@@ -13,9 +13,6 @@
 // limitations under the License.
 
 import { CoreTextUtils } from '@services/utils/text';
-import { Injectable } from '@angular/core';
-import { FileTransfer, FileTransferObject, FileUploadResult, FileTransferError } from '@awesome-cordova-plugins/file-transfer/ngx';
-
 import { CoreFile } from '@services/file';
 
 /**
@@ -43,40 +40,25 @@ export class FileTransferErrorMock implements FileTransferError {
 /**
  * Emulates the Cordova FileTransfer plugin in desktop apps and in browser.
  */
-@Injectable()
-export class FileTransferMock extends FileTransfer {
+export class FileTransferMock {
 
-    /**
-     * Creates a new FileTransferObjectMock object.
-     *
-     * @returns a new file transfer mock.
-     */
-    create(): FileTransferObjectMock {
-        return new FileTransferObjectMock();
-    }
-
-}
-
-/**
- * Emulates the FileTransferObject class in desktop apps and in browser.
- */
-export class FileTransferObjectMock extends FileTransferObject {
-
-    progressListener?: (event: ProgressEvent) => void;
     source?: string;
     target?: string;
     xhr?: XMLHttpRequest;
 
-    protected reject?: (reason?: unknown) => void;
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    onprogress: (event: ProgressEvent) => void = () => {};
+
+    errorCallback?: (error: FileTransferError) => void;
 
     /**
      * Aborts an in-progress transfer. The onerror callback is passed a FileTransferError
      * object which has an error code of FileTransferError.ABORT_ERR.
      */
-    abort(): void {
+     abort(): void {
         if (this.xhr) {
             this.xhr.abort();
-            this.reject?.(
+            this.errorCallback?.(
                 new FileTransferErrorMock(FileTransferErrorMock.ABORT_ERR, this.source || '', this.target || '', 0, '', ''),
             );
         }
@@ -87,13 +69,20 @@ export class FileTransferObjectMock extends FileTransferObject {
      *
      * @param source URL of the server to download the file, as encoded by encodeURI().
      * @param target Filesystem url representing the file on the device.
+     * @param successCallback Callback to execute if download the file sucessfully.
+     * @param errorCallback Callback to execute if an error happened downloading the file.
      * @param trustAllHosts If set to true, it accepts all security certificates.
      * @param options Optional parameters, currently only supports headers.
-     * @returns Returns a Promise that resolves to a FileEntry object.
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    download(source: string, target: string, trustAllHosts?: boolean, options?: { [s: string]: any }): Promise<unknown> {
-        return new Promise((resolve, reject): void => {
+    download(
+        source: string,
+        target: string,
+        successCallback: (params: CoreFileTransferDownloadResponse) => void,
+        errorCallback: (error: FileTransferError) => void,
+        trustAllHosts?: boolean,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        options?: Record<string, any>,
+    ): void {
             // Use XMLHttpRequest instead of HttpClient to support onprogress and abort.
             const basicAuthHeader = this.getBasicAuthHeader(source);
             const xhr = new XMLHttpRequest();
@@ -101,7 +90,7 @@ export class FileTransferObjectMock extends FileTransferObject {
             this.xhr = xhr;
             this.source = source;
             this.target = target;
-            this.reject = reject;
+            this.errorCallback = errorCallback;
 
             if (basicAuthHeader) {
                 source = source.replace(this.getUrlCredentials(source) + '@', '');
@@ -124,13 +113,12 @@ export class FileTransferObjectMock extends FileTransferObject {
             }
 
             xhr.onprogress = (ev: ProgressEvent): void => {
-                if (this.progressListener) {
-                    this.progressListener(ev);
-                }
+                this.onprogress(ev);
             };
 
             xhr.onerror = (): void => {
-                reject(new FileTransferErrorMock(-1, source, target, xhr.status, xhr.statusText, ''));
+                const error = new FileTransferErrorMock(-1, source, target, xhr.status, xhr.statusText, '');
+                errorCallback(error);
             };
 
             xhr.onload = async (): Promise<void> => {
@@ -141,28 +129,27 @@ export class FileTransferObjectMock extends FileTransferObject {
                 if (status < 200 || status >= 300) {
                     // Request failed. Try to get the error message.
                     response = await this.parseResponse(response);
+                    const error = new FileTransferErrorMock(-1, source, target, xhr.status, response || xhr.statusText, '');
 
-                    reject(new FileTransferErrorMock(-1, source, target, xhr.status, response || xhr.statusText, ''));
-
-                    return;
+                    return errorCallback(error);
                 }
 
                 if (!response) {
-                    reject();
+                    const error = new FileTransferErrorMock(-1, source, target, xhr.status, xhr.statusText, 'No response obtained');
 
-                    return;
+                    return errorCallback(error);
                 }
 
                 const basePath = CoreFile.getBasePathInstant();
                 target = target.replace(basePath, ''); // Remove basePath from the target.
                 target = target.replace(/%20/g, ' '); // Replace all %20 with spaces.
-
-                // eslint-disable-next-line promise/catch-or-return
-                CoreFile.writeFile(target, response).then(resolve, reject);
+                CoreFile.writeFile(target, response)
+                    .then(entry =>
+                        successCallback({ entry: entry as unknown as globalThis.FileEntry, headers: response.headers }))
+                        .catch(error => errorCallback(error));
             };
 
             xhr.send();
-        });
     }
 
     /**
@@ -228,15 +215,6 @@ export class FileTransferObjectMock extends FileTransferObject {
     }
 
     /**
-     * Registers a listener that gets called whenever a new chunk of data is transferred.
-     *
-     * @param listener Listener that takes a progress event.
-     */
-    onProgress(listener: (event: ProgressEvent) => void): void {
-        this.progressListener = listener;
-    }
-
-    /**
      * Parse a response, converting it into text and the into an object if needed.
      *
      * @param response The response to parse.
@@ -285,11 +263,17 @@ export class FileTransferObjectMock extends FileTransferObject {
      *
      * @param fileUrl Filesystem URL representing the file on the device or a data URI.
      * @param url URL of the server to receive the file, as encoded by encodeURI().
+     * @param successCallback Callback to execute if upload the file sucessfully.
+     * @param errorCallback Callback to execute if an error happened uploading the file.
      * @param options Optional parameters.
-     * @returns Promise that resolves to a FileUploadResult and rejects with FileTransferError.
      */
-    upload(fileUrl: string, url: string, options?: FileUploadOptions): Promise<FileUploadResult> {
-        return new Promise((resolve, reject): void => {
+    upload(
+        fileUrl: string,
+        url: string,
+        successCallback: (result: FileUploadResult) => void,
+        errorCallback: (error: FileTransferError) => void,
+        options?: FileUploadOptions,
+    ): void {
             const basicAuthHeader = this.getBasicAuthHeader(url);
             let fileKey: string | undefined;
             let fileName: string | undefined;
@@ -330,7 +314,6 @@ export class FileTransferObjectMock extends FileTransferObject {
             // Adding a Content-Type header with the mimeType makes the request fail (it doesn't detect the token in the params).
             // Don't include this header, and delete it if it's supplied.
             delete headers['Content-Type'];
-
             // Get the file to upload.
             CoreFile.getFile(fileUrl).then((fileEntry) =>
                 CoreFile.getFileObjectFromFileEntry(fileEntry)).then((file) => {
@@ -345,28 +328,28 @@ export class FileTransferObjectMock extends FileTransferObject {
                 }
 
                 xhr.onprogress = (ev: ProgressEvent): void => {
-                    if (this.progressListener) {
-                        this.progressListener(ev);
-                    }
+                    this.onprogress(ev);
                 };
-
                 this.xhr = xhr;
                 this.source = fileUrl;
                 this.target = url;
-                this.reject = reject;
+                this.errorCallback = errorCallback;
 
                 xhr.onerror = (): void => {
-                    reject(new FileTransferErrorMock(-1, fileUrl, url, xhr.status, xhr.statusText, ''));
+                    const error = new FileTransferErrorMock(-1, fileUrl, url, xhr.status, xhr.statusText, '');
+                    errorCallback(error);
                 };
 
                 xhr.onload = (): void => {
-                    // Finished uploading the file.
-                    resolve({
+                    const result = {
                         bytesSent: file.size,
                         responseCode: xhr.status,
                         response: xhr.response,
                         headers: this.getHeadersAsObject(xhr),
-                    });
+                    };
+
+                    // Finished uploading the file.
+                    successCallback(result);
                 };
 
                 // Create a form data to send params and the file.
@@ -374,13 +357,14 @@ export class FileTransferObjectMock extends FileTransferObject {
                 for (const name in params) {
                     fd.append(name, params[name]);
                 }
-                fd.append('file', file, fileName);
 
+                fd.append('file', file, fileName);
                 xhr.send(fd);
 
                 return;
-            }).catch(reject);
-        });
+            }).catch(error => errorCallback(error));
     }
 
 }
+
+export type CoreFileTransferDownloadResponse = { entry: globalThis.FileEntry; headers: Record<string, string> | undefined };
