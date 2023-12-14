@@ -186,17 +186,20 @@ export class TestingBehatRuntimeService {
     closePopup(): string {
         this.log('Action - Close popup');
 
-        let backdrops = Array.from(document.querySelectorAll('ion-backdrop'));
-        backdrops = backdrops.filter((backdrop) => !!backdrop.offsetParent);
+        const backdrops = Array
+            .from(document.querySelectorAll('.ion-page:not(.ion-page-hidden) ion-popover'))
+            .map(popover => popover.shadowRoot?.querySelector('ion-backdrop'))
+            .filter(backdrop => !!backdrop);
 
         if (!backdrops.length) {
             return 'ERROR: Could not find backdrop';
         }
+
         if (backdrops.length > 1) {
             return 'ERROR: Found too many backdrops ('+backdrops.length+')';
         }
-        const backdrop = backdrops[0];
-        backdrop.click();
+
+        backdrops[0]?.click();
 
         // Mark busy until the click finishes processing.
         TestingBehatBlocking.delay();
