@@ -8,7 +8,6 @@ Feature: Test signup in app
       | auth_instructions | These are the authentication instructions. |
       | passwordpolicy | 0 |
 
-  @ionic7_failure
   Scenario: View auth instructions even if signup is disabled
     Given the following config values are set as admin:
       | registerauth |  |
