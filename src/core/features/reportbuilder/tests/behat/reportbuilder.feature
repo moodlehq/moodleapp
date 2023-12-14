@@ -119,8 +119,7 @@ Feature: Report builder
       | student1 | Lionel      | Smith    | lionel@example.com | Bilbao   |
 
   Scenario: Open report in mobile
-    Given I enter the app
-    And I log in as "student1"
+    Given I entered the app as "student1"
     And I press the user menu button in the app
     When I press "Reports" in the app
 
@@ -132,9 +131,8 @@ Feature: Report builder
     But I should not find "My report 02" in the app
 
   Scenario: Open report in tablet
-    Given I enter the app
+    Given I entered the app as "student1"
     And I change viewport size to "1200x640" in the app
-    And I log in as "student1"
     And I press the user menu button in the app
     When I press "Reports" in the app
 
