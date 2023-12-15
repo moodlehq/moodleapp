@@ -17,14 +17,21 @@
         background: var(--core-search-box-background);
         color: var(--core-search-box-border-color);
 
-        .search-box {
-            --min-height: var(--search-height);
-            border-radius: var(--core-search-box-border-radius);
+        --min-height: var(--search-height);
+
+        ion-input {
+            --padding-start: 16px;
+            --padding-end: 16px;
+            --border-radius: var(--core-search-box-border-radius);
+            min-height: var(--search-height);
         }
 
         ion-button.button {
             margin: 0;
             --a11y-min-target-size: var(--search-height);
+            --padding-start: 0px;
+            --padding-end: 0px;
+            font-size: 12px;
         }
     }
 
@@ -41,23 +48,15 @@
             --background: var(--light);
             cursor: pointer;
         }
-    }
 
-    ion-label {
-        margin: 0;
-    }
+        ion-item {
+            --min-height: var(--a11y-min-target-size);
+            --border-width: 0px;
+            --background: var(--core-search-box-background);
 
-    ion-input {
-        --padding-start: 0px;
-        --padding-end: 0px;
-        padding-left: 0;
-        padding-right: 0;
-    }
-
-
-    ion-item {
-        --min-height: var(--a11y-min-target-size);
-        --border-width: 0px;
-        --background: var(--core-search-box-background);
+            ion-label {
+                margin: 0;
+            }
+        }
     }
 }

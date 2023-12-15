@@ -6,15 +6,24 @@
         padding: 0 .7em;
     }
 
-    .answer {
-        line-height: 2em;
-    }
-
     .d-flex {
         display: flex !important;
     }
 
-    .answer .answernumber {
-        min-width: 1.5em;
+    .answer {
+        line-height: 2em;
+
+        .answernumber {
+            min-width: 1.5em;
+        }
+
+        ion-checkbox::part(label),
+        ion-radio::part(label) {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
     }
 }

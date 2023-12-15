@@ -58,7 +58,6 @@ Feature: Test basic usage of assignment activity in app
     Then I should find "Online text submissions" in the app
     And I should find "Submission test edited" in the app
 
-  @ionic7_failure
   Scenario: Edit/Add submission (online text) & Add new attempt from previous submission & Submit for grading
     # Submit first attempt as a student
     Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app

@@ -14,7 +14,6 @@ Feature: Test messages navigation in the app
       | teacher | C1     | editingteacher |
       | student | C1     | student        |
 
-  @ionic7_failure
   Scenario: Avoid recursive links to profile
     Given I entered the app as "teacher"
     When I press "Messages" in the app

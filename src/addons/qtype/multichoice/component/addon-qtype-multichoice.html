@@ -18,20 +18,21 @@
         <ion-item class="ion-text-wrap answer" *ngFor="let option of question.options">
             <ion-checkbox [attr.name]="option.name" [(ngModel)]="option.checked" [disabled]="option.disabled"
                 [color]='(option.isCorrect === 1 ? "success": "") + (option.isCorrect === 0 ? "danger": "")'>
-                <div [class]="option.class">
-                    <core-format-text [component]="component" [componentId]="componentId" [text]="option.text" [contextLevel]="contextLevel"
-                        [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+                <div>
+                    <div [class]="option.class">
+                        <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"
+                            [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+                    </div>
                     <div *ngIf="option.feedback" class="specificfeedback">
                         <core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"
                             [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
                     </div>
                 </div>
+                <ion-icon *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success"
+                    [attr.aria-label]="'core.question.correct' | translate" />
+                <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fas-xmark" color="danger"
+                    [attr.aria-label]="'core.question.incorrect' | translate" />
             </ion-checkbox>
-
-            <ion-icon slot="end" *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success"
-                [attr.aria-label]="'core.question.correct' | translate" />
-            <ion-icon slot="end" *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fas-xmark" color="danger"
-                [attr.aria-label]="'core.question.incorrect' | translate" />
 
             <!-- ion-checkbox doesn't use an input. Create a hidden input to hold the value. -->
             <input type="hidden" [ngModel]="option.checked" [attr.name]="option.name">
@@ -43,20 +44,21 @@
         <ion-item class="ion-text-wrap answer" *ngFor="let option of question.options">
             <ion-radio [value]="option.value" [disabled]="option.disabled"
                 [color]='(option.isCorrect === 1 ? "success": "") + (option.isCorrect === 0 ? "danger": "")'>
-                <div [class]="option.class">
-                    <core-format-text [component]="component" [componentId]="componentId" [text]="option.text" [contextLevel]="contextLevel"
-                        [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+                <div>
+                    <div [class]="option.class">
+                        <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"
+                            [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+                    </div>
                     <div *ngIf="option.feedback" class="specificfeedback">
                         <core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"
                             [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
                     </div>
                 </div>
+                <ion-icon *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success"
+                    [attr.aria-label]="'core.question.correct' | translate" />
+                <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fas-xmark" color="danger"
+                    [attr.aria-label]="'core.question.incorrect' | translate" />
             </ion-radio>
-
-            <ion-icon slot="end" *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success"
-                [attr.aria-label]="'core.question.correct' | translate" />
-            <ion-icon slot="end" *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fas-xmark" color="danger"
-                [attr.aria-label]="'core.question.incorrect' | translate" />
         </ion-item>
         <ion-button *ngIf="!question.disabled" class="ion-text-wrap ion-margin-top" expand="block" fill="outline"
             [disabled]="!question.singleChoiceModel" (click)="clear()" type="button">

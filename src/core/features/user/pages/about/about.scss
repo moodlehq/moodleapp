@@ -1,8 +1,15 @@
 :host {
     .core-user-profile-maininfo {
         padding-top: 16px;
-        &::part(native) {
+        ion-label {
+            display: flex;
             flex-direction: column;
+            align-items: center;
+            margin-top: 0px;
+
+            h2 {
+                margin-top: 10px;
+            }
         }
     }
     core-user-avatar {

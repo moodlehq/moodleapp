@@ -1,4 +1,8 @@
+@use "theme/globals" as *;
+
 :host {
+    display: contents;
+
     --textarea-background: var(--core-input-background);
     --textarea-color: var(--core-input-text);
     --textarea-border-width: var(--core-input-border-width);
@@ -6,7 +10,6 @@
     --textarea-radius: var(--radius-xl);
 
     form {
-        position: relative;
         display: flex;
         align-items: center;
         width: 100%;
@@ -27,8 +30,13 @@
         min-height: var(--a11y-min-target-size);
         line-height: 20px;
         padding: 10px;
-        margin: 4px 8px;
+        @include margin(4px, 0px, 4px, 8px);
         resize: vertical;
+    }
+
+    ion-button {
+        --padding-start: 16px;
+        --padding-end: 16px;
     }
 
     .core-send-message-input::placeholder {
