@@ -26,7 +26,6 @@ Feature: Test basic usage of comments in app
       | database | type | name              | description              |
       | data1    | text | Test field name   | Test field description   |
 
-  @ionic7_failure
   Scenario: Add comments & Delete comments (database)
     # Create database entry and comment as a teacher
     Given I entered the data activity "Data" on course "Course 1" as "teacher1" in the app
@@ -65,7 +64,6 @@ Feature: Test basic usage of comments in app
     When I press the back button in the app
     Then I should find "Comments (1)" in the app
 
-  @ionic7_failure
   Scenario: Add comments offline & Delete comments offline & Sync comments (database)
     Given I entered the data activity "Data" on course "Course 1" as "teacher1" in the app
     And I press "Add entries" in the app

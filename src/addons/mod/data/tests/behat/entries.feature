@@ -26,7 +26,6 @@ Feature: Users can manage entries in database activities
     | data1    | text | URL         | URL link         |
     | data1    | text | Description | Link description |
 
-  @ionic7_failure
   Scenario: Create entry
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     Then I should find "No entries yet" in the app
@@ -38,7 +37,6 @@ Feature: Users can manage entries in database activities
     Then I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app
 
-  @ionic7_failure
   Scenario: Browse entry
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
 
@@ -72,7 +70,6 @@ Feature: Users can manage entries in database activities
     And I should find "Moodle community site" in the app
     And I should find "Moodle Cloud" in the app
 
-  @ionic7_failure
   Scenario: Students can not edit or delete other user's entries from list and single view in the app
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     And I press "Add entries" in the app
@@ -88,7 +85,6 @@ Feature: Users can manage entries in database activities
     And "Edit" "link" should not exist
     And "Delete" "link" should not exist
 
-  @ionic7_failure
   Scenario: Delete entry (student) & Update entry (student)
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     And I press "Add entries" in the app
@@ -148,7 +144,6 @@ Feature: Users can manage entries in database activities
     And I should not find "Moodle Cloud" in the app
     And I should find "No entries yet" in the app
 
-  @ionic7_failure
   Scenario: Delete entry (teacher) & Update entry (teacher)
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     And I press "Add entries" in the app
@@ -212,7 +207,6 @@ Feature: Users can manage entries in database activities
     And I press "Delete" in the app
     And I should not find "Moodle Cloud" in the app
 
-  @ionic7_failure
   Scenario: Handle number 0 correctly when creating entries
     Given the following "activities" exist:
       | activity | name      | intro     | course | idnumber |
