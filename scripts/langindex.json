@@ -1792,6 +1792,7 @@
   "core.fileuploader.uploadingperc": "local_moodlemobileapp",
   "core.fileuploader.video": "local_moodlemobileapp",
   "core.filter": "moodle",
+  "core.firstdayofweek": "langconfig",
   "core.folder": "moodle",
   "core.forcepasswordchangenotice": "moodle",
   "core.fulllistofcourses": "moodle",
