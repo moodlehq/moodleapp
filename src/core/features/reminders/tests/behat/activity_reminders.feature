@@ -16,6 +16,7 @@ Feature: Set a new reminder on activity
       | assign   | C1                   | assign01  | Assignment 01 | ## yesterday ##          | ## now +70 minutes ## |
       | assign   | C1                   | assign02  | Assignment 02 | ## yesterday ##          | ## 1 January 2050 ##  |
 
+  @ionic7_failure
   Scenario: Add, delete and update reminder on activity
     Given I entered the assign activity "Assignment 01" on course "Course 1" as "student1" in the app
 

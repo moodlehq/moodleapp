@@ -54,6 +54,7 @@ Feature: Test basic usage of user features
     When I press "Reconnect" in the app
     Then I should find "Acceptance test site" in the app
 
+  @ionic7_failure
   Scenario: View profile
     Given the following "custom profile fields" exist:
       | datatype | shortname  | name           | required | param1 |

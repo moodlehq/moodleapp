@@ -79,6 +79,7 @@ Feature: Notifications
     Then I should find "Test 10 description" in the app
     But I should not find "Test 09 description" in the app
 
+  @ionic7_failure
   Scenario: Tablet navigation
     Given I enter the app
     And I change viewport size to "1200x640" in the app

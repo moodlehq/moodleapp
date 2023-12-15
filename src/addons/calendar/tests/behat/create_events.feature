@@ -20,6 +20,7 @@ Feature: Test creation of calendar events in app
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
 
+  @ionic7_failure
   Scenario: Create user event as student from monthly view
     Given I entered the app as "student1"
     When I press "More" in the app

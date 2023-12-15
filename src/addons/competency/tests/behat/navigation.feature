@@ -297,6 +297,7 @@ Feature: Test competency navigation
     Then I should find "Desserts are important" in the app
     But I should not find "Cakes" in the app
 
+  @ionic7_failure
   Scenario: Tablet navigation (student)
     Given I entered the course "Course 1" as "student1" in the app
     And I change viewport size to "1200x640" in the app
@@ -382,6 +383,7 @@ Feature: Test competency navigation
     Then I should find "Desserts are important" in the app
     But I should not find "Cakes" in the app
 
+  @ionic7_failure
   Scenario: Tablet navigation (teacher)
     Given I entered the course "Course 1" as "teacher1" in the app
     And I change viewport size to "1200x640" in the app

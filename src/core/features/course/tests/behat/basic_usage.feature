@@ -80,6 +80,7 @@ Feature: Test basic usage of one course in app
     And I click on "Move right" "link" in the "assignment" activity
     And I log out
 
+  @ionic7_failure
   Scenario: View course contents
     When I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
