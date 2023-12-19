@@ -10,4 +10,16 @@
     .addon-qtype-match-incorrect {
         color: var(--danger);
     }
+
+    ion-select::part(label) {
+        flex-grow: 1;
+    }
+
+    div.flew-row {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
 }

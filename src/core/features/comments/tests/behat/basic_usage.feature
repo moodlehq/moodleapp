@@ -26,7 +26,6 @@ Feature: Test basic usage of comments in app
       | database | type | name              | description              |
       | data1    | text | Test field name   | Test field description   |
 
-  @ionic7_failure
   Scenario: Add comments & Delete comments (database)
     # Create database entry and comment as a teacher
     Given I entered the data activity "Data" on course "Course 1" as "teacher1" in the app
@@ -65,7 +64,6 @@ Feature: Test basic usage of comments in app
     When I press the back button in the app
     Then I should find "Comments (1)" in the app
 
-  @ionic7_failure
   Scenario: Add comments offline & Delete comments offline & Sync comments (database)
     Given I entered the data activity "Data" on course "Course 1" as "teacher1" in the app
     And I press "Add entries" in the app
@@ -152,7 +150,6 @@ Feature: Test basic usage of comments in app
     When I press the back button in the app
     And I should find "Comments (1)" in the app
 
-  @ionic7_failure
   Scenario: Add comments offline & Delete comments offline & Sync comments (glossary)
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "teacher1" in the app
     And I press "Add a new entry" in the app
@@ -231,7 +228,6 @@ Feature: Test basic usage of comments in app
     When I press the back button in the app
     Then I should find "Comments (0)" in the app
 
-  @ionic7_failure
   Scenario: Add comments offline & Delete comments offline & Sync comments (blogs)
     # Create blog as a teacher
     Given the following "core_blog > entries" exist:

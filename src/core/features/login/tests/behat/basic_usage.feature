@@ -25,7 +25,6 @@ Feature: Test basic usage of login in app
     Then I should not find "Skip" in the app
     And I should find "Connect to Moodle" in the app
 
-  @ionic7_failure
   Scenario: Add a new account in the app & Site name in displayed when adding a new account
     When I launch the app
     And I set the field "Your site" to "$WWWROOT" in the app
@@ -49,8 +48,7 @@ Feature: Test basic usage of login in app
     Then I should find "Can't connect to site" in the app
 
   Scenario: Add a non existing account from accounts switcher
-    When I enter the app
-    And I log in as "student1"
+    Given I entered the app as "student1"
     And I press the user menu button in the app
     And I press "Switch account" in the app
     And I press "Add" in the app

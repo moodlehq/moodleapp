@@ -72,7 +72,6 @@ Feature: It navigates properly in pages with a split-view component.
     And I should find "User account" in the app
     But I should not find "Back" in the app
 
-  @ionic7_failure
   Scenario: Navigate in grades tab on tablet
 
     # Open user menu

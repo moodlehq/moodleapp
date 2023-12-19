@@ -19,7 +19,7 @@
                 <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding">
                     <ion-col class="addon-block-timeline-activity-main ion-no-padding">
                         <ion-row class="ion-justify-content-between ion-align-items-center ion-nowrap ion-no-padding">
-                            <ion-col class="addon-block-timeline-activity-time ion-no-padding">
+                            <ion-col class="addon-block-timeline-activity-time ion-no-padding ion-text-nowrap">
                                 <small>{{event.timesort * 1000 | coreFormatDate:"strftimetime24" }}</small>
                                 <core-mod-icon *ngIf="event.iconUrl" [modicon]="event.iconUrl" [componentId]="event.instance"
                                     [modname]="event.modulename" [purpose]="event.purpose" />

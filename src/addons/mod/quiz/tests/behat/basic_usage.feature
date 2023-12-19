@@ -191,7 +191,6 @@ Feature: Attempt a quiz in app
     Then I should find "The correct answer is: Berlin" in the app
     And I should find "Mark 1.00 out of 1.00" in the app
 
-  @ionic7_failure
   Scenario: Submit a quiz & Review a quiz attempt
     Given I entered the quiz activity "Quiz 1" on course "Course 1" as "student1" in the app
     When I press "Attempt quiz now" in the app

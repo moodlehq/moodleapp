@@ -26,7 +26,6 @@ Feature: Users can store entries in database activities when offline and sync wh
     | data1    | text | URL         | URL link         |
     | data1    | text | Description | Link description |
 
-  @ionic7_failure
   Scenario: Create entry (offline)
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     And I switch network connection to offline
@@ -46,7 +45,6 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I should find "Moodle community site" in the app
     And I should not find "This Database has offline data to be synchronised" in the app
 
-  @ionic7_failure
   Scenario: Update entry (offline) & Delete entry (offline)
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     And I should find "No entries yet" in the app
@@ -97,7 +95,6 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I should not find "Moodle Cloud" in the app
     And I should not find "This Database has offline data to be synchronised" in the app
 
-  @ionic7_failure
   Scenario: Students can undo deleting entries to a database in the app while offline
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     And I should find "No entries yet" in the app

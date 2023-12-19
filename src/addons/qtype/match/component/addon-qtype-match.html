@@ -10,20 +10,20 @@
         <ion-select id="{{row.id}}" [name]="row.name" [(ngModel)]="row.selected" interface="action-sheet" [disabled]="row.disabled"
             [cancelText]="'core.cancel' | translate"
             [ngClass]="{'addon-qtype-match-correct': row.isCorrect === 1,'addon-qtype-match-incorrect': row.isCorrect === 0}">
-            <div slot="label">
+            <div slot="label" class="flew-row">
                 <core-format-text [component]="component" [componentId]="componentId" [text]="row.text" [contextLevel]="contextLevel"
                     [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
                 <label class="accesshide" for="{{row.id}}" *ngIf="row.accessibilityLabel">
                     {{ row.accessibilityLabel }}
                 </label>
+                <ion-icon *ngIf="row.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success" slot="end"
+                    [attr.aria-label]="'core.question.correct' | translate" />
+                <ion-icon *ngIf="row.isCorrect === 0" class="core-correct-icon" name="fas-xmark" color="danger" slot="end"
+                    [attr.aria-label]="'core.question.incorrect' | translate" />
             </div>
             <ion-select-option *ngFor="let option of row.options" [value]="option.value">
                 {{option.label}}
             </ion-select-option>
         </ion-select>
-        <ion-icon *ngIf="row.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success" slot="end"
-            [attr.aria-label]="'core.question.correct' | translate" />
-        <ion-icon *ngIf="row.isCorrect === 0" class="core-correct-icon" name="fas-xmark" color="danger" slot="end"
-            [attr.aria-label]="'core.question.incorrect' | translate" />
     </ion-item>
 </section>

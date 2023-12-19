@@ -253,6 +253,9 @@ ion-tabs.hide-header ion-header {
 
 ion-footer {
     background-color: var(--contrast-background);
+    > ion-toolbar:only-child {
+        top: 1px;
+    }
 }
 
 // Ionic icon.
@@ -290,6 +293,11 @@ button,
 [role="button"] {
     min-height: var(--a11y-min-target-size);
     min-width: var(--a11y-min-target-size);
+
+    &.button-large {
+        min-height: 2.8em;
+        min-width: 2.8em
+    }
 }
 
 ion-fab-button {
@@ -1015,15 +1023,19 @@ ion-action-sheet.md {
 ion-radio,
 input[type=radio],
 .select-alert.ios .alert-radio-icon {
-    --color: var(--text-color);
-    --color-checked: var(--color);
     --border-radius: 50%;
     --border-width: 2px;
     --outer-border-width: 2px;
     --border-style: solid;
     --inner-border-radius: 50%;
     --size: 20px;
+
+    &:not(.ion-color) {
+        --color: var(--text-color);
+        --color-checked: var(--color);
+    }
 }
+
 
 .ios ion-radio,
 .ios input[type=radio],
@@ -1108,14 +1120,18 @@ input[type=radio],
 ion-checkbox,
 input[type=checkbox] {
     --border-radius: 2px;
-    --border-color-checked: var(--text-color);
-    --checkbox-background-checked: var(--text-color);
-    --checkmark-color: var(--contrast-background);
     --border-width: 2px;
     --outer-border-width: 2px;
     --border-style: solid;
     --size: 20px;
+
+    &:not(.ion-color) {
+        --border-color-checked: var(--text-color);
+        --checkbox-background-checked: var(--text-color);
+        --checkmark-color: var(--contrast-background);
+    }
 }
+
 
 .ios input[type=checkbox] {
     --outer-border-width: 1px;
@@ -1406,23 +1422,27 @@ audio.core-media-adapt-width {
     width: 100%;
 }
 
-ion-item {
-    // font-size: var(--text-size);
+ion-item.item-lines-default {
     --inner-border-width: 0px;
-}
-
-ion-item.item-lines-full {
-    --inner-border-width: 0px;
-    --border-width: 0 0 1px 0;
-}
-
-ion-item.item-lines-inset {
-    --inner-border-width: 0 0 1px 0;
     --border-width: 0px;
 }
 
-ion-item.item-input.ios {
+ion-item.ion-valid,
+ion-item.ion-invalid {
     --inner-border-width: 0 0 1px 0;
+
+    &.ion-touched {
+        &.ion-invalid {
+            --ion-item-border-color: var(--highlight-color-invalid);
+            --highlight-background: var(--ion-item-border-color);
+            --border-color: var(--ion-item-border-color);
+        }
+        &.ion-valid {
+            --ion-item-border-color: var(--highlight-color-valid);
+            --highlight-background: var(--ion-item-border-color);
+            --border-color: var(--ion-item-border-color);
+        }
+    }
 }
 
 // Fake item.

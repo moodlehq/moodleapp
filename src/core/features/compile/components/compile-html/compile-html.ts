@@ -114,42 +114,41 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
      * @inheritdoc
      */
     async ngOnChanges(changes: Record<string, SimpleChange>): Promise<void> {
-        if (!this.container) {
+        // Only compile if text/javascript has changed or the forceCompile flag has been set to true.
+        if (this.text === undefined ||
+            !(changes.text || changes.javascript || (changes.forceCompile && CoreUtils.isTrueOrOne(this.forceCompile)))) {
             return;
         }
 
-        // Only compile if text/javascript has changed or the forceCompile flag has been set to true.
-        if (this.text !== undefined && (changes.text || changes.javascript ||
-                (changes.forceCompile && CoreUtils.isTrueOrOne(this.forceCompile)))) {
+        // Create a new component and a new module.
+        this.creatingComponent = true;
+        this.compiling.emit(true);
 
-            // Create a new component and a new module.
-            this.creatingComponent = true;
-            this.compiling.emit(true);
+        try {
+            const componentClass = await this.getComponentClass();
 
-            try {
-                const componentClass = await this.getComponentClass();
+            // Destroy previous components.
+            this.componentRef?.destroy();
 
-                // Destroy previous components.
-                this.componentRef?.destroy();
-
-                // Create the component.
+            // Create the component.
+            if (this.container) {
                 this.componentRef = await CoreCompile.createAndCompileComponent(
                     this.text,
                     componentClass,
                     this.container,
                     this.extraImports,
                 );
-                this.componentRef && this.created.emit(this.componentRef.instance);
-
-                this.loaded = true;
-            } catch (error) {
-                CoreDomUtils.showErrorModal(error);
-
-                this.loaded = true;
-            } finally {
-                this.creatingComponent = false;
-                this.compiling.emit(false);
             }
+            this.componentRef && this.created.emit(this.componentRef.instance);
+
+            this.loaded = true;
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            this.loaded = true;
+        } finally {
+            this.creatingComponent = false;
+            this.compiling.emit(false);
         }
     }
 
