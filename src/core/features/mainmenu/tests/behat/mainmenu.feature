@@ -1,4 +1,4 @@
-@app @javascript
+@app @javascript @app_others
 Feature: Main Menu opens the right page
 
   Background:

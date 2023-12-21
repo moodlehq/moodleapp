@@ -1,4 +1,4 @@
-@app @javascript @lms_upto3.9
+@app @javascript @lms_upto3.9 @app_others
 Feature: It opens files properly.
 
   Background:

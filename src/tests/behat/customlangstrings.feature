@@ -1,4 +1,4 @@
-@app @javascript @lms_from4.0
+@app @javascript @lms_from4.0 @app_others
 Feature: Custom lang strings
 
   Background:

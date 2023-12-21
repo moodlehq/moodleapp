@@ -1,4 +1,4 @@
-@app @javascript
+@app @javascript @app_others
 Feature: It navigates using gestures.
 
   Background:
