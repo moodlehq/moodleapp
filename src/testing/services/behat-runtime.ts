@@ -567,6 +567,19 @@ export class TestingBehatRuntimeService {
     }
 
     /**
+     * Get coverage data.
+     *
+     * @returns Coverage data.
+     */
+    getCoverage(): string | null {
+        if (!('__coverage__' in window)) {
+            return null;
+        }
+
+        return JSON.stringify(window.__coverage__);
+    }
+
+    /**
      * Logs information from this Behat runtime JavaScript, including the time and the 'BEHAT'
      * keyword so we can easily filter for it if needed.
      */
