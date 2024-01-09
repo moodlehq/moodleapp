@@ -424,10 +424,17 @@ export class TestingBehatDomUtilsService {
      * @returns Field element.
      */
     findField(field: string): HTMLElement | HTMLInputElement | undefined {
-        const input = this.findElementBasedOnText(
-            { text: field, selector: 'input, textarea, [contenteditable="true"], ion-select, ion-datetime-button, ion-datetime' },
+        const selector =
+            'input, textarea, core-rich-text-editor, [contenteditable="true"], ion-select, ion-datetime-button, ion-datetime';
+
+        let input = this.findElementBasedOnText(
+            { text: field, selector },
             { onlyClickable: false, containerName: '' },
         );
+
+        if (input?.tagName === 'CORE-RICH-TEXT-EDITOR') {
+            input = input.querySelector<HTMLElement>('[contenteditable="true"]') || undefined;
+        }
 
         if (input) {
             return input;
@@ -441,7 +448,17 @@ export class TestingBehatDomUtilsService {
         if (label) {
             const inputId = label.getAttribute('for');
 
-            return (inputId && document.getElementById(inputId)) || undefined;
+            if (inputId) {
+                return document.getElementById(inputId) || undefined;
+            }
+
+            input = this.getShadowDOMHost(label) || undefined;
+
+            // Add support for other input types if required by adding them to the array.
+            const ionicInputFields = ['ION-INPUT', 'ION-TEXTAREA', 'ION-SELECT', 'ION-DATETIME', 'ION-TOGGLE'];
+            if (input && ionicInputFields.includes(input.tagName)) {
+                return input;
+            }
         }
     }
 
