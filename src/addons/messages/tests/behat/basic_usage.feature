@@ -216,7 +216,6 @@ Feature: Test basic usage of messages in app
     Then I should find "heeey student" in the app
     And I should find "byee" in the app
 
-  @ionic7_failure
   Scenario: Search for messages
     Given I entered the app as "teacher1"
     When I press "Messages" in the app

@@ -286,7 +286,18 @@ export class TestingBehatDomUtilsService {
                     continue;
                 }
 
-                if (element.contains(otherElement)) {
+                let documentPosition = element.compareDocumentPosition(otherElement);
+                // eslint-disable-next-line no-bitwise
+                if (documentPosition & Node.DOCUMENT_POSITION_DISCONNECTED) {
+                    // Check if they are inside shadow DOM so we can compare their hosts.
+                    const elementHost = this.getShadowDOMHost(element) || element;
+                    const otherElementHost = this.getShadowDOMHost(otherElement) || otherElement;
+
+                    documentPosition = elementHost.compareDocumentPosition(otherElementHost);
+                }
+
+                // eslint-disable-next-line no-bitwise
+                if (documentPosition & Node.DOCUMENT_POSITION_CONTAINS) {
                     uniqueElements.delete(otherElement);
                 }
             }
@@ -302,9 +313,22 @@ export class TestingBehatDomUtilsService {
      * @returns Parent element.
      */
     protected getParentElement(element: HTMLElement): HTMLElement | null {
-        return element.parentElement ||
-            (element.getRootNode() && (element.getRootNode() as ShadowRoot).host as HTMLElement) ||
-            null;
+        return element.parentElement || this.getShadowDOMHost(element);
+    }
+
+    /**
+     * Get shadow DOM host element.
+     *
+     * @param element Element.
+     * @returns Shadow DOM host element.
+     */
+    protected getShadowDOMHost(element: HTMLElement): HTMLElement | null {
+        const node = element.getRootNode();
+        if (node instanceof ShadowRoot) {
+            return node.host as HTMLElement;
+        }
+
+        return null;
     }
 
     /**
