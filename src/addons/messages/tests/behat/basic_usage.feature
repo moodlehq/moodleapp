@@ -346,7 +346,6 @@ Feature: Test basic usage of messages in app
     Then I should find "test message" in the app
     And I should find "Muted conversation" in the app
 
-  @ionic7_failure
   Scenario: Self conversations
     Given I entered the app as "student1"
     When I press "Messages" in the app

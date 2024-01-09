@@ -612,8 +612,10 @@ export class TestingBehatDomUtilsService {
             // may not work without doing this.
             const parentElement = this.getParentElement(element);
 
-            if (parentElement && parentElement.matches('ion-button, ion-back-button')) {
+            if (parentElement?.matches('ion-button, ion-back-button')) {
                 element = parentElement;
+            } else if (parentElement?.tagName === 'ION-ITEM' && parentElement?.classList.contains('clickable')) {
+                element = parentElement.querySelector<HTMLElement>('ion-toggle') || element;
             }
 
             const rect = await this.ensureElementVisible(element);
