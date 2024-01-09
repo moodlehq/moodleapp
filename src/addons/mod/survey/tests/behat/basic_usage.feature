@@ -20,7 +20,6 @@ Feature: Test basic usage of survey activity in app
       | activity | name             | intro       | course | idnumber | groupmode |
       | survey   | Test survey name | Test survey | C1     | survey   | 0         |
 
-  @ionic7_failure
   Scenario: Answer a survey & View results (ATTLS)
     Given I entered the survey activity "Test survey name" on course "Course 1" as "student1" in the app
     And I set the following fields to these values in the app:
@@ -79,7 +78,6 @@ Feature: Test basic usage of survey activity in app
     And I should see "4th answer"
     And I should see "5th answer"
 
-  @ionic7_failure
   Scenario: Answer a survey & View results (Colles actual)
     Given the following "activities" exist:
       | activity | name                        | intro        | template |course | idnumber | groupmode |
@@ -122,7 +120,6 @@ Feature: Test basic usage of survey activity in app
     Then I should see "You've completed this survey.  The graph below shows a summary of your results compared to the class averages."
     And I should see "1 people have completed this survey so far"
 
-  @ionic7_failure
   Scenario: Answer a survey & View results (Colles preferred)
     Given the following "activities" exist:
       | activity | name                           | intro        | template | course | idnumber | groupmode |
@@ -165,7 +162,6 @@ Feature: Test basic usage of survey activity in app
     Then I should see "You've completed this survey.  The graph below shows a summary of your results compared to the class averages."
     And I should see "1 people have completed this survey so far"
 
-  @ionic7_failure
   Scenario: Answer a survey & View results (Colles preferred and actual)
     Given the following "activities" exist:
       | activity | name                                      | intro        | template | course | idnumber | groupmode |

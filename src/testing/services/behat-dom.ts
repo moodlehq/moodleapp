@@ -631,7 +631,13 @@ export class TestingBehatDomUtilsService {
 
             // Functions to get/set value depending on field type.
             const setValue = (text: string) => {
-                if (element.tagName === 'ION-SELECT' && 'value' in element) {
+                if (! ('value' in element)) {
+                    element.innerHTML = text;
+
+                    return;
+                }
+
+                if (element.tagName === 'ION-SELECT') {
                     value = value.trim();
                     const optionValue = Array.from(element.querySelectorAll('ion-select-option'))
                         .find((option) => option.innerHTML.trim() === value);
@@ -639,11 +645,11 @@ export class TestingBehatDomUtilsService {
                     if (optionValue) {
                         element.value = optionValue.value;
                     }
-                } else if ('value' in element) {
-                    element.value = text;
                 } else {
-                    element.innerHTML = text;
+                    element.value = text;
                 }
+
+                element.dispatchEvent(new Event('ionChange'));
             };
             const getValue = () => {
                 if ('value' in element) {
