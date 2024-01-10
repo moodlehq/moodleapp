@@ -10,7 +10,7 @@ on:
       moodle_branch:
         description: 'Moodle branch'
         required: true
-        default: 'master'
+        default: 'main'
       moodle_repository:
         description: 'Moodle repository'
         required: true
@@ -25,7 +25,7 @@ jobs:
       MOODLE_DOCKER_DB: pgsql
       MOODLE_DOCKER_BROWSER: chrome
       MOODLE_DOCKER_PHP_VERSION: '8.1'
-      MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'master' }}
+      MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'main' }}
       MOODLE_REPOSITORY: ${{ github.event.inputs.moodle_repository || 'https://github.com/moodle/moodle' }}
       BEHAT_TAGS: ${{ github.event.inputs.behat_tags || '~@performance&&~@ionic7_failure' }}
 
@@ -37,7 +37,7 @@ jobs:
     - name: Additional checkouts
       run: |
         git clone --branch $MOODLE_BRANCH --depth 1 $MOODLE_REPOSITORY $GITHUB_WORKSPACE/moodle
-        git clone --branch master --depth 1 https://github.com/moodlehq/moodle-docker $GITHUB_WORKSPACE/moodle-docker
+        git clone --branch main --depth 1 https://github.com/moodlehq/moodle-docker $GITHUB_WORKSPACE/moodle-docker
     - name: Install npm packages
       run: npm ci --no-audit
     - name: Create Behat faildumps folder

@@ -16,8 +16,8 @@ jobs:
         node-version-file: '.nvmrc'
     - name: Additional checkouts
       run: |
-        git clone --branch master --depth 1 https://github.com/moodle/moodle $GITHUB_WORKSPACE/moodle
-        git clone --branch master --depth 1 https://github.com/moodlehq/moodle-docker $GITHUB_WORKSPACE/moodle-docker
+        git clone --branch main --depth 1 https://github.com/moodle/moodle $GITHUB_WORKSPACE/moodle
+        git clone --branch main --depth 1 https://github.com/moodlehq/moodle-docker $GITHUB_WORKSPACE/moodle-docker
     - name: Install npm packages
       run: npm ci --no-audit
     - name: Generate Behat tests plugin
