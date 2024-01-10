@@ -18,7 +18,6 @@ Feature: Test signup in app
     And I should find "These are the authentication instructions." in the app
     But I should not find "Create new account" in the app
 
-  @ionic7_failure
   Scenario: Basic signup
     When I launch the app
 

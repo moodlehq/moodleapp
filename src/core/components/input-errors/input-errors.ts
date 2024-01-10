@@ -64,17 +64,19 @@ export class CoreInputErrorsComponent implements OnInit, OnChanges {
      * Initialize some common errors if they aren't set.
      */
     protected initErrorMessages(): void {
+        // Set default error messages.
         this.errorMessages = {
-            required: this.errorMessages.required || 'core.required',
-            email: this.errorMessages.email || 'core.login.invalidemail',
-            date: this.errorMessages.date || 'core.login.invaliddate',
-            datetime: this.errorMessages.datetime || 'core.login.invaliddate',
-            datetimelocal: this.errorMessages.datetimelocal || 'core.login.invaliddate',
-            time: this.errorMessages.time || 'core.login.invalidtime',
-            url: this.errorMessages.url || 'core.login.invalidurl',
+            required: 'core.required',
+            email: 'core.login.invalidemail',
+            date: 'core.login.invaliddate',
+            datetime: 'core.login.invaliddate',
+            datetimelocal: 'core.login.invaliddate',
+            time: 'core.login.invalidtime',
+            url: 'core.login.invalidurl',
             // Set empty values by default, the default error messages will be built in the template when needed.
-            max: this.errorMessages.max || '',
-            min: this.errorMessages.min || '',
+            max: '',
+            min: '',
+            ...this.errorMessages,
         };
 
         this.errorMessages.requiredTrue = this.errorMessages.required;
