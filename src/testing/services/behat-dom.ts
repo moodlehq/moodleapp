@@ -76,11 +76,10 @@ export class TestingBehatDomUtilsService {
      * Check if an element is selected.
      *
      * @param element Element.
-     * @param container Container.
      * @param firstCall Whether this is the first call of the function.
      * @returns Whether the element is selected or not.
      */
-    isElementSelected(element: HTMLElement, container: HTMLElement, firstCall = true): boolean {
+    isElementSelected(element: HTMLElement, firstCall = true): boolean {
         const ariaCurrent = element.getAttribute('aria-current');
         const ariaSelected = element.getAttribute('aria-selected');
         const ariaChecked = element.getAttribute('aria-checked');
@@ -96,14 +95,19 @@ export class TestingBehatDomUtilsService {
             if (inputElement) {
                 return inputElement.value === 'on';
             }
+
+            const tabButtonElement =  element.closest('ion-tab-button');
+            if (tabButtonElement?.classList.contains('tab-selected')) {
+                return true;
+            }
         }
 
         const parentElement = this.getParentElement(element);
-        if (!parentElement || parentElement === container) {
+        if (!parentElement || parentElement.classList.contains('ion-page')) {
             return false;
         }
 
-        return this.isElementSelected(parentElement, container, false);
+        return this.isElementSelected(parentElement, false);
     }
 
     /**

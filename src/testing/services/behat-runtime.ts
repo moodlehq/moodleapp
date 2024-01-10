@@ -326,7 +326,7 @@ export class TestingBehatRuntimeService {
                 return 'ERROR: No element matches locator to find.';
             }
 
-            return TestingBehatDomUtils.isElementSelected(element, document.body) ? 'YES' : 'NO';
+            return TestingBehatDomUtils.isElementSelected(element) ? 'YES' : 'NO';
         } catch (error) {
             return 'ERROR: ' + error.message;
         }
