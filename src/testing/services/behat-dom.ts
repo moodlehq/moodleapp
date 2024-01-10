@@ -401,7 +401,7 @@ export class TestingBehatDomUtilsService {
      */
     findField(field: string): HTMLElement | HTMLInputElement | undefined {
         const input = this.findElementBasedOnText(
-            { text: field, selector: 'input, textarea, [contenteditable="true"], ion-select, ion-datetime' },
+            { text: field, selector: 'input, textarea, [contenteditable="true"], ion-select, ion-datetime-button, ion-datetime' },
             { onlyClickable: false, containerName: '' },
         );
 
