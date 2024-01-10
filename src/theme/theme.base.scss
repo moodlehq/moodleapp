@@ -1161,7 +1161,7 @@ ion-select-popover {
 
     ion-item.core-select-option-title {
         cursor: pointer;
-        ion-radio {
+        ion-radio::part(container) {
             display: none;
         }
     }

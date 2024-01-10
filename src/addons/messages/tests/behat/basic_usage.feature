@@ -19,7 +19,6 @@ Feature: Test basic usage of messages in app
       | student1 | C1 | student |
       | student2 | C1 | student |
 
-  @ionic7_failure
   Scenario: View recent conversations and contacts
     Given I entered the app as "teacher1"
     When I press "Messages" in the app
