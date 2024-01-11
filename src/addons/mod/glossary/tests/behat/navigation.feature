@@ -211,7 +211,6 @@ Feature: Test glossary navigation
     And I should find "Cashew" in the app
     And I should find "Acerola" in the app
 
-  @ci_jenkins_skip @ionic7_failure
   Scenario: Tablet navigation on glossary
     Given I entered the course "Course 1" as "student1" in the app
     And I change viewport size to "1200x640" in the app

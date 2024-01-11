@@ -330,8 +330,10 @@ class CoreGradesCourseParticipantsSwipeManager extends CoreSwipeNavigationItemsM
     /**
      * @inheritdoc
      */
-    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
-        return route.params.userId;
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
+        const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
+
+        return snapshot.params.userId;
     }
 
 }
