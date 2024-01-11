@@ -69,8 +69,8 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
     // Data for age verification.
     ageVerificationForm: FormGroup;
-    countryControl: FormControl;
-    signUpCountryControl?: FormControl;
+    countryControl: FormControl<string>;
+    signUpCountryControl?: FormControl<string>;
     isMinor = false; // Whether the user is minor age.
     ageDigitalConsentVerification?: boolean; // Whether the age verification is enabled.
     supportName?: string;
@@ -93,7 +93,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         this.ageVerificationForm = this.fb.group({
             age: ['', Validators.required],
         });
-        this.countryControl = this.fb.control('', Validators.required);
+        this.countryControl = this.fb.control('', { validators: Validators.required, nonNullable: true });
         this.ageVerificationForm.addControl('country', this.countryControl);
 
         // Create the signupForm with the basic controls. More controls will be added later.
@@ -141,7 +141,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      */
     protected completeFormGroup(): void {
         this.signupForm.addControl('city', this.fb.control(this.settings?.defaultcity || ''));
-        this.signUpCountryControl = this.fb.control(this.settings?.country || '');
+        this.signUpCountryControl = this.fb.control(this.settings?.country || '', { nonNullable: true });
         this.signupForm.addControl('country', this.signUpCountryControl);
 
         // Add the name fields.

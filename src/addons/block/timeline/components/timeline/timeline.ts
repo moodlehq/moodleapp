@@ -39,10 +39,10 @@ import { CoreLogger } from '@singletons/logger';
 })
 export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent {
 
-    sort = new FormControl();
+    sort = new FormControl(AddonBlockTimelineSort.ByDates);
     sort$!: Observable<AddonBlockTimelineSort>;
     sortOptions!: AddonBlockTimelineOption<AddonBlockTimelineSort>[];
-    filter = new FormControl();
+    filter = new FormControl(AddonBlockTimelineFilter.Next30Days);
     filter$!: Observable<AddonBlockTimelineFilter>;
     statusFilterOptions!: AddonBlockTimelineOption<AddonBlockTimelineFilter>[];
     dateFilterOptions!: AddonBlockTimelineOption<AddonBlockTimelineFilter>[];

@@ -66,7 +66,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     // @todo Implement ControlValueAccessor https://angular.io/api/forms/ControlValueAccessor.
 
     @Input() placeholder = ''; // Placeholder to set in textarea.
-    @Input() control?: FormControl; // Form control.
+    @Input() control?: FormControl<string | undefined | null>; // Form control.
     @Input() name = 'core-rich-text-editor'; // Name to set to the textarea.
     @Input() component?: string; // The component to link the files to.
     @Input() componentId?: number; // An ID to use in conjunction with the component.
@@ -75,7 +75,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() elementId?: string; // An ID to set to the element.
     @Input() draftExtraParams?: Record<string, unknown>; // Extra params to identify the draft.
-    @Output() contentChanged: EventEmitter<string>;
+    @Output() contentChanged: EventEmitter<string | undefined | null>;
 
     @ViewChild('editor') editor?: ElementRef; // WYSIWYG editor.
     @ViewChild('textarea') textarea?: IonTextarea; // Textarea editor.
@@ -190,8 +190,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         // Setup the editor.
         this.editorElement = this.editor?.nativeElement as HTMLDivElement;
         this.setContent(this.control?.value);
-        this.originalContent = this.control?.value;
-        this.lastDraft = this.control?.value;
+        this.originalContent = this.control?.value ?? undefined;
+        this.lastDraft = this.control?.value ?? '';
 
         // Use paragraph on enter.
         // eslint-disable-next-line deprecation/deprecation
@@ -261,19 +261,19 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
             // Apply the new content.
             this.setContent(newValue);
-            this.originalContent = newValue;
+            this.originalContent = newValue ?? undefined;
             this.infoMessage = undefined;
 
             // Save a draft so the original content is saved.
-            this.lastDraft = newValue;
+            this.lastDraft = newValue ?? '';
             CoreEditorOffline.saveDraft(
                 this.contextLevel || '',
                 this.contextInstanceId || 0,
                 this.elementId || '',
                 this.draftExtraParams || {},
                 this.pageInstance,
-                newValue,
-                newValue,
+                this.lastDraft,
+                this.originalContent,
             );
         });
 
@@ -579,7 +579,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @param value text
      * @returns If value is null only a white space.
      */
-    protected isNullOrWhiteSpace(value: string | null): boolean {
+    protected isNullOrWhiteSpace(value: string | null | undefined): boolean {
         if (value == null || value === undefined) {
             return true;
         }
@@ -595,7 +595,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      *
      * @param value New content.
      */
-    protected setContent(value: string | null): void {
+    protected setContent(value: string | null | undefined): void {
         if (!this.editorElement || !this.textarea) {
             return;
         }
@@ -974,7 +974,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
                 return;
             }
 
-            const newText = this.control.value;
+            const newText = this.control.value ?? '';
 
             if (this.lastDraft == newText) {
                 // Text hasn't changed, nothing to save.

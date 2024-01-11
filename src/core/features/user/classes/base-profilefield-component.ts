@@ -24,7 +24,7 @@ import { CoreUserProfileField } from '@features/user/services/user';
 @Component({
     template: '',
 })
-export abstract class CoreUserProfileFieldBaseComponent implements OnInit {
+export abstract class CoreUserProfileFieldBaseComponent<T = string> implements OnInit {
 
     @Input() field?: AuthEmailSignupProfileField | CoreUserProfileField; // The profile field to be rendered.
     @Input() signup = false; // True if editing the field in signup. Defaults to false.
@@ -36,7 +36,7 @@ export abstract class CoreUserProfileFieldBaseComponent implements OnInit {
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the field belongs to (if any). It can be used to improve performance with filters.
 
-    control?: FormControl;
+    control?: FormControl<T>;
     modelName = '';
     value?: string;
     required?: boolean;
@@ -91,13 +91,16 @@ export abstract class CoreUserProfileFieldBaseComponent implements OnInit {
      *
      * @returns Form control.
      */
-    protected createFormControl(field: AuthEmailSignupProfileField): FormControl {
+    protected createFormControl(field: AuthEmailSignupProfileField): FormControl<T> {
         const formData = {
-            value: field.defaultdata,
+            value: (field.defaultdata ?? '') as T,
             disabled: this.disabled,
         };
 
-        return new FormControl(formData, this.required && !field.locked ? Validators.required : null);
+        return new FormControl(formData, {
+            validators: this.required && !field.locked ? Validators.required : null,
+            nonNullable: true,
+        });
     }
 
 }

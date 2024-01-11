@@ -47,7 +47,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
     courseId?: number; // Course the wiki belongs to.
     title?: string; // Title to display.
     pageForm: FormGroup; // The form group.
-    contentControl: FormControl; // The FormControl for the page content.
+    contentControl: FormControl<string>; // The FormControl for the page content.
     canEditTitle = false; // Whether title can be edited.
     loaded = false; // Whether the data has been loaded.
     component = AddonModWikiProvider.COMPONENT; // Component to link the files to.
@@ -74,7 +74,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
     constructor(
         protected formBuilder: FormBuilder,
     ) {
-        this.contentControl = this.formBuilder.control('');
+        this.contentControl = this.formBuilder.control('', { nonNullable: true });
         this.pageForm = this.formBuilder.group({});
     }
 

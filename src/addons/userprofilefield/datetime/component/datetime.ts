@@ -28,7 +28,7 @@ import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-p
     selector: 'addon-user-profile-field-datetime',
     templateUrl: 'addon-user-profile-field-datetime.html',
 })
-export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileFieldBaseComponent {
+export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileFieldBaseComponent<string | undefined> {
 
     ionDateTimePresentation = 'date';
     min?: string;
@@ -84,13 +84,16 @@ export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileField
      *
      * @returns Form control.
      */
-    protected createFormControl(field: AuthEmailSignupProfileField): FormControl {
+    protected createFormControl(field: AuthEmailSignupProfileField): FormControl<string | undefined> {
         const formData = {
             value: field.defaultdata != '0' ? field.defaultdata : undefined,
             disabled: this.disabled,
         };
 
-        return new FormControl(formData, this.required && !field.locked ? Validators.required : null);
+        return new FormControl(formData, {
+            validators: this.required && !field.locked ? Validators.required : null,
+            nonNullable: true,
+        });
     }
 
 }

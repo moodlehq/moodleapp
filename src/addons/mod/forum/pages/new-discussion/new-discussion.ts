@@ -70,7 +70,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     @ViewChild(CoreEditorRichTextEditorComponent) messageEditor!: CoreEditorRichTextEditorComponent;
 
     component = AddonModForumProvider.COMPONENT;
-    messageControl = new FormControl();
+    messageControl = new FormControl<string | null>(null);
     groupsLoaded = false;
     showGroups = false;
     hasOffline = false;

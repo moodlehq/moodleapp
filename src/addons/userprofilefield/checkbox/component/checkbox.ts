@@ -27,20 +27,23 @@ import { CoreUtils } from '@services/utils/utils';
     templateUrl: 'addon-user-profile-field-checkbox.html',
     styleUrls: ['./checkbox.scss'],
 })
-export class AddonUserProfileFieldCheckboxComponent extends CoreUserProfileFieldBaseComponent {
+export class AddonUserProfileFieldCheckboxComponent extends CoreUserProfileFieldBaseComponent<boolean> {
 
     /**
      * Create the Form control.
      *
      * @returns Form control.
      */
-    protected createFormControl(field: AuthEmailSignupProfileField): FormControl {
+    protected createFormControl(field: AuthEmailSignupProfileField): FormControl<boolean> {
         const formData = {
             value: CoreUtils.isTrueOrOne(field.defaultdata),
             disabled: this.disabled,
         };
 
-        return new FormControl(formData, this.required && !field.locked ? Validators.requiredTrue : null);
+        return new FormControl(formData, {
+            validators: this.required && !field.locked ? Validators.requiredTrue : null,
+            nonNullable: true,
+        });
     }
 
 }

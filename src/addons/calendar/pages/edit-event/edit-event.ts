@@ -78,9 +78,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
     // Form variables.
     form: FormGroup;
-    typeControl: FormControl;
-    groupControl: FormControl;
-    descriptionControl: FormControl;
+    typeControl: FormControl<AddonCalendarEventType | null>;
+    groupControl: FormControl<number | null>;
+    descriptionControl: FormControl<string>;
 
     // Reminders.
     remindersEnabled = false;
@@ -103,9 +103,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         this.form = new FormGroup({});
 
         // Initialize form variables.
-        this.typeControl = this.fb.control('', Validators.required);
-        this.groupControl = this.fb.control('');
-        this.descriptionControl = this.fb.control('');
+        this.typeControl = this.fb.control(null, Validators.required);
+        this.groupControl = this.fb.control(null);
+        this.descriptionControl = this.fb.control('', { nonNullable: true });
         this.form.addControl('name', this.fb.control('', Validators.required));
         this.form.addControl('eventtype', this.typeControl);
         this.form.addControl('categoryid', this.fb.control(''));
@@ -322,11 +322,11 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
         this.form.controls.name.setValue(event.name);
         this.form.controls.timestart.setValue(CoreTimeUtils.toDatetimeFormat(event.timestart * 1000));
-        this.form.controls.eventtype.setValue(event.eventtype);
+        this.typeControl.setValue(event.eventtype as AddonCalendarEventType);
         this.form.controls.categoryid.setValue(event.categoryid || '');
         this.form.controls.courseid.setValue(courseId || '');
         this.form.controls.groupcourseid.setValue(courseId || '');
-        this.form.controls.groupid.setValue(event.groupid || '');
+        this.groupControl.setValue(event.groupid || null);
         this.form.controls.description.setValue(event.description);
         this.form.controls.location.setValue(event.location);
 
@@ -410,7 +410,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         try {
             await this.loadGroups(courseId);
 
-            this.groupControl.setValue('');
+            this.groupControl.setValue(null);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting data.');
         }
