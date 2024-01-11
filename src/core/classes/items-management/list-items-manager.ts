@@ -239,13 +239,15 @@ export class CoreListItemsManager<
     /**
      * @inheritdoc
      */
-    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
         const segments: UrlSegment[] = [];
 
         while (route.firstChild) {
             route = route.firstChild;
 
-            segments.push(...route.url);
+            const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
+
+            segments.push(...snapshot.url);
         }
 
         return segments.map(segment => segment.path).join('/').replace(/\/+/, '/').trim() || null;
