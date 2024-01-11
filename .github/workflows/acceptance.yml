@@ -6,7 +6,7 @@ on:
       behat_tags:
         description: 'Behat tags to execute'
         required: true
-        default: '~@performance&&~@ionic7_failure'
+        default: '~@performance'
       moodle_branch:
         description: 'Moodle branch'
         required: true
@@ -27,7 +27,7 @@ jobs:
       MOODLE_DOCKER_PHP_VERSION: '8.1'
       MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'main' }}
       MOODLE_REPOSITORY: ${{ github.event.inputs.moodle_repository || 'https://github.com/moodle/moodle' }}
-      BEHAT_TAGS: ${{ github.event.inputs.behat_tags || '~@performance&&~@ionic7_failure' }}
+      BEHAT_TAGS: ${{ github.event.inputs.behat_tags || '~@performance' }}
 
     steps:
     - uses: actions/checkout@v2
