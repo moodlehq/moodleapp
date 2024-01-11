@@ -5,30 +5,94 @@
     display: block;
     @include margin-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
 
+    &.no-border {
+        --core-combobox-border-width: 0px;
+
+        ion-select.combobox-icon-only {
+            --padding-start: 8px;
+
+            &::part(icon) {
+                display: none;
+            }
+
+            &::part(label) {
+                position: static;
+            }
+
+            ion-icon {
+                margin: var(--icon-margin);
+                font-size: 20px;
+            }
+        }
+    }
+
+
     ion-select,
     ion-button {
         --icon-margin: 0 4px;
-        --background: var(--core-combobox-background);
-        --background-hover: black;
-        --background-activated: black;
-        --background-focused: black;
-        --background-hover-opacity: .04;
 
+        --background: var(--core-combobox-background);
+
+        --border-color: var(--core-combobox-border-color);
+        --border-style: solid;
+        --border-width: var(--core-combobox-border-width);
+        --border-radius: var(--core-combobox-radius);
+
+        --box-shadow: var(--core-combobox-box-shadow);
+
+        --padding-start: 16px;
+        --padding-end: 8px;
+        --padding-top: 8px;
+        --padding-bottom: 8px;
+
+        background: var(--background);
+        color: var(--color);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-height: var(--a11y-min-target-size);
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+
+        &:focus,
+        &:focus-within {
+            @include core-focus-style();
+        }
+    }
+
+    ion-select {
+        border-color: var(--border-color);
+        border-style: var(--border-style);
+        border-width: var(--border-width);
+        border-radius: var(--core-combobox-radius);
+        margin: 8px;
+
+        &.combobox-icon-only {
+            &::part(text) {
+                display: none;
+            }
+        }
+
+        &::part(label) {
+            position: absolute;
+            margin-inline: 0px;
+        }
+
+        &::part(icon) {
+            margin: var(--icon-margin);
+            opacity: 1;
+        }
+    }
+
+    ion-button {
         --color: var(--core-combobox-color);
         --color-activated: var(--core-combobox-color);
         --color-focused: currentcolor;
         --color-hover: currentcolor;
 
-        --border-color: var(--core-combobox-border-color);
-        --border-style: solid;
-        --border-width: var(--core-combobox-border-width);
-        --border-radius: var(--radius-xs);
-
-        --box-shadow: var(--core-combobox-box-shadow);
-
-        --padding-top: 8px;
-        --padding-end: 8px;
-        --padding-bottom: 8px;
+        --background-hover: black;
+        --background-activated: black;
+        --background-focused: black;
+        --background-hover-opacity: .04;
 
         &.md {
             --background-activated-opacity: 0;
@@ -39,97 +103,36 @@
             --background-activated-opacity: .12;
             --background-focused-opacity: .15;
         }
-    }
 
-    ion-button {
-        --padding-start: 8px;
-    }
-
-    ion-select {
-        --padding-start: 16px;
-    }
-}
-
-ion-select,
-ion-button {
-    background: var(--background);
-    color: var(--color);
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    min-height: var(--a11y-min-target-size);
-    overflow: hidden;
-    box-shadow: var(--box-shadow);
-
-    &:focus,
-    &:focus-within {
-        @include core-focus-style();
-    }
-}
-
-ion-select {
-    border-color: var(--border-color);
-    border-style: var(--border-style);
-    border-width: var(--border-width);
-    border-radius: var(--core-combobox-radius);
-    margin: 8px;
-
-    &::part(icon) {
-        margin: var(--icon-margin);
-        opacity: 1;
-    }
-
-    &::after {
-        @include button-state();
-        transition: var(--transition);
-        z-index: -1;
-    }
-
-    &:hover::after {
-        color: var(--color-hover);
-        background: var(--background-hover);
-        opacity: var(--background-hover-opacity);
-    }
-
-    &:focus::after,
-    &:focus-within::after {
-        color: var(--color-focused);
-        background: var(--background-focused);
-        opacity: var(--background-focused-opacity);
-    }
-
-    &[hidden] {
-        display: none !important;
-    }
-}
-
-ion-button {
-    border-radius: var(--core-combobox-radius);
-    margin: 4px 8px;
-
-    flex: 1;
-
-    &::part(native) {
-        text-transform: none;
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 20px;
         border-radius: var(--core-combobox-radius);
+        margin: 4px 8px;
+
+        flex: 1;
+
+        &::part(native) {
+            text-transform: none;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 20px;
+            border-radius: var(--core-combobox-radius);
+        }
+
+        .select-text {
+            @include margin-horizontal(null, auto);
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sr-only {
+            @include sr-only();
+        }
+
+        &.ion-activated {
+            --color: var(--color-activated);
+        }
+
+        ion-icon {
+            margin: var(--icon-margin);
+        }
     }
 
-    .select-text {
-        @include margin-horizontal(null, auto);
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .sr-only {
-        @include sr-only();
-    }
-
-    &.ion-activated {
-        --color: var(--color-activated);
-    }
-
-    ion-icon {
-        margin: var(--icon-margin);
-    }
 }
