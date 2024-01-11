@@ -15,7 +15,7 @@
 import { InjectionToken, Injector, ModuleWithProviders, NgModule } from '@angular/core';
 import { Route, Routes } from '@angular/router';
 
-import { ModuleRoutesConfig, resolveModuleRoutes } from '@/app/app-routing.module';
+import { ModuleRoutesConfig, isEmptyRoute, resolveModuleRoutes } from '@/app/app-routing.module';
 
 const MAIN_MENU_TAB_ROUTES = new InjectionToken('MAIN_MENU_TAB_ROUTES');
 const modulesPaths: Record<string, Set<string>> = {};
@@ -71,6 +71,8 @@ export function buildTabMainRoutes(injector: Injector, mainRoute: Route): Routes
     if (isRootRoute && !('redirectTo' in mainRoute)) {
         mainRoute.children = mainRoute.children || [];
         mainRoute.children = mainRoute.children.concat(routes.children);
+    } else if (isEmptyRoute(mainRoute)) {
+        return [];
     }
 
     return isRootRoute

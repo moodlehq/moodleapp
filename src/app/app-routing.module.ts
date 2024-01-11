@@ -170,6 +170,20 @@ export function conditionalRoutes(routes: Routes, condition: () => boolean): Rou
 }
 
 /**
+ * Check whether a route does not have any content.
+ *
+ * @param route Route.
+ * @returns Whether the route doesn't have any content.
+ */
+export function isEmptyRoute(route: Route): boolean {
+    return !('component' in route)
+        && !('loadComponent' in route)
+        && !('children' in route)
+        && !('loadChildren' in route)
+        && !('redirectTo' in route);
+}
+
+/**
  * Resolve module routes.
  *
  * @param injector Module injector.
