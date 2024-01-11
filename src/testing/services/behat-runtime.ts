@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TestingBehatDomUtils } from './behat-dom';
+import { TestingBehatDomUtils, TestingBehatDomUtilsService } from './behat-dom';
 import { TestingBehatBlocking } from './behat-blocking';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
 import { ONBOARDING_DONE } from '@features/login/constants';
@@ -61,6 +61,10 @@ export class TestingBehatRuntimeService {
 
     get navigator(): CoreNavigatorService {
         return CoreNavigator.instance;
+    }
+
+    get domUtils(): TestingBehatDomUtilsService {
+        return TestingBehatDomUtils.instance;
     }
 
     /**
@@ -468,11 +472,22 @@ export class TestingBehatRuntimeService {
                 ?? options.find(option => option.text === value)?.value
                 ?? options.find(option => option.text.includes(value))?.value
                 ?? value;
+        } else if (input.tagName === 'ION-SELECT') {
+            const options = Array.from(input.querySelectorAll('ion-select-option'));
+
+            value = options.find(option => option.value?.toString() === value)?.textContent?.trim()
+                ?? options.find(option => option.textContent?.trim() === value)?.textContent?.trim()
+                ?? options.find(option => option.textContent?.includes(value))?.textContent?.trim()
+                ?? value;
         }
 
-        await TestingBehatDomUtils.setElementValue(input, value);
+        try {
+            await TestingBehatDomUtils.setInputValue(input, value);
 
-        return 'OK';
+            return 'OK';
+        } catch (error) {
+            return `ERROR: ${error.message ?? 'Unknown error'}`;
+        }
     }
 
     /**
