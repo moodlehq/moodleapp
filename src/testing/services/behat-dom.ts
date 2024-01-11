@@ -76,11 +76,10 @@ export class TestingBehatDomUtilsService {
      * Check if an element is selected.
      *
      * @param element Element.
-     * @param container Container.
      * @param firstCall Whether this is the first call of the function.
      * @returns Whether the element is selected or not.
      */
-    isElementSelected(element: HTMLElement, container: HTMLElement, firstCall = true): boolean {
+    isElementSelected(element: HTMLElement, firstCall = true): boolean {
         const ariaCurrent = element.getAttribute('aria-current');
         const ariaSelected = element.getAttribute('aria-selected');
         const ariaChecked = element.getAttribute('aria-checked');
@@ -96,14 +95,19 @@ export class TestingBehatDomUtilsService {
             if (inputElement) {
                 return inputElement.value === 'on';
             }
+
+            const tabButtonElement =  element.closest('ion-tab-button');
+            if (tabButtonElement?.classList.contains('tab-selected')) {
+                return true;
+            }
         }
 
         const parentElement = this.getParentElement(element);
-        if (!parentElement || parentElement === container) {
+        if (!parentElement || parentElement.classList.contains('ion-page')) {
             return false;
         }
 
-        return this.isElementSelected(parentElement, container, false);
+        return this.isElementSelected(parentElement, false);
     }
 
     /**
@@ -286,7 +290,18 @@ export class TestingBehatDomUtilsService {
                     continue;
                 }
 
-                if (element.contains(otherElement)) {
+                let documentPosition = element.compareDocumentPosition(otherElement);
+                // eslint-disable-next-line no-bitwise
+                if (documentPosition & Node.DOCUMENT_POSITION_DISCONNECTED) {
+                    // Check if they are inside shadow DOM so we can compare their hosts.
+                    const elementHost = this.getShadowDOMHost(element) || element;
+                    const otherElementHost = this.getShadowDOMHost(otherElement) || otherElement;
+
+                    documentPosition = elementHost.compareDocumentPosition(otherElementHost);
+                }
+
+                // eslint-disable-next-line no-bitwise
+                if (documentPosition & Node.DOCUMENT_POSITION_CONTAINS) {
                     uniqueElements.delete(otherElement);
                 }
             }
@@ -302,9 +317,22 @@ export class TestingBehatDomUtilsService {
      * @returns Parent element.
      */
     protected getParentElement(element: HTMLElement): HTMLElement | null {
-        return element.parentElement ||
-            (element.getRootNode() && (element.getRootNode() as ShadowRoot).host as HTMLElement) ||
-            null;
+        return element.parentElement || this.getShadowDOMHost(element);
+    }
+
+    /**
+     * Get shadow DOM host element.
+     *
+     * @param element Element.
+     * @returns Shadow DOM host element.
+     */
+    protected getShadowDOMHost(element: HTMLElement): HTMLElement | null {
+        const node = element.getRootNode();
+        if (node instanceof ShadowRoot) {
+            return node.host as HTMLElement;
+        }
+
+        return null;
     }
 
     /**
@@ -400,10 +428,17 @@ export class TestingBehatDomUtilsService {
      * @returns Field element.
      */
     findField(field: string): HTMLElement | HTMLInputElement | undefined {
-        const input = this.findElementBasedOnText(
-            { text: field, selector: 'input, textarea, [contenteditable="true"], ion-select, ion-datetime' },
+        const selector =
+            'input, textarea, core-rich-text-editor, [contenteditable="true"], ion-select, ion-datetime-button, ion-datetime';
+
+        let input = this.findElementBasedOnText(
+            { text: field, selector },
             { onlyClickable: false, containerName: '' },
         );
+
+        if (input?.tagName === 'CORE-RICH-TEXT-EDITOR') {
+            input = input.querySelector<HTMLElement>('[contenteditable="true"]') || undefined;
+        }
 
         if (input) {
             return input;
@@ -417,7 +452,17 @@ export class TestingBehatDomUtilsService {
         if (label) {
             const inputId = label.getAttribute('for');
 
-            return (inputId && document.getElementById(inputId)) || undefined;
+            if (inputId) {
+                return document.getElementById(inputId) || undefined;
+            }
+
+            input = this.getShadowDOMHost(label) || undefined;
+
+            // Add support for other input types if required by adding them to the array.
+            const ionicInputFields = ['ION-INPUT', 'ION-TEXTAREA', 'ION-SELECT', 'ION-DATETIME', 'ION-TOGGLE'];
+            if (input && ionicInputFields.includes(input.tagName)) {
+                return input;
+            }
         }
     }
 
@@ -588,8 +633,10 @@ export class TestingBehatDomUtilsService {
             // may not work without doing this.
             const parentElement = this.getParentElement(element);
 
-            if (parentElement && parentElement.matches('ion-button, ion-back-button')) {
+            if (parentElement?.matches('ion-button, ion-back-button')) {
                 element = parentElement;
+            } else if (parentElement?.tagName === 'ION-ITEM' && parentElement?.classList.contains('clickable')) {
+                element = parentElement.querySelector<HTMLElement>('ion-toggle') || element;
             }
 
             const rect = await this.ensureElementVisible(element);
@@ -631,7 +678,13 @@ export class TestingBehatDomUtilsService {
 
             // Functions to get/set value depending on field type.
             const setValue = (text: string) => {
-                if (element.tagName === 'ION-SELECT' && 'value' in element) {
+                if (! ('value' in element)) {
+                    element.innerHTML = text;
+
+                    return;
+                }
+
+                if (element.tagName === 'ION-SELECT') {
                     value = value.trim();
                     const optionValue = Array.from(element.querySelectorAll('ion-select-option'))
                         .find((option) => option.innerHTML.trim() === value);
@@ -639,11 +692,11 @@ export class TestingBehatDomUtilsService {
                     if (optionValue) {
                         element.value = optionValue.value;
                     }
-                } else if ('value' in element) {
-                    element.value = text;
                 } else {
-                    element.innerHTML = text;
+                    element.value = text;
                 }
+
+                element.dispatchEvent(new Event('ionChange'));
             };
             const getValue = () => {
                 if ('value' in element) {

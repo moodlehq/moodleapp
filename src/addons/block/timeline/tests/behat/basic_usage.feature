@@ -46,7 +46,7 @@ Feature: Timeline block.
       | assign   | C3                   | assign24  | Assignment 24 | ##+1 year##    |
       | assign   | C3                   | assign25  | Assignment 25 | ##+1 year##    |
 
-  @lms_from4.0 @ionic7_failure
+  @lms_from4.0
   Scenario: See courses inside block
     Given I entered the app as "student1"
     Then I should find "Assignment 00" within "Timeline" "ion-card" in the app
@@ -57,7 +57,7 @@ Feature: Timeline block.
     But I should not find "Assignment 01" within "Timeline" "ion-card" in the app
     And I should not find "Course 3" within "Timeline" "ion-card" in the app
 
-    When I press "Next 30 days" in the app
+    When I press "Filter timeline by date" in the app
     And I press "Overdue" in the app
     Then I should find "Assignment 01" within "Timeline" "ion-card" in the app
     And I should find "Course 2" within "Timeline" "ion-card" in the app
@@ -66,7 +66,7 @@ Feature: Timeline block.
     And I should not find "Course 1" within "Timeline" "ion-card" in the app
     And I should not find "Course 3" within "Timeline" "ion-card" in the app
 
-    When I press "Overdue" in the app
+    When I press "Filter timeline by date" in the app
     And I press "All" in the app
     Then I should find "Assignment 19" within "Timeline" "ion-card" in the app
     And I should find "Course 3" within "Timeline" "ion-card" in the app
@@ -76,7 +76,7 @@ Feature: Timeline block.
     Then I should find "Assignment 21" within "Timeline" "ion-card" in the app
     And I should find "Assignment 25" within "Timeline" "ion-card" in the app
 
-    When I press "All" in the app
+    When I press "Filter timeline by date" in the app
     And I press "Next 7 days" in the app
     And I press "Sort by" in the app
     And I press "Sort by courses" in the app

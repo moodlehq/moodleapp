@@ -15,7 +15,9 @@
 import {
     Component, ContentChild, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChange, TemplateRef, ViewChild,
 } from '@angular/core';
+import { AsyncDirective } from '@classes/async-directive';
 import { CoreSwipeSlidesItemsManager } from '@classes/items-management/swipe-slides-items-manager';
+import { CorePromisedValue } from '@classes/promised-value';
 import { IonContent } from '@ionic/angular';
 import { CoreDomUtils, VerticalPoint } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -32,7 +34,7 @@ import { SwiperOptions } from 'swiper/types';
     templateUrl: 'swipe-slides.html',
     styleUrls: ['swipe-slides.scss'],
 })
-export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDestroy {
+export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDestroy, AsyncDirective {
 
     @Input() manager?: CoreSwipeSlidesItemsManager<Item>;
     @Input() options: CoreSwipeSlidesOptions = {};
@@ -46,22 +48,21 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
          * This setTimeout waits for Ionic's async initialization to complete.
          * Otherwise, an outdated swiper reference will be used.
          */
-        setTimeout(() => {
+        setTimeout(async () => {
             if (swiperRef?.nativeElement?.swiper) {
                 this.swiper = swiperRef.nativeElement.swiper as Swiper;
+
+                await this.initialize();
 
                 if (this.options.initialSlide) {
                     this.swiper.slideTo(this.options.initialSlide, 0, this.options.runCallbacksOnInit);
                 }
 
+                this.updateOptions();
+
                 this.swiper.on('slideChangeTransitionStart', () => this.slideWillChange());
                 this.swiper.on('slideChangeTransitionEnd', () => this.slideDidChange());
 
-                Object.keys(this.options).forEach((key) => {
-                    if (this.swiper) {
-                        this.swiper.params[key] = this.options[key];
-                    }
-                });
             }
         }, 0);
     }
@@ -72,6 +73,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     protected unsubscribe?: () => void;
     protected resizeListener: CoreEventObserver;
     protected activeSlideIndexes: number[] = [];
+    protected onReadyPromise = new CorePromisedValue<void>();
 
     constructor(
         elementRef: ElementRef<HTMLElement>,
@@ -87,17 +89,11 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     /**
      * @inheritdoc
      */
-    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        if (!this.unsubscribe && this.manager) {
-            this.initialize(this.manager);
-        }
+    async ngOnChanges(changes: { [name: string]: SimpleChange }): Promise<void> {
+        await this.initialize();
 
         if (changes.options) {
-            Object.keys(this.options).forEach((key) => {
-                if (this.swiper) {
-                    this.swiper.params[key] = this.options[key];
-                }
-            });
+            this.updateOptions();
         }
     }
 
@@ -122,8 +118,12 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     /**
      * Initialize some properties based on the manager.
      */
-    protected async initialize(manager: CoreSwipeSlidesItemsManager<Item>): Promise<void> {
-        this.unsubscribe = manager.getSource().addListener({
+    protected async initialize(): Promise<void> {
+        if (this.unsubscribe || !this.swiper || !this.manager) {
+            return;
+        }
+
+        this.unsubscribe = this.manager.getSource().addListener({
             onItemsUpdated: () => this.onItemsUpdated(),
         });
 
@@ -131,16 +131,16 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         // This is because default callbacks aren't triggered for index 0, and to prevent auto scroll on init.
         this.options.runCallbacksOnInit = false;
 
-        await manager.getSource().waitForLoaded();
+        await this.manager.getSource().waitForLoaded();
 
         if (this.options.initialSlide === undefined) {
             // Calculate the initial slide.
-            const index = manager.getSource().getInitialItemIndex();
+            const index = this.manager.getSource().getInitialItemIndex();
             this.options.initialSlide = Math.max(index, 0);
         }
 
         // Emit change events with the initial item.
-        const items = manager.getSource().getItems();
+        const items = this.manager.getSource().getItems();
         if (!items || !items.length) {
             return;
         }
@@ -155,9 +155,11 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
 
         this.activeSlideIndexes = [initialIndex];
 
-        manager.setSelectedItem(items[initialIndex]);
+        this.manager.setSelectedItem(items[initialIndex]);
         this.onWillChange.emit(initialItemData);
         this.onDidChange.emit(initialItemData);
+
+        this.onReadyPromise.resolve();
     }
 
     /**
@@ -167,19 +169,20 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      * @param speed Animation speed.
      * @param runCallbacks Whether to run callbacks.
      */
-    slideToIndex(index: number, speed?: number, runCallbacks?: boolean): void {
+    async slideToIndex(index: number, speed?: number, runCallbacks?: boolean): Promise<void> {
         // If slides are being updated, wait for the update to finish.
-        if (!this.swiper) {
-            return;
-        }
+        await this.ready();
 
         // Verify that the number of slides matches the number of items.
-        const slidesLength = this.swiper.slides.length;
+        const slidesLength = this.swiper?.slides?.length || 0;
         if (slidesLength !== this.items.length) {
             // Number doesn't match, do a new update to try to match them.
-            this.updateSlidesComponent();
+            await this.updateSlidesComponent();
         }
 
+        if (!this.swiper?.slides) {
+            return;
+        }
         this.swiper?.slideTo(index, speed, runCallbacks);
     }
 
@@ -190,10 +193,10 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      * @param speed Animation speed.
      * @param runCallbacks Whether to run callbacks.
      */
-    slideToItem(item: Item, speed?: number, runCallbacks?: boolean): void {
+    async slideToItem(item: Item, speed?: number, runCallbacks?: boolean): Promise<void> {
         const index = this.manager?.getSource().getItemIndex(item) ?? -1;
         if (index != -1) {
-            this.slideToIndex(index, speed, runCallbacks);
+            await this.slideToIndex(index, speed, runCallbacks);
         }
     }
 
@@ -225,7 +228,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         await CoreUtils.nextTick();
 
         // Update the slides component so the slides list reflects the new items.
-        this.updateSlidesComponent();
+        await this.updateSlidesComponent();
 
         const currentItem = this.manager?.getSelectedItem();
 
@@ -234,10 +237,26 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         }
 
         // Keep the same slide in case the list has changed.
-        const newIndex = this.manager.getSource().getItemIndex(currentItem) ?? -1;
-        if (newIndex != -1) {
-            this.swiper?.slideTo(newIndex, 0, false);
+        this.slideToItem(currentItem, 0, false);
+    }
+
+    /**
+     * Update Swiper params from options.
+     */
+    protected updateOptions(): void {
+        if (!this.swiper) {
+            return;
         }
+
+        if (this.swiper.params === undefined) {
+            this.swiper.params = {};
+        }
+
+        Object.keys(this.options).forEach((key) => {
+            if (this.swiper) {
+                this.swiper.params[key] = this.options[key];
+            }
+        });
     }
 
     /**
@@ -322,8 +341,24 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     /**
      * Update slides component.
      */
-    updateSlidesComponent(): void {
+    async updateSlidesComponent(): Promise<void> {
+        await this.ready();
+
+        if (!this.swiper) {
+            return;
+        }
+
         this.swiper?.update();
+
+        // We need to ensure the slides are updated before continuing.
+        await CoreUtils.nextTicks(2);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async ready(): Promise<void> {
+        return this.onReadyPromise;
     }
 
     /**

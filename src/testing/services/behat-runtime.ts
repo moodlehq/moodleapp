@@ -326,7 +326,7 @@ export class TestingBehatRuntimeService {
                 return 'ERROR: No element matches locator to find.';
             }
 
-            return TestingBehatDomUtils.isElementSelected(element, document.body) ? 'YES' : 'NO';
+            return TestingBehatDomUtils.isElementSelected(element) ? 'YES' : 'NO';
         } catch (error) {
             return 'ERROR: ' + error.message;
         }
@@ -508,12 +508,15 @@ export class TestingBehatRuntimeService {
      * @returns Value.
      */
     protected getFieldValue(element: HTMLElement | HTMLInputElement): string {
+        if (element.tagName === 'ION-DATETIME-BUTTON' && element.shadowRoot) {
+            return Array.from(element.shadowRoot.querySelectorAll('button')).map(button => button.innerText).join(' ');
+        }
+
         if (element.tagName === 'ION-DATETIME') {
-            // ion-datetime's value is a timestamp in ISO format. Use the text displayed to the user instead.
-            const dateTimeTextElement = element.shadowRoot?.querySelector<HTMLElement>('.datetime-text');
-            if (dateTimeTextElement) {
-                return dateTimeTextElement.innerText;
-            }
+            const value = 'value' in element ? element.value : element.innerText;
+
+            // Remove seconds from the value to ensure stability on tests. It could be improved using moment parsing if needed.
+            return value.substring(0, value.length - 3);
         }
 
         return 'value' in element ? element.value : element.innerText;

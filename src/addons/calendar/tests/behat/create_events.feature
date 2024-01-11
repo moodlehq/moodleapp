@@ -20,13 +20,14 @@ Feature: Test creation of calendar events in app
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
 
-  @ionic7_failure
+  # This test is flaky due to timestamp.
   Scenario: Create user event as student from monthly view
     Given I entered the app as "student1"
     When I press "More" in the app
     And I press "Calendar" in the app
     And I press "New event" in the app
-    Then the field "Date" matches value "## now ##%d/%m/%y, %H:%M##" in the app
+    # Flaky step, sometimes it fails due to minute change when checking.
+    Then the field "Date" matches value "## now ##%Y-%m-%dT%H:%M##" in the app
     And I should not be able to press "Save" in the app
 
     # Check that student can only create User events.
@@ -36,7 +37,7 @@ Feature: Test creation of calendar events in app
 
     # Create the event.
     When I set the field "Event title" to "User Event 01" in the app
-    And I set the field "Date" to "2025-04-11T09:00+08:00" in the app
+    And I set the field "Date" to "2025-04-11T09:00" in the app
     And I press "Without duration" in the app
     And I set the field "Description" to "This is User Event 01 description." in the app
     And I set the field "Location" to "Barcelona" in the app

@@ -19,11 +19,8 @@
         <core-loading [hideUntil]="notifications.loaded">
 
             <ion-item *ngFor="let notification of notifications.items" class="ion-text-wrap"
-                [attr.aria-current]="notifications.getItemAriaCurrent(notification)" [attr.aria-label]="
-                notification.timeread
-                ? notification.subject
-                : 'addon.notifications.unreadnotification' | translate: {$a: notification.subject}"
-                (click)="notifications.select(notification)" button [detail]="false" lines="full">
+                [attr.aria-current]="notifications.getItemAriaCurrent(notification)" (click)="notifications.select(notification)" button
+                [detail]="false" lines="full">
 
                 <core-user-avatar *ngIf="notification.useridfrom > 0" [user]="notification" slot="start"
                     [profileUrl]="notification.profileimageurlfrom" [fullname]="notification.userfromfullname"
@@ -43,7 +40,10 @@
                 </ng-container>
 
                 <ion-label>
-                    <p class="item-heading">
+                    <p class="item-heading" [attr.aria-label]="
+                            notification.timeread
+                            ? notification.subject
+                            : 'addon.notifications.unreadnotification' | translate: {$a: notification.subject}">
                         <core-format-text [text]="notification.subject" contextLevel="system" [contextInstanceId]="0"
                             [wsNotFiltered]="true" />
                     </p>

@@ -18,7 +18,6 @@ Feature: Test signup in app
     And I should find "These are the authentication instructions." in the app
     But I should not find "Create new account" in the app
 
-  @ionic7_failure
   Scenario: Basic signup
     When I launch the app
 
@@ -80,7 +79,7 @@ Feature: Test signup in app
     Then I should find "Spain" in the app
     And I should find "u1@u1.com" in the app
 
-  @ionic7_failure @lms_from3.10
+  @lms_from3.10
   Scenario: Check password policy in signup
     Given the following config values are set as admin:
       | passwordpolicy | 1 |
@@ -115,7 +114,6 @@ Feature: Test signup in app
     And I press "Create my new account" in the app
     Then I should find "An email should have been sent to your address" in the app
 
-  @ionic7_failure
   Scenario: Signup with custom profile fields
     # Use default options Yes/No for menu field because it's not possible to add new lines. See MDL-75788.
     Given the following "custom profile fields" exist:
@@ -163,7 +161,7 @@ Feature: Test signup in app
     And I set the field "Favourite food" to "Sushi" in the app
     And I press "Are you vegetarian?" in the app
     And I set the field "Birthday" to "1990-01-01" in the app
-    And I set the field "Date and time" to "2010-01-01 11:45" in the app
+    And I set the field "Date and time" to "2010-01-01T11:45" in the app
     And I set the field "Describe yourself" to "This is my description." in the app
     And I press "Create my new account" in the app
     Then I should find "An email should have been sent to your address" in the app

@@ -142,7 +142,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     }
 
     /**
-     * Component loaded.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.canNavigate = typeof this.canNavigate == 'undefined' ? true : CoreUtils.isTrueOrOne(this.canNavigate);
@@ -164,7 +164,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     }
 
     /**
-     * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
+     * @inheritdoc
      */
     ngDoCheck(): void {
         const items = this.manager?.getSource().getItems();
@@ -368,7 +368,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.undeleteEventObserver?.off();

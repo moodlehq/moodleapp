@@ -19,7 +19,6 @@ Feature: Test basic usage of messages in app
       | student1 | C1 | student |
       | student2 | C1 | student |
 
-  @ionic7_failure
   Scenario: View recent conversations and contacts
     Given I entered the app as "teacher1"
     When I press "Messages" in the app
@@ -217,7 +216,6 @@ Feature: Test basic usage of messages in app
     Then I should find "heeey student" in the app
     And I should find "byee" in the app
 
-  @ionic7_failure
   Scenario: Search for messages
     Given I entered the app as "teacher1"
     When I press "Messages" in the app
@@ -348,7 +346,6 @@ Feature: Test basic usage of messages in app
     Then I should find "test message" in the app
     And I should find "Muted conversation" in the app
 
-  @ionic7_failure
   Scenario: Self conversations
     Given I entered the app as "student1"
     When I press "Messages" in the app
