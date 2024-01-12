@@ -71,7 +71,7 @@
         </ion-col>
         <ion-col size="auto" *ngIf="sort.enabled">
             <core-combobox [label]="'core.sortby' | translate" [selection]="sort.selected" (onChange)="sortCourses($event)"
-                icon="fas-arrow-down-short-wide">
+                icon="fas-arrow-down-short-wide" class="no-border">
                 <ion-select-option class="ion-text-wrap" value="fullname">
                     {{'addon.block_myoverview.title' | translate}}
                 </ion-select-option>

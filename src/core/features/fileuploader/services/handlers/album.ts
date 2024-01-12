@@ -30,19 +30,14 @@ export class CoreFileUploaderAlbumHandlerService implements CoreFileUploaderHand
     priority = 2000;
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @returns Promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return CorePlatform.isMobile();
     }
 
     /**
-     * Given a list of mimetypes, return the ones that are supported by the handler.
-     *
-     * @param mimetypes List of mimetypes.
-     * @returns Supported mimetypes.
+     * @inheritdoc
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
         // Album allows picking images and videos.
@@ -50,15 +45,13 @@ export class CoreFileUploaderAlbumHandlerService implements CoreFileUploaderHand
     }
 
     /**
-     * Get the data to display the handler.
-     *
-     * @returns Data.
+     * @inheritdoc
      */
     getData(): CoreFileUploaderHandlerData {
         return {
             title: 'core.fileuploader.photoalbums',
             class: 'core-fileuploader-album-handler',
-            icon: 'images', // Cannot use font-awesome in action sheet.
+            icon: 'fas-images',
             action: async (
                 maxSize?: number,
                 upload?: boolean,
