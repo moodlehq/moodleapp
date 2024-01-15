@@ -73,7 +73,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
     assessmentStrategyLoaded = false;
     notSupported = false;
     feedbackText = '';
-    feedbackControl = new FormControl();
+    feedbackControl = new FormControl<string | null>(null);
     overallFeedkback = false;
     overallFeedkbackRequired = false;
     component = ADDON_MOD_WORKSHOP_COMPONENT;

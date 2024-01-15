@@ -83,7 +83,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
     @ViewChild('replyFormEl') formElement!: ElementRef;
 
-    messageControl = new FormControl();
+    messageControl = new FormControl<string | null>(null);
 
     uniqueId!: string;
     defaultReplySubject!: string;

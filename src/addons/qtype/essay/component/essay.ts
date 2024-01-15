@@ -32,7 +32,7 @@ import { CoreFileEntry } from '@services/file-helper';
 })
 export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent<AddonModQuizEssayQuestion> {
 
-    formControl?: FormControl;
+    formControl?: FormControl<string | null>;
     attachments?: CoreFileEntry[];
     uploadFilesSupported = false;
 
@@ -52,7 +52,7 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent<AddonMod
 
         this.initEssayComponent(this.review);
 
-        this.formControl = this.fb.control(this.question?.textarea?.text);
+        this.formControl = this.fb.control(this.question?.textarea?.text ?? null);
 
         if (this.question?.allowsAttachments && this.uploadFilesSupported && !this.review) {
             this.loadAttachments();

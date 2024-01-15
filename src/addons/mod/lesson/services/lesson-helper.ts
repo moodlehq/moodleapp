@@ -369,7 +369,7 @@ export class AddonModLessonHelperProvider {
             };
 
             // Init the control.
-            essayQuestion.control = this.formBuilder.control('');
+            essayQuestion.control = this.formBuilder.control('', { nonNullable: true });
             questionForm.addControl(essayQuestion.textarea.name, essayQuestion.control);
         }
 
@@ -635,7 +635,7 @@ export type AddonModLessonInputQuestion = AddonModLessonQuestionBasicData & {
 export type AddonModLessonEssayQuestion = AddonModLessonQuestionBasicData & {
     useranswer?: string; // User answer, for reviewing.
     textarea?: AddonModLessonTextareaData; // Data for the textarea.
-    control?: FormControl; // Form control.
+    control?: FormControl<string>; // Form control.
 };
 
 /**

@@ -68,7 +68,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
     @Input() id = ''; // An ID to identify the tab.
     @Output() ionSelect: EventEmitter<CoreTabComponent> = new EventEmitter<CoreTabComponent>();
 
-    @ContentChild(TemplateRef) template?: TemplateRef<unknown>; // Template defined by the content.
+    @ContentChild(TemplateRef) template?: TemplateRef<void>; // Template defined by the content.
 
     element: HTMLElement; // The core-tab element.
     loaded = false;

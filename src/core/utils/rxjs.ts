@@ -22,10 +22,10 @@ import { catchError, filter } from 'rxjs/operators';
  * @param control Form control.
  * @returns Form control value observable.
  */
-export function formControlValue<T = unknown>(control: FormControl): Observable<T> {
+export function formControlValue<T = unknown>(control: FormControl<T | null>): Observable<T> {
     return control.valueChanges.pipe(
         startWithOnSubscribed(() => control.value),
-        filter(value => value !== null),
+        filter((value): value is T => value !== null),
     );
 }
 

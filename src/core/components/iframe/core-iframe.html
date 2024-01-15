@@ -11,9 +11,17 @@
         </ion-button>
     </core-navbar-buttons>
 
-    <iframe #iframe class="core-iframe" [attr.id]="id" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}" [src]="safeUrl"
-        [attr.allowfullscreen]="allowFullscreen ? 'allowfullscreen' : null" [class.core-iframe-loading]="loading">
-    </iframe>
+    <!-- allowfullscreen cannot be set dynamically using attribute binding, define 2 iframe elements. -->
+    <ng-container *ngIf="allowFullscreen">
+        <iframe #iframe class="core-iframe" [attr.id]="id" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}" [src]="safeUrl"
+            allowfullscreen="true" [class.core-iframe-loading]="loading">
+        </iframe>
+    </ng-container>
+    <ng-container *ngIf="!allowFullscreen">
+        <iframe #iframe class="core-iframe" [attr.id]="id" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}" [src]="safeUrl"
+            [class.core-iframe-loading]="loading">
+        </iframe>
+    </ng-container>
 
     <ion-button *ngIf="!loading && displayHelp" expand="block" fill="clear" (click)="openIframeHelpModal()" aria-haspopup="dialog"
         class="core-button-as-link core-iframe-help">

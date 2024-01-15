@@ -40,7 +40,7 @@ import { FormControl } from '@angular/forms';
 })
 export class CoreInputErrorsComponent implements OnInit, OnChanges {
 
-    @Input() control?: FormControl; // Needed to be able to check the validity of the input.
+    @Input() control?: FormControl<unknown>; // Needed to be able to check the validity of the input.
     @Input() errorMessages: Record<string, string> = {}; // Error messages to show. Keys must be the name of the error.
     @Input() errorText = ''; // Set other non automatic errors.
     errorKeys: string[] = [];

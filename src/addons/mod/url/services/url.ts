@@ -157,14 +157,14 @@ export class AddonModUrlProvider {
         url = url || '';
 
         const matches = url.match(/\//g);
-        const extension = CoreMimetypeUtils.getFileExtension(url);
+        const extension = CoreMimetypeUtils.guessExtensionFromUrl(url);
 
         if (!matches || matches.length < 3 || url.slice(-1) === '/' || extension == 'php') {
             // Use default icon.
             return '';
         }
 
-        const icon = CoreMimetypeUtils.getFileIcon(url);
+        const icon = CoreMimetypeUtils.getExtensionIcon(extension ?? '');
 
         // We do not want to return those icon types, the module icon is more appropriate.
         if (icon === CoreMimetypeUtils.getFileIconForType('unknown') ||
