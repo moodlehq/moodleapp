@@ -55,7 +55,7 @@ export abstract class CoreRoutedItemsManager<
      * @param route Page route.
      * @returns Path of the selected item in the given route.
      */
-    protected abstract getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null;
+    protected abstract getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null;
 
     /**
      * Get the path of the selected item.
@@ -63,7 +63,7 @@ export abstract class CoreRoutedItemsManager<
      * @param route Page route, if any.
      * @returns Path of the selected item.
      */
-    protected getSelectedItemPath(route?: ActivatedRouteSnapshot | null): string | null {
+    protected getSelectedItemPath(route?: ActivatedRouteSnapshot | ActivatedRoute | null): string | null {
         if (!route) {
             return null;
         }
@@ -76,14 +76,12 @@ export abstract class CoreRoutedItemsManager<
      *
      * @param route Current route.
      */
-    protected updateSelectedItem(route: ActivatedRouteSnapshot | null = null): void {
-        route = route ?? this.getCurrentPageRoute()?.snapshot ?? null;
+    protected updateSelectedItem(route: ActivatedRouteSnapshot | ActivatedRoute | null = null): void {
+        route = route ?? this.getCurrentPageRoute() ?? null;
 
         const selectedItemPath = this.getSelectedItemPath(route);
+        const selectedItem = selectedItemPath ? (this.itemsMap?.[selectedItemPath] ?? null) : null;
 
-        const selectedItem = selectedItemPath
-            ? this.itemsMap?.[selectedItemPath] ?? null
-            : null;
         this.setSelectedItem(selectedItem);
     }
 
@@ -106,7 +104,7 @@ export abstract class CoreRoutedItemsManager<
 
         // If this item is already selected, do nothing.
         const itemPath = this.getSource().getItemPath(item);
-        const selectedItemPath = this.getSelectedItemPath(route.snapshot);
+        const selectedItemPath = this.getSelectedItemPath(route);
 
         if (selectedItemPath === itemPath) {
             return;
@@ -135,7 +133,7 @@ export abstract class CoreRoutedItemsManager<
         }
 
         // If the current page is already the index, do nothing.
-        const selectedItemPath = this.getSelectedItemPath(route.snapshot);
+        const selectedItemPath = this.getSelectedItemPath(route);
 
         if (selectedItemPath === null) {
             return;

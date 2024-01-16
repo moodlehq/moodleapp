@@ -639,8 +639,10 @@ class AddonCalendarEventsSwipeItemsManager extends CoreSwipeNavigationItemsManag
     /**
      * @inheritdoc
      */
-    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
-        return route.params.id;
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
+        const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
+
+        return snapshot.params.id;
     }
 
 }

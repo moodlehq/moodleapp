@@ -32,18 +32,22 @@ export class CoreRemindersSetButtonComponent implements OnInit {
     @Input() instanceId?: number;
     @Input() type?: string;
     @Input() label = '';
-    @Input() timebefore?: number;
+    @Input() initialTimebefore?: number;
     @Input() time = -1;
     @Input() title = '';
     @Input() url = '';
 
     labelClean = '';
+    timebefore?: number;
+    reminderMessage?: string;
 
     /**
      * @inheritdoc
      */
     ngOnInit(): void {
         this.labelClean = this.label.replace(':', '');
+
+        this.setTimebefore(this.initialTimebefore);
     }
 
     /**
@@ -87,6 +91,23 @@ export class CoreRemindersSetButtonComponent implements OnInit {
     }
 
     /**
+     * Update time before.
+     */
+    setTimebefore(timebefore: number | undefined): void {
+        this.timebefore = timebefore;
+
+        if (this.timebefore !== undefined) {
+            const reminderTime = this.time - this.timebefore;
+
+            this.reminderMessage = Translate.instant('core.reminders.reminderset', {
+                $a: CoreTimeUtils.userDate(reminderTime * 1000),
+            });
+        } else {
+            this.reminderMessage = undefined;
+        }
+    }
+
+    /**
      * Save reminder.
      *
      * @param timebefore Time before the event to fire the notification.
@@ -105,18 +126,18 @@ export class CoreRemindersSetButtonComponent implements OnInit {
         });
 
         if (timebefore === undefined || timebefore === CoreRemindersService.DISABLED) {
-            this.timebefore = undefined;
+            this.setTimebefore(undefined);
             CoreDomUtils.showToast('core.reminders.reminderunset', true);
 
             return;
         }
 
-        this.timebefore = timebefore;
+        this.setTimebefore(timebefore);
 
         const reminder: CoreReminderData = {
+            timebefore,
             component: this.component,
             instanceId: this.instanceId,
-            timebefore: this.timebefore,
             type: this.type,
             title: this.label + ' ' + this.title,
             url: this.url,

@@ -699,8 +699,10 @@ class AddonModForumNewDiscussionDiscussionsSwipeManager extends AddonModForumDis
     /**
      * @inheritdoc
      */
-    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
-        return `${this.getSource().DISCUSSIONS_PATH_PREFIX}new/${route.params.timeCreated}`;
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
+        const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
+
+        return `${this.getSource().DISCUSSIONS_PATH_PREFIX}new/${snapshot.params.timeCreated}`;
     }
 
 }

@@ -276,7 +276,7 @@ export class TestingBehatDomUtilsService {
     /**
      * Given a list of elements, get the top ancestors among all of them.
      *
-     * This will remote duplicates and drop any elements nested within each other.
+     * This will remove duplicates and drop any elements nested within each other.
      *
      * @param elements Elements list.
      * @returns Top ancestors.
@@ -481,6 +481,34 @@ export class TestingBehatDomUtilsService {
     }
 
     /**
+     * Wait until an element with the given selector is found.
+     *
+     * @param selector Element selector.
+     * @param timeout Timeout after which an error is thrown.
+     * @param retryFrequency Frequency for retries when the element is not found.
+     * @returns Element.
+     */
+    async waitForElement<T extends HTMLElement = HTMLElement>(
+        selector: string,
+        timeout: number = 2000,
+        retryFrequency: number = 100,
+    ): Promise<T> {
+        const element = document.querySelector<T>(selector);
+
+        if (!element) {
+            if (timeout < retryFrequency) {
+                throw new Error(`Element with '${selector}' selector not found`);
+            }
+
+            await new Promise(resolve => setTimeout(resolve, retryFrequency));
+
+            return this.waitForElement<T>(selector, timeout - retryFrequency, retryFrequency);
+        }
+
+        return element;
+    }
+
+    /**
      * Function to find elements based on their text or Aria label.
      *
      * @param locator Element locator.
@@ -515,7 +543,7 @@ export class TestingBehatDomUtilsService {
     protected findElementsBasedOnTextInContainer(
         locator: TestingBehatElementLocator,
         topContainer: HTMLElement,
-        options: TestingBehatFindOptions,
+        options: TestingBehatFindOptions = {},
     ): HTMLElement[] {
         let container: HTMLElement | null = topContainer;
 
@@ -667,37 +695,26 @@ export class TestingBehatDomUtilsService {
     }
 
     /**
-     * Set an element value.
+     * Set an input element value.
      *
-     * @param element HTML to set.
-     * @param value Value to be set.
+     * @param element Input element.
+     * @param value Value.
      */
-    async setElementValue(element: HTMLInputElement | HTMLElement, value: string): Promise<void> {
+    async setInputValue(element: HTMLInputElement | HTMLElement, value: string): Promise<void> {
         await NgZone.run(async () => {
-            const promise = new CorePromisedValue<void>();
-
             // Functions to get/set value depending on field type.
-            const setValue = (text: string) => {
-                if (! ('value' in element)) {
-                    element.innerHTML = text;
-
-                    return;
-                }
-
+            const setValue = async (text: string) => {
                 if (element.tagName === 'ION-SELECT') {
-                    value = value.trim();
-                    const optionValue = Array.from(element.querySelectorAll('ion-select-option'))
-                        .find((option) => option.innerHTML.trim() === value);
-
-                    if (optionValue) {
-                        element.value = optionValue.value;
-                    }
-                } else {
+                    this.setIonSelectInputValue(element, value);
+                } else if ('value' in element) {
                     element.value = text;
+                } else {
+                    element.innerHTML = text;
                 }
 
                 element.dispatchEvent(new Event('ionChange'));
             };
+
             const getValue = () => {
                 if ('value' in element) {
                     return element.value;
@@ -707,38 +724,79 @@ export class TestingBehatDomUtilsService {
             };
 
             // Pretend we have cut and pasted the new text.
-            let event: InputEvent;
-            if (getValue() !== '') {
-                event = new InputEvent('input', {
+            if (element.tagName !== 'ION-SELECT' && getValue() !== '') {
+                await CoreUtils.nextTick();
+                await setValue('');
+
+                element.dispatchEvent(new InputEvent('input', {
                     bubbles: true,
                     view: window,
                     cancelable: true,
                     inputType: 'deleteByCut',
-                });
-
-                await CoreUtils.nextTick();
-                setValue('');
-                element.dispatchEvent(event);
+                }));
             }
 
             if (value !== '') {
-                event = new InputEvent('input', {
+                await CoreUtils.nextTick();
+                await setValue(value);
+
+                element.dispatchEvent(new InputEvent('input', {
                     bubbles: true,
                     view: window,
                     cancelable: true,
                     inputType: 'insertFromPaste',
                     data: value,
-                });
+                }));
+            }
+        });
+    }
 
-                await CoreUtils.nextTick();
-                setValue(value);
-                element.dispatchEvent(event);
+    /**
+     * Select an option in an ion-select element.
+     *
+     * @param element IonSelect element.
+     * @param value Value.
+     */
+    protected async setIonSelectInputValue(element: HTMLElement, value: string): Promise<void> {
+        // Press select.
+        await TestingBehatDomUtils.pressElement(element);
+
+        // Press option.
+        type IonSelectInterface = 'alert' | 'action-sheet' | 'popover';
+        const selectInterface = element.getAttribute('interface') as IonSelectInterface ?? 'alert';
+        const containerSelector = ({
+            'alert': 'ion-alert.select-alert',
+            'action-sheet': 'ion-action-sheet.select-action-sheet',
+            'popover': 'ion-popover.select-popover',
+        })[selectInterface];
+        const optionSelector = ({
+            'alert': 'button',
+            'action-sheet': 'button',
+            'popover': 'ion-radio',
+        })[selectInterface] ?? '';
+        const optionsContainer = await TestingBehatDomUtils.waitForElement(containerSelector);
+        const options = this.findElementsBasedOnTextInContainer(
+            { text: value, selector: optionSelector },
+            optionsContainer,
+            {},
+        );
+
+        if (options.length === 0) {
+            throw new Error('Couldn\'t find ion-select option.');
+        }
+
+        await TestingBehatDomUtils.pressElement(options[0]);
+
+        // Press options submit.
+        if (selectInterface === 'alert') {
+            const submitButton = optionsContainer.querySelector<HTMLElement>('.alert-button-group button:last-child');
+
+            if (!submitButton) {
+                throw new Error('Couldn\'t find ion-select submit button.');
             }
 
-            promise.resolve();
-
-            return promise;
-        });
+            await TestingBehatDomUtils.pressElement(submitButton);
+        }
     }
 
 }
