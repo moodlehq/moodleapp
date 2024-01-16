@@ -230,6 +230,7 @@
       },
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-media-capture": {},
+      "cordova-plugin-moodleapp": {},
       "cordova-plugin-network-information": {},
       "cordova-plugin-prevent-override": {},
       "cordova-plugin-screen-orientation": {},
