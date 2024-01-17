@@ -202,12 +202,27 @@ export class CoreEagerDatabaseTable<
             return;
         }
 
-        Object.entries(this.records).forEach(([id, record]) => {
+        Object.entries(this.records).forEach(([primaryKey, record]) => {
             if (!this.recordMatches(record, conditions)) {
                 return;
             }
 
-            delete this.records[id];
+            delete this.records[primaryKey];
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+        await super.deleteWhere(conditions);
+
+        Object.entries(this.records).forEach(([primaryKey, record]) => {
+            if (!conditions.js(record)) {
+                return;
+            }
+
+            delete record[primaryKey];
         });
     }
 

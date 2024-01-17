@@ -192,6 +192,21 @@ export class CoreLazyDatabaseTable<
     /**
      * @inheritdoc
      */
+    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+        await super.deleteWhere(conditions);
+
+        Object.entries(this.records).forEach(([primaryKey, record]) => {
+            if (!record || !conditions.js(record)) {
+                return;
+            }
+
+            this.records[primaryKey] = null;
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
     async deleteByPrimaryKey(primaryKey: PrimaryKey): Promise<void> {
         await super.deleteByPrimaryKey(primaryKey);
 

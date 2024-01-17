@@ -312,6 +312,18 @@ export class CoreDatabaseTable<
     }
 
     /**
+     * Delete records matching the given conditions.
+     *
+     * This method should be used when it's necessary to apply complex conditions; the simple `delete`
+     * method should be favored otherwise for better performance.
+     *
+     * @param conditions Matching conditions in SQL and JavaScript.
+     */
+    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+        await this.database.deleteRecordsSelect(this.tableName, conditions.sql, conditions.sqlParams);
+    }
+
+    /**
      * Delete a single record identified by its primary key.
      *
      * @param primaryKey Record primary key.

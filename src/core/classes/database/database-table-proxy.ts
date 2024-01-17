@@ -190,6 +190,13 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
+    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+        return this.target.deleteWhere(conditions);
+    }
+
+    /**
+     * @inheritdoc
+     */
     async deleteByPrimaryKey(primaryKey: PrimaryKey): Promise<void> {
         return this.target.deleteByPrimaryKey(primaryKey);
     }

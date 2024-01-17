@@ -189,6 +189,15 @@ export class CoreDebugDatabaseTable<
     /**
      * @inheritdoc
      */
+    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+        this.logger.log('deleteWhere', conditions);
+
+        return this.target.deleteWhere(conditions);
+    }
+
+    /**
+     * @inheritdoc
+     */
     deleteByPrimaryKey(primaryKey: PrimaryKey): Promise<void> {
         this.logger.log('deleteByPrimaryKey', primaryKey);
 
