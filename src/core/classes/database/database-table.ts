@@ -259,6 +259,18 @@ export class CoreDatabaseTable<
     }
 
     /**
+     * Insert a new record synchronously.
+     *
+     * @param record Database record.
+     */
+    syncInsert(record: DBRecord): void {
+        // The current database architecture does not support synchronous operations,
+        // so calling this method will mean that errors will be silenced. Because of that,
+        // this should only be called if using the asynchronous alternatives is not possible.
+        this.insert(record);
+    }
+
+    /**
      * Update records matching the given conditions.
      *
      * @param updates Record updates.
