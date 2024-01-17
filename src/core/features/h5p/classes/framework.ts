@@ -43,7 +43,6 @@ import { CoreH5PContentBeingSaved, CoreH5PLibraryBeingSaved } from './storage';
 import { CoreH5PLibraryAddTo, CoreH5PLibraryMetadataSettings } from './validator';
 import { CoreH5PMetadata } from './metadata';
 import { Translate } from '@singletons';
-import { SQLiteDB } from '@classes/sqlitedb';
 import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 import { LazyMap, lazyMap } from '@/core/utils/lazy-map';
 import { CoreDatabaseTable } from '@classes/database/database-table';
@@ -138,14 +137,11 @@ export class CoreH5PFramework {
 
         siteId ??= CoreSites.getCurrentSiteId();
 
-        const whereAndParams = SQLiteDB.getInOrEqual(libraryIds);
-        whereAndParams.sql = 'mainlibraryid ' + whereAndParams.sql;
-
         await this.contentTables[siteId].updateWhere(
             { filtered: null },
             {
-                sql: whereAndParams.sql,
-                sqlParams: whereAndParams.params,
+                sql: `mainlibraryid IN (${libraryIds.map(() => '?').join(', ')})`,
+                sqlParams: libraryIds,
                 js: record => libraryIds.includes(record.mainlibraryid),
             },
         );

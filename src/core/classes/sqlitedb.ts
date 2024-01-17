@@ -137,51 +137,6 @@ export interface SQLiteDBForeignKeySchema {
  */
 export class SQLiteDB {
 
-    /**
-     * Constructs 'IN()' or '=' sql fragment
-     *
-     * @param items A single value or array of values for the expression. It doesn't accept objects.
-     * @param equal True means we want to equate to the constructed expression.
-     * @param onEmptyItems This defines the behavior when the array of items provided is empty. Defaults to false,
-     *                     meaning return empty. Other values will become part of the returned SQL fragment.
-     * @returns A list containing the constructed sql fragment and an array of parameters.
-     */
-    static getInOrEqual(
-        items: SQLiteDBRecordValue | SQLiteDBRecordValue[],
-        equal: boolean = true,
-        onEmptyItems?: SQLiteDBRecordValue | null,
-    ): SQLiteDBQueryParams {
-        let sql = '';
-        let params: SQLiteDBRecordValue[];
-
-        // Default behavior, return empty data on empty array.
-        if (Array.isArray(items) && !items.length && onEmptyItems === undefined) {
-            return { sql: '', params: [] };
-        }
-
-        // Handle onEmptyItems on empty array of items.
-        if (Array.isArray(items) && !items.length) {
-            if (onEmptyItems === null) { // Special case, NULL value.
-                sql = equal ? ' IS NULL' : ' IS NOT NULL';
-
-                return { sql, params: [] };
-            } else {
-                items = [onEmptyItems as SQLiteDBRecordValue]; // Rest of cases, prepare items for processing.
-            }
-        }
-
-        if (!Array.isArray(items) || items.length == 1) {
-            sql = equal ? '= ?' : '<> ?';
-            params = Array.isArray(items) ? items : [items];
-        } else {
-            const questionMarks = ',?'.repeat(items.length).substring(1);
-            sql = (equal ? '' : 'NOT ') + `IN (${questionMarks})`;
-            params = items;
-        }
-
-        return { sql, params };
-    }
-
     db?: SQLiteObject;
     promise!: Promise<void>;
 

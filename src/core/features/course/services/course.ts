@@ -56,7 +56,6 @@ import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
 import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
-import { SQLiteDB } from '@classes/sqlitedb';
 import { CorePlatform } from '@services/platform';
 import { asyncObservable } from '@/core/utils/rxjs';
 import { firstValueFrom } from 'rxjs';
@@ -391,12 +390,9 @@ export class CoreCourseProvider {
         }
 
         const site = await CoreSites.getSite(siteId);
-
-        const whereAndParams = SQLiteDB.getInOrEqual(ids);
-
         const entries = await this.viewedModulesTables[site.getId()].getManyWhere({
-            sql: 'cmId ' + whereAndParams.sql,
-            sqlParams: whereAndParams.params,
+            sql: `cmId IN (${ids.map(() => '?').join(', ')})`,
+            sqlParams: ids,
             js: (record) => ids.includes(record.cmId),
         });
 

@@ -879,14 +879,9 @@ export class CoreSite extends CoreAuthenticatedSite {
                 return await this.lastViewedTable.getMany({ component });
             }
 
-            const whereAndParams = SQLiteDB.getInOrEqual(ids);
-
-            whereAndParams.sql = 'id ' + whereAndParams.sql + ' AND component = ?';
-            whereAndParams.params.push(component);
-
             return await this.lastViewedTable.getManyWhere({
-                sql: whereAndParams.sql,
-                sqlParams: whereAndParams.params,
+                sql: `id IN (${ids.map(() => '?').join(', ')}) AND component = ?`,
+                sqlParams: [...ids, component],
                 js: (record) => record.component === component && ids.includes(record.id),
             });
         } catch {

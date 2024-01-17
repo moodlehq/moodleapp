@@ -28,7 +28,6 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils, CoreUtilsOpenFileOptions } from '@services/utils/utils';
-import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
 import { ApplicationInit, makeSingleton, NgZone, Translate } from '@singletons';
@@ -2270,6 +2269,8 @@ export class CoreFilepoolProvider {
         componentId?: string | number,
         onlyUnknown: boolean = true,
     ): Promise<void> {
+        siteId = siteId ?? CoreSites.getCurrentSiteId();
+
         const items = await this.getComponentFiles(siteId, component, componentId);
 
         if (!items.length) {
@@ -2277,23 +2278,15 @@ export class CoreFilepoolProvider {
             return;
         }
 
-        siteId = siteId ?? CoreSites.getCurrentSiteId();
-
         const fileIds = items.map((item) => item.fileId);
-
-        const whereAndParams = SQLiteDB.getInOrEqual(fileIds);
-
-        whereAndParams.sql = 'fileId ' + whereAndParams.sql;
-
-        if (onlyUnknown) {
-            whereAndParams.sql += ' AND (' + CoreFilepoolProvider.FILE_IS_UNKNOWN_SQL + ')';
-        }
 
         await this.filesTables[siteId].updateWhere(
             { stale: 1 },
             {
-                sql: whereAndParams.sql,
-                sqlParams: whereAndParams.params,
+                sql: onlyUnknown
+                    ? `fileId IN (${fileIds.map(() => '?').join(', ')}) AND (${CoreFilepoolProvider.FILE_IS_UNKNOWN_SQL})`
+                    : `fileId IN (${fileIds.map(() => '?').join(', ')})`,
+                sqlParams: fileIds,
                 js: record => fileIds.includes(record.fileId) && (
                     !onlyUnknown || CoreFilepoolProvider.FILE_IS_UNKNOWN_JS(record)
                 ),
