@@ -22,11 +22,15 @@ import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
+    AddonModScormAttemptDBPrimaryKeys,
     AddonModScormAttemptDBRecord,
     AddonModScormOfflineDBCommonData,
+    AddonModScormTrackDBPrimaryKeys,
     AddonModScormTrackDBRecord,
     ATTEMPTS_TABLE_NAME,
+    ATTEMPTS_TABLE_PRIMARY_KEYS,
     TRACKS_TABLE_NAME,
+    TRACKS_TABLE_PRIMARY_KEYS,
 } from './database/scorm';
 import {
     AddonModScormDataEntry,
@@ -51,33 +55,41 @@ export class AddonModScormOfflineProvider {
     protected logger: CoreLogger;
 
     protected tracksTables: LazyMap<
-        AsyncInstance<CoreDatabaseTable<AddonModScormTrackDBRecord, 'scormid' | 'userid' | 'attempt' | 'scoid' | 'element'>>
+        AsyncInstance<CoreDatabaseTable<AddonModScormTrackDBRecord, AddonModScormTrackDBPrimaryKeys, never>>
     >;
 
     protected attemptsTables: LazyMap<
-        AsyncInstance<CoreDatabaseTable<AddonModScormAttemptDBRecord, 'scormid' | 'userid' | 'attempt'>>
+        AsyncInstance<CoreDatabaseTable<AddonModScormAttemptDBRecord, AddonModScormAttemptDBPrimaryKeys, never>>
     >;
 
     constructor() {
         this.logger = CoreLogger.getInstance('AddonModScormOfflineProvider');
         this.tracksTables = lazyMap(
             siteId => asyncInstance(
-                () => CoreSites.getSiteTable(TRACKS_TABLE_NAME, {
-                    siteId,
-                    primaryKeyColumns: ['scormid', 'userid', 'attempt', 'scoid', 'element'],
-                    config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
-                    onDestroy: () => delete this.tracksTables[siteId],
-                }),
+                () => CoreSites.getSiteTable<AddonModScormTrackDBRecord, AddonModScormTrackDBPrimaryKeys, never>(
+                    TRACKS_TABLE_NAME,
+                    {
+                        siteId,
+                        primaryKeyColumns: [...TRACKS_TABLE_PRIMARY_KEYS],
+                        rowIdColumn: null,
+                        config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+                        onDestroy: () => delete this.tracksTables[siteId],
+                    },
+                ),
             ),
         );
         this.attemptsTables = lazyMap(
             siteId => asyncInstance(
-                () => CoreSites.getSiteTable(ATTEMPTS_TABLE_NAME, {
-                    siteId,
-                    primaryKeyColumns: ['scormid', 'userid', 'attempt'],
-                    config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
-                    onDestroy: () => delete this.tracksTables[siteId],
-                }),
+                () => CoreSites.getSiteTable<AddonModScormAttemptDBRecord, AddonModScormAttemptDBPrimaryKeys, never>(
+                    ATTEMPTS_TABLE_NAME,
+                    {
+                        siteId,
+                        primaryKeyColumns: [...ATTEMPTS_TABLE_PRIMARY_KEYS],
+                        rowIdColumn: null,
+                        config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+                        onDestroy: () => delete this.tracksTables[siteId],
+                    },
+                ),
             ),
         );
     }

@@ -49,7 +49,6 @@ export class CoreUserToursService {
                 { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
                 CoreApp.getDB(),
                 USER_TOURS_TABLE_NAME,
-                ['id'],
             );
 
             await table.initialize();

@@ -31,8 +31,9 @@ import {
 export class CoreEagerDatabaseTable<
     DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
     PrimaryKeyColumn extends keyof DBRecord = 'id',
-    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
-> extends CoreInMemoryDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+    RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>,
+> extends CoreInMemoryDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey> {
 
     protected records: Record<string, DBRecord> = {};
 
@@ -153,12 +154,10 @@ export class CoreEagerDatabaseTable<
     /**
      * @inheritdoc
      */
-    async insert(record: DBRecord): Promise<void> {
-        await super.insert(record);
+    async insert(record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>): Promise<number> {
+        const rowId = await this.insertAndRemember(record, this.records);
 
-        const primaryKey = this.serializePrimaryKey(this.getPrimaryKeyFromRecord(record));
-
-        this.records[primaryKey] = record;
+        return rowId;
     }
 
     /**

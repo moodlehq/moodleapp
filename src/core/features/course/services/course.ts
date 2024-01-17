@@ -27,7 +27,12 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 
 import {
-    CoreCourseStatusDBRecord, CoreCourseViewedModulesDBRecord, COURSE_STATUS_TABLE, COURSE_VIEWED_MODULES_TABLE ,
+    CoreCourseStatusDBRecord,
+    CoreCourseViewedModulesDBPrimaryKeys,
+    CoreCourseViewedModulesDBRecord,
+    COURSE_STATUS_TABLE,
+    COURSE_VIEWED_MODULES_PRIMARY_KEYS,
+    COURSE_VIEWED_MODULES_TABLE,
 } from './database/course';
 import { CoreCourseOffline } from './course-offline';
 import { CoreError } from '@classes/errors/error';
@@ -121,7 +126,9 @@ export class CoreCourseProvider {
 
     protected logger: CoreLogger;
     protected statusTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreCourseStatusDBRecord>>>;
-    protected viewedModulesTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreCourseViewedModulesDBRecord, 'courseId' | 'cmId'>>>;
+    protected viewedModulesTables: LazyMap<
+        AsyncInstance<CoreDatabaseTable<CoreCourseViewedModulesDBRecord, CoreCourseViewedModulesDBPrimaryKeys, never>>
+    >;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreCourseProvider');
@@ -137,12 +144,16 @@ export class CoreCourseProvider {
 
         this.viewedModulesTables = lazyMap(
             siteId => asyncInstance(
-                () => CoreSites.getSiteTable(COURSE_VIEWED_MODULES_TABLE, {
-                    siteId,
-                    config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
-                    primaryKeyColumns: ['courseId', 'cmId'],
-                    onDestroy: () => delete this.viewedModulesTables[siteId],
-                }),
+                () => CoreSites.getSiteTable<CoreCourseViewedModulesDBRecord, CoreCourseViewedModulesDBPrimaryKeys, never>(
+                    COURSE_VIEWED_MODULES_TABLE,
+                    {
+                        siteId,
+                        config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+                        primaryKeyColumns: [...COURSE_VIEWED_MODULES_PRIMARY_KEYS],
+                        rowIdColumn: null,
+                        onDestroy: () => delete this.viewedModulesTables[siteId],
+                    },
+                ),
             ),
         );
     }

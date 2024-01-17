@@ -38,16 +38,17 @@ import { CoreLazyDatabaseTable } from './lazy-database-table';
 export class CoreDatabaseTableProxy<
     DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
     PrimaryKeyColumn extends keyof DBRecord = 'id',
-    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
-> extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+    RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>,
+> extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey> {
 
     protected readonly DEFAULT_CACHING_STRATEGY = CoreDatabaseCachingStrategy.None;
 
-    protected target = asyncInstance<CoreDatabaseTable<DBRecord, PrimaryKeyColumn>>();
+    protected target = asyncInstance<CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>>();
     protected environmentObserver?: CoreEventObserver;
     protected targetConstructors: Record<
         CoreDatabaseCachingStrategy,
-        CoreDatabaseTableConstructor<DBRecord, PrimaryKeyColumn, PrimaryKey>
+        CoreDatabaseTableConstructor<DBRecord, PrimaryKeyColumn, RowIdColumn>
     > = {
         [CoreDatabaseCachingStrategy.Eager]: CoreEagerDatabaseTable,
         [CoreDatabaseCachingStrategy.Lazy]: CoreLazyDatabaseTable,
@@ -154,7 +155,7 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
-    async insert(record: DBRecord): Promise<void> {
+    async insert(record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>): Promise<number> {
         return this.target.insert(record);
     }
 
@@ -239,7 +240,7 @@ export class CoreDatabaseTableProxy<
      *
      * @returns Target instance.
      */
-    protected async createTarget(): Promise<CoreDatabaseTable<DBRecord, PrimaryKeyColumn>> {
+    protected async createTarget(): Promise<CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>> {
         const config = await this.getRuntimeConfig();
         const table = this.createTable(config);
 
@@ -252,7 +253,7 @@ export class CoreDatabaseTableProxy<
      * @param config Database configuration.
      * @returns Database table.
      */
-    protected createTable(config: Partial<CoreDatabaseConfiguration>): CoreDatabaseTable<DBRecord, PrimaryKeyColumn> {
+    protected createTable(config: Partial<CoreDatabaseConfiguration>): CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn> {
         const DatabaseTable = this.targetConstructors[config.cachingStrategy ?? this.DEFAULT_CACHING_STRATEGY];
 
         return new DatabaseTable(config, this.database, this.tableName, this.primaryKeyColumns);

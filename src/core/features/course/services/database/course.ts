@@ -19,6 +19,7 @@ import { CoreSiteSchema } from '@services/sites';
  */
 export const COURSE_STATUS_TABLE = 'course_status';
 export const COURSE_VIEWED_MODULES_TABLE = 'course_viewed_modules';
+export const COURSE_VIEWED_MODULES_PRIMARY_KEYS = ['courseId', 'cmId'] as const;
 export const SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreCourseProvider',
     version: 2,
@@ -75,7 +76,7 @@ export const SITE_SCHEMA: CoreSiteSchema = {
                     type: 'INTEGER',
                 },
             ],
-            primaryKeys: ['courseId', 'cmId'],
+            primaryKeys: [...COURSE_VIEWED_MODULES_PRIMARY_KEYS],
         },
     ],
 };
@@ -132,6 +133,8 @@ export type CoreCourseViewedModulesDBRecord = {
     timeaccess: number;
     sectionId?: number;
 };
+
+export type CoreCourseViewedModulesDBPrimaryKeys = typeof COURSE_VIEWED_MODULES_PRIMARY_KEYS[number];
 
 export type CoreCourseManualCompletionDBRecord = {
     cmid: number;

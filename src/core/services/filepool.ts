@@ -42,10 +42,14 @@ import {
     CoreFilepoolFileEntry,
     CoreFilepoolComponentLink,
     CoreFilepoolFileOptions,
-    CoreFilepoolLinksRecord,
+    CoreFilepoolLinksDBRecord,
     CoreFilepoolPackageEntry,
     CoreFilepoolQueueEntry,
-    CoreFilepoolQueueDBEntry,
+    CoreFilepoolQueueDBRecord,
+    CoreFilepoolLinksDBPrimaryKeys,
+    LINKS_TABLE_PRIMARY_KEYS,
+    CoreFilepoolQueueDBPrimaryKeys,
+    QUEUE_TABLE_PRIMARY_KEYS,
 } from '@services/database/filepool';
 import { CoreFileHelper } from './file-helper';
 import { CoreUrl } from '@singletons/url';
@@ -102,33 +106,39 @@ export class CoreFilepoolProvider {
     // Variables to prevent downloading packages/files twice at the same time.
     protected packagesPromises: { [s: string]: { [s: string]: Promise<void> } } = {};
     protected filePromises: { [s: string]: { [s: string]: Promise<string> } } = {};
-    protected filesTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreFilepoolFileEntry, 'fileId'>>>;
-    protected linksTables:
-        LazyMap<AsyncInstance<CoreDatabaseTable<CoreFilepoolLinksRecord, 'fileId' | 'component' | 'componentId'>>>;
+    protected filesTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreFilepoolFileEntry, 'fileId', never>>>;
+    protected linksTables: LazyMap<
+        AsyncInstance<CoreDatabaseTable<CoreFilepoolLinksDBRecord, CoreFilepoolLinksDBPrimaryKeys, never>>
+    >;
 
     protected packagesTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreFilepoolPackageEntry>>>;
-    protected queueTable = asyncInstance<CoreDatabaseTable<CoreFilepoolQueueDBEntry, 'siteId' | 'fileId'>>();
+    protected queueTable = asyncInstance<CoreDatabaseTable<CoreFilepoolQueueDBRecord, CoreFilepoolQueueDBPrimaryKeys>>();
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreFilepoolProvider');
         this.filesTables = lazyMap(
             siteId => asyncInstance(
-                () => CoreSites.getSiteTable(FILES_TABLE_NAME, {
+                () => CoreSites.getSiteTable<CoreFilepoolFileEntry, 'fileId', never>(FILES_TABLE_NAME, {
                     siteId,
                     config: { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
                     primaryKeyColumns: ['fileId'],
+                    rowIdColumn: null,
                     onDestroy: () => delete this.filesTables[siteId],
                 }),
             ),
         );
         this.linksTables = lazyMap(
             siteId => asyncInstance(
-                () => CoreSites.getSiteTable(LINKS_TABLE_NAME, {
-                    siteId,
-                    config: { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
-                    primaryKeyColumns: ['fileId', 'component', 'componentId'],
-                    onDestroy: () => delete this.linksTables[siteId],
-                }),
+                () => CoreSites.getSiteTable<CoreFilepoolLinksDBRecord, CoreFilepoolLinksDBPrimaryKeys, never>(
+                    LINKS_TABLE_NAME,
+                    {
+                        siteId,
+                        config: { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
+                        primaryKeyColumns: [...LINKS_TABLE_PRIMARY_KEYS],
+                        rowIdColumn: null,
+                        onDestroy: () => delete this.linksTables[siteId],
+                    },
+                ),
             ),
         );
         this.packagesTables = lazyMap(
@@ -168,11 +178,11 @@ export class CoreFilepoolProvider {
             // Ignore errors.
         }
 
-        const queueTable = new CoreDatabaseTableProxy<CoreFilepoolQueueDBEntry, 'siteId' | 'fileId'>(
+        const queueTable = new CoreDatabaseTableProxy<CoreFilepoolQueueDBRecord, CoreFilepoolQueueDBPrimaryKeys>(
             { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
             CoreApp.getDB(),
             QUEUE_TABLE_NAME,
-            ['siteId','fileId'],
+            [...QUEUE_TABLE_PRIMARY_KEYS],
         );
 
         await queueTable.initialize();
@@ -406,7 +416,7 @@ export class CoreFilepoolProvider {
             return this.addToQueue(siteId, fileId, fileUrl, priority, revision, timemodified, filePath, onProgress, options, link);
         }
 
-        const newData: Partial<CoreFilepoolQueueDBEntry> = {};
+        const newData: Partial<CoreFilepoolQueueDBRecord> = {};
         let foundLink = false;
 
         // We already have the file in queue, we update the priority and links.
@@ -1245,7 +1255,7 @@ export class CoreFilepoolProvider {
         siteId: string | undefined,
         component: string,
         componentId?: string | number,
-    ): Promise<CoreFilepoolLinksRecord[]> {
+    ): Promise<CoreFilepoolLinksDBRecord[]> {
         siteId = siteId ?? CoreSites.getCurrentSiteId();
         const conditions = {
             component,
@@ -1364,7 +1374,7 @@ export class CoreFilepoolProvider {
      * @param fileId The file ID.
      * @returns Promise resolved with the links.
      */
-    protected async getFileLinks(siteId: string, fileId: string): Promise<CoreFilepoolLinksRecord[]> {
+    protected async getFileLinks(siteId: string, fileId: string): Promise<CoreFilepoolLinksDBRecord[]> {
         const items = await this.linksTables[siteId].getMany({ fileId });
 
         items.forEach((item) => {

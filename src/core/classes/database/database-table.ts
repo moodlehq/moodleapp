@@ -21,13 +21,15 @@ import { SQLiteDB, SQLiteDBRecordValue, SQLiteDBRecordValues } from '@classes/sq
 export class CoreDatabaseTable<
     DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
     PrimaryKeyColumn extends keyof DBRecord = 'id',
-    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
+    RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>,
 > {
 
     protected config: Partial<CoreDatabaseConfiguration>;
     protected database: SQLiteDB;
     protected tableName: string;
     protected primaryKeyColumns: PrimaryKeyColumn[];
+    protected rowIdColumn: RowIdColumn | null;
     protected listeners: CoreDatabaseTableListener[] = [];
 
     constructor(
@@ -35,11 +37,13 @@ export class CoreDatabaseTable<
         database: SQLiteDB,
         tableName: string,
         primaryKeyColumns?: PrimaryKeyColumn[],
+        rowIdColumn?: RowIdColumn | null,
     ) {
         this.config = config;
         this.database = database;
         this.tableName = tableName;
         this.primaryKeyColumns = primaryKeyColumns ?? ['id'] as PrimaryKeyColumn[];
+        this.rowIdColumn = rowIdColumn === null ? null : (rowIdColumn ?? 'id') as RowIdColumn;
     }
 
     /**
@@ -253,9 +257,12 @@ export class CoreDatabaseTable<
      * Insert a new record.
      *
      * @param record Database record.
+     * @returns New record row id.
      */
-    async insert(record: DBRecord): Promise<void> {
-        await this.database.insertRecord(this.tableName, record);
+    async insert(record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>): Promise<number> {
+        const rowId = await this.database.insertRecord(this.tableName, record);
+
+        return rowId;
     }
 
     /**
@@ -263,7 +270,7 @@ export class CoreDatabaseTable<
      *
      * @param record Database record.
      */
-    syncInsert(record: DBRecord): void {
+    syncInsert(record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>): void {
         // The current database architecture does not support synchronous operations,
         // so calling this method will mean that errors will be silenced. Because of that,
         // this should only be called if using the asynchronous alternatives is not possible.
@@ -423,15 +430,17 @@ export interface CoreDatabaseTableListener {
 export type CoreDatabaseTableConstructor<
     DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
     PrimaryKeyColumn extends keyof DBRecord = 'id',
-    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
+    RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>,
 > = {
 
     new (
         config: Partial<CoreDatabaseConfiguration>,
         database: SQLiteDB,
         tableName: string,
-        primaryKeyColumns?: PrimaryKeyColumn[]
-    ): CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey>;
+        primaryKeyColumns?: PrimaryKeyColumn[],
+        rowIdColumn?: RowIdColumn | null,
+    ): CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey>;
 
 };
 

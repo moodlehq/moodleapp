@@ -31,8 +31,9 @@ import {
 export class CoreLazyDatabaseTable<
     DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
     PrimaryKeyColumn extends keyof DBRecord = 'id',
-    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
-> extends CoreInMemoryDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+    RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>,
+> extends CoreInMemoryDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey> {
 
     protected readonly DEFAULT_CACHE_LIFETIME = 60000;
 
@@ -137,10 +138,10 @@ export class CoreLazyDatabaseTable<
     /**
      * @inheritdoc
      */
-    async insert(record: DBRecord): Promise<void> {
-        await super.insert(record);
+    async insert(record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>): Promise<number> {
+        const rowId = await this.insertAndRemember(record, this.records);
 
-        this.records[this.serializePrimaryKey(this.getPrimaryKeyFromRecord(record))] = record;
+        return rowId;
     }
 
     /**

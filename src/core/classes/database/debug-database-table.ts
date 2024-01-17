@@ -30,13 +30,14 @@ import {
 export class CoreDebugDatabaseTable<
     DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
     PrimaryKeyColumn extends keyof DBRecord = 'id',
-    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
-> extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+    RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>,
+> extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey> {
 
-    protected target: CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey>;
+    protected target: CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey>;
     protected logger: CoreLogger;
 
-    constructor(target: CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey>) {
+    constructor(target: CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey>) {
         super(target.getConfig(), target.getDatabase(), target.getTableName(), target.getPrimaryKeyColumns());
 
         this.target = target;
@@ -48,7 +49,7 @@ export class CoreDebugDatabaseTable<
      *
      * @returns Table instance.
      */
-    getTarget(): CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+    getTarget(): CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey> {
         return this.target;
     }
 
@@ -152,7 +153,7 @@ export class CoreDebugDatabaseTable<
     /**
      * @inheritdoc
      */
-    insert(record: DBRecord): Promise<void> {
+    insert(record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>): Promise<number> {
         this.logger.log('insert', record);
 
         return this.target.insert(record);

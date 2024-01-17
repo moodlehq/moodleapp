@@ -26,8 +26,9 @@ import { CoreDatabaseTable, GetDBRecordPrimaryKey } from './database-table';
 export abstract class CoreInMemoryDatabaseTable<
     DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
     PrimaryKeyColumn extends keyof DBRecord = 'id',
-    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
-> extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+    RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>,
+> extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey> {
 
     private static readonly ACTIVE_TABLES: WeakMap<SQLiteDB, Set<string>> = new WeakMap();
     private static readonly LOGGER: CoreLogger = CoreLogger.getInstance('CoreInMemoryDatabaseTable');
@@ -68,6 +69,30 @@ export abstract class CoreInMemoryDatabaseTable<
         if (activeTables?.size === 0) {
             CoreInMemoryDatabaseTable.ACTIVE_TABLES.delete(this.database);
         }
+    }
+
+    /**
+     * Insert a new record and store it in the given object.
+     *
+     * @param record Database record.
+     * @param records Records object.
+     * @returns New record row id.
+     */
+    protected async insertAndRemember(
+        record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>,
+        records: Record<string, DBRecord | null>,
+    ): Promise<number> {
+        const rowId = await super.insert(record);
+
+        const completeRecord = (this.rowIdColumn && !(this.rowIdColumn in record))
+            ? Object.assign({ [this.rowIdColumn]: rowId }, record) as DBRecord
+            : record as DBRecord;
+
+        const primaryKey = this.serializePrimaryKey(this.getPrimaryKeyFromRecord(completeRecord));
+
+        records[primaryKey] = completeRecord;
+
+        return rowId;
     }
 
 }
