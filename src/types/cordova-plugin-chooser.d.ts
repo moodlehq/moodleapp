@@ -26,7 +26,7 @@ interface IChooserResult {
     uri: string;
 }
 
-interface Cordova {
+interface Window {
 
     chooser: {
         getFile(accept?: string): Promise<IChooserResult | undefined>;
