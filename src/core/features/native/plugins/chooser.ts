@@ -29,7 +29,7 @@ export class Chooser {
      * If error occurs, promise will be rejected.
      */
     getFile(accept?: string): Promise<IChooserResult | undefined> {
-        return cordova.chooser.getFile(accept);
+        return window.chooser.getFile(accept);
     }
 
     /**
@@ -41,7 +41,7 @@ export class Chooser {
      * If error occurs, promise will be rejected.
      */
     getFileMetadata(accept?: string): Promise<IChooserResult | undefined> {
-        return cordova.chooser.getFileMetadata(accept);
+        return window.chooser.getFileMetadata(accept);
     }
 
 }
