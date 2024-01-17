@@ -72,7 +72,7 @@ export class CorePushNotificationsProvider {
         this.logger = CoreLogger.getInstance('CorePushNotificationsProvider');
         this.registeredDevicesTables = lazyMap(
             siteId => asyncInstance(
-                () => CoreSites.getSiteTable<CorePushNotificationsRegisteredDeviceDBRecord, 'appid' | 'uuid'>(
+                () => CoreSites.getSiteTable(
                     REGISTERED_DEVICES_TABLE_NAME,
                     {
                         siteId,

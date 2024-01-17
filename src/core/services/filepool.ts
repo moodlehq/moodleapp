@@ -113,7 +113,7 @@ export class CoreFilepoolProvider {
         this.logger = CoreLogger.getInstance('CoreFilepoolProvider');
         this.filesTables = lazyMap(
             siteId => asyncInstance(
-                () => CoreSites.getSiteTable<CoreFilepoolFileEntry, 'fileId'>(FILES_TABLE_NAME, {
+                () => CoreSites.getSiteTable(FILES_TABLE_NAME, {
                     siteId,
                     config: { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
                     primaryKeyColumns: ['fileId'],
@@ -123,7 +123,7 @@ export class CoreFilepoolProvider {
         );
         this.linksTables = lazyMap(
             siteId => asyncInstance(
-                () => CoreSites.getSiteTable<CoreFilepoolLinksRecord, 'fileId' | 'component' | 'componentId'>(LINKS_TABLE_NAME, {
+                () => CoreSites.getSiteTable(LINKS_TABLE_NAME, {
                     siteId,
                     config: { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
                     primaryKeyColumns: ['fileId', 'component', 'componentId'],
@@ -133,7 +133,7 @@ export class CoreFilepoolProvider {
         );
         this.packagesTables = lazyMap(
             siteId => asyncInstance(
-                () => CoreSites.getSiteTable<CoreFilepoolPackageEntry, 'id'>(PACKAGES_TABLE_NAME, {
+                () => CoreSites.getSiteTable(PACKAGES_TABLE_NAME, {
                     siteId,
                     config: { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
                     onDestroy: () => delete this.packagesTables[siteId],

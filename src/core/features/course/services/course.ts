@@ -137,7 +137,7 @@ export class CoreCourseProvider {
 
         this.viewedModulesTables = lazyMap(
             siteId => asyncInstance(
-                () => CoreSites.getSiteTable<CoreCourseViewedModulesDBRecord, 'courseId' | 'cmId'>(COURSE_VIEWED_MODULES_TABLE, {
+                () => CoreSites.getSiteTable(COURSE_VIEWED_MODULES_TABLE, {
                     siteId,
                     config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
                     primaryKeyColumns: ['courseId', 'cmId'],
