@@ -15,9 +15,17 @@
 import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { SQLiteDB } from '@classes/sqlitedb';
-import { CoreSearchHistoryDBRecord, SEARCH_HISTORY_TABLE_NAME } from './search-history-db';
+import {
+    CoreSearchHistoryDBPrimaryKeys,
+    CoreSearchHistoryDBRecord,
+    SEARCH_HISTORY_TABLE_NAME,
+    SEARCH_HISTORY_TABLE_PRIMARY_KEYS,
+} from './search-history-db';
 import { makeSingleton } from '@singletons';
+import { LazyMap, lazyMap } from '@/core/utils/lazy-map';
+import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
+import { CoreDatabaseTable } from '@classes/database/database-table';
+import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
 
 /**
  * Service that enables adding a history to a search box.
@@ -27,6 +35,27 @@ export class CoreSearchHistoryProvider {
 
     protected static readonly HISTORY_LIMIT = 10;
 
+    protected searchHistoryTables: LazyMap<
+        AsyncInstance<CoreDatabaseTable<CoreSearchHistoryDBRecord, CoreSearchHistoryDBPrimaryKeys, never>>
+    >;
+
+    constructor() {
+        this.searchHistoryTables = lazyMap(
+            siteId => asyncInstance(
+                () => CoreSites.getSiteTable<CoreSearchHistoryDBRecord, CoreSearchHistoryDBPrimaryKeys, never>(
+                    SEARCH_HISTORY_TABLE_NAME,
+                    {
+                        siteId,
+                        primaryKeyColumns: [...SEARCH_HISTORY_TABLE_PRIMARY_KEYS],
+                        rowIdColumn: null,
+                        config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+                        onDestroy: () => delete this.searchHistoryTables[siteId],
+                    },
+                ),
+            ),
+        );
+    }
+
     /**
      * Get a search area history sorted by use.
      *
@@ -35,12 +64,9 @@ export class CoreSearchHistoryProvider {
      * @returns Promise resolved with the list of items when done.
      */
     async getSearchHistory(searchArea: string, siteId?: string): Promise<CoreSearchHistoryDBRecord[]> {
-        const site = await CoreSites.getSite(siteId);
-        const conditions = {
-            searcharea: searchArea,
-        };
+        siteId ??= CoreSites.getCurrentSiteId();
 
-        const history: CoreSearchHistoryDBRecord[] = await site.getDb().getRecords(SEARCH_HISTORY_TABLE_NAME, conditions);
+        const history = await this.searchHistoryTables[siteId].getMany({ searcharea: searchArea });
 
         // Sorting by last used DESC.
         return history.sort((a, b) => (b.lastused || 0) - (a.lastused || 0));
@@ -50,10 +76,10 @@ export class CoreSearchHistoryProvider {
      * Controls search limit and removes the last item if overflows.
      *
      * @param searchArea Search area to control
-     * @param db SQLite DB where to perform the search.
+     * @param siteId Site id.
      * @returns Resolved when done.
      */
-    protected async controlSearchLimit(searchArea: string, db: SQLiteDB): Promise<void> {
+    protected async controlSearchLimit(searchArea: string, siteId: string): Promise<void> {
         const items = await this.getSearchHistory(searchArea);
         if (items.length > CoreSearchHistoryProvider.HISTORY_LIMIT) {
             // Over the limit. Remove the last.
@@ -62,12 +88,10 @@ export class CoreSearchHistoryProvider {
                 return;
             }
 
-            const searchItem = {
+            await this.searchHistoryTables[siteId].delete({
                 searcharea: lastItem.searcharea,
                 searchedtext: lastItem.searchedtext,
-            };
-
-            await db.deleteRecords(SEARCH_HISTORY_TABLE_NAME, searchItem);
+            });
         }
     }
 
@@ -76,23 +100,23 @@ export class CoreSearchHistoryProvider {
      *
      * @param searchArea Area where the search has been performed.
      * @param text Text of the performed text.
-     * @param db SQLite DB where to perform the search.
+     * @param siteId Site id.
      * @returns True if exists, false otherwise.
      */
-    protected async updateExistingItem(searchArea: string, text: string, db: SQLiteDB): Promise<boolean> {
+    protected async updateExistingItem(searchArea: string, text: string, siteId: string): Promise<boolean> {
         const searchItem = {
             searcharea: searchArea,
             searchedtext: text,
         };
 
         try {
-            const existingItem: CoreSearchHistoryDBRecord = await db.getRecord(SEARCH_HISTORY_TABLE_NAME, searchItem);
+            const existingItem = await this.searchHistoryTables[siteId].getOne(searchItem);
 
             // If item exist, update time and number of times searched.
             existingItem.lastused = Date.now();
             existingItem.times++;
 
-            await db.updateRecords(SEARCH_HISTORY_TABLE_NAME, existingItem, searchItem);
+            await this.searchHistoryTables[siteId].update(existingItem, searchItem);
 
             return true;
         } catch {
@@ -109,23 +133,20 @@ export class CoreSearchHistoryProvider {
      * @returns Resolved when done.
      */
     async insertOrUpdateSearchText(searchArea: string, text: string, siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
-        const db = site.getDb();
+        siteId ??= CoreSites.getCurrentSiteId();
 
-        const exists = await this.updateExistingItem(searchArea, text, db);
+        const exists = await this.updateExistingItem(searchArea, text, siteId);
 
         if (!exists) {
             // If item is new, control the history does not goes over the limit.
-            const searchItem: CoreSearchHistoryDBRecord = {
+            await this.searchHistoryTables[siteId].insert({
                 searcharea: searchArea,
                 searchedtext: text,
                 lastused: Date.now(),
                 times: 1,
-            };
+            });
 
-            await db.insertRecord(SEARCH_HISTORY_TABLE_NAME, searchItem);
-
-            await this.controlSearchLimit(searchArea, db);
+            await this.controlSearchLimit(searchArea, siteId);
         }
     }
 
