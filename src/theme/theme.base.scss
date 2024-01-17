@@ -66,75 +66,68 @@ body {
 .font-lg { font-size: 1.7rem; }
 .font-sm { font-size: 1.2rem; }
 
-// Headings.
+// Item Headings.
 // Some styles taken from ion-label
-.md ion-label .item-heading,
-.ios ion-label .item-heading {
-    text-overflow: inherit;
-    overflow: inherit;
-    --color: initial;
-    color: var(--color);
-    line-height: 20px;
-
-    &.item-heading-secondary {
+.item > ion-label,
+.fake-ion-item > ion-label,
+ion-item .in-item {
+    p {
         --color: var(--subdued-text-color);
+        color: var(--color);
+        @include margin(2px, 0);
+        font-size: 0.875rem;
     }
-}
 
-.ios ion-label > p,
-.md ion-label > p {
-    --color: var(--subdued-text-color);
-    color: var(--color);
-}
-
-.md ion-label .item-heading {
-    @include margin(2px, 0);
-
-    font-size: 16px;
-    font-weight: normal;
-
-    &.item-heading-secondary {
+    .item-heading {
         @include margin(2px, 0);
 
-        font-size: var(--text-size);
+        font-size: 1rem;
         font-weight: normal;
 
-        line-height: normal;
-    }
-}
+        text-overflow: inherit;
+        overflow: inherit;
+        --color: initial;
+        color: var(--color);
 
-.ios ion-label .item-heading {
-    @include margin(0, 0, 2px);
+        &.item-heading-secondary {
+            @include margin(2px, 0);
 
-    font-size: 17px;
-    font-weight: normal;
+            font-size: var(--text-size);
+            font-weight: normal;
+            line-height: normal;
 
-    &.item-heading-secondary {
-        @include margin(0, 0, 3px);
-
-        font-size: var(--text-size);
-        font-weight: normal;
-
-        line-height: normal;
+            --color: var(--subdued-text-color);
+        }
     }
 }
 
 // Correctly inherit ion-text-wrap onto labels.
-.item ion-label core-format-text > *:not(pre),
-.fake-ion-item core-format-text > *:not(pre) {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.item > ion-label,
+.fake-ion-item {
+    core-format-text,
+    core-format-text > *:not(pre) {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 
-.item.ion-text-wrap > ion-label core-format-text > *:not(pre),
-.fake-ion-item.ion-text-wrap core-format-text > *:not(pre) {
-    white-space: normal;
-    overflow: inherit;
+.item.ion-text-wrap > ion-label,
+ion-item > .in-item,
+.fake-ion-item.ion-text-wrap {
+    core-format-text,
+    core-format-text > *:not(pre) {
+        white-space: normal;
+        overflow: inherit;
+    }
 }
 
 .item.ion-text-wrap > ion-label {
     white-space: normal !important;
+}
+
+ion-item .core-input-errors-wrapper {
+    width: 100%;
 }
 
 @each $color-name, $unused in $colors {
@@ -151,7 +144,7 @@ ion-toolbar {
 
 // Header.
 ion-header {
-    z-index: 12; // To hide ion-slides on scroll.
+    z-index: 12; // To hide swiper-container on scroll.
 
     ion-toolbar {
         ion-spinner {
@@ -260,6 +253,9 @@ ion-tabs.hide-header ion-header {
 
 ion-footer {
     background-color: var(--contrast-background);
+    > ion-toolbar:only-child {
+        top: 1px;
+    }
 }
 
 // Ionic icon.
@@ -297,6 +293,11 @@ button,
 [role="button"] {
     min-height: var(--a11y-min-target-size);
     min-width: var(--a11y-min-target-size);
+
+    &.button-large {
+        min-height: 2.8em;
+        min-width: 2.8em
+    }
 }
 
 ion-fab-button {
@@ -518,7 +519,7 @@ ion-alert .alert-button.timed-button{
 }
 
 ion-alert {
-    --border-radius: var(--radius-xl);
+    --border-radius: var(--modal-radius);
 
     &.md, &.ios {
         --max-width: 80%;
@@ -545,7 +546,7 @@ ion-alert {
 }
 
 ion-loading {
-    --border-radius: var(--radius-xl);
+    --border-radius: var(--modal-radius);
 
     .loading-wrapper {
         border-radius: var(--border-radius) !important;
@@ -680,7 +681,7 @@ body.core-iframe-fullscreen ion-router-outlet {
 }
 
 // Modals.
-.core-modal-fullscreen .modal-wrapper {
+.core-modal-fullscreen::part(content) {
     position: absolute;
     @include position(0 !important, null, null, 0 !important);
     display: block;
@@ -690,11 +691,11 @@ body.core-iframe-fullscreen ion-router-outlet {
 
 .core-modal-transparent {
 
-    ion-backdrop {
+    &::part(backdrop) {
         backdrop-filter: blur(8px);
     }
 
-    .modal-wrapper {
+    &::part(content) {
         backdrop-filter: blur(12px);
         --background: rgba(10, 10, 10, 0.2);
 
@@ -717,7 +718,7 @@ body.core-iframe-fullscreen ion-router-outlet {
     --ion-safe-area-left: 0px;
     --ion-safe-area-right: 0px;
 
-    .modal-wrapper {
+    &::part(content) {
         @include margin-horizontal(var(--modal-lateral-margin), null);
 
         position: absolute;
@@ -729,7 +730,7 @@ body.core-iframe-fullscreen ion-router-outlet {
         box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
     }
 
-    ion-backdrop {
+    &::part(backdrop) {
         visibility: visible;
     }
 
@@ -740,10 +741,10 @@ body.core-iframe-fullscreen ion-router-outlet {
 
 .core-modal-transparent-no-filter {
     @extend .core-modal-transparent;
-    ion-backdrop {
+    &::part(backdrop) {
         backdrop-filter: none;
     }
-    .modal-wrapper {
+    &::part(content) {
         backdrop-filter: none;
     }
 }
@@ -977,6 +978,15 @@ ion-content.limited-width > :not([slot]) {
     min-height: 100%;
 }
 
+.limited-width > core-loading:not([slot]),
+.menu > core-loading:not([slot]) {
+    &.core-loading-loaded {
+        --contents-display: flex;
+        flex-direction: column;
+    }
+    min-height: 100%;
+}
+
 ion-toolbar h1 img.core-bar-button-image,
 ion-toolbar h1 .core-bar-button-image img {
     padding: 4px;
@@ -1013,15 +1023,18 @@ ion-action-sheet.md {
 ion-radio,
 input[type=radio],
 .select-alert.ios .alert-radio-icon {
-    --color: var(--text-color);
-    --color-checked: var(--color);
     --border-radius: 50%;
     --border-width: 2px;
     --outer-border-width: 2px;
     --border-style: solid;
-    --inner-border-radius: 50%;
     --size: 20px;
+
+    &:not(.ion-color) {
+        --color: var(--text-color);
+        --color-checked: var(--color);
+    }
 }
+
 
 .ios ion-radio,
 .ios input[type=radio],
@@ -1031,10 +1044,10 @@ input[type=radio],
 }
 
 .ios ion-radio {
-    width: var(--size);
-    height: var(--size);
-
     &::part(container) {
+        width: var(--size);
+        height: var(--size);
+
         margin: 0px;
         border-radius: var(--border-radius);
         border-width: var(--outer-border-width);
@@ -1106,14 +1119,18 @@ input[type=radio],
 ion-checkbox,
 input[type=checkbox] {
     --border-radius: 2px;
-    --border-color-checked: var(--text-color);
-    --background-checked: var(--text-color);
-    --checkmark-color: var(--contrast-background);
     --border-width: 2px;
     --outer-border-width: 2px;
     --border-style: solid;
     --size: 20px;
+
+    &:not(.ion-color) {
+        --border-color-checked: var(--text-color);
+        --checkbox-background-checked: var(--text-color);
+        --checkmark-color: var(--contrast-background);
+    }
 }
+
 
 .ios input[type=checkbox] {
     --outer-border-width: 1px;
@@ -1124,22 +1141,33 @@ input[type=checkbox] {
 }
 
 // Select.
-ion-select::part(text) {
-    white-space: normal;
-}
-
-ion-select::part(icon) {
-    opacity: 1;
+ion-select {
+    &::part(text) {
+        white-space: normal;
+    }
+    &::part(icon) {
+        opacity: 1;
+    }
+    &::part(label) {
+        max-width: none;
+    }
 }
 
 ion-select-popover {
+    ion-list ion-radio-group ion-item.select-interface-option ion-radio.hydrated::part(container) {
+        opacity: 1;
+    }
+
+    ion-item {
+        font-size: 14px;
+    }
     ion-item.core-select-option-border-bottom {
         border-bottom: 1px solid var(--stroke);
     }
 
     ion-item.core-select-option-title {
         cursor: pointer;
-        ion-radio {
+        ion-radio::part(container) {
             display: none;
         }
     }
@@ -1318,7 +1346,7 @@ mark, .matchtext {
 }
 
 .core-scanning-qr {
-    .ion-page, .modal-wrapper {
+    .ion-page, ion-modal::part(content) {
         background-color: transparent !important;
         --background: transparent;
     }
@@ -1400,23 +1428,27 @@ audio.core-media-adapt-width {
     width: 100%;
 }
 
-ion-item {
-    font-size: var(--text-size);
+ion-item.item-lines-default {
     --inner-border-width: 0px;
-}
-
-ion-item.item-lines-full {
-    --inner-border-width: 0px;
-    --border-width: 0 0 1px 0;
-}
-
-ion-item.item-lines-inset {
-    --inner-border-width: 1px;
     --border-width: 0px;
 }
 
-ion-item.item-input.ios {
+ion-item.ion-valid,
+ion-item.ion-invalid {
     --inner-border-width: 0 0 1px 0;
+
+    &.ion-touched {
+        &.ion-invalid {
+            --ion-item-border-color: var(--highlight-color-invalid);
+            --highlight-background: var(--ion-item-border-color);
+            --border-color: var(--ion-item-border-color);
+        }
+        &.ion-valid {
+            --ion-item-border-color: var(--highlight-color-valid);
+            --highlight-background: var(--ion-item-border-color);
+            --border-color: var(--ion-item-border-color);
+        }
+    }
 }
 
 // Fake item.
@@ -1585,37 +1617,6 @@ ion-item.item-input.item-multiple-inputs {
     }
 }
 
-// Focus highlight for accessibility.
-.ion-focused:not(.item-multiple-inputs):not(:focus),
-ion-input.has-focus,
-ion-card:focus {
-    @include core-focus();
-}
-.ion-focused.item-multiple-inputs,
-.ion-focused.ion-activatable {
-    ion-toggle:focus-within,
-    ion-select:focus-within,
-    ion-checkbox:focus-within,
-    ion-radio:focus-within {
-        @include core-focus();
-    }
-}
-
-// Treat cases where there's a focusable element inside an item, like a button.
-ion-item.item-input:not(.item-multiple-inputs):not(:focus),
-ion-item.item-has-focus:not(.item-multiple-inputs):not(:focus),
-ion-item.item-input ion-input.has-focus {
-    position: relative;
-    &::after {
-        box-shadow: revert;
-        opacity: revert;
-        z-index: revert;
-    }
-    .item-highlight, .item-inner-highlight {
-        position: unset;
-    }
-}
-
 ion-item-divider.item,
 ion-item.item.divider {
     min-height: var(--min-height);
@@ -1650,7 +1651,44 @@ ion-item.item {
 // Change default outline.
 :focus-visible {
     @include core-focus-style();
+    border-radius: inherit;
     outline: none;
+}
+
+// Focus highlight for accessibility.
+.ion-focused:not(.item-multiple-inputs):not(:focus),
+ion-input.has-focus,
+ion-card:focus {
+    @include core-focus();
+
+    :focus-visible,
+    .clickable:focus {
+        box-shadow: none;
+    }
+}
+
+.ion-focused.item-multiple-inputs {
+    ion-toggle:focus-within,
+    ion-select:focus-within,
+    ion-checkbox:focus-within,
+    ion-radio:focus-within {
+        @include core-focus();
+    }
+}
+
+// Treat cases where there's a focusable element inside an item, like a button.
+ion-item.item-input:not(.item-multiple-inputs):not(:focus),
+ion-item.item-has-focus:not(.item-multiple-inputs):not(:focus),
+ion-item.item-input ion-input.has-focus {
+    position: relative;
+    &::after {
+        box-shadow: revert;
+        opacity: revert;
+        z-index: revert;
+    }
+    .item-highlight, .item-inner-highlight {
+        position: unset;
+    }
 }
 
 textarea, button, select, input, a, .clickable {
@@ -1658,10 +1696,6 @@ textarea, button, select, input, a, .clickable {
         @include core-focus-style();
         outline: none;
     }
-}
-
-.ion-focused:not(.item-multiple-inputs):not(:focus) .clickable:focus {
-    box-shadow: none;
 }
 
 ion-loading:focus-visible,
@@ -1672,16 +1706,16 @@ ion-modal:focus-visible {
     border-radius: 0;
 }
 
-input {
-    --placeholder-color: var(--ion-placeholder-color);
-    --placeholder-opacity: .85;
-}
-
 ion-input .native-input {
     &:focus, &:focus-visible {
         box-shadow: none;
         outline: none;
     }
+}
+
+input {
+    --placeholder-color: var(--ion-placeholder-color);
+    --placeholder-opacity: .85;
 }
 
 // Disable scroll on parent ion contents to enabled PTR on the ones inside the splitview. See split-view component for more info.
@@ -1807,13 +1841,53 @@ ion-header.no-title {
         flex-direction: column;
         flex-grow: 1;
 
-        ion-slides {
+        swiper-container {
             flex-grow: 1;
             max-width: 100%;
         }
     }
+}
 
+swiper-container {
+    --swiper-theme-color: var(--ion-color-primary, #3880ff);
+    --swiper-pagination-bullet-inactive-color: var(--ion-color-step-200, #cccccc);
+    --swiper-pagination-color: var(--swiper-theme-color);
+    --swiper-pagination-progressbar-bg-color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.25);
+    --swiper-scrollbar-bg-color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.1);
+    --swiper-scrollbar-drag-bg-color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.5);
+    width: 100%;
+    max-width: 100%;
+    max-height: 100vh;
+    // CSS Grid/Flexbox bug size workaround
+    // @see https://github.com/kenwheeler/slick/issues/982
+    // @see https://github.com/nolimits4web/swiper/issues/3599
+    min-height: 0;
+    min-width: 0;
 
+    swiper-slide {
+        display: flex;
+        position: relative;
+
+        flex-direction: column;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+
+        width: 100%;
+        height: 100%;
+
+        font-size: 18px;
+
+        text-align: center;
+        box-sizing: border-box;
+
+        img {
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            max-height: 100%;
+        }
+    }
 }
 
 .has-spacer,
@@ -1876,6 +1950,9 @@ ion-modal {
             --border-radius: var(--modal-radius);
         }
     }
+    &.ion-datetime-button-overlay {
+        --border-radius: var(--modal-radius);
+    }
 
     &.core-modal-lateral,
     &.core-modal-fullscreen {
@@ -1887,14 +1964,14 @@ ion-modal {
         --box-shadow: none !important;
         pointer-events: none;
 
-        ion-backdrop {
+        &::part(backdrop) {
             display: none;
         }
     }
 }
 
 ion-popover {
-    .popover-wrapper .popover-content {
+    &::part(content) {
         border-radius: var(--modal-radius);
     }
     &.md {
@@ -1903,7 +1980,7 @@ ion-popover {
 
         // Never show backdrop on popovers on Android
         // @todo Apply box shadow on ios and make it transparent too. The main problem is the box arrow.
-        ion-backdrop {
+        &::part(backdrop) {
             background: transparent;
         }
     }
@@ -1925,4 +2002,30 @@ ion-popover {
     overflow: initial;
     inset: initial;
     color: initial;
+}
+
+/**
+ * https://github.com/ionic-team/ionic-framework/blob/6ffbdbb3b2b69290cf25753d535bc7483bd7c6e8/BREAKING.md#css-utilities
+ */
+[hidden] {
+    display: none !important;
+}
+
+// Ion Datetime
+ion-item.item-label-stacked ion-datetime-button {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    align-self: self-end;
+}
+
+// Development styles. Most of them temporary.
+html.development {
+    ion-checkbox.legacy-checkbox,
+    ion-radio.legacy-radio,
+    ion-select.legacy-select,
+    ion-toggle.legacy-toggle,
+    ion-textarea.legacy-textarea,
+    ion-input.legacy-input {
+        background: red !important;
+    }
 }

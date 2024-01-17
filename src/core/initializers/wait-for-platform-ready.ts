@@ -14,6 +14,9 @@
 
 import { CorePlatform } from '@services/platform';
 
+/**
+ * Initializes the application when the CorePlatform is ready.
+ */
 export default async function(): Promise<void> {
     await CorePlatform.ready();
 }

@@ -16,7 +16,7 @@ import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CanLeaveGuard } from '@guards/can-leave';
+import { canLeaveGuard } from '@guards/can-leave';
 import { CoreScreen } from '@services/screen';
 import { AddonModAssignComponentsModule } from './components/components.module';
 import { AddonModAssignEditPage } from './pages/edit/edit';
@@ -32,7 +32,7 @@ const commonRoutes: Routes = [
     {
         path: ':courseId/:cmId/edit',
         component: AddonModAssignEditPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
 ];
 
@@ -45,7 +45,7 @@ const mobileRoutes: Routes = [
     {
         path: ':courseId/:cmId/submission/:submitId',
         component: AddonModAssignSubmissionReviewPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
 ];
 
@@ -58,7 +58,7 @@ const tabletRoutes: Routes = [
             {
                 path: ':submitId',
                 component: AddonModAssignSubmissionReviewPage,
-                canDeactivate: [CanLeaveGuard],
+                canDeactivate: [canLeaveGuard],
             },
         ],
     },

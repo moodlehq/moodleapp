@@ -13,16 +13,15 @@
         </ion-label>
         <div slot="end" class="flex-row">
             <core-download-refresh [status]="state" [enabled]="canDownload" [loading]="isDownloading" [canTrustDownload]="!alwaysDownload"
-                (action)="download()">
-            </core-download-refresh>
+                (action)="download()" />
 
             <ion-button fill="clear" *ngIf="isDownloaded && isIOS" (click)="openFile($event, true)" [title]="openButtonLabel | translate">
-                <ion-icon slot="icon-only" [name]="openButtonIcon" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" [name]="openButtonIcon" aria-hidden="true" />
             </ion-button>
 
             <ion-button fill="clear" *ngIf="!isDownloading && canDelete" (click)="delete($event)"
                 [attr.aria-label]="'core.delete' | translate" color="danger">
-                <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true" />
             </ion-button>
         </div>
     </ion-item>

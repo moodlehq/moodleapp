@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.messages.messages' | translate }}</h1>
@@ -10,7 +10,7 @@
 </ion-header>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!preferencesLoaded" (ionRefresh)="refreshPreferences($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="preferencesLoaded">
         <!-- General settings. -->
@@ -22,21 +22,18 @@
                     </ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p>{{ 'addon.messages.useentertosend' | translate }}</p>
-                    </ion-label>
-                    <ion-toggle [(ngModel)]="sendOnEnter" (ngModelChange)="sendOnEnterChanged()" slot="end"></ion-toggle>
+                    <ion-toggle [(ngModel)]="sendOnEnter" (ngModelChange)="sendOnEnterChanged()">
+                        {{ 'addon.messages.useentertosend' | translate }}
+                    </ion-toggle>
                 </ion-item>
             </ion-list>
         </ion-card>
 
         <!-- Contactable privacy. -->
         <ion-card>
-            <ion-item *ngIf="!advancedContactable">
-                <ion-label class="ion-text-wrap">
-                    <p>{{ 'addon.messages.blocknoncontacts' | translate }}</p>
-                </ion-label>
-                <ion-toggle [(ngModel)]="contactablePrivacy" (ngModelChange)="saveContactablePrivacy(contactablePrivacy)" slot="end">
+            <ion-item *ngIf="!advancedContactable" class="ion-text-wrap">
+                <ion-toggle [(ngModel)]="contactablePrivacy" (ngModelChange)="saveContactablePrivacy(contactablePrivacy)">
+                    {{ 'addon.messages.blocknoncontacts' | translate }}
                 </ion-toggle>
             </ion-item>
 
@@ -48,22 +45,19 @@
                         </ion-label>
                     </ion-item-divider>
                     <ion-item class="ion-text-wrap">
-                        <ion-label>
-                            <p>{{ 'addon.messages.contactableprivacy_onlycontacts' | translate }}</p>
-                        </ion-label>
-                        <ion-radio slot="start" [value]="onlyContactsValue"></ion-radio>
+                        <ion-radio labelPlacement="end" justify="start" [value]="onlyContactsValue">
+                            {{ 'addon.messages.contactableprivacy_onlycontacts' | translate }}
+                        </ion-radio>
                     </ion-item>
                     <ion-item class="ion-text-wrap">
-                        <ion-label>
-                            <p>{{ 'addon.messages.contactableprivacy_coursemember' | translate }}</p>
-                        </ion-label>
-                        <ion-radio slot="start" [value]="courseMemberValue"></ion-radio>
+                        <ion-radio labelPlacement="end" justify="start" [value]="courseMemberValue">
+                            {{ 'addon.messages.contactableprivacy_coursemember' | translate }}
+                        </ion-radio>
                     </ion-item>
                     <ion-item *ngIf="allowSiteMessaging" class="ion-text-wrap">
-                        <ion-label>
-                            <p>{{ 'addon.messages.contactableprivacy_site' | translate }}</p>
-                        </ion-label>
-                        <ion-radio slot="start" [value]="siteValue"></ion-radio>
+                        <ion-radio labelPlacement="end" justify="start" [value]="siteValue">
+                            {{ 'addon.messages.contactableprivacy_site' | translate }}
+                        </ion-radio>
                     </ion-item>
                 </ion-radio-group>
             </ion-list>
@@ -72,10 +66,10 @@
         <!-- Notifications. -->
         <ng-container *ngIf="preferences">
             <ng-container *ngIf="!groupMessagingEnabled">
-                <ng-container *ngTemplateOutlet="legacySettings; context: {preferences: preferences}"></ng-container>
+                <ng-container *ngTemplateOutlet="legacySettings; context: {preferences: preferences}" />
             </ng-container>
             <ng-container *ngIf="groupMessagingEnabled">
-                <ng-container *ngTemplateOutlet="settings; context: {preferences: preferences}"></ng-container>
+                <ng-container *ngTemplateOutlet="settings; context: {preferences: preferences}" />
             </ng-container>
         </ng-container>
     </core-loading>
@@ -109,8 +103,7 @@
                             <!-- If notifications enabled, show toggle. -->
                             <core-button-with-spinner *ngIf="!processor.locked" [loading]="notification['updating'+state]" slot="end">
                                 <ion-toggle [(ngModel)]="processor[state].checked"
-                                    (ngModelChange)="changePreferenceLegacy(notification, processor, state)">
-                                </ion-toggle>
+                                    (ngModelChange)="changePreferenceLegacy(notification, processor, state)" />
                             </core-button-with-spinner>
                             <span *ngIf="processor.locked && processor[state].checked" class="text-gray" slot="end">
                                 {{'core.settings.forced' | translate }}
@@ -145,8 +138,7 @@
                     <ng-container *ngIf="!preferences.disableall">
                         <!-- If notifications enabled, show toggle. -->
                         <core-button-with-spinner *ngIf="!processor.locked" [loading]="notification.updating" slot="end">
-                            <ion-toggle [(ngModel)]="processor.enabled" (ngModelChange)="changePreference(notification, processor)">
-                            </ion-toggle>
+                            <ion-toggle [(ngModel)]="processor.enabled" (ngModelChange)="changePreference(notification, processor)" />
                         </core-button-with-spinner>
                         <span class="text-gray" *ngIf="processor.locked" slot="end">
                             {{ processor.lockedmessage }}

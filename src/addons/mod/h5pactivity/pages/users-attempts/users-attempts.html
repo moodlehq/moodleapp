@@ -1,20 +1,19 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
                 <core-format-text *ngIf="h5pActivity" [text]="h5pActivity.name" contextLevel="module"
-                    [contextInstanceId]="h5pActivity.coursemodule" [courseId]="courseId">
-                </core-format-text>
+                    [contextInstanceId]="h5pActivity.coursemodule" [courseId]="courseId" />
             </h1>
         </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
         <ion-list *ngIf="users.length">
@@ -39,7 +38,7 @@
                     <ion-row class="ion-align-items-center">
                         <ion-col class="ion-text-center" size="4">
                             <p>
-                                <core-user-avatar [user]="user.user" [courseId]="courseId"></core-user-avatar>
+                                <core-user-avatar [user]="user.user" [courseId]="courseId" />
                             </p>
                             {{ user.user.fullname }}
                         </ion-col>
@@ -65,10 +64,8 @@
 
         <!-- No attempts. -->
         <core-empty-box *ngIf="!users.length && !canLoadMore" icon="fas-chart-bar"
-            [message]="'addon.mod_h5pactivity.noparticipants' | translate">
-        </core-empty-box>
+            [message]="'addon.mod_h5pactivity.noparticipants' | translate" />
 
-        <core-infinite-loading [enabled]="loaded && canLoadMore" [error]="fetchMoreUsersFailed" (action)="fetchMoreUsers($event)">
-        </core-infinite-loading>
+        <core-infinite-loading [enabled]="loaded && canLoadMore" [error]="fetchMoreUsersFailed" (action)="fetchMoreUsers($event)" />
     </core-loading>
 </ion-content>

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TestingBehatDomUtils } from './behat-dom';
+import { TestingBehatDomUtils, TestingBehatDomUtilsService } from './behat-dom';
 import { TestingBehatBlocking } from './behat-blocking';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
 import { ONBOARDING_DONE } from '@features/login/constants';
@@ -29,7 +29,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesProvider } from '@services/sites';
 import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
 import { CoreSwipeNavigationDirective } from '@directives/swipe-navigation';
-import { IonSlides } from '@ionic/angular';
+import { Swiper } from 'swiper';
 
 /**
  * Behat runtime servive with public API.
@@ -61,6 +61,10 @@ export class TestingBehatRuntimeService {
 
     get navigator(): CoreNavigatorService {
         return CoreNavigator.instance;
+    }
+
+    get domUtils(): TestingBehatDomUtilsService {
+        return TestingBehatDomUtils.instance;
     }
 
     /**
@@ -186,17 +190,20 @@ export class TestingBehatRuntimeService {
     closePopup(): string {
         this.log('Action - Close popup');
 
-        let backdrops = Array.from(document.querySelectorAll('ion-backdrop'));
-        backdrops = backdrops.filter((backdrop) => !!backdrop.offsetParent);
+        const backdrops = Array
+            .from(document.querySelectorAll('ion-popover, ion-modal'))
+            .map(popover => popover.shadowRoot?.querySelector('ion-backdrop'))
+            .filter(backdrop => !!backdrop);
 
         if (!backdrops.length) {
             return 'ERROR: Could not find backdrop';
         }
+
         if (backdrops.length > 1) {
             return 'ERROR: Found too many backdrops ('+backdrops.length+')';
         }
-        const backdrop = backdrops[0];
-        backdrop.click();
+
+        backdrops[0]?.click();
 
         // Mark busy until the click finishes processing.
         TestingBehatBlocking.delay();
@@ -323,7 +330,7 @@ export class TestingBehatRuntimeService {
                 return 'ERROR: No element matches locator to find.';
             }
 
-            return TestingBehatDomUtils.isElementSelected(element, document.body) ? 'YES' : 'NO';
+            return TestingBehatDomUtils.isElementSelected(element) ? 'YES' : 'NO';
         } catch (error) {
             return 'ERROR: ' + error.message;
         }
@@ -404,17 +411,13 @@ export class TestingBehatRuntimeService {
         this.log('Action - pullToRefresh');
 
         try {
-            // 'el' is protected, but there's no other way to trigger refresh programatically.
-            const ionRefresher = this.getAngularInstance<{ el: HTMLIonRefresherElement }>(
-                'ion-refresher',
-                'IonRefresher',
-            );
+            const ionRefresher = this.getElement('ion-refresher');
 
             if (!ionRefresher) {
                 return 'ERROR: It\'s not possible to pull to refresh the current page.';
             }
 
-            ionRefresher.el.dispatchEvent(new CustomEvent('ionRefresh'));
+            ionRefresher.dispatchEvent(new CustomEvent('ionRefresh'));
 
             return 'OK';
         } catch (error) {
@@ -469,11 +472,22 @@ export class TestingBehatRuntimeService {
                 ?? options.find(option => option.text === value)?.value
                 ?? options.find(option => option.text.includes(value))?.value
                 ?? value;
+        } else if (input.tagName === 'ION-SELECT') {
+            const options = Array.from(input.querySelectorAll('ion-select-option'));
+
+            value = options.find(option => option.value?.toString() === value)?.textContent?.trim()
+                ?? options.find(option => option.textContent?.trim() === value)?.textContent?.trim()
+                ?? options.find(option => option.textContent?.includes(value))?.textContent?.trim()
+                ?? value;
         }
 
-        await TestingBehatDomUtils.setElementValue(input, value);
+        try {
+            await TestingBehatDomUtils.setInputValue(input, value);
 
-        return 'OK';
+            return 'OK';
+        } catch (error) {
+            return `ERROR: ${error.message ?? 'Unknown error'}`;
+        }
     }
 
     /**
@@ -509,32 +523,28 @@ export class TestingBehatRuntimeService {
      * @returns Value.
      */
     protected getFieldValue(element: HTMLElement | HTMLInputElement): string {
+        if (element.tagName === 'ION-DATETIME-BUTTON' && element.shadowRoot) {
+            return Array.from(element.shadowRoot.querySelectorAll('button')).map(button => button.innerText).join(' ');
+        }
+
         if (element.tagName === 'ION-DATETIME') {
-            // ion-datetime's value is a timestamp in ISO format. Use the text displayed to the user instead.
-            const dateTimeTextElement = element.shadowRoot?.querySelector<HTMLElement>('.datetime-text');
-            if (dateTimeTextElement) {
-                return dateTimeTextElement.innerText;
-            }
+            const value = 'value' in element ? element.value : element.innerText;
+
+            // Remove seconds from the value to ensure stability on tests. It could be improved using moment parsing if needed.
+            return value.substring(0, value.length - 3);
         }
 
         return 'value' in element ? element.value : element.innerText;
     }
 
     /**
-     * Get an Angular component instance.
+     * Get element instance.
      *
-     * @param selector Element selector
-     * @param className Constructor class name
+     * @param selector Element selector.
      * @param referenceLocator The locator to the reference element to start looking for. If not specified, document body.
-     * @returns Component instance
+     * @returns Element instance.
      */
-    getAngularInstance<T = unknown>(
-        selector: string,
-        className: string,
-        referenceLocator?: TestingBehatElementLocator,
-    ): T | null {
-        this.log('Action - Get Angular instance ' + selector + ', ' + className, referenceLocator);
-
+    private getElement<T = Element>(selector: string, referenceLocator?: TestingBehatElementLocator): T | null {
         let startingElement: HTMLElement | undefined = document.body;
         let queryPrefix = '';
 
@@ -552,15 +562,8 @@ export class TestingBehatRuntimeService {
             queryPrefix = '.ion-page:not(.ion-page-hidden) ';
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const activeElement = Array.from(startingElement.querySelectorAll<any>(`${queryPrefix}${selector}`)).pop() ??
-            startingElement.closest(selector);
-
-        if (!activeElement || !activeElement.__ngContext__) {
-            return null;
-        }
-
-        return activeElement.__ngContext__.find(node => node?.constructor?.name === className);
+        return Array.from(startingElement.querySelectorAll(`${queryPrefix}${selector}`)).pop() as T
+            ?? startingElement.closest(selector) as T;
     }
 
     /**
@@ -631,27 +634,27 @@ export class TestingBehatRuntimeService {
         this.log('Action - Swipe', { direction, locator });
 
         if (locator) {
-            // Locator specified, try to find ion-slides first.
-            const instance = this.getAngularInstance<IonSlides>('ion-slides', 'IonSlides', locator);
-            if (instance) {
-                direction === 'left' ? instance.slideNext() : instance.slidePrev();
+            // Locator specified, try to find swiper-container first.
+            const swiperContainer = this.getElement<{ swiper: Swiper }>('swiper-container', locator);
+
+            if (swiperContainer) {
+                direction === 'left' ? swiperContainer.swiper.slideNext() : swiperContainer.swiper.slidePrev();
 
                 return 'OK';
             }
         }
 
-        // No locator specified or ion-slides not found, search swipe navigation now.
-        const instance = this.getAngularInstance<CoreSwipeNavigationDirective>(
-            'ion-content',
-            'CoreSwipeNavigationDirective',
+        // No locator specified or swiper-container not found, search swipe navigation now.
+        const ionContent = this.getElement<{ swipeNavigation: CoreSwipeNavigationDirective }>(
+            'ion-content.uses-swipe-navigation',
             locator,
         );
 
-        if (!instance) {
+        if (!ionContent) {
             return 'ERROR: Element to swipe not found.';
         }
 
-        direction === 'left' ? instance.swipeLeft() : instance.swipeRight();
+        direction === 'left' ? ionContent.swipeNavigation.swipeLeft() : ionContent.swipeNavigation.swipeRight();
 
         return 'OK';
     }

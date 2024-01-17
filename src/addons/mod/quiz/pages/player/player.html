@@ -1,13 +1,12 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
                 <core-format-text *ngIf="quiz" [text]="quiz.name" contextLevel="module" [contextInstanceId]="quiz.coursemodule"
-                    [courseId]="courseId">
-                </core-format-text>
+                    [courseId]="courseId" />
             </h1>
         </ion-title>
 
@@ -15,16 +14,15 @@
             <ion-button fill="clear" id="addon-mod_quiz-connection-error-button" [hidden]="!autoSaveError"
                 (click)="showConnectionError($event)" [attr.aria-label]="'addon.mod_quiz.connectionerror' | translate"
                 aria-haspopup="dialog">
-                <ion-icon name="fas-circle-exclamation" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-circle-exclamation" slot="icon-only" aria-hidden="true" />
             </ion-button>
             <ion-button *ngIf="navigation.length" [attr.aria-label]="'addon.mod_quiz.opentoc' | translate" (click)="openNavigation()">
-                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
     <core-timer *ngIf="loaded && endTime && questions.length && !quizAborted && !showSummary" [endTime]="endTime" (finished)="timeUp()"
-        [timerText]="'addon.mod_quiz.timeleft' | translate" [hiddable]="true">
-    </core-timer>
+        [timerText]="'addon.mod_quiz.timeleft' | translate" [hiddable]="true" />
 </ion-header>
 <ion-content class="limited-width">
     <core-loading [hideUntil]="loaded" class="has-spacer">
@@ -58,8 +56,7 @@
                     <core-question class="ion-text-wrap" [question]="question" [component]="component" [componentId]="cmId"
                         [attemptId]="attempt!.id" [usageId]="attempt!.uniqueid" [offlineEnabled]="offline" contextLevel="module"
                         [contextInstanceId]="cmId" [courseId]="courseId" [preferredBehaviour]="quiz!.preferredbehaviour" [review]="false"
-                        (onAbort)="abortQuiz()" (buttonClicked)="behaviourButtonClicked($event)">
-                    </core-question>
+                        (onAbort)="abortQuiz()" (buttonClicked)="behaviourButtonClicked($event)" />
                 </ion-card>
             </div>
         </form>
@@ -68,16 +65,16 @@
         <ion-row *ngIf="questions.length && !quizAborted && !showSummary" class="spacer-top">
             <ion-col *ngIf="previousPage >= 0">
                 <ion-button expand="block" fill="outline" (click)="changePage(previousPage)" class="ion-text-wrap">
-                    <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true" />
                     {{ 'core.previous' | translate }}
                 </ion-button>
             </ion-col>
             <ion-col *ngIf="nextPage >= -1">
                 <ion-button expand="block" (click)="changePage(nextPage)" class="ion-text-wrap" *ngIf="nextPage > 0">
                     {{ 'core.next' | translate }}
-                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
                 </ion-button>
-                <ion-button expand="block" (click)="changePage(nextPage)" class="ion-text-wrap" *ngIf="nextPage == -1">
+                <ion-button expand="block" (click)="changePage(nextPage)" class="ion-text-wrap" *ngIf="nextPage === -1">
                     {{ 'core.submit' | translate }}
                 </ion-button>
             </ion-col>
@@ -125,8 +122,7 @@
             </ion-item>
 
             <!-- Time left (if quiz is timed). -->
-            <core-timer *ngIf="endTime" [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate">
-            </core-timer>
+            <core-timer *ngIf="endTime" [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate" />
 
             <!-- List of messages explaining why the quiz cannot be submitted. -->
             <ion-item class="ion-text-wrap" *ngIf="preventSubmitMessages.length">
@@ -153,7 +149,7 @@
                 <ion-button *ngIf="preventSubmitMessages.length" expand="block" class="ion-margin ion-text-wrap" [href]="moduleUrl"
                     core-link [showBrowserWarning]="false">
                     {{ 'core.openinbrowser' | translate }}
-                    <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
                 </ion-button>
 
                 <!-- Button to submit the quiz. -->

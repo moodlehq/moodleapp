@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreViewerImageComponent } from './image/image';
@@ -33,5 +33,6 @@ import { CoreViewerTextComponent } from './text/text';
         CoreViewerQRScannerComponent,
         CoreViewerTextComponent,
     ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CoreViewerComponentsModule {}

@@ -29,6 +29,7 @@ import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
 import { CoreUserHelper } from './user-helper';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CoreConstants } from '@/core/constants';
 
 const ROOT_CACHE_KEY = 'mmUser:';
 
@@ -283,6 +284,24 @@ export class CoreUserProvider {
                 throw error;
             }
         }
+    }
+
+    /**
+     * Get the starting week day based on the user preference.
+     *
+     * @returns Starting week day.
+     */
+    async getStartingWeekDay(): Promise<number> {
+        const preference = await CoreUtils.ignoreErrors(this.getUserPreference('calendar_startwday'));
+
+        if (preference && !isNaN(Number(preference))) {
+            return Number(preference);
+        }
+
+        const defaultValue = Number(CoreSites.getCurrentSite()?.getStoredConfig('calendar_startwday') ??
+            Translate.instant('core.firstdayofweek'));
+
+        return !isNaN(defaultValue) ? defaultValue % 7 : CoreConstants.CALENDAR_DEFAULT_STARTING_WEEKDAY;
     }
 
     /**

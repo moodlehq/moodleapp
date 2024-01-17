@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Params } from '@angular/router';
 
-import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
+import { NavigationOptions } from '@ionic/angular/common/providers/nav-controller';
 
 import { CoreConstants } from '@/core/constants';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -136,7 +136,7 @@ export class CoreNavigatorService {
             animated: options.animated,
             animation: options.animation,
             animationDirection: options.animationDirection,
-            queryParams: CoreObject.isEmpty(options.params ?? {}) ? null : CoreObject.withoutEmpty(options.params),
+            queryParams: CoreObject.isEmpty(options.params ?? {}) ? null : CoreObject.withoutEmpty(options.params ?? {}),
             relativeTo: path.startsWith('/') ? null : this.getCurrentRoute(),
             replaceUrl: options.replace,
         });
@@ -437,8 +437,8 @@ export class CoreNavigatorService {
      *
      * @returns Promise resolved when done.
      */
-    back(): Promise<void> {
-        return NavController.pop();
+    async back(): Promise<void> {
+        await NavController.pop();
     }
 
     /**

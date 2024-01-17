@@ -13,10 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { InAppBrowserObject, InAppBrowserOptions } from '@ionic-native/in-app-browser';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { InAppBrowserObject, InAppBrowserOptions } from '@awesome-cordova-plugins/in-app-browser';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { Subscription } from 'rxjs';
-
 import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CoreLang } from '@services/lang';
@@ -24,7 +23,7 @@ import { CoreWS } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
-import { makeSingleton, Clipboard, InAppBrowser, FileOpener, WebIntent, QRScanner, Translate, NgZone } from '@singletons';
+import { makeSingleton, Clipboard, InAppBrowser, FileOpener, WebIntent, Translate, NgZone } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreViewerQRScannerComponent } from '@features/viewer/components/qr-scanner/qr-scanner';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
@@ -40,6 +39,7 @@ import { CoreSites } from '@services/sites';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrlUtils } from './url';
+import { QRScanner } from '@features/native/plugins';
 
 export type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -1059,7 +1059,7 @@ export class CoreUtilsProvider {
 
     /**
      * Open a URL using InAppBrowser.
-     * Do not use for files, refer to {@link openFile}.
+     * Do not use for files, refer to {@link CoreUtilsProvider.openFile}.
      *
      * @param url The URL to open.
      * @param options Override default options passed to InAppBrowser.
@@ -1176,7 +1176,7 @@ export class CoreUtilsProvider {
 
     /**
      * Open a URL using a browser.
-     * Do not use for files, refer to {@link openFile}.
+     * Do not use for files, refer to {@link CoreUtilsProvider.openFile}.
      *
      * @param url The URL to open.
      * @param options Options.
@@ -1405,7 +1405,7 @@ export class CoreUtilsProvider {
      * @param enumeration Enumeration object.
      * @returns Keys of the enumeration.
      */
-    enumKeys<O, K extends keyof O = keyof O>(enumeration: O): K[] {
+    enumKeys<O extends object, K extends keyof O = keyof O>(enumeration: O): K[] {
         return Object.keys(enumeration).filter(k => Number.isNaN(+k)) as K[];
     }
 

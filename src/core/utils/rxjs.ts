@@ -13,9 +13,7 @@
 // limitations under the License.
 
 import { FormControl } from '@angular/forms';
-import { CoreError } from '@classes/errors/error';
-import { CoreSubscriptions } from '@singletons/subscriptions';
-import { BehaviorSubject, Observable, of, OperatorFunction, Subscription } from 'rxjs';
+import { Observable, of, OperatorFunction, Subscription } from 'rxjs';
 import { catchError, filter } from 'rxjs/operators';
 
 /**
@@ -24,10 +22,10 @@ import { catchError, filter } from 'rxjs/operators';
  * @param control Form control.
  * @returns Form control value observable.
  */
-export function formControlValue<T = unknown>(control: FormControl): Observable<T> {
+export function formControlValue<T = unknown>(control: FormControl<T | null>): Observable<T> {
     return control.valueChanges.pipe(
         startWithOnSubscribed(() => control.value),
-        filter(value => value !== null),
+        filter((value): value is T => value !== null),
     );
 }
 
@@ -79,27 +77,8 @@ export function asyncObservable<T>(createObservable: () => Promise<Observable<T>
     });
 }
 
-/**
- * Create a Promise resolved with the first value returned from an observable. The difference with toPromise is that
- * this function returns the value as soon as it's emitted, it doesn't wait until the observable completes.
- * This function can be removed when the app starts using rxjs v7.
- *
- * @param observable Observable.
- * @returns Promise resolved with the first value returned.
- */
-export function firstValueFrom<T>(observable: Observable<T>): Promise<T> {
-    return new Promise((resolve, reject) => {
-        CoreSubscriptions.once(observable, resolve, reject, () => {
-            // Subscription is completed, check if we can get its value.
-            if (observable instanceof BehaviorSubject) {
-                resolve(observable.getValue());
-            }
-
-            reject(new CoreError('Couldn\'t get first value from observable because it\'s already completed'));
-        });
-    });
-}
-
+export function ignoreErrors<Result>(observable: Observable<Result>): Observable<Result | undefined>;
+export function ignoreErrors<Result, Fallback>(observable: Observable<Result>, fallback: Fallback): Observable<Result | Fallback>;
 /**
  * Ignore errors from an observable, returning a certain value instead.
  *
@@ -107,8 +86,6 @@ export function firstValueFrom<T>(observable: Observable<T>): Promise<T> {
  * @param fallback Value to return if the observer errors.
  * @returns Observable with ignored errors, returning the fallback result if provided.
  */
-export function ignoreErrors<Result>(observable: Observable<Result>): Observable<Result | undefined>;
-export function ignoreErrors<Result, Fallback>(observable: Observable<Result>, fallback: Fallback): Observable<Result | Fallback>;
 export function ignoreErrors<Result, Fallback>(
     observable: Observable<Result>,
     fallback?: Fallback,

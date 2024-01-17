@@ -19,10 +19,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
-import { Translate } from '@singletons';
 import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-profilefield-component';
-import { CoreLang } from '@services/lang';
-import { CoreAppProvider } from '@services/app';
 
 /**
  * Directive to render a datetime user profile field.
@@ -31,15 +28,13 @@ import { CoreAppProvider } from '@services/app';
     selector: 'addon-user-profile-field-datetime',
     templateUrl: 'addon-user-profile-field-datetime.html',
 })
-export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileFieldBaseComponent {
+export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileFieldBaseComponent<string | undefined> {
 
-    format?: string;
+    ionDateTimePresentation = 'date';
     min?: string;
     max?: string;
     valueNumber?: number;
     displayValue?: string;
-    monthNames?: string[];
-    displayTimezone?: string;
 
     /**
      * Init the data when the field is meant to be displayed without editing.
@@ -64,16 +59,11 @@ export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileField
     protected initForEdit(field: AuthEmailSignupProfileField): void {
         super.initForEdit(field);
 
-        this.monthNames = CoreLang.getMonthNames();
-        this.displayTimezone = CoreAppProvider.getForcedTimezone();
-
         // Check if it's only date or it has time too.
         const hasTime = CoreUtils.isTrueOrOne(field.param3);
 
         // Calculate format to use.
-        this.format = CoreTimeUtils.fixFormatForDatetime(CoreTimeUtils.convertPHPToMoment(
-            Translate.instant('core.' + (hasTime ? 'strftimedatetime' : 'strftimedate')),
-        ));
+        this.ionDateTimePresentation = hasTime ? 'date-time' : 'date';
 
         // Check min value.
         if (field.param1 && Number(field.param1)) {
@@ -94,13 +84,16 @@ export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileField
      *
      * @returns Form control.
      */
-    protected createFormControl(field: AuthEmailSignupProfileField): FormControl {
+    protected createFormControl(field: AuthEmailSignupProfileField): FormControl<string | undefined> {
         const formData = {
             value: field.defaultdata != '0' ? field.defaultdata : undefined,
             disabled: this.disabled,
         };
 
-        return new FormControl(formData, this.required && !field.locked ? Validators.required : null);
+        return new FormControl(formData, {
+            validators: this.required && !field.locked ? Validators.required : null,
+            nonNullable: true,
+        });
     }
 
 }

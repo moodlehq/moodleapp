@@ -7,8 +7,9 @@
 
     <ion-radio-group [(ngModel)]="question.behaviourCertaintySelected" [name]="question.behaviourCertaintyOptions[0].name">
         <ion-item class="ion-text-wrap" *ngFor="let option of question.behaviourCertaintyOptions">
-            <ion-label>{{ option.text }}</ion-label>
-            <ion-radio slot="end" id="{{option.id}}" [value]="option.value" [disabled]="option.disabled"></ion-radio>
+            <ion-radio id="{{option.id}}" [value]="option.value" [disabled]="option.disabled">
+                {{ option.text }}
+            </ion-radio>
         </ion-item>
     </ion-radio-group>
 

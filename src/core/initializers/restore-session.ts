@@ -15,6 +15,9 @@
 import { CoreSites } from '@services/sites';
 import { CoreUpdateManager } from '@services/update-manager';
 
+/**
+ * Restores the session to the previous one so the user doesn't has to login everytime the app is started.
+ */
 export default async function(): Promise<void> {
     await CoreUpdateManager.donePromise;
 

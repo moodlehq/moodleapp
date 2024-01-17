@@ -161,7 +161,7 @@ Feature: Test signup in app
     And I set the field "Favourite food" to "Sushi" in the app
     And I press "Are you vegetarian?" in the app
     And I set the field "Birthday" to "1990-01-01" in the app
-    And I set the field "Date and time" to "2010-01-01 11:45" in the app
+    And I set the field "Date and time" to "2010-01-01T11:45" in the app
     And I set the field "Describe yourself" to "This is my description." in the app
     And I press "Create my new account" in the app
     Then I should find "An email should have been sent to your address" in the app

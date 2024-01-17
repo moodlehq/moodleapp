@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-declare module '!raw-loader!*' {
-    const contents: string;
+import { CoreIcons } from '@singletons/icons';
 
-    export = contents;
+/**
+ * Add custom icons to Ionicons.
+ */
+export default function(): void {
+    CoreIcons.addIconsToIonicons();
 }

@@ -14,6 +14,17 @@
 
 import { CorePlatform } from '@services/platform';
 import { CoreIframeUtils } from '@services/utils/iframe';
+import { WKUserScriptWindow } from 'cordova-plugin-wkuserscript';
+
+/**
+ * Check Whether the window object has WKUserScript set.
+ *
+ * @param window Window object.
+ * @returns Whether the window object has WKUserScript set.
+ */
+function isWKUserScriptWindow(window: object): window is WKUserScriptWindow {
+    return CorePlatform.isIOS() && 'WKUserScript' in window;
+}
 
 /**
  * Inject some scripts for iOS iframes.
@@ -21,7 +32,7 @@ import { CoreIframeUtils } from '@services/utils/iframe';
 export default async function(): Promise<void> {
     await CorePlatform.ready();
 
-    if (!CorePlatform.isIOS() || !('WKUserScript' in window)) {
+    if (!isWKUserScriptWindow(window)) {
         return;
     }
 

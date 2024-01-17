@@ -16,14 +16,14 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { AddonModForumComponentsModule } from '@addons/mod/forum/components/components.module';
-import { CanLeaveGuard } from '@guards/can-leave';
+import { canLeaveGuard } from '@guards/can-leave';
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModForumDiscussionPage } from '@addons/mod/forum/pages/discussion/discussion';
 
 const routes: Routes = [{
     path: '',
     component: AddonModForumDiscussionPage,
-    canDeactivate: [CanLeaveGuard],
+    canDeactivate: [canLeaveGuard],
 }];
 
 @NgModule({

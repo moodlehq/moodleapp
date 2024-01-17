@@ -1,22 +1,20 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" class="core-header-sitename">
-                </core-format-text>
+                <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" class="core-header-sitename" />
                 <img src="assets/img/top_logo.png" class="core-header-logo" [alt]="siteName">
             </h1>
         </ion-title>
         <ion-buttons slot="end">
-            <core-user-menu-button></core-user-menu-button>
+            <core-user-menu-button />
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <core-loading [hideUntil]="loaded">
-    <core-empty-box *ngIf="tabs.length == 0" icon="fas-house" [message]="'core.courses.nocourses' | translate"></core-empty-box>
+    <core-empty-box *ngIf="tabs.length === 0" icon="fas-house" [message]="'core.courses.nocourses' | translate" />
 </core-loading>
-<core-tabs-outlet *ngIf="tabs.length > 0" [hideUntil]="loaded" [tabs]="tabs" (ionChange)="tabSelected()">
-</core-tabs-outlet>
+<core-tabs-outlet *ngIf="tabs.length > 0" [hideUntil]="loaded" [tabs]="tabs" (ionChange)="tabSelected()" />

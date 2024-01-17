@@ -17,14 +17,13 @@ import {
     Injector,
     Component,
     NgModule,
-    Compiler,
-    ComponentFactory,
     ComponentRef,
-    NgModuleRef,
     NO_ERRORS_SCHEMA,
     Type,
+    Provider,
+    createNgModule,
+    ViewContainerRef,
 } from '@angular/core';
-import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import {
     ActionSheetController,
     AlertController,
@@ -34,6 +33,7 @@ import {
     ToastController,
 } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
+import { TranslatePipeForCompile } from '../pipes/translate';
 
 import { CoreLogger } from '@singletons/logger';
 import { CoreEvents } from '@singletons/events';
@@ -167,7 +167,6 @@ import { CoreAutoLogoutService } from '@features/autologout/services/autologout'
 export class CoreCompileProvider {
 
     protected logger: CoreLogger;
-    protected compiler: Compiler;
 
     // Other Ionic/Angular providers that don't depend on where they are injected.
     protected readonly OTHER_SERVICES: unknown[] = [
@@ -186,10 +185,8 @@ export class CoreCompileProvider {
         getWorkshopComponentModules,
     ];
 
-    constructor(protected injector: Injector, compilerFactory: JitCompilerFactory) {
+    constructor(protected injector: Injector) {
         this.logger = CoreLogger.getInstance('CoreCompileProvider');
-
-        this.compiler = compilerFactory.createCompiler();
     }
 
     /**
@@ -197,14 +194,19 @@ export class CoreCompileProvider {
      *
      * @param template The template of the component.
      * @param componentClass The JS class of the component.
+     * @param viewContainerRef View container reference to inject the component.
      * @param extraImports Extra imported modules if needed and not imported by this class.
-     * @returns Promise resolved with the factory to instantiate the component.
+     * @returns Promise resolved with the component reference.
      */
     async createAndCompileComponent<T = unknown>(
         template: string,
         componentClass: Type<T>,
+        viewContainerRef: ViewContainerRef,
         extraImports: any[] = [], // eslint-disable-line @typescript-eslint/no-explicit-any
-    ): Promise<ComponentFactory<T> | undefined> {
+    ): Promise<ComponentRef<T> | undefined> {
+        // Import the Angular compiler to be able to compile components in runtime.
+        await import('@angular/compiler');
+
         // Create the component using the template and the class.
         const component = Component({ template })(componentClass);
 
@@ -213,17 +215,24 @@ export class CoreCompileProvider {
             ...CoreArray.flatten(lazyImports),
             ...this.IMPORTS,
             ...extraImports,
+            TranslatePipeForCompile,
         ];
 
-        // Now create the module containing the component.
-        const module = NgModule({ imports, declarations: [component], schemas: [NO_ERRORS_SCHEMA] })(class {});
-
         try {
-            // Compile the module and the component.
-            const factories = await this.compiler.compileModuleAndAllComponentsAsync(module);
+            viewContainerRef.clear();
 
-            // Search and return the factory of the component we just created.
-            return factories.componentFactories.find(factory => factory.componentType == component);
+            // Now create the module containing the component.
+            const ngModuleRef = createNgModule(
+                NgModule({ imports, declarations: [component], schemas: [NO_ERRORS_SCHEMA] })(class {}),
+                this.injector,
+            );
+
+            return viewContainerRef.createComponent(
+                component,
+                {
+                    environmentInjector: ngModuleRef,
+                },
+            );
         } catch (error) {
             this.logger.error('Error compiling template', template);
             this.logger.error(error);
@@ -331,10 +340,10 @@ export class CoreCompileProvider {
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
         for (const i in providers) {
             const providerDef = providers[i];
-            if (typeof providerDef == 'function' && providerDef.name) {
+            if (typeof providerDef === 'function' && providerDef.name) {
                 try {
                     // Inject the provider to the instance. We use the class name as the property name.
-                    instance[providerDef.name.replace(/DelegateService$/, 'Delegate')] = this.injector.get(providerDef);
+                    instance[providerDef.name.replace(/DelegateService$/, 'Delegate')] = this.injector.get<Provider>(providerDef);
                 } catch (ex) {
                     this.logger.error('Error injecting provider', providerDef.name, ex);
                 }
@@ -405,29 +414,6 @@ export class CoreCompileProvider {
         return [
             ...ADDON_MOD_WORKSHOP_SERVICES,
         ];
-    }
-
-    /**
-     * Instantiate a dynamic component.
-     *
-     * @param template The template of the component.
-     * @param componentClass The JS class of the component.
-     * @param injector The injector to use. It's recommended to pass it so NavController and similar can be injected.
-     * @returns Promise resolved with the component instance.
-     */
-    async instantiateDynamicComponent<T = unknown>(
-        template: string,
-        componentClass: Type<T>,
-        injector?: Injector,
-    ): Promise<ComponentRef<T> | undefined> {
-        injector = injector || this.injector;
-
-        const factory = await this.createAndCompileComponent(template, componentClass);
-
-        if (factory) {
-            // Create and return the component.
-            return factory.create(injector, undefined, undefined, injector.get(NgModuleRef));
-        }
     }
 
 }

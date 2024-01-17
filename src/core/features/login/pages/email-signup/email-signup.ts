@@ -69,8 +69,8 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
     // Data for age verification.
     ageVerificationForm: FormGroup;
-    countryControl: FormControl;
-    signUpCountryControl?: FormControl;
+    countryControl: FormControl<string>;
+    signUpCountryControl?: FormControl<string>;
     isMinor = false; // Whether the user is minor age.
     ageDigitalConsentVerification?: boolean; // Whether the age verification is enabled.
     supportName?: string;
@@ -93,7 +93,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         this.ageVerificationForm = this.fb.group({
             age: ['', Validators.required],
         });
-        this.countryControl = this.fb.control('', Validators.required);
+        this.countryControl = this.fb.control('', { validators: Validators.required, nonNullable: true });
         this.ageVerificationForm.addControl('country', this.countryControl);
 
         // Create the signupForm with the basic controls. More controls will be added later.
@@ -105,15 +105,14 @@ export class CoreLoginEmailSignupPage implements OnInit {
         });
 
         // Setup validation errors.
-        this.usernameErrors = CoreLoginHelper.getErrorMessages('core.login.usernamerequired');
-        this.passwordErrors = CoreLoginHelper.getErrorMessages('core.login.passwordrequired');
-        this.emailErrors = CoreLoginHelper.getErrorMessages('core.login.missingemail');
-        this.policyErrors = CoreLoginHelper.getErrorMessages('core.login.policyagree');
-        this.email2Errors = CoreLoginHelper.getErrorMessages(
-            'core.login.missingemail',
-            undefined,
-            'core.login.emailnotmatch',
-        );
+        this.usernameErrors = { required: 'core.login.usernamerequired' };
+        this.passwordErrors = { required: 'core.login.passwordrequired' };
+        this.emailErrors = { required: 'core.login.missingemail' };
+        this.policyErrors = { required: 'core.login.policyagree' };
+        this.email2Errors = {
+            required: 'core.login.missingemail',
+            pattern: 'core.login.emailnotmatch',
+        };
     }
 
     /**
@@ -142,7 +141,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      */
     protected completeFormGroup(): void {
         this.signupForm.addControl('city', this.fb.control(this.settings?.defaultcity || ''));
-        this.signUpCountryControl = this.fb.control(this.settings?.country || '');
+        this.signUpCountryControl = this.fb.control(this.settings?.country || '', { nonNullable: true });
         this.signupForm.addControl('country', this.signUpCountryControl);
 
         // Add the name fields.
@@ -224,7 +223,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         const namefieldsErrors = {};
         if (this.settings.namefields) {
             this.settings.namefields.forEach((field) => {
-                namefieldsErrors[field] = CoreLoginHelper.getErrorMessages('core.login.missing' + field);
+                namefieldsErrors[field] = { required: 'core.login.missing' + field };
             });
         }
         this.namefieldsErrors = namefieldsErrors;

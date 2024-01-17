@@ -13,14 +13,16 @@
 // limitations under the License.
 
 import { UrlTree } from '@angular/router';
-import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
+import { NavigationOptions } from '@ionic/angular/common/providers/nav-controller';
 
 declare module '@ionic/angular' {
 
-    export class NavController {
+    export interface NavController {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         navigateForward(url: string | UrlTree | any[], options?: NavigationOptions): Promise<boolean | null>;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        navigateRoot(url: string | UrlTree | any[], options?: NavigationOptions): Promise<boolean | null>;
 
     }
 

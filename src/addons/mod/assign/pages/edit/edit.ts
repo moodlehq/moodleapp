@@ -205,6 +205,12 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             this.introAttachments = submissionStatus.assignmentdata?.attachments?.intro ?? this.assign.introattachments;
 
             this.allowOffline = true; // If offline isn't allowed we shouldn't have reached this point.
+
+            // If received submission statement is empty, then it's not required.
+            if(!this.assign.submissionstatement && this.assign.submissionstatement !== undefined) {
+                this.assign.requiresubmissionstatement = 0;
+            }
+
             // Only show submission statement if we are editing our own submission.
             if (this.assign.requiresubmissionstatement && !this.assign.submissiondrafts && this.userId == currentUserId) {
                 this.submissionStatement = this.assign.submissionstatement;

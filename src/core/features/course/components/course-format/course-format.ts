@@ -426,6 +426,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         const data = await CoreDomUtils.openModal<CoreCourseIndexSectionWithModule>({
             component: CoreCourseCourseIndexComponent,
+            initialBreakpoint: 1,
+            breakpoints: [0, 1],
             componentProps: {
                 course: this.course,
                 sections: this.sections,

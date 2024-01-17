@@ -58,7 +58,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
     courseId!: number;
     loaded = false;
     glossary?: AddonModGlossaryGlossary;
-    definitionControl = new FormControl();
+    definitionControl = new FormControl<string | null>(null);
     categories: AddonModGlossaryCategory[] = [];
     showAliases = true;
     editorExtraParams: Record<string, unknown> = {};

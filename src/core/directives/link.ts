@@ -89,9 +89,7 @@ export class CoreLinkDirective implements OnInit {
         const openIn = this.element.getAttribute('data-open-in');
 
         if (CoreUtils.isTrueOrOne(this.capture)) {
-            href = CoreTextUtils.decodeURI(href);
-
-            const treated = await CoreContentLinksHelper.handleLink(href, undefined, true, true);
+            const treated = await CoreContentLinksHelper.handleLink(CoreTextUtils.decodeURI(href), undefined, true, true);
 
             if (!treated) {
                 this.navigate(href, openIn);

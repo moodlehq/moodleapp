@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
 
         <ion-title>
@@ -25,7 +25,7 @@
                 </ion-label>
             </ion-item>
             <ion-card *ngIf="showInline" class="core-site-policy-iframe-container">
-                <core-iframe [src]="sitePolicy"></core-iframe>
+                <core-iframe [src]="sitePolicy" />
             </ion-card>
             <ion-button class="ion-text-wrap ion-margin-horizontal" expand="block" (click)="accept()">
                 {{ 'core.login.policyacceptmandatory' | translate }}

@@ -3,16 +3,19 @@
     <ion-select [formControlName]="'f_'+field.id" multiple="true" [placeholder]="'addon.mod_data.menuchoose' | translate"
         [cancelText]="'core.cancel' | translate" [okText]="'core.ok' | translate" [interfaceOptions]="{header: field.name}"
         interface="alert">
-        <ion-select-option *ngFor="let option of options" [value]="option.value">{{option.key}}</ion-select-option>
+        <ion-select-option *ngFor="let option of options" [value]="option.value">
+            <core-format-text [text]="option.key" contextLevel="module" [contextInstanceId]="database?.coursemodule"
+                [courseId]="database?.course" [wsNotFiltered]="true" />
+        </ion-select-option>
     </ion-select>
-    <core-input-errors *ngIf="error && editMode" [control]="form.controls['f_'+field.id]" [errorText]="error"></core-input-errors>
+    <core-input-errors *ngIf="error && editMode" [control]="form.controls['f_'+field.id]" [errorText]="error" />
 
 
-    <ion-item *ngIf="searchMode">
-        <ion-label>{{ 'addon.mod_data.selectedrequired' | translate }}</ion-label>
-        <ion-checkbox slot="end" [formControlName]="'f_'+field.id+'_allreq'" [(ngModel)]="searchFields!['f_'+field.id+'_allreq']">
+    <ion-item *ngIf="searchMode" class="ion-text-wrap">
+        <ion-checkbox [formControlName]="'f_'+field.id+'_allreq'" [(ngModel)]="searchFields!['f_'+field.id+'_allreq']">
+            {{ 'addon.mod_data.selectedrequired' | translate }}
         </ion-checkbox>
     </ion-item>
 </span>
 
-<core-format-text *ngIf="displayMode && value && value.content" [text]="value.content" [filter]="false"></core-format-text>
+<core-format-text *ngIf="displayMode && value && value.content" [text]="value.content" [filter]="false" />

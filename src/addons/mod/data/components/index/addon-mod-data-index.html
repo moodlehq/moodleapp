@@ -1,19 +1,17 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button *ngIf="canSearch" (click)="showSearch()" [attr.aria-label]="'addon.mod_data.search' | translate">
-        <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
     </ion-button>
     <core-context-menu>
         <core-context-menu-item [priority]="500" *ngIf="canAdd" [content]="'addon.mod_data.addentries' | translate" iconAction="fas-plus"
-            (action)="gotoAddEntries()">
-        </core-context-menu-item>
+            (action)="gotoAddEntries()" />
         <core-context-menu-item [priority]="400" *ngIf="firstEntry" [content]="'addon.mod_data.single' | translate" iconAction="fas-file"
-            (action)="gotoEntry(firstEntry)">
-        </core-context-menu-item>
+            (action)="gotoEntry(firstEntry)" />
     </core-context-menu>
 
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
     </ion-button>
 </core-navbar-buttons>
 
@@ -22,30 +20,28 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
-        [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings" (completionChanged)="onCompletionChange()">
-    </core-course-module-info>
+        [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings" (completionChanged)="onCompletionChange()" />
 
     <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="setGroup(selectedGroup)"
-        [courseId]="database?.course">
-    </core-group-selector>
+        [courseId]="database?.course" />
 
     <ion-card class="core-info-card" *ngIf="!access?.timeavailable && timeAvailableFrom">
         <ion-item>
-            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
             <ion-label>{{ 'addon.mod_data.notopenyet' | translate:{$a: timeAvailableFromReadable} }}</ion-label>
         </ion-item>
     </ion-card>
 
     <ion-card class="core-info-card" *ngIf="!access?.timeavailable && timeAvailableTo">
         <ion-item>
-            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
             <ion-label>{{ 'addon.mod_data.expired' | translate:{$a: timeAvailableToReadable} }}</ion-label>
         </ion-item>
     </ion-card>
 
     <ion-card class="core-info-card" *ngIf="access && access.entrieslefttoview">
         <ion-item>
-            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
             <ion-label>
                 {{ 'addon.mod_data.entrieslefttoaddtoview' | translate:{$a: {entrieslefttoview: access.entrieslefttoview} } }}
             </ion-label>
@@ -54,7 +50,7 @@
 
     <ion-card class="core-info-card" *ngIf="access && access.entrieslefttoadd">
         <ion-item>
-            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
             <ion-label>
                 {{ 'addon.mod_data.entrieslefttoadd' | translate:{$a: {entriesleft: access.entrieslefttoadd} } }}
             </ion-label>
@@ -79,30 +75,29 @@
     </ng-container>
 
     <div class="addon-data-contents addon-data-entries-{{database.id}}" *ngIf="!isEmpty && database">
-        <core-style [css]="database.csstemplate" prefix=".addon-data-entries-{{database.id}}"></core-style>
+        <core-style [css]="database.csstemplate" prefix=".addon-data-entries-{{database.id}}" />
 
-        <core-compile-html [text]="entriesRendered" [jsData]="jsData" [extraImports]="extraImports"></core-compile-html>
+        <core-compile-html [text]="entriesRendered" [jsData]="jsData" [extraImports]="extraImports" />
     </div>
 
     <ion-grid *ngIf="search.page > 0 || hasNextPage">
         <ion-row class="ion-align-items-center">
             <ion-col *ngIf="search.page > 0">
                 <ion-button expand="block" fill="outline" (click)="searchEntries(search.page - 1)">
-                    <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true" />
                     {{ 'core.previous' | translate }}
                 </ion-button>
             </ion-col>
             <ion-col *ngIf="hasNextPage">
                 <ion-button expand="block" (click)="searchEntries(search.page + 1)">
                     {{ 'core.next' | translate }}
-                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
                 </ion-button>
             </ion-col>
         </ion-row>
     </ion-grid>
 
-    <core-empty-box *ngIf="isEmpty && !search.searching" icon="fas-database" [message]="'addon.mod_data.norecords' | translate">
-    </core-empty-box>
+    <core-empty-box *ngIf="isEmpty && !search.searching" icon="fas-database" [message]="'addon.mod_data.norecords' | translate" />
 
     <core-empty-box *ngIf="isEmpty && search.searching" icon="fas-database" [message]="'addon.mod_data.nomatch' | translate"
         class="core-empty-box-clickable">
@@ -111,12 +106,11 @@
 
 </core-loading>
 
-<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModuleId]="module.id">
-</core-course-module-navigation>
+<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModuleId]="module.id" />
 
 <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canAdd">
     <ion-fab-button (click)="gotoAddEntries()" [attr.aria-label]="'addon.mod_data.addentries' | translate">
-        <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-plus" aria-hidden="true" />
         <span class="sr-only">{{ 'addon.mod_data.addentries' | translate }}</span>
     </ion-fab-button>
 </ion-fab>

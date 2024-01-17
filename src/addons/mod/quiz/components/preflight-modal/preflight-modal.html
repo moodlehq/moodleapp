@@ -5,7 +5,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -19,7 +19,7 @@
                     <core-dynamic-component [component]="data.component" [data]="data.data">
                         <p class="ion-padding">Couldn't find the directive to render this access rule.</p>
                     </core-dynamic-component>
-                    <core-spacer *ngIf="!last"></core-spacer>
+                    <core-spacer *ngIf="!last" />
                 </ng-container>
 
                 <ion-button expand="block" type="submit" class="ion-margin">

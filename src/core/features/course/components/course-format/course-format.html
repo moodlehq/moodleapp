@@ -1,6 +1,6 @@
 <core-navbar-buttons slot="end" prepend>
     <ion-button fill="clear" (click)="gotoCourseDownloads()" [attr.aria-label]="'addon.storagemanager.coursedownloads' | translate">
-        <ion-icon name="fas-cloud-arrow-down" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-cloud-arrow-down" slot="icon-only" aria-hidden="true" />
     </ion-button>
 </core-navbar-buttons>
 <core-dynamic-component [component]="courseFormatComponent" [data]="data">
@@ -8,40 +8,37 @@
     <core-loading [hideUntil]="loaded">
 
         <!-- Single section. -->
-        <div *ngIf="selectedSection && selectedSection.id != allSectionsId">
+        <div *ngIf="selectedSection && selectedSection.id !== allSectionsId">
             <core-dynamic-component [component]="singleSectionComponent" [data]="data">
-                <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: selectedSection}"></ng-container>
+                <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: selectedSection}" />
                 <core-empty-box *ngIf="!selectedSection.hasContent" icon="fas-table-cells-large"
-                    [message]="'core.course.nocontentavailable' | translate">
-                </core-empty-box>
+                    [message]="'core.course.nocontentavailable' | translate" />
             </core-dynamic-component>
         </div>
 
         <!-- Multiple sections. -->
-        <div *ngIf="selectedSection && selectedSection.id == allSectionsId">
+        <div *ngIf="selectedSection && selectedSection.id === allSectionsId">
             <core-dynamic-component [component]="allSectionsComponent" [data]="data">
                 <ng-container *ngFor="let section of sections; index as i">
                     <ng-container *ngIf="i <= lastShownSectionIndex">
-                        <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: section}"></ng-container>
+                        <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: section}" />
                     </ng-container>
                 </ng-container>
             </core-dynamic-component>
 
-            <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)"></core-infinite-loading>
+            <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)" />
         </div>
         <div collapsible-footer appearOnBottom *ngIf="displayCourseIndex && (previousSection || nextSection)" slot="fixed">
             <div class="core-course-section-nav-buttons safe-area-padding-horizontal list-item-limited-width">
                 <ion-button *ngIf="previousSection" (click)="sectionChanged(previousSection)" expand="block"
                     [attr.aria-label]="('core.previous' | translate) + ': ' + previousSection.name">
-                    <ion-icon name="fas-arrow-left" slot="start" aria-hidden="true"></ion-icon>
-                    <core-format-text [text]="previousSection.name" contextLevel="course" [contextInstanceId]="course.id">
-                    </core-format-text>
+                    <ion-icon name="fas-arrow-left" slot="start" aria-hidden="true" />
+                    <core-format-text [text]="previousSection.name" contextLevel="course" [contextInstanceId]="course.id" />
                 </ion-button>
                 <ion-button *ngIf="nextSection" (click)="sectionChanged(nextSection)" expand="block"
                     [attr.aria-label]="('core.next' | translate) + ': ' + nextSection.name">
-                    <core-format-text [text]="nextSection.name" contextLevel="course" [contextInstanceId]="course.id">
-                    </core-format-text>
-                    <ion-icon name="fas-arrow-right" slot="end" aria-hidden="true"></ion-icon>
+                    <core-format-text [text]="nextSection.name" contextLevel="course" [contextInstanceId]="course.id" />
+                    <ion-icon name="fas-arrow-right" slot="end" aria-hidden="true" />
                 </ion-button>
             </div>
         </div>
@@ -50,28 +47,26 @@
 
 
 <core-block-side-blocks-button slot="fixed" *ngIf="loaded && course && displayBlocks && hasBlocks" contextLevel="course"
-    [instanceId]="course.id">
-</core-block-side-blocks-button>
+    [instanceId]="course.id" />
 
 <!-- Course Index button. -->
 <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="loaded && displayCourseIndex">
     <ion-fab-button (click)="openCourseIndex()" [userTour]="courseIndexTour" [attr.aria-label]="'core.course.courseindex' | translate"
         color="secondary">
-        <ion-icon name="fas-list-ul" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-list-ul" aria-hidden="true" />
         <span class="sr-only">{{'core.course.courseindex' | translate }}</span>
     </ion-fab-button>
 </ion-fab>
 
 <!-- Template to render a section. -->
 <ng-template #sectionTemplate let-section="section">
-    <section *ngIf="!section.hiddenbynumsections && section.id != allSectionsId && section.id != stealthModulesSectionId"
+    <section *ngIf="!section.hiddenbynumsections && section.id !== allSectionsId && section.id !== stealthModulesSectionId"
         class="core-course-module-list-wrapper" [id]="section.id"
         [attr.aria-labelledby]="section.name ? 'core-section-name-' + section.id : null">
         <ion-item-divider class="course-section ion-text-wrap" [class.item-dimmed]="section.visible === 0 || section.uservisible === false">
             <ion-label>
                 <h2 *ngIf="section.name" class="big" [id]="'core-section-name-' + section.id">
-                    <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="course.id">
-                    </core-format-text>
+                    <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="course.id" />
                 </h2>
                 <div *ngIf="section.visible === 0 && section.uservisible !== false">
                     <ion-badge color="warning">
@@ -85,10 +80,9 @@
                 </div>
                 <div *ngIf="section.availabilityinfo">
                     <ion-chip class="clickable">
-                        <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>
+                        <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate" />
                         <ion-label>
-                            <core-format-text [text]=" section.availabilityinfo" contextLevel="course" [contextInstanceId]="course.id">
-                            </core-format-text>
+                            <core-format-text [text]=" section.availabilityinfo" contextLevel="course" [contextInstanceId]="course.id" />
                         </ion-label>
                     </ion-chip>
                 </div>
@@ -98,8 +92,7 @@
 
         <ion-item class="ion-text-wrap section-summary" *ngIf="section.summary">
             <ion-label>
-                <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="course.id">
-                </core-format-text>
+                <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="course.id" />
             </ion-label>
         </ion-item>
 
@@ -107,8 +100,7 @@
             <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [section]="section"
                 [showActivityDates]="course.showactivitydates" [showCompletionConditions]="course.showcompletionconditions"
                 [isLastViewed]="lastModuleViewed && lastModuleViewed.cmId === module.id" [class.core-course-module-not-viewed]="
-                    !viewedModules[module.id] && (!module.completiondata || module.completiondata.state === completionStatusIncomplete)">
-            </core-course-module>
+                    !viewedModules[module.id] && (!module.completiondata || module.completiondata.state === completionStatusIncomplete)" />
         </ng-container>
     </section>
 </ng-template>

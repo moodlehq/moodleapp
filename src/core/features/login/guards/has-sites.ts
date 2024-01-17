@@ -12,50 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
-import { CanActivate, CanLoad, UrlTree } from '@angular/router';
-
+import { CanActivateFn } from '@angular/router';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { Router } from '@singletons';
-
 import { CoreLoginHelper } from '../services/login-helper';
 
-@Injectable({ providedIn: 'root' })
-export class CoreLoginHasSitesGuard implements CanActivate, CanLoad {
+/**
+ * Guard to check if the user has any sites stored.
+ *
+ * @returns True if user has sites, redirect route otherwise.
+ */
+export const hasSitesGuard: CanActivateFn = async () => {
+    const sites = await CoreUtils.ignoreErrors(CoreSites.getSites(), []);
 
-    /**
-     * @inheritdoc
-     */
-    canActivate(): Promise<true | UrlTree> {
-        return this.guard();
+    if (sites.length > 0) {
+        return true;
     }
 
-    /**
-     * @inheritdoc
-     */
-    canLoad(): Promise<true | UrlTree> {
-        return this.guard();
-    }
+    const [path, params] = await CoreLoginHelper.getAddSiteRouteInfo();
+    const route = Router.parseUrl(path);
 
-    /**
-     * Check if the user has any sites stored.
-     *
-     * @returns Promise resolved with true if it's not redirected or the redirection route.
-     */
-    private async guard(): Promise<true | UrlTree> {
-        const sites = await CoreUtils.ignoreErrors(CoreSites.getSites(), []);
+    route.queryParams = params;
 
-        if (sites.length > 0) {
-            return true;
-        }
-
-        const [path, params] = await CoreLoginHelper.getAddSiteRouteInfo();
-        const route = Router.parseUrl(path);
-
-        route.queryParams = params;
-
-        return route;
-    }
-
-}
+    return route;
+};

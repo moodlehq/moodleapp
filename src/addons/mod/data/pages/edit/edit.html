@@ -1,12 +1,11 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId">
-                </core-format-text>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId" />
             </h1>
         </ion-title>
         <ion-buttons slot="end">
@@ -19,14 +18,13 @@
 <ion-content>
     <core-loading [hideUntil]="loaded">
         <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="setGroup(selectedGroup)"
-            [courseId]="database?.course">
-        </core-group-selector>
+            [courseId]="database?.course" />
 
         <div class="addon-data-contents {{cssClass}}" *ngIf="database">
-            <core-style [css]="database.csstemplate" prefix=".{{cssClass}}"></core-style>
+            <core-style [css]="database.csstemplate" prefix=".{{cssClass}}" />
 
             <form (ngSubmit)="save($event)" [formGroup]="editForm" #editFormEl>
-                <core-compile-html [text]="editFormRender" [jsData]="jsData" [extraImports]="extraImports"></core-compile-html>
+                <core-compile-html [text]="editFormRender" [jsData]="jsData" [extraImports]="extraImports" />
             </form>
         </div>
     </core-loading>

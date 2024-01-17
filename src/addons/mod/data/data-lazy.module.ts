@@ -18,7 +18,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
 import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
 import { CoreRatingComponentsModule } from '@features/rating/components/components.module';
-import { CanLeaveGuard } from '@guards/can-leave';
+import { canLeaveGuard } from '@guards/can-leave';
 import { AddonModDataComponentsCompileModule } from './components/components-compile.module';
 import { AddonModDataComponentsModule } from './components/components.module';
 import { AddonModDataEditPage } from './pages/edit/edit';
@@ -33,12 +33,12 @@ const routes: Routes = [
     {
         path: ':courseId/:cmId/edit',
         component: AddonModDataEditPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
     {
         path: ':courseId/:cmId/edit/:entryId',
         component: AddonModDataEditPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
     {
         path: ':courseId/:cmId/:entryId',

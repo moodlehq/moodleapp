@@ -44,12 +44,12 @@
             }
         }
 
-        ion-slides {
+        swiper-container {
             text-align: center;
             line-height: 1.6rem;
             flex-grow: 1;
 
-            ion-slide {
+            swiper-slide {
                 border-bottom: 2px solid transparent;
                 min-width: 100px;
                 height: var(--height);

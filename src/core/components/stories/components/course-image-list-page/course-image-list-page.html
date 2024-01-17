@@ -9,7 +9,7 @@
     <ion-content>
         <ion-list>
             <ion-item class="ion-text-wrap" *ngFor="let course of courses">
-                <core-course-image [course]="course" slot="start"></core-course-image>
+                <core-course-image [course]="course" slot="start" />
                 <ion-label>
                     {{ course.shortname }}
                 </ion-label>

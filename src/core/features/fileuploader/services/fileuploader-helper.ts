@@ -14,10 +14,10 @@
 
 import { Injectable } from '@angular/core';
 import { ActionSheetButton } from '@ionic/core';
-import { CameraOptions } from '@ionic-native/camera/ngx';
-import { ChooserResult } from '@ionic-native/chooser/ngx';
-import { FileEntry, IFile } from '@ionic-native/file/ngx';
-import { MediaFile } from '@ionic-native/media-capture/ngx';
+import { CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
+import { ChooserResult } from 'cordova-plugin-chooser';
+import { FileEntry, IFile } from '@awesome-cordova-plugins/file/ngx';
+import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/file';
@@ -25,7 +25,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { makeSingleton, Translate, Camera, Chooser, ActionSheetController } from '@singletons';
+import { makeSingleton, Translate, Camera, ActionSheetController } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
@@ -43,6 +43,7 @@ import { CoreSites } from '@services/sites';
 import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
+import { Chooser } from '@features/native/plugins';
 
 /**
  * Helper service to upload files.

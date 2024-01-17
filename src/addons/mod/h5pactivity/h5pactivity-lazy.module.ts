@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CanLeaveGuard } from '@guards/can-leave';
+import { canLeaveGuard } from '@guards/can-leave';
 import { AddonModH5PActivityComponentsModule } from './components/components.module';
 import { AddonModH5PActivityIndexPage } from './pages/index/index';
 import { AddonModH5PActivityUserAttemptsPage } from '@addons/mod/h5pactivity/pages/user-attempts/user-attempts';
@@ -27,7 +27,7 @@ const routes: Routes = [
     {
         path: ':courseId/:cmId',
         component: AddonModH5PActivityIndexPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
     {
         path: ':courseId/:cmId/userattempts/:userId',

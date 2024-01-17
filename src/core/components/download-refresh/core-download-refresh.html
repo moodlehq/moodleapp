@@ -1,23 +1,23 @@
 <ng-container *ngIf="enabled && !loading">
     <!-- Download button. -->
-    <ion-button *ngIf="status == statusNotDownloaded" fill="clear" (click)="download($event, false)" @coreShowHideAnimation
+    <ion-button *ngIf="status === statusNotDownloaded" fill="clear" (click)="download($event, false)" @coreShowHideAnimation
         [attr.aria-label]="(statusTranslatable || 'core.download') | translate">
-        <ion-icon slot="icon-only" name="fas-cloud-arrow-down" aria-hidden="true"></ion-icon>
+        <ion-icon slot="icon-only" name="fas-cloud-arrow-down" aria-hidden="true" />
     </ion-button>
 
     <!-- Refresh button. -->
-    <ion-button *ngIf="status == statusOutdated || (status == statusDownloaded && !canTrustDownload)" fill="clear"
+    <ion-button *ngIf="status === statusOutdated || (status === statusDownloaded && !canTrustDownload)" fill="clear"
         (click)="download($event, true)" @coreShowHideAnimation [attr.aria-label]="(statusTranslatable || 'core.refresh') | translate">
-        <ion-icon slot="icon-only" name="fam-cloud-refresh" aria-hidden="true"></ion-icon>
+        <ion-icon slot="icon-only" name="fam-cloud-refresh" aria-hidden="true" />
     </ion-button>
 
     <!-- Downloaded status icon. -->
-    <ion-icon *ngIf="status == statusDownloaded && canTrustDownload" class="core-icon-downloaded ion-padding-horizontal" color="success"
-        name="fam-cloud-done" [attr.aria-label]="(statusTranslatable || 'core.downloaded') | translate" role="status"></ion-icon>
+    <ion-icon *ngIf="status === statusDownloaded && canTrustDownload" class="core-icon-downloaded ion-padding-horizontal" color="success"
+        name="fam-cloud-done" [attr.aria-label]="(statusTranslatable || 'core.downloaded') | translate" role="status" />
 
     <ion-spinner *ngIf="status === statusDownloading" @coreShowHideAnimation
-        [attr.aria-label]="(statusTranslatable || 'core.downloading') | translate"></ion-spinner>
+        [attr.aria-label]="(statusTranslatable || 'core.downloading') | translate" />
 </ng-container>
 
 <!-- Spinner. -->
-<ion-spinner *ngIf="loading" @coreShowHideAnimation [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+<ion-spinner *ngIf="loading" @coreShowHideAnimation [attr.aria-label]="'core.loading' | translate" />

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, COMPILER_OPTIONS, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouteReuseStrategy } from '@angular/router';
@@ -28,13 +28,18 @@ import { AddonsModule } from '@addons/addons.module';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
+
 import { CoreCronDelegate } from '@services/cron';
 import { CoreSiteInfoCronHandler } from '@services/handlers/site-info-cron';
 import { moodleTransitionAnimation } from '@classes/page-transition';
 import { TestingModule } from '@/testing/testing.module';
 
-// For translate loader. AoT requires an exported function for factories.
+/**
+ * For translate loader. AoT requires an exported function for factories.
+ *
+ * @param http Http client.
+ * @returns Translate loader.
+ */
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
     return new TranslateHttpLoader(http, './assets/lang/', '.json');
 }
@@ -47,6 +52,8 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         IonicModule.forRoot(
             {
                 navAnimation: moodleTransitionAnimation,
+                innerHTMLTemplatesEnabled: true,
+                sanitizerEnabled: true,
             },
         ),
         HttpClientModule, // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
@@ -64,8 +71,6 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
     ],
     providers: [
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-        { provide: COMPILER_OPTIONS, useValue: {}, multi: true },
-        { provide: JitCompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS] },
         {
             provide: APP_INITIALIZER,
             multi: true,

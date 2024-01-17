@@ -146,7 +146,7 @@ html {
     --core-header-buttons-background: var(--core-header-toolbar-background);
     --core-header-buttons-color: var(--core-header-toolbar-color);
 
-    ion-header {
+    ion-header, ion-header.header-md {
         box-shadow: var(--core-header-shadow, none);
         transition: box-shadow 0.5s;
 
@@ -247,7 +247,7 @@ html {
     --core-tab-font-weight-active: normal;
     --core-tabs-height: 48px;
     core-tabs, core-tabs-outlet {
-        ion-slide {
+        swiper-slide {
             --background: var(--core-tab-background);
             --color: var(--core-tab-color);
             --border-color: var(--core-tab-border-color);

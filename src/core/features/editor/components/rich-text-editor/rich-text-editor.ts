@@ -25,7 +25,7 @@ import {
     AfterViewInit,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { IonTextarea, IonContent, IonSlides } from '@ionic/angular';
+import { IonTextarea, IonContent, IonicSlides } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
@@ -42,6 +42,8 @@ import { CoreScreen } from '@services/screen';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreDom } from '@singletons/dom';
 import { CorePlatform } from '@services/platform';
+import { Swiper } from 'swiper';
+import { SwiperOptions } from 'swiper/types';
 
 /**
  * Component to display a rich text editor if enabled.
@@ -64,7 +66,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     // @todo Implement ControlValueAccessor https://angular.io/api/forms/ControlValueAccessor.
 
     @Input() placeholder = ''; // Placeholder to set in textarea.
-    @Input() control?: FormControl; // Form control.
+    @Input() control?: FormControl<string | undefined | null>; // Form control.
     @Input() name = 'core-rich-text-editor'; // Name to set to the textarea.
     @Input() component?: string; // The component to link the files to.
     @Input() componentId?: number; // An ID to use in conjunction with the component.
@@ -73,12 +75,32 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() elementId?: string; // An ID to set to the element.
     @Input() draftExtraParams?: Record<string, unknown>; // Extra params to identify the draft.
-    @Output() contentChanged: EventEmitter<string>;
+    @Output() contentChanged: EventEmitter<string | undefined | null>;
 
     @ViewChild('editor') editor?: ElementRef; // WYSIWYG editor.
     @ViewChild('textarea') textarea?: IonTextarea; // Textarea editor.
     @ViewChild('toolbar') toolbar?: ElementRef;
-    @ViewChild(IonSlides) toolbarSlides?: IonSlides;
+    protected toolbarSlides?: Swiper;
+    @ViewChild('swiperRef')
+    set swiperRef(swiperRef: ElementRef) {
+        /**
+         * This setTimeout waits for Ionic's async initialization to complete.
+         * Otherwise, an outdated swiper reference will be used.
+         */
+        setTimeout(() => {
+            if (swiperRef.nativeElement?.swiper) {
+                this.toolbarSlides = swiperRef.nativeElement.swiper as Swiper;
+
+                this.toolbarSlides.changeLanguageDirection(CorePlatform.isRTL ? 'rtl' : 'ltr');
+
+                Object.keys(this.swiperOpts).forEach((key) => {
+                    if (this.toolbarSlides) {
+                        this.toolbarSlides.params[key] = this.swiperOpts[key];
+                    }
+                });
+            }
+        }, 0);
+    }
 
     protected readonly DRAFT_AUTOSAVE_FREQUENCY = 30000;
     protected readonly RESTORE_MESSAGE_CLEAR_TIME = 6000;
@@ -119,7 +141,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     canScanQR = false;
     ariaLabelledBy?: string;
     infoMessage?: string;
-    direction = 'ltr';
     toolbarStyles = {
         strong: 'false',
         em: 'false',
@@ -133,11 +154,11 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         ol: 'false',
     };
 
-    slidesOpts = {
-        initialSlide: 0,
+    swiperOpts: SwiperOptions = {
+        modules: [IonicSlides],
         slidesPerView: 6,
         centerInsufficientSlides: true,
-        watchSlidesVisibility: true,
+        watchSlidesProgress: true,
     };
 
     constructor(
@@ -156,7 +177,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         this.canScanQR = CoreUtils.canScanQR();
         this.isPhone = CoreScreen.isMobile;
         this.toolbarHidden = this.isPhone;
-        this.direction = CorePlatform.isRTL ? 'rtl' : 'ltr';
     }
 
     /**
@@ -170,8 +190,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         // Setup the editor.
         this.editorElement = this.editor?.nativeElement as HTMLDivElement;
         this.setContent(this.control?.value);
-        this.originalContent = this.control?.value;
-        this.lastDraft = this.control?.value;
+        this.originalContent = this.control?.value ?? undefined;
+        this.lastDraft = this.control?.value ?? '';
 
         // Use paragraph on enter.
         // eslint-disable-next-line deprecation/deprecation
@@ -211,10 +231,17 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             return;
         }
 
-        const updateArialabelledBy = () => this.ariaLabelledBy = label.getAttribute('id') ?? undefined;
+        const updateArialabelledBy = () => {
+            this.ariaLabelledBy = label.getAttribute('id') ?? undefined;
+        };
 
         this.labelObserver = new MutationObserver(updateArialabelledBy);
         this.labelObserver.observe(label, { attributes: true, attributeFilter: ['id'] });
+
+        // Usually the label won't have an id, so we need to add one.
+        if (!label.getAttribute('id')) {
+            label.setAttribute('id', 'rte-'+CoreUtils.getUniqueId('CoreEditorRichTextEditor'));
+        }
 
         updateArialabelledBy();
     }
@@ -234,19 +261,19 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
             // Apply the new content.
             this.setContent(newValue);
-            this.originalContent = newValue;
+            this.originalContent = newValue ?? undefined;
             this.infoMessage = undefined;
 
             // Save a draft so the original content is saved.
-            this.lastDraft = newValue;
+            this.lastDraft = newValue ?? '';
             CoreEditorOffline.saveDraft(
                 this.contextLevel || '',
                 this.contextInstanceId || 0,
                 this.elementId || '',
                 this.draftExtraParams || {},
                 this.pageInstance,
-                newValue,
-                newValue,
+                this.lastDraft,
+                this.originalContent,
             );
         });
 
@@ -265,7 +292,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         // Change the side when the language changes.
         this.languageChangedSubscription = Translate.onLangChange.subscribe(() => {
             setTimeout(() => {
-                this.direction = CorePlatform.isRTL ? 'rtl' : 'ltr';
+                this.toolbarSlides?.changeLanguageDirection(CorePlatform.isRTL ? 'rtl' : 'ltr');
             });
         });
     }
@@ -552,7 +579,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @param value text
      * @returns If value is null only a white space.
      */
-    protected isNullOrWhiteSpace(value: string | null): boolean {
+    protected isNullOrWhiteSpace(value: string | null | undefined): boolean {
         if (value == null || value === undefined) {
             return true;
         }
@@ -568,7 +595,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      *
      * @param value New content.
      */
-    protected setContent(value: string | null): void {
+    protected setContent(value: string | null | undefined): void {
         if (!this.editorElement || !this.textarea) {
             return;
         }
@@ -656,8 +683,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     /**
      * Replace tags for a11y.
      *
-     * @param originTag      Origin tags to be replaced.
-     * @param destinationTag Destination tags to replace.
+     * @param originTags      Origin tags to be replaced.
+     * @param destinationTags Destination tags to replace.
      */
     protected replaceTags(originTags: string[], destinationTags: string[]): void {
         if (!this.editorElement) {
@@ -774,8 +801,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         this.stopBubble(event);
 
         if (!this.toolbarNextHidden) {
-            const currentIndex = await this.toolbarSlides?.getActiveIndex();
-            this.toolbarSlides?.slideTo((currentIndex || 0) + this.slidesOpts.slidesPerView);
+            const currentIndex = this.toolbarSlides?.activeIndex;
+            this.toolbarSlides?.slideTo((currentIndex || 0) + this.toolbarSlides.slidesPerViewDynamic());
         }
 
         await this.updateToolbarArrows();
@@ -792,8 +819,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         this.stopBubble(event);
 
         if (!this.toolbarPrevHidden) {
-            const currentIndex = await this.toolbarSlides?.getActiveIndex();
-            this.toolbarSlides?.slideTo((currentIndex || 0) - this.slidesOpts.slidesPerView);
+            const currentIndex = this.toolbarSlides?.activeIndex;
+            this.toolbarSlides?.slideTo((currentIndex || 0) - this.toolbarSlides.slidesPerViewDynamic());
         }
 
         await this.updateToolbarArrows();
@@ -808,7 +835,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             return;
         }
 
-        const length = await this.toolbarSlides.length();
+        const length = this.toolbarSlides.slides.length;
 
         // Cancel previous one, if any.
         this.buttonsDomPromise?.cancel();
@@ -818,17 +845,16 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         const width = this.toolbar.nativeElement.getBoundingClientRect().width;
 
         if (length > 0 && width > length * this.toolbarButtonWidth) {
-            this.slidesOpts = { ...this.slidesOpts, slidesPerView: length };
+            this.swiperOpts.slidesPerView = length;
             this.toolbarArrows = false;
         } else {
-            const slidesPerView = Math.floor((width - this.toolbarArrowWidth * 2) / this.toolbarButtonWidth);
-            this.slidesOpts = { ...this.slidesOpts, slidesPerView };
+            this.swiperOpts.slidesPerView = Math.floor((width - this.toolbarArrowWidth * 2) / this.toolbarButtonWidth);
             this.toolbarArrows = true;
         }
 
         await CoreUtils.nextTick();
 
-        await this.toolbarSlides.update();
+        this.toolbarSlides.update();
 
         await this.updateToolbarArrows();
     }
@@ -841,10 +867,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             return;
         }
 
-        const currentIndex = await this.toolbarSlides.getActiveIndex();
-        const length = await this.toolbarSlides.length();
+        const currentIndex = this.toolbarSlides.activeIndex;
+        const length = this.toolbarSlides.slides.length;
         this.toolbarPrevHidden = currentIndex <= 0;
-        this.toolbarNextHidden = currentIndex + this.slidesOpts.slidesPerView >= length;
+        this.toolbarNextHidden = currentIndex + this.toolbarSlides.slidesPerViewDynamic() >= length;
     }
 
     /**
@@ -948,7 +974,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
                 return;
             }
 
-            const newText = this.control.value;
+            const newText = this.control.value ?? '';
 
             if (this.lastDraft == newText) {
                 // Text hasn't changed, nothing to save.

@@ -5,10 +5,10 @@
     "types": [
       "@moodlehq/cordova-plugin-file-transfer",
       "@moodlehq/cordova-plugin-inappbrowser",
+      "@moodlehq/phonegap-plugin-push",
       "cordova-plugin-moodleapp",
       "cordova",
       "dom-mediacapture-record",
-      "node",
       "resize-observer-browser",
       "webpack-env"
     ]

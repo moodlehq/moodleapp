@@ -5,6 +5,7 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
+    "skipLibCheck": true,
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "strictNullChecks": true,
@@ -14,7 +15,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2015",
+    "target": "es2022",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "lib": [
@@ -24,6 +25,7 @@
     "types": [
         "@moodlehq/cordova-plugin-file-transfer",
         "@moodlehq/cordova-plugin-inappbrowser",
+        "@moodlehq/phonegap-plugin-push",
         "cordova-plugin-moodleapp",
         "cordova",
         "dom-mediacapture-record",

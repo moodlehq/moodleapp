@@ -45,7 +45,6 @@ import { CoreForms } from '@singletons/form';
 import { CoreReminders, CoreRemindersService, CoreRemindersUnits } from '@features/reminders/services/reminders';
 import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
 import moment from 'moment-timezone';
-import { CoreAppProvider } from '@services/app';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -61,7 +60,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     @ViewChild('editEventForm') formElement!: ElementRef;
 
     title = 'addon.calendar.newevent';
-    dateFormat: string;
     component = AddonCalendarProvider.COMPONENT;
     loaded = false;
     hasOffline = false;
@@ -71,20 +69,18 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     groups: CoreGroup[] = [];
     loadingGroups = false;
     courseGroupSet = false;
-    errors: Record<string, string>;
     error = false;
     eventRepeatId?: number;
     otherEventsCount = 0;
     eventId?: number;
     maxDate: string;
     minDate: string;
-    displayTimezone?: string;
 
     // Form variables.
     form: FormGroup;
-    typeControl: FormControl;
-    groupControl: FormControl;
-    descriptionControl: FormControl;
+    typeControl: FormControl<AddonCalendarEventType | null>;
+    groupControl: FormControl<number | null>;
+    descriptionControl: FormControl<string>;
 
     // Reminders.
     remindersEnabled = false;
@@ -103,21 +99,13 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     ) {
         this.currentSite = CoreSites.getRequiredCurrentSite();
         this.remindersEnabled = CoreReminders.isEnabled();
-        this.errors = {
-            required: Translate.instant('core.required'),
-        };
-
-        // Calculate format to use. ion-datetime doesn't support escaping characters ([]), so we remove them.
-        this.dateFormat = CoreTimeUtils.convertPHPToMoment(Translate.instant('core.strftimedatetimeshort'))
-            .replace(/[[\]]/g, '');
-        this.displayTimezone = CoreAppProvider.getForcedTimezone();
 
         this.form = new FormGroup({});
 
         // Initialize form variables.
-        this.typeControl = this.fb.control('', Validators.required);
-        this.groupControl = this.fb.control('');
-        this.descriptionControl = this.fb.control('');
+        this.typeControl = this.fb.control(null, Validators.required);
+        this.groupControl = this.fb.control(null);
+        this.descriptionControl = this.fb.control('', { nonNullable: true });
         this.form.addControl('name', this.fb.control('', Validators.required));
         this.form.addControl('eventtype', this.typeControl);
         this.form.addControl('categoryid', this.fb.control(''));
@@ -334,11 +322,11 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
         this.form.controls.name.setValue(event.name);
         this.form.controls.timestart.setValue(CoreTimeUtils.toDatetimeFormat(event.timestart * 1000));
-        this.form.controls.eventtype.setValue(event.eventtype);
+        this.typeControl.setValue(event.eventtype as AddonCalendarEventType);
         this.form.controls.categoryid.setValue(event.categoryid || '');
         this.form.controls.courseid.setValue(courseId || '');
         this.form.controls.groupcourseid.setValue(courseId || '');
-        this.form.controls.groupid.setValue(event.groupid || '');
+        this.groupControl.setValue(event.groupid || null);
         this.form.controls.description.setValue(event.description);
         this.form.controls.location.setValue(event.location);
 
@@ -422,7 +410,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         try {
             await this.loadGroups(courseId);
 
-            this.groupControl.setValue('');
+            this.groupControl.setValue(null);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting data.');
         }

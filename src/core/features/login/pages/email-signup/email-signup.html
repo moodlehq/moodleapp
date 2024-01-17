@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
 
         <ion-title>
@@ -11,7 +11,7 @@
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="authInstructions" (click)="showAuthInstructions()"
                 [attr.aria-label]="'core.login.instructions' | translate">
-                <ion-icon slot="icon-only" name="far-circle-question" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="far-circle-question" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -43,19 +43,17 @@
                     </ion-item-divider>
 
                     <ion-item class="ion-text-wrap">
-                        <ion-label position="stacked">
-                            <span core-mark-required="true">{{ 'core.whatisyourage' | translate }}</span>
-                        </ion-label>
-                        <ion-input type="number" name="age" placeholder="0" formControlName="age" autocapitalize="none" autocorrect="off">
+                        <ion-input labelPlacement="stacked" type="number" name="age" placeholder="0" formControlName="age"
+                            autocapitalize="none" autocorrect="off">
+                            <div slot="label" [core-mark-required]="true">{{ 'core.whatisyourage' | translate }}</div>
                         </ion-input>
                     </ion-item>
 
                     <ion-item class="ion-text-wrap">
-                        <ion-label position="stacked">
-                            <span core-mark-required="true">{{ 'core.wheredoyoulive' | translate }}</span>
-                        </ion-label>
-                        <ion-select name="country" formControlName="country" [cancelText]="'core.cancel' | translate"
-                            [okText]="'core.ok' | translate" [placeholder]="'core.login.selectacountry' | translate">
+                        <ion-select labelPlacement="stacked" name="country" formControlName="country"
+                            [cancelText]="'core.cancel' | translate" [okText]="'core.ok' | translate"
+                            [placeholder]="'core.login.selectacountry' | translate">
+                            <div slot="label" [core-mark-required]="true">{{ 'core.wheredoyoulive' | translate }}</div>
                             <ion-select-option value="">{{ 'core.login.selectacountry' | translate }}</ion-select-option>
                             <ion-select-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-select-option>
                         </ion-select>
@@ -85,7 +83,7 @@
                             <p *ngIf="!siteName && displaySiteUrl" class="ion-padding item-heading">{{site.siteUrl}}</p>
                             <!-- If sitename, show big sitename and small siteurl. -->
                             <p *ngIf="siteName" class="ion-padding item-heading">
-                                <core-format-text [text]="siteName" [filter]="false"></core-format-text>
+                                <core-format-text [text]="siteName" [filter]="false" />
                             </p>
                             <p *ngIf="siteName && displaySiteUrl">{{site.siteUrl}}</p>
                         </ion-label>
@@ -98,27 +96,24 @@
                         </ion-label>
                     </ion-item-divider>
                     <ion-item class="ion-text-wrap">
-                        <ion-label position="stacked">
-                            <span core-mark-required="true">{{ 'core.login.username' | translate }}</span>
-                        </ion-label>
-                        <ion-input type="text" name="username" placeholder="{{ 'core.login.username' | translate }}"
-                            formControlName="username" autocapitalize="none" autocorrect="off">
+                        <ion-input labelPlacement="stacked" type="text" name="username"
+                            placeholder="{{ 'core.login.username' | translate }}" formControlName="username" autocapitalize="none"
+                            autocorrect="off">
+                            <div slot="label" [core-mark-required]="true">{{ 'core.login.username' | translate }}</div>
                         </ion-input>
-                        <core-input-errors [control]="signupForm.controls.username" [errorMessages]="usernameErrors"></core-input-errors>
+                        <core-input-errors [control]="signupForm.controls.username" [errorMessages]="usernameErrors" />
                     </ion-item>
                     <ion-item class="ion-text-wrap">
-                        <ion-label position="stacked">
-                            <span core-mark-required="true">{{ 'core.login.password' | translate }}</span>
-                        </ion-label>
-                        <core-show-password name="password">
-                            <ion-input name="password" type="password" placeholder="{{ 'core.login.password' | translate }}"
-                                formControlName="password" [clearOnEdit]="false" autocomplete="new-password" required="true">
-                            </ion-input>
-                        </core-show-password>
+                        <ion-input labelPlacement="stacked" name="password" type="password"
+                            placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false"
+                            autocomplete="new-password" required="true">
+                            <div slot="label" [core-mark-required]="true">{{ 'core.login.password' | translate }}</div>
+                            <core-show-password slot="end" />
+                        </ion-input>
                         <p *ngIf="settings.passwordpolicy" class="core-input-footnote">
                             {{settings.passwordpolicy}}
                         </p>
-                        <core-input-errors [control]="signupForm.controls.password" [errorMessages]="passwordErrors"></core-input-errors>
+                        <core-input-errors [control]="signupForm.controls.password" [errorMessages]="passwordErrors" />
                     </ion-item>
 
                     <!-- More details. -->
@@ -128,43 +123,35 @@
                         </ion-label>
                     </ion-item-divider>
                     <ion-item class="ion-text-wrap">
-                        <ion-label position="stacked">
-                            <span core-mark-required="true">{{ 'core.user.email' | translate }}</span>
-                        </ion-label>
-                        <ion-input type="email" name="email" placeholder="{{ 'core.user.email' | translate }}" formControlName="email"
-                            autocapitalize="none" autocorrect="off">
+                        <ion-input labelPlacement="stacked" type="email" name="email" placeholder="{{ 'core.user.email' | translate }}"
+                            formControlName="email" autocapitalize="none" autocorrect="off">
+                            <div slot="label" [core-mark-required]="true">{{ 'core.user.email' | translate }}</div>
                         </ion-input>
-                        <core-input-errors [control]="signupForm.controls.email" [errorMessages]="emailErrors"></core-input-errors>
+                        <core-input-errors [control]="signupForm.controls.email" [errorMessages]="emailErrors" />
                     </ion-item>
                     <ion-item class="ion-text-wrap">
-                        <ion-label position="stacked">
-                            <span core-mark-required="true">{{ 'core.user.emailagain' | translate }}</span>
-                        </ion-label>
-                        <ion-input type="email" name="email2" placeholder="{{ 'core.user.emailagain' | translate }}" autocapitalize="none"
-                            formControlName="email2" autocorrect="off" [pattern]="escapeMail(signupForm.controls.email.value)">
+                        <ion-input labelPlacement="stacked" type="email" name="email2"
+                            placeholder="{{ 'core.user.emailagain' | translate }}" autocapitalize="none" formControlName="email2"
+                            autocorrect="off" [pattern]="escapeMail(signupForm.controls.email.value)">
+                            <div slot="label" [core-mark-required]="true">{{ 'core.user.emailagain' | translate }}</div>
                         </ion-input>
-                        <core-input-errors [control]="signupForm.controls.email2" [errorMessages]="email2Errors"></core-input-errors>
+                        <core-input-errors [control]="signupForm.controls.email2" [errorMessages]="email2Errors" />
                     </ion-item>
                     <ion-item *ngFor="let nameField of settings.namefields" class="ion-text-wrap">
-                        <ion-label position="stacked">
-                            <span core-mark-required="true">{{ 'core.user.' + nameField | translate }}</span>
-                        </ion-label>
-                        <ion-input type="text" [name]="nameField" placeholder="{{ 'core.user.' + nameField | translate }}"
-                            formControlName="{{nameField}}" autocorrect="off">
+                        <ion-input labelPlacement="stacked" type="text" [name]="nameField" formControlName="{{nameField}}" autocorrect="off"
+                            [placeholder]="'core.user.' + nameField | translate">
+                            <div slot="label" [core-mark-required]="true">{{ 'core.user.' + nameField | translate }}</div>
                         </ion-input>
-                        <core-input-errors [control]="signupForm.controls[nameField]" [errorMessages]="namefieldsErrors![nameField]">
-                        </core-input-errors>
+                        <core-input-errors [control]="signupForm.controls[nameField]" [errorMessages]="namefieldsErrors![nameField]" />
                     </ion-item>
                     <ion-item class="ion-text-wrap">
-                        <ion-label position="stacked">{{ 'core.user.city' | translate }}</ion-label>
-                        <ion-input type="text" name="city" placeholder="{{ 'core.user.city' | translate }}" formControlName="city"
-                            autocorrect="off">
-                        </ion-input>
+                        <ion-input labelPlacement="stacked" type="text" name="city" placeholder="{{ 'core.user.city' | translate }}"
+                            formControlName="city" autocorrect="off" [label]="'core.user.city' | translate" />
                     </ion-item>
                     <ion-item class="ion-text-wrap">
-                        <ion-label position="stacked">{{ 'core.user.country' | translate }}</ion-label>
-                        <ion-select name="country" formControlName="country" [placeholder]="'core.login.selectacountry' | translate"
-                            [cancelText]="'core.cancel' | translate" [okText]="'core.ok' | translate">
+                        <ion-select labelPlacement="stacked" name="country" formControlName="country"
+                            [placeholder]="'core.login.selectacountry' | translate" [cancelText]="'core.cancel' | translate"
+                            [okText]="'core.ok' | translate" [label]="'core.user.country' | translate">
                             <ion-select-option value="">{{ 'core.login.selectacountry' | translate }}</ion-select-option>
                             <ion-select-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-select-option>
                         </ion-select>
@@ -178,18 +165,18 @@
                             </ion-label>
                         </ion-item-divider>
                         <core-user-profile-field *ngFor="let field of category.fields" [field]="field" [edit]="true" [signup]="true"
-                            registerAuth="email" [form]="signupForm"></core-user-profile-field>
+                            registerAuth="email" [form]="signupForm" />
                     </ng-container>
 
                     <!-- ReCAPTCHA -->
                     <ng-container *ngIf="settings.recaptchapublickey">
                         <ion-item-divider class="ion-text-wrap">
                             <ion-label>
-                                <h2><span [core-mark-required]="true">{{ 'core.login.security_question' | translate }}</span></h2>
+                                <h2 [core-mark-required]="true">{{ 'core.login.security_question' | translate }}</h2>
                             </ion-label>
                         </ion-item-divider>
                         <core-recaptcha [publicKey]="settings.recaptchapublickey" [model]="captcha" [siteUrl]="site.siteUrl"
-                            [showRequiredError]="formSubmitClicked"></core-recaptcha>
+                            [showRequiredError]="formSubmitClicked" />
                     </ng-container>
 
                     <!-- Site policy (if any). -->
@@ -207,12 +194,10 @@
                             </ion-label>
                         </ion-item>
                         <ion-item class="ion-text-wrap">
-                            <ion-label>
-                                <span [core-mark-required]="true">{{ 'core.login.policyacceptmandatory' | translate }}</span>
-                                <core-input-errors [control]="signupForm.controls.policyagreed" [errorMessages]="policyErrors">
-                                </core-input-errors>
-                            </ion-label>
-                            <ion-checkbox slot="end" name="policyagreed" formControlName="policyagreed"></ion-checkbox>
+                            <ion-checkbox labelPlacement="start" justify="space-between" name="policyagreed" formControlName="policyagreed">
+                                <p [core-mark-required]="true">{{ 'core.login.policyacceptmandatory' | translate }}</p>
+                            </ion-checkbox>
+                            <core-input-errors [control]="signupForm.controls.policyagreed" [errorMessages]="policyErrors" />
                         </ion-item>
                     </ng-container>
 
@@ -232,7 +217,7 @@
             <ion-item-divider class="ion-text-wrap">
                 <ion-label>
                     <h2 *ngIf="siteName" class="item-heading ion-padding">
-                        <core-format-text [text]="siteName" [filter]="false"></core-format-text>
+                        <core-format-text [text]="siteName" [filter]="false" />
                     </h2>
                 </ion-label>
             </ion-item-divider>

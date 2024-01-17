@@ -893,8 +893,10 @@ class AddonModForumDiscussionDiscussionsSwipeManager extends AddonModForumDiscus
     /**
      * @inheritdoc
      */
-    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
-        return this.getSource().DISCUSSIONS_PATH_PREFIX + route.params.discussionId;
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
+        const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
+
+        return this.getSource().DISCUSSIONS_PATH_PREFIX + snapshot.params.discussionId;
     }
 
 }

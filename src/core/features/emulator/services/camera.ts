@@ -13,13 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
+import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
 
 import { CoreEmulatorCaptureHelper } from './capture-helper';
-
-// @todo remove android.media.action.IMAGE_CAPTURE and android.intent.action.GET_CONTENT entries
-// from config.xml once https://github.com/apache/cordova-plugin-camera/issues/673 is resolved.
-// (this is written here because comments get stripped out from config.xml)
 
 /**
  * Emulates the Cordova Camera plugin in browser.

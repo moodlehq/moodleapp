@@ -1,4 +1,5 @@
-@import "~theme/globals";
+@use "theme/globals" as *;
+@use "sass:math" as math;
 
 $quiz-timer-warn-color: $red !default;
 $quiz-timer-iterations: 15 !default;
@@ -13,9 +14,9 @@ $quiz-timer-iterations: 15 !default;
         // Make the timer go red when it's reaching 0.
         @for $i from 0 through $quiz-timer-iterations {
             &.core-timer-timeleft-#{$i} {
-                $timer-background: rgba($quiz-timer-warn-color, 1 - ($i / $quiz-timer-iterations));
+                $timer-background: rgba($quiz-timer-warn-color, 1 - math.div($i, $quiz-timer-iterations));
                 --timer-background: #{$timer-background};
-                @if $i <= $quiz-timer-iterations / 2 {
+                @if $i <= math.div($quiz-timer-iterations, 2) {
                     --timer-text-color: var(--white);
                 }
             }

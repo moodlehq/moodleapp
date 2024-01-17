@@ -39,18 +39,19 @@ $ion-item-background-rgb:  color-to-rgb-list($ion-item-background) !default;
 $ion-item-background-dark: $gray-900 !default;
 $ion-item-background-dark-rgb: color-to-rgb-list($ion-item-background-dark) !default;
 
-$primary:    $brand-color !default;
-$secondary:  $gray-300 !default;
-$danger:     $red !default;
-$warning:    $yellow !default;
-$success:    $green !default;
-$info:       $blue !default;
-$light:      $gray-100 !default;
-$medium:     $gray-700 !default;
-$dark:       $gray-900 !default;
+$primary:      $brand-color !default;
+$primary-dark: $brand-color !default;
+$secondary:    $gray-300 !default;
+$danger:       $red !default;
+$warning:      $yellow !default;
+$success:      $green !default;
+$info:         $blue !default;
+$light:        $gray-100 !default;
+$medium:       $gray-700 !default;
+$dark:         $gray-900 !default;
 
 $colors:  (
-    primary: (light: $primary, dark: $primary),
+    primary: (light: $primary, dark: $primary-dark),
     secondary: (light: $secondary, dark: $gray-700),
     success: (light: $success),
     warning: (light: $warning),

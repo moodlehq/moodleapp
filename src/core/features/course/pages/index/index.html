@@ -1,20 +1,20 @@
-<ion-header [collapsible]="(tabsComponent?.selectedIndex == 0 || tabsComponent?.selectedIndex === undefined) && !fullScreenEnabled">
+<ion-header [collapsible]="(tabsComponent?.selectedIndex === 0 || tabsComponent?.selectedIndex === undefined) && !fullScreenEnabled">
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="course?.id"></core-format-text>
+                <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="course?.id" />
             </h1>
         </ion-title>
 
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="openCourseSummary()" [attr.aria-label]="'core.course.coursesummary' | translate">
-                <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
             </ion-button>
             <!-- Add an empty context menu so tab pages can add items, otherwise the menu disappears in some cases. -->
-            <core-context-menu></core-context-menu>
+            <core-context-menu />
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
@@ -22,8 +22,7 @@
     <ion-item class="core-format-progress-list ion-text-wrap list-item-limited-width" collapsible>
         <ng-container *ngIf="course">
             <div *ngIf="!course.courseimage" #courseThumb slot="start" class="core-course-thumb">
-                <ion-icon name="fas-graduation-cap" class="course-icon" aria-hidden="true">
-                </ion-icon>
+                <ion-icon name="fas-graduation-cap" class="course-icon" aria-hidden="true" />
             </div>
             <ion-avatar *ngIf="course.courseimage" slot="start" class="core-course-thumb">
                 <img [src]="course.courseimage" core-external-content alt="" />
@@ -32,13 +31,12 @@
 
         <ion-label>
             <h1>
-                <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="course?.id"></core-format-text>
+                <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="course?.id" />
             </h1>
             <div class="core-course-progress" *ngIf="progress !== undefined">
-                <core-progress-bar [progress]="progress" a11yText="core.course.aria:sectionprogress">
-                </core-progress-bar>
+                <core-progress-bar [progress]="progress" a11yText="core.course.aria:sectionprogress" />
             </div>
         </ion-label>
     </ion-item>
 </div>
-<core-tabs-outlet [tabs]="tabs" [hideUntil]="loaded" (ionChange)="tabSelected()"></core-tabs-outlet>
+<core-tabs-outlet [tabs]="tabs" [hideUntil]="loaded" (ionChange)="tabSelected()" />

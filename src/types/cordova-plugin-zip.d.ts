@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { HammerGestureConfig } from '@angular/platform-browser';
-import { DIRECTION_ALL } from 'hammerjs';
-
 /**
- * Application HammerJS config.
+ * Types for file cordova plugin.
+ *
+ * @see https://github.com/moodlemobile/cordova-plugin-zip
  */
-export class CoreHammerGestureConfig extends HammerGestureConfig {
 
-    overrides = {
-        swipe: { direction: DIRECTION_ALL },
+interface Window {
+
+    zip: {
+        unzip(source: string, destination: string, onSuccess: Function, onProgress?: Function): void;
     };
 
 }

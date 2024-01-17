@@ -1,14 +1,14 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1 *ngIf="courseId">{{ 'core.search' | translate }}</h1>
             <h1 *ngIf="!courseId">{{ 'core.search.globalsearch' | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
-            <core-user-menu-button></core-user-menu-button>
+            <core-user-menu-button />
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
@@ -16,25 +16,23 @@
     <div>
         <ion-card class="core-danger-card" *ngIf="searchBanner">
             <ion-item>
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
                 <ion-label>
-                    <core-format-text [text]="searchBanner"></core-format-text>
+                    <core-format-text [text]="searchBanner" />
                 </ion-label>
             </ion-item>
         </ion-card>
 
         <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch()" [placeholder]="'core.search' | translate"
-            [searchLabel]="'core.search' | translate" [autoFocus]="true" searchArea="CoreSearchGlobalSearch"></core-search-box>
+            [searchLabel]="'core.search' | translate" [autoFocus]="true" searchArea="CoreSearchGlobalSearch" />
 
         <ion-list *ngIf="resultsSource.isLoaded()">
             <core-search-global-search-result *ngFor="let result of resultsSource.getItems()" [result]="result"
-                (onClick)="visitResult(result)">
-            </core-search-global-search-result>
+                (onClick)="visitResult(result)" />
         </ion-list>
 
         <core-infinite-loading [enabled]="resultsSource.isLoaded() && !resultsSource.isCompleted()" (action)="loadMoreResults($event)"
-            [error]="loadMoreError">
-        </core-infinite-loading>
+            [error]="loadMoreError" />
 
         <core-empty-box *ngIf="resultsSource.isEmpty()" icon="fas-magnifying-glass" [dimmed]="!resultsSource.isLoaded()">
             <p *ngIf="!resultsSource.isLoaded()">{{ 'core.search.empty' | translate }}</p>
@@ -46,7 +44,7 @@
 
         <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
             <ion-fab-button (click)="openFilters()" [attr.aria-label]="'core.filter' | translate">
-                <ion-icon name="fas-filter" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-filter" aria-hidden="true" />
             </ion-fab-button>
         </ion-fab>
     </div>

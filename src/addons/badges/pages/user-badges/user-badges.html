@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.badges.badges' | translate }}</h1>
@@ -11,11 +11,10 @@
 <ion-content>
     <core-split-view>
         <ion-refresher slot="fixed" [disabled]="!badges.loaded" (ionRefresh)="refreshBadges($event.target)">
-            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
         <core-loading [hideUntil]="badges.loaded">
-            <core-empty-box *ngIf="badges.empty" icon="fas-trophy" [message]="'addon.badges.nobadges' | translate">
-            </core-empty-box>
+            <core-empty-box *ngIf="badges.empty" icon="fas-trophy" [message]="'addon.badges.nobadges' | translate" />
 
             <ion-list *ngIf="!badges.empty" class="ion-no-margin">
                 <ion-item button class="ion-text-wrap" *ngFor="let badge of badges.items" [attr.aria-label]="badge.name"

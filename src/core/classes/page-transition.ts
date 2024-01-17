@@ -12,41 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createAnimation } from '@ionic/angular';
-import { Animation, NavOptions } from '@ionic/core';
+import { TransitionOptions, createAnimation, getIonPageElement } from '@ionic/angular';
+import { Animation } from '@ionic/core';
 
 /**
- * Adaptation from Ionic 5 iOs transition.
+ * Adaptation from Ionic 7 iOs transition.
  *
- * https://github.com/ionic-team/ionic-framework/blob/5.8.x/core/src/utils/transition/ios.transition.ts
+ * https://github.com/ionic-team/ionic-framework/blob/v7.5.6/core/src/utils/transition/ios.transition.ts
  * Removed large title options, translucent header, buttons-collapse and header-collapse-condense-inactive.
  * Changed large title check by collapsible header.
  */
 
 const DURATION = 540;
 
-const getIonPageElement = (element: HTMLElement): HTMLElement | null => {
-    if (element.classList.contains('ion-page')) {
-        return element;
-    }
-
-    const ionPage: HTMLElement | null = element.querySelector(':scope > .ion-page, :scope > ion-nav, :scope > ion-tabs');
-    if (ionPage) {
-        return ionPage;
-    }
-
-    // idk, return the original element so at least something animates and we don't have a null pointer
-    return element;
-};
-
-export interface TransitionOptions extends NavOptions {
-    progressCallback?: ((ani: Animation | undefined) => void);
-    baseEl: HTMLElement;
-    enteringEl: HTMLElement;
-    leavingEl: HTMLElement | undefined;
-}
-
-export const shadow = <T extends Element>(el: T): ShadowRoot | T => el.shadowRoot || el;
+const shadow = <T extends Element>(el: T): ShadowRoot | T => el.shadowRoot || el;
 
 export const moodleTransitionAnimation = (navEl: HTMLElement, opts: TransitionOptions): Animation => {
     const EASING = 'cubic-bezier(0.32,0.72,0,1)';

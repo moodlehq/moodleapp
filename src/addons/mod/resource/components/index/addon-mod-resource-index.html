@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
     </ion-button>
 </core-navbar-buttons>
 
@@ -12,24 +12,23 @@
     <core-course-module-info [module]="module" [courseId]="courseId" [description]="displayDescription && description"
         [component]="component" [componentId]="componentId" (completionChanged)="onCompletionChange()">
         <div class="addon-mod_resource-afterlink ion-text-wrap" *ngIf="module.afterlink" description>
-            <core-format-text [text]="module.afterlink" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-            </core-format-text>
+            <core-format-text [text]="module.afterlink" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
         </div>
     </core-course-module-info>
 
     <ion-card class="core-warning-card" *ngIf="warning">
         <ion-item>
-            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
             <ion-label><span [innerHTML]="warning"></span></ion-label>
         </ion-item>
     </ion-card>
 
     <ng-container *ngIf="mode === 'iframe'">
-        <core-iframe [src]="src"></core-iframe>
+        <core-iframe [src]="src" />
     </ng-container>
 
     <div *ngIf="mode === 'embedded'" class="ion-padding">
-        <core-format-text [text]="contentText" [filter]="false"></core-format-text>
+        <core-format-text [text]="contentText" [filter]="false" />
     </div>
 
     <ng-container *ngIf="mode === 'external'">
@@ -70,7 +69,7 @@
                         <ion-grid *ngIf="currentStatus === outdatedStatus" class="addon-mod_resource-outdated">
                             <ion-row class="ion-align-items-center">
                                 <ion-col size="auto">
-                                    <ion-icon color="warning" name="fas-triangle-exclamation" aria-hidden="true"></ion-icon>
+                                    <ion-icon color="warning" name="fas-triangle-exclamation" aria-hidden="true" />
                                 </ion-col>
                                 <ion-col>
                                     <p><strong>{{ 'addon.mod_resource.resourcestatusoutdated' | translate }}</strong></p>
@@ -87,22 +86,21 @@
         <div class="list-item-limited-width" *ngIf="mode === 'external'">
             <ion-button *ngIf="isIOS && (!shouldOpenInBrowser || !isOnline)" expand="block" fill="outline"
                 (click)="open(openFileAction.OPEN_WITH)" class="ion-margin ion-text-wrap">
-                <ion-icon name="far-share-from-square" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="far-share-from-square" slot="start" aria-hidden="true" />
                 {{ 'core.openwith' | translate }}
             </ion-button>
 
             <ion-button expand="block" (click)="open(openFileAction.OPEN)" class="ion-margin ion-text-wrap">
                 <ng-container *ngIf="isStreamedFile">
-                    <ion-icon name="fas-play" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-play" slot="start" aria-hidden="true" />
                     {{ 'core.play' | translate }}
                 </ng-container>
                 <ng-container *ngIf="!isStreamedFile">
-                    <ion-icon name="far-file" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon name="far-file" slot="start" aria-hidden="true" />
                     {{ 'addon.mod_resource.openthefile' | translate }}
                 </ng-container>
             </ion-button>
         </div>
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">
-        </core-course-module-navigation>
+        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
     </div>
 </core-loading>

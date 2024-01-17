@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFile } from '@services/file';
 import { CoreTextUtils } from '@services/utils/text';
@@ -312,17 +312,12 @@ export class CoreMimetypeUtilsProvider {
      * @returns The lowercased extension without the dot, or undefined.
      */
     guessExtensionFromUrl(fileUrl: string): string | undefined {
-        const split = CoreUrl.removeUrlAnchor(fileUrl).split('.');
+        const parsed = CoreUrl.parse(fileUrl);
+        const split = parsed?.path?.split('.');
         let extension: string | undefined;
 
-        if (split.length > 1) {
-            let candidate = split[split.length - 1].toLowerCase();
-            // Remove params if any.
-            const position = candidate.indexOf('?');
-            if (position > -1) {
-                candidate = candidate.substring(0, position);
-            }
-
+        if (split && split.length > 1) {
+            const candidate = split[split.length - 1].toLowerCase();
             if (EXTENSION_REGEX.test(candidate)) {
                 extension = candidate;
             }

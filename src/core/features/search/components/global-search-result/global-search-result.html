@@ -1,23 +1,23 @@
 <ion-item lines="inset" button (click)="onClick.emit($event)">
-    <core-course-image *ngIf="result.course" [course]="result.course"></core-course-image>
-    <core-user-avatar *ngIf="result.user" [user]="result.user" [linkProfile]="false"></core-user-avatar>
+    <core-course-image *ngIf="result.course" [course]="result.course" />
+    <core-user-avatar *ngIf="result.user" [user]="result.user" [linkProfile]="false" />
     <ion-label>
         <h3 *ngIf="result.title">
-            <ion-icon *ngIf="renderedIcon" [name]="renderedIcon" aria-hidden="true"></ion-icon>
+            <ion-icon *ngIf="renderedIcon" [name]="renderedIcon" aria-hidden="true" />
             <core-mod-icon *ngIf="!renderedIcon && result.module" [modicon]="result.module.iconurl"
-                [modname]="result.module.name"></core-mod-icon>
+                [modname]="result.module.name" />
             <img *ngIf="!renderedIcon && !result.module && result.component" [src]="result.component.iconurl" alt="" class="result-icon"
                 core-external-content [component]="result.component.name">
-            <core-format-text [text]="result.title"></core-format-text>
+            <core-format-text [text]="result.title" />
         </h3>
-        <core-format-text *ngIf="result.content && !result.course && !result.user" [text]="result.content"></core-format-text>
+        <core-format-text *ngIf="result.content && !result.course && !result.user" [text]="result.content" />
         <div *ngIf="renderedContext" class="result-context-wrapper">
             <div *ngIf="renderedContext.courseName" class="result-context">
-                <ion-icon name="fas-graduation-cap" aria-hidden="true"></ion-icon>
-                <core-format-text [text]="renderedContext.courseName"></core-format-text>
+                <ion-icon name="fas-graduation-cap" aria-hidden="true" />
+                <core-format-text [text]="renderedContext.courseName" />
             </div>
             <div *ngIf="renderedContext.userName" class="result-context">
-                <ion-icon name="fas-user" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-user" aria-hidden="true" />
                 <span>{{ 'core.search.resultby' | translate: { $a: renderedContext.userName } }}</span>
             </div>
         </div>

@@ -134,22 +134,22 @@ Feature: Test basic usage of book activity in app
     But I should not find "This is the first chapter" in the app
 
     # Navigate using swipe.
-    When I swipe to the left in "Chapt 3" "ion-slides" in the app
+    When I swipe to the left in "Chapt 3" "swiper-container" in the app
     Then I should find "Chapt 3" in the app
     And I should find "This is the third chapter" in the app
     And I should find "4 / 4" in the app
 
-    When I swipe to the right in "Chapt 3" "ion-slides" in the app
+    When I swipe to the right in "Chapt 3" "swiper-container" in the app
     Then I should find "Chapt 2" in the app
     And I should find "This is the second chapter" in the app
     And I should find "3 / 4" in the app
 
-    When I swipe to the right in "Chapt 2" "ion-slides" in the app
+    When I swipe to the right in "Chapt 2" "swiper-container" in the app
     Then I should find "Chapt 1.1" in the app
     And I should find "This is a subchapter" in the app
     And I should find "2 / 4" in the app
 
-    When I swipe to the left in "Chapt 1.1" "ion-slides" in the app
+    When I swipe to the left in "Chapt 1.1" "swiper-container" in the app
     Then I should find "Chapt 2" in the app
     And I should find "This is the second chapter" in the app
     And I should find "3 / 4" in the app
@@ -208,22 +208,22 @@ Scenario: View and navigate book contents (teacher)
     But I should not find "This is the first chapter" in the app
 
     # Navigate using swipe.
-    When I swipe to the left in "Hidden subchapter" "ion-slides" in the app
+    When I swipe to the left in "Hidden subchapter" "swiper-container" in the app
     Then I should find "Chapt 3" in the app
     And I should find "This is the third chapter" in the app
     And I should find "6 / 7" in the app
 
-    When I swipe to the left in "Chapt 3" "ion-slides" in the app
+    When I swipe to the left in "Chapt 3" "swiper-container" in the app
     Then I should find "Last hidden" in the app
     And I should find "Another hidden subchapter" in the app
     And I should find "7 / 7" in the app
 
-    When I swipe to the left in "Last hidden" "ion-slides" in the app
+    When I swipe to the left in "Last hidden" "swiper-container" in the app
     Then I should find "Last hidden" in the app
     And I should find "Another hidden subchapter" in the app
     And I should find "7 / 7" in the app
 
-    When I swipe to the right in "Last hidden" "ion-slides" in the app
+    When I swipe to the right in "Last hidden" "swiper-container" in the app
     Then I should find "Chapt 3" in the app
     And I should find "This is the third chapter" in the app
     And I should find "6 / 7" in the app

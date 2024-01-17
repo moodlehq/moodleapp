@@ -47,8 +47,8 @@ export class CoreSitesListComponent<T extends CoreSiteBasicInfo> {
     @Input() currentSiteClickable?: boolean; // If set, specify a different clickable value for current site.
     @Output() onSiteClicked = new EventEmitter<T>();
 
-    @ContentChild('siteItem') siteItemTemplate?: TemplateRef<unknown>;
-    @ContentChild('siteLabel') siteLabelTemplate?: TemplateRef<unknown>;
+    @ContentChild('siteItem') siteItemTemplate?: TemplateRef<{site: T; isCurrentSite: boolean}>;
+    @ContentChild('siteLabel') siteLabelTemplate?: TemplateRef<{site: T; isCurrentSite: boolean}>;
 
     /**
      * Check whether a site is clickable.

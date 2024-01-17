@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Translate } from '@singletons';
 import { ModalOptions } from '@ionic/core';
 import { CoreDomUtils } from '@services/utils/dom';
-import { IonSelect } from '@ionic/angular';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 /**
@@ -50,8 +49,6 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     ],
 })
 export class CoreComboboxComponent implements ControlValueAccessor {
-
-    @ViewChild(IonSelect) select!: IonSelect;
 
     @Input() interface: 'popover' | 'modal' = 'popover';
     @Input() label = Translate.instant('core.show'); // Aria label.
@@ -112,30 +109,25 @@ export class CoreComboboxComponent implements ControlValueAccessor {
     /**
      * Shows combobox modal.
      *
-     * @param event Event.
      * @returns Promise resolved when done.
      */
-    async openSelect(event?: UIEvent): Promise<void> {
+    async openModal(): Promise<void> {
         this.touch();
 
-        if (this.interface == 'modal') {
-            if (this.expanded || !this.modalOptions) {
-                return;
-            }
-            this.expanded = true;
+        if (this.expanded || !this.modalOptions) {
+            return;
+        }
+        this.expanded = true;
 
-            if (this.listboxId) {
-                this.modalOptions.id = this.listboxId;
-            }
+        if (this.listboxId) {
+            this.modalOptions.id = this.listboxId;
+        }
 
-            const data = await CoreDomUtils.openModal(this.modalOptions);
-            this.expanded = false;
+        const data = await CoreDomUtils.openModal(this.modalOptions);
+        this.expanded = false;
 
-            if (data) {
-                this.onValueChanged(data);
-            }
-        } else if (this.select) {
-            this.select.open(event);
+        if (data) {
+            this.onValueChanged(data);
         }
     }
 

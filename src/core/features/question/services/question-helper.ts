@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable, EventEmitter } from '@angular/core';
-import { FileEntry, DirectoryEntry } from '@ionic-native/file/ngx';
+import { FileEntry, DirectoryEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';

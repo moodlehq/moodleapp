@@ -15,6 +15,9 @@
 import { CoreApp } from '@services/app';
 import { CoreUpdateManager } from '@services/update-manager';
 
+/**
+ * Read redirect data from local storage and clear it if it existed.
+ */
 export default async function(): Promise<void> {
     await CoreUpdateManager.donePromise;
 

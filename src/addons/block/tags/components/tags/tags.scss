@@ -1,14 +1,20 @@
 :host .core-block-content ::ng-deep {
+    ion-label {
+        max-width: 100%;
+    }
     .tag_cloud {
-        text-align: center;
         ul.inline-list {
             list-style: none;
             margin: 0;
             -webkit-padding-start: 0;
 
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+
             li {
                 padding: .2em;
-                display: inline-block;
 
                 a {
                     background: var(--primary);

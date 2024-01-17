@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'core.user.profile' | translate }}</h1>
@@ -10,18 +10,18 @@
 </ion-header>
 <ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!userLoaded" (ionRefresh)="refreshUser($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="userLoaded">
         <ion-list *ngIf="user">
-            <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap" [lines]="user.description ? null : 'full'">
-                <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="!canChangeProfilePicture">
-                    <ion-button class="edit-avatar" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"
-                        [attr.aria-label]="'core.user.newpicture' | translate" fill="clear">
-                        <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true"></ion-icon>
-                    </ion-button>
-                </core-user-avatar>
+            <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap" [lines]="user.description ? 'none' : 'full'">
                 <ion-label>
+                    <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="!canChangeProfilePicture">
+                        <ion-button class="edit-avatar" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"
+                            [attr.aria-label]="'core.user.newpicture' | translate" fill="clear">
+                            <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true" />
+                        </ion-button>
+                    </core-user-avatar>
                     <h2>{{ user.fullname }}</h2>
                 </ion-label>
             </ion-item>
@@ -29,8 +29,7 @@
             <ion-item class="ion-text-wrap" *ngIf="user.description" lines="full">
                 <ion-label>
                     <p>
-                        <core-format-text [text]="user.description" contextLevel="user" [contextInstanceId]="user.id">
-                        </core-format-text>
+                        <core-format-text [text]="user.description" contextLevel="user" [contextInstanceId]="user.id" />
                     </p>
                 </ion-label>
             </ion-item>
@@ -129,13 +128,11 @@
                     </ion-label>
                 </ion-item>
                 <core-user-profile-field *ngFor="let field of user.customfields" [field]="field" contextLevel="course"
-                    [contextInstanceId]="courseId" [courseId]="courseId">
-                </core-user-profile-field>
+                    [contextInstanceId]="courseId" [courseId]="courseId" />
             </ion-item-group>
         </ion-list>
 
         <core-empty-box *ngIf="!user || (!hasContact && !hasDetails && !user.description)" icon="fas-user"
-            [message]=" 'core.user.detailsnotavailable' | translate">
-        </core-empty-box>
+            [message]=" 'core.user.detailsnotavailable' | translate" />
     </core-loading>
 </ion-content>

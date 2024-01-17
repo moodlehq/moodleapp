@@ -1,23 +1,23 @@
 <span *ngIf="inputMode && form" [formGroup]="form">
-    <ion-input *ngIf="searchMode" type="text" [placeholder]="field.name" [formControlName]="'f_'+field.id"></ion-input>
+    <ion-input *ngIf="searchMode" type="text" [placeholder]="field.name" [formControlName]="'f_'+field.id" />
 
     <ng-container *ngIf="editMode">
         <span [core-mark-required]="field.required" class="core-mark-required"></span>
-        <div class="addon-data-latlong">
-            <ion-input type="text" [formControlName]="'f_'+field.id+'_0'" maxlength="10"></ion-input>
-            <span class="placeholder-icon" item-right>°N</span>
+        <div class="addon-data-latlong flex-row">
+            <ion-input type="text" [formControlName]="'f_'+field.id+'_0'" maxlength="10" />
+            <div class="input-units">°N</div>
         </div>
-        <div class="addon-data-latlong">
-            <ion-input type="text" [formControlName]="'f_'+field.id+'_1'" maxlength="10"></ion-input>
-            <span class="placeholder-icon" item-right>°E</span>
+        <div class="addon-data-latlong flex-row">
+            <ion-input type="text" [formControlName]="'f_'+field.id+'_1'" maxlength="10" />
+            <div class="input-units">°E</div>
         </div>
         <div class="addon-data-latlong" *ngIf="locationServicesEnabled">
             <ion-button (click)="getLocation($event)">
-                <ion-icon name="fas-crosshairs" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-crosshairs" slot="start" aria-hidden="true" />
                 {{ 'addon.mod_data.mylocation' | translate }}
             </ion-button>
         </div>
-        <core-input-errors *ngIf="error" [control]="form.controls['f_'+field.id]" [errorText]="error"></core-input-errors>
+        <core-input-errors *ngIf="error" [control]="form.controls['f_'+field.id]" [errorText]="error" />
     </ng-container>
 </span>
 

@@ -49,7 +49,7 @@ export class CoreUserProfileMailHandlerService implements CoreUserProfileHandler
      */
     getDisplayData(): CoreUserProfileHandlerData {
         return {
-            icon: 'mail',
+            icon: 'fas-envelope',
             title: 'core.user.sendemail',
             class: 'core-user-profile-mail',
             action: (event, user): void => {

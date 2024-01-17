@@ -267,7 +267,7 @@ export enum CoreAutoLogoutType {
      * then, the user must login again.
      */
     CUSTOM = 2,
-};
+}
 
 export type CoreAutoLogoutConfig = CoreAutoLogoutSessionConfig | CoreAutoLogoutOtherConfig;
 

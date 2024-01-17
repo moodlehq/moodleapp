@@ -33,9 +33,8 @@ import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSilentError } from '../errors/silenterror';
 import { CorePromisedValue } from '@classes/promised-value';
-import { Observable, ObservableInput, ObservedValueOf, OperatorFunction, Subject } from 'rxjs';
+import { Observable, ObservableInput, ObservedValueOf, OperatorFunction, Subject, firstValueFrom } from 'rxjs';
 import { finalize, map, mergeMap } from 'rxjs/operators';
-import { firstValueFrom } from '../../utils/rxjs';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreSiteInfo, CoreSiteInfoResponse, CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from './unauthenticated-site';
@@ -212,7 +211,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
     /**
      * Check if current user is Admin.
-     * Works properly since v3.8. See more in: {@link} https://tracker.moodle.org/browse/MDL-65550
+     * Works properly since v3.8. See more in: {@link https://tracker.moodle.org/browse/MDL-65550}
      *
      * @returns Whether the user is Admin.
      */
@@ -1279,7 +1278,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         const ignoreCache = CoreSitesReadingStrategy.ONLY_NETWORK || CoreSitesReadingStrategy.PREFER_NETWORK;
         if (!ignoreCache && this.publicConfig) {
             return this.publicConfig;
-        };
+        }
 
         const method = 'tool_mobile_get_public_config';
         const cacheId = this.getCacheId(method, {});

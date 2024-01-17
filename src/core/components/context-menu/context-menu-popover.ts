@@ -61,7 +61,7 @@ export class CoreContextMenuPopoverComponent {
             item.toggle = !item.toggle;
         }
 
-        if (!!item.action && item.action.observers.length > 0) {
+        if (!!item.action && item.action.observed) {
             event.preventDefault();
             event.stopPropagation();
 
@@ -74,7 +74,7 @@ export class CoreContextMenuPopoverComponent {
             }
 
             item.action.emit(() => this.closeMenu(item));
-        } else if (item.closeOnClick && (item.href || (!!item.onClosed && item.onClosed.observers.length > 0))) {
+        } else if (item.closeOnClick && (item.href || (!!item.onClosed && item.onClosed.observed))) {
             this.closeMenu(item);
         }
 

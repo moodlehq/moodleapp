@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
 
         <ion-title>
@@ -12,8 +12,7 @@
 <ion-content class="limited-width">
     <core-loading [hideUntil]="loaded">
         <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterChanged($event.target)" (ionCancel)="filterChanged($event.target)"
-            [placeholder]="'core.filter' | translate" class="ion-margin-top">
-        </ion-searchbar>
+            [placeholder]="'core.filter' | translate" class="ion-margin-top" />
         <ion-list>
             <ion-item button *ngIf="error" class="ion-text-wrap" [href]="licensesUrl" core-link auto-login="no" [detail]="false">
                 <ion-label>

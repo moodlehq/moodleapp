@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, Output, OnInit, EventEmitter, ViewChild, ElementRef } from '@angular/core';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreFile } from '@services/file';
@@ -119,7 +119,7 @@ export class CoreLocalFileComponent implements OnInit {
         e.preventDefault();
         e.stopPropagation();
 
-        if (!isOpenButton && CoreUtils.isTrueOrOne(this.overrideClick) && this.onClick.observers.length) {
+        if (!isOpenButton && CoreUtils.isTrueOrOne(this.overrideClick) && this.onClick.observed) {
             this.onClick.emit();
 
             return;

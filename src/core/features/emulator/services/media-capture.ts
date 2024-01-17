@@ -18,7 +18,7 @@ import {
     CaptureImageOptions,
     CaptureVideoOptions,
     MediaFile,
-} from '@ionic-native/media-capture/ngx';
+} from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreEmulatorCaptureHelper } from './capture-helper';
 

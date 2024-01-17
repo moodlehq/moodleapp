@@ -5,23 +5,22 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
     <core-format-text [text]="content" [component]="component" [componentId]="componentId" [filter]="filter" [contextLevel]="contextLevel"
-        [contextInstanceId]="instanceId" [courseId]="courseId">
-    </core-format-text>
+        [contextInstanceId]="instanceId" [courseId]="courseId" />
 
     <ion-card *ngIf="files?.length">
-        <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="componentId"></core-file>
+        <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="componentId" />
     </ion-card>
 </ion-content>
 <ion-footer *ngIf="displayCopyButton">
     <ion-button expand="block" fill="outline" (click)="copyText()">
-        <ion-icon name="fas-copy" aria-hidden="true" slot="start"></ion-icon>
+        <ion-icon name="fas-copy" aria-hidden="true" slot="start" />
         {{ 'core.copytoclipboard' | translate }}
     </ion-button>
 </ion-footer>

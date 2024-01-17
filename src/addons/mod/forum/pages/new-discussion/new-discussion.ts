@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, ViewChild, ElementRef, OnInit, Optional } from '@angular/core';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { FormControl } from '@angular/forms';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import { CoreGroup, CoreGroups, CoreGroupsProvider } from '@services/groups';
@@ -70,7 +70,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     @ViewChild(CoreEditorRichTextEditorComponent) messageEditor!: CoreEditorRichTextEditorComponent;
 
     component = AddonModForumProvider.COMPONENT;
-    messageControl = new FormControl();
+    messageControl = new FormControl<string | null>(null);
     groupsLoaded = false;
     showGroups = false;
     hasOffline = false;
@@ -699,8 +699,10 @@ class AddonModForumNewDiscussionDiscussionsSwipeManager extends AddonModForumDis
     /**
      * @inheritdoc
      */
-    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
-        return `${this.getSource().DISCUSSIONS_PATH_PREFIX}new/${route.params.timeCreated}`;
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
+        const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
+
+        return `${this.getSource().DISCUSSIONS_PATH_PREFIX}new/${snapshot.params.timeCreated}`;
     }
 
 }

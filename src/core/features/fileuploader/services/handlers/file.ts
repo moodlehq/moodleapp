@@ -31,34 +31,27 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
     priority = 1200;
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @returns Promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Given a list of mimetypes, return the ones that are supported by the handler.
-     *
-     * @param mimetypes List of mimetypes.
-     * @returns Supported mimetypes.
+     * @inheritdoc
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
         return mimetypes;
     }
 
     /**
-     * Get the data to display the handler.
-     *
-     * @returns Data.
+     * @inheritdoc
      */
     getData(): CoreFileUploaderHandlerData {
         const handler: CoreFileUploaderHandlerData = {
             title: 'core.fileuploader.file',
             class: 'core-fileuploader-file-handler',
-            icon: 'folder', // Cannot use font-awesome in action sheet.
+            icon: 'fas-file-lines',
         };
 
         if (CorePlatform.isMobile()) {

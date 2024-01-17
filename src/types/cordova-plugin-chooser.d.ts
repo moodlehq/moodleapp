@@ -12,15 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Pipe, PipeTransform } from '@angular/core';
+/**
+ * Types for chooser cordova plugin.
+ *
+ * @see https://github.com/cyph/cordova-plugin-chooser
+ */
 
-@Pipe({
-    name: 'translate',
-})
-export class TranslatePipeStub implements PipeTransform {
+interface IChooserResult {
+    data?: Uint8Array;
+    dataURI?: string;
+    mediaType: string;
+    name: string;
+    uri: string;
+}
 
-    transform(text: string): string {
-        return text;
-    }
+interface Window {
 
+    chooser: {
+        getFile(accept?: string): Promise<IChooserResult | undefined>;
+        getFileMetadata(accept?: string): Promise<IChooserResult | undefined>;
+    };
+
+}
+
+declare module 'cordova-plugin-chooser' {
+    export type ChooserResult = IChooserResult;
 }

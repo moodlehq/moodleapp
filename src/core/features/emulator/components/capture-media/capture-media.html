@@ -31,21 +31,20 @@
 
 <ion-footer *ngIf="readyToCapture">
     <ion-row>
-        <ion-col></ion-col>
+        <ion-col />
         <ion-col class="ion-text-center">
             <ion-button fill="clear" *ngIf="!hasCaptured" (click)="actionClicked()" [attr.aria-label]="title">
-                <ion-icon *ngIf="!isCapturing && isVideo" name="fas-video" slot="icon-only" aria-hidden="true"></ion-icon>
-                <ion-icon *ngIf="isImage" name="fas-camera" slot="icon-only" aria-hidden="true"></ion-icon>
-                <ion-icon *ngIf="isCapturing" name="fas-square" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="!isCapturing && isVideo" name="fas-video" slot="icon-only" aria-hidden="true" />
+                <ion-icon *ngIf="isImage" name="fas-camera" slot="icon-only" aria-hidden="true" />
+                <ion-icon *ngIf="isCapturing" name="fas-square" slot="icon-only" aria-hidden="true" />
             </ion-button>
             <ion-button fill="clear" *ngIf="hasCaptured" (click)="discard()" [attr.aria-label]="'core.discard' | translate">
-                <ion-icon color="danger" name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon color="danger" name="fas-trash" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-col>
         <ion-col class="ion-padding ion-text-end chrono-container">
             <core-chrono *ngIf="!isImage" [hidden]="hasCaptured" [running]="isCapturing" [reset]="resetChrono" [endTime]="maxTime"
-                (onEnd)="stopCapturing()">
-            </core-chrono>
+                (onEnd)="stopCapturing()" />
         </ion-col>
     </ion-row>
 </ion-footer>

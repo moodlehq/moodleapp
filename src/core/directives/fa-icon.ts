@@ -15,6 +15,7 @@
 import { AfterViewInit, Directive, ElementRef, Input, OnChanges, SimpleChange } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreIcons } from '@singletons/icons';
+import { CoreConstants } from '../constants';
 
 /**
  * Directive to enable font-awesome 6.4 as ionicons.
@@ -41,65 +42,30 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
     }
 
     /**
-     * Detect icon name and use svg.
+     * Validate icon, e.g. checking if it's using a deprecated name.
      */
-    async setIcon(): Promise<void> {
-        let library = '';
-        let iconName = this.name;
-        let font = 'ionicons';
-        const parts = iconName.split('-', 2);
-        if (parts.length === 2) {
-            switch (parts[0]) {
-                case 'far':
-                    library = 'regular';
-                    font = 'font-awesome';
-                    break;
-                case 'fa':
-                case 'fas':
-                    library = 'solid';
-                    font = 'font-awesome';
-                    break;
-                case 'fab':
-                    library = 'brands';
-                    font = 'font-awesome';
-                    break;
-                case 'moodle':
-                    library = 'moodle';
-                    font = 'moodle';
-                    break;
-                case 'fam':
-                    library = 'font-awesome';
-                    font = 'moodle';
-                    break;
-                default:
-                    break;
+    async validateIcon(): Promise<void> {
+        if (CoreConstants.BUILD.isDevelopment && !CoreIcons.isIconNamePrefixed(this.name)) {
+            this.logger.warn(`Not prefixed icon ${this.name} detected, it could be an Ionic icon. Font-awesome is preferred.`);
+        }
+
+        if (this.name.includes('_')) {
+            // Ionic icons cannot contain a '_' in the name, Ionic doesn't load them, replace it with '-'.
+            this.logger.warn(`Icon ${this.name} contains '_' character and it's not allowed, replacing it with '-'.`);
+            this.updateName(this.name.replace(/_/g, '-'));
+        }
+
+        if (this.name.match(/^fa[brs]?-/)) {
+            // It's a font-awesome icon, check if it's using a deprecated name.
+            const iconName = this.name.substring(this.name.indexOf('-') + 1);
+            const { fileName, newLibrary } = await CoreIcons.getFontAwesomeIconFileName(iconName);
+
+            if (newLibrary) {
+                this.updateName(CoreIcons.prefixIconName('font-awesome', newLibrary, fileName));
+            } else if (fileName !== iconName) {
+                this.updateName(this.name.replace(iconName, fileName));
             }
         }
-
-        if (font === 'ionicons') {
-            this.element.removeAttribute('src');
-            this.logger.warn(`Ionic icon ${this.name} detected`);
-
-            return;
-        }
-
-        iconName = iconName.substring(parts[0].length + 1);
-
-        // Set it here to avoid loading unexisting icon paths (svg/iconName) caused by the tick delay of the checkIconAlias promise.
-        let src = CoreIcons.getIconSrc(font, library, iconName);
-        this.element.setAttribute('src', src);
-
-        if (font === 'font-awesome') {
-            const { fileName } = await CoreIcons.getFontAwesomeIconFileName(iconName);
-            if (fileName !== iconName) {
-                src = CoreIcons.getIconSrc(font, library, fileName);
-                this.element.setAttribute('src', src);
-            }
-        }
-
-        this.element.classList.add('faicon');
-        CoreIcons.validateIcon(this.name, src);
-
     }
 
     /**
@@ -123,7 +89,17 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
             return;
         }
 
-        this.setIcon();
+        this.validateIcon();
+    }
+
+    /**
+     * Update the icon name.
+     *
+     * @param newName New name to use.
+     */
+    protected updateName(newName: string): void {
+        this.name = newName;
+        this.element.setAttribute('name', newName);
     }
 
 }

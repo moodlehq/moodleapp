@@ -1,28 +1,26 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1 *ngIf="competency">
                 <core-format-text [text]="competency.competency.shortname" [contextLevel]="contextLevel"
-                    [contextInstanceId]="contextInstanceId">
-                </core-format-text> <small>{{ competency.competency.idnumber }}</small>
+                    [contextInstanceId]="contextInstanceId" /> <small>{{ competency.competency.idnumber }}</small>
             </h1>
         </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!competencyLoaded" (ionRefresh)="refreshCompetency($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="competencyLoaded">
         <ion-card *ngIf="competency">
             <ion-item class="ion-text-wrap" *ngIf="competency.competency.description">
                 <ion-label>
                     <core-format-text [text]="competency.competency.description" [contextLevel]="contextLevel"
-                        [contextInstanceId]="contextInstanceId">
-                    </core-format-text>
+                        [contextInstanceId]="contextInstanceId" />
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap">
@@ -30,14 +28,12 @@
                     <p class="item-heading">{{ 'addon.competency.path' | translate }}</p>
                     <p>
                         <core-format-text [text]="competency.comppath.framework.name" [contextLevel]="contextLevel"
-                            [contextInstanceId]="contextInstanceId">
-                        </core-format-text>
+                            [contextInstanceId]="contextInstanceId" />
                         <ng-container *ngFor="let ancestor of competency.comppath.ancestors">
                             &nbsp;/&nbsp;
                             <button class="as-link" (click)="openCompetencySummary(ancestor.id)">
                                 <core-format-text [text]="ancestor.name" [contextLevel]="contextLevel"
-                                    [contextInstanceId]="contextInstanceId">
-                                </core-format-text>
+                                    [contextInstanceId]="contextInstanceId" />
                             </button>
                         </ng-container>
                     </p>

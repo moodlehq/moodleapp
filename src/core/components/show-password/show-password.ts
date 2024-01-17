@@ -18,18 +18,31 @@ import { IonInput } from '@ionic/angular';
 import { CorePlatform } from '@services/platform';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreLogger } from '@singletons/logger';
 
 /**
- * Component to allow showing and hiding a password. The affected input MUST have a name to identify it.
+ * This component allows to show/hide a password.
+ * It's meant to be used with ion-input.
+ * It's recommended to use it as a slot of the input.
  *
  * @description
- * This directive needs to surround the input with the password.
  *
- * You need to supply the name of the input.
+ * There are 2 ways to use ths component:
+ * - Slot it to start or end on the ion-input element.
+ * - Surround the ion-input with the password with this component. This is deprecated.
  *
- * Example:
+ * In order to help finding the input you can specify the name of the input or the ion-input element.
  *
- * <core-show-password [name]="'password'">
+ *
+ * Example of new usage:
+ *
+ * <ion-input type="password" name="password">
+ *     <core-show-password slot="end" />
+ * </ion-input>
+ *
+ * Example deprecated usage:
+ *
+ * <core-show-password>
  *     <ion-input type="password" name="password"></ion-input>
  * </core-show-password>
  */
@@ -40,17 +53,30 @@ import { CoreUtils } from '@services/utils/utils';
 })
 export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
 
-    @Input() name?: string; // Name of the input affected.
     @Input() initialShown?: boolean | string; // Whether the password should be shown at start.
-    @ContentChild(IonInput) ionInput?: IonInput;
 
-    shown = false; // Whether the password is shown.
+    @Input() name = ''; // Deprecated. Not used anymore.
+    @ContentChild(IonInput) ionInput?: IonInput | HTMLIonInputElement; // Deprecated. Use slot instead.
 
-    protected input?: HTMLInputElement; // Input affected.
-    protected element: HTMLElement; // Current element.
+    protected input?: HTMLInputElement;
+    protected hostElement: HTMLElement;
+    protected logger: CoreLogger;
 
     constructor(element: ElementRef) {
-        this.element = element.nativeElement;
+        this.hostElement = element.nativeElement;
+        this.logger = CoreLogger.getInstance('CoreShowPasswordComponent');
+    }
+
+    get shown(): boolean {
+        return this.input?.type === 'text';
+    }
+
+    set shown(shown: boolean) {
+        if (!this.input) {
+            return;
+        }
+
+        this.input.type = shown ? 'text' : 'password';
     }
 
     /**
@@ -64,27 +90,11 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        if (this.ionInput) {
-            try {
-                // It's an ion-input, use it to get the native element.
-                this.input = await this.ionInput.getInputElement();
-                this.setData(this.input);
-            } catch (error) {
-                // This should never fail, but it does in some testing environment because Ionic elements are not
-                // rendered properly. So in case this fails, we'll just ignore the error.
-            }
-
-            return;
-        }
-
-        // Search the input.
-        this.input = this.element.querySelector<HTMLInputElement>('input[name="' + this.name + '"]') ?? undefined;
+        await this.setInputElement();
 
         if (!this.input) {
             return;
         }
-
-        this.setData(this.input);
 
         // By default, don't autocapitalize and autocorrect.
         if (!this.input.getAttribute('autocorrect')) {
@@ -96,12 +106,33 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
     }
 
     /**
-     * Set label, icon name and input type.
-     *
-     * @param input The input element.
+     * Set the input element to affect.
      */
-    protected setData(input: HTMLInputElement): void {
-        input.type = this.shown ? 'text' : 'password';
+    protected async setInputElement(): Promise<void> {
+        if (!this.ionInput) {
+            this.ionInput = this.hostElement.closest('ion-input') ?? undefined;
+
+            this.hostElement.setAttribute('slot', 'end');
+        } else {
+            // It's outside ion-input, warn devs.
+            this.logger.warn('Deprecated CoreShowPasswordComponent usage, it\'s not needed to surround ion-input anymore.');
+        }
+
+        if (!this.ionInput) {
+            return;
+        }
+
+        try {
+            this.input = await this.ionInput.getInputElement();
+        } catch {
+            // This should never fail, but it does in some testing environment because Ionic elements are not
+            // rendered properly. So in case this fails it will try to find through the name and ignore the error.
+            const name = this.ionInput.name;
+            if (!name) {
+                return;
+            }
+            this.input = this.hostElement.querySelector<HTMLInputElement>('input[name="' + name + '"]') ?? undefined;
+        }
     }
 
     /**
@@ -110,7 +141,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
      * @param event The mouse event.
      */
     toggle(event: Event): void {
-        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+        if (event.type === 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
             return;
         }
 
@@ -120,13 +151,8 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
         const isFocused = document.activeElement === this.input;
         this.shown = !this.shown;
 
-        if (!this.input) {
-            return;
-        }
-
-        this.setData(this.input);
         // In Android, the keyboard is closed when the input type changes. Focus it again.
-        if (isFocused && CorePlatform.isAndroid()) {
+        if (this.input && isFocused && CorePlatform.isAndroid()) {
             CoreDomUtils.focusElement(this.input);
         }
     }

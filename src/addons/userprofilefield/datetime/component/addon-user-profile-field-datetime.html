@@ -3,8 +3,7 @@
     <ion-label>
         <p class="item-heading">
             <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                [courseId]="courseId" [wsNotFiltered]="true">
-            </core-format-text>
+                [courseId]="courseId" [wsNotFiltered]="true" />
         </p>
         <p *ngIf="valueNumber">{{ valueNumber * 1000 | coreFormatDate }}</p>
         <p *ngIf="displayValue">{{ displayValue }}</p>
@@ -16,12 +15,20 @@
     <ion-label position="stacked">
         <span [core-mark-required]="required">
             <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                [courseId]="courseId" [wsNotFiltered]="true">
-            </core-format-text>
+                [courseId]="courseId" [wsNotFiltered]="true" />
         </span>
     </ion-label>
-    <ion-datetime [formControlName]="modelName" [placeholder]="'core.choosedots' | translate" [displayFormat]="format" [max]="max"
-        [min]="min" [monthNames]="monthNames" [displayTimezone]="displayTimezone">
-    </ion-datetime>
-    <core-input-errors [control]="form.controls[modelName]"></core-input-errors>
+
+    <ion-datetime-button datetime="datetime" />
+    <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+            <ion-datetime id="datetime" [formControlName]="modelName" [presentation]="ionDateTimePresentation" [max]="max" [min]="min">
+                <span slot="title">
+                    <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                        [courseId]="courseId" [wsNotFiltered]="true" />
+                </span>
+            </ion-datetime>
+        </ng-template>
+    </ion-modal>
+    <core-input-errors [control]="form.controls[modelName]" />
 </ion-item>

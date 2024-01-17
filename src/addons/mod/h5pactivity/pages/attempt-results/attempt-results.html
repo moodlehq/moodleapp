@@ -1,27 +1,26 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
                 <core-format-text *ngIf="h5pActivity" [text]="h5pActivity.name" contextLevel="module"
-                    [contextInstanceId]="h5pActivity.coursemodule" [courseId]="courseId">
-                </core-format-text>
+                    [contextInstanceId]="h5pActivity.coursemodule" [courseId]="courseId" />
             </h1>
         </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
         <ng-container *ngIf="attempt">
             <!-- Attempt number and user that did the attempt. -->
             <ion-item class="ion-text-wrap" *ngIf="user" core-user-link [userId]="user.id" [courseId]="courseId"
                 [attr.aria-label]="user.fullname">
-                <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false"></core-user-avatar>
+                <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false" />
                 <ion-label>
                     <p class="item-heading">{{ 'addon.mod_h5pactivity.attempt' | translate }} #{{attempt.attempt}}: {{user.fullname}}</p>
                 </ion-label>
@@ -65,11 +64,11 @@
                         <ion-label>
                             <p class="item-heading">{{ 'addon.mod_h5pactivity.outcome' | translate }}</p>
                             <p *ngIf="attempt.success !== null && attempt.success">
-                                <ion-icon name="fas-circle-check" aria-hidden="true"></ion-icon>
+                                <ion-icon name="fas-circle-check" aria-hidden="true" />
                                 {{ 'addon.mod_h5pactivity.attempt_success_pass' | translate }}
                             </p>
                             <p *ngIf="attempt.success !== null && !attempt.success">
-                                <ion-icon name="far-circle" aria-hidden="true"></ion-icon>
+                                <ion-icon name="far-circle" aria-hidden="true" />
                                 {{ 'addon.mod_h5pactivity.attempt_success_fail' | translate }}
                             </p>
                             <p *ngIf="attempt.success === null">
@@ -92,15 +91,13 @@
                     <ion-card-header class="ion-text-wrap">
                         <ion-card-title>
                             <core-format-text [text]="result.description" [component]="component" [componentId]="cmId" contextLevel="module"
-                                [contextInstanceId]="cmId" [courseId]="courseId">
-                            </core-format-text>
+                                [contextInstanceId]="cmId" [courseId]="courseId" />
                         </ion-card-title>
                     </ion-card-header>
                     <ion-item *ngIf="result.content" class="ion-text-wrap">
                         <ion-label>
                             <core-format-text [text]="result.content" [component]="component" [componentId]="cmId" contextLevel="module"
-                                [contextInstanceId]="cmId" [courseId]="courseId">
-                            </core-format-text>
+                                [contextInstanceId]="cmId" [courseId]="courseId" />
                         </ion-label>
                     </ion-item>
 
@@ -120,19 +117,16 @@
                                 <ion-row class="ion-align-items-center">
                                     <ion-col class="ion-text-start">
                                         <core-format-text [text]="option.description" [component]="component" [componentId]="cmId"
-                                            contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
-                                        </core-format-text>
+                                            contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
                                     </ion-col>
                                     <ion-col class="ion-text-center">
                                         <ng-container *ngIf="option.correctanswer">
-                                            <ng-container *ngTemplateOutlet="answerTemplate; context: {answer: option.correctanswer}">
-                                            </ng-container>
+                                            <ng-container *ngTemplateOutlet="answerTemplate; context: {answer: option.correctanswer}" />
                                         </ng-container>
                                     </ion-col>
                                     <ion-col class="ion-text-center">
                                         <ng-container *ngIf="option.useranswer">
-                                            <ng-container *ngTemplateOutlet="answerTemplate; context: {answer: option.useranswer}">
-                                            </ng-container>
+                                            <ng-container *ngTemplateOutlet="answerTemplate; context: {answer: option.useranswer}" />
                                         </ng-container>
                                     </ion-col>
                                 </ion-row>
@@ -152,7 +146,7 @@
 
                     <!-- Result doesn't support tracking. -->
                     <ion-item class="ion-text-wrap core-warning-item" *ngIf="!result.track">
-                        <ion-icon slot="start" name="fas-triangle-exclamation" color="warning" aria-hidden="true"></ion-icon>
+                        <ion-icon slot="start" name="fas-triangle-exclamation" color="warning" aria-hidden="true" />
                         <ion-label>
                             {{ 'addon.mod_h5pactivity.no_compatible_track' | translate:{$a: result.interactiontype} }}
                         </ion-label>
@@ -166,28 +160,23 @@
 <!-- Template to render an answer. -->
 <ng-template #answerTemplate let-answer="answer">
     <p *ngIf="answer.correct">
-        <ion-icon name="fas-check" [attr.aria-label]="'addon.mod_h5pactivity.answer_correct' | translate" color="success">
-        </ion-icon>
+        <ion-icon name="fas-check" [attr.aria-label]="'addon.mod_h5pactivity.answer_correct' | translate" color="success" />
         {{ answer.answer }}
     </p>
     <p *ngIf="answer.incorrect">
-        <ion-icon name="fas-xmark" [attr.aria-label]="'addon.mod_h5pactivity.answer_incorrect' | translate" color="danger">
-        </ion-icon>
+        <ion-icon name="fas-xmark" [attr.aria-label]="'addon.mod_h5pactivity.answer_incorrect' | translate" color="danger" />
         {{ answer.answer }}
     </p>
     <p *ngIf="answer.text">
         {{ answer.answer }}
     </p>
     <p *ngIf="answer.checked">
-        <ion-icon name="fas-circle-check" [attr.aria-label]="'addon.mod_h5pactivity.answer_checked' | translate">
-        </ion-icon>
+        <ion-icon name="fas-circle-check" [attr.aria-label]="'addon.mod_h5pactivity.answer_checked' | translate" />
     </p>
     <p *ngIf="answer.pass">
-        <ion-icon name="fas-check" [attr.aria-label]="'addon.mod_h5pactivity.answer_pass' | translate" color="success">
-        </ion-icon>
+        <ion-icon name="fas-check" [attr.aria-label]="'addon.mod_h5pactivity.answer_pass' | translate" color="success" />
     </p>
     <p *ngIf="answer.fail">
-        <ion-icon name="fas-xmark" [attr.aria-label]="'addon.mod_h5pactivity.answer_fail' | translate" color="danger">
-        </ion-icon>
+        <ion-icon name="fas-xmark" [attr.aria-label]="'addon.mod_h5pactivity.answer_fail' | translate" color="danger" />
     </p>
 </ng-template>

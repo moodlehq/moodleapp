@@ -1,35 +1,33 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId">
-                </core-format-text>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId" />
             </h1>
         </ion-title>
 
-        <ion-buttons slot="end"></ion-buttons>
+        <ion-buttons slot="end" />
     </ion-toolbar>
 </ion-header>
 
 <ion-content>
     <core-split-view>
         <ion-refresher slot="fixed" [disabled]="!submissions.loaded" (ionRefresh)="refreshList($event.target)">
-            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
         <core-loading [hideUntil]="submissions.loaded">
             <ion-list>
                 <core-group-selector [groupInfo]="groupInfo" [(selected)]="groupId" (selectedChange)="reloadSubmissions()"
-                    [courseId]="courseId">
-                </core-group-selector>
+                    [courseId]="courseId" />
 
                 <!-- List of submissions. -->
                 <ng-container *ngFor="let submission of submissions.items">
                     <ion-item class="ion-text-wrap" (click)="submissions.select(submission)" button
                         [attr.aria-current]="submissions.getItemAriaCurrent(submission)" [detail]="true">
-                        <core-user-avatar [user]="submission" [linkProfile]="false" slot="start"></core-user-avatar>
+                        <core-user-avatar [user]="submission" [linkProfile]="false" slot="start" />
                         <ion-label>
                             <p class="item-heading" *ngIf="submission.userfullname">{{submission.userfullname}}</p>
                             <p class="item-heading" *ngIf="!submission.userfullname">
@@ -37,8 +35,7 @@
                             </p>
                             <p *ngIf="assign && assign!.teamsubmission">
                                 <span *ngIf="submission.groupname" class="core-groupname">
-                                    <core-format-text [text]="submission.groupname" contextLevel="course" [contextInstanceId]="courseId">
-                                    </core-format-text>
+                                    <core-format-text [text]="submission.groupname" contextLevel="course" [contextInstanceId]="courseId" />
                                 </span>
                                 <span *ngIf="assign!.preventsubmissionnotingroup && !submission.groupname && submission.noGroups
                                     && !submission.blindid" class="text-danger">
@@ -68,8 +65,7 @@
             </ion-list>
 
             <core-empty-box *ngIf="!submissions || submissions.empty" icon="fas-file-signature"
-                [message]="'addon.mod_assign.submissionstatus_' | translate">
-            </core-empty-box>
+                [message]="'addon.mod_assign.submissionstatus_' | translate" />
         </core-loading>
     </core-split-view>
 </ion-content>

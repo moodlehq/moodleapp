@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ILocalNotification } from '@ionic-native/local-notifications';
-import { NotificationEventResponse, PushOptions, RegistrationEventResponse } from '@moodlehq/ionic-native-push/ngx';
+import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
+import { NotificationEventResponse, PushOptions, RegistrationEventResponse } from '@awesome-cordova-plugins/push/ngx';
 
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
@@ -25,7 +25,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreConfig } from '@services/config';
 import { CoreConstants } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
-import { makeSingleton, Badge, Push, Device, Translate, ApplicationInit, NgZone } from '@singletons';
+import { makeSingleton, Badge, Device, Translate, ApplicationInit, NgZone } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreEvents } from '@singletons/events';
 import {
@@ -49,6 +49,7 @@ import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
 import { CorePlatform } from '@services/platform';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
+import { Push } from '@features/native/plugins';
 
 /**
  * Service to handle push notifications.

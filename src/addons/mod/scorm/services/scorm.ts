@@ -337,7 +337,7 @@ export class AddonModScormProvider {
 
                 const re = /^(\d+)\*\{(.+)\}$/; // Sets like 3*{S34, S36, S37, S39}.
                 const reOther = /^(.+)(=|<>)(.+)$/; // Other symbols.
-                let matches = element.match(re);
+                const matches = element.match(re);
 
                 if (matches) {
                     const repeat = Number(matches[1]);
@@ -363,18 +363,18 @@ export class AddonModScormProvider {
                     element = '!';
                 } else if (reOther.test(element)) {
                     // Other symbols = | <> .
-                    matches = element.match(reOther) ?? [];
-                    element = matches[1]?.trim();
+                    const otherMatches = element.match(reOther) ?? [];
+                    element = otherMatches[1]?.trim();
 
                     if (trackData[element] !== undefined) {
-                        let value = matches[3].trim().replace(/('|")/gi, '');
+                        let value = otherMatches[3].trim().replace(/('|")/gi, '');
                         let oper: string;
 
                         if (STATUSES[value] !== undefined) {
                             value = STATUSES[value];
                         }
 
-                        if (matches[2] == '<>') {
+                        if (otherMatches[2] == '<>') {
                             oper = '!=';
                         } else {
                             oper = '==';

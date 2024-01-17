@@ -81,11 +81,13 @@ export class CoreSwipeNavigationItemsManager<
     /**
      * @inheritdoc
      */
-    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
         const segments: UrlSegment[] = [];
 
         while (route) {
-            segments.push(...route.url);
+            const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
+
+            segments.push(...snapshot.url);
 
             if (!route.firstChild) {
                 break;

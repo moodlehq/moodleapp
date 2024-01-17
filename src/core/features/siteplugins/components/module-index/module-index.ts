@@ -58,6 +58,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     description?: string;
 
     collapsibleFooterAppearOnBottom = true;
+    addDefaultModuleInfo = false;
 
     displayOpenInBrowser = true;
     displayDescription = true;
@@ -133,6 +134,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
      * Function called when the data of the site plugin content is loaded.
      */
     contentLoaded(data: CoreSitePluginsPluginContentLoadedData): void {
+        this.addDefaultModuleInfo = !data.content.includes('<core-course-module-info');
         if (data.success) {
             CoreCourse.storeModuleViewed(this.courseId, this.module.id, {
                 sectionId: this.module.section,

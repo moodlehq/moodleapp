@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Clipboard } from '@ionic-native/clipboard/ngx';
+import { Clipboard } from '@awesome-cordova-plugins/clipboard/ngx';
 
 /**
  * Emulates the Cordova Clipboard plugin in browser.
@@ -46,6 +46,7 @@ export class ClipboardMock extends Clipboard {
             this.copyTextarea.select();
 
             try {
+                // eslint-disable-next-line deprecation/deprecation
                 if (document.execCommand('copy')) {
                     resolve();
                 } else {
@@ -71,6 +72,7 @@ export class ClipboardMock extends Clipboard {
             this.copyTextarea.select();
 
             try {
+                // eslint-disable-next-line deprecation/deprecation
                 if (document.execCommand('paste')) {
                     resolve(this.copyTextarea.innerHTML);
                 } else {

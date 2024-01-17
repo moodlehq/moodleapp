@@ -22,7 +22,7 @@ import { AddonModChatSessionMessagesPage } from './pages/session-messages/sessio
 import { CoreScreen } from '@services/screen';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { AddonModChatSessionsPage } from './pages/sessions/sessions';
-import { CanLeaveGuard } from '@guards/can-leave';
+import { canLeaveGuard } from '@guards/can-leave';
 
 const commonRoutes: Routes = [
     {
@@ -32,7 +32,7 @@ const commonRoutes: Routes = [
     {
         path: ':courseId/:cmId/chat',
         component: AddonModChatChatPage,
-        canDeactivate: [CanLeaveGuard],
+        canDeactivate: [canLeaveGuard],
     },
 ];
 

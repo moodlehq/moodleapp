@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CorePlatform } from '@services/platform';
-import { Network } from '@ionic-native/network/ngx';
+import { Network } from '@awesome-cordova-plugins/network/ngx';
 import { makeSingleton } from '@singletons';
 import { Observable, Subject, merge } from 'rxjs';
 

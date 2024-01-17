@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ title | translate }}</h1>
@@ -10,19 +10,18 @@
 </ion-header>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshData($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 
     <core-loading [hideUntil]="loaded">
         <form [formGroup]="form" *ngIf="!error" #editEventForm>
             <!-- Event name. -->
             <ion-item class="ion-text-wrap">
-                <ion-label position="stacked">
-                    <p class="item-heading" [core-mark-required]="true">{{ 'addon.calendar.eventname' | translate }}</p>
-                </ion-label>
-                <ion-input type="text" name="name" [placeholder]="'addon.calendar.eventname' | translate" formControlName="name">
+                <ion-input labelPlacement="stacked" type="text" name="name" [placeholder]="'addon.calendar.eventname' | translate"
+                    formControlName="name">
+                    <div slot="label" [core-mark-required]="true">{{ 'addon.calendar.eventname' | translate }}</div>
                 </ion-input>
-                <core-input-errors [control]="form.controls.name" [errorMessages]="errors"></core-input-errors>
+                <core-input-errors [control]="form.controls.name" />
             </ion-item>
 
             <!-- Date. -->
@@ -30,20 +29,26 @@
                 <ion-label position="stacked">
                     <p class="item-heading" [core-mark-required]="true">{{ 'core.date' | translate }}</p>
                 </ion-label>
-                <ion-datetime formControlName="timestart" [placeholder]="'core.date' | translate" [displayFormat]="dateFormat"
-                    [max]="maxDate" [min]="minDate" [displayTimezone]="displayTimezone">
-                </ion-datetime>
-                <core-input-errors [control]="form.controls.timestart" [errorMessages]="errors"></core-input-errors>
+                <ion-datetime-button datetime="timestart" />
+                <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                        <ion-datetime id="timestart" formControlName="timestart" presentation="date-time" [max]="maxDate" [min]="minDate">
+                            <span slot="title">{{'core.date' | translate}}</span>
+                        </ion-datetime>
+                    </ng-template>
+                </ion-modal>
+                <core-input-errors [control]="form.controls.timestart" />
             </ion-item>
 
             <!-- Type. -->
             <ion-item class="ion-text-wrap addon-calendar-eventtype-container">
-                <ion-label>
+                <ion-label *ngIf="eventTypes.length === 1">
                     <p class="item-heading" [core-mark-required]="true">{{ 'addon.calendar.eventkind' | translate }}</p>
                 </ion-label>
-                <p *ngIf="eventTypes.length == 1" slot="end">{{eventTypes[0].name | translate }}</p>
+                <p *ngIf="eventTypes.length === 1" slot="end">{{eventTypes[0].name | translate }}</p>
                 <ion-select *ngIf="eventTypes.length > 1" formControlName="eventtype" interface="action-sheet"
                     [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'addon.calendar.eventkind' | translate}">
+                    <div [core-mark-required]="true" slot="label">{{ 'addon.calendar.eventkind' | translate }}</div>
                     <ion-select-option *ngFor="let type of eventTypes" [value]="type.value">
                         {{ type.name | translate }}
                     </ion-select-option>
@@ -52,11 +57,9 @@
 
             <!-- Category. -->
             <ion-item class="ion-text-wrap" *ngIf="typeControl.value === 'category'">
-                <ion-label>
-                    <p class="item-heading" [core-mark-required]="true">{{ 'core.category' | translate }}</p>
-                </ion-label>
                 <ion-select formControlName="categoryid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
                     [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.category' | translate}">
+                    <p [core-mark-required]="true" slot="label">{{ 'core.category' | translate }}</p>
                     <ion-select-option *ngFor="let category of categories" [value]="category.id">
                         {{ category.name }}
                     </ion-select-option>
@@ -65,11 +68,9 @@
 
             <!-- Course. -->
             <ion-item class="ion-text-wrap" *ngIf="typeControl.value === 'course'">
-                <ion-label>
-                    <p class="item-heading" [core-mark-required]="true">{{ 'core.course' | translate }}</p>
-                </ion-label>
                 <ion-select formControlName="courseid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
                     [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.course' | translate}">
+                    <p [core-mark-required]="true" slot="label">{{ 'core.course' | translate }}</p>
                     <ion-select-option *ngFor="let course of courses" [value]="course.id">{{ course.fullname }}</ion-select-option>
                 </ion-select>
             </ion-item>
@@ -78,12 +79,10 @@
             <ng-container *ngIf="typeControl.value === 'group'">
                 <!-- Select the course. -->
                 <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p class="item-heading" [core-mark-required]="true">{{ 'core.course' | translate }}</p>
-                    </ion-label>
                     <ion-select formControlName="groupcourseid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
                         [cancelText]="'core.cancel' | translate" (ionChange)="groupCourseSelected()"
                         [interfaceOptions]="{header: 'core.course' | translate}">
+                        <p [core-mark-required]="true" slot="label">{{ 'core.course' | translate }}</p>
                         <ion-select-option *ngFor="let course of courses" [value]="course.id">
                             {{ course.fullname }}
                         </ion-select-option>
@@ -97,18 +96,16 @@
                 </ion-item>
                 <!-- Select the group. -->
                 <ion-item class="ion-text-wrap core-edit-set-group" *ngIf="!loadingGroups && groups.length > 0">
-                    <ion-label>
-                        <p class="item-heading" [core-mark-required]="true">{{ 'core.group' | translate }}</p>
-                    </ion-label>
                     <ion-select formControlName="groupid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
                         [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.group' | translate}">
+                        <p [core-mark-required]="true" slot="label">{{ 'core.group' | translate }}</p>
                         <ion-select-option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</ion-select-option>
                     </ion-select>
                 </ion-item>
                 <!-- Loading groups. -->
                 <ion-item class="ion-text-wrap" *ngIf="loadingGroups">
                     <ion-label>
-                        <ion-spinner *ngIf="loadingGroups" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+                        <ion-spinner *ngIf="loadingGroups" [attr.aria-label]="'core.loading' | translate" />
                     </ion-label>
                 </ion-item>
             </ng-container>
@@ -121,7 +118,7 @@
                     </ion-label>
                     <ion-button fill="clear" (click)="addReminder()" slot="end"
                         [attr.aria-label]="'addon.calendar.setnewreminder' | translate">
-                        <ion-icon name="fas-plus" slot="icon-only" aria-hidden="true"></ion-icon>
+                        <ion-icon name="fas-plus" slot="icon-only" aria-hidden="true" />
                     </ion-button>
                 </ion-item-divider>
                 <ion-item *ngFor="let reminder of reminders" class="ion-text-wrap">
@@ -129,7 +126,7 @@
                         <p>{{ reminder.label }}</p>
                     </ion-label>
                     <ion-button fill="clear" (click)="removeReminder(reminder)" [attr.aria-label]="'core.delete' | translate" slot="end">
-                        <ion-icon name="fas-trash" color="danger" slot="icon-only" aria-hidden="true"></ion-icon>
+                        <ion-icon name="fas-trash" color="danger" slot="icon-only" aria-hidden="true" />
                     </ion-button>
                 </ion-item>
             </ng-container>
@@ -143,34 +140,35 @@
                         </ion-label>
                     </ion-item-divider>
                     <ion-item>
-                        <ion-label>
+                        <ion-radio [value]="0">
                             <p>{{ 'addon.calendar.durationnone' | translate }}</p>
-                        </ion-label>
-                        <ion-radio slot="end" [value]="0"></ion-radio>
+                        </ion-radio>
                     </ion-item>
                     <ion-item>
-                        <ion-label>
+                        <ion-radio [value]="1">
                             <p>{{ 'addon.calendar.durationuntil' | translate }}</p>
-                        </ion-label>
-                        <ion-radio slot="end" [value]="1"></ion-radio>
+                        </ion-radio>
                     </ion-item>
                     <ion-item *ngIf="form.controls.duration.value === 1">
-                        <ion-label position="stacked"></ion-label>
-                        <ion-datetime formControlName="timedurationuntil" [max]="maxDate" [min]="minDate"
-                            [placeholder]="'addon.calendar.durationuntil' | translate" [displayFormat]="dateFormat"
-                            [displayTimezone]="displayTimezone">
-                        </ion-datetime>
+                        <ion-label position="stacked" />
+                        <ion-datetime-button datetime="timedurationuntil" />
+                        <ion-modal [keepContentsMounted]="true">
+                            <ng-template>
+                                <ion-datetime id="timedurationuntil" formControlName="timedurationuntil" [max]="maxDate" [min]="minDate"
+                                    presentation="date-time">
+                                    <span slot="title">{{'addon.calendar.durationuntil' | translate}}</span>
+                                </ion-datetime>
+                            </ng-template>
+                        </ion-modal>
                     </ion-item>
                     <ion-item>
-                        <ion-label>
-                            <p>{{ 'addon.calendar.durationminutes' | translate }}</p>
-                        </ion-label>
-                        <ion-radio slot="end" [value]="2"></ion-radio>
+                        <ion-radio [value]="2">
+                            <p id="durationinminutes">{{ 'addon.calendar.durationminutes' | translate }}</p>
+                        </ion-radio>
                     </ion-item>
                     <ion-item *ngIf="form.controls.duration.value === 2">
-                        <ion-label class="sr-only">{{ 'addon.calendar.durationminutes' | translate }}</ion-label>
-                        <ion-input type="number" name="timedurationminutes" slot="end"
-                            [placeholder]="'addon.calendar.durationminutes' | translate" formControlName="timedurationminutes"></ion-input>
+                        <ion-input type="number" name="timedurationminutes" labelPlacement="start" aria-labelledby="durationinminutes"
+                            [placeholder]="'addon.calendar.durationminutes' | translate" formControlName="timedurationminutes" />
                     </ion-item>
                 </ion-radio-group>
             </div>
@@ -178,17 +176,13 @@
             <!-- Repeat (for new events). -->
             <ng-container *ngIf="!eventId || eventId < 0">
                 <ion-item class="ion-text-wrap divider">
-                    <ion-label>
+                    <ion-checkbox labelPlacement="start" formControlName="repeat">
                         <p class="item-heading">{{ 'addon.calendar.repeatevent' | translate }}</p>
-                    </ion-label>
-                    <ion-checkbox slot="end" formControlName="repeat"></ion-checkbox>
+                    </ion-checkbox>
                 </ion-item>
                 <ion-item class="ion-text-wrap">
-                    <ion-label position="stacked">
-                        <p class="item-heading">{{ 'addon.calendar.repeatweeksl' | translate }}</p>
-                    </ion-label>
-                    <ion-input type="number" name="repeats" formControlName="repeats" [disabled]="!form.controls.repeat.value">
-                    </ion-input>
+                    <ion-input labelPlacement="stacked" [label]="'addon.calendar.repeatweeksl' | translate" type="number" name="repeats"
+                        formControlName="repeats" [disabled]="!form.controls.repeat.value" />
                 </ion-item>
             </ng-container>
 
@@ -201,16 +195,14 @@
                         </ion-label>
                     </ion-item-divider>
                     <ion-item>
-                        <ion-label>
+                        <ion-radio value="1">
                             <p>{{ 'addon.calendar.repeateditall' | translate:{$a: otherEventsCount} }}</p>
-                        </ion-label>
-                        <ion-radio slot="end" value="1"></ion-radio>
+                        </ion-radio>
                     </ion-item>
                     <ion-item>
-                        <ion-label>
+                        <ion-radio value="0">
                             <p>{{ 'addon.calendar.repeateditthis' | translate }}</p>
-                        </ion-label>
-                        <ion-radio slot="end" value="0"></ion-radio>
+                        </ion-radio>
                     </ion-item>
                 </ion-radio-group>
             </div>
@@ -222,16 +214,13 @@
                 </ion-label>
                 <core-rich-text-editor [control]="descriptionControl" [attr.aria-label]="'core.description' | translate"
                     [placeholder]="'core.description' | translate" name="description" [component]="component" [componentId]="eventId"
-                    [autoSave]="false"></core-rich-text-editor>
+                    [autoSave]="false" />
             </ion-item>
 
             <!-- Location. -->
             <ion-item class="ion-text-wrap">
-                <ion-label position="stacked">
-                    <p class="item-heading">{{ 'core.location' | translate }}</p>
-                </ion-label>
-                <ion-input type="text" name="location" [placeholder]="'core.location' | translate" formControlName="location">
-                </ion-input>
+                <ion-input type="text" name="location" [placeholder]="'core.location' | translate" [label]="'core.location' | translate"
+                    labelPlacement="stacked" formControlName="location" />
             </ion-item>
         </form>
         <div collapsible-footer appearOnBottom *ngIf="loaded && !error" slot="fixed">

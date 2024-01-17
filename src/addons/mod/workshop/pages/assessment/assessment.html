@@ -1,13 +1,12 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
                 <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="workshop && workshop.coursemodule"
-                    [courseId]="courseId">
-                </core-format-text>
+                    [courseId]="courseId" />
             </h1>
         </ion-title>
         <ion-buttons slot="end" [hidden]="!evaluating">
@@ -19,13 +18,12 @@
 </ion-header>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshAssessment($event.target)" *ngIf="!evaluating">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
 
         <ion-item class="ion-text-wrap">
-            <core-user-avatar *ngIf="profile" [user]="profile" slot="start" [courseId]="courseId" [userId]="profile.id">
-            </core-user-avatar>
+            <core-user-avatar *ngIf="profile" [user]="profile" slot="start" [courseId]="courseId" [userId]="profile.id" />
 
             <ion-label>
                 <h2 *ngIf="profile && profile.fullname">{{profile.fullname}}</h2>
@@ -41,7 +39,7 @@
                     class="core-overriden-grade">
                     {{ 'addon.mod_workshop.gradinggradeover' | translate }}: {{assessment.gradinggradeover}}
                 </p>
-                <p *ngIf="assessment && assessment.weight && assessment.weight != 1">
+                <p *ngIf="assessment && assessment.weight && assessment.weight !== 1">
                     {{ 'addon.mod_workshop.weightinfo' | translate:{$a: assessment.weight } }}
                 </p>
                 <ion-badge *ngIf="!assessment || !showGrade(assessment.grade)" color="danger">
@@ -51,8 +49,7 @@
         </ion-item>
 
         <addon-mod-workshop-assessment-strategy *ngIf="assessment && assessmentId && showGrade(assessment.grade) && workshop && access"
-            [workshop]="workshop" [access]="access" [assessmentId]="assessmentId" [userId]="profile && profile.id" [strategy]="strategy">
-        </addon-mod-workshop-assessment-strategy>
+            [workshop]="workshop" [access]="access" [assessmentId]="assessmentId" [userId]="profile && profile.id" [strategy]="strategy" />
 
         <form [formGroup]="evaluateForm" *ngIf="evaluating" #evaluateFormEl>
             <ion-item class="ion-text-wrap">
@@ -61,13 +58,12 @@
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="access?.canallocate">
-                <ion-label position="stacked">
-                    <span core-mark-required="true">
-                        {{ 'addon.mod_workshop.assessmentweight' | translate }}
-                    </span>
-                </ion-label>
-                <ion-select formControlName="weight" required="true" interface="action-sheet" [cancelText]="'core.cancel' | translate"
+                <ion-select labelPlacement="stacked" formControlName="weight" required="true" interface="action-sheet"
+                    [cancelText]="'core.cancel' | translate"
                     [interfaceOptions]="{header: 'addon.mod_workshop.assessmentweight' | translate}">
+                    <div [core-mark-required]="true" slot="label">
+                        {{ 'addon.mod_workshop.assessmentweight' | translate }}
+                    </div>
                     <ion-select-option *ngFor="let w of weights" [value]="w">{{ w }}</ion-select-option>
                 </ion-select>
             </ion-item>
@@ -78,9 +74,10 @@
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="access?.canoverridegrades">
-                <ion-label position="stacked">{{ 'addon.mod_workshop.gradinggradeover' | translate }}</ion-label>
-                <ion-select formControlName="grade" interface="action-sheet" [cancelText]="'core.cancel' | translate"
-                    [interfaceOptions]="{header: 'addon.mod_workshop.gradinggradeover' | translate}">
+                <ion-select labelPlacement="stacked" formControlName="grade" interface="action-sheet"
+                    [cancelText]="'core.cancel' | translate"
+                    [interfaceOptions]="{header: 'addon.mod_workshop.gradinggradeover' | translate}"
+                    [label]="'addon.mod_workshop.gradinggradeover' | translate">
                     <ion-select-option *ngFor="let grade of evaluationGrades" [value]="grade.value">
                         {{grade.label}}
                     </ion-select-option>
@@ -90,21 +87,19 @@
                 <ion-label position="stacked">{{ 'addon.mod_workshop.feedbackreviewer' | translate }}</ion-label>
                 <core-rich-text-editor [control]="evaluateForm.controls['text']" name="text" [autoSave]="true" contextLevel="module"
                     [contextInstanceId]="workshop?.coursemodule" elementId="feedbackreviewer_editor"
-                    [draftExtraParams]="{asid: assessmentId}">
-                </core-rich-text-editor>
+                    [draftExtraParams]="{asid: assessmentId}" />
             </ion-item>
         </form>
         <ion-list *ngIf="!evaluating && evaluate && evaluate.text">
             <ion-item class="ion-text-wrap">
                 <core-user-avatar *ngIf="evaluateByProfile" [user]="evaluateByProfile" slot="start" [courseId]="courseId"
-                    [userId]="evaluateByProfile.id"></core-user-avatar>
+                    [userId]="evaluateByProfile.id" />
                 <ion-label>
                     <h3 class="item-heading" *ngIf="evaluateByProfile && evaluateByProfile.fullname">
                         {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}
                     </h3>
                     <core-format-text [text]="evaluate.text" contextLevel="module" [contextInstanceId]="workshop?.coursemodule"
-                        [courseId]="courseId">
-                    </core-format-text>
+                        [courseId]="courseId" />
                 </ion-label>
             </ion-item>
         </ion-list>

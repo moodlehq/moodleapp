@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
-import { FileEntry, DirectoryEntry } from '@ionic-native/file/ngx';
+import { FileEntry, DirectoryEntry } from '@awesome-cordova-plugins/file/ngx';
 import { Md5 } from 'ts-md5';
 
 import { CoreSharedFiles } from '@features/sharedfiles/services/sharedfiles';

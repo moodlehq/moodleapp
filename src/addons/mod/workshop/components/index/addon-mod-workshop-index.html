@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
     </ion-button>
 </core-navbar-buttons>
 
@@ -10,8 +10,7 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [component]="component" [componentId]="componentId" [courseId]="courseId"
-        [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()">
-    </core-course-module-info>
+        [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()" />
 
     <ion-card *ngIf="phases && workshop">
         <ion-item button (click)="viewPhaseInfo()" [detail]="true">
@@ -24,34 +23,29 @@
             <ion-item button class="ion-text-wrap" *ngFor="let task of phases[workshop.phase].tasks"
                 [class.item-dimmed]="task.code === 'submit' && !showSubmit" (click)="runTask(task)" [detail]="false">
                 <ion-icon slot="start" name="far-circle" *ngIf="task.completed === null"
-                    [attr.aria-label]="'addon.mod_workshop.tasktodo' | translate"></ion-icon>
+                    [attr.aria-label]="'addon.mod_workshop.tasktodo' | translate" />
                 <ion-icon slot="start" name="fas-circle-xmark" color="danger" *ngIf="task.completed === ''"
-                    [attr.aria-label]="'addon.mod_workshop.taskfail' | translate">
-                </ion-icon>
+                    [attr.aria-label]="'addon.mod_workshop.taskfail' | translate" />
                 <ion-icon slot="start" name="fas-circle-info" color="info" *ngIf="task.completed === 'info'"
-                    [attr.aria-label]="'addon.mod_workshop.taskinfo' | translate">
-                </ion-icon>
-                <ion-icon slot="start" name="fas-circle-check" color="success" *ngIf="task.completed == '1'"
-                    [attr.aria-label]="'addon.mod_workshop.taskdone' | translate">
-                </ion-icon>
+                    [attr.aria-label]="'addon.mod_workshop.taskinfo' | translate" />
+                <ion-icon slot="start" name="fas-circle-check" color="success" *ngIf="task.completed === '1'"
+                    [attr.aria-label]="'addon.mod_workshop.taskdone' | translate" />
                 <ion-label>
                     <p class="item-heading">{{task.title}}</p>
                     <p *ngIf="task.details" [innerHTML]="task.details"></p>
                 </ion-label>
-                <ion-icon slot="end" *ngIf="task.link && task.code !== 'submit'" name="fas-up-right-from-square" aria-hidden="true">
-                </ion-icon>
+                <ion-icon slot="end" *ngIf="task.link && task.code !== 'submit'" name="fas-up-right-from-square" aria-hidden="true" />
             </ion-item>
         </ng-container>
     </ion-card>
 
     <!-- Description (setup phase only) -->
-    <ion-card *ngIf="description && workshop && workshop.phase == PHASE_SETUP">
+    <ion-card *ngIf="description && workshop && workshop.phase === PHASE_SETUP">
         <ion-item class="ion-text-wrap">
             <ion-label>
                 <h3 class="item-heading">{{ 'core.description' | translate }}</h3>
                 <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
-                    [contextInstanceId]="module.id" [courseId]="courseId">
-                </core-format-text>
+                    [contextInstanceId]="module.id" [courseId]="courseId" />
             </ion-label>
         </ion-item>
     </ion-card>
@@ -64,8 +58,7 @@
                     <ion-label>
                         <h3 class="item-heading">{{ 'addon.mod_workshop.conclusion' | translate }}</h3>
                         <core-format-text collapsible-item [component]="component" [componentId]="module.id" [text]="workshop.conclusion"
-                            contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-                        </core-format-text>
+                            contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
                     </ion-label>
                 </ion-item>
             </ion-card>
@@ -92,13 +85,12 @@
         </ng-container>
 
         <!-- SUBMISSION PHASE -->
-        <ion-card *ngIf="workshop.phase == PHASE_SUBMISSION && workshop.instructauthors">
+        <ion-card *ngIf="workshop.phase === PHASE_SUBMISSION && workshop.instructauthors">
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <h3 class="item-heading">{{ 'addon.mod_workshop.areainstructauthors' | translate }}</h3>
                     <core-format-text collapsible-item [component]="component" [componentId]="module.id" [text]="workshop.instructauthors"
-                        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-                    </core-format-text>
+                        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
                 </ion-label>
             </ion-item>
         </ion-card>
@@ -106,10 +98,10 @@
         <ion-card *ngIf="canSubmit">
             <ion-item-divider class="ion-text-wrap">
                 <ion-label>
-                    <h3 class="item-heading" *ngIf="workshop.phase != PHASE_CLOSED || !submission">
+                    <h3 class="item-heading" *ngIf="workshop.phase !== PHASE_CLOSED || !submission">
                         {{ 'addon.mod_workshop.yoursubmission' | translate }}
                     </h3>
-                    <h3 class="item-heading" *ngIf="workshop.phase == PHASE_CLOSED && submission">
+                    <h3 class="item-heading" *ngIf="workshop.phase === PHASE_CLOSED && submission">
                         {{ 'addon.mod_workshop.yoursubmissionwithassessments' | translate }}
                     </h3>
                 </ion-label>
@@ -120,8 +112,7 @@
                 </ion-label>
             </ion-item>
             <addon-mod-workshop-submission *ngIf="submission" [submission]="submission" [courseId]="workshop.course" [module]="module"
-                [workshop]="workshop" [access]="access">
-            </addon-mod-workshop-submission>
+                [workshop]="workshop" [access]="access" />
         </ion-card>
 
 
@@ -134,21 +125,20 @@
                 </ion-item-divider>
                 <ng-container *ngFor="let submission of publishedSubmissions">
                     <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop.course" [module]="module"
-                        [workshop]="workshop" [access]="access" summary="true" class="core-as-item">
-                    </addon-mod-workshop-submission>
+                        [workshop]="workshop" [access]="access" summary="true" class="core-as-item" />
                 </ng-container>
             </ion-card>
         </ng-container>
 
         <!-- ASSESSMENT PHASE -->
         <ng-container *ngIf="workshop.phase >= PHASE_ASSESSMENT">
-            <ion-card *ngIf="workshop.phase == PHASE_ASSESSMENT && workshop.instructreviewers">
+            <ion-card *ngIf="workshop.phase === PHASE_ASSESSMENT && workshop.instructreviewers">
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <h3 class="item-heading">{{ 'addon.mod_workshop.areainstructreviewers' | translate }}</h3>
                         <core-format-text collapsible-item [component]="component" [componentId]="module.id"
-                            [text]="workshop.instructreviewers" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-                        </core-format-text>
+                            [text]="workshop.instructreviewers" contextLevel="module" [contextInstanceId]="module.id"
+                            [courseId]="courseId" />
                     </ion-label>
                 </ion-item>
             </ion-card>
@@ -167,8 +157,7 @@
                 <ng-container *ngFor="let assessment of (assessments || [])">
                     <addon-mod-workshop-submission [submission]="assessment.submission" [assessment]="assessment"
                         [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" summary="true"
-                        class="core-as-item">
-                    </addon-mod-workshop-submission>
+                        class="core-as-item" />
                 </ng-container>
             </ion-card>
         </ng-container>
@@ -178,33 +167,31 @@
             ((grades && grades.length) || (groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)))">
             <ion-item-divider class="ion-text-wrap">
                 <ion-label>
-                    <h3 class="item-heading" *ngIf="workshop.phase == PHASE_SUBMISSION">{{ 'addon.mod_workshop.submissionsreport' |
+                    <h3 class="item-heading" *ngIf="workshop.phase === PHASE_SUBMISSION">{{ 'addon.mod_workshop.submissionsreport' |
                         translate }}</h3>
                     <h3 class="item-heading" *ngIf="workshop.phase > PHASE_SUBMISSION">{{ 'addon.mod_workshop.gradesreport' | translate }}
                     </h3>
                 </ion-label>
             </ion-item-divider>
-            <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)" [courseId]="courseId">
-            </core-group-selector>
+            <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)" [courseId]="courseId" />
 
             <ng-container *ngFor="let submission of grades">
                 <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop.course" [module]="module"
-                    [workshop]="workshop" [access]="access" summary="true" class="core-as-item">
-                </addon-mod-workshop-submission>
+                    [workshop]="workshop" [access]="access" summary="true" class="core-as-item" />
             </ng-container>
 
             <ion-grid *ngIf="page > 0 || hasNextPage">
                 <ion-row class="ion-align-items-center">
                     <ion-col *ngIf="page > 0">
                         <ion-button expand="block" fill="outline" (click)="gotoSubmissionsPage(page -1)">
-                            <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true" />
                             {{ 'core.previous' | translate }}
                         </ion-button>
                     </ion-col>
                     <ion-col *ngIf="hasNextPage">
                         <ion-button expand="block" (click)="gotoSubmissionsPage(page + 1)">
                             {{ 'core.next' | translate }}
-                            <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
                         </ion-button>
                     </ion-col>
                 </ion-row>
@@ -219,17 +206,16 @@
             <!-- Show only on current phase -->
             <ion-button expand="block" *ngIf="access.creatingsubmissionallowed && !submission" (click)="gotoSubmit()"
                 class="ion-text-wrap ion-margin">
-                <ion-icon slot="start" name="fas-plus" aria-hidden="true"></ion-icon>
+                <ion-icon slot="start" name="fas-plus" aria-hidden="true" />
                 {{ 'addon.mod_workshop.createsubmission' | translate }}
             </ion-button>
             <ion-button expand="block" *ngIf="access.modifyingsubmissionallowed && submission" (click)="gotoSubmit()"
                 class="ion-text-wrap ion-margin">
-                <ion-icon slot="start" name="fas-pen" aria-hidden="true"></ion-icon>
+                <ion-icon slot="start" name="fas-pen" aria-hidden="true" />
                 {{ 'addon.mod_workshop.editsubmission' | translate }}
             </ion-button>
         </div>
 
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">
-        </core-course-module-navigation>
+        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
     </div>
 </core-loading>

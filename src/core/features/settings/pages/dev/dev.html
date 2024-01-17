@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
 
         <ion-title>
@@ -10,7 +10,7 @@
 
         <ion-buttons slot="end" *ngIf="siteId">
             <ion-button fill="clear" (click)="copyInfo()" [attr.aria-label]="'core.settings.copyinfo' | translate">
-                <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -18,40 +18,33 @@
 <ion-content>
     <ion-list class="list-item-limited-width">
         <ion-item class="ion-text-wrap">
-            <ion-label>
+            <ion-toggle [(ngModel)]="rtl" (ionChange)="RTLChanged()">
                 <p class="item-heading">Change text direction</p>
                 <p>{{ direction }}</p>
-            </ion-label>
-            <ion-toggle [(ngModel)]="rtl" (ionChange)="RTLChanged()" slot="end"></ion-toggle>
+            </ion-toggle>
         </ion-item>
         <ion-item class="ion-text-wrap">
-            <ion-label>
+            <ion-toggle [(ngModel)]="forceSafeAreaMargins" (ionChange)="safeAreaChanged()">
                 <p class="item-heading">Force safe area margins</p>
-            </ion-label>
-            <ion-toggle [(ngModel)]="forceSafeAreaMargins" (ionChange)="safeAreaChanged()" slot="end"></ion-toggle>
+            </ion-toggle>
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="stagingSitesCount && enableStagingSites !== undefined">
-            <ion-label>
-                <h2>Enable staging sites ({{stagingSitesCount}})</h2>
-            </ion-label>
-            <ion-toggle [(ngModel)]="enableStagingSites" (ionChange)="setEnabledStagingSites($event.detail.checked)" slot="end">
+            <ion-toggle [(ngModel)]="enableStagingSites" (ionChange)="setEnabledStagingSites($event.detail.checked)">
+                <p class="item-heading">Enable staging sites <ion-badge>{{stagingSitesCount}}</ion-badge></p>
             </ion-toggle>
-
         </ion-item>
         <ng-container *ngIf="siteId">
             <ion-item class="ion-text-wrap">
-                <ion-label>
+                <ion-toggle [(ngModel)]="remoteStyles" (ionChange)="remoteStylesChanged()">
                     <p class="item-heading">Enable remote styles <ion-badge>{{remoteStylesCount}}</ion-badge>
                     </p>
-                </ion-label>
-                <ion-toggle [(ngModel)]="remoteStyles" (ionChange)="remoteStylesChanged()" slot="end"></ion-toggle>
+                </ion-toggle>
             </ion-item>
             <ion-item class="ion-text-wrap">
-                <ion-label>
+                <ion-toggle [(ngModel)]="pluginStyles" (ionChange)="pluginStylesChanged()">
                     <p class="item-heading">Enable site plugin styles <ion-badge>{{pluginStylesCount}}</ion-badge>
                     </p>
-                </ion-label>
-                <ion-toggle [(ngModel)]="pluginStyles" (ionChange)="pluginStylesChanged()" slot="end"></ion-toggle>
+                </ion-toggle>
             </ion-item>
         </ng-container>
 
@@ -60,7 +53,7 @@
                 <p class="item-heading">Reset user tours</p>
             </ion-label>
             <ion-button (click)="resetUserTours()" aria-label="Reset user tours" fill="clear" slot="end">
-                <ion-icon slot="icon-only" aria-hidden="true" name="fas-repeat"></ion-icon>
+                <ion-icon slot="icon-only" aria-hidden="true" name="fas-repeat" />
             </ion-button>
         </ion-item>
 
@@ -69,7 +62,7 @@
                 <p class="item-heading">Invalidate caches</p>
             </ion-label>
             <ion-button (click)="invalidateCaches()" aria-label="Invalidate caches" fill="clear" slot="end">
-                <ion-icon slot="icon-only" aria-hidden="true" name="fas-rotate-right"></ion-icon>
+                <ion-icon slot="icon-only" aria-hidden="true" name="fas-rotate-right" />
             </ion-button>
         </ion-item>
 
@@ -85,7 +78,7 @@
                 <p>Clear deleted sites from file storage and temp folder</p>
             </ion-label>
             <ion-button (click)="clearFileStorage()" aria-label="Clear File Storage" fill="clear" slot="end">
-                <ion-icon slot="icon-only" aria-hidden="true" name="fas-broom"></ion-icon>
+                <ion-icon slot="icon-only" aria-hidden="true" name="fas-broom" />
             </ion-button>
         </ion-item>
 

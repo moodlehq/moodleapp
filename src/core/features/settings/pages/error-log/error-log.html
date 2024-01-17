@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
 
         <ion-title>
@@ -10,7 +10,7 @@
 
         <ion-buttons slot="end" *ngIf="errorLogs.length">
             <ion-button fill="clear" (click)="copyError()" [attr.aria-label]="'core.settings.copyinfo' | translate">
-                <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -45,7 +45,6 @@
         </ion-item>
     </ion-list>
     <ng-template #noLogs>
-        <core-empty-box message="No logs available" icon="fas-clipboard-question">
-        </core-empty-box>
+        <core-empty-box message="No logs available" icon="fas-clipboard-question" />
     </ng-template>
 </ion-content>

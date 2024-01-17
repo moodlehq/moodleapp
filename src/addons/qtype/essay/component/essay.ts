@@ -14,7 +14,7 @@
 
 import { Component, ElementRef } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { AddonModQuizEssayQuestion, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
@@ -32,7 +32,7 @@ import { CoreFileEntry } from '@services/file-helper';
 })
 export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent<AddonModQuizEssayQuestion> {
 
-    formControl?: FormControl;
+    formControl?: FormControl<string | null>;
     attachments?: CoreFileEntry[];
     uploadFilesSupported = false;
 
@@ -52,7 +52,7 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent<AddonMod
 
         this.initEssayComponent(this.review);
 
-        this.formControl = this.fb.control(this.question?.textarea?.text);
+        this.formControl = this.fb.control(this.question?.textarea?.text ?? null);
 
         if (this.question?.allowsAttachments && this.uploadFilesSupported && !this.review) {
             this.loadAttachments();

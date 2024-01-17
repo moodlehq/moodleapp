@@ -75,6 +75,7 @@ import { CoreRemindersPushNotificationData } from '@features/reminders/services/
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreEnrol } from '@features/enrol/services/enrol';
 import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
+import { LazyRoutesModule } from '@/app/app-routing.module';
 
 /**
  * Prefetch info of a module.
@@ -1990,7 +1991,7 @@ export class CoreCourseHelperProvider {
      *
      * @returns Course summary page module.
      */
-    async getCourseSummaryRouteModule(): Promise<unknown> {
+    async getCourseSummaryRouteModule(): Promise<LazyRoutesModule> {
         return import('../course-summary-lazy.module').then(m => m.CoreCourseSummaryLazyModule);
     }
 

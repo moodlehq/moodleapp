@@ -613,7 +613,6 @@ export class CoreSitePluginsHelperProvider {
                 for (const property of handlerProperties) {
                     if (property !== 'constructor' && typeof handler[property] === 'function' &&
                             typeof jsResult[property] === 'function') {
-                        // eslint-disable-next-line @typescript-eslint/ban-types
                         handler[property] = (<Function> jsResult[property]).bind(handler);
                     }
                 }
@@ -837,7 +836,6 @@ export class CoreSitePluginsHelperProvider {
                 for (const property of handlerProperties) {
                     if (property !== 'constructor' && typeof handler[property] === 'function' &&
                             typeof jsResult[property] === 'function') {
-                        // eslint-disable-next-line @typescript-eslint/ban-types
                         handler[property] = (<Function> jsResult[property]).bind(handler);
                     }
                 }

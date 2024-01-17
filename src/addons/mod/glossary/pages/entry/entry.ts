@@ -23,7 +23,7 @@ import { CoreCommentsCommentsComponent } from '@features/comments/components/com
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreTag } from '@features/tag/services/tag';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
@@ -367,8 +367,10 @@ class AddonModGlossaryEntryEntriesSwipeManager
     /**
      * @inheritdoc
      */
-    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
-        return `${this.getSource().GLOSSARY_PATH_PREFIX}entry/${route.params.entrySlug}`;
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
+        const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
+
+        return `${this.getSource().GLOSSARY_PATH_PREFIX}entry/${snapshot.params.entrySlug}`;
     }
 
 }

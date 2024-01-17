@@ -34,7 +34,7 @@ import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/cl
 })
 export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedbackPluginBaseComponent implements OnInit {
 
-    control?: FormControl;
+    control?: FormControl<string>;
     component = AddonModAssignProvider.COMPONENT;
     text = '';
     isSent = false;
@@ -76,7 +76,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
                     }
                 });
             } else if (this.edit) {
-                this.control = this.fb.control(this.text);
+                this.control = this.fb.control(this.text, { nonNullable: true });
             }
         } finally {
             this.loaded = true;

@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { AddonModForumComponentsModule } from '@addons/mod/forum/components/components.module';
-import { CanLeaveGuard } from '@guards/can-leave';
+import { canLeaveGuard } from '@guards/can-leave';
 import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModForumNewDiscussionPage } from '@addons/mod/forum/pages/new-discussion/new-discussion';
@@ -24,7 +24,7 @@ import { AddonModForumNewDiscussionPage } from '@addons/mod/forum/pages/new-disc
 const routes: Routes = [{
     path: '',
     component: AddonModForumNewDiscussionPage,
-    canDeactivate: [CanLeaveGuard],
+    canDeactivate: [canLeaveGuard],
 }];
 
 @NgModule({

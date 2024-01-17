@@ -35,10 +35,13 @@ import { CorePlatform } from '@services/platform';
 import { CoreUrl } from '@singletons/url';
 import { CoreLogger } from '@singletons/logger';
 import { CorePromisedValue } from '@classes/promised-value';
+import { register } from 'swiper/element/bundle';
 
 const MOODLE_SITE_URL_PREFIX = 'url-';
 const MOODLE_VERSION_PREFIX = 'version-';
 const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
+
+register();
 
 @Component({
     selector: 'app-root',
@@ -56,7 +59,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const win = <any> window;
-        CoreDomUtils.toggleModeClass('ionic5', true, { includeLegacy: true });
+        CoreDomUtils.toggleModeClass('ionic7', true, { includeLegacy: true });
+        CoreDomUtils.toggleModeClass('development', CoreConstants.BUILD.isDevelopment);
         this.addVersionClass(MOODLEAPP_VERSION_PREFIX, CoreConstants.CONFIG.versionname.replace('-dev', ''));
 
         CoreEvents.on(CoreEvents.LOGOUT, async () => {

@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'core.settings.settings' | translate }}</h1>
@@ -11,8 +11,9 @@
 <ion-content>
     <ion-list>
         <ion-item *ngIf="defaultTimeLabel">
-            <ion-label>{{ 'addon.calendar.defaultnotificationtime' | translate }}</ion-label>
-            <ion-select [(ngModel)]="defaultTimeLabel" (click)="changeDefaultTime($event)">
+
+            <ion-select [(ngModel)]="defaultTimeLabel" (click)="changeDefaultTime($event)"
+                [label]="'addon.calendar.defaultnotificationtime' | translate">
                 <ion-select-option [value]="defaultTimeLabel">{{ defaultTimeLabel }}</ion-select-option>
             </ion-select>
         </ion-item>

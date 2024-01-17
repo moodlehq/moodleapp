@@ -1,41 +1,39 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text [text]="title" contextLevel="coursecat" [contextInstanceId]="currentCategory && currentCategory!.id">
-                </core-format-text>
+                <core-format-text [text]="title" contextLevel="coursecat" [contextInstanceId]="currentCategory && currentCategory!.id" />
             </h1>
         </ion-title>
         <ion-buttons slot="end">
             <core-context-menu>
                 <core-context-menu-item *ngIf="downloadCourseEnabled || downloadCoursesEnabled" [priority]="1000"
                     [content]="'core.settings.showdownloadoptions' | translate" (action)="toggleDownload()" iconAction="toggle"
-                    [(toggle)]="downloadEnabled"></core-context-menu-item>
+                    [(toggle)]="downloadEnabled" />
                 <core-context-menu-item [priority]="900" [content]="'core.courses.showonlyenrolled' | translate" (action)="filterEnrolled()"
-                    iconAction="toggle" [(toggle)]="showOnlyEnrolled"></core-context-menu-item>
+                    iconAction="toggle" [(toggle)]="showOnlyEnrolled" />
             </core-context-menu>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!categoriesLoaded" (ionRefresh)="refreshCategories($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="categoriesLoaded">
         <ion-list class="list-item-limited-width">
             <ion-item *ngIf="currentCategory" class="ion-text-wrap">
-                <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.category' | translate"></ion-icon>
+                <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.category' | translate" />
                 <ion-label>
                     <p class="item-heading">
-                        <core-format-text [text]="currentCategory.name" contextLevel="coursecat" [contextInstanceId]="currentCategory.id">
-                        </core-format-text>
+                        <core-format-text [text]="currentCategory.name" contextLevel="coursecat" [contextInstanceId]="currentCategory.id" />
                     </p>
                     <p *ngIf="currentCategory.description">
                         <core-format-text [text]="currentCategory.description" collapsible-item contextLevel="coursecat"
-                            [contextInstanceId]="currentCategory.id"></core-format-text>
+                            [contextInstanceId]="currentCategory.id" />
                     </p>
                 </ion-label>
             </ion-item>
@@ -49,11 +47,10 @@
                 <ion-card *ngFor="let category of categories">
                     <ion-item button class="ion-text-wrap" (click)="openCategory(category.id)" [attr.aria-label]="category.name"
                         [detail]="true">
-                        <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.category' | translate"></ion-icon>
+                        <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.category' | translate" />
                         <ion-label>
                             <p class="item-heading">
-                                <core-format-text [text]="category.name" contextLevel="coursecat" [contextInstanceId]="category.id">
-                                </core-format-text>
+                                <core-format-text [text]="category.name" contextLevel="coursecat" [contextInstanceId]="category.id" />
                             </p>
                         </ion-label>
                         <ion-badge slot="end" *ngIf="!showOnlyEnrolled && category.coursecount > 0" color="light">
@@ -71,12 +68,10 @@
                         <h2 *ngIf="showOnlyEnrolled" class="big">{{ 'core.courses.mycourses' | translate }}</h2>
                     </ion-label>
                 </ion-item-divider>
-                <core-courses-course-list-item *ngFor="let course of courses" [course]="course" [showDownload]="downloadEnabled">
-                </core-courses-course-list-item>
+                <core-courses-course-list-item *ngFor="let course of courses" [course]="course" [showDownload]="downloadEnabled" />
             </ng-container>
         </ion-list>
         <core-empty-box *ngIf="!categories.length && !courses.length" icon="fas-graduation-cap"
-            [message]="'core.courses.nocoursesyet' | translate">
-        </core-empty-box>
+            [message]="'core.courses.nocoursesyet' | translate" />
     </core-loading>
 </ion-content>

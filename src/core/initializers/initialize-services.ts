@@ -22,6 +22,9 @@ import { CoreSites } from '@services/sites';
 import { CoreUpdateManager } from '@services/update-manager';
 import { CoreTimeUtils } from '@services/utils/time';
 
+/**
+ * Initializes various core components asynchronously.
+ */
 export default async function(): Promise<void> {
     await Promise.all([
         CoreConfig.initialize(),

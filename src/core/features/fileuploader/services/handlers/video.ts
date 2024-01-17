@@ -30,19 +30,14 @@ export class CoreFileUploaderVideoHandlerService implements CoreFileUploaderHand
     priority = 1400;
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @returns Promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return CorePlatform.isMobile() || (CoreApp.canGetUserMedia() && CoreApp.canRecordMedia());
     }
 
     /**
-     * Given a list of mimetypes, return the ones that are supported by the handler.
-     *
-     * @param mimetypes List of mimetypes.
-     * @returns Supported mimetypes.
+     * @inheritdoc
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
         if (CorePlatform.isIOS()) {
@@ -66,15 +61,13 @@ export class CoreFileUploaderVideoHandlerService implements CoreFileUploaderHand
     }
 
     /**
-     * Get the data to display the handler.
-     *
-     * @returns Data.
+     * @inheritdoc
      */
     getData(): CoreFileUploaderHandlerData {
         return {
             title: 'core.fileuploader.video',
             class: 'core-fileuploader-video-handler',
-            icon: 'videocam', // Cannot use font-awesome in action sheet.
+            icon: 'fas-video',
             action: async (
                 maxSize?: number,
                 upload?: boolean,

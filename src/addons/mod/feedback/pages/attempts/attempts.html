@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.mod_feedback.responses' |translate }}</h1>
@@ -11,13 +11,12 @@
 <ion-content>
     <core-split-view>
         <ion-refresher slot="fixed" [disabled]="!attempts || !attempts.loaded" (ionRefresh)="refreshFeedback($event.target)">
-            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
         <core-loading [hideUntil]="attempts && attempts.loaded">
             <ion-list class="ion-no-margin">
                 <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="reloadAttempts()"
-                    [courseId]="courseId">
-                </core-group-selector>
+                    [courseId]="courseId" />
 
                 <ng-container *ngIf="identifiableAttemptsTotal > 0">
                     <ion-item-divider>
@@ -27,7 +26,7 @@
                     </ion-item-divider>
                     <ion-item *ngFor="let attempt of identifiableAttempts" class="ion-text-wrap" button [detail]="true"
                         (click)="attempts?.select(attempt)" [attr.aria-current]="attempts?.getItemAriaCurrent(attempt)">
-                        <core-user-avatar [user]="attempt" [linkProfile]="false" slot="start"></core-user-avatar>
+                        <core-user-avatar [user]="attempt" [linkProfile]="false" slot="start" />
                         <ion-label>
                             <p class="item-heading">{{ attempt.fullname }}</p>
                             <p *ngIf="attempt.timemodified">{{ attempt.timemodified * 1000 | coreFormatDate }}</p>
@@ -43,7 +42,7 @@
                     </ion-item-divider>
                     <ion-item *ngFor="let attempt of anonymousAttempts" class="ion-text-wrap" button [detail]="true"
                         (click)="attempts?.select(attempt)" [attr.aria-current]="attempts?.getItemAriaCurrent(attempt)">
-                        <core-user-avatar [linkProfile]="false" slot="start"></core-user-avatar>
+                        <core-user-avatar [linkProfile]="false" slot="start" />
                         <ion-label>
                             <p class="item-heading">{{ 'addon.mod_feedback.anonymous_user' | translate }}</p>
                             <p>{{ 'addon.mod_feedback.response_nr' | translate }}: {{attempt.number}}</p>
@@ -52,8 +51,7 @@
                 </ng-container>
 
                 <core-infinite-loading [enabled]="attempts && attempts.loaded && !attempts.completed" [error]="fetchFailed"
-                    (action)="fetchMoreAttempts($event)">
-                </core-infinite-loading>
+                    (action)="fetchMoreAttempts($event)" />
             </ion-list>
         </core-loading>
     </core-split-view>

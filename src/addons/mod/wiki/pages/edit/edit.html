@@ -1,12 +1,11 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
-                </core-format-text>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
             </h1>
         </ion-title>
 
@@ -21,17 +20,15 @@
     <core-loading [hideUntil]="loaded">
         <form [formGroup]="pageForm" #editPageForm *ngIf="loaded">
             <ion-item class="ion-text-wrap" *ngIf="canEditTitle">
-                <ion-label class="sr-only">{{ 'addon.mod_wiki.newpagetitle' | translate }}</ion-label>
-                <ion-input name="title" type="text" [placeholder]="'addon.mod_wiki.newpagetitle' | translate" formControlName="title">
-                </ion-input>
+                <ion-input [attr.aria-label]="'addon.mod_wiki.newpagetitle' | translate" name="title" type="text"
+                    [placeholder]="'addon.mod_wiki.newpagetitle' | translate" formControlName="title" />
             </ion-item>
 
             <ion-item>
                 <ion-label class="sr-only">{{ 'core.content' | translate }}</ion-label>
                 <core-rich-text-editor [control]="contentControl" [placeholder]="'core.content' | translate" name="wiki_page_content"
                     [component]="component" [componentId]="cmId" [autoSave]="true" contextLevel="module" [contextInstanceId]="cmId"
-                    elementId="newcontent_editor" [draftExtraParams]="editorExtraParams">
-                </core-rich-text-editor>
+                    elementId="newcontent_editor" [draftExtraParams]="editorExtraParams" />
             </ion-item>
 
             <ion-item *ngIf="wrongVersionLock" class="ion-text-center addon-mod_wiki-wrongversionlock">

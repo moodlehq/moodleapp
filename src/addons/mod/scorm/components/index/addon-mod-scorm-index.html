@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
     </ion-button>
 </core-navbar-buttons>
 
@@ -10,13 +10,12 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
-        [courseId]="courseId" [hasDataToSync]="!errorMessage && hasOffline" (completionChanged)="onCompletionChange()">
-    </core-course-module-info>
+        [courseId]="courseId" [hasDataToSync]="!errorMessage && hasOffline" (completionChanged)="onCompletionChange()" />
 
     <!-- Warning message. -->
     <ion-card class="core-info-card" *ngIf="scorm && scorm.warningMessage">
         <ion-item>
-            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
             <ion-label>{{ scorm.warningMessage }}</ion-label>
         </ion-item>
     </ion-card>
@@ -34,7 +33,7 @@
                             <p class="item-heading">{{ 'addon.mod_scorm.noattemptsallowed' | translate }}</p>
                         </ion-label>
                         <p slot="end">
-                            <span *ngIf="scorm.maxattempt == 0">{{ 'core.unlimited' | translate }}</span>
+                            <span *ngIf="scorm.maxattempt === 0">{{ 'core.unlimited' | translate }}</span>
                             <span *ngIf="scorm.maxattempt! > 0">{{ scorm.maxattempt }}</span>
                         </p>
                     </ion-item>
@@ -47,8 +46,7 @@
                     <ion-item *ngIf="onlineAttempts.length > 0" button class="divider ion-text-wrap" (click)="toggleGrades()"
                         [attr.aria-label]="(gradesExpanded ? 'core.collapse' : 'core.expand') | translate" [detail]="false">
                         <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
-                            [class.expandable-status-icon-expanded]="gradesExpanded">
-                        </ion-icon>
+                            [class.expandable-status-icon-expanded]="gradesExpanded" />
                         <ion-label>
                             <h3 class="item-heading">{{'core.grades.grades' | translate}}</h3>
                         </ion-label>
@@ -59,8 +57,8 @@
                                 <p class="item-heading">{{ 'addon.mod_scorm.gradeforattempt' | translate }} {{attempt.num}}</p>
                             </ion-label>
                             <p slot="end">
-                                <span *ngIf="attempt.grade != -1">{{ attempt.gradeFormatted }}</span>
-                                <span *ngIf="attempt.grade == -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</span>
+                                <span *ngIf="attempt.grade !== -1">{{ attempt.gradeFormatted }}</span>
+                                <span *ngIf="attempt.grade === -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</span>
                             </p>
                         </ion-item>
                     </ng-container>
@@ -76,8 +74,8 @@
                         </p>
                     </ion-label>
                     <p slot="end">
-                        <span *ngIf="attempt.grade != -1">{{ attempt.gradeFormatted }}</span>
-                        <span *ngIf="attempt.grade == -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</span>
+                        <span *ngIf="attempt.grade !== -1">{{ attempt.gradeFormatted }}</span>
+                        <span *ngIf="attempt.grade === -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</span>
                     </p>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="scorm.displayattemptstatus && gradeMethodReadable">
@@ -91,8 +89,8 @@
                         <p class="item-heading">{{ 'addon.mod_scorm.gradereported' | translate }}</p>
                     </ion-label>
                     <p slot="end">
-                        <span *ngIf="grade != -1">{{ gradeFormatted }}</span>
-                        <span *ngIf="grade == -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</span>
+                        <span *ngIf="grade !== -1">{{ gradeFormatted }}</span>
+                        <span *ngIf="grade === -1">{{ 'addon.mod_scorm.cannotcalculategrade' | translate }}</span>
                     </p>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="syncTime">
@@ -112,10 +110,10 @@
             </ion-card-header>
             <ion-list>
                 <ion-item class="ion-text-wrap" *ngIf="organizations.length > 1">
-                    <ion-label>{{ 'addon.mod_scorm.organizations' | translate }}</ion-label>
                     <ion-select [(ngModel)]="currentOrganization.identifier" (ionChange)="loadOrganization()"
                         [cancelText]="'core.cancel' | translate" interface="action-sheet"
                         [interfaceOptions]="{header: 'addon.mod_scorm.organizations' | translate}">
+                        <p class="item-heading" slot="label">{{ 'addon.mod_scorm.organizations' | translate }}</p>
                         <ion-select-option *ngFor="let org of organizations" [value]="org.identifier">
                             {{ org.title }}
                         </ion-select-option>
@@ -123,7 +121,7 @@
                 </ion-item>
                 <ion-item class="ion-text-center" *ngIf="scorm.displaycoursestructure && loadingToc">
                     <ion-label>
-                        <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+                        <ion-spinner [attr.aria-label]="'core.loading' | translate" />
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="scorm.displaycoursestructure && !loadingToc">
@@ -135,17 +133,14 @@
                         <p>{{ currentOrganization.title }}</p>
                         <div *ngFor="let sco of toc" class="core-padding-{{sco.level}} addon-mod_scorm-type-{{sco.scormtype}}">
                             <p *ngIf="sco.isvisible">
-                                <ion-icon *ngIf="sco.icon" [name]="sco.icon.icon" [attr.aria-label]="sco.icon.description" slot="start">
-                                </ion-icon>
+                                <ion-icon *ngIf="sco.icon" [name]="sco.icon.icon" [attr.aria-label]="sco.icon.description" slot="start" />
                                 <button class="as-link" *ngIf="sco.prereq && sco.launch" (click)="open($event, false, sco.id)">
                                     <core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id"
-                                        [courseId]="courseId">
-                                    </core-format-text>
+                                        [courseId]="courseId" />
                                 </button>
                                 <span *ngIf="!sco.prereq || !sco.launch">
                                     <core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id"
-                                        [courseId]="courseId">
-                                    </core-format-text>
+                                        [courseId]="courseId" />
                                 </span>
                                 <span *ngIf="accessInfo && accessInfo.canviewscores && sco.scoreraw">
                                     ({{ 'addon.mod_scorm.score' | translate }}: {{sco.scoreraw}})
@@ -169,12 +164,12 @@
                 </ion-item>
                 <ion-button class="ion-margin ion-text-wrap" expand="block" [href]="module.url" core-link [showBrowserWarning]="false">
                     {{ 'core.openinbrowser' | translate }}
-                    <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
                 </ion-button>
             </ng-container>
 
             <!-- Warning that user doesn't have any more attempts. -->
-            <ion-card *ngIf="!errorMessage && attemptsLeft == 0" class="core-danger-card">
+            <ion-card *ngIf="!errorMessage && attemptsLeft === 0" class="core-danger-card">
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <p>{{ 'addon.mod_scorm.exceededmaxattempts' | translate }}</p>
@@ -187,8 +182,8 @@
                 <ng-container *ngIf="!downloading && !skip">
                     <!-- Create new attempt -->
                     <ion-item class="ion-text-wrap" *ngIf="!scorm.forcenewattempt && numAttempts > 0 && !incomplete && attemptsLeft > 0">
-                        <ion-label>{{ 'addon.mod_scorm.newattempt' | translate }}</ion-label>
-                        <ion-checkbox slot="end" name="newAttempt" [(ngModel)]="startNewAttempt">
+                        <ion-checkbox name="newAttempt" [(ngModel)]="startNewAttempt">
+                            {{ 'addon.mod_scorm.newattempt' | translate }}
                         </ion-checkbox>
                     </ion-item>
 
@@ -202,7 +197,7 @@
                         <!-- Open mode (Preview or Normal) -->
                         <ion-button *ngIf="!scorm.hidebrowse" expand="block" fill="outline" (click)="open($event, true)"
                             class="ion-text-wrap ion-margin">
-                            <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true" />
                             {{ 'addon.mod_scorm.browse' | translate }}
                         </ion-button>
                         <ion-button expand="block" (click)="open($event)" class="ion-text-wrap ion-margin">
@@ -214,15 +209,13 @@
                 <!-- Download progress. -->
                 <ion-item class="ion-text-center" *ngIf="downloading">
                     <ion-label>
-                        <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
+                        <ion-spinner [attr.aria-label]="'core.loading' | translate" />
                         <p class="item-heading" *ngIf="progressMessage">{{ progressMessage | translate }}</p>
-                        <core-progress-bar *ngIf="showPercentage" [progress]="percentage" [a11yText]="progressMessage">
-                        </core-progress-bar>
+                        <core-progress-bar *ngIf="showPercentage" [progress]="percentage" [a11yText]="progressMessage" />
                     </ion-label>
                 </ion-item>
             </ng-container>
         </div>
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">
-        </core-course-module-navigation>
+        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
     </div>
 </core-loading>

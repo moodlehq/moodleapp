@@ -5,8 +5,7 @@
 </ion-item-divider>
 <core-loading [hideUntil]="loaded">
     <ion-item class="ion-text-wrap" *ngFor="let entry of entries" [detail]="true" button (click)="gotoCoureListModType(entry)">
-        <core-mod-icon slot="start" [modicon]="entry.icon" [modname]="entry.iconModName" [showAlt]="false">
-        </core-mod-icon>
+        <core-mod-icon slot="start" [modicon]="entry.icon" [modname]="entry.iconModName" [showAlt]="false" />
         <ion-label>{{ entry.name }}</ion-label>
     </ion-item>
 </core-loading>

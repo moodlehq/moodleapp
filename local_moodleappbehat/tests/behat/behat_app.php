@@ -214,10 +214,7 @@ class behat_app extends behat_app_helper {
             return true;
         });
 
-        $this->wait_for_pending_js();
-
-        // Wait scroll animation to finish.
-        $this->getSession()->wait(300);
+        $this->wait_animations_done();
     }
 
     /**
@@ -263,10 +260,7 @@ class behat_app extends behat_app_helper {
             throw new DriverException('Error when swiping - ' . $result);
         }
 
-        $this->wait_for_pending_js();
-
-        // Wait swipe animation to finish.
-        $this->getSession()->wait(300);
+        $this->wait_animations_done();
     }
 
     /**
@@ -689,10 +683,7 @@ class behat_app extends behat_app_helper {
                 return true;
             });
 
-            $this->wait_for_pending_js();
-
-            // Wait for UI to settle after refreshing.
-            $this->getSession()->wait(300);
+            $this->wait_animations_done();
 
             if (is_null($locator)) {
                 return;
@@ -790,13 +781,10 @@ class behat_app extends behat_app_helper {
     /**
      * Sets a field to the given text value in the app.
      *
-     * Currently this only works for input fields which must be identified using a partial or
-     * exact match on the placeholder text.
-     *
      * @Given /^I set the field "((?:[^"]|\\")+)" to "((?:[^"]|\\")*)" in the app$/
-     * @param string $field Text identifying field
-     * @param string $value Value for field
-     * @throws DriverException If the field set doesn't work
+     * @param string $field Text identifying the field.
+     * @param string $value Value to set. In select fields, this can be either the value or text included in the select option.
+     * @throws DriverException If the field set doesn't work.
      */
     public function i_set_the_field_in_the_app(string $field, string $value) {
         $field = addslashes_js($field);

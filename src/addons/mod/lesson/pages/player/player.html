@@ -1,18 +1,17 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId">
-                </core-format-text>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="lesson?.coursemodule" [courseId]="courseId" />
             </h1>
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="displayMenu || mediaFile" [attr.aria-label]="'addon.mod_lesson.lessonmenu' | translate"
                 (click)="showMenu()">
-                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -22,7 +21,7 @@
         <!-- Info messages. Only show the first one. -->
         <ion-card class="core-info-card" *ngIf="lesson && messages?.length">
             <ion-item class="ion-text-wrap">
-                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
                 <ion-label>{{ messages[0].message }}</ion-label>
             </ion-item>
         </ion-card>
@@ -31,8 +30,7 @@
             [ngStyle]="{'width': lessonWidth, 'height': lessonHeight}">
 
             <core-timer *ngIf="endTime" [endTime]="endTime" (finished)="timeUp()" [timeLeftClassThreshold]="-1"
-                [timerText]="'addon.mod_lesson.timeremaining' | translate">
-            </core-timer>
+                [timerText]="'addon.mod_lesson.timeremaining' | translate" />
 
             <!-- Retake and ongoing score. -->
             <ion-item class="ion-text-wrap" *ngIf="showRetake && !eolData && !processData">
@@ -51,8 +49,7 @@
                 <ion-item class="ion-text-wrap" *ngIf="!question && pageContent">
                     <ion-label>
                         <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="pageContent"
-                            contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId">
-                        </core-format-text>
+                            contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId" />
                     </ion-label>
                 </ion-item>
 
@@ -64,8 +61,7 @@
                         <ion-label>
                             <h2>
                                 <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="pageContent"
-                                    contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId">
-                                </core-format-text>
+                                    contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId" />
                             </h2>
                         </ion-label>
                     </ion-item-divider>
@@ -75,11 +71,9 @@
 
                         <!-- Short answer. -->
                         <ion-item class="ion-text-wrap" *ngSwitchCase="'shortanswer'">
-                            <ion-label class="sr-only" stacked></ion-label>
                             <ion-input [type]="question.input!.type" placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}"
-                                [id]="question.input!.id" [formControlName]="question.input!.name" autocorrect="off"
-                                [maxlength]="question.input!.maxlength">
-                            </ion-input>
+                                [attr.aria-label]="'addon.mod_lesson.youranswer' | translate" [id]="question.input!.id"
+                                [formControlName]="question.input!.name" autocorrect="off" [maxlength]="question.input!.maxlength" />
                         </ion-item>
 
                         <!-- Essay. -->
@@ -89,8 +83,7 @@
                                 <core-rich-text-editor placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}"
                                     [control]="question.control" [component]="component" [componentId]="lesson.coursemodule"
                                     [autoSave]="true" contextLevel="module" [contextInstanceId]="lesson.coursemodule"
-                                    elementId="answer_editor">
-                                </core-rich-text-editor>
+                                    elementId="answer_editor" />
                             </ion-item>
                             <ion-item class="ion-text-wrap" *ngIf="!question.textarea && question.useranswer">
                                 <ion-label>
@@ -98,8 +91,7 @@
                                     <p>
                                         <core-format-text [component]="component" [componentId]="lesson.coursemodule"
                                             [text]="question.useranswer" contextLevel="module" [contextInstanceId]="lesson.coursemodule"
-                                            [courseId]="courseId">
-                                        </core-format-text>
+                                            [courseId]="courseId" />
                                     </p>
                                 </ion-label>
                             </ion-item>
@@ -110,12 +102,9 @@
                             <!-- Single choice. -->
                             <ion-radio-group *ngIf="!question.multi" [formControlName]="question.controlName">
                                 <ion-item class="ion-text-wrap" *ngFor="let option of question.options">
-                                    <ion-label>
+                                    <ion-radio [id]="option.id" [value]="option.value" [disabled]="option.disabled">
                                         <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="option.text"
-                                            contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId">
-                                        </core-format-text>
-                                    </ion-label>
-                                    <ion-radio slot="end" [id]="option.id" [value]="option.value" [disabled]="option.disabled">
+                                            contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId" />
                                     </ion-radio>
                                 </ion-item>
                             </ion-radio-group>
@@ -123,12 +112,10 @@
                             <!-- Multiple choice. -->
                             <ng-container *ngIf="question.multi">
                                 <ion-item class="ion-text-wrap" *ngFor="let option of question.options">
-                                    <ion-label>
+                                    <ion-checkbox [id]="option.id" [formControlName]="option.name">
                                         <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="option.text"
-                                            contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId">
-                                        </core-format-text>
-                                    </ion-label>
-                                    <ion-checkbox [id]="option.id" [formControlName]="option.name" slot="end"></ion-checkbox>
+                                            contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId" />
+                                    </ion-checkbox>
                                 </ion-item>
                             </ng-container>
                         </ng-container>
@@ -136,15 +123,11 @@
                         <!-- Matching. -->
                         <ng-container *ngSwitchCase="'matching'">
                             <ion-item class="ion-text-wrap" *ngFor="let row of question.rows">
-                                <ion-label>
-                                    <p>
-                                        <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="row.text"
-                                            contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId">
-                                        </core-format-text>
-                                    </p>
-                                </ion-label>
                                 <ion-select [id]="row.id" [formControlName]="row.name" [cancelText]="'core.cancel' | translate"
                                     interface="action-sheet">
+                                    <core-format-text slot="label" [component]="component" [componentId]="lesson.coursemodule"
+                                        [text]="row.text" contextLevel="module" [contextInstanceId]="lesson.coursemodule"
+                                        [courseId]="courseId" />
                                     <ion-select-option *ngFor="let option of row.options" [value]="option.value">
                                         {{option.label}}
                                     </ion-select-option>
@@ -178,13 +161,12 @@
                         <span id="addon-mod_lesson-{{cmId}}-progress">
                             {{ 'addon.mod_lesson.progresscompleted' | translate:{$a: pageData.progress} }}
                         </span>
-                        <core-progress-bar [progress]="pageData.progress" ariaDescribedBy="addon-mod_lesson-{{cmId}}-progress">
-                        </core-progress-bar>
+                        <core-progress-bar [progress]="pageData.progress" ariaDescribedBy="addon-mod_lesson-{{cmId}}-progress" />
                     </ion-label>
                 </ion-item>
                 <ion-card class="core-info-card" *ngIf="lesson.progressbar && canManage">
                     <ion-item class="ion-text-wrap">
-                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
+                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
                         <ion-label>{{ 'addon.mod_lesson.progressbarteacherwarning2' | translate }}</ion-label>
                     </ion-item>
                 </ion-card>
@@ -193,7 +175,7 @@
             <!-- End of lesson reached. -->
             <ion-card class="core-warning-card" *ngIf="eolData && !processData && eolData.offline?.value">
                 <ion-item>
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
                     <ion-label>{{ 'addon.mod_lesson.finishretakeoffline' | translate }}</ion-label>
                 </ion-item>
             </ion-card>
@@ -216,7 +198,7 @@
                     <ion-label>{{ eolData.numberofcorrectanswers.message }}</ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="eolData.displayscorewithessays">
-                    <ion-label [innerHTML]="eolData.displayscorewithessays.message"></ion-label>
+                    <ion-label [innerHTML]="eolData.displayscorewithessays.message" />
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="!eolData.displayscorewithessays && eolData.displayscorewithoutessays">
                     <ion-label>{{ eolData.displayscorewithoutessays.message }}</ion-label>
@@ -236,8 +218,7 @@
                             {{ 'addon.mod_lesson.progresscompleted' | translate:{$a: eolData.progresscompleted.value} }}
                         </span>
                         <core-progress-bar [progress]="eolData.progresscompleted.value"
-                            ariaDescribedBy="addon-mod_lesson-{{cmId}}-progress-end">
-                        </core-progress-bar>
+                            ariaDescribedBy="addon-mod_lesson-{{cmId}}-progress-end" />
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="eolData.displayofgrade">
@@ -254,15 +235,13 @@
                 <ion-button *ngIf="activityLink && activityLink.formatted" expand="block" fill="outline" [href]="activityLink.href"
                     core-link [capture]="true" class="ion-text-wrap ion-margin button-no-uppercase">
                     <core-format-text [text]="activityLink.label" contextLevel="module" [contextInstanceId]="lesson.coursemodule"
-                        [courseId]="courseId">
-                    </core-format-text>
+                        [courseId]="courseId" />
                 </ion-button>
                 <ion-item class="ion-text-wrap" *ngIf="activityLink && !activityLink.formatted">
                     <!-- Activity link wasn't formatted, render the original link. -->
                     <ion-label>
                         <core-format-text [text]="activityLink.label" contextLevel="module" [contextInstanceId]="lesson.coursemodule"
-                            [courseId]="courseId">
-                        </core-format-text>
+                            [courseId]="courseId" />
                     </ion-label>
                 </ion-item>
             </ion-card>
@@ -276,8 +255,7 @@
                     <ion-label>
                         <div *ngIf="!processData.reviewmode">
                             <core-format-text [component]="component" [componentId]="lesson.coursemodule" [text]="processData.feedback"
-                                contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId">
-                            </core-format-text>
+                                contextLevel="module" [contextInstanceId]="lesson.coursemodule" [courseId]="courseId" />
                         </div>
                         <div *ngIf="review">
                             <p>{{ 'addon.mod_lesson.gotoendoflesson' | translate }}</p>

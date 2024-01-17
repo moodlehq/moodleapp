@@ -85,12 +85,6 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
         this.initialized = true;
 
-        this.iframeWidth = (this.iframeWidth && CoreDomUtils.formatPixelsSize(this.iframeWidth)) || '100%';
-        this.iframeHeight = (this.iframeHeight && CoreDomUtils.formatPixelsSize(this.iframeHeight)) || '100%';
-        this.allowFullscreen = CoreUtils.isTrueOrOne(this.allowFullscreen);
-        this.showFullscreenOnToolbar = CoreUtils.isTrueOrOne(this.showFullscreenOnToolbar);
-        this.autoFullscreenOnRotate = CoreUtils.isTrueOrOne(this.autoFullscreenOnRotate);
-
         if (this.showFullscreenOnToolbar || this.autoFullscreenOnRotate) {
             // Leave fullscreen when navigating.
             this.navSubscription = Router.events
@@ -157,6 +151,22 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * Detect changes on input properties.
      */
     async ngOnChanges(changes: {[name: string]: SimpleChange }): Promise<void> {
+        if (changes.iframeWidth) {
+            this.iframeWidth = (this.iframeWidth && CoreDomUtils.formatPixelsSize(this.iframeWidth)) || '100%';
+        }
+        if (changes.iframeHeight) {
+            this.iframeHeight = (this.iframeHeight && CoreDomUtils.formatPixelsSize(this.iframeHeight)) || '100%';
+        }
+        if (changes.allowFullscreen) {
+            this.allowFullscreen = CoreUtils.isTrueOrOne(this.allowFullscreen);
+        }
+        if (changes.showFullscreenOnToolbar) {
+            this.showFullscreenOnToolbar = CoreUtils.isTrueOrOne(this.showFullscreenOnToolbar);
+        }
+        if (changes.autoFullscreenOnRotate) {
+            this.autoFullscreenOnRotate = CoreUtils.isTrueOrOne(this.autoFullscreenOnRotate);
+        }
+
         if (!changes.src) {
             return;
         }

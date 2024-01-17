@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
-import { ILocalNotification } from '@ionic-native/local-notifications';
+import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
 
 import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
@@ -24,7 +24,7 @@ import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
-import { makeSingleton, NgZone, Translate, LocalNotifications, Push } from '@singletons';
+import { makeSingleton, NgZone, Translate, LocalNotifications } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
     APP_SCHEMA,
@@ -35,6 +35,7 @@ import {
 } from '@services/database/local-notifications';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
+import { Push } from '@features/native/plugins';
 
 /**
  * Service to handle local notifications.

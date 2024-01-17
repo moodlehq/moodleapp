@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, Input } from '@angular/core';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFile } from '@services/file';
 import { ModalController, Translate } from '@singletons';

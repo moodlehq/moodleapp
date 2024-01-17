@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1>
@@ -10,7 +10,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="copyInfo()" [attr.aria-label]="'core.settings.copyinfo' | translate">
-                <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -19,7 +19,7 @@
 <ion-content>
     <ion-list class="list-item-limited-width">
         <ion-item *ngIf="showDevOptions" [detail]="true" (click)="gotoDevOptions()">
-            <ion-icon name="fas-terminal" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-terminal" slot="start" aria-hidden="true" />
             <ion-label class="ion-text-wrap">
                 <p class="item-heading">{{ 'core.settings.developeroptions' | translate }}</p>
             </ion-label>

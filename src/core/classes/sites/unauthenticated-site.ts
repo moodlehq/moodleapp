@@ -174,7 +174,7 @@ export class CoreUnauthenticatedSite {
             options.readingStrategy ===  CoreSitesReadingStrategy.PREFER_NETWORK;
         if (!ignoreCache && this.publicConfig) {
             return this.publicConfig;
-        };
+        }
 
         if (options.readingStrategy === CoreSitesReadingStrategy.ONLY_CACHE) {
             throw new CoreError('Cache not available to read public config');

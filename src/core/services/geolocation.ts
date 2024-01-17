@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Coordinates } from '@ionic-native/geolocation';
+import { Coordinates } from '@awesome-cordova-plugins/geolocation';
 
 import { CoreApp } from '@services/app';
 import { CoreAnyError, CoreError } from '@classes/errors/error';

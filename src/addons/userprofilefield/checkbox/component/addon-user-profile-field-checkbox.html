@@ -3,13 +3,12 @@
     <ion-label>
         <p class="item-heading">
             <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                [courseId]="courseId" [wsNotFiltered]="true">
-            </core-format-text>
+                [courseId]="courseId" [wsNotFiltered]="true" />
         </p>
-        <p *ngIf="value != '0'">
+        <p *ngIf="value !== '0'">
             {{ 'core.yes' | translate }}
         </p>
-        <p *ngIf="value == '0'">
+        <p *ngIf="value === '0'">
             {{ 'core.no' | translate }}
         </p>
     </ion-label>
@@ -17,14 +16,11 @@
 
 <!-- Edit. -->
 <ion-item *ngIf="edit && field && field.shortname && form" [formGroup]="form">
-    <ion-label>
-        <span class="label-text" [core-mark-required]="required">
+    <ion-checkbox [formControlName]="modelName" labelPlacement="start" justify="space-between">
+        <span [core-mark-required]="required">
             <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                [courseId]="courseId" [wsNotFiltered]="true">
-            </core-format-text>
+                [courseId]="courseId" [wsNotFiltered]="true" />
         </span>
-        <core-input-errors [control]="form.controls[modelName]"></core-input-errors>
-    </ion-label>
-    <ion-checkbox item-end [formControlName]="modelName">
     </ion-checkbox>
+    <core-input-errors [control]="form.controls[modelName]" />
 </ion-item>

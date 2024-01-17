@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1 *ngIf="attempt">{{ attempt.fullname }}</h1>
@@ -14,7 +14,7 @@
         <ion-list class="ion-no-margin" *ngIf="attempt || anonAttempt">
             <ion-item *ngIf="attempt" class="ion-text-wrap" core-user-link [userId]="attempt.userid"
                 [attr.aria-label]="'core.user.viewprofile' | translate" [courseId]="attempt.courseid">
-                <core-user-avatar [user]="attempt" slot="start" [linkProfile]="false"></core-user-avatar>
+                <core-user-avatar [user]="attempt" slot="start" [linkProfile]="false" />
                 <ion-label>
                     <h2>{{attempt.fullname}}</h2>
                     <p *ngIf="attempt.timemodified">{{attempt.timemodified * 1000 | coreFormatDate }}</p>
@@ -22,7 +22,7 @@
             </ion-item>
 
             <ion-item class="ion-text-wrap" *ngIf="anonAttempt">
-                <core-user-avatar [linkProfile]="false" slot="start"></core-user-avatar>
+                <core-user-avatar [linkProfile]="false" slot="start" />
                 <ion-label>
                     <h2>{{ 'addon.mod_feedback.anonymous_user' |translate }}</h2>
                     <p>{{ 'addon.mod_feedback.response_nr' | translate }}: {{anonAttempt.number}}</p>
@@ -30,19 +30,17 @@
             </ion-item>
             <ng-container *ngIf="items && items.length">
                 <ng-container *ngFor="let item of items">
-                    <core-spacer *ngIf="item.typ === 'pagebreak'"></core-spacer>
+                    <core-spacer *ngIf="item.typ === 'pagebreak'" />
                     <ion-item class="ion-text-wrap" *ngIf="item.typ !== 'pagebreak'" [color]="item.dependitem > 0 ? 'light' : ''">
                         <ion-label>
                             <p class="item-heading" *ngIf="item.name" [core-mark-required]="item.required">
                                 <span *ngIf="feedback!.autonumbering && item.itemnumber">{{item.itemnumber}}. </span>
                                 <core-format-text [component]="component" [componentId]="cmId" [text]="item.name" contextLevel="module"
-                                    [contextInstanceId]="cmId" [courseId]="courseId">
-                                </core-format-text>
+                                    [contextInstanceId]="cmId" [courseId]="courseId" />
                             </p>
                             <p *ngIf="item.submittedValue">
                                 <core-format-text [component]="component" [componentId]="cmId" [text]="item.submittedValue"
-                                    contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
-                                </core-format-text>
+                                    contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
                             </p>
                         </ion-label>
                     </ion-item>

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreError } from '@classes/errors/error';
-import { FileEntry, DirectoryEntry } from '@ionic-native/file/ngx';
+import { FileEntry, DirectoryEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFile, CoreFileFormat } from '@services/file';
 import { Translate } from '@singletons';
 import { CorePath } from '@singletons/path';

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InAppBrowserObject, InAppBrowserOptions } from '@ionic-native/in-app-browser';
+import { InAppBrowserObject, InAppBrowserOptions } from '@awesome-cordova-plugins/in-app-browser';
 
 import { CoreNetwork } from '@services/network';
 import { CoreDB } from '@services/db';
@@ -48,10 +48,10 @@ import {
     WS_CACHE_TABLE,
 } from '@services/database/sites';
 import { map } from 'rxjs/operators';
-import { firstValueFrom } from '../../utils/rxjs';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSiteInfo } from './unauthenticated-site';
 import { CoreAuthenticatedSite, CoreAuthenticatedSiteOptionalData, CoreSiteWSPreSets, WSObservable } from './authenticated-site';
+import { firstValueFrom } from 'rxjs';
 
 /**
  * Class that represents a site (combination of site + user).

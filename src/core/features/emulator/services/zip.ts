@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Zip } from '@ionic-native/zip/ngx';
+import { Zip } from '@features/native/plugins/zip';
 import * as JSZip from 'jszip';
 import { CorePath } from '@singletons/path';
 import { File } from '@singletons';
@@ -54,7 +54,6 @@ export class ZipMock extends Zip {
      * @returns Promise that resolves with a number. 0 is success, -1 is error.
      */
     async unzip(source: string, destination: string, onProgress?: (ev: {loaded: number; total: number}) => void): Promise<number> {
-
         // Replace all %20 with spaces.
         source = source.replace(/%20/g, ' ');
         destination = destination.replace(/%20/g, ' ');

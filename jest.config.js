@@ -1,4 +1,4 @@
-const { pathsToModuleNameMapper } = require('ts-jest/utils');
+const { pathsToModuleNameMapper } = require('ts-jest');
 const { compilerOptions } = require('./tsconfig');
 
 module.exports = {
@@ -9,17 +9,6 @@ module.exports = {
         'src/**/*.{ts,html}',
         '!src/testing/**/*',
     ],
-    transform: {
-        '^.+\\.(ts|html)$': 'ts-jest',
-    },
-    transformIgnorePatterns: ['node_modules/(?!@ionic-native|@ionic|@moodlehq/ionic-native-push)'],
-    moduleNameMapper: {
-        ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src/' }),
-        '^!raw-loader!.*': 'jest-raw-loader',
-    },
-    globals: {
-        'ts-jest': {
-            tsconfig: './tsconfig.test.json',
-        },
-    },
+    transformIgnorePatterns: ['node_modules/(?!@stencil|@angular|@ionic|@moodlehq|@ngx-translate|swiper)'],
+    moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src/' }),
 };

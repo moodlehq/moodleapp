@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
             <h1 *ngIf="badge">{{ badge.name }}</h1>
@@ -11,7 +11,7 @@
 </ion-header>
 <ion-content [core-swipe-navigation]="badges" class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!badgeLoaded" (ionRefresh)="refreshBadges($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="badgeLoaded">
         <ion-item-group *ngIf="badge">
@@ -122,8 +122,7 @@
                     <ion-label>
                         <p class="item-heading">{{ 'core.course' | translate}}</p>
                         <p>
-                            <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="courseId">
-                            </core-format-text>
+                            <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="courseId" />
                         </p>
                     </ion-label>
                 </ion-item>
@@ -217,7 +216,7 @@
                         <p class="item-heading">{{ relatedBadge.name }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="badge.relatedbadges.length == 0">
+                <ion-item class="ion-text-wrap" *ngIf="badge.relatedbadges.length === 0">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.badges.norelated' | translate}}</p>
                     </ion-label>
@@ -237,7 +236,7 @@
                         <p class="item-heading">{{ alignment.targetname }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="badge.alignment.length == 0">
+                <ion-item class="ion-text-wrap" *ngIf="badge.alignment.length === 0">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.badges.noalignment' | translate}}</p>
                     </ion-label>

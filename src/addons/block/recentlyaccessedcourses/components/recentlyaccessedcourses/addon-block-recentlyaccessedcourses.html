@@ -3,21 +3,19 @@
         <h2>{{ 'addon.block_recentlyaccessedcourses.pluginname' | translate }}</h2>
     </ion-label>
     <div slot="end" class="flex-row">
-        <core-horizontal-scroll-controls #scrollControls [aria-controls]="scrollElementId">
-        </core-horizontal-scroll-controls>
+        <core-horizontal-scroll-controls #scrollControls [aria-controls]="scrollElementId" />
     </div>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded">
-    <core-empty-box *ngIf="courses.length == 0" image="assets/img/icons/courses.svg"
-        [message]="'addon.block_recentlyaccessedcourses.nocourses' | translate"></core-empty-box>
+    <core-empty-box *ngIf="courses.length === 0" image="assets/img/icons/courses.svg"
+        [message]="'addon.block_recentlyaccessedcourses.nocourses' | translate" />
     <!-- List of courses. -->
     <div [hidden]="courses.length === 0" [id]="scrollElementId" class="core-horizontal-scroll"
         (scroll)="scrollControls.updateScrollPosition()">
         <div (onResize)="scrollControls.updateScrollPosition()" class="flex-row">
             <div class="safe-area-pseudo-padding-start"></div>
             <ng-container *ngFor="let course of courses">
-                <core-courses-course-list-item [course]="course" class="core-recentlyaccessedcourses" layout="summarycard">
-                </core-courses-course-list-item>
+                <core-courses-course-list-item [course]="course" class="core-recentlyaccessedcourses" layout="summarycard" />
             </ng-container>
             <div class="safe-area-pseudo-padding-end"></div>
         </div>

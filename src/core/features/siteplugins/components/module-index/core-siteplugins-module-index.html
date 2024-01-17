@@ -1,19 +1,17 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
     </ion-button>
 </core-navbar-buttons>
 
 <!-- Activity info. -->
-<core-course-module-info [module]="module" [courseId]="courseId" [component]="component" [componentId]="module.id">
-</core-course-module-info>
+<core-course-module-info *ngIf="addDefaultModuleInfo" [module]="module" [courseId]="courseId" [component]="component"
+    [componentId]="module.id" />
 
 <core-site-plugins-plugin-content *ngIf="component && method" [component]="component" [method]="method" [args]="args"
     [initResult]="initResult" [data]="jsData" [pageTitle]="pageTitle" [preSets]="preSets" (onContentLoaded)="contentLoaded($event)"
-    (onLoadingContent)="contentLoading()">
-</core-site-plugins-plugin-content>
+    (onLoadingContent)="contentLoading()" />
 
 <core-course-module-navigation collapsible-footer [appearOnBottom]="collapsibleFooterAppearOnBottom" *ngIf="module" [courseId]="courseId"
-    [currentModuleId]="module.id">
-</core-course-module-navigation>
+    [currentModuleId]="module.id" />

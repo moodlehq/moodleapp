@@ -75,4 +75,5 @@ export interface EnvironmentConfig {
     disableTokenFile: boolean; // Disable the use of tokenpluginfile.php for downloading files (so it fallbacks to pluginfile.php)
     demoMode?: boolean; // Whether to run the app in "demo mode".
     hideInformativeLinks?: boolean; // Whether to hide informative links.
+    iconsPrefixes?: Record<string, Record<string, string[]>>; // Prefixes for custom font icons (located in src/assets/fonts).
 }

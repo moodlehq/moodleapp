@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants } from '@/core/constants';
 import {  AfterViewInit, Directive, ElementRef, Input, OnDestroy } from '@angular/core';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreSwipeNavigationTourComponent } from '@components/swipe-navigation-tour/swipe-navigation-tour';
@@ -35,7 +36,6 @@ const SWIPE_FRICTION = 0.6;
 })
 export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
 
-    // eslint-disable-next-line @angular-eslint/no-input-rename
     @Input('core-swipe-navigation') manager?: CoreSwipeNavigationItemsManager;
 
     protected element: HTMLElement;
@@ -43,6 +43,11 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
 
     constructor(el: ElementRef) {
         this.element = el.nativeElement;
+
+        if (CoreConstants.enableDevTools()) {
+            this.element['swipeNavigation'] = this;
+            this.element.classList.add('uses-swipe-navigation');
+        }
     }
 
     get enabled(): boolean {
