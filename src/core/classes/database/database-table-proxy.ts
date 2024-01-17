@@ -162,6 +162,13 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
+    syncInsert(record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>): void {
+        this.target.syncInsert(record);
+    }
+
+    /**
+     * @inheritdoc
+     */
     async update(updates: Partial<DBRecord>, conditions?: Partial<DBRecord>): Promise<void> {
         return this.target.update(updates, conditions);
     }
