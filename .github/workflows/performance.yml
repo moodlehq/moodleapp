@@ -10,8 +10,8 @@ jobs:
       MOODLE_DOCKER_BROWSER: chrome
       MOODLE_DOCKER_PHP_VERSION: '8.0'
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
     - name: Additional checkouts

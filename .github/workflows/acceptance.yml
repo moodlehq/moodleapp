@@ -30,8 +30,8 @@ jobs:
       BEHAT_TAGS: ${{ github.event.inputs.behat_tags || '~@performance' }}
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
     - name: Additional checkouts
