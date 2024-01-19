@@ -16,7 +16,7 @@ on:
         required: true
         default: 'https://github.com/moodle/moodle'
   pull_request:
-    branches: [ main, ionic7, v*.x ]
+    branches: [ main, v*.x ]
 
 jobs:
   behat:
@@ -30,8 +30,8 @@ jobs:
       BEHAT_TAGS: ${{ github.event.inputs.behat_tags || '~@performance' }}
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
     - name: Additional checkouts
