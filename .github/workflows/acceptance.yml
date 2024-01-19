@@ -16,7 +16,7 @@ on:
         required: true
         default: 'https://github.com/moodle/moodle'
   pull_request:
-    branches: [ main, ionic7, v*.x ]
+    branches: [ main, v*.x ]
 
 jobs:
   behat:

@@ -1,8 +1,8 @@
 os: linux
-dist: trusty
-node_js: 14
+dist: jammy
+node_js: 18
 jdk:
-  - oraclejdk11
+  - openjdk17
 
 git:
   depth: 3
@@ -21,6 +21,7 @@ cache:
     - $HOME/Library/Caches/Homebrew
 
 before_install:
+  - echo -e "machine github.com\n login $GIT_TOKEN" > ~/.netrc
   - nvm install
   - node --version
   - npm --version
@@ -37,26 +38,7 @@ jobs:
   include:
   - name: "Build Android"
     if: env(DEPLOY) = 1 OR (env(DEPLOY) = 2 AND tag IS NOT blank)
-    language: android
-    android:
-      components:
-      - tools
-      - platform-tools
-      - build-tools-29.0.3
-      - android-29
-      - extra-google-google_play_services
-      - extra-google-m2repository
-      - extra-android-m2repository
-    before_install:
-      - nvm install
-      - node --version
-      - npm --version
-      - nvm --version
-      - npm ci
-      - export JAVA_HOME_COPY=$JAVA_HOME
-      - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-      - yes | sdkmanager "build-tools;32.0.0"
-      - export JAVA_HOME=$JAVA_HOME_COPY
+    language: java
     addons:
       apt:
         packages:
