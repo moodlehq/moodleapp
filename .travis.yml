@@ -26,7 +26,7 @@ before_install:
   - node --version
   - npm --version
   - nvm --version
-  - npm ci
+  - npm ci --no-audit
 
 before_script:
   - npx gulp
@@ -39,6 +39,9 @@ jobs:
   - name: "Build Android"
     if: env(DEPLOY) = 1 OR (env(DEPLOY) = 2 AND tag IS NOT blank)
     language: java
+    env:
+    - ANDROID_PLATFORM_VERSION=32
+    - ANDROID_BUILD_TOOLS_VERSION="32.0.0"
     addons:
       apt:
         packages:
