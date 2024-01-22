@@ -26,7 +26,7 @@ before_install:
   - node --version
   - npm --version
   - nvm --version
-  - npm ci
+  - npm ci --no-audit
 
 before_script:
   - npx gulp
