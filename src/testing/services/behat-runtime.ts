@@ -190,10 +190,15 @@ export class TestingBehatRuntimeService {
     closePopup(): string {
         this.log('Action - Close popup');
 
-        const backdrops = Array
-            .from(document.querySelectorAll('ion-popover, ion-modal'))
-            .map(popover => popover.shadowRoot?.querySelector('ion-backdrop'))
-            .filter(backdrop => !!backdrop);
+        const backdrops = [
+            ...Array
+                .from(document.querySelectorAll('ion-popover, ion-modal'))
+                .map(popover => popover.shadowRoot?.querySelector('ion-backdrop'))
+                .filter(backdrop => !!backdrop),
+            ...Array
+                .from(document.querySelectorAll('ion-backdrop'))
+                .filter(backdrop => !!backdrop.offsetParent),
+        ];
 
         if (!backdrops.length) {
             return 'ERROR: Could not find backdrop';
