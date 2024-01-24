@@ -1,0 +1,66 @@
+diff --git a/node_modules/check-es-compat/bin/cli.mjs b/node_modules/check-es-compat/bin/cli.mjs
+index f4c0b55..381c321 100755
+--- a/node_modules/check-es-compat/bin/cli.mjs
++++ b/node_modules/check-es-compat/bin/cli.mjs
+@@ -17,7 +17,8 @@ if (args.length === 0) {
+   }
+ }
+ 
+-async function execute(files) {
++async function execute(args) {
++  const { files, polyfills } = parseArguments(args);
+   const eslint = new ESLint({
+     // Ignore any config files
+     useEslintrc: false,
+@@ -34,7 +35,7 @@ async function execute(files) {
+         es2023: true,
+       },
+       rules: {
+-        'ecmascript-compat/compat': 'error',
++        'ecmascript-compat/compat': ['error', { polyfills }],
+       },
+     },
+   });
+@@ -46,3 +47,42 @@ async function execute(files) {
+ 
+   return { hasErrors: results.some((result) => result.errorCount > 0) };
+ }
++
++function parseArguments(args) {
++  const files = [];
++  const polyfills = [];
++  let nextArgIsPolyfills = false;
++
++  for (const arg of args) {
++    if (nextArgIsPolyfills) {
++      nextArgIsPolyfills = false;
++      polyfills.push(...splitPolyfillsArgument(arg));
++      continue;
++    }
++
++    if (arg.startsWith('--polyfills')) {
++      if (arg.startsWith('--polyfills=')) {
++        polyfills.push(...splitPolyfillsArgument(arg.slice(12)));
++      } else {
++        nextArgIsPolyfills = true;
++      }
++
++      continue;
++    }
++
++    files.push(arg);
++  }
++
++  return { files, polyfills };
++}
++
++function splitPolyfillsArgument(polyfills) {
++  const prototypeAtPolyfill = '{Array,String,TypedArray}.prototype.at';
++  const prototypeAtPlaceholder = '{{PROTOTYPEAT}}';
++
++  return polyfills
++    .replaceAll('\\', '')
++    .replace(prototypeAtPolyfill, prototypeAtPlaceholder)
++    .split(',')
++    .map(polyfill => polyfill === prototypeAtPlaceholder ? prototypeAtPolyfill : polyfill);
++}
