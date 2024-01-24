@@ -7,7 +7,7 @@
             <ion-icon name="fas-lock" *ngIf="module.visible === 0 || module.uservisible === false"
                 [attr.aria-label]="'core.restricted' | translate" />
         </h1>
-        <ng-content select="[title]"></ng-content>
+        <ng-content select="[title]" />
     </ion-label>
 </ion-item>
 
@@ -37,10 +37,10 @@
         <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
             [contextInstanceId]="module.id" [courseId]="courseId" [collapsible-item]="expandDescription ? null : ''" />
     </div>
-    <ng-content select="[description]"></ng-content>
+    <ng-content select="[description]" />
 </div>
 
-<ng-content></ng-content>
+<ng-content />
 
 <!-- Activity has something offline. -->
 <ion-card class="core-warning-card" *ngIf="hasDataToSync">

@@ -26,19 +26,19 @@
                 <ng-container *ngFor="let item of items">
                     <ng-container [ngSwitch]="item">
                         <ng-container *ngSwitchCase="'LIST_OF_COURSE'">
-                            <ng-template *ngTemplateOutlet="allCourseList"></ng-template>
+                            <ng-template *ngTemplateOutlet="allCourseList" />
                         </ng-container>
                         <ng-container *ngSwitchCase="'LIST_OF_CATEGORIES'">
-                            <ng-template *ngTemplateOutlet="categories"></ng-template>
+                            <ng-template *ngTemplateOutlet="categories" />
                         </ng-container>
                         <ng-container *ngSwitchCase="'COURSE_SEARCH_BOX'">
-                            <ng-template *ngTemplateOutlet="courseSearch"></ng-template>
+                            <ng-template *ngTemplateOutlet="courseSearch" />
                         </ng-container>
                         <ng-container *ngSwitchCase="'ENROLLED_COURSES'">
-                            <ng-template *ngTemplateOutlet="enrolledCourseList"></ng-template>
+                            <ng-template *ngTemplateOutlet="enrolledCourseList" />
                         </ng-container>
                         <ng-container *ngSwitchCase="'NEWS_ITEMS'">
-                            <ng-template *ngTemplateOutlet="news"></ng-template>
+                            <ng-template *ngTemplateOutlet="news" />
                         </ng-container>
                     </ng-container>
                 </ng-container>

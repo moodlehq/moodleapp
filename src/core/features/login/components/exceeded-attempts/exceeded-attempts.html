@@ -3,7 +3,7 @@
         <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
         <ion-label>
             <p>
-                <ng-content></ng-content>
+                <ng-content />
             </p>
             <ion-button *ngIf="canContactSupport" fill="outline" color="medium" (click)="contactSupport()">
                 {{ 'core.contactsupport' | translate }}
