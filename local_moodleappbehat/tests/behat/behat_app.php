@@ -57,7 +57,6 @@ class behat_app extends behat_app_helper {
         }
 
         $this->featurepath = dirname($feature->getFile());
-        $this->configure_performance_logs();
     }
 
     /**
@@ -80,23 +79,6 @@ class behat_app extends behat_app_helper {
         }
 
         $this->enter_site();
-    }
-
-    /**
-     * Configure performance logs.
-     */
-    protected function configure_performance_logs() {
-        global $CFG;
-
-        $performanceLogs = $CFG->behat_profiles['default']['capabilities']['extra_capabilities']['goog:loggingPrefs']['performance'] ?? null;
-
-        if ($performanceLogs !== 'ALL') {
-            return;
-        }
-
-        // Enable DB Logging only for app tests with performance logs activated.
-        $this->getSession()->visit($this->get_app_url() . '/assets/env.json');
-        $this->execute_script("document.cookie = 'MoodleAppDBLoggingEnabled=true;path=/';");
     }
 
     /**
