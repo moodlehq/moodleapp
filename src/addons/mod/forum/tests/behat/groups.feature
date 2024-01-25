@@ -1,4 +1,4 @@
-@mod @mod_forum @app @javascript
+@addon_mod_forum @app @javascript
 Feature: Test usage of forum activity with groups in app
 
   Background:

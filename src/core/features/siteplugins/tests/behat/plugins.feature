@@ -1,4 +1,4 @@
-@app @javascript
+@core_siteplugins @app @javascript
 Feature: Plugins work properly.
 
   Background:

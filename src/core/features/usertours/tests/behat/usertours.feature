@@ -1,4 +1,4 @@
-@app @javascript
+@core_usertours @app @javascript
 Feature: User Tours work properly.
 
   Background:

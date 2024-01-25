@@ -1,4 +1,4 @@
-@core @core_user @app @javascript
+@core_user @app @javascript
 Feature: Test basic usage of user features
 
   Background:

@@ -1,4 +1,4 @@
-@block @block_timeline @app @javascript
+@addon_block_timeline @app @javascript
 Feature: Timeline block.
 
   Background:

@@ -1,4 +1,4 @@
-@core @core_message @app @javascript
+@addon_messages @app @javascript
 Feature: Test messages navigation in the app
 
   Background:

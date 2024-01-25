@@ -1,4 +1,4 @@
-@app @javascript @lms_upto3.11
+@core_mainmenu @app @javascript @lms_upto3.11
 Feature: Main Menu opens the right page
 
   Background:

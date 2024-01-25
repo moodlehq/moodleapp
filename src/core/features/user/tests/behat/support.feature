@@ -1,4 +1,4 @@
-@core @core_user @app @javascript @lms_from4.0
+@core_user @app @javascript @lms_from4.0
 Feature: Site support
 
   Background:

@@ -1,4 +1,4 @@
-@app @javascript
+@core_mainmenu @app @javascript
 Feature: Main Menu opens the right page
 
   Background:

@@ -1,4 +1,4 @@
-@mod @mod_choice @app @javascript @lms_upto3.11
+@addon_mod_choice @app @javascript @lms_upto3.11
 Feature: Test basic usage of choice activity in app
   In order to participate in the choice while using the mobile app
   As a student

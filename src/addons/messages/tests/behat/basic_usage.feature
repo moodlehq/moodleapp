@@ -1,4 +1,4 @@
-@core @core_message @app @javascript
+@addon_messages @app @javascript
 Feature: Test basic usage of messages in app
   In order to participate with messages while using the mobile app
   As a student

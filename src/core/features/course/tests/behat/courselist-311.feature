@@ -1,4 +1,4 @@
-@core @core_course @app @javascript @lms_upto3.11
+@core_course @app @javascript @lms_upto3.11
 Feature: Test course list shown on app start tab
   In order to select a course
   As a student

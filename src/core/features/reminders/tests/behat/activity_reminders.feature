@@ -1,4 +1,4 @@
-@app @javascript @core_reminders @lms_from4.0
+@core_reminders @app @javascript @lms_from4.0
 Feature: Set a new reminder on activity
 
   Background:

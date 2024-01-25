@@ -1,4 +1,4 @@
-@mod @competency @app @javascript
+@addon_competency @app @javascript
 Feature: Test competency navigation
 
   Background:

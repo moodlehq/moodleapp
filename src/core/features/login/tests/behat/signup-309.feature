@@ -1,4 +1,4 @@
-@auth @core_auth @app @javascript @lms_upto3.9
+@core_login @app @javascript @lms_upto3.9
 Feature: Test signup in app
   I need basic signup functionality to work
 

@@ -1,4 +1,4 @@
-@core @core_calendar @app @javascript
+@addon_calendar @app @javascript
 Feature: Test creation of calendar events in app
   In order to take advantage of all the calendar features while using the mobile app
   As a student

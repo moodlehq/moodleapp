@@ -1,4 +1,4 @@
-@app @javascript @core_reminders
+@core_reminders @app @javascript
 Feature: Set a new reminder on course
 
   Background:

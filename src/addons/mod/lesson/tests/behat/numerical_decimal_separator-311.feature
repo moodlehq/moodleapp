@@ -1,4 +1,4 @@
-@mod @mod_lesson @app @javascript @lms_upto3.11
+@addon_mod_lesson @app @javascript @lms_upto3.11
 Feature: Test decimal separators in lesson
 
   Background:

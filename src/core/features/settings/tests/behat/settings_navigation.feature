@@ -1,4 +1,4 @@
-@app @javascript @core_settings
+@core_settings @app @javascript
 Feature: It navigates properly within settings.
 
   Background:
