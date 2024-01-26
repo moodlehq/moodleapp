@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants, ModPurpose } from '@/core/constants';
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreSites } from '@services/sites';
@@ -22,6 +22,12 @@ import { CoreUrlUtils } from '@services/utils/url';
 
 const assetsPath = 'assets/img/';
 const fallbackModName = 'external-tool';
+
+const enum IconVersion {
+    LEGACY_VERSION = 'version_legacy',
+    VERSION_4_0 = 'version_40',
+    CURRENT_VERSION = 'version_current',
+}
 
 /**
  * Component to handle a module icon.
@@ -33,6 +39,8 @@ const fallbackModName = 'external-tool';
 })
 export class CoreModIconComponent implements OnInit, OnChanges {
 
+    @HostBinding('class.no-filter') noFilter = false;
+
     @Input() modname = ''; // The module name. Used also as component if set.
     @Input() fallbackTranslation = ''; // Fallback translation string if cannot auto translate.
     @Input() componentId?: number; // Component Id for external icons.
@@ -41,12 +49,12 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     @Input() purpose: ModPurpose = ModPurpose.MOD_PURPOSE_OTHER; // Purpose of the module.
 
     icon = '';
-    noFilter = false;
+
     modNameTranslated = '';
     isLocalUrl = true;
     linkIconWithComponent = false;
 
-    protected legacyIcon = true; // @deprecatedonmoodle since 3.11.
+    @HostBinding('class') iconVersion = 'legacy';
 
     constructor(protected el: ElementRef) { }
 
@@ -54,21 +62,34 @@ export class CoreModIconComponent implements OnInit, OnChanges {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
+        this.iconVersion = this.getIconVersion();
+
         if (!this.modname && this.modicon) {
             // Guess module from the icon url.
             this.modname = this.getComponentNameFromIconUrl(this.modicon);
         }
 
         this.modNameTranslated = CoreCourse.translateModuleName(this.modname, this.fallbackTranslation);
-        if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
-            this.legacyIcon = false;
+        if (this.iconVersion !== IconVersion.LEGACY_VERSION) {
 
-            const purposeClass =
+            let purposeClass =
                 CoreCourseModuleDelegate.supportsFeature<ModPurpose>(
                     this.modname || '',
                     CoreConstants.FEATURE_MOD_PURPOSE,
                     this.purpose,
                 );
+
+            if (this.iconVersion === IconVersion.VERSION_4_0) {
+                if (purposeClass === ModPurpose.MOD_PURPOSE_INTERACTIVECONTENT) {
+                    // Interactive content was introduced on 4.4, on previous versions CONTENT is used instead.
+                    purposeClass = ModPurpose.MOD_PURPOSE_CONTENT;
+                }
+
+                if (this.modname === 'lti') {
+                    // LTI had content purpose with 4.0 icons.
+                    purposeClass = ModPurpose.MOD_PURPOSE_CONTENT;
+                }
+            }
 
             if (purposeClass) {
                 const element: HTMLElement = this.el.nativeElement;
@@ -129,13 +150,13 @@ export class CoreModIconComponent implements OnInit, OnChanges {
      */
     protected async getIconNoFilter(): Promise<boolean> {
         // Earlier 4.0, icons were never filtered.
-        if (this.legacyIcon) {
+        if (this.iconVersion === IconVersion.LEGACY_VERSION) {
             return true;
         }
 
         // No icon or local icon (not legacy), filter it.
         if (!this.icon || this.isLocalUrl) {
-            return false;
+            return await CoreCourseModuleDelegate.moduleIconIsBranded(this.modname);
         }
 
         this.icon = CoreTextUtils.decodeHTMLEntities(this.icon);
@@ -190,6 +211,25 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         }
 
         return component;
+    }
+
+    /**
+     * Get the icon version depending on site version.
+     *
+     * @returns Icon version.
+     */
+    protected getIconVersion(): IconVersion {
+        if (!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
+            // @deprecatedonmoodle since 3.11.
+            return IconVersion.LEGACY_VERSION;
+        }
+
+        if (!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.4')) {
+            // @deprecatedonmoodle since 4.3.
+            return IconVersion.VERSION_4_0;
+        }
+
+        return IconVersion.CURRENT_VERSION;
     }
 
 }

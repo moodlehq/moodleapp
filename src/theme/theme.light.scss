@@ -404,8 +404,13 @@ html {
     }
 
     // Make activtity colours available for custom modules.
-    @each $type, $value in $activity-icon-colors {
+    @each $type, $value in $activity-icon-color-filters {
         --activity#{$type}: #{$value};
+    }
+
+    // Make activtity colours available for custom modules.
+    @each $type, $value in $activity-icon-background-colors {
+        --activity-40-#{$type}: #{$value};
     }
 
     --core-mainpage-sitename-display: none;

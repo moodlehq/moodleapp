@@ -42,7 +42,7 @@ export class AddonModLessonModuleHandlerService extends CoreModuleHandlerBase im
         [CoreConstants.FEATURE_GRADE_OUTCOMES]: true,
         [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
         [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
-        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_CONTENT,
+        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_INTERACTIVECONTENT,
     };
 
     /**

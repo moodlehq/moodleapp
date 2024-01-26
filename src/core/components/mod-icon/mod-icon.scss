@@ -2,7 +2,7 @@
 
 :host {
     display: inline-block;
-    --size: var(--module-icon-size, 24px);
+    --size: var(--module-icon-size, 32px);
     --padding: var(--module-icon-padding, 8px);
     --icon-radius: var(--module-icon-radius, var(--radius-xs));
     --margin-end: 0px;
@@ -14,16 +14,43 @@
 
     border-radius: var(--icon-radius);
     padding: var(--padding);
-    background-color: $gray-100;
+    background-color: transparent;
     line-height: var(--size);
 
-    @each $type, $value in $activity-icon-colors {
-        &.#{$type} {
-            background-color: var(--activity#{$type});
-            img {
-                filter: var(--filter, brightness(0) invert(1));
+    &.version_current {
+        @each $type, $value in $activity-icon-color-filters {
+            &.#{$type} {
+                --filter: var(--activity#{$type});
             }
         }
+
+        img {
+            filter: var(--filter, brightness(0) invert(1));
+        }
+    }
+
+    &.version_40 {
+        --size: var(--module-icon-size, 24px);
+        background-color: $gray-100;
+
+        @each $type, $value in $activity-icon-background-colors {
+            &.#{$type} {
+                background-color: var(--activity-40-#{$type});
+                img {
+                    filter: var(--filter, brightness(0) invert(1));
+                }
+            }
+        }
+    }
+
+    &.version_legacy {
+        --size: var(--module-icon-size, 24px);
+        --filter: none;
+        background-color: $gray-100;
+    }
+
+    &.no-filter {
+        --filter: none !important;
     }
 }
 
@@ -41,11 +68,6 @@ img {
         white-space: nowrap;
         overflow: hidden;
     }
-
-    &.no-filter {
-        --filter: none;
-    }
-
 }
 
 :host-context(ion-item) {

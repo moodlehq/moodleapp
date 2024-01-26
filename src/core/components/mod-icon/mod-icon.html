@@ -1,5 +1,7 @@
-<img *ngIf="!isLocalUrl" [src]="icon" [alt]="showAlt ? modNameTranslated : ''" [attr.role]="!showAlt ? 'presentation' : null"
-    class="core-module-icon" [class.no-filter]="noFilter" core-external-content [component]="linkIconWithComponent ? modname : null"
+<img *ngIf="!isLocalUrl && !iconSVG" [src]="icon" [alt]="showAlt ? modNameTranslated : ''" [attr.role]="!showAlt ? 'presentation' : null"
+    class="core-module-icon" core-external-content [component]="linkIconWithComponent ? modname : null"
     [componentId]="linkIconWithComponent ? componentId : null" (error)="loadFallbackIcon()">
-<img *ngIf="isLocalUrl" [src]="icon" [alt]="showAlt ? modNameTranslated : ''" [attr.role]="!showAlt ? 'presentation' : null"
-    class="core-module-icon" [class.no-filter]="noFilter" (error)="loadFallbackIcon()">
+<img *ngIf="isLocalUrl && !iconSVG" [src]="icon" [alt]="showAlt ? modNameTranslated : ''" [attr.role]="!showAlt ? 'presentation' : null"
+    class="core-module-icon" (error)="loadFallbackIcon()">
+<div *ngIf="iconSVG" class="core-module-icon" [innerHTML]="iconSVG" [attr.aria-label]="showAlt ? modNameTranslated : ''"
+    [attr.role]="!showAlt ? 'presentation' : null"></div>

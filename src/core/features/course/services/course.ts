@@ -1750,6 +1750,7 @@ export type CoreCourseGetContentsWSModule = {
     visibleoncoursepage: number; // Is the module visible on course page. Cannot be undefined.
     modicon: string; // Activity icon url.
     modname: string; // Activity module type.
+    purpose?: string; // @since 4.4 The module purpose.
     modplural: string; // Activity module plural name.
     availability?: string; // Module availability settings.
     indent: number; // Number of identation in the site.

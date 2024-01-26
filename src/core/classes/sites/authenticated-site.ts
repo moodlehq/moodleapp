@@ -1431,7 +1431,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                     }
                 }
             }
-        } else if (typeof versions == 'string') {
+        } else if (typeof versions === 'string') {
             // Compare with this version.
             return siteVersion >= this.getVersionNumber(versions);
         }
