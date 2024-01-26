@@ -116,11 +116,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             ? fallbackModName
             : this.modname;
 
-        let path = assetsPath + 'mod/';
-        if (this.legacyIcon) {
-            // @deprecatedonmoodle since 3.11.
-            path = assetsPath + 'mod_legacy/';
-        }
+        const path = CoreCourse.getModuleIconsPath();
 
         this.icon = path + moduleName + '.svg';
         this.noFilter = await this.getIconNoFilter();
