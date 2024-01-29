@@ -523,10 +523,15 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         });
 
         const iframeControllers = iframes.map(iframe => {
+            const { launchExternal, label } = CoreIframeUtils.frameShouldLaunchExternal(iframe);
+            if (launchExternal && this.replaceFrameWithButton(iframe, site, label)) {
+                return;
+            }
+
             promises.push(this.treatIframe(iframe, site));
 
             return new FrameElementController(iframe, !this.disabled);
-        });
+        }).filter((controller): controller is FrameElementController => controller !== undefined);
 
         svgImages.forEach((image) => {
             this.addExternalContent(image);
@@ -562,11 +567,16 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         });
 
         // Handle all kind of frames.
-        const frameControllers = frames.map<FrameElementController>((frame) => {
+        const frameControllers = frames.map((frame) => {
+            const { launchExternal, label } = CoreIframeUtils.frameShouldLaunchExternal(frame);
+            if (launchExternal && this.replaceFrameWithButton(frame, site, label)) {
+                return;
+            }
+
             CoreIframeUtils.treatFrame(frame, false);
 
             return new FrameElementController(frame, !this.disabled);
-        });
+        }).filter((controller): controller is FrameElementController => controller !== undefined);
 
         CoreDomUtils.handleBootstrapTooltips(div);
 
@@ -861,6 +871,38 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         }
 
         CoreIframeUtils.treatFrame(iframe, false);
+    }
+
+    /**
+     * Replace a frame with a button to open the frame's URL in an external app.
+     *
+     * @param frame Frame element to replace.
+     * @param site Site instance.
+     * @param label The text to put in the button.
+     * @returns Whether iframe was replaced.
+     */
+    protected replaceFrameWithButton(frame: FrameElement, site: CoreSite | undefined, label: string): boolean {
+        const url = 'src' in frame ? frame.src : frame.data;
+        if (!url) {
+            return false;
+        }
+
+        const button = document.createElement('ion-button');
+        button.setAttribute('expand', 'block');
+        button.classList.add('ion-text-wrap');
+        button.innerHTML = label;
+
+        button.addEventListener('click', () => {
+            CoreIframeUtils.frameLaunchExternal(url, {
+                site,
+                component: this.component,
+                componentId: this.componentId,
+            });
+        });
+
+        frame.replaceWith(button);
+
+        return true;
     }
 
     /**
