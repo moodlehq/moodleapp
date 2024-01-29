@@ -68,6 +68,17 @@ export class LocalNotificationsMock extends LocalNotifications {
     }
 
     /**
+     * Flush pending notifications.
+     */
+    flush(): void {
+        for (const notification of this.scheduledNotifications) {
+            this.sendNotification(notification);
+        }
+
+        this.scheduledNotifications = [];
+    }
+
+    /**
      * Sets timeout for next nofitication.
      */
     protected scheduleNotifications(): void {
@@ -104,40 +115,48 @@ export class LocalNotificationsMock extends LocalNotifications {
 
         const notificationTime = nextNotification.trigger?.at?.getTime() || 0;
         if (notificationTime === 0 || notificationTime <= dateNow) {
-            const body = Array.isArray(nextNotification.text) ? nextNotification.text.join() : nextNotification.text;
-            const notification = new Notification(nextNotification.title || '', {
-                body,
-                data: nextNotification.data,
-                icon: nextNotification.icon,
-                requireInteraction: true,
-                tag: nextNotification.data?.component,
-            });
-
-            this.triggeredNotifications.push(nextNotification);
-
-            this.observables.trigger.next(nextNotification);
-
-            notification.addEventListener('click', () => {
-                this.observables.click.next(nextNotification);
-
-                notification.close();
-                if (nextNotification.id) {
-                    delete(this.presentNotifications[nextNotification.id]);
-                }
-            });
-
-            if (nextNotification.id) {
-                this.presentNotifications[nextNotification.id] = notification;
-
-                notification.addEventListener('close', () => {
-                    delete(this.presentNotifications[nextNotification.id ?? 0]);
-                });
-            }
-
+            this.sendNotification(nextNotification);
             this.scheduledNotifications.shift();
             this.triggerNextNotification();
         } else {
             this.scheduleNotifications();
+        }
+    }
+
+    /**
+     * Send notification.
+     *
+     * @param localNotification Notification.
+     */
+    protected sendNotification(localNotification: ILocalNotification): void {
+        const body = Array.isArray(localNotification.text) ? localNotification.text.join() : localNotification.text;
+        const notification = new Notification(localNotification.title || '', {
+            body,
+            data: localNotification.data,
+            icon: localNotification.icon,
+            requireInteraction: true,
+            tag: localNotification.data?.component,
+        });
+
+        this.triggeredNotifications.push(localNotification);
+
+        this.observables.trigger.next(localNotification);
+
+        notification.addEventListener('click', () => {
+            this.observables.click.next(localNotification);
+
+            notification.close();
+            if (localNotification.id) {
+                delete(this.presentNotifications[localNotification.id]);
+            }
+        });
+
+        if (localNotification.id) {
+            this.presentNotifications[localNotification.id] = notification;
+
+            notification.addEventListener('close', () => {
+                delete(this.presentNotifications[localNotification.id ?? 0]);
+            });
         }
     }
 

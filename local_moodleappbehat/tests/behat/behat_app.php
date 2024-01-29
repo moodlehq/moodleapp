@@ -1056,28 +1056,82 @@ class behat_app extends behat_app_helper {
 
 
     /**
+     * Send pending notifications.
+     *
+     * @Then /^I flush pending notifications in the app$/
+     */
+    public function i_flush_notifications() {
+        $this->runtime_js("flushNotifications()");
+    }
+
+    /**
      * Check if a notification has been triggered and is present.
      *
-     * @Then /^a notification with title (".+") is( not)? present in the app$/
+     * @Then /^a notification with title (".+") should( not)? be present in the app$/
      * @param string $title Notification title
      * @param bool $not Whether assert that the notification was not found
      */
     public function notification_present_in_the_app(string $title, bool $not = false) {
-        $result = $this->runtime_js("notificationIsPresentWithText($title)");
+        $this->spin(function() use ($not, $title) {
+            $result = $this->runtime_js("notificationIsPresentWithText($title)");
 
-        if ($not && $result === 'YES') {
-            throw new ExpectationException("Notification is present", $this->getSession()->getDriver());
+            if ($not && $result === 'YES') {
+                throw new ExpectationException("Notification is present", $this->getSession()->getDriver());
+            }
+
+            if (!$not && $result === 'NO') {
+                throw new ExpectationException("Notification is not present", $this->getSession()->getDriver());
+            }
+
+            if ($result !== 'YES' && $result !== 'NO') {
+                throw new DriverException('Error checking notification - ' . $result);
+            }
+
+            return true;
+        });
+    }
+
+    /**
+     * Check if a notification has been scheduled.
+     *
+     * @Then /^a notification with title (".+") should( not)? be scheduled(?: (\d+) minutes before the "(.+)" assignment due date)? in the app$/
+     * @param string $title Notification title
+     * @param bool $not Whether assert that the notification was not scheduled
+     * @param int $minutes Minutes before the assignment at which the notification was scheduled
+     * @param string $assignment Assignment for which the notification was scheduled
+     */
+    public function notification_scheduled_in_the_app(string $title, bool $not = false, ?int $minutes = null, ?string $assignment = null) {
+        if (!is_null($minutes)) {
+            global $DB;
+
+            $assign = $DB->get_record('assign', ['name' => $assignment]);
+
+            if (!$assign) {
+                throw new ExpectationException("Couldn't find '$assignment' assignment", $this->getSession()->getDriver());
+            }
+
+            $date = ($assign->duedate - $minutes * 60) * 1000;
+        } else {
+            $date = 'undefined';
         }
 
-        if (!$not && $result === 'NO') {
-            throw new ExpectationException("Notification is not present", $this->getSession()->getDriver());
-        }
+        $this->spin(function() use ($not, $title, $date) {
+            $result = $this->runtime_js("notificationIsScheduledWithText($title, $date)");
 
-        if ($result !== 'YES' && $result !== 'NO') {
-            throw new DriverException('Error checking notification - ' . $result);
-        }
+            if ($not && $result === 'YES') {
+                throw new ExpectationException("Notification is scheduled", $this->getSession()->getDriver());
+            }
 
-        return true;
+            if (!$not && $result === 'NO') {
+                throw new ExpectationException("Notification is not scheduled", $this->getSession()->getDriver());
+            }
+
+            if ($result !== 'YES' && $result !== 'NO') {
+                throw new DriverException('Error checking scheduled notification - ' . $result);
+            }
+
+            return true;
+        });
     }
 
     /**

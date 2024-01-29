@@ -30,6 +30,7 @@ import { CoreSites, CoreSitesProvider } from '@services/sites';
 import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
 import { CoreSwipeNavigationDirective } from '@directives/swipe-navigation';
 import { Swiper } from 'swiper';
+import { LocalNotificationsMock } from '@features/emulator/services/local-notifications';
 
 /**
  * Behat runtime servive with public API.
@@ -586,6 +587,13 @@ export class TestingBehatRuntimeService {
     }
 
     /**
+     * Flush pending notifications.
+     */
+    flushNotifications(): void {
+        (LocalNotifications as unknown as LocalNotificationsMock).flush();
+    }
+
+    /**
      * Check a notification is present.
      *
      * @param title Title of the notification
@@ -606,6 +614,23 @@ export class TestingBehatRuntimeService {
         }
 
         return (await LocalNotifications.isPresent(notification.id)) ? 'YES' : 'NO';
+    }
+
+    /**
+     * Check a notification is scheduled.
+     *
+     * @param title Title of the notification
+     * @param date Scheduled notification date.
+     * @returns YES or NO: depending on the result.
+     */
+    async notificationIsScheduledWithText(title: string, date?: number): Promise<string> {
+        const notifications = await LocalNotifications.getAllScheduled();
+
+        const notification = notifications.find(
+            (notification) => notification.title?.includes(title) && (!date || notification.trigger?.at?.getTime() === date),
+        );
+
+        return notification ? 'YES' : 'NO';
     }
 
     /**
