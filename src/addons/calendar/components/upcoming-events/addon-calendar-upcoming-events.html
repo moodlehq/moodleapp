@@ -8,7 +8,7 @@
                 <ion-item class="ion-text-wrap addon-calendar-event" [attr.aria-label]="event.name" (click)="eventClicked(event)" button
                     [ngClass]="['addon-calendar-eventtype-'+event.eventtype]" [detail]="false">
                     <core-mod-icon *ngIf="event.moduleIcon" [modicon]="event.moduleIcon" slot="start" [modname]="event.modulename"
-                        [componentId]="event.instance" [showAlt]="false" [purpose]="event.purpose" />
+                        [componentId]="event.instance" [showAlt]="false" [purpose]="event.purpose" [isBranded]="event.branded" />
                     <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" slot="start" aria-hidden="true" />
                     <ion-label>
                         <!-- Add the icon title so accessibility tools read it. -->

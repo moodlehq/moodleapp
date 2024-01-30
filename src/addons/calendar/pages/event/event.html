@@ -32,6 +32,7 @@
             <ion-item class="ion-text-wrap addon-calendar-event" collapsible [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
                 <core-mod-icon *ngIf="event.moduleIcon" [modicon]="event.moduleIcon" [showAlt]="false" [modname]="event.modulename"
                     [componentId]="event.instance" slot="start" [purpose]="event.purpose" />
+                <!-- TODO MOBILE-4530 Add isBranded when available -->
                 <ion-icon *ngIf=" event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" aria-hidden="true" slot="start" />
                 <ion-label>
                     <!-- Add the icon title so accessibility tools read it. -->

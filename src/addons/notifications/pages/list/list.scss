@@ -1,6 +1,7 @@
 @use "theme/globals" as *;
 
 ion-item.addon-notification-item {
+
     ion-label {
         margin-top: 8px;
         margin-bottom: 8px;
@@ -31,17 +32,6 @@ ion-item.addon-notification-item {
     [slot=start] {
         align-self: start;
         margin-top: 16px;
-    }
-
-    --icon-size: 16px;
-    --extra-icon-size: 12px;
-    --core-avatar-size: 32px;
-
-    div.core-notification-icon,
-    core-mod-icon.core-notification-icon {
-        --padding: 8px;
-        max-width: var(--core-avatar-size);
-        max-height:  var(--core-avatar-size);
     }
 }
 

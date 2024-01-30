@@ -135,15 +135,6 @@ $activity-icon-colors: (
     interactivecontent: #8d3d1b
 ) !default;
 
-$activity-icon-color-filters: (
-    administration: invert(45%) sepia(46%) saturate(3819%) hue-rotate(260deg) brightness(101%) contrast(87%),
-    assessment: invert(36%) sepia(98%) saturate(6969%) hue-rotate(315deg) brightness(90%) contrast(119%),
-    collaboration: invert(25%) sepia(54%) saturate(6226%) hue-rotate(245deg) brightness(100%) contrast(102%),
-    communication: invert(48%) sepia(74%) saturate(4887%) hue-rotate(11deg) brightness(102%) contrast(101%),
-    content: invert(49%) sepia(52%) saturate(4675%) hue-rotate(156deg) brightness(89%) contrast(102%),
-    interactivecontent: invert(25%) sepia(63%) saturate(1152%) hue-rotate(344deg) brightness(94%) contrast(91%)
-) !default;
-
 $calendar-event-category-category: #8e24aa !default;
 $calendar-event-category-course: $red !default;
 $calendar-event-category-group: $yellow !default;

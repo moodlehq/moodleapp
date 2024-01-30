@@ -3,70 +3,75 @@
 :host {
     display: inline-block;
     --size: var(--module-icon-size, 32px);
-    --padding: var(--module-icon-padding, 8px);
+    --padding-start: var(--module-icon-padding, 4px);
+    --padding-top: var(--module-icon-padding, 4px);
+    --padding-end: var(--module-icon-padding, 4px);
+    --padding-bottom: var(--module-icon-padding, 4px);
     --icon-radius: var(--module-icon-radius, var(--radius-xs));
     --margin-end: 0px;
     --margin-vertical: 0px;
+
+    min-width: calc(var(--size) + var(--padding-start) + var(--padding-end));
+    min-height: calc(var(--size) + var(--padding-top) + var(--padding-bottom));
 
     margin-top: var(--margin-vertical);
     margin-bottom: var(--margin-vertical);
     @include margin-horizontal(null, var(--margin-end));
 
     border-radius: var(--icon-radius);
-    padding: var(--padding);
+    @include padding(var(--padding-top), var(--padding-end), var(--padding-bottom), var(--padding-start));
     background-color: transparent;
     line-height: var(--size);
 
-    &.version_current {
-        @each $type, $value in $activity-icon-color-filters {
-            &.#{$type} {
-                --filter: var(--activity#{$type});
+    --color: var(--text-color);
+
+    &.colorize {
+        &.version_current {
+            @each $type, $value in $activity-icon-colors {
+                &.#{$type} {
+                    --color: var(--activity#{$type});
+                }
             }
         }
 
-        img {
-            filter: var(--filter, brightness(0) invert(1));
-        }
-    }
+        &.version_40 {
+            background-color: var(--gray-100);
 
-    &.version_40 {
-        --size: var(--module-icon-size, 24px);
-        background-color: $gray-100;
+            --color: white;
 
-        @each $type, $value in $activity-icon-background-colors {
-            &.#{$type} {
-                background-color: var(--activity-40-#{$type});
-                img {
-                    filter: var(--filter, brightness(0) invert(1));
+            @each $type, $value in $activity-icon-background-colors {
+                &.#{$type} {
+                    background-color: var(--activity-40-#{$type});
                 }
             }
         }
     }
 
+    &.version_40,
     &.version_legacy {
-        --size: var(--module-icon-size, 24px);
-        --filter: none;
-        background-color: $gray-100;
+        --size: var(--module-legacy-icon-size, 24px);
+        --padding-start: var(--module-legacy-icon-padding, 8px);
+        --padding-top: var(--module-legacy-icon-padding, 8px);
+        --padding-end: var(--module-legacy-icon-padding, 8px);
+        --padding-bottom: var(--module-legacy-icon-padding, 8px);
     }
 
-    &.no-filter {
-        --filter: none !important;
+    &:not(.branded) {
+        ::ng-deep svg,
+        ::ng-deep svg * {
+            fill: var(--color);
+        }
     }
-}
 
-img {
-    width: var(--size);
-    height: var(--size);
-    max-width: var(--size);
-    max-height: var(--size);
-    min-width: var(--size);
-    min-height: var(--size);
-    vertical-align: top;
-
-    &[alt] {
-        text-indent: -999999px;
-        white-space: nowrap;
-        overflow: hidden;
+    img,
+    ::ng-deep svg {
+        width: var(--size);
+        height: var(--size);
+        max-width: var(--size);
+        max-height: var(--size);
+        min-width: var(--size);
+        min-height: var(--size);
+        vertical-align: top;
     }
 }
 

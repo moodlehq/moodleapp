@@ -10,8 +10,16 @@
 
     core-mod-icon {
         align-self: flex-start;
-        --padding: 4px;
         @include margin-horizontal(null, 8px);
+
+        --module-icon-padding: 0px;
+        --module-legacy-icon-padding: 4px;
+    }
+
+    ion-label.core-module-info-activity-title {
+        margin-top: 12px;
+        margin-bottom: 12px;
+        line-height: 32px;
     }
 
     h1 ion-icon {

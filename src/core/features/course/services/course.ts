@@ -1751,6 +1751,7 @@ export type CoreCourseGetContentsWSModule = {
     modicon: string; // Activity icon url.
     modname: string; // Activity module type.
     purpose?: string; // @since 4.4 The module purpose.
+    branded?: boolean; // @since 4.4 Whether the module is branded or not.
     modplural: string; // Activity module plural name.
     availability?: string; // Module availability settings.
     indent: number; // Number of identation in the site.

@@ -16,7 +16,7 @@
                 <core-user-avatar *ngIf="notification.useridfrom > 0" slot="start" [userId]="notification.useridfrom"
                     [profileUrl]="notification.profileimageurlfrom" [fullname]="notification.userfromfullname">
                     <div class="core-avatar-extra-img" *ngIf="notification.iconurl">
-                        <img [src]="notification.iconurl" alt="" role="presentation">
+                        <img [src]="notification.iconurl" alt="" role="presentation" core-external-content>
                     </div>
                 </core-user-avatar>
 

@@ -12,14 +12,14 @@
         color: var(--core-global-search-result-title-color);
 
         core-mod-icon {
-            --size: var(--core-global-search-result-icon-size);
-            --filter: var(--module-icon-filter);
+            --module-icon-padding: 0px;
+            --module-legacy-icon-padding: 0px;
+            --module-icon-size: var(--core-global-search-result-icon-size);
+            --module-legacy-icon-size: var(--core-global-search-result-icon-size);
 
             margin-inline-end: var(--spacing-2);
             margin-top: 0px;
             margin-bottom: 0px;
-            --padding: 0px;
-            background: transparent;
             flex-shrink: 0;
         }
 

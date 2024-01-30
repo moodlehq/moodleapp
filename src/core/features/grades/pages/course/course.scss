@@ -43,10 +43,10 @@ table.core-table.core-grades-table {
         }
 
         core-mod-icon {
-            --padding: 0px;
-            --size: 16px;
-            background: transparent;
-            --filter: var(--module-icon-filter);
+            --module-icon-padding: 0px;
+            --module-legacy-icon-padding: 0px;
+            --module-icon-size: 16px;
+            --module-legacy-icon-size: 16px;
         }
 
         ion-icon {

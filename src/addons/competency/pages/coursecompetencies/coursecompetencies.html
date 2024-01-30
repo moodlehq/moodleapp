@@ -119,7 +119,8 @@
                             </p>
                             <ion-item class="ion-text-wrap core-course-module-handler" [attr.aria-label]="activity.name" core-link
                                 *ngFor="let activity of competency.coursemodules" [href]="activity.url" capture="true">
-                                <core-mod-icon slot="start" [modicon]="activity.iconurl" [showAlt]="false" *ngIf="activity.iconurl" />
+                                <core-mod-icon slot="start" [modicon]="activity.iconurl" [showAlt]="false" *ngIf="activity.iconurl"
+                                    [colorize]="false" />
                                 <ion-label>
                                     <core-format-text [text]="activity.name" contextLevel="module" [contextInstanceId]="activity.id"
                                         [courseId]="courseId" />

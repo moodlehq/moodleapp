@@ -67,7 +67,8 @@
                                         (click)="gotoEvent(event.id, day)" [class.item-dimmed]="event.ispast"
                                         [ngClass]="['addon-calendar-eventtype-'+event.eventtype]" button [detail]="false">
                                         <core-mod-icon *ngIf="event.moduleIcon" [modicon]="event.moduleIcon" slot="start" [showAlt]="false"
-                                            [modname]="event.modulename" [componentId]="event.instance" [purpose]="event.purpose" />
+                                            [modname]="event.modulename" [componentId]="event.instance" [purpose]="event.purpose"
+                                            [isBranded]="event.branded" />
                                         <ion-icon *ngIf="event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" slot="start"
                                             aria-hidden="true" />
                                         <ion-label>

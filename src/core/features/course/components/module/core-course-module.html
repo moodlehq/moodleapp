@@ -8,7 +8,8 @@
             <ion-label>
                 <div class="activity-main">
                     <core-mod-icon *ngIf="module.handlerData.icon" [modicon]="module.handlerData.icon" [modname]="module.modname"
-                        [componentId]="module.instance" [fallbackTranslation]="module.modplural" [purpose]="module.purpose" />
+                        [componentId]="module.instance" [fallbackTranslation]="module.modplural" [purpose]="module.purpose"
+                        [isBranded]="module.branded" />
                     <div class="activity-title">
                         <p class="item-heading">
                             <core-format-text [text]="module.handlerData.title" contextLevel="module" [contextInstanceId]="module.id"
