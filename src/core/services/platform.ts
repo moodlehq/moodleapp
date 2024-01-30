@@ -45,6 +45,15 @@ export class CorePlatformService extends Platform {
     }
 
     /**
+     * Returns whether the user agent is controlled by automation. I.e. Behat testing.
+     *
+     * @returns True if the user agent is controlled by automation, false otherwise.
+     */
+    isAutomated(): boolean {
+        return !!navigator.webdriver;
+    }
+
+    /**
      * Checks if the app is running in an iOS mobile or tablet device.
      *
      * @returns Whether the app is running in an iOS mobile or tablet device.

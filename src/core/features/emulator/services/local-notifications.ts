@@ -15,6 +15,8 @@
 import { CoreError } from '@classes/errors/error';
 import { ILocalNotification, ILocalNotificationAction, LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { Observable, Subject } from 'rxjs';
+import { CoreUtils } from '@services/utils/utils';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Mock LocalNotifications service.
@@ -332,7 +334,16 @@ export class LocalNotificationsMock extends LocalNotifications {
      */
     async registerPermission(): Promise<boolean> {
         // We need to ask the user for permission
-        const permission = await Notification.requestPermission();
+        const permissionRequests = [Notification.requestPermission()];
+
+        if (CorePlatform.isAutomated()) {
+            // In some testing environments, Notification.requestPermission gets stuck and never returns.
+            // Given that we don't actually need browser notifications to work in Behat tests, we can just
+            // continue if the permissions haven't been granted after 1 second.
+            permissionRequests.push(CoreUtils.wait(1000).then(() => 'granted'));
+        }
+
+        const permission = await Promise.race(permissionRequests);
 
         this.hasGranted = permission === 'granted';
 

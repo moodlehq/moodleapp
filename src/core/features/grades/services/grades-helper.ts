@@ -41,9 +41,9 @@ import { CoreNavigator } from '@services/navigator';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { CoreAppProvider } from '@services/app';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseAccess } from '@features/course/services/course-options-delegate';
+import { CorePlatform } from '@services/platform';
 
 export const GRADES_PAGE_NAME = 'grades';
 export const GRADES_PARTICIPANTS_PAGE_NAME = 'participant-grades';
@@ -105,7 +105,7 @@ export class CoreGradesHelperProvider {
                 row.rowclass += itemNameColumn.class.indexOf('hidden') >= 0 ? ' hidden' : '';
                 row.rowclass += itemNameColumn.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
 
-                if (!useLegacyLayout && !CoreAppProvider.isAutomated()) {
+                if (!useLegacyLayout && !CorePlatform.isAutomated()) {
                     // Activity name is only included in the webservice response from the latest version when behat is not running.
                     content = content.replace(/<span[^>]+>.+?<\/span>/i, '');
                 }

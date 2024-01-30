@@ -70,10 +70,11 @@ export class CoreAppProvider {
     /**
      * Returns whether the user agent is controlled by automation. I.e. Behat testing.
      *
+     * @deprecated since 4.4. Use CorePlatform.isAutomated() instead.
      * @returns True if the user agent is controlled by automation, false otherwise.
      */
     static isAutomated(): boolean {
-        return !!navigator.webdriver;
+        return CorePlatform.isAutomated();
     }
 
     /**
@@ -82,7 +83,7 @@ export class CoreAppProvider {
      * @returns Timezone. Undefined to use the user's timezone.
      */
     static getForcedTimezone(): string | undefined {
-        if (CoreAppProvider.isAutomated()) {
+        if (CorePlatform.isAutomated()) {
             // Use the same timezone forced for LMS in tests.
             return 'Australia/Perth';
         }
