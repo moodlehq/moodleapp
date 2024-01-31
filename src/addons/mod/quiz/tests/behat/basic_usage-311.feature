@@ -158,12 +158,9 @@ Feature: Attempt a quiz in app
     And I press "Next" in the app
     And I press "True" in the app
     And I press "Next" in the app
-    And I press "Choose... , frog" in the app
-    And I press "amphibian" in the app
-    And I press "Choose... , newt" in the app
-    And I press "insect" in the app
-    And I press "Choose... , cat" in the app
-    And I press "mammal" in the app
+    And I set the field "frog" to "amphibian" in the app
+    And I set the field "newt" to "insect" in the app
+    And I set the field "cat" to "mammal" in the app
     And I press "Next" in the app
     Then I should find "Text of the eighth question" in the app
 
