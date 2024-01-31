@@ -195,7 +195,10 @@ export class CoreFileUploaderProvider {
     clearTmpFiles(files: (CoreWSFile | FileEntry)[]): void {
         // Delete the temporary files.
         files.forEach((file) => {
-            if ('remove' in file && CoreFile.removeBasePath(file.toURL()).startsWith(CoreFileProvider.TMPFOLDER)) {
+            if (
+                'remove' in file &&
+                CoreFile.removeBasePath(CoreFile.getFileEntryURL(file)).startsWith(CoreFileProvider.TMPFOLDER)
+            ) {
                 // Pass an empty function to prevent missing parameter error.
                 file.remove(() => {
                     // Nothing to do.
@@ -568,7 +571,7 @@ export class CoreFileUploaderProvider {
                 const destFile = CorePath.concatenatePaths(folderPath, file.name);
                 result.offline++;
 
-                await CoreFile.copyFile(file.toURL(), destFile);
+                await CoreFile.copyFile(CoreFile.getFileEntryURL(file), destFile);
             }
         }));
 
@@ -642,9 +645,10 @@ export class CoreFileUploaderProvider {
             usedNames[name] = file;
 
             // Now upload the file.
-            const options = this.getFileUploadOptions(file.toURL(), name, undefined, false, 'draft', itemId);
+            const filePath = CoreFile.getFileEntryURL(file);
+            const options = this.getFileUploadOptions(filePath, name, undefined, false, 'draft', itemId);
 
-            await this.uploadFile(file.toURL(), options, undefined, siteId);
+            await this.uploadFile(filePath, options, undefined, siteId);
         }));
     }
 
@@ -701,9 +705,10 @@ export class CoreFileUploaderProvider {
         // Now upload the file.
         const extension = CoreMimetypeUtils.getFileExtension(fileName);
         const mimetype = extension ? CoreMimetypeUtils.getMimeType(extension) : undefined;
-        const options = this.getFileUploadOptions(fileEntry.toURL(), fileName, mimetype, isOnline, 'draft', itemId);
+        const filePath = CoreFile.getFileEntryURL(fileEntry);
+        const options = this.getFileUploadOptions(filePath, fileName, mimetype, isOnline, 'draft', itemId);
 
-        const result = await this.uploadFile(fileEntry.toURL(), options, undefined, siteId);
+        const result = await this.uploadFile(filePath, options, undefined, siteId);
 
         return result.itemid;
     }

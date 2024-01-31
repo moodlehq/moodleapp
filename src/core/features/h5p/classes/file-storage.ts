@@ -333,7 +333,7 @@ export class CoreH5PFileStorage {
 
         const file = await CoreFile.getFile(this.getContentIndexPath(folderName, siteId));
 
-        return file.toURL();
+        return CoreFile.getFileEntryURL(file);
     }
 
     /**

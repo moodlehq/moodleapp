@@ -80,7 +80,7 @@ export class AddonModLtiProvider {
 
         const entry = await CoreFile.writeFile(LAUNCHER_FILE_NAME, text);
 
-        return entry.toURL();
+        return CoreFile.getFileEntryURL(entry);
     }
 
     /**

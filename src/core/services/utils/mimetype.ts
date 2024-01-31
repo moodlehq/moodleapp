@@ -185,7 +185,7 @@ export class CoreMimetypeUtilsProvider {
             // @todo linting: See if this can be removed
             (file as { embedType?: string }).embedType = embedType;
 
-            path = path ?? (CoreUtils.isFileEntry(file) ? file.toURL() : CoreFileHelper.getFileUrl(file));
+            path = path ?? (CoreUtils.isFileEntry(file) ? CoreFile.getFileEntryURL(file) : CoreFileHelper.getFileUrl(file));
             path = path && CoreFile.convertFileSrc(path);
 
             switch (embedType) {

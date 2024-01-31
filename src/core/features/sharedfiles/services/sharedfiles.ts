@@ -245,7 +245,7 @@ export class CoreSharedFilesProvider {
         // Create dir if it doesn't exist already.
         await CoreFile.createDir(sharedFilesFolder);
 
-        const newFile = await CoreFile.moveExternalFile(entry.toURL(), newPath);
+        const newFile = await CoreFile.moveExternalFile(CoreFile.getFileEntryURL(entry), newPath);
 
         CoreEvents.trigger(CoreEvents.FILE_SHARED, { siteId, name: newName });
 

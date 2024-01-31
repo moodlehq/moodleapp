@@ -258,7 +258,7 @@ export class CoreWSProvider {
             onProgress && transfer.onProgress(onProgress);
 
             // Download the file in the tmp file.
-            await transfer.download(url, fileEntry.toURL(), true, {
+            await transfer.download(url, CoreFile.getFileEntryURL(fileEntry), true, {
                 headers: {
                     'User-Agent': navigator.userAgent,
                 },

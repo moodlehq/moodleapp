@@ -227,7 +227,7 @@ export class CoreSharedFilesHelperProvider {
             } else if (siteIds.length == 1) {
                 return this.storeSharedFileInSite(fileEntry, siteIds[0], !path);
             } else if (!this.isChoosingSite()) {
-                this.goToChooseSite(fileEntry.toURL(), !path);
+                this.goToChooseSite(CoreFile.getFileEntryURL(fileEntry), !path);
             }
         } catch (error) {
             if (error) {
