@@ -16,17 +16,21 @@ import { AppComponent } from '@/app/app.component';
 import { CoreEvents } from '@singletons/events';
 import { CoreLang, CoreLangProvider } from '@services/lang';
 
-import { mockSingleton, renderComponent } from '@/testing/utils';
+import { mock, mockSingleton, renderComponent } from '@/testing/utils';
 import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
+import { CoreSites } from '@services/sites';
+import { Http } from '@singletons';
+import { of } from 'rxjs';
+import { CoreSite } from '@classes/sites/site';
+import { CoreUtils } from '@services/utils/utils';
 
 describe('AppComponent', () => {
 
     let langProvider: CoreLangProvider;
-    let navigator: CoreNavigatorService;
-
     beforeEach(() => {
-        navigator = mockSingleton(CoreNavigator, ['navigate']);
-        langProvider = mockSingleton(CoreLang, ['clearCustomStrings']);
+        langProvider = mockSingleton(CoreLang, mock({ getCurrentLanguage: async () => 'en' , clearCustomStrings: () => null }));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        mockSingleton(Http, { get: () => of(null as any) });
     });
 
     it('should render', async () => {
@@ -38,12 +42,75 @@ describe('AppComponent', () => {
 
     it('cleans up on logout', async () => {
         const fixture = await renderComponent(AppComponent);
+        const navigator: CoreNavigatorService = mockSingleton(CoreNavigator, ['navigate']);
 
         fixture.componentInstance.ngOnInit();
         CoreEvents.trigger(CoreEvents.LOGOUT);
 
         expect(langProvider.clearCustomStrings).toHaveBeenCalled();
         expect(navigator.navigate).toHaveBeenCalledWith('/login/sites', { reset: true });
+    });
+
+    it('adds ionic platform and theme classes', async () => {
+        const fixture = await renderComponent(AppComponent);
+        const siteUrl = 'https://campus.example.edu';
+        const themeName = 'mytheme';
+        const themeName2 = 'anothertheme';
+
+        fixture.componentInstance.ngOnInit();
+
+        expect(document.documentElement.classList.contains('ionic7')).toBe(true);
+
+        const site = mock(new CoreSite('42', siteUrl, 'token', { info: {
+                sitename: 'Example Campus',
+                username: 'admin',
+                firstname: 'Admin',
+                lastname: 'User',
+                fullname: 'Admin User',
+                lang: 'en',
+                userid: 1,
+                siteurl: siteUrl,
+                userpictureurl: '',
+                theme: themeName,
+                functions: [],
+        } }));
+
+        mockSingleton(CoreSites, {
+            getSite: () => Promise.resolve(site),
+            getCurrentSiteId: () => '42',
+        });
+
+        CoreEvents.trigger(CoreEvents.LOGIN, {}, '42');
+        // Wait the event to be processed.
+        await CoreUtils.nextTick();
+
+        expect(document.documentElement.classList.contains('theme-site-'+themeName)).toBe(true);
+        expect(document.documentElement.classList.contains('theme-site-'+themeName2)).toBe(false);
+
+        if (site.infos) {
+            site.infos.theme = themeName2;
+        }
+
+        CoreEvents.trigger(CoreEvents.SITE_UPDATED, site.infos , '42');
+
+        // Wait the event to be processed.
+        await CoreUtils.nextTick();
+
+        expect(document.documentElement.classList.contains('theme-site-'+themeName2)).toBe(true);
+        expect(document.documentElement.classList.contains('theme-site-'+themeName)).toBe(false);
+
+        CoreEvents.trigger(CoreEvents.LOGOUT);
+
+        expect(document.documentElement.classList.contains('theme-site-'+themeName)).toBe(false);
+        expect(document.documentElement.classList.contains('theme-site-'+themeName2)).toBe(false);
+
+        CoreEvents.trigger(CoreEvents.SITE_ADDED, site.infos , '42');
+
+        // Wait the event to be processed.
+        await CoreUtils.nextTick();
+
+        expect(document.documentElement.classList.contains('theme-site-'+themeName2)).toBe(true);
+        expect(document.documentElement.classList.contains('theme-site-'+themeName)).toBe(false);
     });
 
 });

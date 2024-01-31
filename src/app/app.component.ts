@@ -36,10 +36,12 @@ import { CoreUrl } from '@singletons/url';
 import { CoreLogger } from '@singletons/logger';
 import { CorePromisedValue } from '@classes/promised-value';
 import { register } from 'swiper/element/bundle';
+import { CoreSiteInfo, CoreSiteInfoResponse } from '@classes/sites/unauthenticated-site';
 
 const MOODLE_SITE_URL_PREFIX = 'url-';
 const MOODLE_VERSION_PREFIX = 'version-';
 const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
+const MOODLE_SITE_THEME_PREFIX = 'theme-site-';
 
 register();
 
@@ -68,7 +70,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             CoreLang.clearCustomStrings();
 
             // Remove version classes from body.
-            this.removeModeClasses([MOODLE_VERSION_PREFIX, MOODLE_SITE_URL_PREFIX]);
+            this.removeSiteClasses();
 
             // Go to sites page when user is logged out.
             await CoreNavigator.navigate('/login/sites', { reset: true });
@@ -122,11 +124,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 const site = await CoreSites.getSite(data.siteId);
                 const info = site.getInfo();
                 if (info) {
-                    // Add version classes to body.
-                    this.removeModeClasses([MOODLE_VERSION_PREFIX, MOODLE_SITE_URL_PREFIX]);
-
-                    this.addVersionClass(MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(info.release || ''));
-                    this.addSiteUrlClass(info.siteurl);
+                    this.addSiteClasses(info);
                 }
             }
 
@@ -142,11 +140,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             if (data.siteId === CoreSites.getCurrentSiteId()) {
                 this.loadCustomStrings();
 
-                // Add version classes to body.
-                this.removeModeClasses([MOODLE_VERSION_PREFIX, MOODLE_SITE_URL_PREFIX]);
-
-                this.addVersionClass(MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(data.release || ''));
-                this.addSiteUrlClass(data.siteurl);
+                this.addSiteClasses(data);
             }
         });
 
@@ -154,11 +148,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             if (data.siteId === CoreSites.getCurrentSiteId()) {
                 this.loadCustomStrings();
 
-                // Add version classes to body.
-                this.removeModeClasses([MOODLE_VERSION_PREFIX, MOODLE_SITE_URL_PREFIX]);
-
-                this.addVersionClass(MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(data.release || ''));
-                this.addSiteUrlClass(data.siteurl);
+                this.addSiteClasses(data);
             }
         });
 
@@ -318,6 +308,33 @@ export class AppComponent implements OnInit, AfterViewInit {
 
             CoreDomUtils.toggleModeClass(modeClass, false, { includeLegacy: true });
         }
+    }
+
+    /**
+     * Convenience function to add site classes to html.
+     *
+     * @param siteInfo Site Info.
+     */
+    protected addSiteClasses(siteInfo: CoreSiteInfo | CoreSiteInfoResponse): void {
+        // Add version classes to html tag.
+        this.removeSiteClasses();
+
+        this.addVersionClass(MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(siteInfo.release || ''));
+        this.addSiteUrlClass(siteInfo.siteurl);
+
+        if (siteInfo.theme) {
+            CoreDomUtils.toggleModeClass(MOODLE_SITE_THEME_PREFIX + siteInfo.theme, true);
+        }
+    }
+
+    /**
+     * Convenience function to remove all site mode classes form html.
+     */
+    protected removeSiteClasses(): void {
+        // Remove version classes from html tag.
+        this.removeModeClasses(
+            [MOODLE_VERSION_PREFIX, MOODLE_SITE_URL_PREFIX, MOODLE_SITE_THEME_PREFIX],
+        );
     }
 
     /**

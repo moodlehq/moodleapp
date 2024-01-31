@@ -1402,7 +1402,7 @@ export type CoreCourseSearchedData = CoreCourseBasicSearchedData & {
     enablecompletion?: number; // Completion enabled? 1: yes 0: no.
     completionnotify?: number; // 1: yes 0: no.
     lang?: string; // Forced course language.
-    theme?: string; // Fame of the forced theme.
+    theme?: string; // Name of the forced theme.
     marker?: number; // Current course marker.
     legacyfiles?: number; // If legacy files are enabled.
     calendartype?: string; // Calendar type.
