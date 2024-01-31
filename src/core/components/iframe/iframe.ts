@@ -55,6 +55,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     safeUrl?: SafeResourceUrl;
     displayHelp = false;
     fullscreen = false;
+    launchExternalLabel?: string; // Text to set to the button to launch external app.
 
     initialized = false;
 
@@ -173,6 +174,19 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
         let url = this.src;
 
+        if (url) {
+            const { launchExternal, label } = CoreIframeUtils.frameShouldLaunchExternal(url);
+
+            if (launchExternal) {
+                this.launchExternalLabel = label;
+                this.loading = false;
+
+                return;
+            }
+        }
+
+        this.launchExternalLabel = undefined;
+
         if (url && !CoreUrlUtils.isLocalFileUrl(url)) {
             url = CoreUrlUtils.getYoutubeEmbedUrl(url) || url;
             this.displayHelp = CoreIframeUtils.shouldDisplayHelpForUrl(url);
@@ -258,6 +272,19 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         } else if (event.data == 'exitFullScreen' && this.fullscreen) {
             this.toggleFullscreen(false, false);
         }
+    }
+
+    /**
+     * Launch content in an external app.
+     */
+    launchExternal(): void {
+        if (!this.src) {
+            return;
+        }
+
+        CoreIframeUtils.frameLaunchExternal(this.src, {
+            site: CoreSites.getCurrentSite(),
+        });
     }
 
 }

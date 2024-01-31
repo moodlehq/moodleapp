@@ -33,6 +33,9 @@ import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 import { FrameElement } from '@classes/element-controllers/FrameElementController';
+import { CoreMimetypeUtils } from './mimetype';
+import { CoreFilepool } from '@services/filepool';
+import { CoreSite } from '@classes/sites/site';
 
 type CoreFrameElement = FrameElement & {
     window?: Window;
@@ -45,7 +48,7 @@ type CoreFrameElement = FrameElement & {
 @Injectable({ providedIn: 'root' })
 export class CoreIframeUtilsProvider {
 
-    static readonly FRAME_TAGS = ['iframe', 'frame', 'object', 'embed'];
+    static readonly FRAME_TAGS = ['iframe', 'object', 'embed'];
 
     protected logger: CoreLogger;
     protected waitAutoLoginDefer?: CorePromisedValue<void>;
@@ -631,6 +634,84 @@ export class CoreIframeUtilsProvider {
         });
     }
 
+    /**
+     * Check if a frame content should be opened with an external app (PDF reader, browser, etc.).
+     *
+     * @param urlOrFrame Either a URL of a frame, or the frame to check.
+     * @returns Whether it should be opened with an external app, and the label for the action to launch in external.
+     */
+    frameShouldLaunchExternal(urlOrFrame: string | FrameElement): { launchExternal: boolean; label: string } {
+        const url = typeof urlOrFrame === 'string' ?
+            urlOrFrame :
+            ('src' in urlOrFrame ? urlOrFrame.src : urlOrFrame.data);
+        const frame = typeof urlOrFrame !== 'string' && urlOrFrame;
+
+        const extension = url && CoreMimetypeUtils.guessExtensionFromUrl(url);
+        const launchExternal = extension === 'pdf' || (frame && frame.getAttribute('data-open-external') === 'true');
+
+        let label = '';
+        if (launchExternal) {
+            const mimetype = extension && CoreMimetypeUtils.getMimeType(extension);
+
+            label = mimetype && mimetype !== 'text/html' && mimetype !== 'text/plain' ?
+                Translate.instant('core.openfilewithextension', { extension: extension.toUpperCase() }) :
+                Translate.instant('core.openinbrowser');
+        }
+
+        return {
+            launchExternal,
+            label,
+        };
+    }
+
+    /**
+     * Launch a frame content in an external app.
+     *
+     * @param url Frame URL.
+     * @param options Options
+     */
+    async frameLaunchExternal(url: string, options: LaunchExternalOptions = {}): Promise<void> {
+        const modal = await CoreDomUtils.showModalLoading();
+
+        try {
+            if (!CoreNetwork.isOnline()) {
+                // User is offline, try to open a local copy of the file if present.
+                const localUrl = options.site ?
+                    await CoreUtils.ignoreErrors(CoreFilepool.getInternalUrlByUrl(options.site.getId(), url)) :
+                    undefined;
+
+                if (localUrl) {
+                    CoreUtils.openFile(localUrl);
+                } else {
+                    CoreDomUtils.showErrorModal('core.networkerrormsg', true);
+                }
+
+                return;
+            }
+
+            const mimetype = await CoreUtils.ignoreErrors(CoreUtils.getMimeTypeFromUrl(url));
+
+            if (!mimetype || mimetype === 'text/html' || mimetype === 'text/plain') {
+                // It's probably a web page, open in browser.
+                options.site ? options.site.openInBrowserWithAutoLogin(url) : CoreUtils.openInBrowser(url);
+
+                return;
+            }
+
+            // Open the file using the online URL and try to download it in background for offline usage.
+            if (options.site) {
+                CoreFilepool.getUrlByUrl(options.site.getId(), url, options.component, options.componentId, 0, false);
+
+                url = await options.site.checkAndFixPluginfileURL(url);
+            }
+
+            CoreUtils.openOnlineFile(url);
+
+        } finally {
+            modal.dismiss();
+        }
+    }
+
 }
 
 export const CoreIframeUtils = makeSingleton(CoreIframeUtilsProvider);
@@ -640,4 +721,13 @@ export const CoreIframeUtils = makeSingleton(CoreIframeUtilsProvider);
  */
 type CoreIframeHTMLAnchorElement = HTMLAnchorElement & {
     treated?: boolean; // Whether the element has been treated already.
+};
+
+/**
+ * Options to pass to frameLaunchExternal.
+ */
+type LaunchExternalOptions = {
+    site?: CoreSite; // Site the frame belongs to.
+    component?: string; // Component to download the file if needed.
+    componentId?: string | number; // Component ID to use in conjunction with the component.
 };

@@ -687,7 +687,7 @@ export class CoreDomUtilsProvider {
         const element = this.convertToElement(html);
 
         // Treat elements with src (img, audio, video, ...).
-        const media = Array.from(element.querySelectorAll<HTMLElement>('img, video, audio, source, track'));
+        const media = Array.from(element.querySelectorAll<HTMLElement>('img, video, audio, source, track, iframe, embed'));
         media.forEach((media: HTMLElement) => {
             const currentSrc = media.getAttribute('src');
             const newSrc = currentSrc ?

@@ -2231,6 +2231,7 @@
   "core.ok": "moodle",
   "core.online": "message",
   "core.openfile": "local_moodlemobileapp",
+  "core.openfilewithextension": "local_moodlemobileapp",
   "core.openfullimage": "local_moodlemobileapp",
   "core.openinbrowser": "local_moodlemobileapp",
   "core.openinbrowserdescription": "local_moodlemobileapp",

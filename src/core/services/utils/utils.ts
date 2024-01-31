@@ -1230,6 +1230,8 @@ export class CoreUtilsProvider {
                     type: CoreAnalyticsEventType.OPEN_LINK,
                     link: CoreUrlUtils.unfixPluginfileURL(url),
                 });
+
+                return;
             } catch (error) {
                 this.logger.error('Error opening online file ' + url + ' with mimetype ' + mimetype);
                 this.logger.error('Error: ', JSON.stringify(error));

@@ -233,6 +233,7 @@
     "ok": "OK",
     "online": "Online",
     "openfile": "Open file",
+    "openfilewithextension": "Open {{extension}} file",
     "openfullimage": "Click here to display the full size image",
     "openinbrowser": "Open in browser",
     "openinbrowserdescription": "You will be taken to a web browser",
