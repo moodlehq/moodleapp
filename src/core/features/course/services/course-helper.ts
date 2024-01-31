@@ -2031,6 +2031,29 @@ export class CoreCourseHelperProvider {
         );
     }
 
+    /**
+     * Get course communication room URL.
+     *
+     * @param course Course.
+     * @returns Promise resolved with the URL.
+     */
+    async getCourseCommunicationRoom(course: CoreCourseAnyCourseData): Promise<string | undefined> {
+
+        const site = CoreSites.getRequiredCurrentSite();
+        if (!site.isVersionGreaterEqualThan('4.4')) {
+            return;
+        }
+
+        if ('communicationroomurl' in course) {
+            return course.communicationroomurl;
+        }
+
+        course = await CoreCourses.getCourseByField('id', course.id, site.id);
+        if ('communicationroomurl' in course) {
+            return course.communicationroomurl;
+        }
+    }
+
 }
 
 export const CoreCourseHelper = makeSingleton(CoreCourseHelperProvider);

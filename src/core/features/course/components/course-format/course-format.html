@@ -50,9 +50,14 @@
     [instanceId]="course.id" />
 
 <!-- Course Index button. -->
-<ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="loaded && displayCourseIndex">
-    <ion-fab-button (click)="openCourseIndex()" [userTour]="courseIndexTour" [attr.aria-label]="'core.course.courseindex' | translate"
-        color="secondary">
+<ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="loaded && (displayCourseIndex || communicationRoomUrl)">
+    <ion-fab-button size="small" *ngIf="communicationRoomUrl" [href]="communicationRoomUrl" core-link capture="false"
+        [attr.aria-label]="'core.course.communicationroomlink' | translate">
+        <ion-icon name="far-comments" aria-hidden="true" />
+        <span class="sr-only">{{'core.course.communicationroomlink' | translate }}</span>
+    </ion-fab-button>
+    <ion-fab-button *ngIf="displayCourseIndex" (click)="openCourseIndex()" [userTour]="courseIndexTour"
+        [attr.aria-label]="'core.course.courseindex' | translate" color="secondary">
         <ion-icon name="fas-list-ul" aria-hidden="true" />
         <span class="sr-only">{{'core.course.courseindex' | translate }}</span>
     </ion-fab-button>

@@ -5,6 +5,7 @@
     "aria:sectionprogress": "Section progress:",
     "availablespace": "You currently have about {{available}} free space.",
     "cannotdeletewhiledownloading": "Files cannot be deleted while the activity is being downloaded. Please wait for the download to finish.",
+    "communicationroomlink": "Chat to course participants",
     "completion_automatic:done": "Done:",
     "completion_automatic:failed": "Failed:",
     "completion_automatic:todo": "To do:",
