@@ -59,13 +59,12 @@ Feature: It opens files properly.
     Then I should find "This file may not work as expected on this device" in the app
 
   Scenario: Open a PDF embedded using an iframe
-    # Using http://webserver directly because $WWWROOT cannot be used in generators or when creating the page manually.
     Given the following "activities" exist:
       | activity | idnumber | course | name                   | content                                                                                             |
-      | page     | page1    | C1     | Page with embedded PDF | <iframe src="http://webserver/local/moodleappbehat/fixtures/dummy.pdf" width="100%" height="500"></iframe> |
+      | page     | page1    | C1     | Page with embedded PDF | <iframe src="#wwwroot#/local/moodleappbehat/fixtures/dummy.pdf" width="100%" height="500"></iframe> |
       | page     | page2    | C1     | Page with embedded web | <iframe src="https://moodle.org" width="100%" height="500" data-open-external="true"></iframe>      |
     And the following config values are set as admin:
-      | custommenuitems | PDF item\|http://webserver/local/moodleappbehat/fixtures/dummy.pdf\|embedded | tool_mobile |
+      | custommenuitems | PDF item\|#wwwroot#/local/moodleappbehat/fixtures/dummy.pdf\|embedded | tool_mobile |
     And I entered the course "Course 1" as "student1" in the app
 
     When I press "Page with embedded PDF" in the app
