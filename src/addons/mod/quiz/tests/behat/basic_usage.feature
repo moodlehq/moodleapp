@@ -1,4 +1,4 @@
-@mod @mod_quiz @app @javascript @lms_from4.0
+@addon_mod_quiz @app @javascript @lms_from4.0
 Feature: Attempt a quiz in app
   As a student
   In order to demonstrate what I know

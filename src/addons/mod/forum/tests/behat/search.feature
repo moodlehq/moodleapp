@@ -1,4 +1,4 @@
-@mod @mod_forum @app @javascript @lms_from4.3
+@addon_mod_forum @app @javascript @lms_from4.3
 Feature: Test Forum Search
 
   Background:

@@ -1,4 +1,4 @@
-@mod @mod_chat @app @javascript
+@addon_mod_chat @app @javascript
 Feature: Test chat navigation
 
   Background:

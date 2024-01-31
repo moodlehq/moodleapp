@@ -1,4 +1,4 @@
-@app @javascript
+@core @app @javascript
 Feature: It has a Behat runtime with testing helpers.
 
   Background:

@@ -1,4 +1,4 @@
-@auth @core_auth @app @javascript @lms_upto3.11
+@core_login @app @javascript @lms_upto3.11
 Feature: Test basic usage of login in app
   I need basic login functionality to work
 

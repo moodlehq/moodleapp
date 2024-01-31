@@ -1,4 +1,4 @@
-@app @javascript @core_reminders @lms_from4.0
+@core_reminders @app @javascript @lms_from4.0
 Feature: Set a new reminder on activity
 
   Background:
@@ -62,20 +62,21 @@ Feature: Set a new reminder on activity
     And I press "Custom..." in the app
     Then I should find "Custom reminder" in the app
     When I set the following fields to these values in the app:
-       | Value | 69 |
+       | Value | 40 |
        | Units | minutes |
     And I press "Set reminder" in the app
     Then I should find "Reminder set for" in the app
-    When I wait "50" seconds
-    Then a notification with title "Due: Assignment 01" is present in the app
-    And I close a notification with title "Due: Assignment 01" in the app
+    And a notification with title "Due: Assignment 01" should be scheduled 40 minutes before the "Assignment 01" assignment due date in the app
+    When I flush pending notifications in the app
+    Then a notification with title "Due: Assignment 01" should be present in the app
 
     # Set and check reminder is cancelled
-    When I press "Set a reminder for \"Assignment 01\" (Due)" in the app
+    When I close a notification with title "Due: Assignment 01" in the app
+    And I press "Set a reminder for \"Assignment 01\" (Due)" in the app
     And I press "Custom..." in the app
     Then I should find "Custom reminder" in the app
     When I set the following fields to these values in the app:
-       | Value | 68 |
+       | Value | 20 |
        | Units | minutes |
     And I press "Set reminder" in the app
     Then I should find "Reminder set for" in the app
@@ -83,8 +84,8 @@ Feature: Set a new reminder on activity
     Then I should find "Reminder set for" in the app
     When I press "Delete reminder" in the app
     Then I should find "Reminder deleted" in the app
-    When I wait "50" seconds
-    Then a notification with title "Due: Assignment 01" is not present in the app
+    But a notification with title "Due: Assignment 01" should not be scheduled in the app
+    And a notification with title "Due: Assignment 01" should not be present in the app
 
   Scenario: Check toast is correct
     Given I entered the assign activity "Assignment 02" on course "Course 1" as "student1" in the app

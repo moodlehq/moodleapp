@@ -1,4 +1,4 @@
-@app @javascript @lms_upto3.11
+@core_grades @app @javascript @lms_upto3.11
 Feature: View grades
 
   Background:

@@ -1,4 +1,4 @@
-@mod @mod_book @app @javascript
+@addon_mod_book @app @javascript
 Feature: Test basic usage of book activity in app
   In order to view a book while using the mobile app
   As a student

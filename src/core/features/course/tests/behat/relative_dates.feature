@@ -1,4 +1,4 @@
-@core @core_course @app @javascript @lms_from4.0
+@core_course @app @javascript @lms_from4.0
 Feature: Check relative dates feature.
 
   Background:

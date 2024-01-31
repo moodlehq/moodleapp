@@ -48,6 +48,7 @@ import { CoreUpdateManagerProvider } from '@services/update-manager';
 import { CoreUrlUtilsProvider } from '@services/utils/url';
 import { CoreUtilsProvider } from '@services/utils/utils';
 import { CoreWSProvider } from '@services/ws';
+import { CorePlatformService } from '@services/platform';
 
 export const CORE_SERVICES: Type<unknown>[] = [
     CoreAppProvider,
@@ -68,6 +69,7 @@ export const CORE_SERVICES: Type<unknown>[] = [
     CoreMimetypeUtilsProvider,
     CoreNavigatorService,
     CorePluginFileDelegateService,
+    CorePlatformService,
     CoreScreenService,
     CoreSitesProvider,
     CoreSyncProvider,

@@ -1,4 +1,4 @@
-@app @javascript
+@core_grades @app @javascript
 Feature: Grades navigation
 
   Background:

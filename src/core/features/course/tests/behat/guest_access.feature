@@ -1,4 +1,4 @@
-@core @core_course @app @javascript @enrol @enrol_guest
+@core_course @app @javascript @enrol @enrol_guest
 Feature: Test basic usage of guest access course in app
 
   Background:

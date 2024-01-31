@@ -1,4 +1,4 @@
-@auth @core_auth @app @javascript
+@core_login @app @javascript
 Feature: Test basic usage of login in app
   I need basic login functionality to work
 
@@ -96,7 +96,7 @@ Feature: Test basic usage of login in app
     And I should find "You must change your password to proceed." in the app
 
     When I press "Change password" "ion-button" in the app
-    Then the app should have opened a browser tab with url "webserver"
+    Then the app should have opened a browser tab with url "$WWWROOTPATTERN"
 
     When I close the browser tab opened by the app
     Then I should find "If you didn't change your password correctly, you'll be asked to do it again." in the app
@@ -115,7 +115,7 @@ Feature: Test basic usage of login in app
     But I should not find "Reconnect" in the app
 
     When I press "Change password" "ion-button" in the app
-    Then the app should have opened a browser tab with url "webserver"
+    Then the app should have opened a browser tab with url "$WWWROOTPATTERN"
 
     When I switch to the browser tab opened by the app
     And I set the field "username" to "student1"

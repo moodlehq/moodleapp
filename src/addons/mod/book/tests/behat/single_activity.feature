@@ -1,4 +1,4 @@
-@app @javascript @mod @mod_book
+@addon_mod_book @app @javascript
 Feature: Test single activity of book type in app
   In order to view a book while using the mobile app
   As a student

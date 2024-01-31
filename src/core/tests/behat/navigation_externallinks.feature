@@ -1,4 +1,4 @@
-@app @javascript
+@core @app @javascript
 Feature: It opens external links properly.
 
   Background:

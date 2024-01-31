@@ -1,4 +1,4 @@
-@mod @mod_quiz @app @javascript
+@addon_mod_quiz @app @javascript
 Feature: Navigate through a quiz in the app
 
   Background:

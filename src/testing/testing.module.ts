@@ -16,6 +16,7 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CoreAppProvider } from '@services/app';
 import moment from 'moment-timezone';
 import { TestingBehatRuntime, TestingBehatRuntimeService } from './services/behat-runtime';
+import { CorePlatform } from '@services/platform';
 
 type AutomatedTestsWindow = Window & {
     behat?: TestingBehatRuntimeService;
@@ -27,7 +28,7 @@ type AutomatedTestsWindow = Window & {
  * @param window Window.
  */
 function initializeAutomatedTests(window: AutomatedTestsWindow) {
-    if (!CoreAppProvider.isAutomated()) {
+    if (!CorePlatform.isAutomated()) {
         return;
     }
 
