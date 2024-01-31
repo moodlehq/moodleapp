@@ -771,7 +771,7 @@ export class CoreFilepoolProvider {
             });
 
             // Add the anchor again to the local URL.
-            return fileEntry.toURL() + (anchor || '');
+            return CoreFile.getFileEntryURL(fileEntry) + (anchor || '');
         }).finally(() => {
             // Download finished, delete the promise.
             delete this.filePromises[siteId][downloadId];
@@ -1278,7 +1278,7 @@ export class CoreFilepoolProvider {
         const filePath = await this.getFilePath(siteId, fileId, '');
         const dirEntry = await CoreFile.getDir(filePath);
 
-        return dirEntry.toURL();
+        return CoreFile.getFileEntryURL(dirEntry);
     }
 
     /**
@@ -1666,7 +1666,7 @@ export class CoreFilepoolProvider {
         const path = await this.getFilePath(siteId, fileId);
         const fileEntry = await CoreFile.getFile(path);
 
-        return CoreFile.convertFileSrc(fileEntry.toURL());
+        return CoreFile.convertFileSrc(CoreFile.getFileEntryURL(fileEntry));
     }
 
     /**
@@ -1685,7 +1685,7 @@ export class CoreFilepoolProvider {
         const fileEntry = await CoreFile.getFile(path);
 
         // This URL is usually used to launch files or put them in HTML.
-        return fileEntry.toURL();
+        return CoreFile.getFileEntryURL(fileEntry);
     }
 
     /**
@@ -1701,7 +1701,7 @@ export class CoreFilepoolProvider {
 
         const fileEntry = await CoreFile.getFile(filePath);
 
-        return fileEntry.toURL();
+        return CoreFile.getFileEntryURL(fileEntry);
     }
 
     /**
@@ -1797,7 +1797,7 @@ export class CoreFilepoolProvider {
         const dirPath = await this.getFilePath(siteId, dirName, '');
         const dirEntry = await CoreFile.getDir(dirPath);
 
-        return dirEntry.toURL();
+        return CoreFile.getFileEntryURL(dirEntry);
     }
 
     /**

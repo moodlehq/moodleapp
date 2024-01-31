@@ -185,7 +185,7 @@ export class CoreFileUploaderHelperProvider {
 
         if (upload) {
             // Pass true to delete the copy after the upload.
-            return this.uploadGenericFile(fileEntry.toURL(), name, file.type, true);
+            return this.uploadGenericFile(CoreFile.getFileEntryURL(fileEntry), name, file.type, true);
         } else {
             return fileEntry;
         }
@@ -455,7 +455,7 @@ export class CoreFileUploaderHelperProvider {
 
             await this.confirmUploadFile(file.size);
 
-            await this.uploadGenericFile(fileEntry.toURL(), file.name, file.type, deleteAfterUpload, siteId);
+            await this.uploadGenericFile(CoreFile.getFileEntryURL(fileEntry), file.name, file.type, deleteAfterUpload, siteId);
 
             CoreDomUtils.showToast('core.fileuploader.fileuploaded', true, undefined, 'core-toast-success');
         } catch (error) {

@@ -145,7 +145,7 @@ export class CoreH5PPlayer {
 
         const fileEntry = await CoreFile.writeFile(indexPath, html);
 
-        return fileEntry.toURL();
+        return CoreFile.getFileEntryURL(fileEntry);
     }
 
     /**

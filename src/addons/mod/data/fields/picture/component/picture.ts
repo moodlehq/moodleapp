@@ -18,6 +18,7 @@ import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
 import { CoreDomUtils } from '@services/utils/dom';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
+import { CoreFile } from '@services/file';
 
 /**
  * Component to render data picture field.
@@ -129,7 +130,7 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginBa
             setTimeout(() => {
                 if (this.image) {
                     this.imageUrl = 'name' in this.image
-                        ? this.image.toURL() // Is Offline.
+                        ? CoreFile.getFileEntryURL(this.image) // Is Offline.
                         : CoreFileHelper.getFileUrl(this.image);
                 }
             }, 1);

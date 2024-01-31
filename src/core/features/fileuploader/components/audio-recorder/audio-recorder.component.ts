@@ -170,7 +170,7 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
 
             this.close({
                 name: fileEntry.name,
-                fullPath: fileEntry.toURL(),
+                fullPath: CoreFile.getFileEntryURL(fileEntry),
                 type: 'audio/mpeg',
             });
         } catch (error) {

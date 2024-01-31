@@ -12,6 +12,7 @@ For more information about upgrading, read the official documentation: https://m
  - With the upgrade to Ionic7 ion-datetime has changed its usage. We recommend using ion-datetime-button. More info here: https://ionicframework.com/docs/updating/6-0#datetime
  - CoreLoginHelper.getErrorMessages has been removed. Please create the messages object yourself.
  - CoreAppProvider.isAutomated() has been deprecated, use CorePlatformService.isAutomated() instead.
+ - Due to a breaking change in cordova-plugin-file, avoid using FileEntry.toURL(). Use CoreFileProvider.getFileEntryURL instead.
 
 === 4.3.0 ===
 
