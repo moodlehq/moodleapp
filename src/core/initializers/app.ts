@@ -12,17 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AppComponent } from '@/app/app.component';
+import { CoreHTMLClasses } from '@singletons/html-classes';
 
-import { renderComponent } from '@/testing/utils';
-
-describe('AppComponent', () => {
-
-    it('should render', async () => {
-        const fixture = await renderComponent(AppComponent);
-
-        expect(fixture.debugElement.componentInstance).toBeTruthy();
-        expect(fixture.nativeElement.querySelector('ion-router-outlet')).toBeTruthy();
-    });
-
-});
+/**
+ * General App initializer.
+ */
+export default async function(): Promise<void> {
+    CoreHTMLClasses.initialize();
+}

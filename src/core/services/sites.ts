@@ -43,7 +43,7 @@ import {
 } from '@services/database/sites';
 import { CoreArray } from '../singletons/array';
 import { CoreNetworkError } from '@classes/errors/network-error';
-import { CoreRedirectPayload } from './navigator';
+import { CoreNavigator, CoreRedirectPayload } from './navigator';
 import { CoreSitesFactory } from './sites-factory';
 import { CoreText } from '@singletons/text';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
@@ -66,6 +66,7 @@ import { CoreCacheManager } from '@services/cache-manager';
 import { CoreSiteInfo, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { firstValueFrom } from 'rxjs';
+import { CoreHTMLClasses } from '@singletons/html-classes';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -111,6 +112,7 @@ export class CoreSitesProvider {
      * Initialize.
      */
     initialize(): void {
+        // Initialize general site events.
         CoreEvents.on(CoreEvents.SITE_DELETED, async ({ siteId }) => {
             if (!siteId || !(siteId in this.siteTables)) {
                 return;
@@ -123,6 +125,57 @@ export class CoreSitesProvider {
             );
 
             delete this.siteTables[siteId];
+        });
+
+        CoreEvents.on(CoreEvents.LOGOUT, async () => {
+            // Unload lang custom strings.
+            CoreLang.clearCustomStrings();
+
+            // Remove version classes from body.
+            CoreHTMLClasses.removeSiteClasses();
+
+            // Go to sites page when user is logged out.
+            await CoreNavigator.navigate('/login/sites', { reset: true });
+
+            if (CoreSitePlugins.hasSitePluginsLoaded) {
+                // Temporary fix. Reload the page to unload all plugins.
+                window.location.reload();
+            }
+        });
+
+        CoreEvents.on(CoreEvents.LOGIN, async (data) => {
+            if (data.siteId) {
+                const site = await CoreSites.getSite(data.siteId);
+                const info = site.getInfo();
+                if (info) {
+                    CoreHTMLClasses.addSiteClasses(info);
+                }
+            }
+
+            CoreLang.loadCustomStringsFromSite();
+        });
+
+        // Site config is checked in login.
+        CoreEvents.on(CoreEvents.LOGIN_SITE_CHECKED, (data) => {
+            CoreHTMLClasses.addSiteUrlClass(data.config.httpswwwroot);
+        });
+
+        CoreEvents.on(CoreEvents.SITE_UPDATED, async (data) => {
+            if (data.siteId !== CoreSites.getCurrentSiteId()) {
+                return;
+            }
+
+            CoreLang.loadCustomStringsFromSite();
+            CoreHTMLClasses.addSiteClasses(data);
+        });
+
+        CoreEvents.on(CoreEvents.SITE_ADDED, (data) => {
+            if (data.siteId !== CoreSites.getCurrentSiteId()) {
+                return;
+            }
+
+            CoreLang.loadCustomStringsFromSite();
+            CoreHTMLClasses.addSiteClasses(data);
         });
 
         CoreCacheManager.registerInvalidateListener(() => this.invalidateCaches());
