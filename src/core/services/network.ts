@@ -159,8 +159,15 @@ export class CoreNetworkService extends Network {
             return;
         }
 
-        const type = this.connectionType;
+        // We cannot use navigator.onLine because it has issues in some devices.
+        // See https://bugs.chromium.org/p/chromium/issues/detail?id=811122
+        if (!CorePlatform.isAndroid()) {
+            this.online = navigator.onLine;
 
+            return;
+        }
+
+        const type = this.connectionType;
         let online = type !== null && type !== CoreNetworkConnection.NONE && type !== CoreNetworkConnection.UNKNOWN;
 
         // Double check we are not online because we cannot rely 100% in Cordova APIs.
