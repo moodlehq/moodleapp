@@ -28,6 +28,7 @@ import { AddonFilterMultilangHandler } from '@addons/filter/multilang/services/h
 import { AddonFilterMultilang2Handler } from '@addons/filter/multilang2/services/handlers/multilang2';
 import { firstValueFrom } from 'rxjs';
 import { CoreLogger } from '@singletons/logger';
+import { CoreSites } from './sites';
 
 /*
  * Service to handle language features, like changing the current language.
@@ -380,14 +381,22 @@ export class CoreLangProvider {
     /**
      * Loads custom strings obtained from site.
      *
-     * @param currentSite Current site object.
+     * @param currentSite Current site object. If not defined, use current site.
      */
-    loadCustomStringsFromSite(currentSite: CoreSite): void {
+    loadCustomStringsFromSite(currentSite?: CoreSite): void {
+        currentSite = currentSite ?? CoreSites.getCurrentSite();
+
+        if (!currentSite) {
+            return;
+        }
+
         const customStrings = currentSite.getStoredConfig('tool_mobile_customlangstrings');
 
-        if (customStrings !== undefined) {
-            this.loadCustomStrings(customStrings);
+        if (customStrings === undefined) {
+            return;
         }
+
+        this.loadCustomStrings(customStrings);
     }
 
     /**

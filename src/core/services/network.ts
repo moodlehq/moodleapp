@@ -15,8 +15,9 @@
 import { Injectable } from '@angular/core';
 import { CorePlatform } from '@services/platform';
 import { Network } from '@awesome-cordova-plugins/network/ngx';
-import { makeSingleton } from '@singletons';
+import { NgZone, makeSingleton } from '@singletons';
 import { Observable, Subject, merge } from 'rxjs';
+import { CoreDomUtils } from './utils/dom';
 
 export enum CoreNetworkConnection {
     UNKNOWN = 'unknown',
@@ -92,6 +93,40 @@ export class CoreNetworkService extends Network {
                 this.fireObservable();
             }, false);
         }
+
+        this.onPlaformReady();
+    }
+
+    /**
+     * Initialize the service when the platform is ready.
+     */
+    async onPlaformReady(): Promise<void> {
+        await CorePlatform.ready();
+
+        // Refresh online status when changes.
+        CoreNetwork.onChange().subscribe(() => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            NgZone.run(() => {
+                const isOnline = this.isOnline();
+
+                const hadOfflineMessage = CoreDomUtils.hasModeClass('core-offline');
+
+                CoreDomUtils.toggleModeClass('core-offline', !isOnline, { includeLegacy: true });
+
+                if (isOnline && hadOfflineMessage) {
+                    CoreDomUtils.toggleModeClass('core-online', true, { includeLegacy: true });
+
+                    setTimeout(() => {
+                        CoreDomUtils.toggleModeClass('core-online', false, { includeLegacy: true });
+                    }, 3000);
+                } else if (!isOnline) {
+                    CoreDomUtils.toggleModeClass('core-online', false, { includeLegacy: true });
+                }
+            });
+        });
+
+        const isOnline = this.isOnline();
+        CoreDomUtils.toggleModeClass('core-offline', !isOnline, { includeLegacy: true });
     }
 
     /**
@@ -124,8 +159,15 @@ export class CoreNetworkService extends Network {
             return;
         }
 
-        const type = this.connectionType;
+        // We cannot use navigator.onLine because it has issues in some devices.
+        // See https://bugs.chromium.org/p/chromium/issues/detail?id=811122
+        if (!CorePlatform.isAndroid()) {
+            this.online = navigator.onLine;
 
+            return;
+        }
+
+        const type = this.connectionType;
         let online = type !== null && type !== CoreNetworkConnection.NONE && type !== CoreNetworkConnection.UNKNOWN;
 
         // Double check we are not online because we cannot rely 100% in Cordova APIs.
