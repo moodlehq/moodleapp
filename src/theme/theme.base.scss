@@ -258,34 +258,6 @@ ion-footer {
     }
 }
 
-// Ionic icon.
-ion-icon {
-    position: relative;
-
-    &.icon-slash::after,
-    &.icon-backslash::after {
-        content: " ";
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background-color: var(--danger);
-        -webkit-mask: url("/assets/fonts/font-awesome/solid/slash.svg") no-repeat 50% 50%;
-        mask: url("/assets/fonts/font-awesome/solid/slash.svg") no-repeat 50% 50%;
-    }
-
-    &.icon-slash::after {
-        -webkit-transform: scale(-1, 1);
-        transform: scale(-1, 1);
-    }
-
-    &.fa-fw {
-        text-align: center;
-        width: 1.25em;
-    }
-}
-
 // Buttons.
 ion-button,
 ion-fab-button,

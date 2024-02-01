@@ -465,7 +465,6 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         const videos = Array.from(div.querySelectorAll('video'));
         const iframes = Array.from(div.querySelectorAll('iframe'));
         const buttons = Array.from(div.querySelectorAll<HTMLElement>('.button'));
-        const icons = Array.from(div.querySelectorAll('i.fa,i.fas,i.far,i.fab'));
         const elementsWithInlineStyles = Array.from(div.querySelectorAll<HTMLElement>('*[style]'));
         const stopClicksElements = Array.from(div.querySelectorAll<HTMLElement>('button,input,select,textarea'));
         const frames = Array.from(
@@ -546,6 +545,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         });
 
         // Handle Font Awesome icons to be rendered by the app.
+        const icons = Array.from(div.querySelectorAll('.fa,.fas,.far,.fab,.fa-solid,.fa-regular,.fa-brands'));
         icons.forEach((icon) => {
             CoreIcons.replaceCSSIcon(icon);
         });
