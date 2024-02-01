@@ -234,7 +234,7 @@ class behat_app_helper extends behat_base {
 
             $this->runtime_js("init($initoptions)");
         } catch (Exception $error) {
-            throw new DriverException('Moodle App not running or not running on Automated mode.');
+            throw new DriverException('Moodle App not running or not running on Automated mode: ' . $error->getMessage());
         }
 
         if ($restart) {
