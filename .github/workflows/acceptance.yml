@@ -41,6 +41,17 @@ jobs:
         working-directory: app
         run: npm run build:test
 
+      - name: Generate SSL certificates
+        working-directory: app
+        run: |
+          mkdir ./ssl
+          openssl req -x509 -nodes \
+            -days 365 \
+            -newkey rsa:2048 \
+            -keyout ./ssl/certificate.key \
+            -out ./ssl/certificate.crt \
+            -subj="/O=Moodle"
+
       - name: Build Behat plugin
         working-directory: app
         run: ./scripts/build-behat-plugin.js ../plugin
@@ -111,11 +122,12 @@ jobs:
 
       - uses: actions/cache/save@v4
         with:
-            key: build-${{ github.sha }}
-            path: |
-              app/node_modules/**/*
-              app/www/**/*
-              plugin/**/*
+          key: build-${{ github.sha }}
+          path: |
+            app/ssl/**/*
+            app/node_modules/**/*
+            app/www/**/*
+            plugin/**/*
 
   behat:
     runs-on: ubuntu-latest
@@ -157,6 +169,7 @@ jobs:
         with:
           key: build-${{ github.sha }}
           path: |
+            app/ssl/**/*
             app/node_modules/**/*
             app/www/**/*
             plugin/**/*
@@ -164,7 +177,14 @@ jobs:
       - name: Launch Docker images
         working-directory: app
         run: |
-          docker run -d --rm -p 8001:80 --name moodleapp -v ./www:/usr/share/nginx/html -v ./nginx.conf:/etc/nginx/conf.d/default.conf nginx:alpine
+          docker run -d --rm \
+              -p 8001:443 \
+              --name moodleapp \
+              -v ./www:/usr/share/nginx/html \
+              -v ./nginx.conf:/etc/nginx/conf.d/default.conf \
+              -v ./ssl/certificate.crt:/etc/ssl/certificate.crt \
+              -v ./ssl/certificate.key:/etc/ssl/certificate.key \
+              nginx:alpine
           docker run -d --rm -p 8002:80 --name bigbluebutton moodlehq/bigbluebutton_mock:latest
 
       - name: Initialise moodle-plugin-ci
@@ -184,7 +204,7 @@ jobs:
           DB: pgsql
           MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'main' }}
           MOODLE_REPO: ${{ github.event.inputs.moodle_repository || 'https://github.com/moodle/moodle.git' }}
-          MOODLE_BEHAT_IONIC_WWWROOT: http://localhost:8001
+          MOODLE_BEHAT_IONIC_WWWROOT: https://localhost:8001
           MOODLE_BEHAT_DEFAULT_BROWSER: chrome
 
       - name: Update config
