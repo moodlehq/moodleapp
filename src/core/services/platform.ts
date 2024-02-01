@@ -95,7 +95,8 @@ export class CorePlatformService extends Platform {
      * @returns Whether the device is configured to reduce motion.
      */
     prefersReducedMotion(): boolean {
-        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // Default to reduced motion in devices that don't support this CSS property.
+        return !window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
     }
 
     /**
