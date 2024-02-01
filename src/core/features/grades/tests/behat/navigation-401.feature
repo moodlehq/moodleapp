@@ -89,7 +89,7 @@ Feature: Grades navigation
     # Course grades
     When I press "Participants" in the app
     And I press "Student first" in the app
-    And I press "Grades" in the app
+    And I press "Grades" near "Details" in the app
     Then I should find "GC C2.1" in the app
     And I should find "Weight" in the app
     And I should find "Contribution to course total" in the app
