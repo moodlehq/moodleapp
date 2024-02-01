@@ -58,6 +58,7 @@ Feature: It opens files properly.
     And I press "Open" in the app
     Then I should find "This file may not work as expected on this device" in the app
 
+  @lms_from4.3
   Scenario: Open a PDF embedded using an iframe
     Given the following "activities" exist:
       | activity | idnumber | course | name                   | content                                                                                             |
