@@ -82,15 +82,18 @@ export class WasmSQLiteObject implements SQLiteObject {
      * @inheritdoc
      */
     async executeSql(statement: string, params?: any[] | undefined): Promise<any> {
+        let insertId: number | undefined = undefined;
         const rows = [] as unknown[];
 
         await this.promiser('exec', {
             sql: statement,
             bind: params,
-            callback({ row, columnNames }) {
+            callback({ row, columnNames, rowId }) {
                 if (!row) {
                     return;
                 }
+
+                insertId ||= rowId;
 
                 rows.push(columnNames.reduce((record, column, index) => {
                     record[column] = row[index];
@@ -106,6 +109,7 @@ export class WasmSQLiteObject implements SQLiteObject {
                 length: rows.length,
             },
             rowsAffected: rows.length,
+            insertId,
         };
     }
 
