@@ -117,6 +117,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     viewedModules: Record<number, boolean> = {};
     completionStatusIncomplete = CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE;
 
+    communicationRoomUrl?: string;
+
     protected selectTabObserver?: CoreEventObserver;
     protected modViewedObserver?: CoreEventObserver;
     protected lastCourseFormat?: string;
@@ -197,6 +199,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.displayBlocks = CoreCourseFormatDelegate.displayBlocks(this.course);
 
             this.hasBlocks = await CoreBlockHelper.hasCourseBlocks(this.course.id);
+
+            this.communicationRoomUrl = await CoreCourseHelper.getCourseCommunicationRoom(this.course);
         }
 
         if (changes.sections && this.sections) {

@@ -1570,6 +1570,7 @@
   "core.course.aria:sectionprogress": "local_moodlemobileapp",
   "core.course.availablespace": "local_moodlemobileapp",
   "core.course.cannotdeletewhiledownloading": "local_moodlemobileapp",
+  "core.course.communicationroomlink": "course",
   "core.course.completion_automatic:done": "course",
   "core.course.completion_automatic:failed": "course",
   "core.course.completion_automatic:todo": "course",

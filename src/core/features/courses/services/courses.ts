@@ -1416,6 +1416,8 @@ export type CoreCourseSearchedData = CoreCourseBasicSearchedData & {
         inheritedstate: number; // 1 or 0 to use when localstate is set to inherit.
     }[];
     courseformatoptions?: CoreCourseFormatOption[]; // Additional options for particular course format.
+    communicationroomname?: string; // @since Moodle 4.4. Communication tool room name.
+    communicationroomurl?: string; // @since Moodle 4.4. Communication tool room URL.
 };
 
 /**
