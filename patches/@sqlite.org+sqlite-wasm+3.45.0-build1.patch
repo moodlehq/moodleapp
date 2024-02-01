@@ -1,0 +1,31 @@
+diff --git a/node_modules/@sqlite.org/sqlite-wasm/sqlite-wasm/jswasm/sqlite3-bundler-friendly.mjs b/node_modules/@sqlite.org/sqlite-wasm/sqlite-wasm/jswasm/sqlite3-bundler-friendly.mjs
+index b86a0aa..a9bf793 100644
+--- a/node_modules/@sqlite.org/sqlite-wasm/sqlite-wasm/jswasm/sqlite3-bundler-friendly.mjs
++++ b/node_modules/@sqlite.org/sqlite-wasm/sqlite-wasm/jswasm/sqlite3-bundler-friendly.mjs
+@@ -533,7 +533,7 @@ var sqlite3InitModule = (() => {
+         wasmBinaryFile = locateFile(wasmBinaryFile);
+       }
+     } else {
+-      wasmBinaryFile = new URL('sqlite3.wasm', import.meta.url).href;
++      wasmBinaryFile = '/assets/lib/sqlite3/sqlite3.wasm';
+     }
+ 
+     function getBinary(file) {
+@@ -12522,7 +12522,7 @@ var sqlite3InitModule = (() => {
+               return promiseResolve_(sqlite3);
+             };
+             const W = new Worker(
+-              new URL('sqlite3-opfs-async-proxy.js', import.meta.url),
++              '/assets/lib/sqlite3/sqlite3-opfs-async-proxy.js',
+             );
+             setTimeout(() => {
+               if (undefined === promiseWasRejected) {
+@@ -13445,7 +13445,7 @@ var sqlite3InitModule = (() => {
+           });
+           return thePromise;
+         };
+-        installOpfsVfs.defaultProxyUri = 'sqlite3-opfs-async-proxy.js';
++        installOpfsVfs.defaultProxyUri = '/assets/lib/sqlite3/sqlite3-opfs-async-proxy.js';
+         globalThis.sqlite3ApiBootstrap.initializersAsync.push(
+           async (sqlite3) => {
+             try {

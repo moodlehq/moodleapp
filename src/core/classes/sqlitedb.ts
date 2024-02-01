@@ -14,10 +14,7 @@
 
 import { SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 
-import { SQLite } from '@singletons';
 import { CoreError } from '@classes/errors/error';
-import { CoreDB } from '@services/db';
-import { CorePlatform } from '@services/platform';
 
 type SQLiteDBColumnType = 'INTEGER' | 'REAL' | 'TEXT' | 'BLOB';
 
@@ -137,17 +134,13 @@ export interface SQLiteDBForeignKeySchema {
  */
 export class SQLiteDB {
 
-    db?: SQLiteObject;
-    promise!: Promise<void>;
-
     /**
      * Create and open the database.
      *
      * @param name Database name.
+     * @param db Database connection.
      */
-    constructor(public name: string) {
-        this.init();
-    }
+    constructor(public name: string, private db: SQLiteObject) {}
 
     /**
      * Add a column to an existing table.
@@ -277,9 +270,7 @@ export class SQLiteDB {
      * @returns Promise resolved when done.
      */
     async close(): Promise<void> {
-        await this.ready();
-
-        await this.db?.close();
+        await this.db.close();
     }
 
     /**
@@ -455,9 +446,7 @@ export class SQLiteDB {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async execute(sql: string, params?: SQLiteDBRecordValue[]): Promise<any> {
-        await this.ready();
-
-        return this.db?.executeSql(sql, params);
+        return this.db.executeSql(sql, params);
     }
 
     /**
@@ -470,9 +459,7 @@ export class SQLiteDB {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async executeBatch(sqlStatements: (string | string[] | any)[]): Promise<void> {
-        await this.ready();
-
-        await this.db?.sqlBatch(sqlStatements);
+        await this.db.sqlBatch(sqlStatements);
     }
 
     /**
@@ -754,25 +741,6 @@ export class SQLiteDB {
     }
 
     /**
-     * Initialize the database.
-     */
-    init(): void {
-        this.promise = this.createDatabase().then(db => {
-            if (CoreDB.loggingEnabled()) {
-                const spies = this.getDatabaseSpies(db);
-
-                db = new Proxy(db, {
-                    get: (target, property, receiver) => spies[property] ?? Reflect.get(target, property, receiver),
-                });
-            }
-
-            this.db = db;
-
-            return;
-        });
-    }
-
-    /**
      * Insert a record into a table and return the "rowId" field.
      *
      * @param table The database table to be inserted into.
@@ -898,18 +866,7 @@ export class SQLiteDB {
      * @returns Promise resolved when open.
      */
     async open(): Promise<void> {
-        await this.ready();
-
-        await this.db?.open();
-    }
-
-    /**
-     * Wait for the DB to be ready.
-     *
-     * @returns Promise resolved when ready.
-     */
-    ready(): Promise<void> {
-        return this.promise;
+        await this.db.open();
     }
 
     /**
@@ -1092,83 +1049,6 @@ export class SQLiteDB {
         }
 
         return { sql, params };
-    }
-
-    /**
-     * Open a database connection.
-     *
-     * @returns Database.
-     */
-    protected async createDatabase(): Promise<SQLiteObject> {
-        await CorePlatform.ready();
-
-        return SQLite.create({ name: this.name, location: 'default' });
-    }
-
-    /**
-     * Get database spy methods to intercept database calls and track logging information.
-     *
-     * @param db Database to spy.
-     * @returns Spy methods.
-     */
-    protected getDatabaseSpies(db: SQLiteObject): Partial<SQLiteObject> {
-        const dbName = this.name;
-
-        return {
-            async executeSql(statement, params) {
-                const start = performance.now();
-
-                try {
-                    const result = await db.executeSql(statement, params);
-
-                    CoreDB.logQuery({
-                        params,
-                        sql: statement,
-                        duration:  performance.now() - start,
-                        dbName,
-                    });
-
-                    return result;
-                } catch (error) {
-                    CoreDB.logQuery({
-                        params,
-                        error,
-                        sql: statement,
-                        duration:  performance.now() - start,
-                        dbName,
-                    });
-
-                    throw error;
-                }
-            },
-            async sqlBatch(statements) {
-                const start = performance.now();
-                const sql = Array.isArray(statements)
-                    ? statements.join(' | ')
-                    : String(statements);
-
-                try {
-                    const result = await db.sqlBatch(statements);
-
-                    CoreDB.logQuery({
-                        sql,
-                        duration: performance.now() - start,
-                        dbName,
-                    });
-
-                    return result;
-                } catch (error) {
-                    CoreDB.logQuery({
-                        sql,
-                        error,
-                        duration: performance.now() - start,
-                        dbName,
-                    });
-
-                    throw error;
-                }
-            },
-        };
     }
 
 }
