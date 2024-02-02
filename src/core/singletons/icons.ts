@@ -112,9 +112,20 @@ export class CoreIcons {
                 return;
             }
 
-            const firstPart = faPart[1].split('-')[0];
+            const afterFa = faPart[1];
 
-            switch (firstPart) {
+            const specialClasses = ['2xs', 'xs', 'sm', 'lg', 'xl', '2xl', 'fw', 'sharp', 'rotate',
+                '1x', '2x', '3x', '4x', '5x', '6x', '7x', '8x', '9x', '10x',
+                'flip-horizontal', 'flip-vertical', 'flip-both', 'spin', 'pulse', 'inverse',
+                'border', 'pull-left', 'pull-right', 'fixed-width', 'list-item', 'bordered', 'spinning',
+                'stack', 'stack-1x', 'stack-2x', 'inverse', 'sr-only', 'sr-only-focusable', 'border'];
+
+            // Class is defining special cases.
+            if (afterFa && specialClasses.includes(afterFa)) {
+                return;
+            }
+
+            switch (afterFa) {
                 // Class is defining library.
                 case 'solid':
                     library = 'solid';
@@ -126,20 +137,9 @@ export class CoreIcons {
                 case 'brands':
                     library = 'brands';
                     break;
-                // Class is defining special cases.
-                case '2xs':
-                case 'xs':
-                case 'sm':
-                case 'lg':
-                case 'xl':
-                case '2xl':
-                case 'fw':
-                case 'sharp':
-                case 'rotate':
-                    return;
                 // Class is defining the icon name (fa-ICONNAME).
                 default:
-                    iconName = faPart[1];
+                    iconName = afterFa;
                     break;
             }
         });
