@@ -61,7 +61,6 @@
     "@awesome-cordova-plugins/diagnostic": "^6.6.0",
     "@awesome-cordova-plugins/file": "^6.6.0",
     "@awesome-cordova-plugins/file-opener": "^6.6.0",
-    "@awesome-cordova-plugins/file-transfer": "^6.6.0",
     "@awesome-cordova-plugins/geolocation": "^6.6.0",
     "@awesome-cordova-plugins/http": "^6.6.0",
     "@awesome-cordova-plugins/in-app-browser": "^6.6.0",

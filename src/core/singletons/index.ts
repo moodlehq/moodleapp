@@ -44,7 +44,6 @@ import { Diagnostic as DiagnosticService } from '@awesome-cordova-plugins/diagno
 import { Device as DeviceService } from '@awesome-cordova-plugins/device/ngx';
 import { File as FileService } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener as FileOpenerService } from '@awesome-cordova-plugins/file-opener/ngx';
-import { FileTransfer as FileTransferService } from '@awesome-cordova-plugins/file-transfer/ngx';
 import { Geolocation as GeolocationService } from '@awesome-cordova-plugins/geolocation/ngx';
 import { HTTP } from '@awesome-cordova-plugins/http/ngx';
 import { InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
@@ -175,7 +174,6 @@ export const Clipboard = makeSingleton(ClipboardService);
 export const Diagnostic = makeSingleton(DiagnosticService);
 export const File = makeSingleton(FileService);
 export const FileOpener = makeSingleton(FileOpenerService);
-export const FileTransfer = makeSingleton(FileTransferService);
 export const Geolocation = makeSingleton(GeolocationService);
 export const InAppBrowser = makeSingleton(InAppBrowserService);
 export const Keyboard = makeSingleton(KeyboardService);

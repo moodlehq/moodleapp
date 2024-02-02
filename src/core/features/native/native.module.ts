@@ -22,7 +22,6 @@ import { Device } from '@awesome-cordova-plugins/device/ngx';
 import { Diagnostic } from '@awesome-cordova-plugins/diagnostic/ngx';
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
-import { FileTransfer } from '@awesome-cordova-plugins/file-transfer/ngx';
 import { Geolocation } from '@awesome-cordova-plugins/geolocation/ngx';
 import { HTTP } from '@awesome-cordova-plugins/http/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
@@ -47,7 +46,6 @@ export const CORE_NATIVE_SERVICES = [
     Diagnostic,
     File,
     FileOpener,
-    FileTransfer,
     Geolocation,
     HTTP,
     InAppBrowser,
@@ -73,7 +71,6 @@ export const CORE_NATIVE_SERVICES = [
         Diagnostic,
         File,
         FileOpener,
-        FileTransfer,
         Geolocation,
         HTTP,
         InAppBrowser,
