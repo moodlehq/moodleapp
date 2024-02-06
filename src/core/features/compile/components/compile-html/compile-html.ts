@@ -138,6 +138,10 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                     this.container,
                     this.extraImports,
                 );
+
+                this.element.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                });
             }
             this.componentRef && this.created.emit(this.componentRef.instance);
 
