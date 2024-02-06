@@ -1989,15 +1989,3 @@ ion-item.item-label-stacked ion-datetime-button {
     margin-bottom: 8px;
     align-self: self-end;
 }
-
-// Development styles. Most of them temporary.
-html.development {
-    ion-checkbox.legacy-checkbox,
-    ion-radio.legacy-radio,
-    ion-select.legacy-select,
-    ion-toggle.legacy-toggle,
-    ion-textarea.legacy-textarea,
-    ion-input.legacy-input {
-        background: red !important;
-    }
-}
