@@ -315,7 +315,12 @@ export class CoreLocalNotificationsProvider {
      * @returns Promise resolved with the notifications.
      */
     protected getAllScheduled(): Promise<ILocalNotification[]> {
-        return this.queueRunner.run('allScheduled', () => LocalNotifications.getAllScheduled());
+        return this.queueRunner.run('allScheduled', () => new Promise((resolve) => {
+            // LocalNotifications.getAllScheduled is broken, use the Cordova plugin directly.
+            const plugin = this.getCordovaPlugin();
+
+            plugin ? plugin.getScheduled(notifications => resolve(notifications)) : resolve([]);
+        }));
     }
 
     /**
