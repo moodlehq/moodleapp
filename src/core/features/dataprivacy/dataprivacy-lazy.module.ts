@@ -12,27 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule, Type } from '@angular/core';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 
-import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreEditorComponentsModule } from './components/components.module';
-import { SITE_SCHEMA } from './services/database/editor';
-import { CoreEditorOfflineProvider } from './services/editor-offline';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreDataPrivacyMainPage } from './pages/main/main';
 
-export const CORE_EDITOR_SERVICES: Type<unknown>[] = [
-    CoreEditorOfflineProvider,
+const routes: Routes = [
+    {
+        path: '',
+        pathMatch: 'full',
+        component: CoreDataPrivacyMainPage,
+    },
 ];
 
 @NgModule({
     imports: [
-        CoreEditorComponentsModule,
+        RouterModule.forChild(routes),
+        CoreSharedModule,
     ],
-    providers: [
-        {
-            provide: CORE_SITE_SCHEMAS,
-            useValue: [SITE_SCHEMA],
-            multi: true,
-        },
+    declarations: [
+        CoreDataPrivacyMainPage,
     ],
 })
-export class CoreEditorModule {}
+export class CoreDataPrivacyLazyModule {}

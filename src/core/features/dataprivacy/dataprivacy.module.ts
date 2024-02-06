@@ -15,9 +15,23 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { CoreDataPrivacyUserHandler } from './services/handlers/user';
+import { Routes } from '@angular/router';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CoreDataPrivacyComponentsModule } from './components/components.module';
+import { CORE_DATAPRIVACY_PAGE_NAME } from './constants';
 
+const routes: Routes = [
+    {
+        path: CORE_DATAPRIVACY_PAGE_NAME,
+        loadChildren: () => import('./dataprivacy-lazy.module').then(m => m.CoreDataPrivacyLazyModule),
+    },
+];
 
 @NgModule({
+    imports: [
+        CoreMainMenuTabRoutingModule.forChild(routes),
+        CoreDataPrivacyComponentsModule,
+    ],
     providers: [
         {
             provide: APP_INITIALIZER,

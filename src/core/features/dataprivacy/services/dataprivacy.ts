@@ -170,7 +170,7 @@ export class CoreDataPrivacyService {
     async createDataRequest(type: CoreDataPrivacyDataRequestType, comments: string, siteId?: string): Promise<number> {
         const site = await CoreSites.getSite(siteId);
 
-        const params: CoreDataPrivacyCreateDataequestWSParams = {
+        const params: CoreDataPrivacyCreateDataRequestWSParams = {
             type,
             comments,
         };
@@ -292,7 +292,7 @@ type CoreDataPrivacyContactDPOWSResponse = {
 /**
  * Params of tool_dataprivacy_create_data_request WS.
  */
-type CoreDataPrivacyCreateDataequestWSParams = {
+type CoreDataPrivacyCreateDataRequestWSParams = {
     type: CoreDataPrivacyDataRequestType; // The type of data request to create. 1 for export, 2 for data deletion.
     comments?: string; // Comments for the data request.
     foruserid?: number; // The id of the user to create the data request for. Empty for current user.
