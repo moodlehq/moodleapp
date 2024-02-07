@@ -669,7 +669,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             } else if (error.errorcode === 'sitepolicynotagreed') {
                 // Site policy not agreed, trigger event.
                 this.triggerSiteEvent(CoreEvents.SITE_POLICY_NOT_AGREED, {});
-                error.message = Translate.instant('core.login.sitepolicynotagreederror');
+                error.message = Translate.instant('core.policy.sitepolicynotagreederror');
 
                 throw new CoreWSError(error);
             } else if (error.errorcode === 'dmlwriteexception' && CoreTextUtils.hasUnicodeData(data)) {

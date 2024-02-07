@@ -5,7 +5,7 @@
         </ion-buttons>
 
         <ion-title>
-            <h1>{{ 'core.login.policyagreement' | translate }}</h1>
+            <h1>{{ 'core.policy.policyagreement' | translate }}</h1>
         </ion-title>
     </ion-toolbar>
 </ion-header>
@@ -14,13 +14,13 @@
         <ion-list *ngIf="sitePolicy">
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <p>{{ 'core.login.policyagree' | translate }}</p>
+                    <p>{{ 'core.policy.policyagree' | translate }}</p>
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p>
-                        <a [href]="sitePolicy" core-link [capture]="false">{{ 'core.login.policyagreementclick' | translate }}</a>
+                        <a [href]="sitePolicy" core-link [capture]="false">{{ 'core.policy.policyagreementclick' | translate }}</a>
                     </p>
                 </ion-label>
             </ion-item>
@@ -28,10 +28,10 @@
                 <core-iframe [src]="sitePolicy" />
             </ion-card>
             <ion-button class="ion-text-wrap ion-margin-horizontal" expand="block" (click)="accept()">
-                {{ 'core.login.policyacceptmandatory' | translate }}
+                {{ 'core.policy.policyacceptmandatory' | translate }}
             </ion-button>
             <ion-button class="ion-text-wrap ion-margin-horizontal ion-margin-bottom" expand="block" fill="outline" (click)="cancel()">
-                {{ 'core.login.cancel' | translate }}
+                {{ 'core.cancel' | translate }}
             </ion-button>
         </ion-list>
     </core-loading>

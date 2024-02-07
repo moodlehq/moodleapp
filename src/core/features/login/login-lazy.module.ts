@@ -20,7 +20,6 @@ import { hasSitesGuard } from './guards/has-sites';
 import { CoreLoginComponentsModule } from './components/components.module';
 import { CoreLoginHelper } from './services/login-helper';
 import { CoreLoginForgottenPasswordPage } from '@features/login/pages/forgotten-password/forgotten-password';
-import { CoreLoginSitePolicyPage } from '@features/login/pages/site-policy/site-policy';
 import { CoreUserComponentsModule } from '@features/user/components/components.module';
 import { CoreLoginEmailSignupPage } from '@features/login/pages/email-signup/email-signup';
 import { CoreLoginSitePage } from '@features/login/pages/site/site';
@@ -55,10 +54,6 @@ const routes: Routes = [
         component: CoreLoginChangePasswordPage,
     },
     {
-        path: 'sitepolicy',
-        component: CoreLoginSitePolicyPage,
-    },
-    {
         path: 'emailsignup',
         component: CoreLoginEmailSignupPage,
     },
@@ -77,7 +72,6 @@ const routes: Routes = [
     ],
     declarations: [
         CoreLoginForgottenPasswordPage,
-        CoreLoginSitePolicyPage,
         CoreLoginSitePage,
         CoreLoginSitesPage,
         CoreLoginChangePasswordPage,

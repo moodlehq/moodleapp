@@ -18,22 +18,22 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEvents } from '@singletons/events';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
+import { CorePolicy } from '@features/policy/services/policy';
 
 /**
  * Page to accept a site policy.
  */
 @Component({
-    selector: 'page-core-login-site-policy',
+    selector: 'page-core-policy-site-policy',
     templateUrl: 'site-policy.html',
     styleUrls: ['site-policy.scss'],
 })
-export class CoreLoginSitePolicyPage implements OnInit {
+export class CorePolicySitePolicyPage implements OnInit {
 
     sitePolicy?: string;
     showInline?: boolean;
@@ -76,7 +76,7 @@ export class CoreLoginSitePolicyPage implements OnInit {
      */
     protected async fetchSitePolicy(): Promise<void> {
         try {
-            this.sitePolicy = await CoreLoginHelper.getSitePolicy(this.siteId);
+            this.sitePolicy = await CorePolicy.getSitePoliciesURL(this.siteId);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting site policy.');
             this.cancel();
@@ -100,7 +100,7 @@ export class CoreLoginSitePolicyPage implements OnInit {
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.VIEW_ITEM,
             ws: 'auth_email_get_signup_settings',
-            name: Translate.instant('core.login.policyagreement'),
+            name: Translate.instant('core.policy.policyagreement'),
             data: { category: 'policy' },
             url: '/user/policy.php',
         });
@@ -126,7 +126,7 @@ export class CoreLoginSitePolicyPage implements OnInit {
         const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         try {
-            await CoreLoginHelper.acceptSitePolicy(this.siteId);
+            await CorePolicy.acceptMandatorySitePolicies(this.siteId);
 
             // Success accepting, go to site initial page.
             // Invalidate cache since some WS don't return error if site policy is not accepted.
