@@ -121,13 +121,13 @@ Feature: Test signup in app
       | menu     | team        | Are you a developer? | 1        | 1      | Yes         |
     And the following "custom profile fields" exist:
       | datatype | shortname   | name                | required | signup | param1              | param2 | param3 | defaultdata |
-      | text     | food        | Favourite food      | 1        | 1      |                     |        |        | Pasta       |
+      | text     | food        | Favourite food      | 1        | 1      |                     | 2040   |        | Pasta       |
       | checkbox | vegetarian  | Are you vegetarian? | 0        | 1      |                     |        |        |             |
       | datetime | birthday    | Birthday            | 1        | 1      | 1900                | 2040   | 0      |             |
       | datetime | time        | Date and time       | 0        | 1      | 1900                | 2040   | 1      |             |
       | textarea | description | Describe yourself   | 0        | 1      |                     |        |        | Sample text |
       | social   | website     | url                 | 0        | 1      | url                 |        |        |             |
-      | text     | beverage    | Favourite beverage  | 0        | 0      |                     |        |        |             |
+      | text     | beverage    | Favourite beverage  | 0        | 0      |                     | 2040   |        |             |
 
     When I launch the app
     And I set the field "Your site" to "$WWWROOT" in the app
