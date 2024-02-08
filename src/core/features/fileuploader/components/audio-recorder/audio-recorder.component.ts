@@ -225,7 +225,7 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
      * @returns Worker.
      */
     protected startWorker(): Worker {
-        const worker = new Worker('./audio-recorder.worker', { type: 'module' });
+        const worker = new Worker(new URL('./audio-recorder.worker', import.meta.url));
 
         worker.postMessage(
             initAudioEncoderMessage({ vmsgWasmUrl: `${document.head.baseURI}assets/lib/vmsg/vmsg.wasm` }),
