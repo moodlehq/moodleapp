@@ -189,11 +189,13 @@ jobs:
 
       - name: Initialise moodle-plugin-ci
         run: |
-          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4.3
+          git clone https://github.com/NoelDeMartin/moodle-plugin-ci --branch selenium-env ci
+          composer install -d ./ci
           echo $(cd ci/bin; pwd) >> $GITHUB_PATH
           echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
           sudo locale-gen en_AU.UTF-8
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
+          sed -i "58i\$CFG->behat_profiles['chrome']['capabilities'] = ['extra_capabilities' => ['chromeOptions' => ['args' => ['--ignore-certificate-errors', '--allow-running-insecure-content']]]];" ci/res/template/config.php.txt
 
       - name: Install Behat Snapshots plugin
         run: moodle-plugin-ci add-plugin NoelDeMartin/moodle-local_behatsnapshots
@@ -214,6 +216,7 @@ jobs:
         run: moodle-plugin-ci behat --auto-rerun 3 --profile chrome --tags="@app&&~@local&&$BEHAT_TAGS"
         env:
           BEHAT_TAGS: ${{ matrix.tags }}
+          MOODLE_BEHAT_SELENIUM_IMAGE: selenium/standalone-chrome:120.0
 
       - name: Upload Snapshot failures
         uses: actions/upload-artifact@v4
