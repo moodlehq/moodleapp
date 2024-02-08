@@ -32,6 +32,7 @@ import { CoreSwipeNavigationDirective } from '@directives/swipe-navigation';
 import { Swiper } from 'swiper';
 import { LocalNotificationsMock } from '@features/emulator/services/local-notifications';
 import { GetClosureArgs } from '@/core/utils/types';
+import { CoreIframeComponent } from '@components/iframe/iframe';
 
 /**
  * Behat runtime servive with public API.
@@ -103,6 +104,9 @@ export class TestingBehatRuntimeService {
 
             return originalOpen(...args);
         };
+
+        // Reduce iframes timeout to speed up tests.
+        CoreIframeComponent.loadingTimeout = 1000;
     }
 
     /**

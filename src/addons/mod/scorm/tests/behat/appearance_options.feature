@@ -4,6 +4,9 @@ Feature: Test appearance options of SCORM activity in app
   As a student
   I need appearance options to be applied properly
 
+  # SCORM iframes no longer work in the browser, hence the commented lines in this file.
+  # This should be reverted once MOBILE-4503 is solved.
+
   Background:
     Given the following "users" exist:
       | username | firstname | lastname | email                |
@@ -28,14 +31,14 @@ Feature: Test appearance options of SCORM activity in app
     When I press "Current window SCORM" in the app
     And I press "Enter" in the app
     And I press "Disable fullscreen" in the app
-    Then the UI should match the snapshot
+    # Then the UI should match the snapshot
 
     When I press the back button in the app
     And I press the back button in the app
     And I press "New window px SCORM" in the app
     And I press "Enter" in the app
     And I press "Disable fullscreen" in the app
-    Then the UI should match the snapshot
+    # Then the UI should match the snapshot
 
     # SCORMs with percentage sizes are displayed with full size in the app. See MOBILE-3426 for details.
     When I press the back button in the app
@@ -43,7 +46,7 @@ Feature: Test appearance options of SCORM activity in app
     And I press "New window perc SCORM" in the app
     And I press "Enter" in the app
     And I press "Disable fullscreen" in the app
-    Then the UI should match the snapshot
+    # Then the UI should match the snapshot
 
   Scenario: Skip SCORM entry page if needed
     Given the following "activities" exist:
@@ -76,7 +79,7 @@ Feature: Test appearance options of SCORM activity in app
     And I press the back button in the app
     And I press "Always skip SCORM" in the app
     And I press "Disable fullscreen" in the app
-    Then I should find "3 / 11" in the app
+    # Then I should find "3 / 11" in the app
 
   Scenario: Disable preview mode
     Given the following "activities" exist:
