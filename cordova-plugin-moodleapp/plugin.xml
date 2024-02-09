@@ -27,5 +27,64 @@
 
         <header-file src="src/ios/SecureStorage.h" />
         <source-file src="src/ios/SecureStorage.m" />
+
+           <config-file target="config.xml" parent="/*">
+            <feature name="Diagnostic">
+                <param name="ios-package" value="Diagnostic" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <js-module src="www/ios/diagnostic.js" name="Diagnostic">
+            <merges target="com.moodle.moodlemobile.diagnostic" />
+        </js-module>
+
+        <header-file src="src/ios/Diagnostic.h" />
+        <source-file src="src/ios/Diagnostic.m" />
+
+        <!--BEGIN_MODULE LOCATION-->
+        <config-file target="config.xml" parent="/*">
+            <feature name="Diagnostic_Location">
+                <param name="ios-package" value="Diagnostic_Location" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/Diagnostic_Location.h" />
+        <source-file src="src/ios/Diagnostic_Location.m" />
+
+        <framework src="CoreLocation.framework" />
+
+        <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription" comment="Default usage descriptions: override as necessary in .plist">
+            <string>We need your location so you can attach it as part of your submissions.</string>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription" comment="iOS 10">
+           <string>We need your location so you can attach it as part of your submissions.</string>
+        </config-file>
+        <!--END_MODULE LOCATION-->
+
+        <!--BEGIN_MODULE MICROPHONE-->
+        <config-file target="config.xml" parent="/*">
+            <feature name="Diagnostic_Microphone">
+                <param name="ios-package" value="Diagnostic_Microphone" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <js-module src="www/ios/diagnostic.js" name="Diagnostic_Microphone">
+            <merges target="com.moodle.moodlemobile.microphone" />
+        </js-module>
+
+        <framework src="AVFoundation.framework" />
+
+        <config-file target="*-Info.plist" parent="NSMicrophoneUsageDescription">
+            <string>We need microphone access to record sounds so you can attach them as part of your submissions.</string>
+        </config-file>
+
+        <header-file src="src/ios/Diagnostic_Microphone.h" />
+        <source-file src="src/ios/Diagnostic_Microphone.m" />
+        <!--END_MODULE MICROPHONE-->
+
     </platform>
 </plugin>

@@ -80,17 +80,8 @@
     </platform>
     <platform name="ios">
         <resource-file src="GoogleService-Info.plist" />
-        <edit-config file="*-Info.plist" mode="merge" target="NSLocationWhenInUseUsageDescription">
-            <string>We need your location so you can attach it as part of your submissions.</string>
-        </edit-config>
-        <edit-config file="*-Info.plist" mode="merge" target="NSLocationAlwaysUsageDescription">
-            <string>We need your location so you can attach it as part of your submissions.</string>
-        </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="NSCameraUsageDescription">
             <string>We need camera access to take pictures so you can attach them as part of your submissions.</string>
-        </edit-config>
-        <edit-config file="*-Info.plist" mode="merge" target="NSMicrophoneUsageDescription">
-            <string>We need microphone access to record sounds so you can attach them as part of your submissions.</string>
         </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="NSPhotoLibraryUsageDescription">
             <string>We need photo library access to get pictures from there so you can attach them as part of your submissions.</string>
