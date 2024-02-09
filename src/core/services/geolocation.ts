@@ -17,12 +17,13 @@ import { Coordinates } from '@awesome-cordova-plugins/geolocation';
 
 import { CoreApp } from '@services/app';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
-import { Geolocation, Diagnostic, makeSingleton } from '@singletons';
+import { Geolocation, makeSingleton } from '@singletons';
 import { CoreUtils } from './utils/utils';
 import { CorePlatform } from './platform';
 import { CoreSilentError } from '@classes/errors/silenterror';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { CoreLogger } from '@singletons/logger';
+import { CoreNative } from '@features/native/services/native';
 
 @Injectable({ providedIn: 'root' })
 export class CoreGeolocationProvider {
@@ -79,7 +80,13 @@ export class CoreGeolocationProvider {
      * @throws {CoreGeolocationError}
      */
     async enableLocation(): Promise<void> {
-        let locationEnabled = await Diagnostic.isLocationEnabled();
+        const diagnostic = CoreNative.plugin('diagnostic');
+
+        if (!diagnostic) {
+            return;
+        }
+
+        let locationEnabled = await diagnostic.isLocationEnabled();
 
         if (locationEnabled) {
             // Location is enabled.
@@ -87,10 +94,10 @@ export class CoreGeolocationProvider {
         }
 
         if (!CorePlatform.isIOS()) {
-            Diagnostic.switchToLocationSettings();
+            diagnostic.switchToLocationSettings();
             await CoreApp.waitForResume(30000);
 
-            locationEnabled = await Diagnostic.isLocationEnabled();
+            locationEnabled = await diagnostic.isLocationEnabled();
         }
 
         if (!locationEnabled) {
@@ -105,26 +112,34 @@ export class CoreGeolocationProvider {
      * @throws {CoreGeolocationError}
      */
     protected async doAuthorizeLocation(failOnDeniedOnce: boolean = false): Promise<void> {
-        const authorizationStatus = await Diagnostic.getLocationAuthorizationStatus();
+        const diagnostic = await CoreNative.plugin('diagnostic')?.getInstance();
+
+        if (!diagnostic) {
+            return;
+        }
+
+        const authorizationStatus = await diagnostic.getLocationAuthorizationStatus();
         this.logger.log(`Authorize location: status ${authorizationStatus}`);
 
         switch (authorizationStatus) {
-            case Diagnostic.permissionStatus.DENIED_ONCE:
+            case diagnostic.permissionStatus.deniedOnce:
                 if (failOnDeniedOnce) {
                     throw new CoreGeolocationError(CoreGeolocationErrorReason.PERMISSION_DENIED);
                 }
+
+            case diagnostic.permissionStatus.granted:
+            case diagnostic.permissionStatus.grantedWhenInUse:
+                // Location is authorized.
+                    return;
+
             // Fall through.
-            case Diagnostic.permissionStatus.NOT_REQUESTED:
+            case diagnostic.permissionStatus.notRequested:
                 this.logger.log('Request location authorization.');
                 await this.requestLocationAuthorization();
                 this.logger.log('Location authorization granted.');
                 await CoreApp.waitForResume(500);
                 await this.doAuthorizeLocation(true);
 
-                return;
-            case Diagnostic.permissionStatus.GRANTED:
-            case Diagnostic.permissionStatus.GRANTED_WHEN_IN_USE:
-                // Location is authorized.
                 return;
             default:
                 throw new CoreGeolocationError(CoreGeolocationErrorReason.PERMISSION_DENIED);
@@ -151,7 +166,13 @@ export class CoreGeolocationProvider {
      * @returns If location can be requested.
      */
     async canRequest(): Promise<boolean> {
-        return CoreUtils.promiseWorks(Diagnostic.getLocationAuthorizationStatus());
+        const diagnostic = CoreNative.plugin('diagnostic');
+
+        if (diagnostic) {
+            return CoreUtils.promiseWorks(diagnostic.getLocationAuthorizationStatus());
+        }
+
+        return false;
     }
 
     /**
@@ -159,7 +180,7 @@ export class CoreGeolocationProvider {
      */
     protected async requestLocationAuthorization(): Promise<void> {
         if (!CorePlatform.isIOS()) {
-            await Diagnostic.requestLocationAuthorization();
+            await CoreNative.plugin('diagnostic')?.requestLocationAuthorization();
 
             return;
         }
@@ -168,7 +189,8 @@ export class CoreGeolocationProvider {
         return new Promise((resolve, reject) => {
             // Don't display an error if app is sent to the background, just finish the process.
             const unsubscribe = CoreSubscriptions.once(CorePlatform.pause, () => reject(new CoreSilentError()));
-            Diagnostic.requestLocationAuthorization().then(() => resolve(), reject).finally(() => unsubscribe());
+            CoreNative.plugin('diagnostic')?.requestLocationAuthorization()
+                .then(() => resolve(), reject).finally(() => unsubscribe());
         });
     }
 

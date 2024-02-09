@@ -15,9 +15,30 @@
                 <param name="android-package" value="com.moodle.moodlemobile.InstallReferrer"/>
             </feature>
         </config-file>
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="Diagnostic" >
+                <param name="android-package" value="com.moodle.moodlemobile.Diagnostic"/>
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <js-module name="Diagnostic" src="www/android/diagnostic.js">
+            <merges target="com.moodle.moodlemobile.diagnostic" />
+        </js-module>
+
+        <source-file src="src/android/Diagnostic.java" target-dir="src/cordova/plugins" />
+        <source-file src="src/android/Diagnostic_Location.java" target-dir="src/cordova/plugins" />
+
+        <preference name="ANDROIDX_VERSION" default="1.0.0" />
+        <preference name="ANDROIDX_APPCOMPAT_VERSION" default="1.3.1" />
+        <framework src="androidx.legacy:legacy-support-v4:$ANDROIDX_VERSION" />
+        <framework src="androidx.appcompat:appcompat:$ANDROIDX_APPCOMPAT_VERSION" />
+
         <source-file src="src/android/SecureStorage.java" target-dir="src/com/moodle/moodlemobile" />
         <source-file src="src/android/InstallReferrer.java" target-dir="src/com/moodle/moodlemobile" />
     </platform>
+
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
             <feature name="SecureStorage">
