@@ -29,6 +29,7 @@ import {
 import { CoreDebugDatabaseTable } from './debug-database-table';
 import { CoreEagerDatabaseTable } from './eager-database-table';
 import { CoreLazyDatabaseTable } from './lazy-database-table';
+import { SubPartial } from '@/core/utils/types';
 
 /**
  * Database table proxy used to route database interactions through different implementations.
@@ -155,14 +156,14 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
-    async insert(record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>): Promise<number> {
+    async insert(record: SubPartial<DBRecord, RowIdColumn>): Promise<number> {
         return this.target.insert(record);
     }
 
     /**
      * @inheritdoc
      */
-    syncInsert(record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>): void {
+    syncInsert(record: SubPartial<DBRecord, RowIdColumn>): void {
         this.target.syncInsert(record);
     }
 

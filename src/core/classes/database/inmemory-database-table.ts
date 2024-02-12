@@ -16,6 +16,7 @@ import { CoreConstants } from '@/core/constants';
 import { SQLiteDB, SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreLogger } from '@singletons/logger';
 import { CoreDatabaseTable, GetDBRecordPrimaryKey } from './database-table';
+import { SubPartial } from '@/core/utils/types';
 
 /**
  * Database wrapper that caches database records in memory to speed up read operations.
@@ -79,7 +80,7 @@ export abstract class CoreInMemoryDatabaseTable<
      * @returns New record row id.
      */
     protected async insertAndRemember(
-        record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>,
+        record: SubPartial<DBRecord, RowIdColumn>,
         records: Record<string, DBRecord | null>,
     ): Promise<number> {
         const rowId = await super.insert(record);

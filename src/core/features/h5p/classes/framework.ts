@@ -47,6 +47,7 @@ import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 import { LazyMap, lazyMap } from '@/core/utils/lazy-map';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
+import { SubPartial } from '@/core/utils/types';
 
 /**
  * Equivalent to Moodle's implementation of H5PFrameworkInterface.
@@ -780,7 +781,7 @@ export class CoreH5PFramework {
             embedTypes = libraryData.embedTypes.join(', ');
         }
 
-        const data: Omit<CoreH5PLibraryDBRecord, 'id'> & Partial<Pick<CoreH5PLibraryDBRecord, 'id'>> = {
+        const data: SubPartial<CoreH5PLibraryDBRecord, 'id'> = {
             title: libraryData.title,
             machinename: libraryData.machineName,
             majorversion: libraryData.majorVersion,
@@ -930,7 +931,7 @@ export class CoreH5PFramework {
             throw new CoreError('Attempted to create content of library without id');
         }
 
-        const data: Omit<CoreH5PContentDBRecord, 'id'> & Partial<Pick<CoreH5PContentDBRecord, 'id'>> = {
+        const data: SubPartial<CoreH5PContentDBRecord, 'id'> = {
             jsoncontent: content.params ?? '{}',
             mainlibraryid: content.library?.libraryId,
             timemodified: Date.now(),

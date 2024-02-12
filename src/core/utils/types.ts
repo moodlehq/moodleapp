@@ -35,6 +35,11 @@ export type GetClosureArgs<T> = T extends (...args: infer TArgs) => any ? TArgs 
 export type Pretty<T> = T extends infer U ? {[K in keyof U]: U[K]} : never;
 
 /**
+ * Helper to convert some keys of an object to optional.
+ */
+export type SubPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+/**
  * Helper type to omit union.
  * You can use it if need to omit an element from types union.
  * If you omit a value in an union with `Omit<TypeUnion, 'value'>` you will obtain

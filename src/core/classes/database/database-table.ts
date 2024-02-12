@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { SubPartial } from '@/core/utils/types';
 import { CoreError } from '@classes/errors/error';
 import { SQLiteDB, SQLiteDBRecordValue, SQLiteDBRecordValues } from '@classes/sqlitedb';
 
@@ -259,7 +260,7 @@ export class CoreDatabaseTable<
      * @param record Database record.
      * @returns New record row id.
      */
-    async insert(record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>): Promise<number> {
+    async insert(record: SubPartial<DBRecord, RowIdColumn>): Promise<number> {
         const rowId = await this.database.insertRecord(this.tableName, record);
 
         return rowId;
@@ -270,7 +271,7 @@ export class CoreDatabaseTable<
      *
      * @param record Database record.
      */
-    syncInsert(record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>): void {
+    syncInsert(record: SubPartial<DBRecord, RowIdColumn>): void {
         // The current database architecture does not support synchronous operations,
         // so calling this method will mean that errors will be silenced. Because of that,
         // this should only be called if using the asynchronous alternatives is not possible.

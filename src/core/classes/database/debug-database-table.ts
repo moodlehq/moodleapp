@@ -21,6 +21,7 @@ import {
     CoreDatabaseReducer,
     CoreDatabaseQueryOptions,
 } from './database-table';
+import { SubPartial } from '@/core/utils/types';
 
 /**
  * Database table proxy used to debug runtime operations.
@@ -153,7 +154,7 @@ export class CoreDebugDatabaseTable<
     /**
      * @inheritdoc
      */
-    insert(record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>): Promise<number> {
+    insert(record: SubPartial<DBRecord, RowIdColumn>): Promise<number> {
         this.logger.log('insert', record);
 
         return this.target.insert(record);

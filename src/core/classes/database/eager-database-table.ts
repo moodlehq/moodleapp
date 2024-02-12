@@ -21,6 +21,7 @@ import {
     CoreDatabaseReducer,
     CoreDatabaseQueryOptions,
 } from './database-table';
+import { SubPartial } from '@/core/utils/types';
 
 /**
  * Wrapper used to improve performance by caching all the records for faster read operations.
@@ -154,7 +155,7 @@ export class CoreEagerDatabaseTable<
     /**
      * @inheritdoc
      */
-    async insert(record: Omit<DBRecord, RowIdColumn> & Partial<Pick<DBRecord, RowIdColumn>>): Promise<number> {
+    async insert(record: SubPartial<DBRecord, RowIdColumn>): Promise<number> {
         const rowId = await this.insertAndRemember(record, this.records);
 
         return rowId;

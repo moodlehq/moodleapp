@@ -19,6 +19,7 @@ import { ModalController, Translate } from '@singletons';
 import { FAQ_QRCODE_IMAGE_HTML, FAQ_URL_IMAGE_HTML, GET_STARTED_URL } from '@features/login/constants';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
+import { SubPartial } from '@/core/utils/types';
 
 /**
  * Component that displays help to connect to a site.
@@ -217,5 +218,5 @@ enum AnswerFormat {
  * Question definition.
  */
 type QuestionDefinition = Omit<Question, 'id' | 'answer'> & {
-    answer: Omit<Answer, 'class'> & Partial<Pick<Answer, 'class'>>;
+    answer: SubPartial<Answer, 'class'>;
 };
