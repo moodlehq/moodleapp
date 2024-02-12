@@ -749,16 +749,17 @@ export class CoreUtilsProvider {
     async getMimeTypeFromUrl(url: string): Promise<string> {
         // First check if it can be guessed from the URL.
         const extension = CoreMimetypeUtils.guessExtensionFromUrl(url);
-        let mimetype = extension && CoreMimetypeUtils.getMimeType(extension);
+        const mimetype = extension && CoreMimetypeUtils.getMimeType(extension);
 
-        if (mimetype) {
+        // Ignore PHP extension for now, it could be serving a file.
+        if (mimetype && extension !== 'php') {
             return mimetype;
         }
 
         // Can't be guessed, get the remote mimetype.
-        mimetype = await CoreWS.getRemoteFileMimeType(url);
+        const remoteMimetype = await CoreWS.getRemoteFileMimeType(url);
 
-        return mimetype || '';
+        return remoteMimetype || mimetype || '';
     }
 
     /**
