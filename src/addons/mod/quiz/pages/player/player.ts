@@ -406,7 +406,34 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         try {
             // Show confirm if the user clicked the finish button and the quiz is in progress.
             if (!timeUp && this.attempt.state == AddonModQuizProvider.ATTEMPT_IN_PROGRESS) {
-                await CoreDomUtils.showConfirm(Translate.instant('addon.mod_quiz.confirmclose'));
+                let message = Translate.instant('addon.mod_quiz.confirmclose');
+
+                const unansweredCount = this.summaryQuestions
+                    .filter(question => AddonModQuiz.isQuestionUnanswered(question))
+                    .length;
+
+                if (unansweredCount > 0) {
+                    const warning = Translate.instant(
+                        'addon.mod_quiz.submission_confirmation_unanswered',
+                        { $a: unansweredCount },
+                    );
+
+                    message += `
+                        <ion-card class="core-warning-card">
+                            <ion-item>
+                                <ion-label>
+                                    ${ warning }
+                                </ion-label>
+                            </ion-item>
+                        </ion-card>
+                    `;
+                }
+
+                await CoreDomUtils.showConfirm(
+                    message,
+                    Translate.instant('addon.mod_quiz.submitallandfinish'),
+                    Translate.instant('core.submit'),
+                );
             }
 
             modal = await CoreDomUtils.showModalLoading('core.sending', true);

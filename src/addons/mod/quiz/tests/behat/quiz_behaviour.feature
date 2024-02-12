@@ -46,7 +46,7 @@ Feature: Use quizzes with different behaviours in the app
 
     When I press "Submit" in the app
     And I press "Submit all and finish" in the app
-    And I press "OK" near "Once you submit" in the app
+    And I press "Submit" near "Once you submit" in the app
     Then I should find "Mark 0.33 out of 1.00" in the app
 
   Scenario: Immediate feedback behaviour
@@ -85,7 +85,7 @@ Feature: Use quizzes with different behaviours in the app
 
     When I press "Submit" in the app
     And I press "Submit all and finish" in the app
-    And I press "OK" near "Once you submit" in the app
+    And I press "Submit" near "Once you submit" in the app
     Then I should find "Mark 1.00 out of 1.00" in the app
 
   Scenario: Deferred feedback with CBM behaviour
@@ -103,7 +103,7 @@ Feature: Use quizzes with different behaviours in the app
     And I press "Quite sure" in the app
     And I press "Submit" in the app
     And I press "Submit all and finish" in the app
-    And I press "OK" near "Once you submit" in the app
+    And I press "Submit" near "Once you submit" in the app
     Then I should find "CBM mark 1.50" in the app
     And I should find "Parts, but only parts, of your response are correct" in the app
 
@@ -147,5 +147,5 @@ Feature: Use quizzes with different behaviours in the app
 
     When I press "Submit" in the app
     And I press "Submit all and finish" in the app
-    And I press "OK" near "Once you submit" in the app
+    And I press "Submit" near "Once you submit" in the app
     Then I should find "Mark 0.33 out of 1.00" in the app

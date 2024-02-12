@@ -41,6 +41,7 @@ import { AddonModQuizAttempt } from './quiz-helper';
 import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-offline';
 import { AddonModQuizAutoSyncData, AddonModQuizSyncProvider } from './quiz-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { QUESTION_INVALID_STATE_CLASSES, QUESTION_TODO_STATE_CLASSES } from '@features/question/constants';
 
 const ROOT_CACHE_KEY = 'mmaModQuiz:';
 
@@ -1515,6 +1516,21 @@ export class AddonModQuizProvider {
         const element = CoreDomUtils.convertToElement(question.html);
 
         return !!element.querySelector('.mod_quiz-blocked_question_warning');
+    }
+
+    /**
+     * Check if a question is unanswered.
+     *
+     * @param question Question.
+     * @returns Whether it's unanswered.
+     */
+    isQuestionUnanswered(question: CoreQuestionQuestionParsed): boolean {
+        if (!question.stateclass) {
+            return false;
+        }
+
+        return QUESTION_TODO_STATE_CLASSES.some(stateClass => stateClass === question.stateclass)
+            || QUESTION_INVALID_STATE_CLASSES.some(stateClass => stateClass === question.stateclass);
     }
 
     /**
