@@ -374,6 +374,9 @@ export type CoreSiteInfoResponse = {
     usercalendartype?: string; // Calendar typed used by the user.
     userissiteadmin?: boolean; // Whether the user is a site admin or not.
     theme?: string; // Current theme for the user.
+    limitconcurrentlogins?: number; // @since 4.0. Number of concurrent sessions allowed.
+    usersessionscount?: number; // @since 4.0. Number of active sessions for current user. Only if limitconcurrentlogins is used.
+    policyagreed?: number; // @since 4.4. Whether user accepted all the policies.
 };
 
 /**
