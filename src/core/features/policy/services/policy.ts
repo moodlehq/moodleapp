@@ -17,16 +17,19 @@ import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreNavigator } from '@services/navigator';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { POLICY_PAGE_NAME, SITE_POLICY_PAGE_NAME } from '../constants';
+import { CoreSite } from '@classes/sites/site';
 
 /**
  * Service that provides some common features regarding policies.
  */
 @Injectable({ providedIn: 'root' })
 export class CorePolicyService {
+
+    protected static readonly ROOT_CACHE_KEY = 'CorePolicy:';
 
     /**
      * Accept all mandatory site policies.
@@ -37,7 +40,7 @@ export class CorePolicyService {
     async acceptMandatorySitePolicies(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        const result = await site.write<AgreeSitePolicyResult>('core_user_agree_site_policy', {});
+        const result = await site.write<CorePolicyAgreeSitePolicyResult>('core_user_agree_site_policy', {});
 
         if (result.status) {
             return;
@@ -87,6 +90,42 @@ export class CorePolicyService {
     }
 
     /**
+     * Get user acceptances.
+     *
+     * @param options Options
+     * @returns List of policies with their acceptances.
+     */
+    async getUserAcceptances(options: CoreSitesCommonWSOptions = {}): Promise<CorePolicySitePolicy[]> {
+        const site = await CoreSites.getSite(options.siteId);
+
+        const data: CorePolicyGetUserAcceptancesWSParams = {
+            userid: site.getUserId(),
+        };
+        const preSets = {
+            cacheKey: this.getUserAcceptancesCacheKey(site.getUserId()),
+            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+        };
+
+        const response = await site.read<CorePolicyGetUserAcceptancesWSResponse>('tool_policy_get_user_acceptances', data, preSets);
+        if (response.warnings?.length) {
+            throw new CoreWSError(response.warnings[0]);
+        }
+
+        return response.policies;
+    }
+
+    /**
+     * Get the cache key for the get user acceptances call.
+     *
+     * @param userId ID of the user to get the badges from.
+     * @returns Cache key.
+     */
+    protected getUserAcceptancesCacheKey(userId: number): string {
+        return CorePolicyService.ROOT_CACHE_KEY + 'userAcceptances:' + userId;
+    }
+
+    /**
      * Open page to accept site policies.
      *
      * @param siteId Site ID. If not defined, current site.
@@ -108,6 +147,44 @@ export class CorePolicyService {
         CoreNavigator.navigate(routePath, { params: { siteId }, reset: true });
     }
 
+    /**
+     * Check whether a site allows getting and setting acceptances.
+     *
+     * @param siteId Site Id.
+     * @returns Whether the site allows getting and setting acceptances.
+     */
+    async isManageAcceptancesAvailable(siteId?: string): Promise<boolean> {
+        const site = await CoreSites.getSite(siteId);
+
+        return site.wsAvailable('tool_policy_get_user_acceptances') && site.wsAvailable('tool_policy_set_acceptances_status');
+    }
+
+    /**
+     * Set user acceptances.
+     *
+     * @param policies Policies to accept or decline. Keys are policy version id, value is whether to accept or decline.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns New value for policyagreed.
+     */
+    async setUserAcceptances(policies: Record<number, number>, siteId?: string): Promise<number> {
+        const site = await CoreSites.getSite(siteId);
+
+        const data: CorePolicySetAcceptancesWSParams = {
+            userid: site.getUserId(),
+            policies: Object.keys(policies).map((versionId) => ({
+                versionid: Number(versionId),
+                status: policies[versionId],
+            })),
+        };
+
+        const response = await site.write<CorePolicySetAcceptancesWSResponse>('tool_policy_get_user_acceptances', data);
+        if (response.warnings?.length) {
+            throw new CoreWSError(response.warnings[0]);
+        }
+
+        return response.policyagreed;
+    }
+
 }
 
 export const CorePolicy = makeSingleton(CorePolicyService);
@@ -115,7 +192,71 @@ export const CorePolicy = makeSingleton(CorePolicyService);
 /**
  * Result of WS core_user_agree_site_policy.
  */
-type AgreeSitePolicyResult = {
+type CorePolicyAgreeSitePolicyResult = {
     status: boolean; // Status: true only if we set the policyagreed to 1 for the user.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Params of tool_policy_get_user_acceptances WS.
+ */
+type CorePolicyGetUserAcceptancesWSParams = {
+    userid?: number; // The user id we want to retrieve the acceptances.
+};
+
+/**
+ * Data returned by tool_policy_get_user_acceptances WS.
+ */
+type CorePolicyGetUserAcceptancesWSResponse = {
+    policies: CorePolicySitePolicy[];
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Policy data returned by tool_policy_get_user_acceptances WS.
+ */
+export type CorePolicySitePolicy = {
+    policyid: number; // The policy id.
+    versionid: number; // The policy version id.
+    agreementstyle: number; // The policy agreement style. 0: consent page, 1: own page.
+    optional: number; // Whether the policy is optional. 0: compulsory, 1: optional.
+    revision: string; // The policy revision.
+    status: number; // The policy status. 0: draft, 1: active, 2: archived.
+    name: string; // The policy name.
+    summary?: string; // The policy summary.
+    summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN, or 4 = MARKDOWN).
+    content?: string; // The policy content.
+    contentformat: number; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN, or 4 = MARKDOWN).
+    acceptance?: CorePolicySitePolicyAcceptance; // Acceptance status for the given user.
+};
+
+/**
+ * Policy acceptance data returned by tool_policy_get_user_acceptances WS.
+ */
+export type CorePolicySitePolicyAcceptance = {
+    status: number; // The acceptance status. 0: declined, 1: accepted.
+    lang: string; // The policy lang.
+    timemodified: number; // The time the acceptance was set.
+    usermodified: number; // The user who accepted.
+    note?: string; // The policy note/remarks.
+    modfullname?: string; // The fullname who accepted on behalf.
+};
+
+/**
+ * Params of tool_policy_set_acceptances_status WS.
+ */
+type CorePolicySetAcceptancesWSParams = {
+    policies: {
+        versionid: number; // The policy version id.
+        status: number; // The policy acceptance status. 0: decline, 1: accept.
+    }[]; // Policies acceptances for the given user.
+    userid?: number; // The user id we want to set the acceptances. Default is the current user.
+};
+
+/**
+ * Data returned by tool_policy_set_acceptances_status WS.
+ */
+type CorePolicySetAcceptancesWSResponse = {
+    policyagreed: number; // Whether the user has provided acceptance to all current site policies. 1 if yes, 0 if not.
     warnings?: CoreWSExternalWarning[];
 };
