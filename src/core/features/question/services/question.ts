@@ -28,6 +28,15 @@ import {
     QUESTION_ANSWERS_TABLE_NAME,
     QUESTION_TABLE_NAME,
 } from './database/question';
+import {
+    QUESTION_COMPLETE_STATE_CLASSES,
+    QUESTION_FINISHED_STATE_CLASSES,
+    QUESTION_GAVE_UP_STATE_CLASSES,
+    QUESTION_GRADED_STATE_CLASSES,
+    QUESTION_INVALID_STATE_CLASSES,
+    QUESTION_NEEDS_GRADING_STATE_CLASSES,
+    QUESTION_TODO_STATE_CLASSES,
+} from '@features/question/constants';
 
 const QUESTION_PREFIX_REGEX = /q\d+:(\d+)_/;
 const STATES: Record<string, CoreQuestionState> = {
@@ -598,6 +607,14 @@ export type CoreQuestionQuestionWSData = {
     questionnumber?: string; // @since 4.2. Question ordering number in the quiz.
     state?: string; // The state where the question is in. It won't be returned if the user cannot see it.
     status?: string; // Current formatted state of the question.
+    stateclass?: // @since 4.4. A machine-readable class name for the state that this question attempt is in.
+        typeof QUESTION_TODO_STATE_CLASSES[number] |
+        typeof QUESTION_INVALID_STATE_CLASSES[number] |
+        typeof QUESTION_COMPLETE_STATE_CLASSES[number] |
+        typeof QUESTION_NEEDS_GRADING_STATE_CLASSES[number] |
+        typeof QUESTION_FINISHED_STATE_CLASSES[number] |
+        typeof QUESTION_GAVE_UP_STATE_CLASSES[number] |
+        typeof QUESTION_GRADED_STATE_CLASSES[number];
     blockedbyprevious?: boolean; // Whether the question is blocked by the previous question.
     mark?: string; // The mark awarded. It will be returned only if the user is allowed to see it.
     maxmark?: number; // The maximum mark possible for this question attempt.

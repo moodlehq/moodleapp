@@ -1,11 +1,11 @@
-@addon_mod_quiz @app @javascript @lms_from3.10 @lms_upto3.11
+@addon_mod_quiz @app @javascript @lms_from4.0 @lms_upto4.3
 Feature: Attempt a quiz in app
   As a student
   In order to demonstrate what I know
   I need to be able to attempt quizzes
 
-  # These scenarios are duplicated from main because the manual quiz setup is not
-  # equivalent before 4.0.
+  # These scenarios are duplicated from main because the unanswered questions warning
+  # is not available before 4.4.
   Background:
     Given the Moodle site is compatible with this feature
     And the following "courses" exist:
@@ -79,8 +79,7 @@ Feature: Attempt a quiz in app
       | Question text        | {1:SHORTANSWER:=Berlin} is the capital of Germany.  |
       | General feedback     | The capital of Germany is Berlin.                   |
     And I am on the "quiz2" "Activity" page
-    And I click on "Actions menu" "link"
-    And I click on "Edit quiz" "link"
+    And I click on "Questions" "link"
     And I click on "Add" "link"
     And I click on "from question bank" "link"
     And I set the field with xpath "//tr[contains(normalize-space(.), 'multianswer')]//input[@type='checkbox']" to "1"
@@ -194,6 +193,7 @@ Feature: Attempt a quiz in app
     Given I entered the quiz activity "Quiz 1" on course "Course 1" as "student1" in the app
     When I press "Attempt quiz now" in the app
     Then I should find "Text of the first question" in the app
+    And the UI should match the snapshot
 
     When I press "True" in the app
     And I press "Next" in the app
@@ -205,6 +205,7 @@ Feature: Attempt a quiz in app
 
     When I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(1) p:nth-child(2)" with "[Started on date]"
     And I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(3) p:nth-child(2)" with "[Completed on date]"
+    Then the UI should match the snapshot
 
     Given I entered the quiz activity "Quiz 1" on course "Course 1" as "teacher1" in the app
     When I press "Information" in the app
