@@ -1,20 +1,45 @@
+@use "theme/globals" as *;
+
 :host {
-    ion-list {
+    hr {
+        background: var(--black);
+        margin: 0 16px;
+    }
+
+    form {
         display: flex;
         flex-direction: column;
+        flex-grow: 1;
         height: 100%;
 
-        ion-item {
+        ion-item, .core-info-card {
             flex-shrink: 0;
         }
 
-        .core-site-policy-iframe-container {
-            height: 100%;
+        ion-item {
+            --inner-border-width: 0;
+        }
 
-            core-iframe {
-                height: 100%;
-                width: 100%;
+        .core-site-policy-link {
+            p {
+                text-decoration: underline;
+                font-size: 1rem;
+
+                ion-icon {
+                    font-size: 0.875rem;
+                    @include margin-horizontal(4px, 0);
+                }
             }
+        }
+
+        .core-site-policy-iframe-container {
+            margin: 8px;
+            display: flex;
+            flex-grow: 1;
+        }
+
+        ion-button[type="submit"] {
+            margin-bottom: 12px;;
         }
     }
 }

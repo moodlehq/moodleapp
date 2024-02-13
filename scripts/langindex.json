@@ -2282,7 +2282,7 @@
   "core.phone": "moodle",
   "core.pictureof": "moodle",
   "core.play": "local_moodlemobileapp",
-  "core.policy.policyaccept": "moodle",
+  "core.policy.havereadandagreepolicy": "local_moodlemobileapp",
   "core.policy.policyacceptmandatory": "local_moodlemobileapp",
   "core.policy.policyagree": "moodle",
   "core.policy.policyagreement": "moodle",

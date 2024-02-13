@@ -99,7 +99,9 @@ ion-item .in-item {
 
 // Correctly inherit ion-text-wrap onto labels.
 .item > ion-label,
-.fake-ion-item {
+.fake-ion-item,
+.item.ion-text-wrap > ion-checkbox::part(label),
+ion-checkbox.ion-text-wrap::part(label) {
     core-format-text,
     core-format-text > *:not(pre) {
         white-space: nowrap;
@@ -110,7 +112,9 @@ ion-item .in-item {
 
 .item.ion-text-wrap > ion-label,
 ion-item > .in-item,
-.fake-ion-item.ion-text-wrap {
+.fake-ion-item.ion-text-wrap,
+.item.ion-text-wrap > ion-checkbox::part(label),
+ion-checkbox.ion-text-wrap::part(label) {
     core-format-text,
     core-format-text > *:not(pre) {
         white-space: normal;
@@ -118,7 +122,9 @@ ion-item > .in-item,
     }
 }
 
-.item.ion-text-wrap > ion-label {
+.item.ion-text-wrap > ion-label,
+.item.ion-text-wrap > ion-checkbox::part(label),
+ion-checkbox.ion-text-wrap::part(label) {
     white-space: normal !important;
 }
 

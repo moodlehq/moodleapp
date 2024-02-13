@@ -24,6 +24,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CorePolicy } from '@features/policy/services/policy';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 /**
  * Page to accept a site policy.
@@ -35,20 +36,26 @@ import { CorePolicy } from '@features/policy/services/policy';
 })
 export class CorePolicySitePolicyPage implements OnInit {
 
-    sitePolicy?: string;
+    siteName?: string;
+    isManageAcceptancesAvailable = false;
+    isPoliciesURL = false;
+    sitePoliciesURL?: string;
     showInline?: boolean;
     policyLoaded?: boolean;
+    policyForm?: FormGroup;
+
     protected siteId?: string;
     protected currentSite!: CoreSite;
 
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.siteId = CoreNavigator.getRouteParam('siteId');
 
         try {
             this.currentSite = CoreSites.getRequiredCurrentSite();
+            this.siteName = (await CoreUtils.ignoreErrors(this.currentSite.getSiteName(), '')) || '';
         } catch {
             // Not logged in, stop.
             this.cancel();
@@ -66,17 +73,36 @@ export class CorePolicySitePolicyPage implements OnInit {
             return;
         }
 
-        this.fetchSitePolicy();
+        this.isManageAcceptancesAvailable = await CorePolicy.isManageAcceptancesAvailable(this.siteId);
+        this.isPoliciesURL = this.isManageAcceptancesAvailable ?
+            (await this.currentSite.getConfig('sitepolicyhandler')) !== 'tool_policy' :
+            true; // Site doesn't support managing acceptances, just display it as a URL.
+
+        if (this.isPoliciesURL) {
+            this.initFormForPoliciesURL();
+
+            await this.fetchSitePoliciesURL();
+        } else {
+            // TODO
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'auth_email_get_signup_settings',
+            name: Translate.instant('core.policy.policyagreement'),
+            data: { category: 'policy' },
+            url: '/user/policy.php',
+        });
     }
 
     /**
-     * Fetch the site policy URL.
+     * Fetch the site policies URL.
      *
      * @returns Promise resolved when done.
      */
-    protected async fetchSitePolicy(): Promise<void> {
+    protected async fetchSitePoliciesURL(): Promise<void> {
         try {
-            this.sitePolicy = await CorePolicy.getSitePoliciesURL(this.siteId);
+            this.sitePoliciesURL = await CorePolicy.getSitePoliciesURL(this.siteId);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting site policy.');
             this.cancel();
@@ -86,9 +112,9 @@ export class CorePolicySitePolicyPage implements OnInit {
 
         // Try to get the mime type.
         try {
-            const mimeType = await CoreUtils.getMimeTypeFromUrl(this.sitePolicy);
+            const mimeType = await CoreUtils.getMimeTypeFromUrl(this.sitePoliciesURL);
 
-            const extension = CoreMimetypeUtils.getExtension(mimeType, this.sitePolicy);
+            const extension = CoreMimetypeUtils.getExtension(mimeType, this.sitePoliciesURL);
             this.showInline = extension == 'html' || extension == 'htm';
         } catch {
             // Unable to get mime type, assume it's not supported.
@@ -96,13 +122,17 @@ export class CorePolicySitePolicyPage implements OnInit {
         } finally {
             this.policyLoaded = true;
         }
+    }
 
-        CoreAnalytics.logEvent({
-            type: CoreAnalyticsEventType.VIEW_ITEM,
-            ws: 'auth_email_get_signup_settings',
-            name: Translate.instant('core.policy.policyagreement'),
-            data: { category: 'policy' },
-            url: '/user/policy.php',
+    /**
+     * Init the form to accept the policies using a URL.
+     */
+    protected initFormForPoliciesURL(): void {
+        this.policyForm = new FormGroup({
+            agreepolicy: new FormControl(false, {
+                validators: Validators.requiredTrue,
+                nonNullable: true,
+            }),
         });
     }
 
@@ -118,11 +148,19 @@ export class CorePolicySitePolicyPage implements OnInit {
     }
 
     /**
-     * Accept the site policy.
+     * Submit the acceptances to one or several policies.
      *
+     * @param event Event.
      * @returns Promise resolved when done.
      */
-    async accept(): Promise<void> {
+    async submitAcceptances(event: Event): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (!this.policyForm?.valid) {
+            return;
+        }
+
         const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         try {

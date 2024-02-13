@@ -1,5 +1,5 @@
 {
-    "policyaccept": "I understand and agree",
+    "havereadandagreepolicy": "I have read and agree to the {{policyname}}",
     "policyacceptmandatory": "I understand and agree to the mandatory site policies",
     "policyagree": "You must agree to this policy to continue using this site.  Do you agree?",
     "policyagreement": "Site policy agreement",
