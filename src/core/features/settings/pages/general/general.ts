@@ -20,13 +20,14 @@ import { CoreLang } from '@services/lang';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSettingsHelper, CoreColorScheme, CoreZoomLevel } from '../../services/settings-helper';
 import { CoreIframeUtils } from '@services/utils/iframe';
-import { Diagnostic, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { AlertButton } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreAnalytics } from '@services/analytics';
+import { CoreNative } from '@features/native/services/native';
 
 /**
  * Page that displays the general settings.
@@ -263,7 +264,7 @@ export class CoreSettingsGeneralPage {
         ev.stopPropagation();
         ev.preventDefault();
 
-        Diagnostic.switchToSettings();
+        CoreNative.plugin('diagnostic')?.switchToSettings();
     }
 
 }

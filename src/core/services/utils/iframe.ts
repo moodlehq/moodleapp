@@ -24,7 +24,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 
-import { makeSingleton, NgZone, Translate, Diagnostic } from '@singletons';
+import { makeSingleton, NgZone, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
 import { CoreWindow } from '@singletons/window';
@@ -36,6 +36,7 @@ import { FrameElement } from '@classes/element-controllers/FrameElementControlle
 import { CoreMimetypeUtils } from './mimetype';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSite } from '@classes/sites/site';
+import { CoreNative } from '@features/native/services/native';
 
 type CoreFrameElement = FrameElement & {
     window?: Window;
@@ -627,7 +628,7 @@ export class CoreIframeUtilsProvider {
                 {
                     text: Translate.instant('core.opensettings'),
                     handler: (): void => {
-                        Diagnostic.switchToSettings();
+                        CoreNative.plugin('diagnostic')?.switchToSettings();
                     },
                 },
             ],

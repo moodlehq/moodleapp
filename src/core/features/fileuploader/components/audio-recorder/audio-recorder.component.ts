@@ -15,7 +15,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy } from '@angular/core';
 import { CoreModalComponent } from '@classes/modal-component';
 import { CorePlatform } from '@services/platform';
-import { Diagnostic, DomSanitizer, Translate } from '@singletons';
+import { DomSanitizer, Translate } from '@singletons';
 import { BehaviorSubject, combineLatest, Observable, OperatorFunction } from 'rxjs';
 import { Mp3MediaRecorder } from 'mp3-mediarecorder';
 import { map, shareReplay, tap } from 'rxjs/operators';
@@ -26,6 +26,7 @@ import { CAPTURE_ERROR_NO_MEDIA_FILES, CoreCaptureError } from '@classes/errors/
 import { CoreFileUploaderAudioRecording } from '@features/fileuploader/services/fileuploader';
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CorePath } from '@singletons/path';
+import { CoreNative } from '@features/native/services/native';
 
 @Component({
     selector: 'core-fileuploader-audio-recorder',
@@ -204,17 +205,19 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
      * Make sure that microphone usage has been authorized.
      */
     protected async prepareMicrophoneAuthorization(): Promise<void> {
-        if (!CorePlatform.isMobile()) {
+        const diagnostic = await CoreNative.plugin('diagnostic')?.getInstance();
+
+        if (!CorePlatform.isMobile() || !diagnostic) {
             return;
         }
 
-        const status = await Diagnostic.requestMicrophoneAuthorization();
+        const status = await diagnostic.requestMicrophoneAuthorization();
 
         switch (status) {
-            case Diagnostic.permissionStatus.DENIED_ONCE:
-            case Diagnostic.permissionStatus.DENIED_ALWAYS:
+            case diagnostic.permissionStatus.deniedOnce:
+            case diagnostic.permissionStatus.deniedAlways:
                 throw new Error(Translate.instant('core.fileuploader.microphonepermissiondenied'));
-            case Diagnostic.permissionStatus.RESTRICTED:
+            case diagnostic.permissionStatus.restricted:
                 throw new Error(Translate.instant('core.fileuploader.microphonepermissionrestricted'));
         }
     }

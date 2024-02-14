@@ -19,7 +19,6 @@ import { Camera } from '@awesome-cordova-plugins/camera/ngx';
 import { Chooser } from '@features/native/plugins/chooser';
 import { Clipboard } from '@awesome-cordova-plugins/clipboard/ngx';
 import { Device } from '@awesome-cordova-plugins/device/ngx';
-import { Diagnostic } from '@awesome-cordova-plugins/diagnostic/ngx';
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { Geolocation } from '@awesome-cordova-plugins/geolocation/ngx';
@@ -43,7 +42,6 @@ export const CORE_NATIVE_SERVICES = [
     Chooser,
     Clipboard,
     Device,
-    Diagnostic,
     File,
     FileOpener,
     Geolocation,
@@ -68,7 +66,6 @@ export const CORE_NATIVE_SERVICES = [
         Camera,
         Clipboard,
         Device,
-        Diagnostic,
         File,
         FileOpener,
         Geolocation,
