@@ -21,6 +21,7 @@ import {
     CoreDatabaseReducer,
     CoreDatabaseQueryOptions,
 } from './database-table';
+import { SubPartial } from '@/core/utils/types';
 
 /**
  * Database table proxy used to debug runtime operations.
@@ -30,13 +31,14 @@ import {
 export class CoreDebugDatabaseTable<
     DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
     PrimaryKeyColumn extends keyof DBRecord = 'id',
-    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
-> extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+    RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>,
+> extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey> {
 
-    protected target: CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey>;
+    protected target: CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey>;
     protected logger: CoreLogger;
 
-    constructor(target: CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey>) {
+    constructor(target: CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey>) {
         super(target.getConfig(), target.getDatabase(), target.getTableName(), target.getPrimaryKeyColumns());
 
         this.target = target;
@@ -48,7 +50,7 @@ export class CoreDebugDatabaseTable<
      *
      * @returns Table instance.
      */
-    getTarget(): CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+    getTarget(): CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey> {
         return this.target;
     }
 
@@ -152,7 +154,7 @@ export class CoreDebugDatabaseTable<
     /**
      * @inheritdoc
      */
-    insert(record: DBRecord): Promise<void> {
+    insert(record: SubPartial<DBRecord, RowIdColumn>): Promise<number> {
         this.logger.log('insert', record);
 
         return this.target.insert(record);
@@ -183,6 +185,15 @@ export class CoreDebugDatabaseTable<
         this.logger.log('delete', conditions);
 
         return this.target.delete(conditions);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+        this.logger.log('deleteWhere', conditions);
+
+        return this.target.deleteWhere(conditions);
     }
 
     /**

@@ -74,7 +74,22 @@ export const APP_SCHEMA: CoreAppSchema = {
 };
 
 export type CodeRequestsQueueItem = {
-    table: string;
+    table: typeof SITES_TABLE_NAME | typeof COMPONENTS_TABLE_NAME;
     id: string;
     deferreds: CorePromisedValue<number>[];
+};
+
+export type CoreLocalNotificationsSitesDBRecord = {
+    id: string;
+    code: number;
+};
+
+export type CoreLocalNotificationsComponentsDBRecord = {
+    id: string;
+    code: number;
+};
+
+export type CoreLocalNotificationsTriggeredDBRecord = {
+    id: number;
+    at: number;
 };

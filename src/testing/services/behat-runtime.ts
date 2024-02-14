@@ -31,6 +31,8 @@ import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
 import { CoreSwipeNavigationDirective } from '@directives/swipe-navigation';
 import { Swiper } from 'swiper';
 import { LocalNotificationsMock } from '@features/emulator/services/local-notifications';
+import { GetClosureArgs } from '@/core/utils/types';
+import { CoreIframeComponent } from '@components/iframe/iframe';
 
 /**
  * Behat runtime servive with public API.
@@ -39,6 +41,10 @@ import { LocalNotificationsMock } from '@features/emulator/services/local-notifi
 export class TestingBehatRuntimeService {
 
     protected initialized = false;
+    protected openedUrls: {
+        args: GetClosureArgs<Window['open']>;
+        contents?: string;
+    }[] = [];
 
     get cronDelegate(): CoreCronDelegateService {
         return CoreCronDelegate.instance;
@@ -90,6 +96,17 @@ export class TestingBehatRuntimeService {
             document.cookie = 'MoodleAppConfig=' + JSON.stringify(options.configOverrides);
             CoreConfig.patchEnvironment(options.configOverrides, { patchDefault: true });
         }
+
+        // Spy on window.open.
+        const originalOpen = window.open.bind(window);
+        window.open = (...args) => {
+            this.openedUrls.push({ args });
+
+            return originalOpen(...args);
+        };
+
+        // Reduce iframes timeout to speed up tests.
+        CoreIframeComponent.loadingTimeout = 1000;
     }
 
     /**
@@ -272,6 +289,45 @@ export class TestingBehatRuntimeService {
         } catch (error) {
             return 'ERROR: ' + error.message;
         }
+    }
+
+    /**
+     * Check whether the given url has been opened in the app.
+     *
+     * @param urlPattern Url pattern.
+     * @param contents Url contents.
+     * @param times How many times it should have been opened.
+     * @returns OK if successful, or ERROR: followed by message
+     */
+    async hasOpenedUrl(urlPattern: string, contents: string, times: number): Promise<string> {
+        const urlRegExp = new RegExp(urlPattern);
+        const urlMatches = await Promise.all(this.openedUrls.map(async (openedUrl) => {
+            const renderedUrl = openedUrl.args[0]?.toString() ?? '';
+
+            if (!urlRegExp.test(renderedUrl)) {
+                return false;
+            }
+
+            if (contents && !('contents' in openedUrl)) {
+                const response = await fetch(renderedUrl);
+
+                openedUrl.contents = await response.text();
+            }
+
+            if (contents && contents !== openedUrl.contents) {
+                return false;
+            }
+
+            return true;
+        }));
+
+        if (urlMatches.filter(matches => !!matches).length === times) {
+            return 'OK';
+        }
+
+        return times === 1
+            ? `ERROR: Url matching '${urlPattern}' with '${contents}' contents has not been opened once`
+            : `ERROR: Url matching '${urlPattern}' with '${contents}' contents has not been opened ${times} times`;
     }
 
     /**

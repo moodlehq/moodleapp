@@ -21,6 +21,7 @@ import {
     CoreDatabaseReducer,
     CoreDatabaseQueryOptions,
 } from './database-table';
+import { SubPartial } from '@/core/utils/types';
 
 /**
  * Wrapper used to improve performance by caching all the records for faster read operations.
@@ -31,8 +32,9 @@ import {
 export class CoreEagerDatabaseTable<
     DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
     PrimaryKeyColumn extends keyof DBRecord = 'id',
-    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
-> extends CoreInMemoryDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+    RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>,
+> extends CoreInMemoryDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey> {
 
     protected records: Record<string, DBRecord> = {};
 
@@ -153,12 +155,10 @@ export class CoreEagerDatabaseTable<
     /**
      * @inheritdoc
      */
-    async insert(record: DBRecord): Promise<void> {
-        await super.insert(record);
+    async insert(record: SubPartial<DBRecord, RowIdColumn>): Promise<number> {
+        const rowId = await this.insertAndRemember(record, this.records);
 
-        const primaryKey = this.serializePrimaryKey(this.getPrimaryKeyFromRecord(record));
-
-        this.records[primaryKey] = record;
+        return rowId;
     }
 
     /**
@@ -203,12 +203,27 @@ export class CoreEagerDatabaseTable<
             return;
         }
 
-        Object.entries(this.records).forEach(([id, record]) => {
+        Object.entries(this.records).forEach(([primaryKey, record]) => {
             if (!this.recordMatches(record, conditions)) {
                 return;
             }
 
-            delete this.records[id];
+            delete this.records[primaryKey];
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+        await super.deleteWhere(conditions);
+
+        Object.entries(this.records).forEach(([primaryKey, record]) => {
+            if (!conditions.js(record)) {
+                return;
+            }
+
+            delete record[primaryKey];
         });
     }
 

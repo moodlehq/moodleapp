@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "ng": "ng",
-    "start": "ionic serve --browser=$MOODLE_APP_BROWSER",
+    "start": "ionic serve --browser=$MOODLE_APP_BROWSER --ssl",
     "serve:test": "NODE_ENV=testing ionic serve --no-open",
     "build": "ionic build",
     "build:prod": "NODE_ENV=production ionic build --prod",
@@ -88,6 +88,7 @@
     "@moodlehq/phonegap-plugin-push": "4.0.0-moodle.7",
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
+    "@sqlite.org/sqlite-wasm": "^3.45.0-build1",
     "@types/chart.js": "^2.9.31",
     "@types/cordova": "0.0.34",
     "@types/dom-mediacapture-record": "1.0.7",

@@ -27,7 +27,12 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 
 import {
-    CoreCourseStatusDBRecord, CoreCourseViewedModulesDBRecord, COURSE_STATUS_TABLE, COURSE_VIEWED_MODULES_TABLE ,
+    CoreCourseStatusDBRecord,
+    CoreCourseViewedModulesDBPrimaryKeys,
+    CoreCourseViewedModulesDBRecord,
+    COURSE_STATUS_TABLE,
+    COURSE_VIEWED_MODULES_PRIMARY_KEYS,
+    COURSE_VIEWED_MODULES_TABLE,
 } from './database/course';
 import { CoreCourseOffline } from './course-offline';
 import { CoreError } from '@classes/errors/error';
@@ -51,7 +56,6 @@ import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
 import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
-import { SQLiteDB } from '@classes/sqlitedb';
 import { CorePlatform } from '@services/platform';
 import { asyncObservable } from '@/core/utils/rxjs';
 import { firstValueFrom } from 'rxjs';
@@ -121,7 +125,9 @@ export class CoreCourseProvider {
 
     protected logger: CoreLogger;
     protected statusTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreCourseStatusDBRecord>>>;
-    protected viewedModulesTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreCourseViewedModulesDBRecord, 'courseId' | 'cmId'>>>;
+    protected viewedModulesTables: LazyMap<
+        AsyncInstance<CoreDatabaseTable<CoreCourseViewedModulesDBRecord, CoreCourseViewedModulesDBPrimaryKeys, never>>
+    >;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreCourseProvider');
@@ -137,12 +143,16 @@ export class CoreCourseProvider {
 
         this.viewedModulesTables = lazyMap(
             siteId => asyncInstance(
-                () => CoreSites.getSiteTable<CoreCourseViewedModulesDBRecord, 'courseId' | 'cmId'>(COURSE_VIEWED_MODULES_TABLE, {
-                    siteId,
-                    config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
-                    primaryKeyColumns: ['courseId', 'cmId'],
-                    onDestroy: () => delete this.viewedModulesTables[siteId],
-                }),
+                () => CoreSites.getSiteTable<CoreCourseViewedModulesDBRecord, CoreCourseViewedModulesDBPrimaryKeys, never>(
+                    COURSE_VIEWED_MODULES_TABLE,
+                    {
+                        siteId,
+                        config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+                        primaryKeyColumns: [...COURSE_VIEWED_MODULES_PRIMARY_KEYS],
+                        rowIdColumn: null,
+                        onDestroy: () => delete this.viewedModulesTables[siteId],
+                    },
+                ),
             ),
         );
     }
@@ -380,12 +390,9 @@ export class CoreCourseProvider {
         }
 
         const site = await CoreSites.getSite(siteId);
-
-        const whereAndParams = SQLiteDB.getInOrEqual(ids);
-
         const entries = await this.viewedModulesTables[site.getId()].getManyWhere({
-            sql: 'cmId ' + whereAndParams.sql,
-            sqlParams: whereAndParams.params,
+            sql: `cmId IN (${ids.map(() => '?').join(', ')})`,
+            sqlParams: ids,
             js: (record) => ids.includes(record.cmId),
         });
 

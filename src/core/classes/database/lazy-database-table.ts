@@ -21,6 +21,7 @@ import {
     GetDBRecordPrimaryKey,
     CoreDatabaseQueryOptions,
 } from './database-table';
+import { SubPartial } from '@/core/utils/types';
 
 /**
  * Wrapper used to improve performance by caching records that are used often for faster read operations.
@@ -31,8 +32,9 @@ import {
 export class CoreLazyDatabaseTable<
     DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
     PrimaryKeyColumn extends keyof DBRecord = 'id',
-    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
-> extends CoreInMemoryDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+    RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>,
+> extends CoreInMemoryDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey> {
 
     protected readonly DEFAULT_CACHE_LIFETIME = 60000;
 
@@ -137,10 +139,10 @@ export class CoreLazyDatabaseTable<
     /**
      * @inheritdoc
      */
-    async insert(record: DBRecord): Promise<void> {
-        await super.insert(record);
+    async insert(record: SubPartial<DBRecord, RowIdColumn>): Promise<number> {
+        const rowId = await this.insertAndRemember(record, this.records);
 
-        this.records[this.serializePrimaryKey(this.getPrimaryKeyFromRecord(record))] = record;
+        return rowId;
     }
 
     /**
@@ -186,6 +188,21 @@ export class CoreLazyDatabaseTable<
 
             this.records[primaryKey] = null;
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+        await super.deleteWhere(conditions);
+
+        Object.entries(this.records).forEach(([primaryKey, record]) => {
+            if (!record || !conditions.js(record)) {
+                return;
+            }
+
+            this.records[primaryKey] = null;
+        });
     }
 
     /**

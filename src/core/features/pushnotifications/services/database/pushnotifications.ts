@@ -21,8 +21,10 @@ import { CoreSiteSchema } from '@services/sites';
  * Keep "addon" in some names for backwards compatibility.
  */
 export const BADGE_TABLE_NAME = 'addon_pushnotifications_badge';
+export const BADGE_TABLE_PRIMARY_KEYS = ['siteid', 'addon'] as const;
 export const PENDING_UNREGISTER_TABLE_NAME = 'addon_pushnotifications_pending_unregister';
 export const REGISTERED_DEVICES_TABLE_NAME = 'addon_pushnotifications_registered_devices_2';
+export const REGISTERED_DEVICES_TABLE_PRIMARY_KEYS = ['appid', 'uuid'] as const;
 export const APP_SCHEMA: CoreAppSchema = {
     name: 'CorePushNotificationsProvider',
     version: 1,
@@ -43,7 +45,7 @@ export const APP_SCHEMA: CoreAppSchema = {
                     type: 'INTEGER',
                 },
             ],
-            primaryKeys: ['siteid', 'addon'],
+            primaryKeys: [...BADGE_TABLE_PRIMARY_KEYS],
         },
         {
             name: PENDING_UNREGISTER_TABLE_NAME,
@@ -109,7 +111,7 @@ export const SITE_SCHEMA: CoreSiteSchema = {
                     type: 'TEXT',
                 },
             ],
-            primaryKeys: ['appid', 'uuid'],
+            primaryKeys: [...REGISTERED_DEVICES_TABLE_PRIMARY_KEYS],
         },
     ],
     async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
@@ -128,6 +130,8 @@ export type CorePushNotificationsBadgeDBRecord = {
     addon: string;
     number: number; // eslint-disable-line id-blacklist
 };
+
+export type CorePushNotificationsBadgeDBPrimaryKeys = typeof BADGE_TABLE_PRIMARY_KEYS[number];
 
 /**
  * Data stored in DB for pending unregisters.
@@ -152,3 +156,5 @@ export type CorePushNotificationsRegisteredDeviceDBRecord = {
     pushid: string; // Push ID.
     publickey?: string; // Public key.
 };
+
+export type CorePushNotificationsRegisteredDeviceDBPrimaryKeys = typeof REGISTERED_DEVICES_TABLE_PRIMARY_KEYS[number];

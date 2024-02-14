@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreUser } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
@@ -23,11 +22,15 @@ import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
+    AddonModScormAttemptDBPrimaryKeys,
     AddonModScormAttemptDBRecord,
     AddonModScormOfflineDBCommonData,
+    AddonModScormTrackDBPrimaryKeys,
     AddonModScormTrackDBRecord,
     ATTEMPTS_TABLE_NAME,
+    ATTEMPTS_TABLE_PRIMARY_KEYS,
     TRACKS_TABLE_NAME,
+    TRACKS_TABLE_PRIMARY_KEYS,
 } from './database/scorm';
 import {
     AddonModScormDataEntry,
@@ -38,6 +41,10 @@ import {
     AddonModScormUserDataMap,
     AddonModScormWSSco,
 } from './scorm';
+import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
+import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';
+import { CoreDatabaseTable } from '@classes/database/database-table';
+import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
 
 /**
  * Service to handle offline SCORM.
@@ -47,8 +54,44 @@ export class AddonModScormOfflineProvider {
 
     protected logger: CoreLogger;
 
+    protected tracksTables: LazyMap<
+        AsyncInstance<CoreDatabaseTable<AddonModScormTrackDBRecord, AddonModScormTrackDBPrimaryKeys, never>>
+    >;
+
+    protected attemptsTables: LazyMap<
+        AsyncInstance<CoreDatabaseTable<AddonModScormAttemptDBRecord, AddonModScormAttemptDBPrimaryKeys, never>>
+    >;
+
     constructor() {
         this.logger = CoreLogger.getInstance('AddonModScormOfflineProvider');
+        this.tracksTables = lazyMap(
+            siteId => asyncInstance(
+                () => CoreSites.getSiteTable<AddonModScormTrackDBRecord, AddonModScormTrackDBPrimaryKeys, never>(
+                    TRACKS_TABLE_NAME,
+                    {
+                        siteId,
+                        primaryKeyColumns: [...TRACKS_TABLE_PRIMARY_KEYS],
+                        rowIdColumn: null,
+                        config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+                        onDestroy: () => delete this.tracksTables[siteId],
+                    },
+                ),
+            ),
+        );
+        this.attemptsTables = lazyMap(
+            siteId => asyncInstance(
+                () => CoreSites.getSiteTable<AddonModScormAttemptDBRecord, AddonModScormAttemptDBPrimaryKeys, never>(
+                    ATTEMPTS_TABLE_NAME,
+                    {
+                        siteId,
+                        primaryKeyColumns: [...ATTEMPTS_TABLE_PRIMARY_KEYS],
+                        rowIdColumn: null,
+                        config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+                        onDestroy: () => delete this.tracksTables[siteId],
+                    },
+                ),
+            ),
+        );
     }
 
     /**
@@ -76,40 +119,43 @@ export class AddonModScormOfflineProvider {
 
         this.logger.debug(`Change attempt number from ${attempt} to ${newAttempt} in SCORM ${scormId}`);
 
-        // Update the attempt number.
-        const db = site.getDb();
-        const currentAttemptConditions: AddonModScormOfflineDBCommonData = {
-            scormid: scormId,
-            userid: userId,
-            attempt,
-        };
-        const newAttemptConditions: AddonModScormOfflineDBCommonData = {
-            scormid: scormId,
-            userid: userId,
-            attempt: newAttempt,
-        };
-        const newAttemptData: Partial<AddonModScormAttemptDBRecord> = {
-            attempt: newAttempt,
-            timemodified: CoreTimeUtils.timestamp(),
-        };
-
         // Block the SCORM so it can't be synced.
         CoreSync.blockOperation(AddonModScormProvider.COMPONENT, scormId, 'changeAttemptNumber', site.id);
 
         try {
-            await db.updateRecords(ATTEMPTS_TABLE_NAME, newAttemptData, currentAttemptConditions);
+            const currentAttemptConditions = {
+                sql: 'scormid = ? AND userid = ? AND attempt = ?',
+                sqlParams: [scormId, userId, attempt],
+                js: (record: AddonModScormOfflineDBCommonData) =>
+                    record.scormid === scormId &&
+                    record.userid === userId &&
+                    record.attempt === attempt,
+            };
+
+            await this.attemptsTables[site.id].updateWhere(
+                { attempt: newAttempt, timemodified: CoreTimeUtils.timestamp() },
+                currentAttemptConditions,
+            );
 
             try {
                 // Now update the attempt number of all the tracks and mark them as not synced.
-                const newTrackData: Partial<AddonModScormTrackDBRecord> = {
-                    attempt: newAttempt,
-                    synced: 0,
-                };
-
-                await db.updateRecords(TRACKS_TABLE_NAME, newTrackData, currentAttemptConditions);
+                await this.tracksTables[site.id].updateWhere(
+                    { attempt: newAttempt, synced: 0 },
+                    currentAttemptConditions,
+                );
             } catch (error) {
                 // Failed to update the tracks, restore the old attempt number.
-                await db.updateRecords(ATTEMPTS_TABLE_NAME, { attempt }, newAttemptConditions);
+                await this.attemptsTables[site.id].updateWhere(
+                    { attempt },
+                    {
+                        sql: 'scormid = ? AND userid = ? AND attempt = ?',
+                        sqlParams: [scormId, userId, newAttempt],
+                        js: (attempt) =>
+                            attempt.scormid === scormId &&
+                            attempt.userid === userId &&
+                            attempt.attempt === newAttempt,
+                    },
+                );
 
                 throw error;
             }
@@ -148,7 +194,6 @@ export class AddonModScormOfflineProvider {
         CoreSync.blockOperation(AddonModScormProvider.COMPONENT, scorm.id, 'createNewAttempt', site.id);
 
         // Create attempt in DB.
-        const db = site.getDb();
         const entry: AddonModScormAttemptDBRecord = {
             scormid: scorm.id,
             userid: userId,
@@ -166,7 +211,7 @@ export class AddonModScormOfflineProvider {
         }
 
         try {
-            await db.insertRecord(ATTEMPTS_TABLE_NAME, entry);
+            await this.attemptsTables[site.id].insert(entry);
 
             // Store all the data in userData.
             const promises: Promise<void>[] = [];
@@ -204,16 +249,15 @@ export class AddonModScormOfflineProvider {
 
         this.logger.debug(`Delete offline attempt ${attempt} in SCORM ${scormId}`);
 
-        const db = site.getDb();
-        const conditions: AddonModScormOfflineDBCommonData = {
+        const conditions = {
             scormid: scormId,
             userid: userId,
             attempt,
         };
 
         await Promise.all([
-            db.deleteRecords(ATTEMPTS_TABLE_NAME, conditions),
-            db.deleteRecords(TRACKS_TABLE_NAME, conditions),
+            this.attemptsTables[site.id].delete(conditions),
+            this.tracksTables[site.id].delete(conditions),
         ]);
     }
 
@@ -280,9 +324,9 @@ export class AddonModScormOfflineProvider {
      * @returns Promise resolved when the offline attempts are retrieved.
      */
     async getAllAttempts(siteId?: string): Promise<AddonModScormOfflineAttempt[]> {
-        const db = await CoreSites.getSiteDb(siteId);
+        siteId ??= CoreSites.getCurrentSiteId();
 
-        const attempts = await db.getAllRecords<AddonModScormAttemptDBRecord>(ATTEMPTS_TABLE_NAME);
+        const attempts = await this.attemptsTables[siteId].getMany();
 
         return attempts.map((attempt) => this.parseAttempt(attempt));
     }
@@ -300,7 +344,7 @@ export class AddonModScormOfflineProvider {
         const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
-        const attemptRecord = await site.getDb().getRecord<AddonModScormAttemptDBRecord>(ATTEMPTS_TABLE_NAME, {
+        const attemptRecord = await this.attemptsTables[site.id].getOneByPrimaryKey({
             scormid: scormId,
             userid: userId,
             attempt,
@@ -340,7 +384,7 @@ export class AddonModScormOfflineProvider {
         const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
-        const attempts = await site.getDb().getRecords<AddonModScormAttemptDBRecord>(ATTEMPTS_TABLE_NAME, {
+        const attempts = await this.attemptsTables[site.id].getMany({
             scormid: scormId,
             userid: userId,
         });
@@ -428,7 +472,7 @@ export class AddonModScormOfflineProvider {
             conditions.synced = 1;
         }
 
-        const tracks = await site.getDb().getRecords<AddonModScormTrackDBRecord>(TRACKS_TABLE_NAME, conditions);
+        const tracks = await this.tracksTables[site.id].getMany(conditions);
 
         return this.parseTracks(tracks);
     }
@@ -598,7 +642,6 @@ export class AddonModScormOfflineProvider {
         userId = userId || site.getUserId();
 
         const scoUserData = scoData?.userdata || {};
-        const db = site.getDb();
         let lessonStatusInserted = false;
 
         if (forceCompleted) {
@@ -611,7 +654,16 @@ export class AddonModScormOfflineProvider {
                 if (scoUserData['cmi.core.lesson_status'] == 'incomplete') {
                     lessonStatusInserted = true;
 
-                    await this.insertTrackToDB(db, userId, scormId, scoId, attempt, 'cmi.core.lesson_status', 'completed');
+                    await this.tracksTables[site.id].insert({
+                        userid: userId,
+                        scormid: scormId,
+                        scoid: scoId,
+                        attempt,
+                        element: 'cmi.core.lesson_status',
+                        value: JSON.stringify('completed'),
+                        timemodified: CoreTimeUtils.timestamp(),
+                        synced: 0,
+                    });
                 }
             }
         }
@@ -622,78 +674,32 @@ export class AddonModScormOfflineProvider {
         }
 
         try {
-            await this.insertTrackToDB(db, userId, scormId, scoId, attempt, element, value);
+            await this.tracksTables[site.id].insert({
+                userid: userId,
+                scormid: scormId,
+                scoid: scoId,
+                attempt,
+                element,
+                value: value === undefined ? null : JSON.stringify(value),
+                timemodified: CoreTimeUtils.timestamp(),
+                synced: 0,
+            });
         } catch (error) {
             if (lessonStatusInserted) {
                 // Rollback previous insert.
-                await this.insertTrackToDB(db, userId, scormId, scoId, attempt, 'cmi.core.lesson_status', 'incomplete');
+                await this.tracksTables[site.id].insert({
+                    userid: userId,
+                    scormid: scormId,
+                    scoid: scoId,
+                    attempt,
+                    element: 'cmi.core.lesson_status',
+                    value: JSON.stringify('incomplete'),
+                    timemodified: CoreTimeUtils.timestamp(),
+                    synced: 0,
+                });
             }
 
             throw error;
-        }
-    }
-
-    /**
-     * Insert a track in the DB.
-     *
-     * @param db Site's DB.
-     * @param userId User ID.
-     * @param scormId SCORM ID.
-     * @param scoId SCO ID.
-     * @param attempt Attempt number.
-     * @param element Name of the element to insert.
-     * @param value Value of the element to insert.
-     * @param synchronous True if insert should NOT return a promise. Please use it only if synchronous is a must.
-     * @returns Returns a promise if synchronous=false, otherwise returns a boolean.
-     */
-    protected insertTrackToDB(
-        db: SQLiteDB,
-        userId: number,
-        scormId: number,
-        scoId: number,
-        attempt: number,
-        element: string,
-        value: AddonModScormDataValue | undefined,
-        synchronous: true,
-    ): boolean;
-    protected insertTrackToDB(
-        db: SQLiteDB,
-        userId: number,
-        scormId: number,
-        scoId: number,
-        attempt: number,
-        element: string,
-        value?: AddonModScormDataValue,
-        synchronous?: false,
-    ): Promise<number>;
-    protected insertTrackToDB(
-        db: SQLiteDB,
-        userId: number,
-        scormId: number,
-        scoId: number,
-        attempt: number,
-        element: string,
-        value?: AddonModScormDataValue,
-        synchronous?: boolean,
-    ): boolean | Promise<number> {
-        const entry: AddonModScormTrackDBRecord = {
-            userid: userId,
-            scormid: scormId,
-            scoid: scoId,
-            attempt,
-            element: element,
-            value: value === undefined ? null : JSON.stringify(value),
-            timemodified: CoreTimeUtils.timestamp(),
-            synced: 0,
-        };
-
-        if (synchronous) {
-            // The insert operation is always asynchronous, always return true.
-            db.insertRecord(TRACKS_TABLE_NAME, entry);
-
-            return true;
-        } else {
-            return db.insertRecord(TRACKS_TABLE_NAME, entry);
         }
     }
 
@@ -730,8 +736,7 @@ export class AddonModScormOfflineProvider {
         }
 
         const scoUserData = scoData?.userdata || {};
-        const db = CoreSites.getRequiredCurrentSite().getDb();
-        let lessonStatusInserted = false;
+        const siteId = CoreSites.getRequiredCurrentSite().id;
 
         if (forceCompleted) {
             if (element == 'cmi.core.lesson_status' && value == 'incomplete') {
@@ -741,11 +746,16 @@ export class AddonModScormOfflineProvider {
             }
             if (element == 'cmi.core.score.raw') {
                 if (scoUserData['cmi.core.lesson_status'] == 'incomplete') {
-                    lessonStatusInserted = true;
-
-                    if (!this.insertTrackToDB(db, userId, scormId, scoId, attempt, 'cmi.core.lesson_status', 'completed', true)) {
-                        return false;
-                    }
+                    this.tracksTables[siteId].syncInsert({
+                        userid: userId,
+                        scormid: scormId,
+                        scoid: scoId,
+                        attempt,
+                        element: 'cmi.core.lesson_status',
+                        value: JSON.stringify('completed'),
+                        timemodified: CoreTimeUtils.timestamp(),
+                        synced: 0,
+                    });
                 }
             }
         }
@@ -755,15 +765,16 @@ export class AddonModScormOfflineProvider {
             return true;
         }
 
-        if (!this.insertTrackToDB(db, userId, scormId, scoId, attempt, element, value, true)) {
-            // Insert failed.
-            if (lessonStatusInserted) {
-                // Rollback previous insert.
-                this.insertTrackToDB(db, userId, scormId, scoId, attempt, 'cmi.core.lesson_status', 'incomplete', true);
-            }
-
-            return false;
-        }
+        this.tracksTables[siteId].syncInsert({
+            userid: userId,
+            scormid: scormId,
+            scoid: scoId,
+            attempt,
+            element: element,
+            value: value === undefined ? null : JSON.stringify(value),
+            timemodified: CoreTimeUtils.timestamp(),
+            synced: 0,
+        });
 
         return true;
     }
@@ -784,7 +795,7 @@ export class AddonModScormOfflineProvider {
 
         this.logger.debug(`Mark SCO ${scoId} as synced for attempt ${attempt} in SCORM ${scormId}`);
 
-        await site.getDb().updateRecords(TRACKS_TABLE_NAME, { synced: 1 }, <Partial<AddonModScormTrackDBRecord>> {
+        await this.tracksTables[site.id].update({ synced: 1 }, {
             scormid: scormId,
             userid: userId,
             attempt,
@@ -971,10 +982,13 @@ export class AddonModScormOfflineProvider {
             snapshot: JSON.stringify(this.removeDefaultData(userData)),
         };
 
-        await site.getDb().updateRecords(ATTEMPTS_TABLE_NAME, newData, <Partial<AddonModScormAttemptDBRecord>> {
-            scormid: scormId,
-            userid: userId,
-            attempt,
+        await this.attemptsTables[site.id].updateWhere(newData, {
+            sql: 'scormid = ? AND userid = ? AND attempt = ?',
+            sqlParams: [scormId, userId, attempt],
+            js: (record: AddonModScormOfflineDBCommonData) =>
+                record.scormid === scormId &&
+                record.userid === userId &&
+                record.attempt === attempt,
         });
     }
 

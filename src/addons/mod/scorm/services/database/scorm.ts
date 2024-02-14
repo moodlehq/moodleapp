@@ -18,7 +18,9 @@ import { CoreSiteSchema } from '@services/sites';
  * Database variables for AddonModScormOfflineProvider.
  */
 export const ATTEMPTS_TABLE_NAME = 'addon_mod_scorm_offline_attempts';
+export const ATTEMPTS_TABLE_PRIMARY_KEYS = ['scormid', 'userid', 'attempt'] as const;
 export const TRACKS_TABLE_NAME = 'addon_mod_scorm_offline_scos_tracks';
+export const TRACKS_TABLE_PRIMARY_KEYS = ['scormid', 'userid', 'attempt', 'scoid', 'element'] as const;
 export const OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
     name: 'AddonModScormOfflineProvider',
     version: 1,
@@ -58,7 +60,7 @@ export const OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
                     type: 'TEXT',
                 },
             ],
-            primaryKeys: ['scormid', 'userid', 'attempt'],
+            primaryKeys: [...ATTEMPTS_TABLE_PRIMARY_KEYS],
         },
         {
             name: TRACKS_TABLE_NAME,
@@ -101,7 +103,7 @@ export const OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
                     type: 'INTEGER',
                 },
             ],
-            primaryKeys: ['scormid', 'userid', 'attempt', 'scoid', 'element'],
+            primaryKeys: [...TRACKS_TABLE_PRIMARY_KEYS],
         },
     ],
 };
@@ -125,6 +127,8 @@ export type AddonModScormAttemptDBRecord = AddonModScormOfflineDBCommonData & {
     snapshot?: string | null;
 };
 
+export type AddonModScormAttemptDBPrimaryKeys = typeof ATTEMPTS_TABLE_PRIMARY_KEYS[number];
+
 /**
  * SCORM track data.
  */
@@ -135,3 +139,5 @@ export type AddonModScormTrackDBRecord = AddonModScormOfflineDBCommonData & {
     timemodified: number;
     synced: number;
 };
+
+export type AddonModScormTrackDBPrimaryKeys = typeof TRACKS_TABLE_PRIMARY_KEYS[number];

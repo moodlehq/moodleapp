@@ -201,14 +201,14 @@ export class CoreH5PFileStorage {
 
         const result = await db.execute(query, queryArgs);
 
-        await Array.from(result.rows).map(async (entry: {foldername: string}) => {
+        await Promise.all(Array.from(result.rows).map(async (entry: {foldername: string}) => {
             try {
                 // Delete the index.html.
                 await this.deleteContentIndex(entry.foldername, site.getId());
             } catch {
                 // Ignore errors.
             }
-        });
+        }));
     }
 
     /**

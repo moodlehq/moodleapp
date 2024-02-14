@@ -29,6 +29,7 @@ import {
 import { CoreDebugDatabaseTable } from './debug-database-table';
 import { CoreEagerDatabaseTable } from './eager-database-table';
 import { CoreLazyDatabaseTable } from './lazy-database-table';
+import { SubPartial } from '@/core/utils/types';
 
 /**
  * Database table proxy used to route database interactions through different implementations.
@@ -38,16 +39,17 @@ import { CoreLazyDatabaseTable } from './lazy-database-table';
 export class CoreDatabaseTableProxy<
     DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
     PrimaryKeyColumn extends keyof DBRecord = 'id',
-    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
-> extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+    RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>,
+> extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn, PrimaryKey> {
 
     protected readonly DEFAULT_CACHING_STRATEGY = CoreDatabaseCachingStrategy.None;
 
-    protected target = asyncInstance<CoreDatabaseTable<DBRecord, PrimaryKeyColumn>>();
+    protected target = asyncInstance<CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>>();
     protected environmentObserver?: CoreEventObserver;
     protected targetConstructors: Record<
         CoreDatabaseCachingStrategy,
-        CoreDatabaseTableConstructor<DBRecord, PrimaryKeyColumn, PrimaryKey>
+        CoreDatabaseTableConstructor<DBRecord, PrimaryKeyColumn, RowIdColumn>
     > = {
         [CoreDatabaseCachingStrategy.Eager]: CoreEagerDatabaseTable,
         [CoreDatabaseCachingStrategy.Lazy]: CoreLazyDatabaseTable,
@@ -154,8 +156,15 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
-    async insert(record: DBRecord): Promise<void> {
+    async insert(record: SubPartial<DBRecord, RowIdColumn>): Promise<number> {
         return this.target.insert(record);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    syncInsert(record: SubPartial<DBRecord, RowIdColumn>): void {
+        this.target.syncInsert(record);
     }
 
     /**
@@ -177,6 +186,13 @@ export class CoreDatabaseTableProxy<
      */
     async delete(conditions?: Partial<DBRecord>): Promise<void> {
         return this.target.delete(conditions);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+        return this.target.deleteWhere(conditions);
     }
 
     /**
@@ -239,7 +255,7 @@ export class CoreDatabaseTableProxy<
      *
      * @returns Target instance.
      */
-    protected async createTarget(): Promise<CoreDatabaseTable<DBRecord, PrimaryKeyColumn>> {
+    protected async createTarget(): Promise<CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>> {
         const config = await this.getRuntimeConfig();
         const table = this.createTable(config);
 
@@ -252,7 +268,7 @@ export class CoreDatabaseTableProxy<
      * @param config Database configuration.
      * @returns Database table.
      */
-    protected createTable(config: Partial<CoreDatabaseConfiguration>): CoreDatabaseTable<DBRecord, PrimaryKeyColumn> {
+    protected createTable(config: Partial<CoreDatabaseConfiguration>): CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn> {
         const DatabaseTable = this.targetConstructors[config.cachingStrategy ?? this.DEFAULT_CACHING_STRATEGY];
 
         return new DatabaseTable(config, this.database, this.tableName, this.primaryKeyColumns);

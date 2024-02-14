@@ -23,6 +23,10 @@ import { CorePlatform } from '@services/platform';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
+import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
+import { CoreDatabaseTable } from '@classes/database/database-table';
+import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';
+import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
 
 /**
  * Units to set a reminder.
@@ -60,6 +64,20 @@ export class CoreRemindersService {
 
     static readonly DEFAULT_NOTIFICATION_TIME_SETTING = 'CoreRemindersDefaultNotification';
     static readonly DEFAULT_NOTIFICATION_TIME_CHANGED = 'CoreRemindersDefaultNotificationChangedEvent';
+
+    protected remindersTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreReminderDBRecord>>>;
+
+    constructor() {
+        this.remindersTables = lazyMap(
+            siteId => asyncInstance(
+                () => CoreSites.getSiteTable(REMINDERS_TABLE, {
+                    siteId,
+                    config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+                    onDestroy: () => delete this.remindersTables[siteId],
+                }),
+            ),
+        );
+    }
 
     /**
      * Initialize the service.
@@ -103,13 +121,13 @@ export class CoreRemindersService {
      * @returns Resolved when done. Rejected on failure.
      */
     async addReminder(reminder: CoreReminderData, siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
+        siteId ??= CoreSites.getCurrentSiteId();
 
-        const reminderId = await site.getDb().insertRecord(REMINDERS_TABLE, reminder);
+        const reminderId = await this.remindersTables[siteId].insert(reminder);
 
         const reminderRecord: CoreReminderDBRecord = Object.assign(reminder, { id: reminderId });
 
-        await this.scheduleNotification(reminderRecord, site.getId());
+        await this.scheduleNotification(reminderRecord, siteId);
     }
 
     /**
@@ -123,9 +141,9 @@ export class CoreRemindersService {
         reminder: CoreReminderDBRecord,
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
+        siteId ??= CoreSites.getCurrentSiteId();
 
-        await site.getDb().updateRecords(REMINDERS_TABLE, reminder, { id: reminder.id });
+        await this.remindersTables[siteId].update(reminder, { id: reminder.id });
 
         // Reschedule.
         await this.scheduleNotification(reminder, siteId);
@@ -162,9 +180,13 @@ export class CoreRemindersService {
      * @returns Promise resolved when the reminder data is retrieved.
      */
     async getAllReminders(siteId?: string): Promise<CoreReminderDBRecord[]> {
-        const site = await CoreSites.getSite(siteId);
+        siteId ??= CoreSites.getCurrentSiteId();
 
-        return site.getDb().getRecords(REMINDERS_TABLE, undefined, 'time ASC');
+        return this.remindersTables[siteId].getMany(undefined, {
+            sorting: [
+                { time: 'asc' },
+            ],
+        });
     }
 
     /**
@@ -175,9 +197,13 @@ export class CoreRemindersService {
      * @returns Promise resolved when the reminder data is retrieved.
      */
     async getReminders(selector: CoreReminderSelector, siteId?: string): Promise<CoreReminderDBRecord[]> {
-        const site = await CoreSites.getSite(siteId);
+        siteId ??= CoreSites.getCurrentSiteId();
 
-        return site.getDb().getRecords(REMINDERS_TABLE, selector, 'time ASC');
+        return this.remindersTables[siteId].getMany(selector, {
+            sorting: [
+                { time: 'asc' },
+            ],
+        });
     }
 
     /**
@@ -187,13 +213,13 @@ export class CoreRemindersService {
      * @returns Promise resolved when the reminder data is retrieved.
      */
     protected async getRemindersWithDefaultTime(siteId?: string): Promise<CoreReminderDBRecord[]> {
-        const site = await CoreSites.getSite(siteId);
+        siteId ??= CoreSites.getCurrentSiteId();
 
-        return site.getDb().getRecords<CoreReminderDBRecord>(
-            REMINDERS_TABLE,
-            { timebefore: CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE },
-            'time ASC',
-        );
+        return this.remindersTables[siteId].getMany({ timebefore: CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE }, {
+            sorting: [
+                { time: 'asc' },
+            ],
+        });
     }
 
     /**
@@ -204,15 +230,15 @@ export class CoreRemindersService {
      * @returns Promise resolved when the notification is updated.
      */
     async removeReminder(id: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
+        siteId ??= CoreSites.getCurrentSiteId();
 
-        const reminder = await site.getDb().getRecord<CoreReminderDBRecord>(REMINDERS_TABLE, { id });
+        const reminder = await this.remindersTables[siteId].getOneByPrimaryKey({ id });
 
         if (this.isEnabled()) {
-            this.cancelReminder(id, reminder.component, site.getId());
+            this.cancelReminder(id, reminder.component, siteId);
         }
 
-        await site.getDb().deleteRecords(REMINDERS_TABLE, { id });
+        await this.remindersTables[siteId].deleteByPrimaryKey({ id });
     }
 
     /**
@@ -223,8 +249,7 @@ export class CoreRemindersService {
      * @returns Promise resolved when the notification is updated.
      */
     async removeReminders(selector: CoreReminderSelector, siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
-        siteId = site.getId();
+        siteId ??= CoreSites.getCurrentSiteId();
 
         if (this.isEnabled()) {
             const reminders = await this.getReminders(selector, siteId);
@@ -234,7 +259,7 @@ export class CoreRemindersService {
             });
         }
 
-        await site.getDb().deleteRecords(REMINDERS_TABLE, selector);
+        await this.remindersTables[siteId].delete(selector);
     }
 
     /**

@@ -35,25 +35,20 @@ Feature: It opens files properly.
     Then I should find "This file may not work as expected on this device" in the app
 
     When I press "Open file" in the app
-    Then the app should have opened a browser tab with url "^blob:"
+    Then the app should have opened url "^blob:" with contents "Test resource A rtf.rtf file" once
 
-    When I switch to the browser tab opened by the app
-    Then I should see "Test resource A rtf.rtf file"
-
-    When I close the browser tab opened by the app
-    And I press "Open" in the app
+    When I press "Open" in the app
     Then I should find "This file may not work as expected on this device" in the app
 
     When I select "Don't show again." in the app
     And I press "Open file" in the app
-    Then the app should have opened a browser tab with url "^blob:"
+    Then the app should have opened url "^blob:" with contents "Test resource A rtf.rtf file" 2 times
 
-    When I close the browser tab opened by the app
-    And I press "Open" in the app
-    Then the app should have opened a browser tab with url "^blob:"
+    When I press "Open" in the app
+    Then I should not find "This file may not work as expected on this device" in the app
+    And the app should have opened url "^blob:" with contents "Test resource A rtf.rtf file" 3 times
 
-    When I close the browser tab opened by the app
-    And I press the back button in the app
+    When I press the back button in the app
     And I press "Test DOC" in the app
     And I press "Open" in the app
     Then I should find "This file may not work as expected on this device" in the app

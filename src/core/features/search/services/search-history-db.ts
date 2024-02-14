@@ -18,6 +18,7 @@ import { CoreSiteSchema } from '@services/sites';
  * Database variables for CoreSearchHistory service.
  */
 export const SEARCH_HISTORY_TABLE_NAME = 'seach_history';
+export const SEARCH_HISTORY_TABLE_PRIMARY_KEYS = ['searcharea', 'searchedtext'] as const;
 export const SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreSearchHistoryProvider',
     version: 1,
@@ -46,7 +47,7 @@ export const SITE_SCHEMA: CoreSiteSchema = {
                     notNull: true,
                 },
             ],
-            primaryKeys: ['searcharea', 'searchedtext'],
+            primaryKeys: [...SEARCH_HISTORY_TABLE_PRIMARY_KEYS],
         },
     ],
 };
@@ -60,3 +61,5 @@ export type CoreSearchHistoryDBRecord = {
     searchedtext: string; // Text of the performed search.
     times: number; // Times search has been performed (if previously in history).
 };
+
+export type CoreSearchHistoryDBPrimaryKeys = typeof SEARCH_HISTORY_TABLE_PRIMARY_KEYS[number];

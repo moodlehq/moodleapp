@@ -95,7 +95,11 @@
           "options": {
             "disableHostCheck": true,
             "port": 8100,
-            "buildTarget": "app:build"
+            "buildTarget": "app:build",
+            "headers": {
+                "Cross-Origin-Opener-Policy": "same-origin",
+                "Cross-Origin-Embedder-Policy": "require-corp"
+            }
           },
           "configurations": {
             "production": {

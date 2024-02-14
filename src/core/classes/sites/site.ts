@@ -42,8 +42,10 @@ import { CoreDatabaseCachingStrategy } from '../database/database-table-proxy';
 import {
     CONFIG_TABLE,
     CoreSiteConfigDBRecord,
+    CoreSiteLastViewedDBPrimaryKeys,
     CoreSiteLastViewedDBRecord,
     CoreSiteWSCacheRecord,
+    LAST_VIEWED_PRIMARY_KEYS,
     LAST_VIEWED_TABLE,
     WS_CACHE_TABLE,
 } from '@services/database/sites';
@@ -65,8 +67,8 @@ export class CoreSite extends CoreAuthenticatedSite {
 
     protected db!: SQLiteDB;
     protected cacheTable: AsyncInstance<CoreDatabaseTable<CoreSiteWSCacheRecord>>;
-    protected configTable: AsyncInstance<CoreDatabaseTable<CoreSiteConfigDBRecord, 'name'>>;
-    protected lastViewedTable: AsyncInstance<CoreDatabaseTable<CoreSiteLastViewedDBRecord, 'component' | 'id'>>;
+    protected configTable: AsyncInstance<CoreDatabaseTable<CoreSiteConfigDBRecord, 'name', never>>;
+    protected lastViewedTable: AsyncInstance<CoreDatabaseTable<CoreSiteLastViewedDBRecord, CoreSiteLastViewedDBPrimaryKeys>>;
     protected lastAutoLogin = 0;
     protected tokenPluginFileWorks?: boolean;
     protected tokenPluginFileWorksPromise?: Promise<boolean>;
@@ -99,18 +101,19 @@ export class CoreSite extends CoreAuthenticatedSite {
             config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
         }));
 
-        this.configTable = asyncInstance(() => CoreSites.getSiteTable(CONFIG_TABLE, {
+        this.configTable = asyncInstance(() => CoreSites.getSiteTable<CoreSiteConfigDBRecord, 'name', never>(CONFIG_TABLE, {
             siteId: this.getId(),
             database: this.getDb(),
             config: { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
             primaryKeyColumns: ['name'],
+            rowIdColumn: null,
         }));
 
         this.lastViewedTable = asyncInstance(() => CoreSites.getSiteTable(LAST_VIEWED_TABLE, {
             siteId: this.getId(),
             database: this.getDb(),
             config: { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
-            primaryKeyColumns: ['component', 'id'],
+            primaryKeyColumns: [...LAST_VIEWED_PRIMARY_KEYS],
         }));
         this.setInfo(otherData.info);
         this.calculateOfflineDisabled();
@@ -876,14 +879,9 @@ export class CoreSite extends CoreAuthenticatedSite {
                 return await this.lastViewedTable.getMany({ component });
             }
 
-            const whereAndParams = SQLiteDB.getInOrEqual(ids);
-
-            whereAndParams.sql = 'id ' + whereAndParams.sql + ' AND component = ?';
-            whereAndParams.params.push(component);
-
             return await this.lastViewedTable.getManyWhere({
-                sql: whereAndParams.sql,
-                sqlParams: whereAndParams.params,
+                sql: `id IN (${ids.map(() => '?').join(', ')}) AND component = ?`,
+                sqlParams: [...ids, component],
                 js: (record) => record.component === component && ids.includes(record.id),
             });
         } catch {

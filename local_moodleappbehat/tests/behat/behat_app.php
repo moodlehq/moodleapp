@@ -937,6 +937,38 @@ class behat_app extends behat_app_helper {
     }
 
     /**
+     * Check that the app opened a url.
+     *
+     * @Then /^the app should( not)? have opened url "([^"]+)"(?: with contents "([^"]+)")?(?: (once|\d+ times))?$/
+     * @param bool $not Whether to check if the app did not open the url
+     * @param string $urlpattern Url pattern
+     * @param string $contents Url contents
+     * @param string $times How many times the url should have been opened
+     */
+    public function the_app_should_have_opened_url(bool $not, string $urlpattern, ?string $contents = null, ?string $times = null) {
+        if (is_null($times) || $times === 'once') {
+            $times = 1;
+        } else {
+            $times = intval(substr($times, 0, strlen($times) - 6));
+        }
+
+        $this->spin(function() use ($not, $urlpattern, $contents, $times) {
+            $result = $this->runtime_js("hasOpenedUrl('$urlpattern', '$contents', $times)");
+
+            // TODO process times
+            if ($not && $result === 'OK') {
+                throw new DriverException('Error, an url was opened that should not have');
+            }
+
+            if (!$not && $result !== 'OK') {
+                throw new DriverException('Error asserting that url was opened - ' . $result);
+            }
+
+            return true;
+        });
+    }
+
+    /**
      * Switches to a newly-opened browser tab.
      *
      * This assumes the app opened a new tab.

@@ -69,17 +69,17 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
             return;
         }
 
-        // Wait until next tick to allow items to render and scroll content to grow.
-        await CoreUtils.nextTick();
+        const scrollElement = await this.hostElement.closest('ion-content')?.getScrollElement();
 
-        // Calculate distance from edge.
-        const content = this.hostElement.closest('ion-content');
-        if (!content) {
+        if (!scrollElement) {
             return;
         }
 
-        const scrollElement = await content.getScrollElement();
+        // Wait to allow items to render and scroll content to grow.
+        await CoreUtils.nextTick();
+        await CoreUtils.waitFor(() => scrollElement.scrollHeight > scrollElement.clientHeight, { timeout: 1000 });
 
+        // Calculate distance from edge.
         const infiniteHeight = this.hostElement.getBoundingClientRect().height;
         const scrollTop = scrollElement.scrollTop;
         const height = scrollElement.offsetHeight;

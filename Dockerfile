@@ -23,10 +23,17 @@ ARG build_command="npm run build:prod"
 COPY . /app
 RUN ${build_command}
 
+# Generate SSL certificate
+RUN mkdir /app/ssl
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /app/ssl/certificate.key -out /app/ssl/certificate.crt -subj="/O=Moodle"
+
 ## SERVE STAGE
 FROM nginx:alpine as serve-stage
 
 # Copy assets & config
 COPY --from=build-stage /app/www /usr/share/nginx/html
+COPY --from=build-stage /app/ssl/certificate.crt /etc/ssl/certificate.crt
+COPY --from=build-stage /app/ssl/certificate.key /etc/ssl/certificate.key
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-HEALTHCHECK --interval=10s --timeout=4s CMD curl -f http://localhost/assets/env.json || exit 1
+EXPOSE 443
+HEALTHCHECK --interval=10s --timeout=4s CMD curl --insecure -f https://localhost/assets/env.json || exit 1
