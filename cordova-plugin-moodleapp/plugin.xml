@@ -23,10 +23,6 @@
             </feature>
         </config-file>
 
-        <js-module name="Diagnostic" src="www/android/diagnostic.js">
-            <merges target="com.moodle.moodlemobile.diagnostic" />
-        </js-module>
-
         <source-file src="src/android/Diagnostic.java" target-dir="src/cordova/plugins" />
         <source-file src="src/android/Diagnostic_Location.java" target-dir="src/cordova/plugins" />
 
@@ -55,10 +51,6 @@
                 <param name="onload" value="true" />
             </feature>
         </config-file>
-
-        <js-module src="www/ios/diagnostic.js" name="Diagnostic">
-            <merges target="com.moodle.moodlemobile.diagnostic" />
-        </js-module>
 
         <header-file src="src/ios/Diagnostic.h" />
         <source-file src="src/ios/Diagnostic.m" />
@@ -92,10 +84,6 @@
                 <param name="onload" value="true" />
             </feature>
         </config-file>
-
-        <js-module src="www/ios/diagnostic.js" name="Diagnostic_Microphone">
-            <merges target="com.moodle.moodlemobile.microphone" />
-        </js-module>
 
         <framework src="AVFoundation.framework" />
 
