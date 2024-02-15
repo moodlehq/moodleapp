@@ -1711,9 +1711,11 @@ ion-input .native-input {
     }
 }
 
-input {
+ion-input,
+ion-input input,
+ion-textarea {
     --placeholder-color: var(--ion-placeholder-color);
-    --placeholder-opacity: .85;
+    --placeholder-opacity: .65;
 }
 
 // Disable scroll on parent ion contents to enabled PTR on the ones inside the splitview. See split-view component for more info.
@@ -1905,6 +1907,10 @@ swiper-container {
 }
 
 
+.core-flex-no-grow {
+    flex-grow: 0;
+}
+
 // Loader animation.
 .core-loading {
     position: relative;
@@ -2014,4 +2020,84 @@ ion-item.item-label-stacked ion-datetime-button {
     margin-top: 8px;
     margin-bottom: 8px;
     align-self: self-end;
+}
+
+// Table App styles
+table.core-table {
+    border-collapse: collapse;
+    line-height: 20px;
+    width: 98%;
+    margin: 1em auto;
+    color: var(--text-color);
+
+
+    thead th {
+        vertical-align: bottom;
+        font-weight: bold;
+        font-size: 14px;
+        background-color: var(--core-table-header-background);
+    }
+
+    tbody th {
+        font-weight: normal;
+    }
+
+    th, td {
+        padding: 8px;
+        white-space: normal;
+        text-align: start;
+    }
+
+    tr {
+        border-bottom: 1px solid var(--core-table-border-color);
+    }
+
+    tbody td {
+        font-size: 16px;
+    }
+
+    .odd {
+        --cell-background: var(--core-table-odd-cell-background);
+        --cell-hover: var(--core-table-odd-cell-hover);
+    }
+
+    .even {
+        --cell-background: var(--core-table-even-cell-background);
+        --cell-hover: var(--core-table-even-cell-hover);
+    }
+
+    .odd, .even {
+        td, th, th[aria-current="page"] {
+            background-color: var(--cell-background);
+
+            &:hover {
+                background-color: var(--cell-hover);
+            }
+        }
+    }
+
+    tbody.auto-striped tr:nth-child(odd) {
+        background-color: var(--core-table-odd-cell-background);
+
+        &:hover {
+            background-color: var(--core-table-even-odd-hover);
+        }
+    }
+
+    tbody.auto-striped tr:nth-child(even) {
+        background-color: var(--core-table-even-cell-background);
+
+        &:hover {
+            background-color: var(--core-table-even-cell-hover);
+        }
+    }
+
+    .ion-no-border {
+        border: 0 !important;
+    }
+
+    .dimmed_text,
+    .hidden {
+        opacity: .7;
+    }
 }

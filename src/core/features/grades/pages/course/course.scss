@@ -1,65 +1,20 @@
 @use "theme/globals" as *;
 
 :host {
-    --header-background: var(--white);
-    --odd-cell-background: var(--light);
-    --odd-cell-hover: var(--gray-200);
-    --even-cell-background: var(--white);
-    --even-cell-hover: var(--light);
     --icon-color: var(--gray-500);
-    --border-color: var(--stroke);
-
-    .odd {
-        --cell-background: var(--odd-cell-background);
-        --cell-hover: var(--odd-cell-hover);
-    }
-
-    .even {
-        --cell-background: var(--even-cell-background);
-        --cell-hover: var(--even-cell-hover);
-    }
-
+    --core-table-border-color: var(--stroke);
 }
 
 :host-context(html.dark) {
-    --header-background: var(--gray-900);
-    --odd-cell-background: var(--gray-800);
-    --odd-cell-hover: var(--gray-600);
-    --even-cell-background: var(--gray-900);
-    --even-cell-hover: var(--gray-700);
     --icon-color: var(--gray-200);
 }
 
-.core-grades-table {
-    border-collapse: collapse;
-    line-height: 20px;
+table.core-table.core-grades-table {
     width: 100%;
-    font-size: 16px;
-    color: var(--ion-text-color);
-
-    tr {
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    th, td {
-        @include padding(8px, 8px, 8px, null);
-        vertical-align: top;
-        white-space: normal;
-        text-align: start;
-    }
-
-    thead th {
-        vertical-align: bottom;
-        font-weight: bold;
-        background-color: var(--header-background);
-    }
+    margin: 0px;
 
     thead #gradeitem {
         @include padding(null, null, null, 24px);
-    }
-
-    tbody th {
-      font-weight: normal;
     }
 
     tbody tr.core-bold th {
@@ -70,9 +25,13 @@
         @include padding(null, null, null, 4px);
     }
 
+    th, td {
+        @include padding(8px, 8px, 8px, 0px);
+        vertical-align: top;
+    }
+
     .core-grades-table-gradeitem {
         @include padding(null, null, null, 4px);
-        font-weight: bold;
 
         &.column-itemname {
             @include padding(null, null, null, 0);
@@ -89,7 +48,6 @@
             background: transparent;
             --filter: var(--module-icon-filter);
         }
-
 
         ion-icon {
             color: var(--icon-color);
@@ -128,21 +86,6 @@
 
     .core-grades-table-leader {
         width: 0;
-    }
-
-    .ion-no-border {
-        border: 0 !important;
-    }
-
-    .dimmed_text,
-    .hidden {
-        opacity: .7;
-    }
-
-    .odd, .even {
-        td, th, th[aria-current="page"] {
-            background-color: var(--cell-background);
-        }
     }
 
     .core-grades-grade-clickable {

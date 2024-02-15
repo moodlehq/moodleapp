@@ -22,7 +22,7 @@
             </ng-container>
 
             <ng-container *ngIf="!isCardLayout">
-                <table>
+                <table class="core-table">
                     <thead>
                         <tr>
                             <th *ngFor="let header of state.report.data.headers">
@@ -30,7 +30,7 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="auto-striped">
                         <tr *ngFor="let row of state.report.data.rows">
                             <td *ngFor="let column of row.columns">
                                 <core-format-text *ngIf="isString(column); else notText" [text]="column" [contextLevel]="source$ | async"
