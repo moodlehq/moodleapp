@@ -1,8 +1,15 @@
 {
+    "agreepolicies": "Please agree to the following policies",
+    "backtotop": "Back to top",
+    "consentpagetitle": "Consent",
     "havereadandagreepolicy": "I have read and agree to the {{policyname}}",
+    "idontagree": "No thanks, I decline {{$a}}",
+    "mustagreetocontinue": "Before continuing you need to acknowledge all these policies.",
     "policyacceptmandatory": "I understand and agree to the mandatory site policies",
     "policyagree": "You must agree to this policy to continue using this site.  Do you agree?",
     "policyagreement": "Site policy agreement",
     "policyagreementclick": "Link to site policy agreement",
-    "sitepolicynotagreederror": "Site policy not agreed."
+    "refertofullpolicytext": "Please refer to the full {{$a}} if you would like to review the text.",
+    "sitepolicynotagreederror": "Site policy not agreed.",
+    "steppolicies": "Policy {{$a.numpolicy}} out of {{$a.totalpolicies}}"
 }

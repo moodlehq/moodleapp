@@ -12,25 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
 import { CoreEvents } from '@singletons/events';
 import { POLICY_PAGE_NAME } from './constants';
-
-/**
- * Get policy services.
- *
- * @returns Policy services.
- */
-export async function getPolicyServices(): Promise<Type<unknown>[]> {
-    const { CorePolicyService } = await import('@features/policy/services/policy');
-
-    return [
-        CorePolicyService,
-    ];
-}
 
 const routes: Routes = [
     {

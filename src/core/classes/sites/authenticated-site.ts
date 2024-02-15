@@ -671,7 +671,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 this.triggerSiteEvent(CoreEvents.SITE_POLICY_NOT_AGREED, {});
                 error.message = Translate.instant('core.policy.sitepolicynotagreederror');
 
-                throw new CoreWSError(error);
+                throw new CoreSilentError(error);
             } else if (error.errorcode === 'dmlwriteexception' && CoreTextUtils.hasUnicodeData(data)) {
                 if (!this.cleanUnicode) {
                     // Try again cleaning unicode.

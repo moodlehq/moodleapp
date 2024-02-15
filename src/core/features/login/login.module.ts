@@ -62,10 +62,6 @@ const appRoutes: Routes = [
                     CoreLoginHelper.passwordChangeForced(data.siteId);
                 });
 
-                CoreEvents.on(CoreEvents.SITE_POLICY_NOT_AGREED, (data) => {
-                    CoreLoginHelper.sitePolicyNotAgreed(data.siteId);
-                });
-
                 await CoreLoginHelper.initialize();
             },
         },

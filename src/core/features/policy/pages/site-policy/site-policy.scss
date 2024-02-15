@@ -6,6 +6,10 @@
         margin: 0 16px;
     }
 
+    h2 {
+        font-size: 1.25rem;
+    }
+
     form {
         display: flex;
         flex-direction: column;
@@ -18,6 +22,17 @@
 
         ion-item {
             --inner-border-width: 0;
+        }
+
+        .core-site-policy-top-bar, .core-site-policy-bottom-bar {
+            font-size: 0.875rem;
+        }
+
+        .core-site-policy-top-bar ion-label {
+            margin-bottom: 0;
+        }
+        .core-site-policy-bottom-bar ion-label {
+            margin-top: 0;
         }
 
         .core-site-policy-link {
@@ -38,8 +53,29 @@
             flex-grow: 1;
         }
 
-        ion-button[type="submit"] {
-            margin-bottom: 12px;;
+        .core-site-policy-content ion-label {
+            margin-top: 0;
         }
+
+        .core-site-policy-go-top-button {
+            --border-radius: 50%;
+            --box-shadow: 0 3px 5px -1px rgba(0, 0, 0, .2), 0 6px 10px 0 rgba(0, 0, 0, .14), 0 1px 18px 0 rgba(0, 0, 0, .12);
+            margin-bottom: 8px;
+        }
+
+        .core-site-policy-buttons {
+            text-align: center;
+
+            ion-button {
+                margin-left: 0;
+                margin-right: 0;
+                margin-bottom: 12px;
+            }
+        }
+
+        .item ::ng-deep ion-label p span {
+            color: var(--core-link-color);
+        }
+
     }
 }

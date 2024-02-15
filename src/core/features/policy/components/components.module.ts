@@ -13,28 +13,19 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CorePolicySitePolicyPage } from '@features/policy/pages/site-policy/site-policy';
-import { SITE_POLICY_PAGE_NAME } from './constants';
-import { CorePolicyComponentsModule } from './components/components.module';
-
-const routes: Routes = [
-    {
-        path: SITE_POLICY_PAGE_NAME,
-        component: CorePolicySitePolicyPage,
-    },
-];
+import { CorePolicyViewPolicyModalComponent } from './policy-modal/policy-modal';
 
 @NgModule({
+    declarations: [
+        CorePolicyViewPolicyModalComponent,
+    ],
     imports: [
         CoreSharedModule,
-        RouterModule.forChild(routes),
-        CorePolicyComponentsModule,
     ],
-    declarations: [
-        CorePolicySitePolicyPage,
+    exports: [
+        CorePolicyViewPolicyModalComponent,
     ],
 })
-export class CorePolicyLazyModule {}
+export class CorePolicyComponentsModule {}

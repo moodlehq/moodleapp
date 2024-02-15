@@ -90,6 +90,38 @@ export class CorePolicyService {
     }
 
     /**
+     * Get the next policies to accept.
+     *
+     * @param options Options
+     * @returns Next pending policies
+     */
+    async getNextPendingPolicies(options: CoreSitesCommonWSOptions = {}): Promise<CorePolicySitePolicy[]> {
+        const policies = await this.getUserAcceptances(options);
+
+        const pendingPolicies: CorePolicySitePolicy[] = [];
+
+        for (const i in policies) {
+            const policy = policies[i];
+            const hasAccepted = policy.acceptance?.status === 1;
+            const hasDeclined = policy.acceptance?.status === 0;
+
+            if (hasAccepted || (hasDeclined && policy.optional === 1)) {
+                // Policy already answered, ignore.
+                continue;
+            }
+
+            if (policy.agreementstyle === CorePolicyAgreementStyle.OwnPage) {
+                // Policy needs to be accepted on its own page, it's the next policy to accept.
+                return [policy];
+            }
+
+            pendingPolicies.push(policy);
+        }
+
+        return pendingPolicies;
+    }
+
+    /**
      * Get user acceptances.
      *
      * @param options Options
@@ -177,7 +209,7 @@ export class CorePolicyService {
             })),
         };
 
-        const response = await site.write<CorePolicySetAcceptancesWSResponse>('tool_policy_get_user_acceptances', data);
+        const response = await site.write<CorePolicySetAcceptancesWSResponse>('tool_policy_set_acceptances_status', data);
         if (response.warnings?.length) {
             throw new CoreWSError(response.warnings[0]);
         }
@@ -260,3 +292,11 @@ type CorePolicySetAcceptancesWSResponse = {
     policyagreed: number; // Whether the user has provided acceptance to all current site policies. 1 if yes, 0 if not.
     warnings?: CoreWSExternalWarning[];
 };
+
+/**
+ * Agreement style.
+ */
+export enum CorePolicyAgreementStyle {
+    ConsentPage = 0, // Policy to be accepted together with others on the consent page.
+    OwnPage = 1, // Policy to be accepted on its own page before reaching the consent page.
+}
