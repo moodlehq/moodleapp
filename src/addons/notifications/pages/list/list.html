@@ -17,8 +17,23 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
         <core-loading [hideUntil]="notifications.loaded">
+            <ion-card class="core-warning-card core-card-with-buttons" *ngIf="!hasNotificationsPermission && !permissionWarningHidden">
+                <ion-item class="ion-text-wrap">
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p><strong>{{ 'core.turnonnotifications' | translate }}</strong></p>
+                        <p>{{ 'core.turnonnotificationsmessage' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+                <div class="core-card-buttons">
+                    <ion-button fill="clear" (click)="hidePermissionWarning()">
+                        {{ 'core.dontshowagain' | translate | coreNoPeriod }}
+                    </ion-button>
+                    <ion-button fill="outline" (click)="openSettings()">{{ 'core.turnon' | translate }}</ion-button>
+                </div>
+            </ion-card>
 
-            <ion-item *ngFor="let notification of notifications.items" class="ion-text-wrap"
+            <ion-item *ngFor="let notification of notifications.items" class="ion-text-wrap addon-notification-item"
                 [attr.aria-current]="notifications.getItemAriaCurrent(notification)" (click)="notifications.select(notification)" button
                 [detail]="false" lines="full">
 

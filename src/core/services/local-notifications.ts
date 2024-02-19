@@ -41,6 +41,7 @@ import { Push } from '@features/native/plugins';
 import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
+import { CoreDomUtils } from './utils/dom';
 
 /**
  * Service to handle local notifications.
@@ -119,6 +120,41 @@ export class CoreLocalNotificationsProvider {
                 this.cancelSiteNotifications(site.id);
             }
         });
+
+        CoreEvents.on(CoreEvents.LOGIN, async () => {
+            const [hasNotificationsPermission, canScheduleExact] = await Promise.all([
+                this.hasNotificationsPermission(),
+                this.canScheduleExactAlarms(),
+            ]);
+
+            if (!hasNotificationsPermission || canScheduleExact) {
+                return;
+            }
+
+            const dontShowWarning = await CoreConfig.get(CoreConstants.EXACT_ALARMS_WARNING_DISPLAYED, 0);
+            if (dontShowWarning) {
+                return;
+            }
+
+            CoreDomUtils.showAlertWithOptions({
+                header: Translate.instant('core.turnonexactalarms'),
+                message: Translate.instant('core.exactalarmsturnedoffmessage'),
+                buttons: [
+                    {
+                        text: Translate.instant('core.notnow'),
+                        role: 'cancel',
+                    },
+                    {
+                        text: Translate.instant('core.turnon'),
+                        handler: (): void => {
+                            this.openAlarmSettings();
+                        },
+                    },
+                ],
+            });
+
+            CoreConfig.set(CoreConstants.EXACT_ALARMS_WARNING_DISPLAYED, 1);
+        });
     }
 
     /**
@@ -161,6 +197,40 @@ export class CoreLocalNotificationsProvider {
         this.sitesTable.setInstance(sitesTable);
         this.componentsTable.setInstance(componentsTable);
         this.triggeredTable.setInstance(triggeredTable);
+    }
+
+    /**
+     * Check whether the app has the permission to display notifications.
+     *
+     * @returns Whether has notifications permission.
+     */
+    async hasNotificationsPermission(): Promise<boolean> {
+        if (!CorePlatform.isMobile()) {
+            return true;
+        }
+
+        return LocalNotifications.hasPermission();
+    }
+
+    /**
+     * Check whether the app can schedule exact alarms.
+     *
+     * @returns Whether can schedule exact alarms.
+     */
+    async canScheduleExactAlarms(): Promise<boolean> {
+        if (!CorePlatform.isAndroid()) {
+            return true;
+        }
+
+        const plugin = this.getCordovaPlugin();
+        if (!plugin || !plugin.canScheduleExactAlarms) {
+            // Cannot check, assume it's enabled.
+            return true;
+        }
+
+        return new Promise(resolve => {
+            plugin.canScheduleExactAlarms(canSchedule => resolve(canSchedule));
+        });
     }
 
     /**
@@ -370,11 +440,18 @@ export class CoreLocalNotificationsProvider {
      * @returns Whether local notifications plugin is available.
      */
     isPluginAvailable(): boolean {
-        const win = <any> window; // eslint-disable-line @typescript-eslint/no-explicit-any
+        return !!this.getCordovaPlugin() && CorePlatform.is('cordova');
+    }
 
-        const enabled = !!win.cordova?.plugins?.notification?.local;
-
-        return enabled && CorePlatform.is('cordova');
+    /**
+     * Get the Cordova plugin object.
+     *
+     * @returns Cordova plugin, undefined if not found.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    protected getCordovaPlugin(): any | undefined {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (<any> window).cordova?.plugins?.notification?.local;
     }
 
     /**
@@ -738,6 +815,28 @@ export class CoreLocalNotificationsProvider {
         const newId = COMPONENTS_TABLE_NAME + '#' + newName;
 
         await this.componentsTable.update({ id: newId }, { id: oldId });
+    }
+
+    /**
+     * Open notification settings.
+     */
+    openNotificationSettings(): void {
+        if (!CorePlatform.isMobile()) {
+            return;
+        }
+
+        this.getCordovaPlugin()?.openNotificationSettings();
+    }
+
+    /**
+     * Open alarm settings (Android only).
+     */
+    openAlarmSettings(): void {
+        if (!CorePlatform.isAndroid()) {
+            return;
+        }
+
+        this.getCordovaPlugin()?.openAlarmSettings();
     }
 
 }
