@@ -16,9 +16,9 @@ import { Injectable } from '@angular/core';
 import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 import {
     CoreUserDelegateContext,
-    CoreUserDelegateService,
     CoreUserProfileHandler,
     CoreUserProfileHandlerData,
+    CoreUserProfileHandlerType,
 } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -33,7 +33,7 @@ export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
 
     name = 'AddonBadges:fakename'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
     priority = 300;
-    type = CoreUserDelegateService.TYPE_NEW_PAGE;
+    type = CoreUserProfileHandlerType.LIST_ITEM;
 
     /**
      * @inheritdoc

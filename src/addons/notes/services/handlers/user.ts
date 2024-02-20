@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreUserProfile } from '@features/user/services/user';
 import {
     CoreUserProfileHandler,
-    CoreUserDelegateService,
+    CoreUserProfileHandlerType,
     CoreUserProfileHandlerData,
     CoreUserDelegateContext,
 } from '@features/user/services/user-delegate';
@@ -33,7 +33,7 @@ export class AddonNotesUserHandlerService implements CoreUserProfileHandler {
 
     name = 'AddonNotes:notes';
     priority = 250;
-    type = CoreUserDelegateService.TYPE_NEW_PAGE;
+    type = CoreUserProfileHandlerType.LIST_ITEM;
     cacheEnabled = true;
 
     /**

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreUserProfile } from '@features/user/services/user';
 import {
     CoreUserProfileHandler,
-    CoreUserDelegateService,
+    CoreUserProfileHandlerType,
     CoreUserProfileHandlerData,
     CoreUserDelegateContext,
 } from '@features/user/services/user-delegate';
@@ -31,7 +31,7 @@ import { AddonCourseCompletion } from '../coursecompletion';
 export class AddonCourseCompletionUserHandlerService implements CoreUserProfileHandler {
 
     name = 'AddonCourseCompletion:viewCompletion';
-    type = CoreUserDelegateService.TYPE_NEW_PAGE;
+    type = CoreUserProfileHandlerType.LIST_ITEM;
     priority = 350;
     cacheEnabled = true;
 

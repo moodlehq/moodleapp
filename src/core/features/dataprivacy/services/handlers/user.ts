@@ -13,7 +13,11 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreUserDelegateService, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
+import {
+    CoreUserProfileHandlerType,
+    CoreUserProfileHandler,
+    CoreUserProfileHandlerData,
+} from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { CoreDataPrivacy } from '../dataprivacy';
@@ -27,7 +31,7 @@ export class CoreDataPrivacyUserHandlerService implements CoreUserProfileHandler
 
     protected pageName = CORE_DATAPRIVACY_PAGE_NAME;
 
-    type = CoreUserDelegateService.TYPE_NEW_PAGE;
+    type = CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM;
     name = 'CoreDataPrivacyDelegate';
     priority = 100;
 

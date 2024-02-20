@@ -33,11 +33,10 @@
                 </ion-label>
             </ion-item>
 
-            <div class="core-user-communication-handlers"
-                *ngIf="(communicationHandlers && communicationHandlers.length) || isLoadingHandlers">
-                <ion-item *ngIf="communicationHandlers && communicationHandlers.length">
+            <div class="core-user-communication-handlers" *ngIf="(buttonHandlers && buttonHandlers.length) || isLoadingHandlers">
+                <ion-item *ngIf="buttonHandlers && buttonHandlers.length">
                     <ion-label>
-                        <ion-button *ngFor="let handler of communicationHandlers" expand="block" size="default"
+                        <ion-button *ngFor="let handler of buttonHandlers" expand="block" size="default"
                             [ngClass]="['core-user-profile-handler', handler.class || '']" (click)="handlerClicked($event, handler)"
                             [hidden]="handler.hidden" [attr.aria-label]="handler.title | translate" [disabled]="handler.spinner">
                             <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true" />
@@ -61,7 +60,7 @@
                     <ion-spinner [attr.aria-label]="'core.loading' | translate" />
                 </ion-label>
             </ion-item>
-            <ion-item button *ngFor="let handler of newPageHandlers" class="ion-text-wrap" (click)="handlerClicked($event, handler)"
+            <ion-item button *ngFor="let handler of listItemHandlers" class="ion-text-wrap" (click)="handlerClicked($event, handler)"
                 [ngClass]="['core-user-profile-handler', handler.class || '']" [hidden]="handler.hidden"
                 [attr.aria-label]="handler.title | translate" [detail]="true">
                 <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true" />
@@ -75,17 +74,6 @@
                     {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
                 </span>
                 <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading" [attr.aria-label]="'core.loading' | translate" />
-            </ion-item>
-            <ion-item *ngIf="actionHandlers && actionHandlers.length">
-                <ion-label>
-                    <ion-button *ngFor="let handler of actionHandlers" expand="block" fill="outline" size="default"
-                        [ngClass]="['core-user-profile-handler', handler.class || '']" (click)="handlerClicked($event, handler)"
-                        [hidden]="handler.hidden" [attr.aria-label]="handler.title | translate" [disabled]="handler.spinner">
-                        <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true" />
-                        {{ handler.title | translate }}
-                        <ion-spinner *ngIf="handler.spinner" slot="end" [attr.aria-label]="'core.loading' | translate" />
-                    </ion-button>
-                </ion-label>
             </ion-item>
         </ion-list>
         <core-empty-box *ngIf="!user && !isDeleted && isEnrolled" icon="far-user"

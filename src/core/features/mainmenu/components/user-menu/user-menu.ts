@@ -25,12 +25,13 @@ import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import {
     CoreUserProfileHandlerData,
     CoreUserDelegate,
-    CoreUserDelegateService,
+    CoreUserProfileHandlerType,
     CoreUserDelegateContext,
 } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreUtils } from '@services/utils/utils';
 import { ModalController, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 
@@ -52,6 +53,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     siteUrl?: string;
     displaySiteUrl = false;
     handlers: CoreUserProfileHandlerData[] = [];
+    accountHandlers: CoreUserProfileHandlerData[] = [];
     handlersLoaded = false;
     user?: CoreUserProfile;
     displaySwitchAccount = true;
@@ -76,37 +78,48 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
         this.loadSiteLogo(currentSite);
 
-        // Load the handlers.
-        if (this.siteInfo) {
-            try {
-                this.user = await CoreUser.getProfile(this.siteInfo.userid);
-            } catch {
-                this.user = {
-                    id: this.siteInfo.userid,
-                    fullname: this.siteInfo.fullname,
-                };
-            }
-
-            this.subscription = CoreUserDelegate.getProfileHandlersFor(this.user, CoreUserDelegateContext.USER_MENU)
-                .subscribe((handlers) => {
-                    if (!handlers || !this.user) {
-                        return;
-                    }
-
-                    const newHandlers = handlers
-                        .filter((handler) => handler.type === CoreUserDelegateService.TYPE_NEW_PAGE)
-                        .map((handler) => handler.data);
-
-                    // Only update handlers if they have changed, to prevent a blink effect.
-                    if (newHandlers.length !== this.handlers.length ||
-                            JSON.stringify(newHandlers) !== JSON.stringify(this.handlers)) {
-                        this.handlers = newHandlers;
-                    }
-
-                    this.handlersLoaded = CoreUserDelegate.areHandlersLoaded(this.user.id, CoreUserDelegateContext.USER_MENU);
-                });
-
+        if (!this.siteInfo) {
+            return;
         }
+
+        // Load the handlers.
+        try {
+            this.user = await CoreUser.getProfile(this.siteInfo.userid);
+        } catch {
+            this.user = {
+                id: this.siteInfo.userid,
+                fullname: this.siteInfo.fullname,
+            };
+        }
+
+        this.subscription = CoreUserDelegate.getProfileHandlersFor(this.user, CoreUserDelegateContext.USER_MENU)
+            .subscribe((handlers) => {
+                if (!handlers.length || !this.user) {
+                    return;
+                }
+
+                let newHandlers = handlers
+                    .filter((handler) => handler.type === CoreUserProfileHandlerType.LIST_ITEM)
+                    .map((handler) => handler.data);
+
+                // Only update handlers if they have changed, to prevent a blink effect.
+                if (newHandlers.length !== this.handlers.length ||
+                        JSON.stringify(newHandlers) !== JSON.stringify(this.handlers)) {
+                    this.handlers = newHandlers;
+                }
+
+                newHandlers = handlers
+                    .filter((handler) => handler.type === CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM)
+                    .map((handler) => handler.data);
+
+                // Only update handlers if they have changed, to prevent a blink effect.
+                if (newHandlers.length !== this.handlers.length ||
+                        JSON.stringify(newHandlers) !== JSON.stringify(this.handlers)) {
+                    this.accountHandlers = newHandlers;
+                }
+
+                this.handlersLoaded = CoreUserDelegate.areHandlersLoaded(this.user.id, CoreUserDelegateContext.USER_MENU);
+            });
     }
 
     /**
@@ -123,15 +136,9 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
             return;
         }
 
-        try {
-            const siteConfig = await currentSite.getPublicConfig();
-
-            this.siteLogo = currentSite.getLogoUrl(siteConfig);
-        } catch {
-            // Ignore errors.
-        } finally {
-            this.siteLogoLoaded = true;
-        }
+        const siteConfig = await CoreUtils.ignoreErrors(currentSite.getPublicConfig());
+        this.siteLogo = currentSite.getLogoUrl(siteConfig);
+        this.siteLogoLoaded = true;
     }
 
     /**

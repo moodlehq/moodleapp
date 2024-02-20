@@ -22,7 +22,7 @@ import {
 import { CoreUserProfile } from '@features/user/services/user';
 import {
     CoreUserDelegateContext,
-    CoreUserDelegateService,
+    CoreUserProfileHandlerType,
     CoreUserProfileHandler,
     CoreUserProfileHandlerData,
 } from '@features/user/services/user-delegate';
@@ -36,7 +36,7 @@ import { CoreSitePluginsBaseHandler } from './base-handler';
 export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandler implements CoreUserProfileHandler {
 
     priority: number;
-    type: string;
+    type: CoreUserProfileHandlerType;
 
     protected updatingDefer?: CorePromisedValue<void>;
 
@@ -51,9 +51,10 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
 
         this.priority = handlerSchema.priority || 0;
 
-        // Only support TYPE_COMMUNICATION and TYPE_NEW_PAGE.
-        this.type = handlerSchema.type != CoreUserDelegateService.TYPE_COMMUNICATION ?
-            CoreUserDelegateService.TYPE_NEW_PAGE : CoreUserDelegateService.TYPE_COMMUNICATION;
+        // Only support LIST_ITEM and BUTTON.
+        this.type = !handlerSchema.type || handlerSchema.type === CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM
+            ? CoreUserProfileHandlerType.LIST_ITEM
+            : handlerSchema.type;
     }
 
     /**

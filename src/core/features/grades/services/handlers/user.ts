@@ -19,7 +19,7 @@ import { CoreGrades } from '@features/grades/services/grades';
 import { CoreUserProfile } from '@features/user/services/user';
 import {
     CoreUserDelegateContext,
-    CoreUserDelegateService ,
+    CoreUserProfileHandlerType ,
     CoreUserProfileHandler,
     CoreUserProfileHandlerData,
 } from '@features/user/services/user-delegate';
@@ -38,7 +38,7 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
 
     name = 'CoreGrades'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
     priority = 500;
-    type = CoreUserDelegateService.TYPE_NEW_PAGE;
+    type = CoreUserProfileHandlerType.LIST_ITEM;
     cacheEnabled = true;
 
     /**

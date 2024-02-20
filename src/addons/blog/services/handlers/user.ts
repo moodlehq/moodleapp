@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import {
     CoreUserProfileHandler,
     CoreUserProfileHandlerData,
-    CoreUserDelegateService,
+    CoreUserProfileHandlerType,
     CoreUserDelegateContext,
 } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
@@ -32,7 +32,7 @@ export class AddonBlogUserHandlerService implements CoreUserProfileHandler {
 
     name = 'AddonBlog'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
     priority = 200;
-    type = CoreUserDelegateService.TYPE_NEW_PAGE;
+    type = CoreUserProfileHandlerType.LIST_ITEM;
 
     /**
      * @inheritdoc

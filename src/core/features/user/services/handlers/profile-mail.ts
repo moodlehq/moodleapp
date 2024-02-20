@@ -14,7 +14,11 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreUserDelegateService, CoreUserProfileHandler, CoreUserProfileHandlerData } from '../user-delegate';
+import {
+    CoreUserProfileHandlerType,
+    CoreUserProfileHandler,
+    CoreUserProfileHandlerData,
+} from '../user-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreUserProfile } from '../user';
@@ -28,7 +32,7 @@ export class CoreUserProfileMailHandlerService implements CoreUserProfileHandler
 
     name = 'CoreUserProfileMail';
     priority = 700;
-    type = CoreUserDelegateService.TYPE_COMMUNICATION;
+    type = CoreUserProfileHandlerType.BUTTON;
 
     /**
      * @inheritdoc
