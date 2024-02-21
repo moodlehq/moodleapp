@@ -747,7 +747,7 @@ export class CoreH5PFramework {
 
         await Promise.all(Object.keys(dependencies).map(async (key) => {
             await this.librariesCachedAssetsTables[targetSiteId].insert({
-                hash: key,
+                hash,
                 libraryid: dependencies[key].libraryId,
                 foldername: folderName,
             });

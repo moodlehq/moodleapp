@@ -23,11 +23,14 @@ console.debug = () => {
     // Silence.
 };
 
-// eslint-disable-next-line no-console, jest/no-jasmine-globals, @typescript-eslint/no-explicit-any
-console.error = (...args: any[]) => fail(args.map(a => String(a)).join(''));
+// eslint-disable-next-line no-console, @typescript-eslint/no-explicit-any
+console.error = (...args: any[]) => {
+    throw new Error(args.map(a => String(a)).join(''));
+};
 
-// eslint-disable-next-line jest/no-jasmine-globals
-process.on('unhandledRejection', error => fail(error));
+process.on('unhandledRejection', error => {
+    throw new Error(error as string);
+});
 
 // Override the method to create singleton method proxies in order to facilitate setting up
 // test expectations about method calls.
