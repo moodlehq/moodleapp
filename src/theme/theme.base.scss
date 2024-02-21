@@ -931,6 +931,25 @@ ion-card {
     ion-card-title {
         font-size: 20px;
     }
+
+    &.core-card-with-buttons .item ion-label {
+        margin-bottom: 0;
+    }
+
+    .core-card-buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        @include margin(0, 8px, 8px, 8px);
+
+        ion-button {
+            text-transform: none;
+
+            &[fill="outline"] {
+                --background: transparent;
+            }
+        }
+    }
 }
 
 .core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation div {

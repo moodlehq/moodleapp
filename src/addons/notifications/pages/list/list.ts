@@ -31,6 +31,10 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { AddonNotificationsNotificationsSource } from '@addons/notifications/classes/notifications-source';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { AddonLegacyNotificationsNotificationsSource } from '@addons/notifications/classes/legacy-notifications-source';
+import { CoreLocalNotifications } from '@services/local-notifications';
+import { CoreConfig } from '@services/config';
+import { CoreConstants } from '@/core/constants';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Page that displays the list of notifications.
@@ -47,12 +51,15 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
     fetchMoreNotificationsFailed = false;
     canMarkAllNotificationsAsRead = false;
     loadingMarkAllNotificationsAsRead = false;
+    hasNotificationsPermission = true;
+    permissionWarningHidden = false;
 
     protected isCurrentView?: boolean;
     protected cronObserver?: CoreEventObserver;
     protected readObserver?: CoreEventObserver;
     protected pushObserver?: Subscription;
     protected pendingRefresh = false;
+    protected appResumeSubscription?: Subscription;
 
     constructor() {
         try {
@@ -67,7 +74,14 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
         } catch(error) {
             CoreDomUtils.showErrorModal(error);
             CoreNavigator.back();
+
+            return;
         }
+
+        this.checkPermission();
+        this.appResumeSubscription = CorePlatform.resume.subscribe(() => {
+            this.checkPermission();
+        });
     }
 
     /**
@@ -118,6 +132,14 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
 
         const deepLinkManager = new CoreMainMenuDeepLinkManager();
         deepLinkManager.treatLink();
+    }
+
+    /**
+     * Check if the app has permission to display notifications.
+     */
+    protected async checkPermission(): Promise<void> {
+        this.permissionWarningHidden = !!(await CoreConfig.get(CoreConstants.DONT_SHOW_NOTIFICATIONS_PERMISSION_WARNING, 0));
+        this.hasNotificationsPermission = await CoreLocalNotifications.hasNotificationsPermission();
     }
 
     /**
@@ -212,6 +234,21 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
     }
 
     /**
+     * Open notification settings.
+     */
+    openSettings(): void {
+        CoreLocalNotifications.openNotificationSettings();
+    }
+
+    /**
+     * Hide permission warning.
+     */
+    hidePermissionWarning(): void {
+        CoreConfig.set(CoreConstants.DONT_SHOW_NOTIFICATIONS_PERMISSION_WARNING, 1);
+        this.permissionWarningHidden = true;
+    }
+
+    /**
      * User entered the page.
      */
     ionViewDidEnter(): void {
@@ -241,6 +278,7 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
         this.readObserver?.off();
         this.pushObserver?.unsubscribe();
         this.notifications?.destroy();
+        this.appResumeSubscription?.unsubscribe();
     }
 
 }

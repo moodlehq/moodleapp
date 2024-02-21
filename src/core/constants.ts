@@ -155,6 +155,9 @@ export class CoreConstants {
 
     // Other constants.
     static readonly CALENDAR_DEFAULT_STARTING_WEEKDAY = 1;
+    static readonly DONT_SHOW_NOTIFICATIONS_PERMISSION_WARNING = 'CoreDontShowNotificationsPermissionWarning';
+    static readonly DONT_SHOW_EXACT_ALARMS_WARNING = 'CoreDontShowScheduleExactWarning';
+    static readonly EXACT_ALARMS_WARNING_DISPLAYED = 'CoreScheduleExactWarningModalDisplayed';
 
     // Config & environment constants.
     static readonly CONFIG = { ...envJson.config } as unknown as EnvironmentConfig; // Data parsed from config.json files.
