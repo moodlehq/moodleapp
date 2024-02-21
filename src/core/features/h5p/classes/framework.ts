@@ -844,7 +844,7 @@ export class CoreH5PFramework {
             }
 
             // Create the relation.
-            if (typeof library.libraryId !== 'string') {
+            if (typeof library.libraryId !== 'number') {
                 throw new CoreError('Attempted to create dependencies of library without id');
             }
 
