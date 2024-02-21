@@ -15,7 +15,8 @@
         <ion-list>
             <ion-item button class="ion-text-wrap {{question.stateClass}}" *ngFor="let question of navigation"
                 [attr.aria-current]="!summaryShown && currentPage === question.page ? 'page' : 'false'"
-                (click)="loadPage(question.page, question.slot)" [detail]="false">
+                [disabled]="!isReview && isSequential && currentPage !== question.page" (click)="loadPage(question.page, question.slot)"
+                [detail]="false">
 
                 <ion-label class="ion-text-wrap">
                     <span *ngIf="question.type !== 'description' && question.questionnumber">

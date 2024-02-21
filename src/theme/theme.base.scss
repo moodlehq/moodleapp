@@ -1522,9 +1522,10 @@ html.ios div.fake-ion-item {
 
 // Disabled items.
 ion-item.item-disabled,
+ion-button.button-disabled,
 ion-item.item-interactive-disabled:not(.item-multiple-inputs) ion-label,
 ion-datetime.datetime-disabled {
-    opacity: .8 !important;
+    opacity: .65 !important;
 }
 
 // Hide details on items to align badges.

@@ -559,8 +559,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
-        // @todo MOBILE-4350: This is called before getting the attempt data in sequential quizzes as a workaround for a bug
-        // in the LMS. Once the bug has been fixed, this should be reverted.
         if (this.isSequential) {
             await this.logViewPage(page);
         }
@@ -594,7 +592,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         // Mark the page as viewed.
         if (!this.isSequential) {
-            // @todo MOBILE-4350: Undo workaround.
             await this.logViewPage(page);
         }
 
@@ -734,6 +731,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
                 summaryShown: this.showSummary,
                 currentPage: this.attempt?.currentpage,
                 isReview: false,
+                isSequential: this.isSequential,
             },
         });
 

@@ -83,55 +83,58 @@ Feature: Navigate through a quiz in the app
     And I should find "Text of the first question" in the app
     And I should find "Text of the second question" in the app
 
-    # @todo MOBILE-4350 uncomment and update this test.
-#   Scenario: Sequential navigation
-#     Given I entered the quiz activity "Quiz 2" on course "Course 1" as "student1" in the app
-#     And I press "Attempt quiz now" in the app
-#     Then I should find "Text of the first question" in the app
-#     But I should not find "Text of the second question" in the app
-#     And I should not find "Text of the third question" in the app
+  Scenario: Sequential navigation
+    Given I entered the quiz activity "Quiz 2" on course "Course 1" as "student1" in the app
+    And I press "Attempt quiz now" in the app
+    Then I should find "Text of the first question" in the app
+    But I should not find "Text of the second question" in the app
+    And I should not find "Text of the third question" in the app
 
-#     When I press "Open navigation popover" in the app
-#     Then I should find "Question 1" in the app
-#     But I should not find "Question 2" in the app
-#     And I should not find "Question 3" in the app
+    When I press "Open navigation popover" in the app
+    Then I should find "Question 1" in the app
+    And I should find "Question 2" in the app
+    And I should find "Question 3" in the app
+    But I should not be able to press "Question 2" in the app
+    And I should not be able to press "Question 3" in the app
 
-#     When I press "Close" in the app
-#     And I press "Next" in the app
-#     Then I should find "Text of the second question" in the app
-#     But I should not find "Text of the first question" in the app
-#     And I should not find "Text of the third question" in the app
-#     And I should not find "Previous" in the app
+    When I press "Close" in the app
+    And I press "Next" in the app
+    Then I should find "Text of the second question" in the app
+    But I should not find "Text of the first question" in the app
+    And I should not find "Text of the third question" in the app
+    And I should not find "Previous" in the app
 
-#     When I press "Open navigation popover" in the app
-#     Then I should find "Question 2" in the app
-#     But I should not find "Question 1" in the app
-#     And I should not find "Question 3" in the app
+    When I press "Open navigation popover" in the app
+    Then I should find "Question 1" in the app
+    And I should find "Question 2" in the app
+    And I should find "Question 3" in the app
+    But I should not be able to press "Question 1" in the app
+    And I should not be able to press "Question 3" in the app
 
-#     When I press "Close" in the app
-#     And I press "Next" in the app
-#     Then I should find "Text of the third question" in the app
-#     But I should not find "Text of the first question" in the app
-#     And I should not find "Text of the second question" in the app
-#     And I should not find "Previous" in the app
+    When I press "Close" in the app
+    And I press "Next" in the app
+    Then I should find "Text of the third question" in the app
+    But I should not find "Text of the first question" in the app
+    And I should not find "Text of the second question" in the app
+    And I should not find "Previous" in the app
 
-#     When I press "Open navigation popover" in the app
-#     Then I should find "Question 3" in the app
-#     But I should not find "Question 1" in the app
-#     And I should not find "Question 2" in the app
+    When I press "Open navigation popover" in the app
+    Then I should find "Question 1" in the app
+    And I should find "Question 2" in the app
+    And I should find "Question 3" in the app
+    But I should not be able to press "Question 1" in the app
+    And I should not be able to press "Question 2" in the app
 
-#     When I press "Close" in the app
-#     And I press "Submit" in the app
-#     Then I should find "Summary of attempt" in the app
-#     # @todo MOBILE-4350: Uncomment these.
-#     # And I should find "Not yet answered" within "1" "ion-item" in the app
-#     # And I should find "Not yet answered" within "2" "ion-item" in the app
-#     # And I should find "Not yet answered" within "3" "ion-item" in the app
+    When I press "Close" in the app
+    And I press "Submit" in the app
+    Then I should find "Summary of attempt" in the app
+    And I should find "Not yet answered" within "1" "ion-item" in the app
+    And I should find "Not yet answered" within "2" "ion-item" in the app
+    And I should find "Not yet answered" within "3" "ion-item" in the app
 
-#     When I press "Submit all and finish" in the app
-#     And I press "Submit" near "Once you submit" in the app
-#     Then I should find "Review" in the app
-#     # @todo MOBILE-4350: Uncomment these.
-#     # And I should find "Text of the first question" in the app
-#     # And I should find "Text of the second question" in the app
-#     # And I should find "Text of the third question" in the app
+    When I press "Submit all and finish" in the app
+    And I press "Submit" near "Once you submit" in the app
+    Then I should find "Review" in the app
+    And I should find "Text of the first question" in the app
+    And I should find "Text of the second question" in the app
+    And I should find "Text of the third question" in the app
