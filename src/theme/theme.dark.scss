@@ -47,9 +47,8 @@ html.dark {
 
     --loader-shine: 90, 90, 90;
 
-    --drop-shadow-color: 0, 0, 0, 1;
-    --drop-shadow-top: 0px 2px 5px rgba(var(--drop-shadow-color));
-    --drop-shadow-bottom: 0px -2px 5px rgba(var(--drop-shadow-color));
+    --drop-shadow-top: 0px 2px 5px rgb(var(--drop-shadow-color) / 1);
+    --drop-shadow-bottom: 0px -2px 5px rgb(var(--drop-shadow-color) / 1);
 
     --ion-card-color: var(--text-color);
     --ion-card-background: var(--ion-item-background);

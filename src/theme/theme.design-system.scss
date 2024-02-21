@@ -24,9 +24,20 @@ html {
     --big-radius: var(--radius-lg);
     --huge-radius: var(--radius-xl);
 
-
+    // Shadows / Elevation
+    --drop-shadow-color: 40 40 40; //#282828;
+    --drop-shadow-00: 0px 0px 0px 0px rgb(var(--drop-shadow-color) / 0.20);
+    --drop-shadow-outline: 0px 0px 0px 2px rgb(var(--drop-shadow-color) / 0.15), 0px 2px 4px 0px rgb(var(--drop-shadow-color) / 0.02);
+    --drop-shadow-01dp: 0px 1px 3px 0px rgb(var(--drop-shadow-color) / 0.20), 0px 2px 1px 0px rgb(var(--drop-shadow-color) / 0.12), 0px 1px 1px 0px rgb(var(--drop-shadow-color) / 0.14);
+    --drop-shadow-02dp: 0px 1px 5px 0px rgb(var(--drop-shadow-color) / 0.20), 0px 3px 1px 0px rgb(var(--drop-shadow-color) / 0.12), 0px 2px 2px 0px rgb(var(--drop-shadow-color) / 0.14);
+    --drop-shadow-03dp: 0px 1px 8px 0px rgb(var(--drop-shadow-color) / 0.20), 0px 3px 3px 0px rgb(var(--drop-shadow-color) / 0.12), 0px 3px 4px 0px rgb(var(--drop-shadow-color) / 0.14);
+    --drop-shadow-04dp: 0px 2px 4px 0px rgb(var(--drop-shadow-color) / 0.20), 0px 1px 10px 0px rgb(var(--drop-shadow-color) / 0.12), 0px 4px 5px 0px rgb(var(--drop-shadow-color) / 0.14);
+    --drop-shadow-06dp: 0px 3px 5px 0px rgb(var(--drop-shadow-color) / 0.20), 0px 1px 18px 0px rgb(var(--drop-shadow-color) / 0.12), 0px 6px 10px 0px rgb(var(--drop-shadow-color) / 0.14);
+    --drop-shadow-08dp: 0px 5px 5px 0px rgb(var(--drop-shadow-color) / 0.20), 0px 3px 14px 0px rgb(var(--drop-shadow-color) / 0.12), 0px 8px 10px 0px rgb(var(--drop-shadow-color) / 0.14);
+    --drop-shadow-12dp: 0px 7px 8px 0px rgb(var(--drop-shadow-color) / 0.20),0px 5px 22px 0px rgb(var(--drop-shadow-color) / 0.12),0px 12px 17px 0px rgb(var(--drop-shadow-color) / 0.14);
+    --drop-shadow-16dp: 0px 7px 8px 0px rgb(var(--drop-shadow-color) / 0.20),0px 5px 22px 0px rgb(var(--drop-shadow-color) / 0.12),0px 12px 17px 0px rgb(var(--drop-shadow-color) / 0.14);
+    --drop-shadow-24dp: 0px 11px 15px 0px rgb(var(--drop-shadow-color) / 0.20), 0px 9px 46px 0px rgb(var(--drop-shadow-color) / 0.12), 0px 24px 38px 0px rgb(var(--drop-shadow-color) / 0.14);
 
     // A11y
     --a11y-min-target-size: 44px;
-
 }
