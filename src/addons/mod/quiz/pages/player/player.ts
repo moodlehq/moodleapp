@@ -412,7 +412,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
                     .filter(question => AddonModQuiz.isQuestionUnanswered(question))
                     .length;
 
-                if (unansweredCount > 0) {
+                if (!this.isSequential && unansweredCount > 0) {
                     const warning = Translate.instant(
                         'addon.mod_quiz.submission_confirmation_unanswered',
                         { $a: unansweredCount },

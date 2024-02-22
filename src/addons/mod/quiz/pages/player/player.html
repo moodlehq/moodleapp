@@ -104,7 +104,7 @@
             <!-- List of questions of the summary table. -->
             <ng-container *ngFor="let question of summaryQuestions">
                 <ion-item *ngIf="question.type !== 'description' && question.questionnumber"
-                    (click)="changePage(question.page, false, question.slot)"
+                    (click)="!isSequential && canReturn && changePage(question.page, false, question.slot)"
                     [attr.aria-label]="'core.question.questionno' | translate:{$a: question.questionnumber}"
                     [detail]="!isSequential && canReturn" [button]="!isSequential && canReturn">
                     <ion-label>
