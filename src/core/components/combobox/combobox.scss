@@ -110,10 +110,9 @@
         flex: 1;
 
         &::part(native) {
-            text-transform: none;
-            font-weight: 400;
-            font-size: 16px;
-            line-height: 20px;
+            font-weight: var(--label-font-weight);
+            font-size: var(--label-lg-font-size);
+            line-height: var(--label-lg-line-height);
             border-radius: var(--core-combobox-radius);
         }
 

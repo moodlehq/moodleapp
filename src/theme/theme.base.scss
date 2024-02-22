@@ -45,10 +45,6 @@ body {
 .core-big   { font-size: 115%; }
 .invisible { visibility: hidden; }
 
-.button-no-uppercase {
-    text-transform: none;
-}
-
 .flex { display: flex; }
 .inline-block { display: inline-block; }
 .block { display: block; }
@@ -263,6 +259,7 @@ ion-button,
 ion-fab-button,
 button,
 [role="button"] {
+    text-transform: none;
     min-height: var(--a11y-min-target-size);
     min-width: var(--a11y-min-target-size);
 
@@ -403,7 +400,6 @@ button[disabled] {
 }
 
 ion-button.core-button-as-link {
-    text-transform: none;
     text-decoration: underline;
     font-size: inherit;
     font-weight: normal;
@@ -943,8 +939,6 @@ ion-card {
         margin: 0 8px 8px 8px;
 
         ion-button {
-            text-transform: none;
-
             &[fill="outline"] {
                 --background: transparent;
             }
@@ -1181,7 +1175,6 @@ ion-button.button.chip {
     line-height: 1.1;
     font-size: 12px;
     min-height: 24px;
-    text-transform: none;
     margin: 4px;
     font-weight: normal;
 
