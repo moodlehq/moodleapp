@@ -83,6 +83,7 @@ Feature: Navigate through a quiz in the app
     And I should find "Text of the first question" in the app
     And I should find "Text of the second question" in the app
 
+  @lms_from4.4
   Scenario: Sequential navigation
     Given I entered the quiz activity "Quiz 2" on course "Course 1" as "student1" in the app
     And I press "Attempt quiz now" in the app
