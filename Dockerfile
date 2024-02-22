@@ -21,6 +21,8 @@ RUN npm ci --no-audit
 # Build source
 ARG build_command="npm run build:prod"
 COPY . /app
+# We want emulator code in Docker images ― even for production bundles ― because they will always run in a browser environment.
+RUN cp /app/src/core/features/emulator/emulator.module.ts /app/src/core/features/emulator/emulator.module.prod.ts
 RUN ${build_command}
 
 # Generate SSL certificate
