@@ -132,6 +132,9 @@ Feature: Navigate through a quiz in the app
     And I should find "Not yet answered" within "2" "ion-item" in the app
     And I should find "Not yet answered" within "3" "ion-item" in the app
 
+    When I press "Not yet answered" within "3" "ion-item" in the app
+    Then I should not find "Text of the third question" in the app
+
     When I press "Submit all and finish" in the app
     Then I should find "Once you submit" in the app
     But I should not find "Questions without a response" in the app
