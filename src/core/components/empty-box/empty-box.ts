@@ -25,7 +25,7 @@ import { Component, HostBinding, Input } from '@angular/core';
 @Component({
     selector: 'core-empty-box',
     templateUrl: 'core-empty-box.html',
-    styleUrls: ['empty-box.scss'],
+    styleUrl: 'empty-box.scss',
 })
 export class CoreEmptyBoxComponent {
 
@@ -33,7 +33,10 @@ export class CoreEmptyBoxComponent {
     @Input() dimmed = false; // Wether the box is dimmed or not.
     @Input() icon?: string; // Name of the icon to use.
     @Input() image?: string; // Image source. If an icon is provided, image won't be used.
-    @Input() flipIconRtl = false; // Whether to flip the icon in RTL. Defaults to false.
+    /**
+     * @deprecated since 4.4. Not used anymore.
+     */
+    @Input() flipIconRtl = false;
 
     @HostBinding('class.dimmed')
     get isDimmed(): boolean {
