@@ -41,7 +41,7 @@ import { FormControl } from '@angular/forms';
 export class CoreInputErrorsComponent implements OnInit, OnChanges {
 
     @Input() control?: FormControl<unknown>; // Needed to be able to check the validity of the input.
-    @Input() errorMessages: Record<string, string> = {}; // Error messages to show. Keys must be the name of the error.
+    @Input() errorMessages: CoreInputErrorsMessages = {}; // Error messages to show. Keys must be the name of the error.
     @Input() errorText = ''; // Set other non automatic errors.
     errorKeys: string[] = [];
 
@@ -124,4 +124,44 @@ export class CoreInputErrorsComponent implements OnInit, OnChanges {
         }
     }
 
+    /**
+     * Get error message for pattern error.
+     *
+     * @returns Error message, undefined if not found.
+     */
+    getPatternErrorMessage(): string | undefined {
+        const patternError = this.control?.errors?.pattern;
+        if (!this.errorMessages?.pattern || !patternError) {
+            return;
+        }
+
+        if (typeof this.errorMessages.pattern === 'string') {
+            return this.errorMessages.pattern;
+        }
+
+        return this.errorMessages.pattern[patternError.requiredPattern];
+    }
+
 }
+
+/**
+ * Error messages for each type of error.
+ * Error messages will be translated in the template, they don't need to be translated already.
+ */
+export type CoreInputErrorsMessages = {
+    required?: string;
+    requiredTrue?: string;
+    email?: string;
+    date?: string;
+    datetime?: string;
+    datetimelocal?: string;
+    time?: string;
+    url?: string;
+    max?: string;
+    min?: string;
+    maxlength?: string;
+    minlength?: string;
+    // For pattern errors you can define an error for all patterns (string), or one error per pattern.
+    // In the latter case, the key of the object is the pattern and the value is the error message identifier.
+    pattern?: string | Record<string,string>;
+};

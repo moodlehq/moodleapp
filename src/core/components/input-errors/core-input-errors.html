@@ -1,13 +1,18 @@
 <ng-container *ngIf="control && control.dirty && !control.valid">
     <ng-container *ngFor="let error of errorKeys">
         <div *ngIf="control.hasError(error)" class="core-input-error">
-            <span *ngIf="errorMessages && errorMessages[error]">{{ errorMessages[error] | translate }}</span>
-            <span *ngIf="(!errorMessages || !errorMessages[error]) && error === 'max' && control.errors?.max">
-                {{ 'core.login.invalidvaluemax' | translate:{$a: control.errors!.max.max} }}
-            </span>
-            <span *ngIf="(!errorMessages || !errorMessages[error]) && error === 'min' && control.errors?.min">
-                {{ 'core.login.invalidvaluemin' | translate:{$a: control.errors!.min.min} }}
-            </span>
+            <ng-container *ngIf="error !== 'pattern'">
+                <span *ngIf="errorMessages && errorMessages[error]">{{ errorMessages[error] | translate }}</span>
+                <span *ngIf="(!errorMessages || !errorMessages[error]) && error === 'max' && control.errors?.max">
+                    {{ 'core.login.invalidvaluemax' | translate:{$a: control.errors!.max.max} }}
+                </span>
+                <span *ngIf="(!errorMessages || !errorMessages[error]) && error === 'min' && control.errors?.min">
+                    {{ 'core.login.invalidvaluemin' | translate:{$a: control.errors!.min.min} }}
+                </span>
+            </ng-container>
+            <ng-container *ngIf="error === 'pattern' && getPatternErrorMessage() as errorMessage">
+                <span>{{ errorMessage | translate }}</span>
+            </ng-container>
         </div>
     </ng-container>
 </ng-container>
