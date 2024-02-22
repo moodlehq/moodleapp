@@ -198,22 +198,22 @@
 
 @mixin core-headings() {
     h1 {
-        font-size: 26px;
+        font: var(--heading-1-font);
     }
     h2, .item-heading {
-        font-size: 24px;
+        font: var(--heading-2-font);
     }
     h3 {
-        font-size: 22px;
+        font: var(--heading-3-font);
     }
     h4 {
-        font-size: 20px;
+        font: var(--heading-4-font);
     }
     h5 {
-        font-size: 18px;
+        font: var(--heading-5-font);
     }
     h6 {
-        font-size: 16px;
+        font: var(--heading-6-font);
     }
 }
 

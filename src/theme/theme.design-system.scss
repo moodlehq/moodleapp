@@ -1,13 +1,73 @@
 html {
 
     // Spacing
-    @for $i from 0 to 13 {
+    @for $i from 0 to 6 {
         --spacing-#{$i}: #{$i*4}px;
     }
 
     // Font sizes
+
+    // Body font size
     --font-size-sm: 12px;
-    --font-size-normal: 14px;
+    --font-size-md: 14px;
+    --font-size-lg: 16px;
+
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+
+    --body-font-size-sm: var(--font-size-sm);
+    --body-font-size-md: var(--font-size-md);
+    --body-font-size-lg: var(--font-size-lg);
+    --body-font-weight: var(--font-weight-normal);
+    --body-line-height: 150%;
+
+    --link-sm-font-size: var(--font-size-sm);
+    --link-md-font-size: var(--font-size-md);
+    --link-lg-font-size: var(--font-size-lg);
+    --link-font-weight: var(--font-weight-normal);
+    --link-line-height: 150%;
+
+    // Labels
+    --label-sm-font-size: 10px;
+    --label-md-font-size: 12px;
+    --label-lg-font-size: 14px;
+    --label-font-weight: var(--font-weight-medium);
+
+    --label-sm-line-height: 16px;
+    --label-md-line-height: 16px;
+    --label-lg-line-height: 20px;
+
+    // Subtitles
+    --subtitle-sm-font-size: 14px;
+    --subtitle-md-font-size: 16px;
+    --subtitle-lg-font-size: 20px;
+
+    --subtitle-font-weight: var(--font-weight-medium);
+    --subtitle-line-height: 150%;
+
+    // Headings
+    --heading-1-font-size: 28px;
+    --heading-2-font-size: 24px;
+    --heading-3-font-size: 22px;
+    --heading-4-font-size: 20px;
+    --heading-5-font-size: 18px;
+    --heading-6-font-size: 16px;
+
+    --heading-1-font-weight: var(--font-weight-normal);
+    --heading-2-font-weight: var(--font-weight-normal);
+    --heading-3-font-weight: var(--font-weight-normal);
+    --heading-4-font-weight: var(--font-weight-medium);
+    --heading-5-font-weight: var(--font-weight-medium);
+    --heading-6-font-weight: var(--font-weight-medium);
+
+    --heading-line-height: 130%;
+
+    --heading-1-font: normal normal var(--heading-1-font-weight) var(--heading-1-font-size)/var(--heading-line-height) var(--ion-font-family);
+    --heading-2-font: normal normal var(--heading-2-font-weight) var(--heading-2-font-size)/var(--heading-line-height) var(--ion-font-family);
+    --heading-3-font: normal normal var(--heading-3-font-weight) var(--heading-3-font-size)/var(--heading-line-height) var(--ion-font-family);
+    --heading-4-font: normal normal var(--heading-4-font-weight) var(--heading-4-font-size)/var(--heading-line-height) var(--ion-font-family);
+    --heading-5-font: normal normal var(--heading-5-font-weight) var(--heading-5-font-size)/var(--heading-line-height) var(--ion-font-family);
+    --heading-6-font: normal normal var(--heading-6-font-weight) var(--heading-6-font-size)/var(--heading-line-height) var(--ion-font-family);
 
     // Radiuses
     --radius-none: 0px;
@@ -17,12 +77,6 @@ html {
     --radius-lg: 16px;
     --radius-xl: 24px;
     --radius-round: 50%;
-
-    /** @deprecated since 4.3 **/
-    --small-radius: var(--radius-xs);
-    --medium-radius: var(--radius-sm);
-    --big-radius: var(--radius-lg);
-    --huge-radius: var(--radius-xl);
 
     // Shadows / Elevation
     --drop-shadow-color: 40 40 40; //#282828;
@@ -40,4 +94,17 @@ html {
 
     // A11y
     --a11y-min-target-size: 44px;
+}
+
+/** @deprecated since 4.3 **/
+html {
+    --small-radius: var(--radius-xs);
+    --medium-radius: var(--radius-sm);
+    --big-radius: var(--radius-lg);
+    --huge-radius: var(--radius-xl);
+}
+
+/** @deprecated since 4.4 **/
+html {
+    --font-size-normal: var(--font-size-md);
 }
