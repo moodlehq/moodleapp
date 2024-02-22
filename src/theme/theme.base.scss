@@ -942,7 +942,7 @@ ion-card {
         display: flex;
         flex-direction: row;
         justify-content: flex-end;
-        margin: 0 8px 8px 8px;
+        margin: 0px 8px 8px 8px;
 
         ion-button {
             &[fill="outline"] {
@@ -1633,9 +1633,10 @@ ion-item.item.divider {
 }
 
 ion-item-divider.item,
-ion-item.item {
+ion-item.item,
+td {
     .expandable-status-icon {
-        font-size: 18px;
+        font-size: 1.125rem;
         @include core-transition(transform, 200ms);
         @include margin-horizontal(null, 16px);
 

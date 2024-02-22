@@ -1,0 +1,309 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate" />
+        </ion-buttons>
+
+        <ion-title>
+            <h1>{{ 'core.policy.policiesagreements' | translate }}</h1>
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!dataLoaded" (ionRefresh)="refreshAcceptances($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
+    </ion-refresher>
+    <core-loading [hideUntil]="dataLoaded">
+        <div class="list-item-limited-width">
+            <ion-card class="core-info-card">
+                <ion-item class="ion-text-wrap">
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p>{{ 'core.policy.contactdpo' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+                <div class="core-card-buttons" *ngIf="canContactDPO">
+                    <ion-button fill="outline" (click)="openContactDPO($event)">{{ 'core.contactverb' | translate }}</ion-button>
+                </div>
+            </ion-card>
+        </div>
+
+        <table *ngIf="isTablet && policies.length" class="core-table x-scrollable core-policy-tablet-container">
+            <thead>
+                <tr>
+                    <th>{{ 'core.policy.policydocname' | translate }}</th>
+                    <th>{{ 'core.policy.policydocrevision' | translate }}</th>
+                    <th>{{ 'core.policy.response' | translate }}</th>
+                    <th>{{ 'core.policy.responseon' | translate }}</th>
+                    <ng-container *ngIf="hasOnBehalf">
+                        <th>{{ 'core.policy.responseby' | translate }}</th>
+                        <th>{{ 'core.policy.acceptancenote' | translate }}</th>
+                    </ng-container>
+                </tr>
+            </thead>
+            <tbody class="auto-striped">
+                <ng-container *ngFor="let policy of policies">
+                    <ng-container
+                        *ngTemplateOutlet="policyTabletTemplate; context: {policy: policy, isPreviousVersion: false, hidden: false}" />
+                </ng-container>
+            </tbody>
+        </table>
+
+        <div *ngIf="!isTablet && policies.length" class="core-policy-mobile-container">
+            <ng-container *ngFor="let policy of policies">
+                <ng-container *ngTemplateOutlet="policyMobileTemplate; context: {policy: policy, isPreviousVersion: false}" />
+            </ng-container>
+        </div>
+
+        <core-empty-box *ngIf="!policies.length" icon="fas-file-shield" [message]="'core.policy.nopoliciesyet' | translate" />
+
+    </core-loading>
+</ion-content>
+
+<!-- Template to render a policy in a tablet device. -->
+<ng-template #policyTabletTemplate let-policy="policy" let-isPreviousVersion="isPreviousVersion">
+    <tr [class.core-policy-previous-version]="isPreviousVersion">
+        <td class="core-policy-title">
+            <ion-icon *ngIf="isPreviousVersion" name="fam-arrow-turn-down-right" aria-hidden="true" />
+            <ion-icon *ngIf="!isPreviousVersion && policy.previousVersions.length" name="fas-chevron-right" flip-rtl
+                (ariaButtonClick)="toggle($event, policy)" class="expandable-status-icon"
+                [class.expandable-status-icon-expanded]="policy.expanded" [attr.aria-expanded]="policy.expanded"
+                [attr.aria-label]="(policy.expanded ? 'core.collapse' : 'core.expand') | translate" />
+            <ion-icon *ngIf="!isPreviousVersion && !policy.previousVersions.length" class="core-policy-icon-placeholder"
+                aria-hidden="true" />
+
+            <a href="#" (click)="viewFullPolicy($event, policy)">{{ policy.name }}</a>
+        </td>
+
+        <td class="core-policy-revision">
+            <p>{{ policy.revision }}</p>
+            <ion-badge color="success" *ngIf="policy.status === activeStatus">
+                {{ 'core.policy.status1' | translate }}
+            </ion-badge>
+            <ion-badge color="info" *ngIf="policy.optional">
+                {{ 'core.policy.policydocoptionalyes' | translate }}
+            </ion-badge>
+        </td>
+
+        <td class="core-policy-user-agreement">
+            <p class="core-policy-user-agreement-info">
+                <ng-container *ngIf="policy.hasAccepted">
+                    <ion-icon name="fas-check" color="success" aria-hidden="true" />
+
+                    <span *ngIf="policy.onBehalf" class="core-policy-user-agreement-status">
+                        {{ 'core.policy.acceptancestatusacceptedbehalf' | translate }}
+                    </span>
+                    <span *ngIf="!policy.onBehalf" class="core-policy-user-agreement-status">
+                        {{ 'core.policy.acceptancestatusaccepted' | translate }}
+                    </span>
+
+                    <span class="core-policy-user-agreement-actions" *ngIf="policy.canrevoke">
+                        <ion-button fill="none" (click)="setAcceptance($event, policy, false)"
+                            [attr.aria-label]="'core.policy.useracceptanceactionrevokeone' | translate:{$a: policy.name}">
+                            {{ 'core.policy.useracceptanceactionrevoke' | translate }}
+                        </ion-button>
+                    </span>
+                </ng-container>
+                <ng-container *ngIf="policy.hasDeclined">
+                    <ion-icon name="fas-xmark" color="danger" aria-hidden="true" />
+
+                    <span *ngIf="policy.onBehalf" class="core-policy-user-agreement-status">
+                        {{ 'core.policy.acceptancestatusdeclinedbehalf' | translate }}
+                    </span>
+                    <span *ngIf="!policy.onBehalf" class="core-policy-user-agreement-status">
+                        {{ 'core.policy.acceptancestatusdeclined' | translate }}
+                    </span>
+
+                    <span class="core-policy-user-agreement-actions" *ngIf="policy.canaccept">
+                        <ion-button fill="none" (click)="setAcceptance($event, policy, true)"
+                            [attr.aria-label]="'core.policy.useracceptanceactionacceptone' | translate:{$a: policy.name}">
+                            {{ 'core.policy.useracceptanceactionaccept' | translate }}
+                        </ion-button>
+                    </span>
+                </ng-container>
+                <ng-container *ngIf="!policy.hasAccepted && !policy.hasDeclined">
+                    <ion-icon name="fas-clock" color="warning" aria-hidden="true" />
+
+                    <span class="core-policy-user-agreement-status">{{ 'core.policy.acceptancestatuspending' | translate }}</span>
+
+                    <span class="core-policy-user-agreement-actions" *ngIf="policy.canaccept">
+                        <ion-button fill="none" (click)="setAcceptance($event, policy, true)"
+                            [attr.aria-label]="'core.policy.useracceptanceactionacceptone' | translate:{$a: policy.name}">
+                            {{ 'core.policy.useracceptanceactionaccept' | translate }}
+                        </ion-button>
+                        <ion-button fill="none" (click)="setAcceptance($event, policy, false)"
+                            [attr.aria-label]="'core.policy.useracceptanceactiondeclineone' | translate:{$a: policy.name}">
+                            {{ 'core.policy.useracceptanceactiondecline' | translate }}
+                        </ion-button>
+                    </span>
+                </ng-container>
+            </p>
+        </td>
+
+        <td class="core-policy-responseon">
+            <p *ngIf="policy.acceptance">
+                {{ policy.acceptance.timemodified * 1000 | coreFormatDate:'strftimedatetime' }}
+            </p>
+            <p *ngIf="!policy.acceptance">-</p>
+        </td>
+
+        <ng-container *ngIf="hasOnBehalf">
+            <td class="core-policy-responseby">
+                <p *ngIf="policy.onBehalf">
+                    <a href="#" core-user-link [userId]="policy.acceptance.usermodified">{{ policy.acceptance.modfullname }}</a>
+                </p>
+                <p *ngIf="!policy.onBehalf">-</p>
+            </td>
+
+            <td class="core-policy-acceptance-note">
+                <p *ngIf="policy.acceptance?.note">
+                    <core-format-text [text]="policy.acceptance.note" contextLevel="system" [contextInstanceId]="0" />
+                </p>
+                <p *ngIf="!policy.acceptance?.note">-</p>
+            </td>
+        </ng-container>
+    </tr>
+    <ng-container *ngIf="!isPreviousVersion && policy.previousVersions.length && policy.expanded">
+        <ng-container *ngFor="let policy of policy.previousVersions">
+            <ng-container *ngTemplateOutlet="policyTabletTemplate; context: {policy: policy, isPreviousVersion: true }" />
+        </ng-container>
+    </ng-container>
+
+</ng-template>
+
+<!-- Template to render a policy in a mobile device. -->
+<ng-template #policyMobileTemplate let-policy="policy" let-isPreviousVersion="isPreviousVersion">
+    <ion-item class="ion-text-wrap core-policy-title">
+        <div slot="start">
+            <ion-icon *ngIf="isPreviousVersion" name="fam-arrow-turn-down-right" aria-hidden="true" />
+            <ion-icon name="fas-chevron-right" flip-rtl (ariaButtonClick)="toggle($event, policy)" class="expandable-status-icon"
+                [class.expandable-status-icon-expanded]="policy.expanded" [attr.aria-expanded]="policy.expanded"
+                [attr.aria-label]="(policy.expanded ? 'core.collapse' : 'core.expand') | translate"
+                [attr.aria-controls]="'core-policy-details-' + policy.versionid" />
+        </div>
+        <ion-label>
+            <p *ngIf="isPreviousVersion">{{ policy.revision }}</p>
+            <p *ngIf="!isPreviousVersion">{{ policy.name }}</p>
+        </ion-label>
+        <ion-button fill="clear" (click)="viewFullPolicy($event, policy)"
+            [attr.aria-label]="'core.policy.viewpolicy' | translate:{policyname: policy.name}">
+            <ion-icon slot="icon-only" name="fas-eye" aria-hidden="true" />
+        </ion-button>
+    </ion-item>
+
+    <div [hidden]="!policy.expanded" id="core-policy-details-{{policy.versionid}}" class="core-policy-details">
+        <ion-item class="ion-text-wrap core-policy-revision" lines="full">
+            <ion-label>
+                <ng-container *ngIf="isPreviousVersion">
+                    <p class="item-heading">{{ 'core.policy.policydocname' | translate }}</p>
+                    <p>{{ policy.name }}</p>
+                </ng-container>
+                <ng-container *ngIf="!isPreviousVersion">
+                    <p class="item-heading">{{ 'core.policy.policydocrevision' | translate }}</p>
+                    <p>{{ policy.revision }}</p>
+                </ng-container>
+                <ion-badge color="success" *ngIf="policy.status === activeStatus">
+                    {{ 'core.policy.status1' | translate }}
+                </ion-badge>
+                <ion-badge color="info" *ngIf="policy.optional">
+                    {{ 'core.policy.policydocoptionalyes' | translate }}
+                </ion-badge>
+            </ion-label>
+        </ion-item>
+
+        <ion-item class="ion-text-wrap core-policy-user-agreement" lines="full"
+            [class.core-policy-agreement-has-actions]="policy.hasActions">
+            <ion-label>
+                <p class="item-heading">{{ 'core.policy.response' | translate }}</p>
+                <p class="core-policy-user-agreement-info">
+                    <ng-container *ngIf="policy.hasAccepted">
+                        <ion-icon name="fas-check" color="success" aria-hidden="true" />
+
+                        <span *ngIf="policy.onBehalf" class="core-policy-user-agreement-status">
+                            {{ 'core.policy.acceptancestatusacceptedbehalf' | translate }}
+                        </span>
+                        <span *ngIf="!policy.onBehalf" class="core-policy-user-agreement-status">
+                            {{ 'core.policy.acceptancestatusaccepted' | translate }}
+                        </span>
+
+                        <span class="core-policy-user-agreement-actions" *ngIf="policy.canrevoke">
+                            <ion-button fill="none" (click)="setAcceptance($event, policy, false)"
+                                [attr.aria-label]="'core.policy.useracceptanceactionrevokeone' | translate:{$a: policy.name}">
+                                {{ 'core.policy.useracceptanceactionrevoke' | translate }}
+                            </ion-button>
+                        </span>
+                    </ng-container>
+                    <ng-container *ngIf="policy.hasDeclined">
+                        <ion-icon name="fas-xmark" color="danger" aria-hidden="true" />
+
+                        <span *ngIf="policy.onBehalf" class="core-policy-user-agreement-status">
+                            {{ 'core.policy.acceptancestatusdeclinedbehalf' | translate }}
+                        </span>
+                        <span *ngIf="!policy.onBehalf" class="core-policy-user-agreement-status">
+                            {{ 'core.policy.acceptancestatusdeclined' | translate }}
+                        </span>
+
+                        <span class="core-policy-user-agreement-actions" *ngIf="policy.canaccept">
+                            <ion-button fill="none" (click)="setAcceptance($event, policy, true)"
+                                [attr.aria-label]="'core.policy.useracceptanceactionacceptone' | translate:{$a: policy.name}">
+                                {{ 'core.policy.useracceptanceactionaccept' | translate }}
+                            </ion-button>
+                        </span>
+                    </ng-container>
+                    <ng-container *ngIf="!policy.hasAccepted && !policy.hasDeclined">
+                        <ion-icon name="fas-clock" color="warning" aria-hidden="true" />
+
+                        <span class="core-policy-user-agreement-status">{{ 'core.policy.acceptancestatuspending' | translate }}</span>
+
+                        <span class="core-policy-user-agreement-actions" *ngIf="policy.canaccept">
+                            <ion-button fill="none" (click)="setAcceptance($event, policy, true)"
+                                [attr.aria-label]="'core.policy.useracceptanceactionacceptone' | translate:{$a: policy.name}">
+                                {{ 'core.policy.useracceptanceactionaccept' | translate }}
+                            </ion-button>
+                            <ion-button fill="none" (click)="setAcceptance($event, policy, false)"
+                                [attr.aria-label]="'core.policy.useracceptanceactiondeclineone' | translate:{$a: policy.name}">
+                                {{ 'core.policy.useracceptanceactiondecline' | translate }}
+                            </ion-button>
+                        </span>
+                    </ng-container>
+                </p>
+            </ion-label>
+        </ion-item>
+
+        <ion-item class="ion-text-wrap core-policy-responseon" lines="full">
+            <ion-label>
+                <p class="item-heading">{{ 'core.policy.responseon' | translate }}</p>
+                <p *ngIf="policy.acceptance">
+                    {{ policy.acceptance.timemodified * 1000 | coreFormatDate:'strftimedatetime' }}
+                </p>
+                <p *ngIf="!policy.acceptance">-</p>
+            </ion-label>
+        </ion-item>
+
+        <ng-container *ngIf="policy.onBehalf">
+            <ion-item button class="ion-text-wrap core-policy-responseby" core-user-link [userId]="policy.acceptance.usermodified"
+                lines="full" detail="false">
+                <ion-label>
+                    <p class="item-heading">{{ 'core.policy.responseby' | translate }}</p>
+                    <p class="core-policy-responseby-name">{{ policy.acceptance.modfullname }}</p>
+                </ion-label>
+            </ion-item>
+
+            <ion-item class="ion-text-wrap core-policy-acceptance-note" lines="full">
+                <ion-label>
+                    <p class="item-heading">{{ 'core.policy.acceptancenote' | translate }}</p>
+                    <p *ngIf="policy.acceptance.note">
+                        <core-format-text [text]="policy.acceptance.note" contextLevel="system" [contextInstanceId]="0" />
+                    </p>
+                    <p *ngIf="!policy.acceptance.note">-</p>
+                </ion-label>
+            </ion-item>
+        </ng-container>
+
+        <div *ngIf="!isPreviousVersion && policy.previousVersions.length" class="core-policy-previous-versions">
+            <ng-container *ngFor="let policy of policy.previousVersions">
+                <ng-container *ngTemplateOutlet="policyMobileTemplate; context: {policy: policy, isPreviousVersion: true}" />
+            </ng-container>
+        </div>
+    </div>
+</ng-template>

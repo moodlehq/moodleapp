@@ -94,6 +94,7 @@ jobs:
               "@core_grades"
               "@core_login"
               "@core_mainmenu"
+              "@core_policy"
               "@core_reminders"
               "@core_reportbuilder"
               "@core_search"

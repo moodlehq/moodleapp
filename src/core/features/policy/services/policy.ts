@@ -127,14 +127,15 @@ export class CorePolicyService {
      * @param options Options
      * @returns List of policies with their acceptances.
      */
-    async getUserAcceptances(options: CoreSitesCommonWSOptions = {}): Promise<CorePolicySitePolicy[]> {
+    async getUserAcceptances(options: CorePolicyGetAcceptancesOptions = {}): Promise<CorePolicySitePolicy[]> {
         const site = await CoreSites.getSite(options.siteId);
 
+        const userId = options.userId || site.getUserId();
         const data: CorePolicyGetUserAcceptancesWSParams = {
-            userid: site.getUserId(),
+            userid: userId,
         };
         const preSets = {
-            cacheKey: this.getUserAcceptancesCacheKey(site.getUserId()),
+            cacheKey: this.getUserAcceptancesCacheKey(userId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -180,6 +181,18 @@ export class CorePolicyService {
     }
 
     /**
+     * Invalidate acceptances WS call.
+     *
+     * @param options Options.
+     * @returns Promise resolved when data is invalidated.
+     */
+    async invalidateAcceptances(options: {userId?: number; siteId?: string} = {}): Promise<void> {
+        const site = await CoreSites.getSite(options.siteId);
+
+        await site.invalidateWsCacheForKey(this.getUserAcceptancesCacheKey(options.userId || site.getUserId()));
+    }
+
+    /**
      * Check whether a site allows getting and setting acceptances.
      *
      * @param siteId Site Id.
@@ -222,6 +235,13 @@ export class CorePolicyService {
 export const CorePolicy = makeSingleton(CorePolicyService);
 
 /**
+ * Options for get policy acceptances.
+ */
+type CorePolicyGetAcceptancesOptions = CoreSitesCommonWSOptions & {
+    userId?: number; // User ID. If not defined, current user.
+};
+
+/**
  * Result of WS core_user_agree_site_policy.
  */
 type CorePolicyAgreeSitePolicyResult = {
@@ -260,6 +280,9 @@ export type CorePolicySitePolicy = {
     content?: string; // The policy content.
     contentformat: number; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN, or 4 = MARKDOWN).
     acceptance?: CorePolicySitePolicyAcceptance; // Acceptance status for the given user.
+    canaccept: boolean; // Whether the policy can be accepted.
+    candecline: boolean; // Whether the policy can be declined.
+    canrevoke: boolean; // Whether the policy can be revoked.
 };
 
 /**
@@ -299,4 +322,13 @@ type CorePolicySetAcceptancesWSResponse = {
 export enum CorePolicyAgreementStyle {
     ConsentPage = 0, // Policy to be accepted together with others on the consent page.
     OwnPage = 1, // Policy to be accepted on its own page before reaching the consent page.
+}
+
+/**
+ * Status of a policy.
+ */
+export enum CorePolicyStatus {
+    Draft = 0,
+    Active = 1,
+    Archived = 2,
 }

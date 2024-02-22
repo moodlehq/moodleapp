@@ -15,3 +15,4 @@
 // Routing.
 export const POLICY_PAGE_NAME = 'policy';
 export const SITE_POLICY_PAGE_NAME = 'sitepolicy';
+export const ACCEPTANCES_PAGE_NAME = 'acceptances';

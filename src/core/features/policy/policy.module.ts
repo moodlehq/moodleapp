@@ -18,6 +18,11 @@ import { Routes } from '@angular/router';
 import { AppRoutingModule } from '@/app/app-routing.module';
 import { CoreEvents } from '@singletons/events';
 import { POLICY_PAGE_NAME } from './constants';
+import { CoreUserDelegate } from '@features/user/services/user-delegate';
+import { CorePolicyUserHandler } from './services/handlers/user';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CorePolicyAcceptancesLinkHandler } from './services/handlers/acceptances-link';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 
 const routes: Routes = [
     {
@@ -29,12 +34,16 @@ const routes: Routes = [
 @NgModule({
     imports: [
         AppRoutingModule.forChild(routes),
+        CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [
         {
             provide: APP_INITIALIZER,
             multi: true,
             useValue: async () => {
+                CoreUserDelegate.registerHandler(CorePolicyUserHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CorePolicyAcceptancesLinkHandler.instance);
+
                 CoreEvents.on(CoreEvents.SITE_POLICY_NOT_AGREED, async (data) => {
                     const { CorePolicy } = await import('@features/policy/services/policy');
 

@@ -17,13 +17,18 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CorePolicySitePolicyPage } from '@features/policy/pages/site-policy/site-policy';
-import { SITE_POLICY_PAGE_NAME } from './constants';
+import { ACCEPTANCES_PAGE_NAME, SITE_POLICY_PAGE_NAME } from './constants';
 import { CorePolicyComponentsModule } from './components/components.module';
+import { CorePolicyAcceptancesPage } from './pages/acceptances/acceptances';
 
 const routes: Routes = [
     {
         path: SITE_POLICY_PAGE_NAME,
         component: CorePolicySitePolicyPage,
+    },
+    {
+        path: ACCEPTANCES_PAGE_NAME,
+        component: CorePolicyAcceptancesPage,
     },
 ];
 
@@ -35,6 +40,7 @@ const routes: Routes = [
     ],
     declarations: [
         CorePolicySitePolicyPage,
+        CorePolicyAcceptancesPage,
     ],
 })
 export class CorePolicyLazyModule {}
