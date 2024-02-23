@@ -84,6 +84,7 @@ jobs:
               "@core_comments"
               "@core_course"
               "@core_courses"
+              "@core_dataprivacy"
               "@core_grades"
               "@core_login"
               "@core_mainmenu"
