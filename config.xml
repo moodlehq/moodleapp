@@ -57,7 +57,7 @@
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
     <platform name="android">
-        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="resources/android/android-splash.xml" />
+        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="resources/splash.png" />
         <preference name="AndroidWindowSplashScreenBackground" value="#FFFFFF" />
         <preference name="AndroidWindowSplashScreenIconBackgroundColor" value="#FFFFFF" />
         <resource-file src="google-services.json" target="app/google-services.json" />
@@ -65,10 +65,6 @@
         <resource-file src="resources/android/icon/drawable-mdpi-smallicon.png" target="app/src/main/res/mipmap-mdpi/smallicon.png" />
         <resource-file src="resources/android/icon/drawable-hdpi-smallicon.png" target="app/src/main/res/mipmap-hdpi/smallicon.png" />
         <resource-file src="resources/android/icon/drawable-xhdpi-smallicon.png" target="app/src/main/res/mipmap-xhdpi/smallicon.png" />
-        <splash src="resources/splash.png" density="land-ldpi"/>
-        <splash src="resources/splash.png" density="land-mdpi"/>
-        <splash src="resources/splash.png" density="land-hdpi"/>
-        <splash src="resources/splash.png" density="land-xhdpi"/>
         <icon src="resources/android/icon/icon.png" density="ldpi" />
         <icon src="resources/android/icon/icon.png" density="mdpi" />
         <icon src="resources/android/icon/icon.png" density="hdpi" />
