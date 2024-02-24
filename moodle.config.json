@@ -1,13 +1,13 @@
 {
-    "app_id": "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
-    "versioncode": 44000,
-    "versionname": "4.4.0",
+    "app_id": "com.akademiprogramlari.dgsakademi",
+    "appname": "DGS Akademi",
+    "versioncode": 100,
+    "versionname": "1.0.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
     "cache_update_frequency_rarely": 43200000,
-    "default_lang": "en",
+    "default_lang": "tr",
     "languages": {
         "af": "Afrikaans",
         "ar": "العربية",
@@ -68,18 +68,6 @@
         "zh-tw": "正體中文"
     },
     "wsservice": "moodle_mobile_app",
-    "demo_sites": {
-        "student": {
-            "url": "https://school.moodledemo.net",
-            "username": "student",
-            "password": "moodle"
-        },
-        "teacher": {
-            "url": "https://school.moodledemo.net",
-            "username": "teacher",
-            "password": "moodle"
-        }
-    },
     "defaultZoomLevel": "none",
     "zoomlevels": {
         "none": 100,
@@ -87,7 +75,14 @@
         "high": 120
     },
     "customurlscheme": "moodlemobile",
-    "sites": [],
+    "sites": [
+    {
+      "name": "DGS Akademi",
+      "alias": "DGS Akademi E-Kurs",
+      "url": "https://kurs.dgsakademi.com",
+      "staging": false
+    }
+    ],
     "multisitesdisplay": "",
     "sitefindersettings": {},
     "onlyallowlistedsites": false,
@@ -100,7 +95,7 @@
     "forceLoginLogo": false,
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
-        "android": "com.moodle.moodlemobile",
+        "android": "com.akademiprogramlari.dgsakademi",
         "ios": "id633359593"
     },
     "wsrequestqueuelimit": 10,
