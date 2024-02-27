@@ -29,7 +29,8 @@
             <ion-item class="ion-text-wrap" *ngIf="user.description" lines="full">
                 <ion-label>
                     <p>
-                        <core-format-text [text]="user.description" contextLevel="user" [contextInstanceId]="user.id" />
+                        <core-format-text [text]="user.description" contextLevel="user" [contextInstanceId]="user.id"
+                            [courseId]="courseId" />
                     </p>
                 </ion-label>
             </ion-item>

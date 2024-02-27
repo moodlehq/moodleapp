@@ -70,32 +70,6 @@ export class CoreFilterHelperProvider {
     }
 
     /**
-     * Get the contexts of all blocks in a course.
-     *
-     * @param courseId Course ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with the contexts.
-     */
-    async getBlocksContexts(courseId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
-        // Use stale while revalidate, but always use the first value. If data is updated it will be stored in DB.
-        const blocks = await firstValueFrom(CoreCourse.getCourseBlocksObservable(courseId, {
-            readingStrategy: CoreSitesReadingStrategy.STALE_WHILE_REVALIDATE,
-            siteId,
-        }));
-
-        const contexts: CoreFiltersGetAvailableInContextWSParamContext[] = [];
-
-        blocks.forEach((block) => {
-            contexts.push({
-                contextlevel: 'block',
-                instanceid: block.instanceid,
-            });
-        });
-
-        return contexts;
-    }
-
-    /**
      * Get some filters from memory cache. If not in cache, get them and store them in cache.
      *
      * @param contextLevel The context level.
@@ -199,10 +173,14 @@ export class CoreFilterHelperProvider {
     async getFilters(
         contextLevel: string,
         instanceId: number,
-        options?: CoreFilterFormatTextOptions,
+        options: CoreFilterFormatTextOptions = {},
         siteId?: string,
     ): Promise<CoreFilterFilter[]> {
-        options = options || {};
+        // Check the right context to use.
+        const newContext = CoreFilter.convertContext(contextLevel, instanceId, { courseId: options.courseId });
+        contextLevel = newContext.contextLevel;
+        instanceId = newContext.instanceId;
+
         options.contextLevel = contextLevel;
         options.instanceId = instanceId;
         options.filter = false;
@@ -245,11 +223,6 @@ export class CoreFilterHelperProvider {
             } else if (contextLevel == 'course') {
                 // If enrolled, get all enrolled courses filters with a single call to decrease number of WS calls.
                 const getFilters = () => this.getCourseContexts(instanceId, siteId);
-
-                return await this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
-            } else if (contextLevel == 'block' && courseId && CoreBlockHelper.canGetCourseBlocks(site)) {
-                // Get all the course blocks filters with a single call to decrease number of WS calls.
-                const getFilters = () => this.getBlocksContexts(courseId, siteId);
 
                 return await this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
             }

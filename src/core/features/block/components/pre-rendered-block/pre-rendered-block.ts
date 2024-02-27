@@ -36,13 +36,11 @@ export class CoreBlockPreRenderedComponent extends CoreBlockBaseComponent implem
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        await super.ngOnInit();
-
         this.courseId = this.contextLevel == 'course' ? this.instanceId : undefined;
-
         this.fetchContentDefaultError = 'Error getting ' + this.block.contents?.title + ' data.';
-
         this.id = `block-${this.block.instanceid}`;
+
+        await super.ngOnInit();
     }
 
 }

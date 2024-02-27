@@ -24,6 +24,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Service to provide filter functionalities.
@@ -160,6 +161,29 @@ export class CoreFilterProvider {
         });
 
         return classified;
+    }
+
+    /**
+     * Given a context level and instance ID, return the proper context to use.
+     *
+     * @param contextLevel The context level.
+     * @param instanceId Instance ID related to the context.
+     * @param options Options.
+     * @returns Context to use.
+     */
+    convertContext(
+        contextLevel: string,
+        instanceId: number,
+        options: {courseId?: number} = {},
+    ): {contextLevel: string; instanceId: number} {
+        if (contextLevel === ContextLevel.BLOCK || contextLevel === ContextLevel.USER) {
+            // Blocks and users cannot have specific filters, use the parent context instead.
+            return options.courseId ?
+                { contextLevel: ContextLevel.COURSE, instanceId: options.courseId } :
+                { contextLevel: ContextLevel.SYSTEM, instanceId: 0 };
+        }
+
+        return { contextLevel, instanceId };
     }
 
     /**
