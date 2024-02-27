@@ -35,6 +35,7 @@ import { CorePath } from '@singletons/path';
 import { CoreDom } from '@singletons/dom';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { EMAIL_SIGNUP_FEATURE_NAME } from '@features/login/constants';
+import { CoreInputErrorsMessages } from '@components/input-errors/input-errors';
 
 /**
  * Page to signup using email.
@@ -45,6 +46,10 @@ import { EMAIL_SIGNUP_FEATURE_NAME } from '@features/login/constants';
     styleUrls: ['../../login.scss'],
 })
 export class CoreLoginEmailSignupPage implements OnInit {
+
+    // Accept A-Z in strict chars pattern to be able to differentiate it from the lowercase pattern.
+    protected static readonly USERNAME_STRICT_CHARS_PATTERN = '^[A-Z-.@_a-z0-9]*$';
+    protected static readonly USERNAME_LOWERCASE_PATTERN = '^[^A-Z]*$';
 
     @ViewChild(CoreRecaptchaComponent) recaptchaComponent?: CoreRecaptchaComponent;
     @ViewChild('ageForm') ageFormElement?: ElementRef;
@@ -77,12 +82,12 @@ export class CoreLoginEmailSignupPage implements OnInit {
     supportEmail?: string;
 
     // Validation errors.
-    usernameErrors: Record<string, string>;
-    passwordErrors: Record<string, string>;
-    emailErrors: Record<string, string>;
-    email2Errors: Record<string, string>;
-    policyErrors: Record<string, string>;
-    namefieldsErrors?: Record<string, Record<string, string>>;
+    usernameErrors: CoreInputErrorsMessages;
+    passwordErrors: CoreInputErrorsMessages;
+    emailErrors: CoreInputErrorsMessages;
+    email2Errors: CoreInputErrorsMessages;
+    policyErrors: CoreInputErrorsMessages;
+    namefieldsErrors?: Record<string, CoreInputErrorsMessages>;
 
     constructor(
         protected fb: FormBuilder,
@@ -98,14 +103,19 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
         // Create the signupForm with the basic controls. More controls will be added later.
         this.signupForm = this.fb.group({
-            username: ['', Validators.required],
             password: ['', Validators.required],
             email: ['', Validators.compose([Validators.required, Validators.email])],
             email2: ['', Validators.compose([Validators.required, Validators.email])],
         });
 
         // Setup validation errors.
-        this.usernameErrors = { required: 'core.login.usernamerequired' };
+        this.usernameErrors = {
+            required: 'core.login.usernamerequired',
+            pattern: {
+                [CoreLoginEmailSignupPage.USERNAME_STRICT_CHARS_PATTERN]: 'core.login.invalidusername',
+                [CoreLoginEmailSignupPage.USERNAME_LOWERCASE_PATTERN]: 'core.login.usernamelowercase',
+            },
+        };
         this.passwordErrors = { required: 'core.login.passwordrequired' };
         this.emailErrors = { required: 'core.login.missingemail' };
         this.policyErrors = { required: 'core.login.policyagree' };
@@ -140,6 +150,13 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * Complete the FormGroup using the settings received from server.
      */
     protected completeFormGroup(): void {
+        const checkStrictChars = this.settings?.extendedusernamechars === false;
+        this.signupForm.addControl('username', this.fb.control('', Validators.compose([
+            Validators.required,
+            Validators.pattern(CoreLoginEmailSignupPage.USERNAME_LOWERCASE_PATTERN),
+            checkStrictChars ?  Validators.pattern(CoreLoginEmailSignupPage.USERNAME_STRICT_CHARS_PATTERN) : undefined,
+        ])));
+
         this.signupForm.addControl('city', this.fb.control(this.settings?.defaultcity || ''));
         this.signUpCountryControl = this.fb.control(this.settings?.country || '', { nonNullable: true });
         this.signupForm.addControl('country', this.signUpCountryControl);

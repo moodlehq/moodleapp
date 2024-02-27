@@ -184,3 +184,44 @@ Feature: Test signup in app
     And I should find "1 January 2010, 11:45 AM" in the app
     And I should find "This is my description" in the app
     And I should find "https://moodle.com" in the app
+
+  @lms_from4.4
+  Scenario: Check extended characters in usernames show error if setting is disabled
+    Given the following config values are set as admin:
+      | extendedusernamechars | 0 |
+    When I launch the app
+    And I set the field "Your site" to "$WWWROOT" in the app
+    And I press "Connect to your site" in the app
+    And I press "Create new account" in the app
+    And I set the following fields to these values in the app:
+      | Username | u1$ |
+    Then I should find "The username can only contain alphanumeric" in the app
+
+    When I set the following fields to these values in the app:
+      | Username | u1 |
+    Then I should not find "The username can only contain alphanumeric" in the app
+
+  @lms_from4.4
+  Scenario: Check can include extended characters in usernames if setting is enabled
+    Given the following config values are set as admin:
+      | extendedusernamechars | 1 |
+    When I launch the app
+    And I set the field "Your site" to "$WWWROOT" in the app
+    And I press "Connect to your site" in the app
+    And I press "Create new account" in the app
+    And I set the following fields to these values in the app:
+      | Username | u1U |
+    Then I should find "Only lowercase letters allowed" in the app
+
+    When I set the following fields to these values in the app:
+      | Username | u1$ |
+    Then I should not find "The username can only contain alphanumeric" in the app
+
+    When I set the following fields to these values in the app:
+      | Password | pu1 |
+      | Email address | u1@u1.com |
+      | Email (again) | u1@u1.com |
+      | First name | User |
+      | Last name | Test |
+    And I press "Create my new account" in the app
+    Then I should find "An email should have been sent to your address" in the app

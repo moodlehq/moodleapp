@@ -1553,6 +1553,7 @@ export type AuthEmailSignupSettings = {
     sitepolicyhandler?: string; // Site policy handler.
     defaultcity?: string; // Default city.
     country?: string; // Default country.
+    extendedusernamechars?: boolean; // @since 4.4. Extended characters in usernames or no.
     profilefields?: AuthEmailSignupProfileField[]; // Required profile fields.
     recaptchapublickey?: string; // Recaptcha public key.
     recaptchachallengehash?: string; // Recaptcha challenge hash.
