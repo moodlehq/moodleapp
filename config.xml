@@ -73,10 +73,6 @@
         <config-file parent="/manifest/application" target="AndroidManifest.xml">
             <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
         </config-file>
-        <config-file parent="/*" target="AndroidManifest.xml">
-            <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
-            <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-        </config-file>
     </platform>
     <platform name="ios">
         <resource-file src="GoogleService-Info.plist" />
