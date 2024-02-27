@@ -1,9 +1,4 @@
-@use "theme/globals" as *;
-
 :host {
-    --header-background: var(--white);
-    --border-color: var(--stroke);
-
     .report-title {
         ion-item {
             width: 100%;
@@ -11,32 +6,9 @@
     }
 
     table {
-        width: 98%;
-        margin: 1em auto;
-        border-collapse: collapse;
-        color: var(--ion-text-color);
         overflow-x: auto;
-        display: block;
-
-        tbody {
-            display: table;
-        }
-
-        th {
-            background-color: var(--header-background);
-        }
-
-        tr {
-            border-bottom: 1px solid var(--border-color);
-
-            &:nth-child(even) {
-                background: var(--light);
-            }
-        }
 
         th, td {
-            @include padding(8px, 8px, 8px, null);
-            text-align: start;
             min-width: 200px;
         }
 

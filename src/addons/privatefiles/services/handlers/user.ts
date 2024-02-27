@@ -18,7 +18,7 @@ import { AddonPrivateFiles } from '@addons/privatefiles/services/privatefiles';
 import { makeSingleton } from '@singletons';
 import {
     CoreUserDelegateContext,
-    CoreUserDelegateService,
+    CoreUserProfileHandlerType,
     CoreUserProfileHandler,
     CoreUserProfileHandlerData,
 } from '@features/user/services/user-delegate';
@@ -36,7 +36,7 @@ export class AddonPrivateFilesUserHandlerService implements CoreUserProfileHandl
 
     name = 'AddonPrivateFiles';
     priority = 400;
-    type = CoreUserDelegateService.TYPE_NEW_PAGE;
+    type = CoreUserProfileHandlerType.LIST_ITEM;
     cacheEnabled = true;
 
     /**

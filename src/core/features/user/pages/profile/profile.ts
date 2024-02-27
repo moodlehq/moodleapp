@@ -25,7 +25,7 @@ import { CoreUserHelper } from '@features/user/services/user-helper';
 import {
     CoreUserDelegate,
     CoreUserDelegateContext,
-    CoreUserDelegateService,
+    CoreUserProfileHandlerType,
     CoreUserProfileHandlerData,
 } from '@features/user/services/user-delegate';
 import { CoreUtils } from '@services/utils/utils';
@@ -59,9 +59,8 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     isSuspended = false;
     isEnrolled = true;
     rolesFormatted?: string;
-    actionHandlers: CoreUserProfileHandlerData[] = [];
-    newPageHandlers: CoreUserProfileHandlerData[] = [];
-    communicationHandlers: CoreUserProfileHandlerData[] = [];
+    listItemHandlers: CoreUserProfileHandlerData[] = [];
+    buttonHandlers: CoreUserProfileHandlerData[] = [];
 
     users?: CoreUserSwipeItemsManager;
 
@@ -153,20 +152,19 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             const context = this.courseId ? CoreUserDelegateContext.COURSE : CoreUserDelegateContext.SITE;
 
             this.subscription = CoreUserDelegate.getProfileHandlersFor(user, context, this.courseId).subscribe((handlers) => {
-                this.actionHandlers = [];
-                this.newPageHandlers = [];
-                this.communicationHandlers = [];
+                this.listItemHandlers = [];
+                this.buttonHandlers = [];
                 handlers.forEach((handler) => {
                     switch (handler.type) {
-                        case CoreUserDelegateService.TYPE_COMMUNICATION:
-                            this.communicationHandlers.push(handler.data);
+                        case CoreUserProfileHandlerType.BUTTON:
+                            this.buttonHandlers.push(handler.data);
                             break;
-                        case CoreUserDelegateService.TYPE_ACTION:
-                            this.actionHandlers.push(handler.data);
+                        case CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM:
+                            // Discard this for now.
                             break;
-                        case CoreUserDelegateService.TYPE_NEW_PAGE:
+                        case CoreUserProfileHandlerType.LIST_ITEM:
                         default:
-                            this.newPageHandlers.push(handler.data);
+                            this.listItemHandlers.push(handler.data);
                             break;
                     }
                 });

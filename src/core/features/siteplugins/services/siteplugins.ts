@@ -33,6 +33,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 import { CoreEnrolAction, CoreEnrolInfoIcon } from '@features/enrol/services/enrol-delegate';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CoreUserProfileHandlerType } from '@features/user/services/user-delegate';
 
 const ROOT_CACHE_KEY = 'CoreSitePlugins:';
 
@@ -907,7 +908,7 @@ export type CoreSitePluginsUserHandlerData = CoreSitePluginsHandlerCommonData & 
         icon?: string;
         class?: string;
     };
-    type?: string;
+    type?: CoreUserProfileHandlerType;
     priority?: number;
     ptrenabled?: boolean;
 };

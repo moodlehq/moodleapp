@@ -381,6 +381,13 @@ html {
     --core-dd-question-radius: 10px;
     --core-dd-question-border: var(--medium);
 
+    --core-table-header-background: var(--white);
+    --core-table-odd-cell-background: var(--light);
+    --core-table-odd-cell-hover: var(--gray-200);
+    --core-table-even-cell-background: var(--white);
+    --core-table-even-cell-hover: var(--light);
+    --core-table-border-color: var(--stroke);
+
     --rotate-expandable: rotate(90deg);
     &[dir=rtl] {
         --rotate-expandable: rotate(-90deg);

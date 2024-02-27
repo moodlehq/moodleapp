@@ -169,4 +169,10 @@ html.dark {
 
     --addon-forum-border-color: var(--gray-500);
     --addon-forum-highlight-color: var(--gray-800);
+
+    --core-table-header-background: var(--gray-900);
+    --core-table-odd-cell-background: var(--gray-800);
+    --core-table-odd-cell-hover: var(--gray-600);
+    --core-table-even-cell-background: var(--gray-900);
+    --core-table-even-cell-hover: var(--gray-700);
 }

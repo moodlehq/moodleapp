@@ -13,39 +13,33 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-
 import {
     CoreUserProfileHandlerType,
     CoreUserProfileHandler,
     CoreUserProfileHandlerData,
-} from '../user-delegate';
-import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreUserProfile } from '../user';
+} from '@features/user/services/user-delegate';
+import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
+import { CoreDataPrivacy } from '../dataprivacy';
+import { CORE_DATAPRIVACY_PAGE_NAME } from '@features/dataprivacy/constants';
 
 /**
- * Handler to send a email to a user.
+ * Handler to visualize custom reports.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreUserProfileMailHandlerService implements CoreUserProfileHandler {
+export class CoreDataPrivacyUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'CoreUserProfileMail';
-    priority = 700;
-    type = CoreUserProfileHandlerType.BUTTON;
+    protected pageName = CORE_DATAPRIVACY_PAGE_NAME;
+
+    type = CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM;
+    name = 'CoreDataPrivacyDelegate';
+    priority = 100;
 
     /**
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async isEnabledForUser(user: CoreUserProfile): Promise<boolean> {
-        return user.id != CoreSites.getCurrentSiteUserId() && !!user.email;
+        return await CoreDataPrivacy.isEnabled();
     }
 
     /**
@@ -53,18 +47,17 @@ export class CoreUserProfileMailHandlerService implements CoreUserProfileHandler
      */
     getDisplayData(): CoreUserProfileHandlerData {
         return {
-            icon: 'fas-envelope',
-            title: 'core.user.sendemail',
-            class: 'core-user-profile-mail',
-            action: (event, user): void => {
+            class: 'core-data-privacy',
+            icon: 'fas-user-shield',
+            title: 'core.dataprivacy.pluginname',
+            action: async (event): Promise<void> => {
                 event.preventDefault();
                 event.stopPropagation();
-
-                CoreUtils.openInBrowser('mailto:' + user.email, { showBrowserWarning: false });
+                await CoreNavigator.navigateToSitePath(this.pageName);
             },
         };
     }
 
 }
 
-export const CoreUserProfileMailHandler = makeSingleton(CoreUserProfileMailHandlerService);
+export const CoreDataPrivacyUserHandler = makeSingleton(CoreDataPrivacyUserHandlerService);
