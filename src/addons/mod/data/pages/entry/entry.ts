@@ -157,7 +157,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();
+        this.commentsEnabled = CoreComments.areCommentsEnabledInSite();
 
         await this.fetchEntryData();
     }

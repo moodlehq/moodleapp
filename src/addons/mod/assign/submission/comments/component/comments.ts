@@ -33,7 +33,7 @@ export class AddonModAssignSubmissionCommentsComponent extends AddonModAssignSub
     constructor() {
         super();
 
-        this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();
+        this.commentsEnabled = CoreComments.areCommentsEnabledInSite();
     }
 
     /**

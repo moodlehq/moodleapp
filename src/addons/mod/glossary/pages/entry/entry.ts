@@ -99,7 +99,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
         try {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.tagsEnabled = CoreTag.areTagsAvailableInSite();
-            this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();
+            this.commentsEnabled = CoreComments.areCommentsEnabledInSite();
             this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
 
             const entrySlug = CoreNavigator.getRequiredRouteParam<string>('entrySlug');
