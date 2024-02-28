@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
@@ -22,16 +22,11 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
-import { AddonBlogProvider } from './services/blog';
 import { AddonBlogCourseOptionHandler } from './services/handlers/course-option';
 import { AddonBlogIndexLinkHandler } from './services/handlers/index-link';
 import { AddonBlogMainMenuHandler, AddonBlogMainMenuHandlerService } from './services/handlers/mainmenu';
 import { AddonBlogTagAreaHandler } from './services/handlers/tag-area';
 import { AddonBlogUserHandler } from './services/handlers/user';
-
-export const ADDON_BLOG_SERVICES: Type<unknown>[] = [
-    AddonBlogProvider,
-];
 
 const routes: Routes = [
     {
