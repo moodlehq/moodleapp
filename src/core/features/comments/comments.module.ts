@@ -18,17 +18,26 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreCommentsComponentsModule } from './components/components.module';
-import { CoreComments, CoreCommentsProvider } from './services/comments';
-import { CoreCommentsOfflineProvider } from './services/comments-offline';
-import { CoreCommentsSyncProvider } from './services/comments-sync';
+import { CoreComments } from './services/comments';
 import { COMMENTS_OFFLINE_SITE_SCHEMA } from './services/database/comments';
 import { CoreCommentsSyncCronHandler } from './services/handlers/sync-cron';
 
-export const CORE_COMMENTS_SERVICES: Type<unknown>[] = [
-    CoreCommentsOfflineProvider,
-    CoreCommentsSyncProvider,
-    CoreCommentsProvider,
-];
+/**
+ * Get comments services.
+ *
+ * @returns Comments services.
+ */
+export async function getCommentsServices(): Promise<Type<unknown>[]> {
+    const { CoreCommentsOfflineProvider } = await import('@features/comments/services/comments-offline');
+    const { CoreCommentsSyncProvider } = await import('@features/comments/services/comments-sync');
+    const { CoreCommentsProvider } = await import('@features/comments/services/comments');
+
+    return [
+        CoreCommentsOfflineProvider,
+        CoreCommentsSyncProvider,
+        CoreCommentsProvider,
+    ];
+}
 
 const routes: Routes = [
     {

@@ -42,7 +42,7 @@ import { makeSingleton } from '@singletons';
 // Import core services.
 import { CORE_SERVICES } from '@/core/core.module';
 import { CORE_BLOCK_SERVICES } from '@features/block/block.module';
-import { CORE_COMMENTS_SERVICES } from '@features/comments/comments.module';
+import { getCommentsServices } from '@features/comments/comments.module';
 import { CORE_CONTENTLINKS_SERVICES } from '@features/contentlinks/contentlinks.module';
 import { CORE_COURSE_SERVICES } from '@features/course/course.module';
 import { CORE_COURSES_SERVICES } from '@features/courses/courses.module';
@@ -280,7 +280,6 @@ export class CoreCompileProvider {
             ...CORE_SERVICES,
             CoreAutoLogoutService,
             ...CORE_BLOCK_SERVICES,
-            ...CORE_COMMENTS_SERVICES,
             ...CORE_CONTENTLINKS_SERVICES,
             ...CORE_COURSE_SERVICES,
             ...CORE_COURSES_SERVICES,
@@ -411,8 +410,11 @@ export class CoreCompileProvider {
     async getLazyLibraries(): Promise<Type<unknown>[]> {
         const ADDON_MOD_WORKSHOP_SERVICES = await getWorkshopServices();
 
+        const CORE_COMMENTS_SERVICES = await getCommentsServices();
+
         return [
             ...ADDON_MOD_WORKSHOP_SERVICES,
+            ...CORE_COMMENTS_SERVICES,
         ];
     }
 
