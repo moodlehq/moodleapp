@@ -47,7 +47,7 @@ export class CoreBlockBaseHandler implements CoreBlockHandler {
         block: CoreCourseBlock, // eslint-disable-line @typescript-eslint/no-unused-vars
         contextLevel: string, // eslint-disable-line @typescript-eslint/no-unused-vars
         instanceId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): undefined | CoreBlockHandlerData | Promise<CoreBlockHandlerData> {
+    ): undefined | CoreBlockHandlerData | Promise<undefined | CoreBlockHandlerData> {
         // To be overridden.
         return undefined;
     }
