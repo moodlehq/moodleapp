@@ -22,15 +22,23 @@ import { CoreTagIndexLinkHandler } from './services/handlers/index-link';
 import { CoreTagSearchLinkHandler } from './services/handlers/search-link';
 import { CoreTagComponentsModule } from './components/components.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreTagAreaDelegateService } from './services/tag-area-delegate';
-import { CoreTagHelperProvider } from './services/tag-helper';
-import { CoreTagProvider } from './services/tag';
 
-export const CORE_TAG_SERVICES: Type<unknown>[] = [
-    CoreTagAreaDelegateService,
-    CoreTagHelperProvider,
-    CoreTagProvider,
-];
+/**
+ * Get tags services.
+ *
+ * @returns Tags services.
+ */
+export async function getTagServices(): Promise<Type<unknown>[]> {
+    const { CoreTagAreaDelegateService } = await import('@features/tag/services/tag-area-delegate');
+    const { CoreTagHelperProvider } = await import('@features/tag/services/tag-helper');
+    const { CoreTagProvider } = await import('@features/tag/services/tag');
+
+    return [
+        CoreTagAreaDelegateService,
+        CoreTagHelperProvider,
+        CoreTagProvider,
+    ];
+}
 
 const routes: Routes = [
     {

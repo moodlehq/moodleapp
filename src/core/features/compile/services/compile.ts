@@ -62,7 +62,7 @@ import { CORE_RATING_SERVICES } from '@features/rating/rating.module';
 import { CORE_SEARCH_SERVICES } from '@features/search/search.module';
 import { CORE_SETTINGS_SERVICES } from '@features/settings/settings.module';
 import { CORE_SITEHOME_SERVICES } from '@features/sitehome/sitehome.module';
-import { CORE_TAG_SERVICES } from '@features/tag/tag.module';
+import { getTagServices } from '@features/tag/tag.module';
 import { CORE_STYLE_SERVICES } from '@features/styles/styles.module';
 import { CORE_USER_SERVICES } from '@features/user/user.module';
 import { CORE_XAPI_SERVICES } from '@features/xapi/xapi.module';
@@ -299,7 +299,6 @@ export class CoreCompileProvider {
             ...CORE_SHAREDFILES_SERVICES,
             ...CORE_SITEHOME_SERVICES,
             CoreSitePluginsProvider,
-            ...CORE_TAG_SERVICES,
             ...CORE_STYLE_SERVICES,
             ...CORE_USER_SERVICES,
             ...CORE_XAPI_SERVICES,
@@ -411,11 +410,13 @@ export class CoreCompileProvider {
         const ADDON_COURSECOMPLETION_SERVICES = await getCourseCompletionServices();
 
         const CORE_COMMENTS_SERVICES = await getCommentsServices();
+        const CORE_TAG_SERVICES = await getTagServices();
 
         return [
             ...ADDON_MOD_WORKSHOP_SERVICES,
-            ...CORE_COMMENTS_SERVICES,
             ...ADDON_COURSECOMPLETION_SERVICES,
+            ...CORE_COMMENTS_SERVICES,
+            ...CORE_TAG_SERVICES,
         ];
     }
 
