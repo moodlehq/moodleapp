@@ -18,6 +18,7 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
 import { Subscription } from 'rxjs';
 import { CoreCourseBlock } from '@/core/features/course/services/course';
 import type { ICoreBlockComponent } from '@features/block/classes/base-block-component';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Component to render a block.
@@ -32,7 +33,7 @@ export class CoreBlockComponent implements OnChanges, OnDestroy {
     @ViewChild(CoreDynamicComponent) dynamicComponent?: CoreDynamicComponent<ICoreBlockComponent>;
 
     @Input() block!: CoreCourseBlock; // The block to render.
-    @Input() contextLevel!: string; // The context where the block will be used.
+    @Input() contextLevel!: ContextLevel; // The context where the block will be used.
     @Input() instanceId!: number; // The instance ID associated with the context level.
     @Input() extraData!: Record<string, unknown>; // Any extra data to be passed to the block.
     @Input() labelledBy?: string;

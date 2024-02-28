@@ -23,6 +23,7 @@ import { CoreWSFile } from '@services/ws';
 import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreLogger } from '@singletons/logger';
 import { CoreQuestionBehaviourButton, CoreQuestionHelper, CoreQuestionQuestion } from '../services/question-helper';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Base class for components to render a question.
@@ -37,7 +38,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
     @Input() componentId?: number; // ID of the component the question belongs to.
     @Input() attemptId?: number; // Attempt ID.
     @Input() offlineEnabled?: boolean | string; // Whether the question can be answered in offline.
-    @Input() contextLevel?: string; // The context level.
+    @Input() contextLevel?: ContextLevel; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // The course the question belongs to (if any).
     @Input() review?: boolean; // Whether the user is in review mode.

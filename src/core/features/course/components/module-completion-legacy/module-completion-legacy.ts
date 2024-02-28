@@ -25,6 +25,7 @@ import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classe
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { BehaviorSubject } from 'rxjs';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Component to handle activity completion in sites previous to 3.11.
@@ -112,7 +113,7 @@ export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleC
 
         const result = await CoreFilterHelper.getFiltersAndFormatText(
             moduleName,
-            'module',
+            ContextLevel.MODULE,
             this.moduleId,
             { clean: true, singleLine: true, shortenLength: 50, courseId: this.completion.courseId },
         );

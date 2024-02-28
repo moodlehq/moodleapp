@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ContextLevel } from '@/core/constants';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChange } from '@angular/core';
 import { Translate } from '@singletons';
 
@@ -36,7 +37,7 @@ export class CoreNavigationBarComponent implements OnChanges {
     @Input() nextTranslate = 'core.next'; // Next translatable text, can admit $a variable.
     @Input() component?: string; // Component the bar belongs to.
     @Input() componentId?: number; // Component ID.
-    @Input() contextLevel?: string; // The context level.
+    @Input() contextLevel?: ContextLevel; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
 

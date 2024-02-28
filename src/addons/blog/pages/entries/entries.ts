@@ -273,7 +273,7 @@ export class AddonBlogEntriesPage implements OnInit {
      */
     refresh(refresher?: HTMLIonRefresherElement): void {
         const promises = this.entries.map((entry) =>
-            CoreComments.invalidateCommentsData('user', entry.userid, this.component, entry.id, 'format_blog'));
+            CoreComments.invalidateCommentsData(ContextLevel.USER, entry.userid, this.component, entry.id, 'format_blog'));
 
         promises.push(AddonBlog.invalidateEntries(this.filter));
 
@@ -304,6 +304,6 @@ export class AddonBlogEntriesPage implements OnInit {
 type AddonBlogPostFormatted = AddonBlogPost & {
     publishTranslated?: string; // Calculated in the app. Key of the string to translate the publish state of the post.
     user?: CoreUserProfile; // Calculated in the app. Data of the user that wrote the post.
-    contextLevel?: string; // Calculated in the app. The context level of the entry.
+    contextLevel?: ContextLevel; // Calculated in the app. The context level of the entry.
     contextInstanceId?: number; // Calculated in the app. The context instance id.
 };

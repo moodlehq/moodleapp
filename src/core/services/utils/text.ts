@@ -27,6 +27,7 @@ import { CoreUrl } from '@singletons/url';
 import { AlertButton } from '@ionic/angular';
 import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Different type of errors the app can treat.
@@ -1048,7 +1049,7 @@ export type CoreTextUtilsViewTextOptions = {
     componentId?: string | number; // An ID to use in conjunction with the component.
     files?: CoreWSFile[]; // List of files to display along with the text.
     filter?: boolean; // Whether the text should be filtered.
-    contextLevel?: string; // The context level.
+    contextLevel?: ContextLevel; // The context level.
     instanceId?: number; // The instance ID related to the context.
     courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     displayCopyButton?: boolean; // Whether to display a button to copy the text.

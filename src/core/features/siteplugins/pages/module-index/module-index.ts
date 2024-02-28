@@ -21,6 +21,7 @@ import { CoreSitePluginsModuleIndexComponent } from '../../components/module-ind
 import { CoreSites } from '@services/sites';
 import { CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Page to render the index page of a module site plugin.
@@ -57,7 +58,7 @@ export class CoreSitePluginsModuleIndexPage implements OnInit, CanLeave {
 
             const filteredTitle = await CoreFilterHelper.getFiltersAndFormatText(
                 this.title.trim(),
-                'module',
+                ContextLevel.MODULE,
                 this.module?.id ?? -1,
                 options,
                 siteId,

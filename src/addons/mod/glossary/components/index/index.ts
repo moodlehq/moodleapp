@@ -170,15 +170,25 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
         // Listen for offline ratings saved and synced.
         this.observers.push(CoreEvents.on(CoreRatingProvider.RATING_SAVED_EVENT, (data) => {
-            if (this.glossary && data.component == 'mod_glossary' && data.ratingArea == 'entry' && data.contextLevel == 'module'
-                    && data.instanceId == this.glossary.coursemodule) {
+            if (
+                this.glossary &&
+                data.component == 'mod_glossary' &&
+                data.ratingArea == 'entry' &&
+                data.contextLevel == ContextLevel.MODULE &&
+                data.instanceId == this.glossary.coursemodule
+            ) {
                 this.hasOfflineRatings = true;
                 this.hasOffline = true;
             }
         }));
         this.observers.push(CoreEvents.on(CoreRatingSyncProvider.SYNCED_EVENT, (data) => {
-            if (this.glossary && data.component == 'mod_glossary' && data.ratingArea == 'entry' && data.contextLevel == 'module'
-                    && data.instanceId == this.glossary.coursemodule) {
+            if (
+                this.glossary &&
+                data.component == 'mod_glossary' &&
+                data.ratingArea == 'entry' &&
+                data.contextLevel == ContextLevel.MODULE &&
+                data.instanceId == this.glossary.coursemodule
+            ) {
                 this.hasOfflineRatings = false;
                 this.hasOffline = this.hasOfflineEntries;
             }

@@ -19,6 +19,7 @@ import { AuthEmailSignupProfileField } from '@features/login/services/login-help
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
 import { CoreUtils } from '@services/utils/utils';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Directive to render user profile field.
@@ -34,7 +35,7 @@ export class CoreUserProfileFieldComponent implements OnInit {
     @Input() edit = false; // True if editing the field. Defaults to false.
     @Input() form?: FormGroup; // Form where to add the form control. Required if edit=true or signup=true.
     @Input() registerAuth?: string; // Register auth method. E.g. 'email'.
-    @Input() contextLevel?: string; // The context level.
+    @Input() contextLevel?: ContextLevel; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the field belongs to (if any). It can be used to improve performance with filters.
 
@@ -78,7 +79,7 @@ export type CoreUserProfileFieldComponentData = {
     disabled?: boolean;
     form?: FormGroup;
     registerAuth?: string;
-    contextLevel?: string;
+    contextLevel?: ContextLevel;
     contextInstanceId?: number;
     courseId?: number;
 };

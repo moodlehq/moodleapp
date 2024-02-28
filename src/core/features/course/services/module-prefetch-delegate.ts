@@ -25,7 +25,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseModuleContentFile } from './course';
 import { CoreCache } from '@classes/cache';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { DownloadStatus, TDownloadStatus, TDownloadedStatus } from '@/core/constants';
+import { DownloadStatus, TDownloadStatus, TDownloadedStatus, ContextLevel } from '@/core/constants';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventSectionStatusChangedData } from '@singletons/events';
@@ -132,7 +132,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
                 if (canUse) {
                     // Can use check updates, add it to the tocheck list.
                     result.toCheck.push({
-                        contextlevel: 'module',
+                        contextlevel: ContextLevel.MODULE,
                         id: module.id,
                         since: data.downloadTime || 0,
                     });
@@ -888,7 +888,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             courseid: courseId,
             tocheck: [
                 {
-                    contextlevel: 'module',
+                    contextlevel: ContextLevel.MODULE,
                     id: module.id,
                     since: data.downloadTime || 0,
                 },
@@ -1611,7 +1611,7 @@ export type CoreCourseCheckUpdatesWSParams = {
  * Data to send in tocheck parameter.
  */
 type CheckUpdatesToCheckWSParam = {
-    contextlevel: string; // The context level for the file location. Only module supported right now.
+    contextlevel: ContextLevel.MODULE; // The context level for the file location. Only module supported right now.
     id: number; // Context instance id.
     since: number; // Check updates since this time stamp.
 };

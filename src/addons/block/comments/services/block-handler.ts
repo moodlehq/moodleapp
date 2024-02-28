@@ -19,6 +19,7 @@ import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler
 import { CoreCourseBlock } from '@features/course/services/course';
 import { makeSingleton } from '@singletons';
 import { CoreComments } from '@features/comments/services/comments';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Block handler.
@@ -44,7 +45,7 @@ export class AddonBlockCommentsHandlerService extends CoreBlockBaseHandler {
      * @param instanceId The instance ID associated with the context level.
      * @returns Data or promise resolved with the data.
      */
-    getDisplayData(block: CoreCourseBlock, contextLevel: string, instanceId: number): CoreBlockHandlerData {
+    getDisplayData(block: CoreCourseBlock, contextLevel: ContextLevel, instanceId: number): CoreBlockHandlerData {
         return {
             title: 'addon.block_comments.pluginname',
             class: 'addon-block-comments',

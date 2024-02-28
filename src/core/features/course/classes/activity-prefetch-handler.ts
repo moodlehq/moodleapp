@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DownloadStatus } from '@/core/constants';
+import { DownloadStatus, ContextLevel } from '@/core/constants';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreNetwork } from '@services/network';
@@ -118,7 +118,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
             await Promise.all([
                 CoreCourse.getModuleBasicInfo(module.id, { siteId }),
                 CoreCourse.getModule(module.id, courseId, undefined, false, true, siteId),
-                CoreFilterHelper.getFilters('module', module.id, { courseId }),
+                CoreFilterHelper.getFilters(ContextLevel.MODULE, module.id, { courseId }),
             ]);
 
             // Call the download function.

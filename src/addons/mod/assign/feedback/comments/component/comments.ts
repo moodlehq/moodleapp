@@ -25,6 +25,7 @@ import { AddonModAssignFeedbackDelegate } from '@addons/mod/assign/services/feed
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
+import { ContextLevel } from '@/core/constants';
 /**
  * Component to render a comments feedback plugin.
  */
@@ -69,7 +70,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
                             component: this.component,
                             componentId: this.assign.cmid,
                             filter: true,
-                            contextLevel: 'module',
+                            contextLevel: ContextLevel.MODULE,
                             instanceId: this.assign.cmid,
                             courseId: this.assign.course,
                         });

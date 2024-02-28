@@ -46,6 +46,7 @@ import { CoreReminders, CoreRemindersService, CoreRemindersUnits } from '@featur
 import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
 import moment from 'moment-timezone';
 import { ADDON_CALENDAR_COMPONENT } from '@addons/calendar/constants';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -266,7 +267,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
         const courseFillFullname = async (course: CoreCourseSearchedData | CoreEnrolledCourseData): Promise<void> => {
             try {
-                const result = await CoreFilterHelper.getFiltersAndFormatText(course.fullname, 'course', course.id);
+                const result = await CoreFilterHelper.getFiltersAndFormatText(course.fullname, ContextLevel.COURSE, course.id);
                 course.fullname = result.text;
             } catch {
                 // Ignore errors.

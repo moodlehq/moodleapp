@@ -20,6 +20,7 @@ import { CoreFilterDefaultHandler } from './handlers/default-filter';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Interface that all filter handlers must implement.
@@ -156,7 +157,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
      * @param instanceId Instance ID.
      * @returns Filters.
      */
-    getEnabledFilters(contextLevel: string, instanceId: number): CoreFilterFilter[] {
+    getEnabledFilters(contextLevel: ContextLevel, instanceId: number): CoreFilterFilter[] {
         const filters: CoreFilterFilter[] = [];
 
         for (const name in this.enabledHandlers) {

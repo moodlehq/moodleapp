@@ -19,6 +19,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';
+import { ContextLevel } from '@/core/constants';
 
 const ROOT_CACHE_KEY = 'mmaFiles:';
 
@@ -136,7 +137,7 @@ export class AddonPrivateFilesProvider {
             contextid: -1,
             component: 'user',
             filearea: 'private',
-            contextlevel: 'user',
+            contextlevel: ContextLevel.USER,
             instanceid: CoreSites.getCurrentSite()?.getUserId(),
             itemid: 0,
             filepath: '',
@@ -428,7 +429,7 @@ export type AddonPrivateFilesGetFilesWSParams = {
     filepath: string; // File path.
     filename: string; // File name.
     modified?: number; // Timestamp to return files changed after this time.
-    contextlevel?: string; // The context level for the file location.
+    contextlevel?: ContextLevel; // The context level for the file location.
     instanceid?: number; // The instance id for where the file is located.
 };
 

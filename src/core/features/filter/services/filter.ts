@@ -141,7 +141,7 @@ export class CoreFilterProvider {
         }
 
         filters.forEach((filter) => {
-            if (hadSystemContext && filter.contextlevel == 'course' && filter.instanceid == site.getSiteHomeId()) {
+            if (hadSystemContext && filter.contextlevel === ContextLevel.COURSE && filter.instanceid == site.getSiteHomeId()) {
                 if (hadSiteHomeContext) {
                     // We need to return both site home and system. Add site home first.
                     classified[filter.contextlevel][filter.instanceid].push(filter);
@@ -151,7 +151,7 @@ export class CoreFilterProvider {
                 }
 
                 // Simulate the system context based on the inherited data.
-                filter.contextlevel = 'system';
+                filter.contextlevel = ContextLevel.SYSTEM;
                 filter.instanceid = 0;
                 filter.contextid = -1;
                 filter.localstate = filter.inheritedstate;
@@ -172,10 +172,10 @@ export class CoreFilterProvider {
      * @returns Context to use.
      */
     convertContext(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         options: {courseId?: number} = {},
-    ): {contextLevel: string; instanceId: number} {
+    ): {contextLevel: ContextLevel; instanceId: number} {
         if (contextLevel === ContextLevel.BLOCK || contextLevel === ContextLevel.USER) {
             // Blocks and users cannot have specific filters, use the parent context instead.
             return options.courseId ?
@@ -321,7 +321,7 @@ export class CoreFilterProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with the filters.
      */
-    async getAvailableInContext(contextLevel: string, instanceId: number, siteId?: string): Promise<CoreFilterFilter[]> {
+    async getAvailableInContext(contextLevel: ContextLevel, instanceId: number, siteId?: string): Promise<CoreFilterFilter[]> {
         const result = await this.getAvailableInContexts([{ contextlevel: contextLevel, instanceid: instanceId }], siteId);
 
         return result[contextLevel][instanceId] || [];
@@ -406,7 +406,7 @@ export class CoreFilterProvider {
      * @param siteId Site ID (empty for current site).
      * @returns Promise resolved when the data is invalidated.
      */
-    async invalidateAvailableInContext(contextLevel: string, instanceId: number, siteId?: string): Promise<void> {
+    async invalidateAvailableInContext(contextLevel: ContextLevel, instanceId: number, siteId?: string): Promise<void> {
         await this.invalidateAvailableInContexts([{ contextlevel: contextLevel, instanceid: instanceId }], siteId);
     }
 
@@ -431,7 +431,7 @@ export class CoreFilterProvider {
         for (let i = 0; i < contexts.length; i++) {
             const context = contexts[i];
 
-            if (context.contextlevel != 'system') {
+            if (context.contextlevel !== ContextLevel.SYSTEM) {
                 continue;
             }
 
@@ -439,7 +439,7 @@ export class CoreFilterProvider {
 
             // Use course site home instead. Check if it's already in the list.
             result.hadSiteHomeContext = contexts.some((context) =>
-                context.contextlevel == 'course' && context.instanceid == site.getSiteHomeId());
+                context.contextlevel === ContextLevel.COURSE && context.instanceid == site.getSiteHomeId());
 
             if (result.hadSiteHomeContext) {
                 // Site home is already in list, remove this context from the list.
@@ -447,7 +447,7 @@ export class CoreFilterProvider {
             } else {
                 // Site home not in list, use it instead of system.
                 contexts[i] = {
-                    contextlevel: 'course',
+                    contextlevel: ContextLevel.COURSE,
                     instanceid: site.getSiteHomeId(),
                 };
             }
@@ -494,7 +494,7 @@ export type CoreFiltersGetAvailableInContextWSParams = {
  * Data about a context sent to core_filters_get_available_in_context.
  */
 export type CoreFiltersGetAvailableInContextWSParamContext = {
-    contextlevel: string; // The context level where the filters are: (coursecat, course, module).
+    contextlevel: ContextLevel; // The context level where the filters are: (coursecat, course, module).
     instanceid: number; // The instance id of item associated with the context.
 };
 
@@ -502,7 +502,7 @@ export type CoreFiltersGetAvailableInContextWSParamContext = {
  * Filter object returned by core_filters_get_available_in_context.
  */
 export type CoreFilterFilter = {
-    contextlevel: string; // The context level where the filters are: (coursecat, course, module).
+    contextlevel: ContextLevel; // The context level where the filters are: (coursecat, course, module).
     instanceid: number; // The instance id of item associated with the context.
     contextid: number; // The context id.
     filter: string; // Filter plugin name.
@@ -522,7 +522,7 @@ export type CoreFilterGetAvailableInContextResult = {
  * Options that can be passed to format text.
  */
 export type CoreFilterFormatTextOptions = {
-    contextLevel?: string; // The context level where the text is.
+    contextLevel?: ContextLevel; // The context level where the text is.
     instanceId?: number; // The instance id related to the context.
     clean?: boolean; // If true all HTML will be removed. Default false.
     filter?: boolean; // If true the string will be run through applicable filters as well. Default true.

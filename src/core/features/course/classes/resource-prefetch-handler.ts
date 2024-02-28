@@ -21,6 +21,7 @@ import { CoreWSFile } from '@services/ws';
 import { CoreCourse, CoreCourseAnyModuleData } from '../services/course';
 import { CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModulePrefetchHandlerBase } from './module-prefetch-handler';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Base prefetch handler to be registered in CoreCourseModulePrefetchDelegate. It is useful to minimize the amount of
@@ -131,7 +132,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
             ));
         }
 
-        promises.push(CoreFilterHelper.getFilters('module', module.id, { courseId }));
+        promises.push(CoreFilterHelper.getFilters(ContextLevel.MODULE, module.id, { courseId }));
 
         await Promise.all(promises);
     }

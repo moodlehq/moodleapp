@@ -19,6 +19,7 @@ import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler
 import { CoreCourseBlock } from '@features/course/services/course';
 import { makeSingleton } from '@singletons';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Block handler.
@@ -41,7 +42,7 @@ export class AddonBlockCompletionStatusHandlerService extends CoreBlockBaseHandl
      */
     async getDisplayData(
         block: CoreCourseBlock,
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
     ): Promise<undefined | CoreBlockHandlerData> {
         if (contextLevel !== 'course') {

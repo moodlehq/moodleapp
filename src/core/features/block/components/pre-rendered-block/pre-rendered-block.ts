@@ -14,6 +14,7 @@
 
 import { OnInit, Component, HostBinding } from '@angular/core';
 import { CoreBlockBaseComponent } from '../../classes/base-block-component';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Component to render blocks with pre-rendered HTML.
@@ -36,7 +37,7 @@ export class CoreBlockPreRenderedComponent extends CoreBlockBaseComponent implem
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.courseId = this.contextLevel == 'course' ? this.instanceId : undefined;
+        this.courseId = this.contextLevel === ContextLevel.COURSE ? this.instanceId : undefined;
         this.fetchContentDefaultError = 'Error getting ' + this.block.contents?.title + ' data.';
         this.id = `block-${this.block.instanceid}`;
 

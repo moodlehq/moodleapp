@@ -22,6 +22,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreDom } from '@singletons/dom';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Component that displays the list of side blocks.
@@ -33,7 +34,7 @@ import { CoreDom } from '@singletons/dom';
 })
 export class CoreBlockSideBlocksComponent implements OnInit {
 
-    @Input() contextLevel!: string;
+    @Input() contextLevel!: ContextLevel;
     @Input() instanceId!: number;
     @Input() initialBlockInstanceId?: number;
     @Input() myDashboardPage?: string;
@@ -64,7 +65,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
     async invalidateBlocks(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        if (this.contextLevel === 'course') {
+        if (this.contextLevel === ContextLevel.COURSE) {
             promises.push(CoreCourse.invalidateCourseBlocks(this.instanceId));
         } else {
             promises.push(CoreCoursesDashboard.invalidateDashboardBlocks());
@@ -87,7 +88,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
      */
     async loadContent(): Promise<void> {
         try {
-            if (this.contextLevel === 'course') {
+            if (this.contextLevel === ContextLevel.COURSE) {
                 this.blocks = await CoreBlockHelper.getCourseBlocks(this.instanceId);
             } else {
                 const blocks = await CoreCoursesDashboard.getDashboardBlocks(undefined, undefined, this.myDashboardPage);

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ContextLevel } from '@/core/constants';
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
@@ -36,7 +37,7 @@ export class CoreSitePluginsUserProfileFieldComponent extends CoreSitePluginsCom
     @Input() disabled = false; // True if disabled. Defaults to false.
     @Input() form?: FormGroup; // Form where to add the form control. Required if edit=true or signup=true.
     @Input() registerAuth?: string; // Register auth method. E.g. 'email'.
-    @Input() contextLevel?: string; // The context level.
+    @Input() contextLevel?: ContextLevel; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the field belongs to (if any). It can be used to improve performance with filters.
 

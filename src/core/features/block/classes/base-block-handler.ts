@@ -14,6 +14,7 @@
 
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreBlockHandler, CoreBlockHandlerData } from '../services/block-delegate';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Base handler for blocks.
@@ -45,7 +46,7 @@ export class CoreBlockBaseHandler implements CoreBlockHandler {
      */
     getDisplayData(
         block: CoreCourseBlock, // eslint-disable-line @typescript-eslint/no-unused-vars
-        contextLevel: string, // eslint-disable-line @typescript-eslint/no-unused-vars
+        contextLevel: ContextLevel, // eslint-disable-line @typescript-eslint/no-unused-vars
         instanceId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): undefined | CoreBlockHandlerData | Promise<undefined | CoreBlockHandlerData> {
         // To be overridden.

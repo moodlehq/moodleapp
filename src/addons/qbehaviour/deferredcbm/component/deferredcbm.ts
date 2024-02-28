@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ContextLevel } from '@/core/constants';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 import { CoreQuestionBehaviourButton, CoreQuestionQuestion } from '@features/question/services/question-helper';
@@ -30,7 +31,7 @@ export class AddonQbehaviourDeferredCBMComponent {
     @Input() componentId?: number; // ID of the component the question belongs to.
     @Input() attemptId?: number; // Attempt ID.
     @Input() offlineEnabled?: boolean | string; // Whether the question can be answered in offline.
-    @Input() contextLevel?: string; // The context level.
+    @Input() contextLevel?: ContextLevel; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the question belongs to (if any). It can be used to improve performance with filters.
     @Input() review?: boolean; // Whether the user is in review mode.

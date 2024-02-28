@@ -20,6 +20,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreEditorDraft, CoreEditorDraftPrimaryData, DRAFT_TABLE } from './database/editor';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Service with features regarding rich text editor in offline.
@@ -44,7 +45,7 @@ export class CoreEditorOfflineProvider {
      * @returns Promise resolved when done.
      */
     async deleteDraft(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         contextInstanceId: number,
         elementId: string,
         extraParams: Record<string, unknown>,
@@ -71,7 +72,7 @@ export class CoreEditorOfflineProvider {
      * @returns Object with the fixed primary data.
      */
     protected fixDraftPrimaryData(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         contextInstanceId: number,
         elementId: string,
         extraParams: Record<string, unknown>,
@@ -96,7 +97,7 @@ export class CoreEditorOfflineProvider {
      * @returns Promise resolved with the draft data. Undefined if no draft stored.
      */
     async getDraft(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         contextInstanceId: number,
         elementId: string,
         extraParams: Record<string, unknown>,
@@ -123,7 +124,7 @@ export class CoreEditorOfflineProvider {
      * @returns Promise resolved with the draft data. Undefined if no draft stored.
      */
     async resumeDraft(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         contextInstanceId: number,
         elementId: string,
         extraParams: Record<string, unknown>,
@@ -183,7 +184,7 @@ export class CoreEditorOfflineProvider {
      * @returns Promise resolved when done.
      */
     async saveDraft(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         contextInstanceId: number,
         elementId: string,
         extraParams: Record<string, unknown>,

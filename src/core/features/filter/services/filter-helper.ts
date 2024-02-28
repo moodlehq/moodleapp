@@ -32,7 +32,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { firstValueFrom } from 'rxjs';
-import { CoreBlockHelper } from '@features/block/services/block-helper';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Helper service to provide filter functionalities.
@@ -80,7 +80,7 @@ export class CoreFilterHelperProvider {
      * @returns Promise resolved with the filters.
      */
     protected async getCacheableFilters(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         getFilters: () => Promise<CoreFiltersGetAvailableInContextWSParamContext[]>,
         options: CoreFilterFormatTextOptions,
@@ -118,7 +118,7 @@ export class CoreFilterHelperProvider {
 
         courseIds.forEach((courseId) => {
             contexts.push({
-                contextlevel: 'course',
+                contextlevel: ContextLevel.COURSE,
                 instanceid: courseId,
             });
         });
@@ -148,7 +148,7 @@ export class CoreFilterHelperProvider {
                 section.modules.forEach((module) => {
                     if (CoreCourseHelper.canUserViewModule(module, section)) {
                         contexts.push({
-                            contextlevel: 'module',
+                            contextlevel: ContextLevel.MODULE,
                             instanceid: module.id,
                         });
                     }
@@ -171,7 +171,7 @@ export class CoreFilterHelperProvider {
      * @returns Promise resolved with the filters.
      */
     async getFilters(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         options: CoreFilterFormatTextOptions = {},
         siteId?: string,
@@ -201,7 +201,10 @@ export class CoreFilterHelperProvider {
             const courseId = options.courseId;
             let hasFilters = true;
 
-            if (contextLevel == 'system' || (contextLevel == 'course' && instanceId == site.getSiteHomeId())) {
+            if (
+                contextLevel === ContextLevel.SYSTEM ||
+                (contextLevel === ContextLevel.COURSE && instanceId == site.getSiteHomeId())
+            ) {
                 // No need to check the site filters because we're requesting the same context, so we'd do the same twice.
             } else {
                 // Check if site has any filter to treat.
@@ -214,13 +217,13 @@ export class CoreFilterHelperProvider {
 
             options.filter = true;
 
-            if (contextLevel == 'module' && courseId) {
+            if (contextLevel === ContextLevel.MODULE && courseId) {
                 // Get all the modules filters with a single call to decrease the number of WS calls.
                 const getFilters = () => this.getCourseModulesContexts(courseId, siteId);
 
                 return await this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
 
-            } else if (contextLevel == 'course') {
+            } else if (contextLevel === ContextLevel.COURSE) {
                 // If enrolled, get all enrolled courses filters with a single call to decrease number of WS calls.
                 const getFilters = () => this.getCourseContexts(instanceId, siteId);
 
@@ -247,7 +250,7 @@ export class CoreFilterHelperProvider {
      */
     async getFiltersAndFormatText(
         text: string,
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         options?: CoreFilterFormatTextOptions,
         siteId?: string,
@@ -271,7 +274,7 @@ export class CoreFilterHelperProvider {
      */
     protected getFromMemoryCache(
         courseId: number,
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         site: CoreSite,
     ): CoreFilterFilter[] | undefined {
@@ -304,7 +307,7 @@ export class CoreFilterHelperProvider {
         const site = await CoreSites.getSite(siteId);
 
         // Get filters at site level.
-        const filters = await CoreFilter.getAvailableInContext('system', 0, site.getId());
+        const filters = await CoreFilter.getAvailableInContext(ContextLevel.SYSTEM, 0, site.getId());
 
         return CoreFilterDelegate.shouldBeApplied(filters, options, site);
     }
@@ -319,7 +322,7 @@ export class CoreFilterHelperProvider {
      */
     protected storeInMemoryCache(
         courseId: number,
-        contextLevel: string,
+        contextLevel: ContextLevel,
         contexts: CoreFilterClassifiedFilters,
         siteId: string,
     ): void {
