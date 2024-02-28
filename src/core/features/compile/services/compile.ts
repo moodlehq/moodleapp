@@ -126,7 +126,7 @@ import { CoreSitePluginsAssignSubmissionComponent } from '@features/siteplugins/
 // Import addon providers. Do not import database module because it causes circular dependencies.
 import { ADDON_BADGES_SERVICES } from '@addons/badges/badges.module';
 import { ADDON_CALENDAR_SERVICES } from '@addons/calendar/calendar.module';
-import { ADDON_COURSECOMPLETION_SERVICES } from '@addons/coursecompletion/coursecompletion.module';
+import { getCourseCompletionServices } from '@addons/coursecompletion/coursecompletion.module';
 import { ADDON_COMPETENCY_SERVICES } from '@addons/competency/competency.module';
 import { ADDON_MESSAGEOUTPUT_SERVICES } from '@addons/messageoutput/messageoutput.module';
 import { ADDON_MESSAGES_SERVICES } from '@addons/messages/messages.module';
@@ -308,7 +308,6 @@ export class CoreCompileProvider {
             ...extraProviders,
             ...ADDON_BADGES_SERVICES,
             ...ADDON_CALENDAR_SERVICES,
-            ...ADDON_COURSECOMPLETION_SERVICES,
             ...ADDON_COMPETENCY_SERVICES,
             ...ADDON_MESSAGEOUTPUT_SERVICES,
             ...ADDON_MESSAGES_SERVICES,
@@ -409,12 +408,14 @@ export class CoreCompileProvider {
      */
     async getLazyLibraries(): Promise<Type<unknown>[]> {
         const ADDON_MOD_WORKSHOP_SERVICES = await getWorkshopServices();
+        const ADDON_COURSECOMPLETION_SERVICES = await getCourseCompletionServices();
 
         const CORE_COMMENTS_SERVICES = await getCommentsServices();
 
         return [
             ...ADDON_MOD_WORKSHOP_SERVICES,
             ...CORE_COMMENTS_SERVICES,
+            ...ADDON_COURSECOMPLETION_SERVICES,
         ];
     }
 
