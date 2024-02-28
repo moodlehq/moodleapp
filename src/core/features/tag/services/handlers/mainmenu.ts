@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreTag } from '../tag';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
-import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -35,13 +34,7 @@ export class CoreTagMainMenuHandlerService implements CoreMainMenuHandler {
      * @returns Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
-        const available = await CoreTag.areTagsAvailable();
-        if (!available) {
-            return false;
-        }
-
-        // The only way to check whether tags are enabled on web is to perform a WS call.
-        return CoreUtils.promiseWorks(CoreTag.getTagCollections());
+        return await CoreTag.areTagsAvailable();
     }
 
     /**

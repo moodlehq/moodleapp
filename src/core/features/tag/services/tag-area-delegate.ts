@@ -15,6 +15,7 @@
 import { Injectable, Type } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { makeSingleton } from '@singletons';
+import { CoreTag } from './tag';
 
 /**
  * Interface that all tag area handlers must implement.
@@ -51,6 +52,13 @@ export class CoreTagAreaDelegateService extends CoreDelegate<CoreTagAreaHandler>
 
     constructor() {
         super('CoreTagAreaDelegate', true);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabled(): Promise<boolean> {
+        return CoreTag.areTagsAvailable();
     }
 
     /**

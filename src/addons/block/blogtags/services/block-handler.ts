@@ -18,6 +18,8 @@ import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { AddonBlockBlogTagsComponent } from '../components/blogtags/blogtags';
 import { makeSingleton } from '@singletons';
+import { CoreTag } from '@features/tag/services/tag';
+import { AddonBlog } from '@addons/blog/services/blog';
 
 /**
  * Block handler.
@@ -27,6 +29,16 @@ export class AddonBlockBlogTagsHandlerService extends CoreBlockBaseHandler {
 
     name = 'AddonBlockBlogTags';
     blockName = 'blog_tags';
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabled(): Promise<boolean> {
+        const tags = await CoreTag.areTagsAvailable();
+        const blogs = await AddonBlog.isPluginEnabled();
+
+        return blogs && tags;
+    }
 
     /**
      * Returns the data needed to render the block.

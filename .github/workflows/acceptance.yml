@@ -93,6 +93,7 @@ jobs:
               "@core_search"
               "@core_settings"
               "@core_siteplugins"
+              "@core_tag"
               "@core_user"
               "@core_usertour"
             )
