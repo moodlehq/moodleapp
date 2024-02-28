@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreCourses } from '@features/courses/services/courses';
+import { CoreCourseAnyCourseData, CoreCourses } from '@features/courses/services/courses';
 import { CoreSite  } from '@classes/sites/site';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -38,6 +38,44 @@ export class AddonCourseCompletionProvider {
 
     constructor() {
         this.logger = CoreLogger.getInstance('AddonCourseCompletion');
+    }
+
+    /**
+     * Check whether completion is available in a certain site.
+     *
+     * @param site Site. If not defined, use current site.
+     * @returns True if available.
+     */
+    isCompletionEnabledInSite(site?: CoreSite): boolean {
+        site = site || CoreSites.getCurrentSite();
+
+        return !!site && site.canUseAdvancedFeature('enablecompletion');
+    }
+
+    /**
+     * Check whether completion is available in a certain course.
+     *
+     * @param course Course.
+     * @param site Site. If not defined, use current site.
+     * @returns True if available.
+     */
+    isCompletionEnabledInCourse(course: CoreCourseAnyCourseData, site?: CoreSite): boolean {
+        if (!this.isCompletionEnabledInSite(site)) {
+            return false;
+        }
+
+        return this.isCompletionEnabledInCourseObject(course);
+    }
+
+    /**
+     * Check whether completion is enabled in a certain course object.
+     *
+     * @param course Course object.
+     * @returns True if completion is enabled, false otherwise.
+     */
+    protected isCompletionEnabledInCourseObject(course: CoreCourseAnyCourseData): boolean {
+        // Undefined means it's not supported, so it's enabled by default.
+        return course.enablecompletion !== false;
     }
 
     /**
@@ -180,7 +218,7 @@ export class AddonCourseCompletionProvider {
      * @returns True if plugin enabled, false otherwise.
      */
     isPluginViewEnabled(): boolean {
-        return CoreSites.isLoggedIn();
+        return CoreSites.isLoggedIn() && this.isCompletionEnabledInSite();
     }
 
     /**
@@ -190,26 +228,19 @@ export class AddonCourseCompletionProvider {
      * @param preferCache True if shouldn't call WS if data is cached, false otherwise.
      * @returns Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
-    async isPluginViewEnabledForCourse(courseId?: number, preferCache: boolean = true): Promise<boolean> {
-        if (!courseId) {
+    async isPluginViewEnabledForCourse(courseId?: number, preferCache = true): Promise<boolean> {
+        if (!courseId || !this.isCompletionEnabledInSite()) {
             return false;
         }
 
         const course = await CoreCourses.getUserCourse(courseId, preferCache);
 
-        if (course) {
-            if (course.enablecompletion !== undefined && !course.enablecompletion) {
-                // Completion not enabled for the course.
-                return false;
-            }
-
-            if (course.completionhascriteria !== undefined && !course.completionhascriteria) {
-                // No criteria, cannot view completion.
-                return false;
-            }
+        if (!course) {
+            return true;
         }
 
-        return true;
+        // Check completion is enabled in the course and it has criteria, to view completion.
+        return this.isCompletionEnabledInCourseObject(course) && course.completionhascriteria !== false;
     }
 
     /**

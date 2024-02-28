@@ -64,6 +64,7 @@ jobs:
               "@addon_block_timeline"
               "@addon_calendar"
               "@addon_competency"
+              "@addon_coursecompletion"
               "@addon_messages"
               "@addon_mod_assign"
               "@addon_mod_bigbluebuttonbn"
