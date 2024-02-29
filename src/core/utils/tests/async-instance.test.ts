@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
+import { AsyncInstance, LazyMethodsGuard, asyncInstance } from '@/core/utils/async-instance';
 import { expectAnyType, expectSameTypes } from '@/testing/utils';
 
 describe('AsyncInstance', () => {
@@ -33,8 +33,45 @@ describe('AsyncInstance', () => {
         expect(asyncService.instance).toBeUndefined();
         expect(asyncService.answer).toEqual(42);
         expect(asyncService.instance).toBeUndefined();
+        expect(await asyncService.isEager()).toBe(true);
         expect(await asyncService.hello()).toEqual('Hi there!');
         expect(asyncService.instance).toBeInstanceOf(LazyService);
+        expect(await asyncService.isEager()).toBe(false);
+    });
+
+    it('does not return undefined methods when they are declared', async () => {
+        const asyncService = asyncInstance<LazyService, EagerService>(() => new LazyService());
+
+        asyncService.setEagerInstance(new EagerService());
+        asyncService.setLazyInstanceMethods(['hello', 'goodbye']);
+
+        expect(asyncService.hello).not.toBeUndefined();
+        expect(asyncService.goodbye).not.toBeUndefined();
+        expect(asyncService.isEager).not.toBeUndefined();
+        expect(asyncService.notImplemented).toBeUndefined();
+    });
+
+    it('guards against missing or invalid instance methods', () => {
+        // Define interfaces.
+        interface Eager {
+            lorem(): void;
+            ipsum(): void;
+        }
+
+        interface Lazy extends Eager {
+            foo(): void;
+            bar(): void;
+        }
+
+        // Test valid method tuples.
+        expectSameTypes<LazyMethodsGuard<['foo', 'bar'], Lazy, Eager>, ['foo', 'bar']>(true);
+        expectSameTypes<LazyMethodsGuard<['bar', 'foo'], Lazy, Eager>, ['bar', 'foo']>(true);
+        expectSameTypes<LazyMethodsGuard<['foo', 'foo', 'bar'], Lazy, Eager>, ['foo', 'foo', 'bar']>(true);
+
+        // Test invalid method tuples.
+        expectSameTypes<LazyMethodsGuard<['foo'], Lazy, Eager>, never>(true);
+        expectSameTypes<LazyMethodsGuard<['foo', 'bar', 'lorem'], Lazy, Eager>, never>(true);
+        expectSameTypes<LazyMethodsGuard<['foo', 'bar', 'baz'], Lazy, Eager>, never>(true);
     });
 
     it('preserves undefined properties after initialization', async () => {
@@ -73,6 +110,12 @@ class EagerService {
 
     answer = 42;
 
+    notImplemented?(): void;
+
+    async isEager(): Promise<boolean> {
+        return true;
+    }
+
 }
 
 class FakeEagerService {
@@ -82,6 +125,10 @@ class FakeEagerService {
 }
 
 class LazyService extends EagerService {
+
+    async isEager(): Promise<boolean> {
+        return false;
+    }
 
     hello(): string {
         return 'Hi there!';

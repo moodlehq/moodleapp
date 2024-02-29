@@ -15,6 +15,7 @@
 import { asyncInstance } from '@/core/utils/async-instance';
 import { ADDON_MOD_WORKSHOP_SYNC_CRON_NAME } from '@addons/mod/workshop/constants';
 import { CoreCronHandler } from '@services/cron';
+import type { AddonModWorkshopSyncCronHandlerLazyService } from './sync-cron-lazy';
 
 export class AddonModWorkshopSyncCronHandlerService {
 
@@ -28,13 +29,17 @@ export class AddonModWorkshopSyncCronHandlerService {
  * @returns Cron handler.
  */
 export function getCronHandlerInstance(): CoreCronHandler {
-    const lazyHandler = asyncInstance(async () => {
+    const lazyHandler = asyncInstance<
+        AddonModWorkshopSyncCronHandlerLazyService,
+        AddonModWorkshopSyncCronHandlerService
+    >(async () => {
         const { AddonModWorkshopSyncCronHandler } = await import('./sync-cron-lazy');
 
         return AddonModWorkshopSyncCronHandler.instance;
     });
 
     lazyHandler.setEagerInstance(new AddonModWorkshopSyncCronHandlerService());
+    lazyHandler.setLazyInstanceMethods(['execute', 'getInterval']);
 
     return lazyHandler;
 }
