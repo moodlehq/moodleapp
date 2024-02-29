@@ -34,23 +34,25 @@ export class AddonBlockSearchForumsHandlerService extends CoreBlockBaseHandler {
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        const enabled = await CoreSearchGlobalSearch.isEnabled();
-
-        if (!enabled) {
-            return false;
-        }
-
-        const forumSearchAreas = ['mod_forum-activity', 'mod_forum-post'];
-        const searchAreas = await CoreSearchGlobalSearch.getSearchAreas();
-
-        return searchAreas.some(({ id }) => forumSearchAreas.includes(id));
+        return CoreSearchGlobalSearch.isEnabled();
     }
 
     /**
      * @inheritdoc
      */
-    getDisplayData(block: CoreCourseBlock, contextLevel: string, instanceId: number): CoreBlockHandlerData | undefined {
+    async getDisplayData(
+        block: CoreCourseBlock,
+        contextLevel: string,
+        instanceId: number,
+    ): Promise<undefined | CoreBlockHandlerData> {
         if (contextLevel !== 'course') {
+            return;
+        }
+
+        const forumSearchAreas = ['mod_forum-activity', 'mod_forum-post'];
+        const searchAreas = await CoreSearchGlobalSearch.getSearchAreas();
+
+        if (!searchAreas.some(({ id }) => forumSearchAreas.includes(id))) {
             return;
         }
 

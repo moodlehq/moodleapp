@@ -45,7 +45,7 @@ export interface CoreBlockHandler extends CoreDelegateHandler {
         block: CoreCourseBlock,
         contextLevel: string,
         instanceId: number,
-    ): undefined | CoreBlockHandlerData | Promise<CoreBlockHandlerData>;
+    ): undefined | CoreBlockHandlerData | Promise<undefined | CoreBlockHandlerData>;
 }
 
 /**
