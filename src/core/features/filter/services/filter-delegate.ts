@@ -15,7 +15,7 @@
 import { Injectable, ViewContainerRef } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreFilter, CoreFilterFilter, CoreFilterFormatTextOptions } from './filter';
+import { CoreFilter, CoreFilterFilter, CoreFilterFormatTextOptions, CoreFilterStateValue } from './filter';
 import { CoreFilterDefaultHandler } from './handlers/default-filter';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreSite } from '@classes/sites/site';
@@ -169,7 +169,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
                 filter: handler.filterName,
                 inheritedstate: 1,
                 instanceid: instanceId,
-                localstate: 1,
+                localstate: CoreFilterStateValue.ON,
             });
         }
 
@@ -245,7 +245,10 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
         skipFilters?: string[],
     ): boolean {
 
-        if (filter.localstate == -1 || (filter.localstate == 0 && filter.inheritedstate == -1)) {
+        if (
+            filter.localstate === CoreFilterStateValue.OFF ||
+            (filter.localstate === CoreFilterStateValue.INHERIT && filter.inheritedstate === CoreFilterStateValue.OFF)
+        ) {
             // Filter is disabled, ignore it.
             return false;
         }
@@ -255,7 +258,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
             return false;
         }
 
-        if (skipFilters && skipFilters.indexOf(filter.filter) != -1) {
+        if (skipFilters && skipFilters.indexOf(filter.filter) !== -1) {
             // Skip this filter.
             return false;
         }

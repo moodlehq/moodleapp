@@ -23,6 +23,8 @@ import {
     CoreFilterFormatTextOptions,
     CoreFilterClassifiedFilters,
     CoreFiltersGetAvailableInContextWSParamContext,
+    CoreFilterStateValue,
+    CoreFilterAllStates,
 } from './filter';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourses } from '@features/courses/services/courses';
@@ -177,7 +179,7 @@ export class CoreFilterHelperProvider {
         siteId?: string,
     ): Promise<CoreFilterFilter[]> {
         // Check the right context to use.
-        const newContext = CoreFilter.convertContext(contextLevel, instanceId, { courseId: options.courseId });
+        const newContext = CoreFilter.getEffectiveContext(contextLevel, instanceId, { courseId: options.courseId });
         contextLevel = newContext.contextLevel;
         instanceId = newContext.instanceId;
 
@@ -196,6 +198,11 @@ export class CoreFilterHelperProvider {
 
                 // We cannot check which filters are available, apply them all.
                 return await CoreFilterDelegate.getEnabledFilters(contextLevel, instanceId);
+            }
+
+            const filters = await this.getFiltersInContextUsingAllStates(contextLevel, instanceId, options, site);
+            if (filters) {
+                return filters;
             }
 
             const courseId = options.courseId;
@@ -236,6 +243,95 @@ export class CoreFilterHelperProvider {
 
             return [];
         }
+    }
+
+    /**
+     * Get filters in context using the all states data.
+     *
+     * @param contextLevel The context level.
+     * @param instanceId Instance ID related to the context.
+     * @param options Options.
+     * @param site Site.
+     * @returns Filters, undefined if all states cannot be used.
+     */
+    protected async getFiltersInContextUsingAllStates(
+        contextLevel: ContextLevel,
+        instanceId: number,
+        options: CoreFilterFormatTextOptions = {},
+        site?: CoreSite,
+    ): Promise<CoreFilterFilter[] | undefined> {
+        site = site || CoreSites.getCurrentSite();
+
+        if (!CoreFilter.canGetAllStatesInSite(site)) {
+            return;
+        }
+
+        const allStates = await CoreFilter.getAllStates({ siteId: site?.getId() });
+        if (
+            contextLevel !== ContextLevel.SYSTEM &&
+            contextLevel !== ContextLevel.COURSECAT &&
+            this.hasCategoryOverride(allStates)
+        ) {
+            // A category has an override, we cannot calculate the right filters for child contexts.
+            return;
+        }
+
+        const contexts = CoreFilter.getContextsTreeList(contextLevel, instanceId, { courseId: options.courseId });
+        const contextId = Object.values(allStates[contextLevel]?.[instanceId] ?? {})[0]?.contextid;
+
+        const filters: Record<string, CoreFilterFilter> = {};
+        contexts.reverse().forEach((context) => {
+            const isParentContext = context.contextLevel !== contextLevel;
+            const filtersInContext = allStates[context.contextLevel]?.[context.instanceId];
+            if (!filtersInContext) {
+                return;
+            }
+
+            for (const name in filtersInContext) {
+                const filterInContext = filtersInContext[name];
+                if (filterInContext.localstate === CoreFilterStateValue.DISABLED) {
+                    // Ignore disabled filters to make it consistent with available in context.
+                    continue;
+                }
+
+                filters[name] = {
+                    contextlevel: contextLevel,
+                    instanceid: instanceId,
+                    contextid: contextId,
+                    filter: name,
+                    localstate: isParentContext ? CoreFilterStateValue.INHERIT : filterInContext.localstate,
+                    inheritedstate: isParentContext ?
+                        filterInContext.localstate :
+                        filters[name]?.inheritedstate ?? filterInContext.localstate,
+                };
+            }
+        });
+
+        return Object.values(filters);
+    }
+
+    /**
+     * Check if there is an override for a category in the states of all filters.
+     *
+     * @param states States to check.
+     * @returns True if has category override, false otherwise.
+     */
+    protected hasCategoryOverride(states: CoreFilterAllStates): boolean {
+        if (!states[ContextLevel.COURSECAT]) {
+            return false;
+        }
+
+        for (const instanceId in states[ContextLevel.COURSECAT]) {
+            for (const name in states[ContextLevel.COURSECAT][instanceId]) {
+                if (
+                    states[ContextLevel.COURSECAT][instanceId][name].localstate !== states[ContextLevel.SYSTEM][0][name].localstate
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
