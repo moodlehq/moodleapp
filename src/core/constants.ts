@@ -41,7 +41,8 @@ export const enum ModPurpose {
     MOD_PURPOSE_COLLABORATION = 'collaboration',
     MOD_PURPOSE_CONTENT = 'content',
     MOD_PURPOSE_ADMINISTRATION = 'administration',
-    MOD_PURPOSE_INTERFACE = 'interface',
+    MOD_PURPOSE_INTERFACE = 'interface', // @deprecatedonmoodle since 4.4.
+    MOD_PURPOSE_INTERACTIVECONTENT = 'interactivecontent',
     MOD_PURPOSE_OTHER = 'other',
 }
 

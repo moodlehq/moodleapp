@@ -50,8 +50,9 @@ ion-badge {
 }
 
 ion-item core-mod-icon {
-    --size: 18px;
-    --padding: 9px;
+    --module-icon-size: 24px;
+    --module-legacy-icon-size: 16px;
+
     --margin-vertical: 8px;
     --margin-end: 8px;
 }

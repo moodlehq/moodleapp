@@ -1,5 +1,5 @@
-<img *ngIf="!isLocalUrl" [src]="icon" [alt]="showAlt ? modNameTranslated : ''" [attr.role]="!showAlt ? 'presentation' : null"
-    class="core-module-icon" [class.no-filter]="noFilter" core-external-content [component]="linkIconWithComponent ? modname : null"
-    [componentId]="linkIconWithComponent ? componentId : null" (error)="loadFallbackIcon()">
-<img *ngIf="isLocalUrl" [src]="icon" [alt]="showAlt ? modNameTranslated : ''" [attr.role]="!showAlt ? 'presentation' : null"
-    class="core-module-icon" [class.no-filter]="noFilter" (error)="loadFallbackIcon()">
+<ng-container *ngIf="loaded">
+    <img *ngIf="!isLocalUrl" [src]="iconUrl" core-external-content alt="" [component]="linkIconWithComponent ? modname : null"
+        [componentId]="linkIconWithComponent ? componentId : null" (error)="loadFallbackIcon()">
+    <img *ngIf="isLocalUrl" [src]="iconUrl" (error)="loadFallbackIcon()" alt="">
+</ng-container>

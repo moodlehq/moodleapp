@@ -41,7 +41,7 @@
                     [profileUrl]="notification.profileimageurlfrom" [fullname]="notification.userfromfullname"
                     [userId]="notification.useridfrom">
                     <div class="core-avatar-extra-img" *ngIf="notification.iconurl">
-                        <img [src]="notification.iconurl" alt="" role="presentation">
+                        <img [src]="notification.iconurl" alt="" role="presentation" core-external-content>
                     </div>
                 </core-user-avatar>
 

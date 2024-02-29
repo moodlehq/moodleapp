@@ -123,6 +123,14 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @returns Promise resolved when done.
      */
     openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void>;
+
+    /**
+     * Whether the activity is branded.
+     * This information is used, for instance, to decide if a filter should be applied to the icon or not.
+     *
+     * @returns bool True if the activity is branded, false otherwise.
+     */
+    isBranded?(): Promise<boolean>;
 }
 
 /**

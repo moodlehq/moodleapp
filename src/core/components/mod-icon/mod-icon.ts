@@ -13,15 +13,26 @@
 // limitations under the License.
 
 import { CoreConstants, ModPurpose } from '@/core/constants';
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
+import { CoreFile } from '@services/file';
+import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUtils } from '@services/utils/utils';
+import { Http } from '@singletons';
+import { firstValueFrom } from 'rxjs';
 
 const assetsPath = 'assets/img/';
 const fallbackModName = 'external-tool';
+
+const enum IconVersion {
+    LEGACY_VERSION = 'version_legacy',
+    VERSION_4_0 = 'version_40',
+    CURRENT_VERSION = 'version_current',
+}
 
 /**
  * Component to handle a module icon.
@@ -39,42 +50,50 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     @Input() modicon?: string; // Module icon url or local url.
     @Input() showAlt = true; // Show alt otherwise it's only presentation icon.
     @Input() purpose: ModPurpose = ModPurpose.MOD_PURPOSE_OTHER; // Purpose of the module.
+    @Input() @HostBinding('class.colorize') colorize = true; // Colorize the icon. Only applies on 4.0 onwards.
+    @Input() @HostBinding('class.branded') isBranded?: boolean; // If icon is branded and no colorize will be applied.
 
-    icon = '';
-    noFilter = false;
+    @HostBinding('attr.role')
+    get getRole(): string | null {
+        return !this.showAlt ? 'presentation' : null;
+    }
+
+    @HostBinding('attr.aria-label')
+    get getAriaLabel(): string {
+        return this.showAlt ? this.modNameTranslated : '';
+    }
+
+    iconUrl = '';
+
     modNameTranslated = '';
-    isLocalUrl = true;
+    isLocalUrl = false;
     linkIconWithComponent = false;
+    loaded = false;
 
-    protected legacyIcon = true; // @deprecatedonmoodle since 3.11.
+    protected iconVersion: IconVersion = IconVersion.LEGACY_VERSION;
+    protected purposeClass = '';
+    protected element: HTMLElement;
 
-    constructor(protected el: ElementRef) { }
+    constructor(element: ElementRef) {
+        this.element = element.nativeElement;
+    }
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
+        this.iconVersion = this.getIconVersion();
+        this.element.classList.add(this.iconVersion);
+
         if (!this.modname && this.modicon) {
             // Guess module from the icon url.
             this.modname = this.getComponentNameFromIconUrl(this.modicon);
         }
 
         this.modNameTranslated = CoreCourse.translateModuleName(this.modname, this.fallbackTranslation);
-        if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
-            this.legacyIcon = false;
 
-            const purposeClass =
-                CoreCourseModuleDelegate.supportsFeature<ModPurpose>(
-                    this.modname || '',
-                    CoreConstants.FEATURE_MOD_PURPOSE,
-                    this.purpose,
-                );
-
-            if (purposeClass) {
-                const element: HTMLElement = this.el.nativeElement;
-                element.classList.add(purposeClass);
-            }
-        }
+        this.setIsBranded();
+        this.setPurposeClass();
 
         await this.setIcon();
     }
@@ -89,11 +108,69 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     }
 
     /**
+     * Sets the isBranded property when undefined.
+     *
+     * @returns wether the icon does not need to be filtered.
+     */
+    protected async setIsBranded(): Promise<void> {
+        if (!this.colorize || this.isBranded !== undefined) {
+            // It doesn't matter.
+            return;
+        }
+
+        // Earlier 4.0, icons were never colorized.
+        if (this.iconVersion === IconVersion.LEGACY_VERSION) {
+            this.colorize = false;
+
+            return;
+        }
+
+        // No icon or local icon (not legacy), colorize it.
+        if (!this.iconUrl || this.isLocalUrl) {
+            this.isBranded = false;
+
+            return;
+        }
+
+        this.iconUrl = CoreTextUtils.decodeHTMLEntities(this.iconUrl);
+
+        // If it's an Moodle Theme icon, check if filtericon is set and use it.
+        if (this.iconUrl && CoreUrlUtils.isThemeImageUrl(this.iconUrl)) {
+            const iconParams = CoreUrlUtils.extractUrlParams(this.iconUrl);
+            if (iconParams['filtericon'] === '1') {
+                this.isBranded =  false;
+
+                return;
+            }
+
+            // filtericon was introduced in 4.2 and backported to 4.1.3 and 4.0.8.
+            if (this.modname && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan(['4.0.8', '4.1.3', '4.2'])) {
+                // If version is prior to that, check if the url is a module icon and filter it.
+                if (this.getComponentNameFromIconUrl(this.iconUrl) === this.modname) {
+                    this.isBranded =  false;
+
+                    return;
+                }
+            }
+        }
+
+        // External icons, or non monologo, do not filter.
+        this.isBranded =  true;
+    }
+
+    /**
      * Set icon.
      */
     async setIcon(): Promise<void> {
-        this.icon = this.modicon || this.icon;
-        this.isLocalUrl = this.icon.startsWith(assetsPath);
+        this.iconUrl = this.modicon || this.iconUrl;
+
+        if (!this.iconUrl) {
+            this.loadFallbackIcon();
+
+            return;
+        }
+
+        this.isLocalUrl = this.iconUrl.startsWith(assetsPath);
 
         // Cache icon if the url is not the theme generic one.
         // If modname is not set icon won't be cached.
@@ -102,66 +179,31 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             !!this.modname &&
             !!this.componentId &&
             !this.isLocalUrl &&
-            this.getComponentNameFromIconUrl(this.icon) != this.modname;
+            this.getComponentNameFromIconUrl(this.iconUrl) != this.modname;
 
-        this.noFilter = await this.getIconNoFilter();
+        await this.setSVGIcon();
     }
 
     /**
      * Icon to load on error.
      */
     async loadFallbackIcon(): Promise<void> {
+        if (this.isLocalUrl) {
+            return;
+        }
+
         this.isLocalUrl = true;
+        this.linkIconWithComponent = false;
+
         const moduleName = !this.modname || CoreCourse.CORE_MODULES.indexOf(this.modname) < 0
             ? fallbackModName
             : this.modname;
 
-        let path = assetsPath + 'mod/';
-        if (this.legacyIcon) {
-            // @deprecatedonmoodle since 3.11.
-            path = assetsPath + 'mod_legacy/';
-        }
+        const path = CoreCourse.getModuleIconsPath();
 
-        this.icon = path + moduleName + '.svg';
-        this.noFilter = await this.getIconNoFilter();
-    }
+        this.iconUrl = path + moduleName + '.svg';
 
-    /**
-     * Returns if the icon does not need to be filtered.
-     *
-     * @returns wether the icon does not need to be filtered.
-     */
-    protected async getIconNoFilter(): Promise<boolean> {
-        // Earlier 4.0, icons were never filtered.
-        if (this.legacyIcon) {
-            return true;
-        }
-
-        // No icon or local icon (not legacy), filter it.
-        if (!this.icon || this.isLocalUrl) {
-            return false;
-        }
-
-        this.icon = CoreTextUtils.decodeHTMLEntities(this.icon);
-
-        // If it's an Moodle Theme icon, check if filtericon is set and use it.
-        if (this.icon && CoreUrlUtils.isThemeImageUrl(this.icon)) {
-            const iconParams = CoreUrlUtils.extractUrlParams(this.icon);
-            if (iconParams['filtericon'] === '1') {
-                return false;
-            }
-
-            // filtericon was introduced in 4.2 and backported to 4.1.3 and 4.0.8.
-            if (this.modname && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan(['4.0.8', '4.1.3', '4.2'])) {
-                // If version is prior to that, check if the url is a module icon and filter it.
-                if (this.getComponentNameFromIconUrl(this.icon) === this.modname) {
-                    return false;
-                }
-            }
-        }
-
-        // External icons, or non monologo, do not filter.
-        return true;
+        await this.setSVGIcon();
     }
 
     /**
@@ -171,7 +213,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
      * @returns Guessed modname.
      */
     protected getComponentNameFromIconUrl(iconUrl: string): string {
-        if (!CoreUrlUtils.isThemeImageUrl(this.icon)) {
+        if (!CoreUrlUtils.isThemeImageUrl(this.iconUrl)) {
             // Cannot be guessed.
             return '';
         }
@@ -194,6 +236,156 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         }
 
         return component;
+    }
+
+    /**
+     * Set the purpose class.
+     */
+    protected setPurposeClass(): void {
+        if (this.iconVersion === IconVersion.LEGACY_VERSION) {
+            return;
+        }
+
+        this.purposeClass =
+            CoreCourseModuleDelegate.supportsFeature<ModPurpose>(
+                this.modname || '',
+                CoreConstants.FEATURE_MOD_PURPOSE,
+                this.purpose,
+            );
+
+        if (this.iconVersion === IconVersion.VERSION_4_0) {
+            if (this.purposeClass === ModPurpose.MOD_PURPOSE_INTERACTIVECONTENT) {
+                // Interactive content was introduced on 4.4, on previous versions CONTENT is used instead.
+                this.purposeClass = ModPurpose.MOD_PURPOSE_CONTENT;
+            }
+
+            if (this.modname === 'lti') {
+                // LTI had content purpose with 4.0 icons.
+                this.purposeClass = ModPurpose.MOD_PURPOSE_CONTENT;
+            }
+        }
+
+        if (this.purposeClass) {
+            this.element.classList.add(this.purposeClass);
+        }
+    }
+
+    /**
+     * Get the icon version depending on site version.
+     *
+     * @returns Icon version.
+     */
+    protected getIconVersion(): IconVersion {
+        if (!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
+            // @deprecatedonmoodle since 3.11.
+            return IconVersion.LEGACY_VERSION;
+        }
+
+        if (!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.4')) {
+            // @deprecatedonmoodle since 4.3.
+            return IconVersion.VERSION_4_0;
+        }
+
+        return IconVersion.CURRENT_VERSION;
+    }
+
+    /**
+     * Sets SVG markup for the icon (if the URL is an SVG).
+     *
+     * @returns Promise resolved when done.
+     */
+    protected async setSVGIcon(): Promise<void> {
+        if (this.iconVersion === IconVersion.LEGACY_VERSION) {
+            this.loaded = true;
+
+            return;
+        }
+
+        this.loaded = false;
+
+        let mimetype = '';
+        let fileContents = '';
+
+        // Download the icon if it's not local to cache it.
+        if (!this.isLocalUrl) {
+            try {
+                const iconUrl = await CoreFileHelper.downloadFile(
+                    this.iconUrl,
+                    this.linkIconWithComponent ? this.modname : undefined,
+                    this.linkIconWithComponent ? this.componentId : undefined,
+                );
+                if (iconUrl) {
+                    mimetype = await CoreUtils.getMimeTypeFromUrl(iconUrl);
+                    fileContents = await CoreFile.readFile(iconUrl);
+                }
+            } catch {
+                // Ignore errors.
+            }
+        }
+
+        try {
+
+            if (!fileContents) {
+                // Try to download the icon directly (also for local files).
+                const response = await firstValueFrom(Http.get(
+                    this.iconUrl,
+                    {
+                        observe: 'response',
+                        responseType: 'text',
+                    },
+                ));
+                mimetype = response.headers.get('content-type') || mimetype;
+                fileContents = response.body || '';
+            }
+
+            if (mimetype !== 'image/svg+xml' || !fileContents) {
+                return;
+            }
+
+            // Clean the DOM to avoid security issues.
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(fileContents, 'image/svg+xml');
+
+            // Safety check.
+            if (doc.documentElement.nodeName !== 'svg') {
+                return;
+            }
+
+            // Remove scripts tags.
+            const scripts = doc.documentElement.getElementsByTagName('script');
+            for (let i = scripts.length - 1; i >= 0; i--) {
+                scripts[i].parentNode?.removeChild(scripts[i]);
+            }
+
+            // Recursively remove attributes starting with on.
+            const removeAttributes = (element: Element): void => {
+                Array.from(element.attributes).forEach((attr) => {
+                    if (attr.name.startsWith('on')) {
+                        element.removeAttribute(attr.name);
+                    }
+                });
+
+                Array.from(element.children).forEach((child) => {
+                    removeAttributes(child);
+                });
+            };
+            removeAttributes(doc.documentElement);
+
+            // Add viewBox to avoid scaling issues.
+            if (!doc.documentElement.getAttribute('viewBox')) {
+                const width = doc.documentElement.getAttribute('width');
+                const height = doc.documentElement.getAttribute('height');
+                if (width && height) {
+                    doc.documentElement.setAttribute('viewBox', '0 0 '+ width + ' ' + height);
+                }
+            }
+
+            this.element.replaceChildren(doc.documentElement);
+        } catch {
+            // Ignore errors.
+        } finally {
+            this.loaded = true;
+        }
     }
 
 }

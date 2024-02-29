@@ -832,14 +832,29 @@ export class CoreCourseProvider {
             moduleName = 'external-tool';
         }
 
-        let path = 'assets/img/mod/';
-        if (!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
-            // @deprecatedonmoodle since 3.11.
-            path = 'assets/img/mod_legacy/';
-        }
+        const path = this.getModuleIconsPath();
 
         // Use default icon on core modules.
         return path + moduleName + '.svg';
+    }
+
+    /**
+     * Get the path where the module icons are stored.
+     *
+     * @returns Path.
+     */
+    getModuleIconsPath(): string {
+        if (!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
+            // @deprecatedonmoodle since 3.11.
+            return 'assets/img/mod_legacy/';
+        }
+
+        if (!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.4')) {
+            // @deprecatedonmoodle since 4.3.
+            return 'assets/img/mod_40/';
+        }
+
+        return 'assets/img/mod/';
     }
 
     /**
@@ -1735,6 +1750,8 @@ export type CoreCourseGetContentsWSModule = {
     visibleoncoursepage: number; // Is the module visible on course page. Cannot be undefined.
     modicon: string; // Activity icon url.
     modname: string; // Activity module type.
+    purpose?: string; // @since 4.4 The module purpose.
+    branded?: boolean; // @since 4.4 Whether the module is branded or not.
     modplural: string; // Activity module plural name.
     availability?: string; // Module availability settings.
     indent: number; // Number of identation in the site.

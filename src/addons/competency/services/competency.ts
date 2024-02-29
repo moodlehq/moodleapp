@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCommentsArea } from '@features/comments/services/comments';
-import { CoreCourseSummary, CoreCourseModuleSummary } from '@features/course/services/course';
+import { CoreCourseSummary } from '@features/course/services/course';
 import { CoreUserSummary } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -877,12 +877,14 @@ type AddonCompetencyDataForUserCompetencySummaryInCourseWSParams = {
 };
 
 /**
- * Data returned by competency's user_competency_summary_in_course_exporter.
+ * Data returned by tool_lp_data_for_user_competency_summary_in_course WS.
+ *
+ * WS Description: Load a summary of a user competency.
  */
 export type AddonCompetencyDataForUserCompetencySummaryInCourseWSResponse = {
     usercompetencysummary: AddonCompetencyDataForUserCompetencySummaryWSResponse;
     course: CoreCourseSummary;
-    coursemodules: CoreCourseModuleSummary[]; // Coursemodules.
+    coursemodules: AddonCompetencyCourseModuleInfo[]; // Coursemodules.
     plans: AddonCompetencyPlan[]; // @since 3.7. Plans.
     pluginbaseurl: string; // @since 3.7. Pluginbaseurl.
 };
@@ -1009,7 +1011,7 @@ export type AddonCompetencyDataForCourseCompetenciesPageWSResponse = {
 export type AddonCompetencyDataForCourseCompetenciesPageCompetency = {
     competency: AddonCompetencyCompetency;
     coursecompetency: AddonCompetencyCourseCompetency;
-    coursemodules: CoreCourseModuleSummary[];
+    coursemodules: AddonCompetencyCourseModuleInfo[];
     usercompetencycourse?: AddonCompetencyUserCompetencyCourse;
     ruleoutcomeoptions: {
         value: number; // The option value.
@@ -1018,6 +1020,13 @@ export type AddonCompetencyDataForCourseCompetenciesPageCompetency = {
     }[];
     comppath: AddonCompetencyPath;
     plans: AddonCompetencyPlan[]; // @since 3.7.
+};
+
+type AddonCompetencyCourseModuleInfo = {
+    id: number; // Id.
+    name: string; // Name.
+    url?: string; // Url.
+    iconurl: string; // Iconurl.
 };
 
 /**

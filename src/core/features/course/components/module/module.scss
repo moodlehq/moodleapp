@@ -33,7 +33,8 @@
         core-mod-icon {
             margin-top: 0px;
             margin-bottom: 0px;
-            --module-icon-padding: 4px;
+            --module-icon-padding: 0px;
+            --module-legacy-icon-padding: 4px;
             --module-icon-radius: var(--radius-xs);
 
             @include margin-horizontal(null, 8px);

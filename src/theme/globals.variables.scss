@@ -115,14 +115,24 @@ $core-user-hide-siteinfo: $core-more-hide-siteinfo !default;
 $core-user-hide-sitename: $core-more-hide-sitename !default;
 $core-user-hide-siteurl: $core-more-hide-siteurl !default;
 
-// Activity icon background colors.
-$activity-icon-colors: (
+// Activity icon background colors. Only used on 4.0-4.3. @deprecatedonmoodle since 4.4.
+$activity-icon-background-colors: (
     administration: #5d63f6,
     assessment: #eb66a2,
     collaboration: #f7634d,
     communication: #11a676,
     content: #399be2,
     interface: #a378ff
+) !default;
+
+// Moodle 4.4 onwards.
+$activity-icon-colors: (
+    administration: #da58ef,
+    assessment: #f90086,
+    collaboration: #5b40ff,
+    communication: #eb6200,
+    content: #0099ad,
+    interactivecontent: #8d3d1b
 ) !default;
 
 $calendar-event-category-category: #8e24aa !default;

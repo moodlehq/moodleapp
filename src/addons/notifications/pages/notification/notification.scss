@@ -1,6 +1,8 @@
 @use "theme/globals" as *;
 
 :host {
+    --icon-size: 44px;
+    --extra-icon-size: 16px;
 
     .core-notification-title {
         [slot=start] {

@@ -354,8 +354,6 @@ html {
     --core-messages-discussion-badge: var(--primary);
     --core-messages-discussion-badge-text: var(--white);
 
-    --module-icon-filter: brightness(0);
-
     --addon-forum-avatar-size: var(--core-avatar-size);
     --addon-forum-border-color: var(--stroke);
     --addon-forum-highlight-color: var(--light);
@@ -406,6 +404,11 @@ html {
     // Make activtity colours available for custom modules.
     @each $type, $value in $activity-icon-colors {
         --activity#{$type}: #{$value};
+    }
+
+    // Make activtity colours available for custom modules.
+    @each $type, $value in $activity-icon-background-colors {
+        --activity-40-#{$type}: #{$value};
     }
 
     --core-mainpage-sitename-display: none;
