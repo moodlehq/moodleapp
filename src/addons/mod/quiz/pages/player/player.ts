@@ -271,9 +271,12 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             await this.scrollToQuestion(slot);
 
             return;
-        } else if ((page == this.attempt.currentpage && !this.showSummary) || (fromModal && this.isSequential && page != -1)) {
+        } else if (
+            (page == this.attempt.currentpage && !this.showSummary) ||
+            (fromModal && this.isSequential && page != this.attempt.currentpage)
+        ) {
             // If the user is navigating to the current page we do nothing.
-            // Also, in sequential quizzes we don't allow navigating using the modal except for finishing the quiz (summary).
+            // Also, in sequential quizzes we can only navigate to the current page.
             return;
         } else if (page === -1 && this.showSummary) {
             // Summary already shown.
