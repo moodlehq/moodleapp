@@ -39,7 +39,7 @@ export class AddonCompetencyCourseOptionHandlerService implements CoreCourseOpti
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return true;
+        return AddonCompetency.areCompetenciesEnabled();
     }
 
     /**
