@@ -127,7 +127,7 @@ import { CoreSitePluginsAssignSubmissionComponent } from '@features/siteplugins/
 import { ADDON_BADGES_SERVICES } from '@addons/badges/badges.module';
 import { ADDON_CALENDAR_SERVICES } from '@addons/calendar/calendar.module';
 import { getCourseCompletionServices } from '@addons/coursecompletion/coursecompletion.module';
-import { ADDON_COMPETENCY_SERVICES } from '@addons/competency/competency.module';
+import { getCompetencyServices } from '@addons/competency/competency.module';
 import { ADDON_MESSAGEOUTPUT_SERVICES } from '@addons/messageoutput/messageoutput.module';
 import { ADDON_MESSAGES_SERVICES } from '@addons/messages/messages.module';
 import { ADDON_MOD_ASSIGN_SERVICES } from '@addons/mod/assign/assign.module';
@@ -307,7 +307,6 @@ export class CoreCompileProvider {
             ...extraProviders,
             ...ADDON_BADGES_SERVICES,
             ...ADDON_CALENDAR_SERVICES,
-            ...ADDON_COMPETENCY_SERVICES,
             ...ADDON_MESSAGEOUTPUT_SERVICES,
             ...ADDON_MESSAGES_SERVICES,
             ...ADDON_MOD_ASSIGN_SERVICES,
@@ -407,6 +406,7 @@ export class CoreCompileProvider {
      */
     async getLazyLibraries(): Promise<Type<unknown>[]> {
         const ADDON_MOD_WORKSHOP_SERVICES = await getWorkshopServices();
+        const ADDON_COMPETENCY_SERVICES = await getCompetencyServices();
         const ADDON_COURSECOMPLETION_SERVICES = await getCourseCompletionServices();
 
         const CORE_COMMENTS_SERVICES = await getCommentsServices();
@@ -414,6 +414,7 @@ export class CoreCompileProvider {
 
         return [
             ...ADDON_MOD_WORKSHOP_SERVICES,
+            ...ADDON_COMPETENCY_SERVICES,
             ...ADDON_COURSECOMPLETION_SERVICES,
             ...CORE_COMMENTS_SERVICES,
             ...CORE_TAG_SERVICES,
