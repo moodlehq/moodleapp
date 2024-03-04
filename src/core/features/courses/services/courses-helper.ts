@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import {
+    CoreCourseAnyCourseData,
     CoreCourseAnyCourseDataWithOptions,
     CoreCourses,
     CoreCourseSearchedData,
@@ -31,6 +32,7 @@ import { zipIncludingComplete } from '@/core/utils/rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { chainRequests, WSObservable } from '@classes/sites/authenticated-site';
 import { LazyRoutesModule } from '@/app/app-routing.module';
+import { CoreSite } from '@classes/sites/site';
 
 // Id for a course item representing all courses (for example, for course filters).
 export const ALL_COURSES_ID = -1;
@@ -363,7 +365,7 @@ export class CoreCoursesHelperProvider {
             return of(course);
         }
 
-        if (course.enablecompletion !== undefined && !course.enablecompletion) {
+        if (!this.isCompletionEnabledInCourse(course)) {
             // Completion is disabled for this course, there is no need to fetch the completion status.
             return of(course);
         }
@@ -435,6 +437,18 @@ export class CoreCoursesHelperProvider {
      */
     async getMyRouteModule(): Promise<LazyRoutesModule> {
         return import('../courses-my-lazy.module').then(m => m.CoreCoursesMyLazyModule);
+    }
+
+    /**
+     * Check whether completion is available in a certain course.
+     * This is a temporary function to be used until we move AddonCourseCompletion to core folder (MOBILE-4537).
+     *
+     * @param course Course.
+     * @param site Site. If not defined, use current site.
+     * @returns True if available.
+     */
+    isCompletionEnabledInCourse(course: CoreCourseAnyCourseData, site?: CoreSite): boolean {
+        return AddonCourseCompletion.isCompletionEnabledInCourse(course, site);
     }
 
 }

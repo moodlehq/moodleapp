@@ -42,7 +42,7 @@ import { makeSingleton } from '@singletons';
 // Import core services.
 import { CORE_SERVICES } from '@/core/core.module';
 import { CORE_BLOCK_SERVICES } from '@features/block/block.module';
-import { CORE_COMMENTS_SERVICES } from '@features/comments/comments.module';
+import { getCommentsServices } from '@features/comments/comments.module';
 import { CORE_CONTENTLINKS_SERVICES } from '@features/contentlinks/contentlinks.module';
 import { CORE_COURSE_SERVICES } from '@features/course/course.module';
 import { CORE_COURSES_SERVICES } from '@features/courses/courses.module';
@@ -62,7 +62,7 @@ import { CORE_RATING_SERVICES } from '@features/rating/rating.module';
 import { CORE_SEARCH_SERVICES } from '@features/search/search.module';
 import { CORE_SETTINGS_SERVICES } from '@features/settings/settings.module';
 import { CORE_SITEHOME_SERVICES } from '@features/sitehome/sitehome.module';
-import { CORE_TAG_SERVICES } from '@features/tag/tag.module';
+import { getTagServices } from '@features/tag/tag.module';
 import { CORE_STYLE_SERVICES } from '@features/styles/styles.module';
 import { CORE_USER_SERVICES } from '@features/user/user.module';
 import { CORE_XAPI_SERVICES } from '@features/xapi/xapi.module';
@@ -126,7 +126,7 @@ import { CoreSitePluginsAssignSubmissionComponent } from '@features/siteplugins/
 // Import addon providers. Do not import database module because it causes circular dependencies.
 import { ADDON_BADGES_SERVICES } from '@addons/badges/badges.module';
 import { ADDON_CALENDAR_SERVICES } from '@addons/calendar/calendar.module';
-import { ADDON_COURSECOMPLETION_SERVICES } from '@addons/coursecompletion/coursecompletion.module';
+import { getCourseCompletionServices } from '@addons/coursecompletion/coursecompletion.module';
 import { ADDON_COMPETENCY_SERVICES } from '@addons/competency/competency.module';
 import { ADDON_MESSAGEOUTPUT_SERVICES } from '@addons/messageoutput/messageoutput.module';
 import { ADDON_MESSAGES_SERVICES } from '@addons/messages/messages.module';
@@ -280,7 +280,6 @@ export class CoreCompileProvider {
             ...CORE_SERVICES,
             CoreAutoLogoutService,
             ...CORE_BLOCK_SERVICES,
-            ...CORE_COMMENTS_SERVICES,
             ...CORE_CONTENTLINKS_SERVICES,
             ...CORE_COURSE_SERVICES,
             ...CORE_COURSES_SERVICES,
@@ -300,7 +299,6 @@ export class CoreCompileProvider {
             ...CORE_SHAREDFILES_SERVICES,
             ...CORE_SITEHOME_SERVICES,
             CoreSitePluginsProvider,
-            ...CORE_TAG_SERVICES,
             ...CORE_STYLE_SERVICES,
             ...CORE_USER_SERVICES,
             ...CORE_XAPI_SERVICES,
@@ -309,7 +307,6 @@ export class CoreCompileProvider {
             ...extraProviders,
             ...ADDON_BADGES_SERVICES,
             ...ADDON_CALENDAR_SERVICES,
-            ...ADDON_COURSECOMPLETION_SERVICES,
             ...ADDON_COMPETENCY_SERVICES,
             ...ADDON_MESSAGEOUTPUT_SERVICES,
             ...ADDON_MESSAGES_SERVICES,
@@ -410,9 +407,16 @@ export class CoreCompileProvider {
      */
     async getLazyLibraries(): Promise<Type<unknown>[]> {
         const ADDON_MOD_WORKSHOP_SERVICES = await getWorkshopServices();
+        const ADDON_COURSECOMPLETION_SERVICES = await getCourseCompletionServices();
+
+        const CORE_COMMENTS_SERVICES = await getCommentsServices();
+        const CORE_TAG_SERVICES = await getTagServices();
 
         return [
             ...ADDON_MOD_WORKSHOP_SERVICES,
+            ...ADDON_COURSECOMPLETION_SERVICES,
+            ...CORE_COMMENTS_SERVICES,
+            ...CORE_TAG_SERVICES,
         ];
     }
 

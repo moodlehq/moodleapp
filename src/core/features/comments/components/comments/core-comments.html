@@ -1,4 +1,4 @@
-<ng-container *ngIf="!disabled">
+<ng-container *ngIf="enabled">
     <core-loading *ngIf="!showItem" [hideUntil]="commentsLoaded" [fullscreen]="false">
         <button *ngIf="!countError" (click)="openComments($event)" class="as-link">
             {{ 'core.comments.commentscount' | translate : {'$a': commentsCount} }}

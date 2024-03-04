@@ -112,6 +112,15 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
     }
 
     /**
+     * Check if the delegate is enabled so handlers are not updated if not..
+     *
+     * @returns Whether the delegate is enabled.
+     */
+    async isEnabled(): Promise<boolean> {
+        return true;
+    }
+
+    /**
      * Execute a certain function in a enabled handler.
      * If the handler isn't found or function isn't defined, call the same function in the default handler.
      *
@@ -315,6 +324,12 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @returns Resolved when done.
      */
     async updateHandlers(): Promise<void> {
+        const enabled = await this.isEnabled();
+
+        if (!enabled) {
+            return;
+        }
+
         const promises: Promise<void>[] = [];
         const now = Date.now();
 
@@ -329,7 +344,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
 
         try {
             await Promise.all(promises);
-        } catch (e) {
+        } catch {
             // Never reject
         }
 

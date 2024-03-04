@@ -139,7 +139,7 @@ export class AddonBlogEntriesPage implements OnInit {
             this.contextInstanceId = 0;
         }
 
-        this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();
+        this.commentsEnabled = CoreComments.areCommentsEnabledInSite();
         this.tagsEnabled = CoreTag.areTagsAvailableInSite();
 
         const deepLinkManager = new CoreMainMenuDeepLinkManager();

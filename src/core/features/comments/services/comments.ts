@@ -181,15 +181,14 @@ export class CoreCommentsProvider {
     }
 
     /**
-     * Check if Calendar is disabled in a certain site.
+     * Check if comments are disabled in a certain site.
      *
      * @param site Site. If not defined, use current site.
      * @returns Whether it's disabled.
+     * @deprecated since 4.4. Use areCommentsEnabledInSite instead.
      */
     areCommentsDisabledInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return !!site?.isFeatureDisabled('NoDelegate_CoreComments');
+        return !this.areCommentsEnabledInSite(site);
     }
 
     /**
@@ -197,11 +196,38 @@ export class CoreCommentsProvider {
      *
      * @param siteId Site Id. If not defined, use current site.
      * @returns Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @deprecated since 4.4. Use areCommentsEnabled instead.
      */
     async areCommentsDisabled(siteId?: string): Promise<boolean> {
+        return !this.areCommentsEnabled(siteId);
+    }
+
+    /**
+     * Check if comments are enabled in a certain site.
+     *
+     * @param site Site. If not defined, use current site.
+     * @returns Whether it's enabled.
+     */
+    areCommentsEnabledInSite(site?: CoreSite): boolean {
+        site = site || CoreSites.getCurrentSite();
+
+        if (!site) {
+            return false;
+        }
+
+        return site.canUseAdvancedFeature('usecomments') && !site.isFeatureDisabled('NoDelegate_CoreComments');
+    }
+
+    /**
+     * Check if comments are enabled in a certain site.
+     *
+     * @param siteId Site Id. If not defined, use current site.
+     * @returns Promise resolved with true if enabled, rejected or resolved with false otherwise.
+     */
+    async areCommentsEnabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
 
-        return this.areCommentsDisabledInSite(site);
+        return this.areCommentsEnabledInSite(site);
     }
 
     /**
@@ -323,7 +349,7 @@ export class CoreCommentsProvider {
         const site = await CoreSites.getSite(siteId);
 
         // First check if it's disabled.
-        if (this.areCommentsDisabledInSite(site)) {
+        if (!this.areCommentsEnabledInSite(site)) {
             return false;
         }
 

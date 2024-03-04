@@ -155,7 +155,7 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
             options,
         ).then((entries) => {
             const promises: Promise<unknown>[] = [];
-            const commentsEnabled = !CoreComments.areCommentsDisabledInSite();
+            const commentsEnabled = CoreComments.areCommentsEnabledInSite();
 
             entries.forEach((entry) => {
                 // Don't fetch individual entries, it's too many WS calls.

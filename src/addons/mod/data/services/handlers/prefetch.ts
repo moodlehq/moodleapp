@@ -230,7 +230,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
         // Prefetch the database data.
         const database = info.database;
 
-        const commentsEnabled = !CoreComments.areCommentsDisabledInSite();
+        const commentsEnabled = CoreComments.areCommentsEnabledInSite();
 
         const promises: Promise<unknown>[] = [];
 

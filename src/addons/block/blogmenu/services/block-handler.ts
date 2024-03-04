@@ -18,6 +18,7 @@ import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { AddonBlockBlogMenuComponent } from '../components/blogmenu/blogmenu';
 import { makeSingleton } from '@singletons';
+import { AddonBlog } from '@addons/blog/services/blog';
 
 /**
  * Block handler.
@@ -27,6 +28,13 @@ export class AddonBlockBlogMenuHandlerService extends CoreBlockBaseHandler {
 
     name = 'AddonBlockBlogMenu';
     blockName = 'blog_menu';
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabled(): Promise<boolean> {
+        return await AddonBlog.isPluginEnabled();
+    }
 
     /**
      * Returns the data needed to render the block.

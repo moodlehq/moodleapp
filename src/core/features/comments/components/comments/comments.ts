@@ -45,7 +45,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
     commentsLoaded = false;
     commentsCount = '';
     countError = false;
-    disabled = false;
+    enabled = false;
 
     protected updateSiteObserver?: CoreEventObserver;
     protected refreshCommentsObserver?: CoreEventObserver;
@@ -55,15 +55,15 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
 
         this.onLoading = new EventEmitter<boolean>();
 
-        this.disabled = CoreComments.areCommentsDisabledInSite();
+        this.enabled = CoreComments.areCommentsEnabledInSite();
 
         // Update visibility if current site info is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
-            const wasDisabled = this.disabled;
+            const wasEnabled = this.enabled;
 
-            this.disabled = CoreComments.areCommentsDisabledInSite();
+            this.enabled = CoreComments.areCommentsEnabledInSite();
 
-            if (wasDisabled && !this.disabled) {
+            if (!wasEnabled && this.enabled) {
                 this.fetchData();
             }
         }, CoreSites.getCurrentSiteId());
@@ -123,7 +123,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
      * Fetch comments data.
      */
     async fetchData(): Promise<void> {
-        if (this.disabled) {
+        if (!this.enabled) {
             return;
         }
 
@@ -173,12 +173,10 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
      * Opens the comments page.
      */
     openComments(e?: Event): void {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
+        e?.preventDefault();
+        e?.stopPropagation();
 
-        if (this.disabled || this.countError) {
+        if (!this.enabled || this.countError) {
             return;
         }
 

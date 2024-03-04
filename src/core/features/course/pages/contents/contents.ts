@@ -37,6 +37,7 @@ import {
 } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
 import { CoreRefreshContext, CORE_REFRESH_CONTEXT } from '@/core/utils/refresh-context';
+import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 
 /**
  * Page that displays the contents of a course.
@@ -221,7 +222,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
         let completionStatus: Record<string, CoreCourseCompletionActivityStatus> = {};
 
         // Get the completion status.
-        if (this.course.enablecompletion !== false) {
+        if (CoreCoursesHelper.isCompletionEnabledInCourse(this.course)) {
             const sectionWithModules = sections.find((section) => section.modules.length > 0);
 
             if (sectionWithModules && sectionWithModules.modules[0].completion !== undefined) {
@@ -265,7 +266,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
     protected async loadCourseFormatOptions(): Promise<void> {
 
         // Load the course format options when course completion is enabled to show completion progress on sections.
-        if (!this.course.enablecompletion) {
+        if (!CoreCoursesHelper.isCompletionEnabledInCourse(this.course)) {
             return;
         }
 

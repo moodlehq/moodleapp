@@ -53,7 +53,8 @@ export class CoreTagProvider {
     areTagsAvailableInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !!site && site.wsAvailable('core_tag_get_tagindex_per_area') &&
+        return !!site && site.canUseAdvancedFeature('usetags') &&
+            site.wsAvailable('core_tag_get_tagindex_per_area') &&
             site.wsAvailable('core_tag_get_tag_cloud') &&
             site.wsAvailable('core_tag_get_tag_collections') &&
             !site.isFeatureDisabled('NoDelegate_CoreTag');

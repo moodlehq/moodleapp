@@ -18,6 +18,7 @@ import { CoreBlockOnlyTitleComponent } from '@features/block/components/only-tit
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { makeSingleton } from '@singletons';
+import { CoreComments } from '@features/comments/services/comments';
 
 /**
  * Block handler.
@@ -27,6 +28,13 @@ export class AddonBlockCommentsHandlerService extends CoreBlockBaseHandler {
 
     name = 'AddonBlockComments';
     blockName = 'comments';
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabled(): Promise<boolean> {
+        return await CoreComments.areCommentsEnabled();
+    }
 
     /**
      * Returns the data needed to render the block.
