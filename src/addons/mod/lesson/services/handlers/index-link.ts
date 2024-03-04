@@ -52,16 +52,16 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
         courseId?: number,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
 
-        courseId = Number(courseId || params.courseid || params.cid);
+        const cId = Number(courseId || params.courseid || params.cid);
 
         return [{
-            action: (siteId): void => {
+            action: async (siteId): Promise<void> => {
                 /* Ignore the pageid param. If we open the lesson player with a certain page and the user hasn't started
                    the lesson, an error is thrown: could not find lesson_timer records. */
                 if (params.userpassword) {
-                    this.navigateToModuleWithPassword(parseInt(params.id, 10), courseId!, params.userpassword, siteId);
+                    await this.navigateToModuleWithPassword(parseInt(params.id, 10), cId, params.userpassword, siteId);
                 } else {
-                    CoreCourseHelper.navigateToModule(parseInt(params.id, 10), {
+                    await CoreCourseHelper.navigateToModule(parseInt(params.id, 10), {
                         courseId,
                         siteId,
                     });

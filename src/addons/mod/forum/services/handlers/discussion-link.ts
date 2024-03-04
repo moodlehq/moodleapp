@@ -36,7 +36,7 @@ export class AddonModForumDiscussionLinkHandlerService extends CoreContentLinksH
     getActions(
         siteIds: string[],
         url: string,
-        params: Params,
+        params: Record<string, string>,
         courseId?: number,
         data?: { instance?: string; cmid?: string; postid?: string },
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
@@ -46,10 +46,10 @@ export class AddonModForumDiscussionLinkHandlerService extends CoreContentLinksH
         // However canreply will be false.
 
         return [{
-            action: (siteId): void => {
+            action: async (siteId): Promise<void> => {
                 const discussionId = parseInt(params.d, 10);
                 const cmId = data?.cmid && Number(data.cmid);
-                courseId = courseId || (params.courseid && Number(params.courseid)) || (params.cid && Number(params.cid));
+                courseId = Number(courseId || params.courseid || params.cid);
 
                 const pageParams: Params = {
                     forumId: data?.instance && parseInt(data.instance, 10),
@@ -65,19 +65,12 @@ export class AddonModForumDiscussionLinkHandlerService extends CoreContentLinksH
                     pageParams.parent = parseInt(params.parent);
                 }
 
-                CoreNavigator.navigateToSitePath(
+                await CoreNavigator.navigateToSitePath(
                     `${AddonModForumModuleHandlerService.PAGE_NAME}/discussion/${discussionId}`,
                     { siteId, params: pageParams },
                 );
             },
         }];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async isEnabled(): Promise<boolean> {
-        return true;
     }
 
 }

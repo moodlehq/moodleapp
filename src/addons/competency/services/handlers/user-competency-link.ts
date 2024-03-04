@@ -35,8 +35,8 @@ export class AddonCompetencyUserCompetencyLinkHandlerService extends CoreContent
      */
     getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
         return [{
-            action: (siteId: string): void => {
-                CoreNavigator.navigateToSitePath(
+            action: async (siteId: string): Promise<void> => {
+                await CoreNavigator.navigateToSitePath(
                     `${ADDON_COMPETENCY_COMPETENCIES_PAGE}/${params.id}/${ADDON_COMPETENCY_SUMMARY_PAGE}`,
                     { siteId },
                 );

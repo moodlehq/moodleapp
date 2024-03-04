@@ -47,12 +47,12 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
         params: Record<string, string>,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
-            action: (siteId) => {
+            action: async (siteId) => {
                 if (!params.action || params.action == 'reportoverview') {
                     // Go to overview.
-                    this.openReportOverview(Number(params.id), Number(params.group), siteId);
+                    await this.openReportOverview(Number(params.id), Number(params.group), siteId);
                 } else if (params.action == 'reportdetail') {
-                    this.openUserRetake(Number(params.id), Number(params.userid), Number(params.try), siteId);
+                    await this.openUserRetake(Number(params.id), Number(params.userid), Number(params.try), siteId);
                 }
             },
         }];

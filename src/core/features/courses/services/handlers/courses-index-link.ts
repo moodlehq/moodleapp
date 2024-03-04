@@ -33,9 +33,9 @@ export class CoreCoursesIndexLinkHandlerService extends CoreContentLinksHandlerB
     /**
      * @inheritdoc
      */
-    getActions(siteIds: string[], url: string, params: Params): CoreContentLinksAction[] {
+    getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
         return [{
-            action: (siteId): void => {
+            action: async (siteId): Promise<void> => {
                 let pageName = CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME;
                 const pageParams: Params = {};
 
@@ -46,7 +46,7 @@ export class CoreCoursesIndexLinkHandlerService extends CoreContentLinksHandlerB
                     pageParams.mode = 'all';
                 }
 
-                CoreNavigator.navigateToSitePath(pageName, { params: pageParams, siteId });
+                await CoreNavigator.navigateToSitePath(pageName, { params: pageParams, siteId });
             },
         }];
     }

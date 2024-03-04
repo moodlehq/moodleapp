@@ -49,10 +49,10 @@ export class AddonModQuizReviewLinkHandlerService extends CoreContentLinksHandle
         const quizId = data?.instance ? Number(data.instance) : undefined;
 
         return [{
-            action: (siteId): void => {
+            action: async (siteId): Promise<void> => {
                 const attemptId = parseInt(params.attempt, 10);
                 const page = parseInt(params.page, 10);
-                AddonModQuizHelper.handleReviewLink(attemptId, page, quizId, siteId);
+                await AddonModQuizHelper.handleReviewLink(attemptId, page, quizId, siteId);
             },
         }];
     }

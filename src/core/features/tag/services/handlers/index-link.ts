@@ -38,7 +38,7 @@ export class CoreTagIndexLinkHandlerService extends CoreContentLinksHandlerBase 
         params: Record<string, string>,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
-            action: (siteId): void => {
+            action: async (siteId): Promise<void> => {
                 const pageParams = {
                     tagId: parseInt(params.id, 10) || 0,
                     tagName: params.tag || '',
@@ -50,11 +50,11 @@ export class CoreTagIndexLinkHandlerService extends CoreContentLinksHandlerBase 
                 };
 
                 if (!pageParams.tagId && (!pageParams.tagName || !pageParams.collectionId)) {
-                    CoreNavigator.navigateToSitePath('/tag/search', { siteId });
+                    await CoreNavigator.navigateToSitePath('/tag/search', { siteId });
                 } else if (pageParams.areaId) {
-                    CoreNavigator.navigateToSitePath('/tag/index-area', { params: pageParams, siteId });
+                    await CoreNavigator.navigateToSitePath('/tag/index-area', { params: pageParams, siteId });
                 } else {
-                    CoreNavigator.navigateToSitePath('/tag/index', { params: pageParams, siteId });
+                    await CoreNavigator.navigateToSitePath('/tag/index', { params: pageParams, siteId });
                 }
             },
         }];

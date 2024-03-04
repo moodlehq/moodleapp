@@ -67,7 +67,7 @@ export class AddonModWikiPageOrMapLinkHandlerService extends CoreContentLinksHan
                         timestamp: Date.now(),
                     }));
 
-                    CoreNavigator.navigateToSitePath(
+                    await CoreNavigator.navigateToSitePath(
                         AddonModWikiModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/page/${hash}`,
                         {
                             params: {

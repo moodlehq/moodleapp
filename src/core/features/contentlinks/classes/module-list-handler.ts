@@ -60,8 +60,8 @@ export class CoreContentLinksModuleListHandler extends CoreContentLinksHandlerBa
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
 
         return [{
-            action: (siteId): void => {
-                CoreNavigator.navigateToSitePath('course/' + params.id + '/list-mod-type', {
+            action: async (siteId): Promise<void> => {
+                await CoreNavigator.navigateToSitePath('course/' + params.id + '/list-mod-type', {
                     params: {
                         modName: this.modName,
                         title: this.title || Translate.instant('addon.mod_' + this.modName + '.modulenameplural'),

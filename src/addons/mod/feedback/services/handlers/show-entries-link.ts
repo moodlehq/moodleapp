@@ -34,8 +34,8 @@ export class AddonModFeedbackShowEntriesLinkHandlerService extends CoreContentLi
      */
     getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
         return [{
-            action: (siteId: string) => {
-                AddonModFeedbackHelper.handleShowEntriesLink(params, siteId);
+            action: async (siteId: string) => {
+                await AddonModFeedbackHelper.handleShowEntriesLink(params, siteId);
             },
         }];
     }

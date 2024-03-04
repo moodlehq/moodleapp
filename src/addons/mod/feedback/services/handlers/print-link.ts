@@ -49,7 +49,7 @@ export class AddonModFeedbackPrintLinkHandlerService extends CoreContentLinksHan
                         { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
                     );
 
-                    CoreNavigator.navigateToSitePath(
+                    await CoreNavigator.navigateToSitePath(
                         AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/form`,
                         {
                             params: {

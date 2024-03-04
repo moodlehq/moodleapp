@@ -47,7 +47,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
         params: Record<string, string>,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
-            action: (siteId?: string): void => {
+            action: async (siteId?: string): Promise<void> => {
                 if (!params.view || params.view == 'month' || params.view == 'mini' || params.view == 'minithree') {
                     // Monthly view, open the calendar tab.
                     const stateParams: Params = {
@@ -59,7 +59,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     stateParams.year = momentInstance.year();
                     stateParams.month = momentInstance.month() + 1;
 
-                    CoreNavigator.navigateToSitePath('/calendar/index', {
+                    await CoreNavigator.navigateToSitePath('/calendar/index', {
                         params: stateParams,
                         siteId,
                         preferCurrentTab: false,
@@ -77,7 +77,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     stateParams.month = momentInstance.month() + 1;
                     stateParams.day = momentInstance.date();
 
-                    CoreNavigator.navigateToSitePath('/calendar/day', { params: stateParams, siteId });
+                    await CoreNavigator.navigateToSitePath('/calendar/day', { params: stateParams, siteId });
 
                 } else if (params.view == 'upcoming' || params.view == 'upcoming_mini') {
                     // Upcoming view, open the calendar tab.
@@ -86,7 +86,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                         upcoming: true,
                     };
 
-                    CoreNavigator.navigateToSitePath('/calendar/index', {
+                    await CoreNavigator.navigateToSitePath('/calendar/index', {
                         params: stateParams,
                         siteId,
                         preferCurrentTab: false,

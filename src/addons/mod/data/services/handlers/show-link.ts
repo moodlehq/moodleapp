@@ -38,7 +38,7 @@ export class AddonModDataShowLinkHandlerService extends CoreContentLinksHandlerB
     /**
      * @inheritdoc
      */
-    getActions(siteIds: string[], url: string, params: Params): CoreContentLinksAction[] {
+    getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
         return [{
             action: async (siteId): Promise<void> => {
                 const modal = await CoreDomUtils.showModalLoading();
@@ -65,7 +65,7 @@ export class AddonModDataShowLinkHandlerService extends CoreContentLinksHandlerB
                         pageParams.offset = page || 0;
                     }
 
-                    CoreNavigator.navigateToSitePath(
+                    await CoreNavigator.navigateToSitePath(
                         `${AddonModDataModuleHandlerService.PAGE_NAME}/${module.course}/${module.id}/${rId}`,
                         { siteId, params: pageParams },
                     );
@@ -80,7 +80,7 @@ export class AddonModDataShowLinkHandlerService extends CoreContentLinksHandlerB
     /**
      * @inheritdoc
      */
-    async isEnabled(siteId: string, url: string, params: Params): Promise<boolean> {
+    async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
         if (params.d === undefined) {
             // Id not defined. Cannot treat the URL.
             return false;

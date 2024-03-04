@@ -87,10 +87,10 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
      * @param courseId Course ID.
      * @param siteId Site ID.
      */
-    protected openAttemptResults(cmId: number, attemptId: number, courseId: number, siteId: string): void {
+    protected async openAttemptResults(cmId: number, attemptId: number, courseId: number, siteId: string): Promise<void> {
         const path = AddonModH5PActivityModuleHandlerService.PAGE_NAME + `/${courseId}/${cmId}/attemptresults/${attemptId}`;
 
-        CoreNavigator.navigateToSitePath(path, {
+        await CoreNavigator.navigateToSitePath(path, {
             siteId,
         });
     }
