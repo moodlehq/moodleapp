@@ -32,7 +32,7 @@ export class CoreDataPrivacyUserHandlerService implements CoreUserProfileHandler
     protected pageName = CORE_DATAPRIVACY_PAGE_NAME;
 
     type = CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM;
-    name = 'CoreDataPrivacyDelegate';
+    name = 'CoreDataPrivacy';
     priority = 100;
 
     /**

@@ -17,9 +17,11 @@ import { CoreDataPrivacyContactDPOComponent } from '@features/dataprivacy/compon
 import { CoreDataPrivacyNewRequestComponent } from '@features/dataprivacy/components/newrequest/newrequest';
 import {
     CoreDataPrivacy,
+    CoreDataPrivacyDataRequestType,
     CoreDataPrivacyGetAccessInformationWSResponse,
     CoreDataPrivacyRequest,
 } from '@features/dataprivacy/services/dataprivacy';
+import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -46,13 +48,33 @@ export class CoreDataPrivacyMainPage implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.fetchContent();
-
         this.isTablet = CoreScreen.isTablet;
 
         this.layoutSubscription = CoreScreen.layoutObservable.subscribe(() => {
             this.isTablet = CoreScreen.isTablet;
         });
+
+        await this.fetchContent();
+
+        const createType = CoreNavigator.getRouteNumberParam('createType') as CoreDataPrivacyDataRequestType;
+
+        switch (createType) {
+            case CoreDataPrivacyDataRequestType.DATAREQUEST_TYPE_EXPORT:
+                if (this.accessInfo?.cancreatedatadownloadrequest) {
+                    this.newRequest(createType);
+                }
+                break;
+            case CoreDataPrivacyDataRequestType.DATAREQUEST_TYPE_DELETE:
+                if (this.accessInfo?.cancreatedatadeletionrequest) {
+                    this.newRequest(createType);
+                }
+                break;
+            case CoreDataPrivacyDataRequestType.DATAREQUEST_TYPE_OTHERS:
+                if (this.accessInfo?.cancontactdpo) {
+                    this.contactDPO();
+                }
+                break;
+        }
     }
 
     /**
@@ -111,12 +133,13 @@ export class CoreDataPrivacyMainPage implements OnInit {
     /**
      * Open the new request modal.
      */
-    async newRequest(): Promise<void> {
+    async newRequest(createType?: CoreDataPrivacyDataRequestType): Promise<void> {
         // Create and show the modal.
         const succeed = await CoreDomUtils.openModal<boolean>({
             component: CoreDataPrivacyNewRequestComponent,
             componentProps: {
                 accessInfo: this.accessInfo,
+                createType,
             },
         });
 
