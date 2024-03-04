@@ -38,13 +38,6 @@ export class AddonModWorkshopAssessmentStrategyAccumulativeHandlerLazyService
     /**
      * @inheritdoc
      */
-    async isEnabled(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
     getComponent(): Type<unknown> {
         return AddonModWorkshopAssessmentStrategyAccumulativeComponent;
     }

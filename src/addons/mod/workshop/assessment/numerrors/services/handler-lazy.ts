@@ -37,13 +37,6 @@ export class AddonModWorkshopAssessmentStrategyNumErrorsHandlerLazyService
     /**
      * @inheritdoc
      */
-    async isEnabled(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
     getComponent(): Type<unknown> {
         return AddonModWorkshopAssessmentStrategyNumErrorsComponent;
     }
