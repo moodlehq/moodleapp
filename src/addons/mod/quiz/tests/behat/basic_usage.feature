@@ -124,8 +124,9 @@ Feature: Attempt a quiz in app
 
     When I press "Submit all and finish" in the app
     And I press "Submit" near "Once you submit" in the app
-    Then I should find "Review" in the app
-    And I should find "Started on" in the app
+    And I run all adhoc tasks
+    And I pull to refresh until I find "Review" in the app
+    Then I should find "Started on" in the app
     And I should find "State" in the app
     And I should find "Completed on" in the app
     And I should find "Time taken" in the app
@@ -182,8 +183,9 @@ Feature: Attempt a quiz in app
     Then I should find "Questions without a response: 1" in the app
 
     When I press "Submit" in the app
-    Then I should find "Review" in the app
-    And I should find "Finished" in the app
+    And I run all adhoc tasks
+    And I pull to refresh until I find "Review" in the app
+    Then I should find "Finished" in the app
     And I should find "Not yet graded" in the app
 
     When I press "Correct" within "Question 2" "ion-card" in the app
@@ -206,6 +208,8 @@ Feature: Attempt a quiz in app
 
     When I press "Submit" in the app
     Then I should find "Review" in the app
+    And I should find "Finished" within "State" "ion-item" in the app
+    And I should find "Not yet graded" within "Grade" "ion-item" in the app
 
     When I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(1) p:nth-child(2)" with "[Started on date]"
     And I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(3) p:nth-child(2)" with "[Completed on date]"
@@ -218,5 +222,17 @@ Feature: Attempt a quiz in app
     And I log in as "teacher1"
     And I follow "Attempts: 1"
     And I follow "Review attempt"
+    Then I should see "Submitted"
+    But I should not see "1.00/2.00"
+    When I run all adhoc tasks
+    And I reload the page
     Then I should see "Finished"
     And I should see "1.00/2.00"
+    When I switch back to the app
+    And I entered the quiz activity "Quiz 1" on course "Course 1" as "student1" in the app
+    And I pull to refresh until I find "Highest grade: 50 / 100" in the app
+    Then I should not find "Not yet graded" in the app
+    When I press "1" within "Finished" "ion-item" in the app
+    Then I should find "Finished" within "State" "ion-item" in the app
+    And I should find "1" within "Marks / 2" "ion-item" in the app
+    And I should find "50" within "Grade / 100" "ion-item" in the app
