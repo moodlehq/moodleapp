@@ -18,7 +18,6 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { CorePolicy } from '../policy';
 import { ACCEPTANCES_PAGE_NAME, POLICY_PAGE_NAME } from '@features/policy/constants';
 import { CoreSites } from '@services/sites';
 
@@ -54,6 +53,8 @@ export class CorePolicyAcceptancesLinkHandlerService extends CoreContentLinksHan
             // Only viewing your own policies is supported.
             return false;
         }
+
+        const { CorePolicy } = await import('@features/policy/services/policy');
 
         return CorePolicy.isManageAcceptancesAvailable(siteId);
     }

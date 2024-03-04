@@ -19,7 +19,6 @@ import {
     CoreUserProfileHandler,
     CoreUserProfileHandlerData,
 } from '@features/user/services/user-delegate';
-import { CorePolicy } from '../policy';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
@@ -40,6 +39,8 @@ export class CorePolicyUserHandlerService implements CoreUserProfileHandler {
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
+        const { CorePolicy } = await import('@features/policy/services/policy');
+
         const wsAvailable = await CorePolicy.isManageAcceptancesAvailable();
         if (!wsAvailable) {
             return false;

@@ -57,7 +57,6 @@ import {
     IDENTITY_PROVIDER_FEATURE_NAME_PREFIX,
 } from '../constants';
 import { LazyRoutesModule } from '@/app/app-routing.module';
-import { CorePolicy } from '@features/policy/services/policy';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -91,6 +90,8 @@ export class CoreLoginHelperProvider {
      * @deprecated since 4.4. Use CorePolicy.acceptMandatoryPolicies instead.
      */
     async acceptSitePolicy(siteId?: string): Promise<void> {
+        const { CorePolicy } = await import('@features/policy/services/policy');
+
         return CorePolicy.acceptMandatorySitePolicies(siteId);
     }
 
@@ -285,6 +286,8 @@ export class CoreLoginHelperProvider {
      * @deprecated since 4.4. Use CorePolicy.getSitePoliciesURL instead.
      */
     async getSitePolicy(siteId?: string): Promise<string> {
+        const { CorePolicy } = await import('@features/policy/services/policy');
+
         return CorePolicy.getSitePoliciesURL(siteId);
     }
 
@@ -1040,7 +1043,9 @@ export class CoreLoginHelperProvider {
      * @returns void
      * @deprecated since 4.4. Use CorePolicy.goToAcceptSitePolicies instead.
      */
-    sitePolicyNotAgreed(siteId?: string): void {
+    async sitePolicyNotAgreed(siteId?: string): Promise<void> {
+        const { CorePolicy } = await import('@features/policy/services/policy');
+
         return CorePolicy.goToAcceptSitePolicies(siteId);
     }
 
