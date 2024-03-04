@@ -18,6 +18,7 @@ import {
     ADDON_MOD_WORKSHOP_ASSESSMENT_STRATEGY_NUMERRORS_NAME,
     ADDON_MOD_WORKSHOP_ASSESSMENT_STRATEGY_NUMERRORS_STRATEGY_NAME,
 } from '@addons/mod/workshop/assessment/constants';
+import type { AddonModWorkshopAssessmentStrategyNumErrorsHandlerLazyService } from './handler-lazy';
 
 export class AddonModWorkshopAssessmentStrategyNumErrorsHandlerService {
 
@@ -32,13 +33,23 @@ export class AddonModWorkshopAssessmentStrategyNumErrorsHandlerService {
  * @returns Assessment strategy handler.
  */
 export function getAssessmentStrategyHandlerInstance(): AddonWorkshopAssessmentStrategyHandler {
-    const lazyHandler = asyncInstance(async () => {
+    const lazyHandler = asyncInstance<
+        AddonModWorkshopAssessmentStrategyNumErrorsHandlerLazyService,
+        AddonModWorkshopAssessmentStrategyNumErrorsHandlerService
+    >(async () => {
         const { AddonModWorkshopAssessmentStrategyNumErrorsHandler } = await import('./handler-lazy');
 
         return AddonModWorkshopAssessmentStrategyNumErrorsHandler.instance;
     });
 
     lazyHandler.setEagerInstance(new AddonModWorkshopAssessmentStrategyNumErrorsHandlerService());
+    lazyHandler.setLazyInstanceMethods([
+        'isEnabled',
+        'getComponent',
+        'getOriginalValues',
+        'hasDataChanged',
+        'prepareAssessmentData',
+    ]);
 
     return lazyHandler;
 }

@@ -18,6 +18,7 @@ import {
     ADDON_MOD_WORKSHOP_ASSESSMENT_STRATEGY_COMMENTS_NAME,
     ADDON_MOD_WORKSHOP_ASSESSMENT_STRATEGY_COMMENTS_STRATEGY_NAME,
 } from '@addons/mod/workshop/assessment/constants';
+import type { AddonModWorkshopAssessmentStrategyCommentsHandlerLazyService } from './handler-lazy';
 
 export class AddonModWorkshopAssessmentStrategyCommentsHandlerService {
 
@@ -32,13 +33,23 @@ export class AddonModWorkshopAssessmentStrategyCommentsHandlerService {
  * @returns Assessment strategy handler.
  */
 export function getAssessmentStrategyHandlerInstance(): AddonWorkshopAssessmentStrategyHandler {
-    const lazyHandler = asyncInstance(async () => {
+    const lazyHandler = asyncInstance<
+        AddonModWorkshopAssessmentStrategyCommentsHandlerLazyService,
+        AddonModWorkshopAssessmentStrategyCommentsHandlerService
+    >(async () => {
         const { AddonModWorkshopAssessmentStrategyCommentsHandler } = await import('./handler-lazy');
 
         return AddonModWorkshopAssessmentStrategyCommentsHandler.instance;
     });
 
     lazyHandler.setEagerInstance(new AddonModWorkshopAssessmentStrategyCommentsHandlerService());
+    lazyHandler.setLazyInstanceMethods([
+        'isEnabled',
+        'getComponent',
+        'getOriginalValues',
+        'hasDataChanged',
+        'prepareAssessmentData',
+    ]);
 
     return lazyHandler;
 }

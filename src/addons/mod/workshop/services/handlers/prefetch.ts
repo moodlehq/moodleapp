@@ -21,6 +21,7 @@ import {
 } from '@addons/mod/workshop/constants';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
 import { CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
+import type { AddonModWorkshopPrefetchHandlerLazyService } from './prefetch-lazy';
 
 export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
@@ -37,13 +38,17 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
  * @returns Prefetch handler.
  */
 export function getPrefetchHandlerInstance(): CoreCourseModulePrefetchHandler {
-    const lazyHandler = asyncInstance(async () => {
+    const lazyHandler = asyncInstance<
+        AddonModWorkshopPrefetchHandlerLazyService,
+        AddonModWorkshopPrefetchHandlerService
+    >(async () => {
         const { AddonModWorkshopPrefetchHandler } = await import('./prefetch-lazy');
 
         return AddonModWorkshopPrefetchHandler.instance;
     });
 
     lazyHandler.setEagerInstance(new AddonModWorkshopPrefetchHandlerService());
+    lazyHandler.setLazyInstanceMethods(['sync']);
 
     return lazyHandler;
 }
