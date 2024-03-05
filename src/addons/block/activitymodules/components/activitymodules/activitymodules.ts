@@ -63,6 +63,8 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
         const archetypes: Record<string, number> = {};
         const modIcons: Record<string, string> = {};
         let modFullNames: Record<string, string> = {};
+        const brandedIcons: Record<string, boolean|undefined> = {};
+
         sections.forEach((section) => {
             if (!section.modules) {
                 return;
@@ -93,6 +95,8 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
                     modFullNames[mod.modname] = mod.modplural;
                 }
 
+                brandedIcons[mod.modname] = mod.branded;
+
                 // If this is not a theme image, leave it undefined to avoid having specific activity icons.
                 if (CoreUrlUtils.isThemeImageUrl(mod.modicon)) {
                     modIcons[mod.modname] = mod.modicon;
@@ -111,6 +115,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
                 iconModName,
                 name: modFullNames[modName],
                 modName,
+                branded: brandedIcons[iconModName],
             });
         }
     }
@@ -149,4 +154,5 @@ type AddonBlockActivityModuleEntry = {
     name: string;
     modName: string;
     iconModName: string;
+    branded?: boolean;
 };
