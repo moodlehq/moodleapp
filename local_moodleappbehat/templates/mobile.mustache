@@ -1,0 +1,15 @@
+{{=<% %>=}}
+<h1 class="text-center">Hello<span id="username"></span>!</h1>
+
+<ion-list>
+    <ion-item>
+        <ion-label position="floating">What is the answer to the Ultimate Question of Life, The Universe, and Everything?</ion-label>
+        <ion-input [(ngModel)]="CONTENT_OTHERDATA.answer"></ion-input>
+    </ion-item>
+    <ion-item *ngIf="CONTENT_OTHERDATA.answer === '42'">
+        <ion-label>That is correct!</ion-label>
+    </ion-item>
+    <ion-item *ngIf="CONTENT_OTHERDATA.answer && CONTENT_OTHERDATA.answer !== '42'">
+        <ion-label>That is not correct!</ion-label>
+    </ion-item>
+</ion-list>

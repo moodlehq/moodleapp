@@ -27,16 +27,19 @@ class mobile {
      * @return array View data.
      */
     public static function view_index() {
+        global $OUTPUT;
+
         $templates = [
             [
                 'id' => 'main',
-                'html' => '<h1 class="text-center">Hello<span id="username"></span>!</h1>',
+                'html' => $OUTPUT->render_from_template('local_moodleappbehat/mobile', []),
             ],
         ];
 
+        $otherdata = ['answer' => null];
         $javascript = file_get_contents(__DIR__ . '/../../js/mobile/index.js');
 
-        return compact('templates', 'javascript');
+        return compact('templates', 'otherdata', 'javascript');
     }
 
 }
