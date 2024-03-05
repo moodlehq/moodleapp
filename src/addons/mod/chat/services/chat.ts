@@ -22,8 +22,7 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-
-const ROOT_CACHE_KEY = 'AddonModChat:';
+import { ADDON_MOD_CHAT_COMPONENT } from '../constants';
 
 /**
  * Service that provides some features for chats.
@@ -31,8 +30,7 @@ const ROOT_CACHE_KEY = 'AddonModChat:';
 @Injectable({ providedIn: 'root' })
 export class AddonModChatProvider {
 
-    static readonly COMPONENT = 'mmaModChat';
-    static readonly POLL_INTERVAL = 4000;
+    protected static readonly ROOT_CACHE_KEY = 'AddonModChat:';
 
     /**
      * Get a chat.
@@ -51,7 +49,7 @@ export class AddonModChatProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getChatsCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModChatProvider.COMPONENT,
+            component: ADDON_MOD_CHAT_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -99,7 +97,7 @@ export class AddonModChatProvider {
         await CoreCourseLogHelper.log(
             'mod_chat_view_chat',
             params,
-            AddonModChatProvider.COMPONENT,
+            ADDON_MOD_CHAT_COMPONENT,
             id,
             siteId,
         );
@@ -126,7 +124,7 @@ export class AddonModChatProvider {
         await CoreCourseLogHelper.log(
             'mod_chat_view_sessions',
             params,
-            AddonModChatProvider.COMPONENT,
+            ADDON_MOD_CHAT_COMPONENT,
             id,
         );
     }
@@ -232,7 +230,7 @@ export class AddonModChatProvider {
             chatsid: sessionId,
         };
         const preSets: CoreSiteWSPreSets = {
-            component: AddonModChatProvider.COMPONENT,
+            component: ADDON_MOD_CHAT_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -265,7 +263,7 @@ export class AddonModChatProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSessionsCacheKey(chatId, groupId, showAll),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
-            component: AddonModChatProvider.COMPONENT,
+            component: ADDON_MOD_CHAT_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -303,7 +301,7 @@ export class AddonModChatProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSessionMessagesCacheKey(chatId, sessionStart, groupId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModChatProvider.COMPONENT,
+            component: ADDON_MOD_CHAT_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -393,7 +391,7 @@ export class AddonModChatProvider {
      * @returns Cache key.
      */
     protected getChatsCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'chats:' + courseId;
+        return AddonModChatProvider.ROOT_CACHE_KEY + 'chats:' + courseId;
     }
 
     /**
@@ -415,7 +413,7 @@ export class AddonModChatProvider {
      * @returns Cache key prefix.
      */
     protected getSessionsCacheKeyPrefix(chatId: number): string {
-        return ROOT_CACHE_KEY + 'sessions:' + chatId + ':';
+        return AddonModChatProvider.ROOT_CACHE_KEY + 'sessions:' + chatId + ':';
     }
 
     /**
@@ -437,7 +435,7 @@ export class AddonModChatProvider {
      * @returns Cache key prefix.
      */
     protected getSessionMessagesCacheKeyPrefix(chatId: number): string {
-        return ROOT_CACHE_KEY + 'sessionsMessages:' + chatId + ':';
+        return AddonModChatProvider.ROOT_CACHE_KEY + 'sessionsMessages:' + chatId + ':';
     }
 
 }
