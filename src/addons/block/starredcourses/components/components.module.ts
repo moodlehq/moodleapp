@@ -27,8 +27,5 @@ import { AddonBlockStarredCoursesComponent } from './starredcourses/starredcours
         CoreSharedModule,
         CoreCoursesComponentsModule,
     ],
-    exports: [
-        AddonBlockStarredCoursesComponent,
-    ],
 })
 export class AddonBlockStarredCoursesComponentsModule {}

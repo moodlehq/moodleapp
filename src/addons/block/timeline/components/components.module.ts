@@ -29,9 +29,5 @@ import { CoreSearchComponentsModule } from '@features/search/components/componen
         CoreSharedModule,
         CoreSearchComponentsModule,
     ],
-    exports: [
-        AddonBlockTimelineComponent,
-        AddonBlockTimelineEventsComponent,
-    ],
 })
 export class AddonBlockTimelineComponentsModule {}

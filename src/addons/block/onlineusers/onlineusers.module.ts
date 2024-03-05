@@ -13,18 +13,10 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { AddonBlockOnlineUsersHandler } from './services/block-handler';
-import { AddonBlockOnlineUsersComponentsModule } from './components/components.module';
 
 @NgModule({
-    imports: [
-        IonicModule,
-        AddonBlockOnlineUsersComponentsModule,
-        TranslateModule.forChild(),
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,

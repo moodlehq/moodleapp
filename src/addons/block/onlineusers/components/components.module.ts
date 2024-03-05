@@ -24,8 +24,5 @@ import { AddonBlockOnlineUsersComponent } from './onlineusers/onlineusers';
     imports: [
         CoreSharedModule,
     ],
-    exports: [
-        AddonBlockOnlineUsersComponent,
-    ],
 })
 export class AddonBlockOnlineUsersComponentsModule {}
