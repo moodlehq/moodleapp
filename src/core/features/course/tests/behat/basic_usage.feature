@@ -17,6 +17,8 @@ Feature: Test basic usage of one course in app
       | user | course | role |
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
+    And I enable "chat" "mod" plugin
+    And I enable "survey" "mod" plugin
     And the following "activities" exist:
       | activity | name            | intro                   | course | idnumber | option                       | section |
       | choice   | Choice course 1 | Test choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 1       |
@@ -345,7 +347,7 @@ Feature: Test basic usage of one course in app
   Scenario: Navigation between sections using the bottom arrows
     When I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
-   And I should find "Test forum name" in the app
+    And I should find "Test forum name" in the app
     And I should find "Test wiki name" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
