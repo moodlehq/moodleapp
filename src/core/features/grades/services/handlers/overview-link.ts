@@ -36,8 +36,8 @@ export class CoreGradesOverviewLinkHandlerService extends CoreContentLinksHandle
      */
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
-            action: siteId => {
-                CoreNavigator.navigateToSitePath(GRADES_PAGE_NAME, { siteId });
+            action: async siteId => {
+                await CoreNavigator.navigateToSitePath(GRADES_PAGE_NAME, { siteId });
             },
         }];
     }

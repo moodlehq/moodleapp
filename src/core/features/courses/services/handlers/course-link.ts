@@ -50,7 +50,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
     getActions(
         siteIds: string[],
         url: string,
-        params: Params,
+        params: Record<string, string>,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         const courseId = parseInt(params.id, 10);
         const sectionId = params.sectionid ? parseInt(params.sectionid, 10) : undefined;
@@ -78,7 +78,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
         }
 
         return [{
-            action: (siteId): void => {
+            action: async (siteId): Promise<void> => {
                 siteId = siteId || CoreSites.getCurrentSiteId();
                 if (siteId === CoreSites.getCurrentSiteId()) {
                     // Check if we already are in the course index page.
@@ -87,15 +87,15 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
                         CoreCourse.selectCourseTab('', pageParams);
 
                         return;
-                    } else {
-                        this.actionOpen(courseId, url, pageParams).catch(() => {
-                            // Ignore errors.
-                        });
                     }
-                } else {
-                    // Make the course the new history root (to avoid "loops" in history).
-                    CoreCourseHelper.getAndOpenCourse(courseId, pageParams, siteId);
+
+                    await CoreUtils.ignoreErrors(this.actionOpen(courseId, url, pageParams));
+
+                    return;
                 }
+
+                // Make the course the new history root (to avoid "loops" in history).
+                await CoreCourseHelper.getAndOpenCourse(courseId, pageParams, siteId);
             },
         }];
     }
@@ -103,7 +103,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
     /**
      * @inheritdoc
      */
-    async isEnabled(siteId: string, url: string, params: Params): Promise<boolean> {
+    async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
         const courseId = parseInt(params.id, 10);
 
         if (!courseId) {

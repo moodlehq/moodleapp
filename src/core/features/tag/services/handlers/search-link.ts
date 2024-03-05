@@ -38,13 +38,13 @@ export class CoreTagSearchLinkHandlerService extends CoreContentLinksHandlerBase
         params: Record<string, string>,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
-            action: (siteId): void => {
+            action: async (siteId): Promise<void> => {
                 const pageParams = {
                     collectionId: parseInt(params.tc, 10) || 0,
                     query: params.query || '',
                 };
 
-                CoreNavigator.navigateToSitePath('/tag/search', { params: pageParams, siteId });
+                await CoreNavigator.navigateToSitePath('/tag/search', { params: pageParams, siteId });
             },
         }];
     }

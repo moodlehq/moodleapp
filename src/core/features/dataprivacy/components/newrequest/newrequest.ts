@@ -33,6 +33,7 @@ import { ModalController } from '@singletons';
 export class CoreDataPrivacyNewRequestComponent implements OnInit {
 
     @Input() accessInfo?: CoreDataPrivacyGetAccessInformationWSResponse;
+    @Input() createType?: CoreDataPrivacyDataRequestType;
 
     message = '';
 
@@ -65,9 +66,24 @@ export class CoreDataPrivacyNewRequestComponent implements OnInit {
             return;
         }
 
-        // Just in case only deleting is allowed, change the default type.
-        if (!this.accessInfo.cancreatedatadownloadrequest && this.accessInfo.cancreatedatadeletionrequest){
-            this.typeControl.setValue(CoreDataPrivacyDataRequestType.DATAREQUEST_TYPE_DELETE);
+        switch (this.createType) {
+            case CoreDataPrivacyDataRequestType.DATAREQUEST_TYPE_EXPORT:
+                if (this.accessInfo?.cancreatedatadownloadrequest) {
+                    this.typeControl.setValue(this.createType);
+
+                }
+                break;
+            case CoreDataPrivacyDataRequestType.DATAREQUEST_TYPE_DELETE:
+                if (this.accessInfo?.cancreatedatadeletionrequest) {
+                    this.typeControl.setValue(this.createType);
+                }
+                break;
+            default:
+                // Just in case only deleting is allowed, change the default type.
+                if (!this.accessInfo.cancreatedatadownloadrequest && this.accessInfo.cancreatedatadeletionrequest){
+                    this.typeControl.setValue(CoreDataPrivacyDataRequestType.DATAREQUEST_TYPE_DELETE);
+                }
+                break;
         }
     }
 

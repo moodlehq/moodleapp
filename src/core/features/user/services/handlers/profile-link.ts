@@ -52,7 +52,7 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
                     userId,
                 };
 
-                CoreNavigator.navigateToSitePath('/user', { params: pageParams, siteId });
+                await CoreNavigator.navigateToSitePath('/user', { params: pageParams, siteId });
             },
         }];
     }

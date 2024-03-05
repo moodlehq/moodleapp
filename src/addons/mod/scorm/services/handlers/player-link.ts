@@ -56,7 +56,7 @@ export class AddonModScormPlayerLinkHandlerService extends CoreContentLinksHandl
                 };
 
                 if (cmId) {
-                    CoreCourseHelper.navigateToModule(
+                    await CoreCourseHelper.navigateToModule(
                         cmId,
                         {
                             courseId,
@@ -65,7 +65,7 @@ export class AddonModScormPlayerLinkHandlerService extends CoreContentLinksHandl
                         },
                     );
                 } else {
-                    CoreCourseHelper.navigateToModuleByInstance(
+                    await CoreCourseHelper.navigateToModuleByInstance(
                         instanceId,
                         'scorm',
                         {

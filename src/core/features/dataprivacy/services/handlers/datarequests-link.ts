@@ -15,31 +15,27 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
+import { CORE_DATAPRIVACY_PAGE_NAME } from '@features/dataprivacy/constants';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { CoreReportBuilder } from '../reportbuilder';
-import { CoreReportBuilderHandlerService } from './reportbuilder';
+import { CoreDataPrivacy } from '../dataprivacy';
 
 /**
- * Content links handler for report builder
- * Match reportbuilder/view.php?id=6 with a valid data and report id.
+ * Handler to treat data requests links.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreReportBuilderLinkHandlerService extends CoreContentLinksHandlerBase {
+export class CoreDataPrivacyDataRequestsLinkHandlerService extends CoreContentLinksHandlerBase {
 
-    name = 'CoreReportBuilderLinkHandler';
-    pattern = /\/reportbuilder\/view\.php.*([?&]id=\d+)/;
+    name = 'CoreDataPrivacyDataRequestsLinkHandler';
+    pattern = /\/admin\/tool\/dataprivacy\/mydatarequests\.php/;
 
     /**
      * @inheritdoc
      */
-    getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
+    getActions(): CoreContentLinksAction[] {
         return [{
             action: async (siteId): Promise<void> => {
-                await CoreNavigator.navigateToSitePath(
-                    `${CoreReportBuilderHandlerService.PAGE_NAME}/${params.id || ''}`,
-                    { siteId },
-                );
+                await CoreNavigator.navigateToSitePath(CORE_DATAPRIVACY_PAGE_NAME, { siteId });
             },
         }];
     }
@@ -48,9 +44,9 @@ export class CoreReportBuilderLinkHandlerService extends CoreContentLinksHandler
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return await CoreReportBuilder.isEnabled();
+        return await CoreDataPrivacy.isEnabled();
     }
 
 }
 
-export const CoreReportBuilderLinkHandler = makeSingleton(CoreReportBuilderLinkHandlerService);
+export const CoreDataPrivacyDataRequestsLinkHandler = makeSingleton(CoreDataPrivacyDataRequestsLinkHandlerService);

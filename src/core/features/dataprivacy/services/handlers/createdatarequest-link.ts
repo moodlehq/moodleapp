@@ -13,33 +13,39 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { Params } from '@angular/router';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
+import { CORE_DATAPRIVACY_PAGE_NAME } from '@features/dataprivacy/constants';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { CoreReportBuilder } from '../reportbuilder';
-import { CoreReportBuilderHandlerService } from './reportbuilder';
+import { CoreDataPrivacy } from '../dataprivacy';
 
 /**
- * Content links handler for report builder
- * Match reportbuilder/view.php?id=6 with a valid data and report id.
+ * Handler to treat data requests creation links.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreReportBuilderLinkHandlerService extends CoreContentLinksHandlerBase {
+export class CoreDataPrivacyCreateDataRequestLinkHandlerService extends CoreContentLinksHandlerBase {
 
-    name = 'CoreReportBuilderLinkHandler';
-    pattern = /\/reportbuilder\/view\.php.*([?&]id=\d+)/;
+    name = 'CoreDataPrivacyCreateDataRequestLinkHandler';
+    pattern = /\/admin\/tool\/dataprivacy\/createdatarequest\.php.*([?&]type=\d+)/;
 
     /**
      * @inheritdoc
      */
-    getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
+    getActions(
+        siteIds: string[],
+        url: string,
+        params: Record<string, string>,
+    ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+
+        const pageParams: Params = {
+            createType: Number(params.type),
+        };
+
         return [{
             action: async (siteId): Promise<void> => {
-                await CoreNavigator.navigateToSitePath(
-                    `${CoreReportBuilderHandlerService.PAGE_NAME}/${params.id || ''}`,
-                    { siteId },
-                );
+                await CoreNavigator.navigateToSitePath(CORE_DATAPRIVACY_PAGE_NAME, { params: pageParams,  siteId });
             },
         }];
     }
@@ -48,9 +54,9 @@ export class CoreReportBuilderLinkHandlerService extends CoreContentLinksHandler
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return await CoreReportBuilder.isEnabled();
+        return await CoreDataPrivacy.isEnabled();
     }
 
 }
 
-export const CoreReportBuilderLinkHandler = makeSingleton(CoreReportBuilderLinkHandlerService);
+export const CoreDataPrivacyCreateDataRequestLinkHandler = makeSingleton(CoreDataPrivacyCreateDataRequestLinkHandlerService);

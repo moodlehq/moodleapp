@@ -118,7 +118,7 @@ export interface CoreContentLinksAction {
      *
      * @param siteId The site ID.
      */
-    action(siteId: string): void;
+    action(siteId: string): Promise<void>;
 }
 
 /**

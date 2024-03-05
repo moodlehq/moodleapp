@@ -62,7 +62,7 @@ export class AddonModWikiEditLinkHandlerService extends CoreContentLinksHandlerB
                         section = params.section.replace(/\+/g, ' ');
                     }
 
-                    CoreNavigator.navigateToSitePath(
+                    await CoreNavigator.navigateToSitePath(
                         AddonModWikiModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/edit`,
                         {
                             params: {

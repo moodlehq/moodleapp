@@ -87,8 +87,8 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
             const instanceId = parseInt(params[this.instanceIdParam], 10);
 
             return [{
-                action: (siteId) => {
-                    CoreCourseHelper.navigateToModuleByInstance(
+                action: async (siteId) => {
+                    await CoreCourseHelper.navigateToModuleByInstance(
                         instanceId,
                         this.modName,
                         {
@@ -103,8 +103,8 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
         }
 
         return [{
-            action: (siteId) => {
-                CoreCourseHelper.navigateToModule(
+            action: async (siteId) => {
+                await CoreCourseHelper.navigateToModule(
                     parseInt(params.id, 10),
                     {
                         courseId,

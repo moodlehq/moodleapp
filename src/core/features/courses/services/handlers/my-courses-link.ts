@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { makeSingleton } from '@singletons';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { Params } from '@angular/router';
 import { CoreNavigator } from '@services/navigator';
 /**
  * Handler to treat links to my courses page.
@@ -36,24 +35,20 @@ export class CoreCoursesMyCoursesLinkHandlerService extends CoreContentLinksHand
         params: Record<string, string>,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
-            action: (): void => {
-                this.actionOpen({
-                    sort: params.sort || undefined,
-                    filter: params.filter || undefined,
-                    search: params.search || undefined,
-                    layout: params.layout || undefined,
-                });
+            action: async (): Promise<void> => {
+                await CoreNavigator.navigate(
+                    '/main/courses/my',
+                    {
+                        params: {
+                            sort: params.sort || undefined,
+                            filter: params.filter || undefined,
+                            search: params.search || undefined,
+                            layout: params.layout || undefined,
+                        },
+                    },
+                );
             },
         }];
-    }
-
-    /**
-     * Open my courses.
-     *
-     * @param params Params to send to the new page.
-     */
-    protected actionOpen(params: Params): void {
-        CoreNavigator.navigate('/main/courses/my', { params });
     }
 
 }

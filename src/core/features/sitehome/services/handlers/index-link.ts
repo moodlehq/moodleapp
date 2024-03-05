@@ -46,8 +46,8 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
         }
 
         return [{
-            action: (siteId: string): void => {
-                CoreNavigator.navigateToSitePath(
+            action: async (siteId: string): Promise<void> => {
+                await CoreNavigator.navigateToSitePath(
                     `/${CoreMainMenuHomeHandlerService.PAGE_NAME}/${CoreSiteHomeHomeHandlerService.PAGE_NAME}`,
                     {
                         preferCurrentTab: false,

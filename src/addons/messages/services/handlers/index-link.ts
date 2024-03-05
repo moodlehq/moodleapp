@@ -38,7 +38,7 @@ export class AddonMessagesIndexLinkHandlerService extends CoreContentLinksHandle
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: async (siteId): Promise<void> => {
-                CoreNavigator.navigateToSitePath(AddonMessagesMainMenuHandlerService.PAGE_NAME, {
+                await CoreNavigator.navigateToSitePath(AddonMessagesMainMenuHandlerService.PAGE_NAME, {
                     siteId,
                     preferCurrentTab: false,
                 });

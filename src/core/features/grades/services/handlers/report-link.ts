@@ -43,11 +43,11 @@ export class CoreGradesReportLinkHandlerService extends CoreContentLinksHandlerB
         data = data || {};
 
         return [{
-            action: (siteId): void => {
+            action: async (siteId): Promise<void> => {
                 const userId = params.userid ? parseInt(params.userid, 10) : undefined;
                 const moduleId = data?.cmid && parseInt(data.cmid, 10) || undefined;
 
-                CoreGradesHelper.goToGrades(courseIdentifier, userId, moduleId, siteId);
+                await CoreGradesHelper.goToGrades(courseIdentifier, userId, moduleId, siteId);
             },
         }];
     }

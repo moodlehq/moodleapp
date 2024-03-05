@@ -19,6 +19,9 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreDataPrivacyComponentsModule } from './components/components.module';
 import { CORE_DATAPRIVACY_PAGE_NAME } from './constants';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { CoreDataPrivacyDataRequestsLinkHandler } from './services/handlers/datarequests-link';
+import { CoreDataPrivacyCreateDataRequestLinkHandler } from './services/handlers/createdatarequest-link';
 
 const routes: Routes = [
     {
@@ -38,6 +41,8 @@ const routes: Routes = [
             multi: true,
             useValue: () => {
                 CoreUserDelegate.registerHandler(CoreDataPrivacyUserHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreDataPrivacyDataRequestsLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreDataPrivacyCreateDataRequestLinkHandler.instance);
             },
         },
     ],

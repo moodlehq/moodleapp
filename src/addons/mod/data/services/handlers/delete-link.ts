@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Params } from '@angular/router';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { makeSingleton } from '@singletons';
@@ -33,13 +32,13 @@ export class AddonModDataDeleteLinkHandlerService extends CoreContentLinksHandle
     /**
      * @inheritdoc
      */
-    getActions(siteIds: string[], url: string, params: Params, courseId?: number): CoreContentLinksAction[] {
+    getActions(siteIds: string[], url: string, params: Record<string, string>, courseId?: number): CoreContentLinksAction[] {
         return [{
-            action: (siteId): void => {
+            action: async (siteId): Promise<void> => {
                 const dataId = parseInt(params.d, 10);
                 const entryId = parseInt(params.delete, 10);
 
-                AddonModDataHelper.showDeleteEntryModal(dataId, entryId, courseId, siteId);
+                await AddonModDataHelper.showDeleteEntryModal(dataId, entryId, courseId, siteId);
             },
         }];
     }
@@ -47,7 +46,7 @@ export class AddonModDataDeleteLinkHandlerService extends CoreContentLinksHandle
     /**
      * @inheritdoc
      */
-    async isEnabled(siteId: string, url: string, params: Params): Promise<boolean> {
+    async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
         if (params.d === undefined || params.delete === undefined) {
             // Required fields not defined. Cannot treat the URL.
             return false;

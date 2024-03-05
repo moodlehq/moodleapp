@@ -41,8 +41,8 @@ export class CoreSearchGlobalSearchLinkHandlerService extends CoreContentLinksHa
      */
     getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
         return [{
-            action: (siteId: string): void => {
-                CoreNavigator.navigateToSitePath(CORE_SEARCH_PAGE_NAME, {
+            action: async (siteId: string): Promise<void> => {
+                await CoreNavigator.navigateToSitePath(CORE_SEARCH_PAGE_NAME, {
                     siteId,
                     params: {
                         query: params.q,

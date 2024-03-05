@@ -36,9 +36,9 @@ export class CoreCoursesDashboardLinkHandlerService extends CoreContentLinksHand
      */
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
-            action: (siteId): void => {
+            action: async (siteId): Promise<void> => {
                 // Use redirect to select the tab.
-                CoreNavigator.navigateToSitePath(
+                await CoreNavigator.navigateToSitePath(
                     `/${CoreMainMenuHomeHandlerService.PAGE_NAME}/${CoreDashboardHomeHandlerService.PAGE_NAME}`,
                     {
                         siteId,

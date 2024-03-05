@@ -53,7 +53,7 @@ export class AddonCourseCompletionStatusLinkHandlerService extends CoreContentLi
                     userId,
                 };
 
-                CoreNavigator.navigateToSitePath(
+                await CoreNavigator.navigateToSitePath(
                     '/coursecompletion',
                     { params: pageParams, siteId },
                 );

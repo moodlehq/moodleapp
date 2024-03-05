@@ -35,8 +35,8 @@ export class AddonMessagesContactRequestLinkHandlerService extends CoreContentLi
      */
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
-            action: (siteId): void => {
-                CoreNavigator.navigateToSitePath('/messages/contacts', { siteId });
+            action: async (siteId): Promise<void> => {
+                await CoreNavigator.navigateToSitePath('/messages/contacts', { siteId });
             },
         }];
     }

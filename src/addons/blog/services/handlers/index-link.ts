@@ -44,8 +44,8 @@ export class AddonBlogIndexLinkHandlerService extends CoreContentLinksHandlerBas
         params.tagid ? pageParams['tagId'] = parseInt(params.tagid, 10) : null;
 
         return [{
-            action: (siteId: string): void => {
-                CoreNavigator.navigateToSitePath('/blog', { params: pageParams, siteId });
+            action: async (siteId: string): Promise<void> => {
+                await CoreNavigator.navigateToSitePath('/blog', { params: pageParams, siteId });
             },
         }];
     }
