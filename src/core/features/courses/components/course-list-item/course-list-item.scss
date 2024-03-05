@@ -20,7 +20,7 @@
     --button-size: 44px;
     --button-padding: 10px;
     --button-radius: 50%;
-    --button-background: rgba(255,255,255,0.5);
+    --button-background: rgb(255 255 255 / 50%);
 
     @include media-breakpoint-down(md) {
         --avatar-size: 48px;
@@ -30,7 +30,7 @@
 
 
 :host-context(html.dark) {
-    --button-background: rgba(0, 0, 0, 0.3);
+    --button-background: rgb(0 0 0 / 30%);
 }
 
 // Common styles.

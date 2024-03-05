@@ -5,11 +5,11 @@
 
 core-format-text {
     --core-format-text-background: var(--background, var(--ion-item-background));
-    --core-format-text-viewer-icon-background: rgba(255, 255, 255, .5);
+    --core-format-text-viewer-icon-background: rgb(255 255 255 / 50%);
 }
 
 html.dark core-format-text {
-    --core-format-text-viewer-icon-background: rgba(0, 0, 0, .5);
+    --core-format-text-viewer-icon-background: rgb(0 0 0 / 50%);
 }
 
 core-format-text {
@@ -646,8 +646,8 @@ core-rich-text-editor .core-rte-editor {
 
     .text-body { color: var(--ion-text-color) !important; }
     .text-muted { color: var(--subdued-text-color) !important; }
-    .text-black-50 { color: rgba(0, 0, 0, .5) !important; }
-    .text-white-50 { color: rgba(255, 255, 255, .5) !important; }
+    .text-black-50 { color: rgb(0 0 0 / 50%) !important; }
+    .text-white-50 { color: rgb(255 255 255 / 50%) !important; }
     .text-decoration-none { text-decoration: none !important; }
     .text-break {
         word-break: break-word !important; // Deprecated, but avoids issues with flex containers
