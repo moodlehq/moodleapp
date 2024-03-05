@@ -39,7 +39,7 @@ export class AddonCompetencyPushClickHandlerService implements CorePushNotificat
         if (CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'moodle' &&
                 (notification.name == 'competencyplancomment' || notification.name == 'competencyusercompcomment')) {
             // If all competency features are disabled, don't handle the click.
-            return AddonCompetency.allCompetenciesDisabled(notification.site).then((disabled) => !disabled);
+            return AddonCompetency.areCompetenciesEnabled({ siteId: notification.site });
         }
 
         return false;

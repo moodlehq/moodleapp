@@ -43,17 +43,33 @@ export class AddonCompetencyProvider {
     static readonly REVIEW_STATUS_IN_REVIEW = 2;
 
     /**
+     * Check if competencies are enabled in a certain site.
+     *
+     * @param options Site ID or site object.
+     * @returns Whether competencies are enabled.
+     */
+    async areCompetenciesEnabled(options?: {siteId?: string; site?: CoreSite}): Promise<boolean> {
+        const site = options?.site ? options.site : await CoreSites.getSite(options?.siteId);
+
+        if (!site) {
+            return false;
+        }
+
+        return site.canUseAdvancedFeature('enablecompetencies') &&
+            !(site.isFeatureDisabled('CoreMainMenuDelegate_AddonCompetency') &&
+            site.isFeatureDisabled('CoreCourseOptionsDelegate_AddonCompetency') &&
+            site.isFeatureDisabled('CoreUserDelegate_AddonCompetency'));
+    }
+
+    /**
      * Check if all competencies features are disabled.
      *
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with boolean: whether all competency features are disabled.
+     * @deprecated since 4.4. Use areCompetenciesEnabled instead.
      */
     async allCompetenciesDisabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return site.isFeatureDisabled('CoreMainMenuDelegate_AddonCompetency') &&
-            site.isFeatureDisabled('CoreCourseOptionsDelegate_AddonCompetency') &&
-            site.isFeatureDisabled('CoreUserDelegate_AddonCompetency');
+        return !(await this.areCompetenciesEnabled({ siteId }));
     }
 
     /**
@@ -66,6 +82,11 @@ export class AddonCompetencyProvider {
      */
     async canViewUserCompetenciesInCourse(courseId: number, userId?: number, siteId?: string): Promise<boolean> {
         if (!CoreSites.isLoggedIn()) {
+            return false;
+        }
+
+        const enabled = await this.areCompetenciesEnabled({ siteId });
+        if (!enabled) {
             return false;
         }
 

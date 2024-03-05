@@ -43,7 +43,7 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return true;
+        return AddonCompetency.areCompetenciesEnabled();
     }
 
     /**

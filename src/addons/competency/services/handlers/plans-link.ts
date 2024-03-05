@@ -49,10 +49,7 @@ export class AddonCompetencyPlansLinkHandlerService extends CoreContentLinksHand
      * @inheritdoc
      */
     async isEnabled(siteId: string): Promise<boolean> {
-        // Handler is disabled if all competency features are disabled.
-        const disabled = await AddonCompetency.allCompetenciesDisabled(siteId);
-
-        return !disabled;
+        return AddonCompetency.areCompetenciesEnabled({ siteId });
     }
 
 }

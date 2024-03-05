@@ -16,6 +16,11 @@ on:
   pull_request:
     branches: [ main, v*.x ]
 
+concurrency:
+    group: acceptance-${{ github.ref }}
+    cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+
 jobs:
 
   build:

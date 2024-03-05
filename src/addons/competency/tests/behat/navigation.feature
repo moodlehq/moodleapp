@@ -175,6 +175,15 @@ Feature: Test competency navigation
     Then I should find "Desserts are important" in the app
     But I should not find "Cakes" in the app
 
+    Given the following config values are set as admin:
+      | enabled | 0 | core_competency |
+    When I entered the course "Course 1" as "student1" in the app
+    Then I should not find "Competencies" in the app
+
+    When I press the back button in the app
+    And I press the user menu button in the app
+    And I should not find "Learning plans" in the app
+
   Scenario: Mobile navigation (teacher)
     Given I entered the course "Course 1" as "teacher1" in the app
 

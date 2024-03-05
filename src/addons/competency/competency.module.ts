@@ -17,8 +17,6 @@ import { CoreContentLinksDelegate } from '@features/contentlinks/services/conten
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
-import { AddonCompetencyProvider } from './services/competency';
-import { AddonCompetencyHelperProvider } from './services/competency-helper';
 import { AddonCompetencyCompetencyLinkHandler } from './services/handlers/competency-link';
 import { AddonCompetencyCourseOptionHandler } from './services/handlers/course-option';
 import { AddonCompetencyPlanLinkHandler } from './services/handlers/plan-link';
@@ -33,11 +31,20 @@ import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.mo
 import { COURSE_PAGE_NAME } from '@features/course/course.module';
 import { PARTICIPANTS_PAGE_NAME } from '@features/user/user.module';
 
-// List of providers (without handlers).
-export const ADDON_COMPETENCY_SERVICES: Type<unknown>[] = [
-    AddonCompetencyProvider,
-    AddonCompetencyHelperProvider,
-];
+/**
+ * Get competency services.
+ *
+ * @returns Competency services.
+ */
+export async function getCompetencyServices(): Promise<Type<unknown>[]> {
+    const { AddonCompetencyProvider } = await import('@addons/competency/services/competency');
+    const { AddonCompetencyHelperProvider } = await import('@addons/competency/services/competency-helper');
+
+    return [
+        AddonCompetencyProvider,
+        AddonCompetencyHelperProvider,
+    ];
+}
 
 export const ADDON_COMPETENCY_LEARNING_PLANS_PAGE = 'learning-plans';
 export const ADDON_COMPETENCY_COMPETENCIES_PAGE = 'competencies';
