@@ -37,13 +37,6 @@ export class AddonModWorkshopAssessmentStrategyCommentsHandlerLazyService
     /**
      * @inheritdoc
      */
-    async isEnabled(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
     getComponent(): Type<unknown> {
         return AddonModWorkshopAssessmentStrategyCommentsComponent;
     }

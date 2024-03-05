@@ -15,6 +15,7 @@ Feature: Test basic usage of chat in app
       | user     | course | role           |
       | student1 | C1     | student        |
       | student2 | C1     | student        |
+    And I enable "chat" "mod" plugin
     And the following "activities" exist:
       | activity   | name            | intro       | course | idnumber | groupmode |
       | chat       | Test chat name  | Test chat   | C1     | chat     | 0         |

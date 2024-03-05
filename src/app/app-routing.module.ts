@@ -14,7 +14,6 @@
 
 import { InjectionToken, Injector, ModuleWithProviders, NgModule, Type } from '@angular/core';
 import {
-    PreloadAllModules,
     RouterModule,
     Route,
     Routes,
@@ -224,7 +223,7 @@ export const APP_ROUTES = new InjectionToken('APP_ROUTES');
 
 @NgModule({
     imports: [
-        RouterModule.forRoot([], { preloadingStrategy: PreloadAllModules }),
+        RouterModule.forRoot([]),
     ],
     providers: [
         { provide: ROUTES, multi: true, useFactory: buildAppRoutes, deps: [Injector] },
