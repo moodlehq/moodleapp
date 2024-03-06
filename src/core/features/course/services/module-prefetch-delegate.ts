@@ -122,8 +122,8 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
 
         const promises = modules.map(async (module) => {
             try {
-                const data = await this.getModuleStatusAndDownloadTime(module, courseId);
-                if (data.status != CoreConstants.DOWNLOADED) {
+                const data = await this.getModuleDownloadTime(module);
+                if (!data.downloadTime || data.outdated) {
                     return;
                 }
 
@@ -730,22 +730,20 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
     }
 
     /**
-     * Get a module status and download time. It will only return the download time if the module is downloaded or outdated.
+     * Get the time a module was downloaded, and whether the download is outdated.
+     * It will only return the download time if the module is downloaded or outdated.
      *
      * @param module Module.
-     * @param courseId Course ID the module belongs to.
      * @returns Promise resolved with the data.
      */
-    protected async getModuleStatusAndDownloadTime(
+    protected async getModuleDownloadTime(
         module: CoreCourseAnyModuleData,
-        courseId: number,
-    ): Promise<{ status: string; downloadTime?: number }> {
+    ): Promise<{ downloadTime?: number; outdated?: boolean }> {
         const handler = this.getPrefetchHandlerFor(module.modname);
         const siteId = CoreSites.getCurrentSiteId();
 
         if (!handler) {
-            // No handler found, module not downloadable.
-            return { status: CoreConstants.NOT_DOWNLOADABLE };
+            return {};
         }
 
         // Get the status from the cache.
@@ -753,14 +751,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         const status = this.statusCache.getValue<string>(packageId, 'status');
 
         if (status !== undefined && !CoreFileHelper.isStateDownloaded(status)) {
-            // Module isn't downloaded, just return the status.
-            return { status };
-        }
-
-        // Check if the module is downloadable.
-        const downloadable = await this.isModuleDownloadable(module, courseId);
-        if (!downloadable) {
-            return { status: CoreConstants.NOT_DOWNLOADABLE };
+            return {};
         }
 
         try {
@@ -768,11 +759,11 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             const data = await CoreFilepool.getPackageData(siteId, handler.component, module.id);
 
             return {
-                status: data.status || CoreConstants.NOT_DOWNLOADED,
-                downloadTime: data.downloadTime || 0,
+                downloadTime: data.downloadTime,
+                outdated: data.status === CoreConstants.OUTDATED,
             };
         } catch {
-            return { status: CoreConstants.NOT_DOWNLOADED };
+            return {};
         }
     }
 
@@ -795,8 +786,8 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
 
         const site = await CoreSites.getSite(siteId);
 
-        const data = await this.getModuleStatusAndDownloadTime(module, courseId);
-        if (!CoreFileHelper.isStateDownloaded(data.status)) {
+        const data = await this.getModuleDownloadTime(module);
+        if (!data.downloadTime) {
             // Not downloaded, no updates.
             return null;
         }
