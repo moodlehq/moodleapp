@@ -18,12 +18,20 @@ import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreH5PComponentsModule } from './components/components.module';
 import { SITE_SCHEMA } from './services/database/h5p';
-import { CoreH5PProvider } from './services/h5p';
 import { CoreH5PPluginFileHandler } from './services/handlers/pluginfile';
 
-export const CORE_H5P_SERVICES: Type<unknown>[] = [
-    CoreH5PProvider,
-];
+/**
+ * Get H5P services.
+ *
+ * @returns Returns H5P services.
+ */
+export async function getH5PServices(): Promise<Type<unknown>[]> {
+    const { CoreH5PProvider } = await import('@features/h5p/services/h5p');
+
+    return [
+        CoreH5PProvider,
+    ];
+}
 
 @NgModule({
     imports: [

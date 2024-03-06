@@ -14,18 +14,26 @@
 
 import { NgModule, Type } from '@angular/core';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreQuestionBehaviourDelegateService } from './services/behaviour-delegate';
 import { QUESTION_SITE_SCHEMA } from './services/database/question';
-import { CoreQuestionProvider } from './services/question';
-import { CoreQuestionDelegateService } from './services/question-delegate';
-import { CoreQuestionHelperProvider } from './services/question-helper';
 
-export const CORE_QUESTION_SERVICES: Type<unknown>[] = [
-    CoreQuestionProvider,
-    CoreQuestionDelegateService,
-    CoreQuestionBehaviourDelegateService,
-    CoreQuestionHelperProvider,
-];
+/**
+ * Get question services.
+ *
+ * @returns Returns question services.
+ */
+export async function getQuestionServices(): Promise<Type<unknown>[]> {
+    const { CoreQuestionProvider } = await import('@features/question/services/question');
+    const { CoreQuestionDelegateService } = await import('@features/question/services/question-delegate');
+    const { CoreQuestionBehaviourDelegateService } = await import('@features/question/services/behaviour-delegate');
+    const { CoreQuestionHelperProvider } = await import('@features/question/services/question-helper');
+
+    return [
+        CoreQuestionProvider,
+        CoreQuestionDelegateService,
+        CoreQuestionBehaviourDelegateService,
+        CoreQuestionHelperProvider,
+    ];
+}
 
 @NgModule({
     providers: [

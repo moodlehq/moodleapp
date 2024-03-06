@@ -17,13 +17,22 @@ import { Routes } from '@angular/router';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreSettingsHelper, CoreSettingsHelperProvider } from './services/settings-helper';
-import { CoreSettingsDelegateService } from './services/settings-delegate';
+import { CoreSettingsHelper } from './services/settings-helper';
 
-export const CORE_SETTINGS_SERVICES: Type<unknown>[] = [
-    CoreSettingsDelegateService,
-    CoreSettingsHelperProvider,
-];
+/**
+ * Get settings services.
+ *
+ * @returns Returns settings services.
+ */
+export async function getSettingsServices(): Promise<Type<unknown>[]> {
+    const { CoreSettingsDelegateService } = await import('@features/settings/services/settings-delegate');
+    const { CoreSettingsHelperProvider } = await import('@features/settings/services/settings-helper');
+
+    return [
+        CoreSettingsDelegateService,
+        CoreSettingsHelperProvider,
+    ];
+}
 
 const appRoutes: Routes = [
     {

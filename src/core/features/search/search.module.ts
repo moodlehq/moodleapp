@@ -17,21 +17,29 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
-import { CoreSearchGlobalSearchService } from '@features/search/services/global-search';
 import { CoreSearchMainMenuHandler, CORE_SEARCH_PAGE_NAME } from '@features/search/services/handlers/mainmenu';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 
 import { CoreSearchComponentsModule } from './components/components.module';
 import { SITE_SCHEMA } from './services/search-history-db';
-import { CoreSearchHistoryProvider } from './services/search-history.service';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreSearchGlobalSearchLinkHandler } from '@features/search/services/handlers/global-search-link';
 
-export const CORE_SEARCH_SERVICES: Type<unknown>[] = [
-    CoreSearchHistoryProvider,
-    CoreSearchGlobalSearchService,
-];
+/**
+ * Get search services.
+ *
+ * @returns Returns search services.
+ */
+export async function getSearchServices(): Promise<Type<unknown>[]> {
+    const { CoreSearchHistoryProvider } = await import('@features/search/services/search-history.service');
+    const { CoreSearchGlobalSearchService } = await import('@features/search/services/global-search');
+
+    return [
+        CoreSearchHistoryProvider,
+        CoreSearchGlobalSearchService,
+    ];
+}
 
 const mainMenuChildrenRoutes: Routes = [
     {

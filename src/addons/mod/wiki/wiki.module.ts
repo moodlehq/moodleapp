@@ -34,14 +34,23 @@ import { AddonModWikiPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModWikiSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModWikiTagAreaHandler } from './services/handlers/tag-area';
 import { AddonModWikiProvider } from './services/wiki';
-import { AddonModWikiOfflineProvider } from './services/wiki-offline';
-import { AddonModWikiSyncProvider } from './services/wiki-sync';
 
-export const ADDON_MOD_WIKI_SERVICES: Type<unknown>[] = [
-    AddonModWikiProvider,
-    AddonModWikiOfflineProvider,
-    AddonModWikiSyncProvider,
-];
+/**
+ * Get mod Wiki services.
+ *
+ * @returns Returns mod Wiki services.
+ */
+export async function getModWikiServices(): Promise<Type<unknown>[]> {
+    const { AddonModWikiProvider } = await import('@addons/mod/wiki/services/wiki');
+    const { AddonModWikiOfflineProvider } = await import('@addons/mod/wiki/services/wiki-offline');
+    const { AddonModWikiSyncProvider } = await import('@addons/mod/wiki/services/wiki-sync');
+
+    return [
+        AddonModWikiProvider,
+        AddonModWikiOfflineProvider,
+        AddonModWikiSyncProvider,
+    ];
+}
 
 const routes: Routes = [
     {

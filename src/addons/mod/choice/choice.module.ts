@@ -24,8 +24,6 @@ import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModChoiceComponentsModule } from './components/components.module';
 import { AddonModChoiceProvider } from './services/choice';
-import { AddonModChoiceOfflineProvider } from './services/choice-offline';
-import { AddonModChoiceSyncProvider } from './services/choice-sync';
 import { OFFLINE_SITE_SCHEMA } from './services/database/choice';
 import { AddonModChoiceIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModChoiceListLinkHandler } from './services/handlers/list-link';
@@ -33,11 +31,22 @@ import { AddonModChoiceModuleHandler, AddonModChoiceModuleHandlerService } from 
 import { AddonModChoicePrefetchHandler } from './services/handlers/prefetch';
 import { AddonModChoiceSyncCronHandler } from './services/handlers/sync-cron';
 
-export const ADDON_MOD_CHOICE_SERVICES: Type<unknown>[] = [
-    AddonModChoiceProvider,
-    AddonModChoiceOfflineProvider,
-    AddonModChoiceSyncProvider,
-];
+/**
+ * Get mod choice services.
+ *
+ * @returns Returns mod choice services.
+ */
+export async function getModChoiceServices(): Promise<Type<unknown>[]> {
+    const { AddonModChoiceProvider } = await import('@addons/mod/choice/services/choice');
+    const { AddonModChoiceOfflineProvider } = await import('@addons/mod/choice/services/choice-offline');
+    const { AddonModChoiceSyncProvider } = await import('@addons/mod/choice/services/choice-sync');
+
+    return [
+        AddonModChoiceProvider,
+        AddonModChoiceOfflineProvider,
+        AddonModChoiceSyncProvider,
+    ];
+}
 
 const routes: Routes = [
     {

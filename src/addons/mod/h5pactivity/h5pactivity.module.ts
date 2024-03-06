@@ -20,19 +20,26 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCronDelegate } from '@services/cron';
 import { AddonModH5PActivityComponentsModule } from './components/components.module';
-import { AddonModH5PActivityProvider } from './services/h5pactivity';
-import { AddonModH5PActivitySyncProvider } from './services/h5pactivity-sync';
 import { AddonModH5PActivityIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModH5PActivityModuleHandler, AddonModH5PActivityModuleHandlerService } from './services/handlers/module';
 import { AddonModH5PActivityPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModH5PActivityReportLinkHandler } from './services/handlers/report-link';
 import { AddonModH5PActivitySyncCronHandler } from './services/handlers/sync-cron';
 
-// List of providers (without handlers).
-export const ADDON_MOD_H5P_ACTIVITY_SERVICES: Type<unknown>[] = [
-    AddonModH5PActivityProvider,
-    AddonModH5PActivitySyncProvider,
-];
+/**
+ * Get mod H5P activity services.
+ *
+ * @returns Returns mod H5P activity services.
+ */
+export async function getModH5PActivityServices(): Promise<Type<unknown>[]> {
+    const { AddonModH5PActivityProvider } = await import('@addons/mod/h5pactivity/services/h5pactivity');
+    const { AddonModH5PActivitySyncProvider } = await import('@addons/mod/h5pactivity/services/h5pactivity-sync');
+
+    return [
+        AddonModH5PActivityProvider,
+        AddonModH5PActivitySyncProvider,
+    ];
+}
 
 const routes: Routes = [
     {

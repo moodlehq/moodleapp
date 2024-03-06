@@ -14,15 +14,22 @@
 
 import { NgModule, Type } from '@angular/core';
 
-import { CoreEnrolDelegateService } from './services/enrol-delegate';
-import { CoreEnrolService } from './services/enrol';
-import { CoreEnrolHelperService } from './services/enrol-helper';
+/**
+ * Get enrol services.
+ *
+ * @returns Returns enrol services.
+ */
+export async function getEnrolServices(): Promise<Type<unknown>[]> {
+    const { CoreEnrolDelegateService } = await import('@features/enrol/services/enrol-delegate');
+    const { CoreEnrolService } = await import('@features/enrol/services/enrol');
+    const { CoreEnrolHelperService } = await import('@features/enrol/services/enrol-helper');
 
-export const CORE_ENROL_SERVICES: Type<unknown>[] = [
-    CoreEnrolService,
-    CoreEnrolHelperService,
-    CoreEnrolDelegateService,
-];
+    return [
+        CoreEnrolService,
+        CoreEnrolHelperService,
+        CoreEnrolDelegateService,
+    ];
+}
 
 @NgModule({})
 export class CoreEnrolModule {}

@@ -13,9 +13,6 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
-import { AddonNotesProvider } from './services/notes';
-import { AddonNotesOfflineProvider } from './services/notes-offline';
-import { AddonNotesSyncProvider } from './services/notes-sync';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
@@ -29,12 +26,22 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
 
-// List of providers (without handlers).
-export const ADDON_NOTES_SERVICES: Type<unknown>[] = [
-    AddonNotesProvider,
-    AddonNotesOfflineProvider,
-    AddonNotesSyncProvider,
-];
+/**
+ * Get notes services.
+ *
+ * @returns Returns notes services.
+ */
+export async function getNotesServices(): Promise<Type<unknown>[]> {
+    const { AddonNotesProvider } = await import('@addons/notes/services/notes');
+    const { AddonNotesOfflineProvider } = await import('@addons/notes/services/notes-offline');
+    const { AddonNotesSyncProvider } = await import('@addons/notes/services/notes-sync');
+
+    return [
+        AddonNotesProvider,
+        AddonNotesOfflineProvider,
+        AddonNotesSyncProvider,
+    ];
+}
 
 const routes: Routes = [
     {

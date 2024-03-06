@@ -18,14 +18,22 @@ import { CoreContentLinksDelegate } from '@features/contentlinks/services/conten
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { AddonModBBBComponentsModule } from './components/components.module';
-import { AddonModBBBService } from './services/bigbluebuttonbn';
 import { AddonModBBBIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModBBBListLinkHandler } from './services/handlers/list-link';
 import { AddonModBBBModuleHandler, ADDON_MOD_BBB_MAIN_MENU_PAGE_NAME } from './services/handlers/module';
 
-export const ADDON_MOD_BBB_SERVICES: Type<unknown>[] = [
-    AddonModBBBService,
-];
+/**
+ * Get mod BBB services.
+ *
+ * @returns Returns mod BBB services.
+ */
+export async function getModBBBServices(): Promise<Type<unknown>[]> {
+    const { AddonModBBBService } = await import('@addons/mod/bigbluebuttonbn/services/bigbluebuttonbn');
+
+    return [
+        AddonModBBBService,
+    ];
+}
 
 const routes: Routes = [
     {

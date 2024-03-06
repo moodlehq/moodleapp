@@ -22,10 +22,6 @@ import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModDataProvider } from './services/data';
-import { AddonModDataFieldsDelegateService } from './services/data-fields-delegate';
-import { AddonModDataHelperProvider } from './services/data-helper';
-import { AddonModDataOfflineProvider } from './services/data-offline';
-import { AddonModDataSyncProvider } from './services/data-sync';
 import { ADDON_MOD_DATA_OFFLINE_SITE_SCHEMA } from './services/database/data';
 import { AddonModDataApproveLinkHandler } from './services/handlers/approve-link';
 import { AddonModDataDeleteLinkHandler } from './services/handlers/delete-link';
@@ -41,14 +37,26 @@ import { AddonModDataFieldModule } from './fields/field.module';
 import { AddonModDataComponentsModule } from './components/components.module';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 
-// List of providers (without handlers).
-export const ADDON_MOD_DATA_SERVICES: Type<unknown>[] = [
-    AddonModDataProvider,
-    AddonModDataHelperProvider,
-    AddonModDataSyncProvider,
-    AddonModDataOfflineProvider,
-    AddonModDataFieldsDelegateService,
-];
+/**
+ * Get mod data services.
+ *
+ * @returns Returns mod data services.
+ */
+export async function getModDataServices(): Promise<Type<unknown>[]> {
+    const { AddonModDataProvider } = await import('@addons/mod/data/services/data');
+    const { AddonModDataOfflineProvider } = await import('@addons/mod/data/services/data-offline');
+    const { AddonModDataSyncProvider } = await import('@addons/mod/data/services/data-sync');
+    const { AddonModDataHelperProvider } = await import('@addons/mod/data/services/data-helper');
+    const { AddonModDataFieldsDelegateService } = await import('@addons/mod/data/services/data-fields-delegate');
+
+    return [
+        AddonModDataProvider,
+        AddonModDataHelperProvider,
+        AddonModDataSyncProvider,
+        AddonModDataOfflineProvider,
+        AddonModDataFieldsDelegateService,
+    ];
+}
 
 const routes: Routes = [
     {

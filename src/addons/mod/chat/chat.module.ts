@@ -21,16 +21,25 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { AddonModChatComponentsModule } from './components/components.module';
 import { AddonModChatProvider } from './services/chat';
-import { AddonModChatHelperProvider } from './services/chat-helper';
 import { AddonModChatIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModChatListLinkHandler } from './services/handlers/list-link';
 import { AddonModChatModuleHandler, AddonModChatModuleHandlerService } from './services/handlers/module';
 import { AddonModChatPrefetchHandler } from './services/handlers/prefetch';
 
-export const ADDON_MOD_CHAT_SERVICES: Type<unknown>[] = [
-    AddonModChatProvider,
-    AddonModChatHelperProvider,
-];
+/**
+ * Get mod chat services.
+ *
+ * @returns Returns mod chat services.
+ */
+export async function getModChatServices(): Promise<Type<unknown>[]> {
+    const { AddonModChatProvider } = await import('@addons/mod/chat/services/chat');
+    const { AddonModChatHelperProvider } = await import('@addons/mod/chat/services/chat-helper');
+
+    return [
+        AddonModChatProvider,
+        AddonModChatHelperProvider,
+    ];
+}
 
 const routes: Routes = [
     {

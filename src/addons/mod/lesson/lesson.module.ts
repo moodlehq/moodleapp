@@ -34,16 +34,25 @@ import { AddonModLessonPushClickHandler } from './services/handlers/push-click';
 import { AddonModLessonReportLinkHandler } from './services/handlers/report-link';
 import { AddonModLessonSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModLessonProvider } from './services/lesson';
-import { AddonModLessonHelperProvider } from './services/lesson-helper';
-import { AddonModLessonOfflineProvider } from './services/lesson-offline';
-import { AddonModLessonSyncProvider } from './services/lesson-sync';
 
-export const ADDON_MOD_LESSON_SERVICES: Type<unknown>[] = [
-    AddonModLessonProvider,
-    AddonModLessonOfflineProvider,
-    AddonModLessonSyncProvider,
-    AddonModLessonHelperProvider,
-];
+/**
+ * Get mod Lesson services.
+ *
+ * @returns Returns mod Lesson services.
+ */
+export async function getModLessonServices(): Promise<Type<unknown>[]> {
+    const { AddonModLessonProvider } = await import('@addons/mod/lesson/services/lesson');
+    const { AddonModLessonOfflineProvider } = await import('@addons/mod/lesson/services/lesson-offline');
+    const { AddonModLessonSyncProvider } = await import('@addons/mod/lesson/services/lesson-sync');
+    const { AddonModLessonHelperProvider } = await import('@addons/mod/lesson/services/lesson-helper');
+
+    return [
+        AddonModLessonProvider,
+        AddonModLessonOfflineProvider,
+        AddonModLessonSyncProvider,
+        AddonModLessonHelperProvider,
+    ];
+}
 
 const routes: Routes = [
     {

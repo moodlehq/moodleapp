@@ -27,18 +27,25 @@ import { AddonModSurveyListLinkHandler } from './services/handlers/list-link';
 import { AddonModSurveyModuleHandler, AddonModSurveyModuleHandlerService } from './services/handlers/module';
 import { AddonModSurveyPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModSurveySyncCronHandler } from './services/handlers/sync-cron';
-import { AddonModSurveyProvider } from './services/survey';
-import { AddonModSurveyHelperProvider } from './services/survey-helper';
-import { AddonModSurveyOfflineProvider } from './services/survey-offline';
-import { AddonModSurveySyncProvider } from './services/survey-sync';
 
-// List of providers (without handlers).
-export const ADDON_MOD_SURVEY_SERVICES: Type<unknown>[] = [
-    AddonModSurveyProvider,
-    AddonModSurveyHelperProvider,
-    AddonModSurveySyncProvider,
-    AddonModSurveyOfflineProvider,
-];
+/**
+ * Get mod Survey services.
+ *
+ * @returns Returns mod Survey services.
+ */
+export async function getModSurveyServices(): Promise<Type<unknown>[]> {
+    const { AddonModSurveyProvider } = await import('@addons/mod/survey/services/survey');
+    const { AddonModSurveyOfflineProvider } = await import('@addons/mod/survey/services/survey-offline');
+    const { AddonModSurveySyncProvider } = await import('@addons/mod/survey/services/survey-sync');
+    const { AddonModSurveyHelperProvider } = await import('@addons/mod/survey/services/survey-helper');
+
+    return [
+        AddonModSurveyProvider,
+        AddonModSurveyHelperProvider,
+        AddonModSurveySyncProvider,
+        AddonModSurveyOfflineProvider,
+    ];
+}
 
 const routes: Routes = [
     {

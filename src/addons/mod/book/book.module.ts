@@ -25,13 +25,21 @@ import { AddonModBookIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModBookListLinkHandler } from './services/handlers/list-link';
 import { AddonModBookPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModBookTagAreaHandler } from './services/handlers/tag-area';
-import { AddonModBookProvider } from './services/book';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { BOOK_SITE_SCHEMA } from './services/database/book';
 
-export const ADDON_MOD_BOOK_SERVICES: Type<unknown>[] = [
-    AddonModBookProvider,
-];
+/**
+ * Get mod book services.
+ *
+ * @returns Returns mod book services.
+ */
+export async function getModBookServices(): Promise<Type<unknown>[]> {
+    const { AddonModBookProvider } = await import('@addons/mod/book/services/book');
+
+    return [
+        AddonModBookProvider,
+    ];
+}
 
 const routes: Routes = [
     {

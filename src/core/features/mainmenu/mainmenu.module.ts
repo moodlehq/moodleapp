@@ -12,22 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { authGuard } from '@features/mainmenu/guards/auth';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
 
-import { CoreMainMenuDelegate, CoreMainMenuDelegateService } from './services/mainmenu-delegate';
+import { CoreMainMenuDelegate } from './services/mainmenu-delegate';
 import { CoreMainMenuHomeHandler } from './services/handlers/mainmenu';
-import { CoreMainMenuProvider } from './services/mainmenu';
-import { CoreMainMenuHomeDelegateService } from './services/home-delegate';
 
-export const CORE_MAINMENU_SERVICES = [
-    CoreMainMenuHomeDelegateService,
-    CoreMainMenuDelegateService,
-    CoreMainMenuProvider,
-];
+/**
+ * Get main menu services.
+ *
+ * @returns Returns main menu services.
+ */
+export async function getMainMenuServices(): Promise<Type<unknown>[]> {
+    const { CoreMainMenuHomeDelegateService } = await import('@features/mainmenu/services/home-delegate');
+    const { CoreMainMenuDelegateService } = await import('@features/mainmenu/services/mainmenu-delegate');
+    const { CoreMainMenuProvider } = await import('@features/mainmenu/services/mainmenu');
+
+    return [
+        CoreMainMenuHomeDelegateService,
+        CoreMainMenuDelegateService,
+        CoreMainMenuProvider,
+    ];
+}
 
 const appRoutes: Routes = [
     {

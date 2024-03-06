@@ -14,20 +14,29 @@
 
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 
-import { CoreFileUploaderProvider } from './services/fileuploader';
-import { CoreFileUploaderDelegate, CoreFileUploaderDelegateService } from './services/fileuploader-delegate';
-import { CoreFileUploaderHelperProvider } from './services/fileuploader-helper';
+import { CoreFileUploaderDelegate } from './services/fileuploader-delegate';
 import { CoreFileUploaderAlbumHandler } from './services/handlers/album';
 import { CoreFileUploaderAudioHandler } from './services/handlers/audio';
 import { CoreFileUploaderCameraHandler } from './services/handlers/camera';
 import { CoreFileUploaderFileHandler } from './services/handlers/file';
 import { CoreFileUploaderVideoHandler } from './services/handlers/video';
 
-export const CORE_FILEUPLOADER_SERVICES: Type<unknown>[] = [
-    CoreFileUploaderProvider,
-    CoreFileUploaderHelperProvider,
-    CoreFileUploaderDelegateService,
-];
+/**
+ * Get file uploaded services.
+ *
+ * @returns Returns file uploaded services.
+ */
+export async function getFileUploadedServices(): Promise<Type<unknown>[]> {
+    const { CoreFileUploaderProvider } = await import('@features/fileuploader/services/fileuploader');
+    const { CoreFileUploaderDelegateService } = await import('@features/fileuploader/services/fileuploader-delegate');
+    const { CoreFileUploaderHelperProvider } = await import('@features/fileuploader/services/fileuploader-helper');
+
+    return [
+        CoreFileUploaderProvider,
+        CoreFileUploaderHelperProvider,
+        CoreFileUploaderDelegateService,
+    ];
+}
 
 @NgModule({
     providers: [

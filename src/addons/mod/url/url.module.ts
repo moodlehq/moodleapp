@@ -23,13 +23,21 @@ import { AddonModUrlIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModUrlListLinkHandler } from './services/handlers/list-link';
 import { AddonModUrlModuleHandler, AddonModUrlModuleHandlerService } from './services/handlers/module';
 import { AddonModUrlPrefetchHandler } from './services/handlers/prefetch';
-import { AddonModUrlProvider } from './services/url';
-import { AddonModUrlHelperProvider } from './services/url-helper';
 
-export const ADDON_MOD_URL_SERVICES: Type<unknown>[] = [
-    AddonModUrlProvider,
-    AddonModUrlHelperProvider,
-];
+/**
+ * Get mod Url services.
+ *
+ * @returns Returns mod Url services.
+ */
+export async function getModUrlServices(): Promise<Type<unknown>[]> {
+    const { AddonModUrlProvider } = await import('@addons/mod/url/services/url');
+    const { AddonModUrlHelperProvider } = await import('@addons/mod/url/services/url-helper');
+
+    return [
+        AddonModUrlProvider,
+        AddonModUrlHelperProvider,
+    ];
+}
 
 const routes: Routes = [
     {

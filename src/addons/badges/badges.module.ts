@@ -23,11 +23,19 @@ import { AddonBadgesUserHandler } from './services/handlers/user';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonBadgesPushClickHandler } from './services/handlers/push-click';
-import { AddonBadgesProvider } from './services/badges';
 
-export const ADDON_BADGES_SERVICES: Type<unknown>[] = [
-    AddonBadgesProvider,
-];
+/**
+ * Get badges services.
+ *
+ * @returns Returns badges services.
+ */
+export async function getBadgesServices(): Promise<Type<unknown>[]> {
+    const { AddonBadgesProvider } = await import('@addons/badges/services/badges');
+
+    return [
+        AddonBadgesProvider,
+    ];
+}
 
 const mainMenuRoutes: Routes = [
     {

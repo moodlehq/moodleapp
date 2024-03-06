@@ -16,13 +16,21 @@ import { NgModule, Type } from '@angular/core';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { SITE_SCHEMA } from './services/database/xapi';
-import { CoreXAPIOfflineProvider } from './services/offline';
-import { CoreXAPIProvider } from './services/xapi';
 
-export const CORE_XAPI_SERVICES: Type<unknown>[] = [
-    CoreXAPIProvider,
-    CoreXAPIOfflineProvider,
-];
+/**
+ * Get XAPI services.
+ *
+ * @returns Returns XAPI services.
+ */
+export async function getXAPIServices(): Promise<Type<unknown>[]> {
+    const { CoreXAPIProvider } = await import('@features/xapi/services/xapi');
+    const { CoreXAPIOfflineProvider } = await import('@features/xapi/services/offline');
+
+    return [
+        CoreXAPIProvider,
+        CoreXAPIOfflineProvider,
+    ];
+}
 
 @NgModule({
     providers: [

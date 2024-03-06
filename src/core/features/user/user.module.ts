@@ -19,7 +19,7 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/user';
 import { CoreUserComponentsModule } from './components/components.module';
-import { CoreUserDelegate, CoreUserDelegateService } from './services/user-delegate';
+import { CoreUserDelegate } from './services/user-delegate';
 import { CoreUserProfileMailHandler } from './services/handlers/profile-mail';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreUserProfileLinkHandler } from './services/handlers/profile-link';
@@ -30,25 +30,35 @@ import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreUserCourseOptionHandler } from './services/handlers/course-option';
-import { CoreUserProfileFieldDelegateService } from './services/user-profile-field-delegate';
-import { CoreUserProvider } from './services/user';
-import { CoreUserHelper, CoreUserHelperProvider } from './services/user-helper';
-import { CoreUserOfflineProvider } from './services/user-offline';
-import { CoreUserSyncProvider } from './services/user-sync';
+import { CoreUserHelper } from './services/user-helper';
 import { AppRoutingModule, conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 import { COURSE_PAGE_NAME } from '@features/course/course.module';
 import { COURSE_INDEX_PATH } from '@features/course/course-lazy.module';
 import { CoreEvents } from '@singletons/events';
 
-export const CORE_USER_SERVICES: Type<unknown>[] = [
-    CoreUserDelegateService,
-    CoreUserProfileFieldDelegateService,
-    CoreUserProvider,
-    CoreUserHelperProvider,
-    CoreUserOfflineProvider,
-    CoreUserSyncProvider,
-];
+/**
+ * Get user services.
+ *
+ * @returns Returns user services.
+ */
+export async function getUsersServices(): Promise<Type<unknown>[]> {
+    const { CoreUserProvider } = await import('@features/user/services/user');
+    const { CoreUserHelperProvider } = await import('@features/user/services/user-helper');
+    const { CoreUserDelegateService } = await import('@features/user/services/user-delegate');
+    const { CoreUserProfileFieldDelegateService } = await import('@features/user/services/user-profile-field-delegate');
+    const { CoreUserOfflineProvider } = await import('@features/user/services/user-offline');
+    const { CoreUserSyncProvider } = await import('@features/user/services/user-sync');
+
+    return [
+        CoreUserProvider,
+        CoreUserHelperProvider,
+        CoreUserDelegateService,
+        CoreUserProfileFieldDelegateService,
+        CoreUserOfflineProvider,
+        CoreUserSyncProvider,
+    ];
+}
 
 export const PARTICIPANTS_PAGE_NAME = 'participants';
 

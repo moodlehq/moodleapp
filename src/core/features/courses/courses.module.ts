@@ -26,9 +26,6 @@ import { CorePushNotificationsDelegate } from '@features/pushnotifications/servi
 import { CoreRemindersPushNotificationData } from '@features/reminders/services/reminders';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { ApplicationInit } from '@singletons';
-import { CoreCoursesProvider } from './services/courses';
-import { CoreCoursesHelperProvider } from './services/courses-helper';
-import { CoreCoursesDashboardProvider } from './services/dashboard';
 import { CoreCoursesCourseLinkHandler } from './services/handlers/course-link';
 import { CoreCoursesIndexLinkHandler } from './services/handlers/courses-index-link';
 
@@ -42,11 +39,22 @@ import {
 import { CoreCoursesRequestPushClickHandler } from './services/handlers/request-push-click';
 import { CoreCoursesMyCoursesLinkHandler } from './services/handlers/my-courses-link';
 
-export const CORE_COURSES_SERVICES: Type<unknown>[] = [
-    CoreCoursesProvider,
-    CoreCoursesDashboardProvider,
-    CoreCoursesHelperProvider,
-];
+/**
+ * Get courses services.
+ *
+ * @returns Returns courses services.
+ */
+export async function getCoursesServices(): Promise<Type<unknown>[]> {
+    const { CoreCoursesProvider } = await import('@features/courses/services/courses');
+    const { CoreCoursesDashboardProvider } = await import('@features/courses/services/dashboard');
+    const { CoreCoursesHelperProvider } = await import('@features/courses/services/courses-helper');
+
+    return [
+        CoreCoursesProvider,
+        CoreCoursesDashboardProvider,
+        CoreCoursesHelperProvider,
+    ];
+}
 
 const mainMenuHomeChildrenRoutes: Routes = [
     {
