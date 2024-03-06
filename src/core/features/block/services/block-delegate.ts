@@ -110,6 +110,13 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
     }
 
     /**
+     * @inheritdoc
+     */
+    async isEnabled(): Promise<boolean> {
+        return !this.areBlocksDisabledInSite();
+    }
+
+    /**
      * Check if blocks are disabled in a certain site.
      *
      * @param site Site. If not defined, use current site.
