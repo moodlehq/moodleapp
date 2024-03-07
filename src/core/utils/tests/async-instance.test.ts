@@ -39,11 +39,20 @@ describe('AsyncInstance', () => {
         expect(await asyncService.isEager()).toBe(false);
     });
 
+    it('initialize instance for forced eager properties', async () => {
+        const asyncService = asyncInstance(() => new LazyService());
+
+        asyncService.setEagerInstance(new EagerService());
+        asyncService.setLazyOverrides(['isEager']);
+
+        expect(await asyncService.isEager()).toBe(false);
+    });
+
     it('does not return undefined methods when they are declared', async () => {
         const asyncService = asyncInstance<LazyService, EagerService>(() => new LazyService());
 
         asyncService.setEagerInstance(new EagerService());
-        asyncService.setLazyInstanceMethods(['hello', 'goodbye']);
+        asyncService.setLazyMethods(['hello', 'goodbye']);
 
         expect(asyncService.hello).not.toBeUndefined();
         expect(asyncService.goodbye).not.toBeUndefined();

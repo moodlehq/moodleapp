@@ -51,7 +51,14 @@ export function getPrefetchHandlerInstance(): CoreCourseModulePrefetchHandler {
         });
 
         prefetchHandlerInstance.setEagerInstance(new AddonModSurveyPrefetchHandlerService());
-        prefetchHandlerInstance.setLazyInstanceMethods(['sync']);
+        prefetchHandlerInstance.setLazyMethods(['sync']);
+        prefetchHandlerInstance.setLazyOverrides([
+            'prefetch',
+            'isEnabled',
+            'invalidateModule',
+            'invalidateContent',
+            'getIntroFiles',
+        ]);
     }
 
     return prefetchHandlerInstance;

@@ -51,7 +51,7 @@ export function getAssessmentStrategyHandlerInstance(): AddonWorkshopAssessmentS
     });
 
     lazyHandler.setEagerInstance(new AddonModWorkshopAssessmentStrategyAccumulativeHandlerService());
-    lazyHandler.setLazyInstanceMethods([
+    lazyHandler.setLazyMethods([
         'getComponent',
         'getOriginalValues',
         'hasDataChanged',

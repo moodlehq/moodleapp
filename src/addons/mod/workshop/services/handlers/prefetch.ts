@@ -48,7 +48,13 @@ export function getPrefetchHandlerInstance(): CoreCourseModulePrefetchHandler {
     });
 
     lazyHandler.setEagerInstance(new AddonModWorkshopPrefetchHandlerService());
-    lazyHandler.setLazyInstanceMethods(['sync']);
+    lazyHandler.setLazyMethods(['sync']);
+    lazyHandler.setLazyOverrides([
+        'getFiles',
+        'invalidateContent',
+        'isDownloadable',
+        'prefetch',
+    ]);
 
     return lazyHandler;
 }
