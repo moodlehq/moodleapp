@@ -115,7 +115,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         }
 
         if (this.showDownloadStatus && this.module.handlerData.showDownloadButton) {
-            const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(this.module, this.module.course);
+            const status = await CoreCourseModulePrefetchDelegate.getDownloadedModuleStatus(this.module, this.module.course);
             this.updateModuleStatus(status);
 
             // Listen for changes on this module status, even if download isn't enabled.
@@ -146,7 +146,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      *
      * @param prefetchStatus Module status.
      */
-    protected updateModuleStatus(prefetchStatus: TDownloadStatus): void {
+    protected updateModuleStatus(prefetchStatus: TDownloadStatus | null): void {
         if (!prefetchStatus) {
             return;
         }

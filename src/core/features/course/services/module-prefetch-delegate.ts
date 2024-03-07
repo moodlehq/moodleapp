@@ -25,7 +25,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseModuleContentFile } from './course';
 import { CoreCache } from '@classes/cache';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { DownloadStatus, TDownloadStatus } from '@/core/constants';
+import { DownloadStatus, TDownloadStatus, TDownloadedStatus } from '@/core/constants';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventSectionStatusChangedData } from '@singletons/events';
@@ -555,6 +555,52 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
     }
 
     /**
+     * If a module is downloaded or downloading, return its status.
+     * This function has a better performance than getModuleStatus, but it doesn't allow you to differentiate betweeen
+     * NOT_DOWNLOADABLE and DOWNLOADABLE_NOT_DOWNLOADED.
+     *
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param updates Result of getCourseUpdates for all modules in the course. If not provided, it will be
+     *                calculated (slower). If it's false it means the site doesn't support check updates.
+     * @param refresh True if it should ignore the memory cache, not the WS cache.
+     * @param sectionId ID of the section the module belongs to.
+     * @returns Promise resolved with the status, null if not downloaded.
+     */
+    async getDownloadedModuleStatus(
+        module: CoreCourseAnyModuleData,
+        courseId: number,
+        updates?: CourseUpdates | false,
+        refresh?: boolean,
+        sectionId?: number,
+    ): Promise<TDownloadedStatus | null> {
+        const handler = this.getPrefetchHandlerFor(module.modname);
+        if (!handler) {
+            // No handler found, module not downloadable.
+            return null;
+        }
+
+        // Check if the status is cached.
+        const packageId = CoreFilepool.getPackageId(handler.component, module.id);
+        const status = this.statusCache.getValue<TDownloadStatus>(packageId, 'status');
+
+        if (!refresh && status !== undefined) {
+            this.storeCourseAndSection(packageId, courseId, sectionId);
+
+            return this.filterDownloadedStatus(this.determineModuleStatus(module, status));
+        }
+
+        const result = await this.calculateDownloadedModuleStatus(handler, module, courseId, updates, sectionId);
+        if (result.updateStatus && result.status) {
+            this.updateStatusCache(result.status, handler.component, module.id, courseId, sectionId);
+        }
+
+        return this.filterDownloadedStatus(
+            this.determineModuleStatus(module, result.status ?? DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED),
+        );
+    }
+
+    /**
      * Calculate a module status.
      *
      * @param handler Prefetch handler.
@@ -581,14 +627,42 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             };
         }
 
+        const result = await this.calculateDownloadedModuleStatus(handler, module, courseId, updates, sectionId);
+
+        return {
+            status: result.status ?? DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED,
+            updateStatus: result.updateStatus,
+        };
+    }
+
+    /**
+     * Calculate the status of a downloaded module.
+     * This function has a better performance than calculateModuleStatus, but it doesn't allow you to differentiate betweeen
+     * NOT_DOWNLOADABLE and DOWNLOADABLE_NOT_DOWNLOADED.
+     *
+     * @param handler Prefetch handler.
+     * @param module Module.
+     * @param courseId Course ID the module belongs to.
+     * @param updates Result of getCourseUpdates for all modules in the course. If not provided, it will be
+     *                calculated (slower). If it's false it means the site doesn't support check updates.
+     * @param sectionId ID of the section the module belongs to.
+     * @returns Promise resolved with the status.
+     */
+    protected async calculateDownloadedModuleStatus(
+        handler: CoreCourseModulePrefetchHandler,
+        module: CoreCourseAnyModuleData,
+        courseId: number,
+        updates?: CourseUpdates | false,
+        sectionId?: number,
+    ): Promise<{status: TDownloadedStatus | null; updateStatus: boolean}> {
         // Get the saved package status.
         const siteId = CoreSites.getCurrentSiteId();
         const currentStatus = await CoreFilepool.getPackageStatus(siteId, handler.component, module.id);
 
         let status = handler.determineStatus ? handler.determineStatus(module, currentStatus, true) : currentStatus;
-        if (status != DownloadStatus.DOWNLOADED || updates === false) {
+        if (status !== DownloadStatus.DOWNLOADED || updates === false) {
             return {
-                status,
+                status: this.filterDownloadedStatus(status),
                 updateStatus: true,
             };
         }
@@ -604,7 +678,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
                 this.storeCourseAndSection(packageId, courseId, sectionId);
 
                 return {
-                    status: currentStatus,
+                    status: this.filterDownloadedStatus(currentStatus),
                     updateStatus: false,
                 };
             }
@@ -647,10 +721,21 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             const status = this.statusCache.getValue<TDownloadStatus>(packageId, 'status', true);
 
             return {
-                status: this.determineModuleStatus(module, status || DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED),
+                status: status ? this.filterDownloadedStatus(status) : null,
                 updateStatus: true,
             };
         }
+    }
+
+    /**
+     * Given a download status, filter it to return only the downloaded statuses.
+     *
+     * @param status Status.
+     * @returns Filtered status, null for not downloaded statuses.
+     */
+    protected filterDownloadedStatus(status: TDownloadStatus): TDownloadedStatus | null {
+        return status === DownloadStatus.NOT_DOWNLOADABLE || status === DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED ?
+            null : status;
     }
 
     /**
