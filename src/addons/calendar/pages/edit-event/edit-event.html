@@ -32,7 +32,8 @@
                 <ion-datetime-button datetime="timestart" />
                 <ion-modal [keepContentsMounted]="true">
                     <ng-template>
-                        <ion-datetime id="timestart" formControlName="timestart" presentation="date-time" [max]="maxDate" [min]="minDate">
+                        <ion-datetime id="timestart" formControlName="timestart" presentation="date-time" [max]="maxDate" [min]="minDate"
+                            [showDefaultButtons]="true">
                             <span slot="title">{{'core.date' | translate}}</span>
                         </ion-datetime>
                     </ng-template>
@@ -155,7 +156,7 @@
                         <ion-modal [keepContentsMounted]="true">
                             <ng-template>
                                 <ion-datetime id="timedurationuntil" formControlName="timedurationuntil" [max]="maxDate" [min]="minDate"
-                                    presentation="date-time">
+                                    presentation="date-time" [showDefaultButtons]="true">
                                     <span slot="title">{{'addon.calendar.durationuntil' | translate}}</span>
                                 </ion-datetime>
                             </ng-template>
