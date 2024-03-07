@@ -24,8 +24,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-
-const ROOT_CACHE_KEY = 'mmaModUrl:';
+import { ADDON_MOD_URL_COMPONENT } from '../constants';
 
 /**
  * Service that provides some features for urls.
@@ -33,7 +32,8 @@ const ROOT_CACHE_KEY = 'mmaModUrl:';
 @Injectable({ providedIn: 'root' })
 export class AddonModUrlProvider {
 
-    static readonly COMPONENT = 'mmaModUrl';
+    protected static readonly ROOT_CACHE_KEY = 'mmaModUrl:';
+    static readonly COMPONENT = ADDON_MOD_URL_COMPONENT;
 
     /**
      * Get the final display type for a certain URL. Based on Moodle's url_get_final_display_type.
@@ -94,7 +94,7 @@ export class AddonModUrlProvider {
      * @returns Cache key.
      */
     protected getUrlCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'url:' + courseId;
+        return AddonModUrlProvider.ROOT_CACHE_KEY + 'url:' + courseId;
     }
 
     /**
@@ -121,7 +121,7 @@ export class AddonModUrlProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUrlCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModUrlProvider.COMPONENT,
+            component: ADDON_MOD_URL_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -222,7 +222,7 @@ export class AddonModUrlProvider {
         return CoreCourseLogHelper.log(
             'mod_url_view_url',
             params,
-            AddonModUrlProvider.COMPONENT,
+            ADDON_MOD_URL_COMPONENT,
             id,
             siteId,
         );

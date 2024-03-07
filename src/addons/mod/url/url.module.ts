@@ -21,8 +21,9 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { AddonModUrlComponentsModule } from './components/components.module';
 import { AddonModUrlIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModUrlListLinkHandler } from './services/handlers/list-link';
-import { AddonModUrlModuleHandler, AddonModUrlModuleHandlerService } from './services/handlers/module';
+import { AddonModUrlModuleHandler } from './services/handlers/module';
 import { AddonModUrlPrefetchHandler } from './services/handlers/prefetch';
+import { ADDON_MOD_URL_PAGE_NAME } from './constants';
 
 /**
  * Get mod Url services.
@@ -41,7 +42,7 @@ export async function getModUrlServices(): Promise<Type<unknown>[]> {
 
 const routes: Routes = [
     {
-        path: AddonModUrlModuleHandlerService.PAGE_NAME,
+        path: ADDON_MOD_URL_PAGE_NAME,
         loadChildren: () => import('./url-lazy.module').then(m => m.AddonModUrlLazyModule),
     },
 ];

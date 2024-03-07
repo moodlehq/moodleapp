@@ -506,6 +506,66 @@ export class CoreUrlUtilsProvider {
     }
 
     /**
+     * Returns an specific param from an image URL.
+     *
+     * @param imageUrl Image Url
+     * @param param Param to get from the URL.
+     * @param siteUrl Site URL.
+     * @returns Param from the URL.
+     */
+    getThemeImageUrlParam(imageUrl: string, param: string, siteUrl?: string): string {
+        if (!this.isThemeImageUrl(imageUrl, siteUrl)) {
+            // Cannot be guessed.
+            return '';
+        }
+
+        const matches = imageUrl.match('/theme/image.php/(.*)');
+        if (matches?.[1]) {
+            // Slash arguments found.
+            const slasharguments = matches[1].split('/');
+
+            if (slasharguments.length < 4) {
+                // Image not found, malformed URL.
+                return '';
+            }
+
+            // Join from the third element to the end.
+            const image = slasharguments.slice(3).join('/');
+            switch (param) {
+                case 'theme':
+                    return slasharguments[0];
+                case 'component':
+                    return slasharguments[1];
+                case 'rev':
+                    return slasharguments[2];
+                case 'image':
+                    // Remove possible url params.
+                    return CoreUrlUtils.removeUrlParams(image);
+                default:
+                    return CoreUrlUtils.extractUrlParams(image)[param] || '';
+            }
+
+        }
+
+        // URL arguments found.
+        const iconParams = CoreUrlUtils.extractUrlParams(imageUrl);
+
+        switch (param) {
+            case 'theme':
+                return iconParams[param] || 'standard';
+            case 'component':
+                return iconParams[param] || 'core';
+            case 'rev':
+                return iconParams[param] || '-1';
+            case 'svg':
+                return iconParams[param] || '1';
+            case 'image':
+            default:
+                return iconParams[param] || '';
+        }
+    }
+
+    /**
      * Remove protocol and www from a URL.
      *
      * @param url URL to treat.

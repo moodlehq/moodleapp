@@ -213,18 +213,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
      * @returns Guessed modname.
      */
     protected getComponentNameFromIconUrl(iconUrl: string): string {
-        if (!CoreUrlUtils.isThemeImageUrl(this.iconUrl)) {
-            // Cannot be guessed.
-            return '';
-        }
-
-        const iconParams = CoreUrlUtils.extractUrlParams(iconUrl);
-        let component = iconParams['component'];
-
-        if (!component) {
-            const matches = iconUrl.match('/theme/image.php/[^/]+/([^/]+)/[-0-9]*/');
-            component = (matches && matches[1]) || '';
-        }
+        const component = CoreUrlUtils.getThemeImageUrlParam(iconUrl, 'component');
 
         // Some invalid components (others may be added later on).
         if (component === 'core' || component === 'theme') {
@@ -232,7 +221,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         }
 
         if (component.startsWith('mod_')) {
-            component = component.substring(4);
+            return component.substring(4);
         }
 
         return component;
