@@ -445,7 +445,7 @@ export class CoreLocalNotificationsProvider {
      * @returns Whether local notifications plugin is available.
      */
     isPluginAvailable(): boolean {
-        return !!this.getCordovaPlugin() && CorePlatform.is('cordova');
+        return !!this.getCordovaPlugin() && CorePlatform.isMobile();
     }
 
     /**
