@@ -145,7 +145,7 @@ import { getModPageServices } from '@addons/mod/page/page.module';
 import { getModQuizServices } from '@addons/mod/quiz/quiz.module';
 import { getModResourceServices } from '@addons/mod/resource/resource.module';
 import { getModScormServices } from '@addons/mod/scorm/scorm.module';
-import { getModSurveyServices } from '@addons/mod/survey/survey.module';
+import { getModSurveyComponentModules, getModSurveyServices } from '@addons/mod/survey/survey.module';
 import { getModUrlServices } from '@addons/mod/url/url.module';
 import { getModWikiServices } from '@addons/mod/wiki/wiki.module';
 import { getModWorkshopComponentModules, getModWorkshopServices } from '@addons/mod/workshop/workshop.module';
@@ -184,6 +184,7 @@ export class CoreCompileProvider {
 
     protected readonly LAZY_IMPORTS = [
         getModWorkshopComponentModules,
+        getModSurveyComponentModules,
     ];
 
     constructor(protected injector: Injector) {
@@ -383,7 +384,6 @@ export class CoreCompileProvider {
             getTagServices(),
             getUsersServices(),
             getXAPIServices(),
-
             getBadgesServices(),
             getCalendarServices(),
             getCompetencyServices(),

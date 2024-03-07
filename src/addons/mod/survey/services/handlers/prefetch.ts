@@ -12,103 +12,54 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
+import {
+    ADDON_MOD_SURVEY_PREFETCH_COMPONENT,
+    ADDON_MOD_SURVEY_PREFETCH_MODNAME,
+    ADDON_MOD_SURVEY_PREFETCH_NAME,
+    ADDON_MOD_SURVEY_PREFETCH_UPDATE_NAMES,
+} from '@addons/mod/survey/constants';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
-import { CoreCourseAnyModuleData } from '@features/course/services/course';
-import { CoreFilepool } from '@services/filepool';
-import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreWSFile } from '@services/ws';
-import { makeSingleton } from '@singletons';
-import { AddonModSurvey, AddonModSurveyProvider } from '../survey';
-import { AddonModSurveySync, AddonModSurveySyncResult } from '../survey-sync';
+import { CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
+import type { AddonModSurveyPrefetchHandlerLazyService } from './prefetch-lazy';
 
-/**
- * Handler to prefetch surveys.
- */
-@Injectable( { providedIn: 'root' })
+let prefetchHandlerInstance: AsyncInstance<
+    AddonModSurveyPrefetchHandlerLazyService,
+    AddonModSurveyPrefetchHandlerService
+> | null = null;
+
 export class AddonModSurveyPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
-    name = 'AddonModSurvey';
-    modName = 'survey';
-    component = AddonModSurveyProvider.COMPONENT;
-    updatesNames = /^configuration$|^.*files$|^answers$/;
-
-    /**
-     * @inheritdoc
-     */
-    async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
-        const survey = await CoreUtils.ignoreErrors(AddonModSurvey.getSurvey(courseId, module.id));
-
-        return this.getIntroFilesFromInstance(module, survey);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async invalidateContent(moduleId: number, courseId: number): Promise<void> {
-        return AddonModSurvey.invalidateContent(moduleId, courseId);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async invalidateModule(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
-        await AddonModSurvey.invalidateSurveyData(courseId);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async isEnabled(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
-        return this.prefetchPackage(module, courseId, (siteId) => this.prefetchSurvey(module, courseId, siteId));
-    }
-
-    /**
-     * Prefetch a survey.
-     *
-     * @param module Module.
-     * @param courseId Course ID the module belongs to.
-     * @param siteId SiteId or current site.
-     * @returns Promise resolved when done.
-     */
-    protected async prefetchSurvey(module: CoreCourseAnyModuleData, courseId: number, siteId: string): Promise<void> {
-        const survey = await AddonModSurvey.getSurvey(courseId, module.id, {
-            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
-            siteId,
-        });
-
-        const promises: Promise<unknown>[] = [];
-        const files = this.getIntroFilesFromInstance(module, survey);
-
-        // Prefetch files.
-        promises.push(CoreFilepool.addFilesToQueue(siteId, files, AddonModSurveyProvider.COMPONENT, module.id));
-
-        // If survey isn't answered, prefetch the questions.
-        if (!survey.surveydone) {
-            promises.push(AddonModSurvey.getQuestions(survey.id, {
-                cmId: module.id,
-                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
-                siteId,
-            }));
-        }
-
-        await Promise.all(promises);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModSurveySyncResult> {
-        return AddonModSurveySync.syncSurvey(module.instance, undefined, siteId);
-    }
+    name = ADDON_MOD_SURVEY_PREFETCH_NAME;
+    modName = ADDON_MOD_SURVEY_PREFETCH_MODNAME;
+    component = ADDON_MOD_SURVEY_PREFETCH_COMPONENT;
+    updatesNames = ADDON_MOD_SURVEY_PREFETCH_UPDATE_NAMES;
 
 }
-export const AddonModSurveyPrefetchHandler = makeSingleton(AddonModSurveyPrefetchHandlerService);
+
+/**
+ * Get prefetch handler instance.
+ *
+ * @returns Prefetch handler.
+ */
+export function getPrefetchHandlerInstance(): CoreCourseModulePrefetchHandler {
+    if (!prefetchHandlerInstance) {
+        prefetchHandlerInstance = asyncInstance(async () => {
+            const { AddonModSurveyPrefetchHandler } = await import('./prefetch-lazy');
+
+            return AddonModSurveyPrefetchHandler.instance;
+        });
+
+        prefetchHandlerInstance.setEagerInstance(new AddonModSurveyPrefetchHandlerService());
+        prefetchHandlerInstance.setLazyMethods(['sync']);
+        prefetchHandlerInstance.setLazyOverrides([
+            'prefetch',
+            'isEnabled',
+            'invalidateModule',
+            'invalidateContent',
+            'getIntroFiles',
+        ]);
+    }
+
+    return prefetchHandlerInstance;
+}

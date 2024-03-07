@@ -28,15 +28,19 @@ function createAsyncInstanceWrapper<
     lazyConstructor?: () => TLazyInstance | Promise<TLazyInstance>,
 ): AsyncInstanceWrapper<TLazyInstance, TEagerInstance> {
     let promisedInstance: CorePromisedValue<TLazyInstance> | null = null;
-    let lazyInstanceMethods: Array<string | symbol>;
+    let lazyMethods: Array<string | number | symbol> | null = null;
+    let lazyOverrides: Array<keyof TEagerInstance> | null = null;
     let eagerInstance: TEagerInstance;
 
     return {
         get instance() {
             return promisedInstance?.value ?? undefined;
         },
-        get lazyInstanceMethods() {
-            return lazyInstanceMethods;
+        get lazyMethods() {
+            return lazyMethods;
+        },
+        get lazyOverrides() {
+            return lazyOverrides;
         },
         get eagerInstance() {
             return eagerInstance;
@@ -68,8 +72,11 @@ function createAsyncInstanceWrapper<
 
             promisedInstance.resolve(instance);
         },
-        setLazyInstanceMethods(methods) {
-            lazyInstanceMethods = methods;
+        setLazyMethods(methods) {
+            lazyMethods = methods;
+        },
+        setLazyOverrides(overrides) {
+            lazyOverrides = overrides;
         },
         setEagerInstance(instance) {
             eagerInstance = instance;
@@ -116,14 +123,16 @@ export interface AsyncInstanceWrapper<
     TEagerInstance extends AsyncObject = Partial<TLazyInstance>
 > {
     instance?: TLazyInstance;
-    lazyInstanceMethods?: Array<string | symbol>;
+    lazyMethods?: Array<string | number | symbol> | null;
+    lazyOverrides?: Array<keyof TEagerInstance> | null;
     eagerInstance?: TEagerInstance;
     getInstance(): Promise<TLazyInstance>;
     getProperty<P extends keyof TLazyInstance>(property: P): Promise<TLazyInstance[P]>;
     setInstance(instance: TLazyInstance): void;
-    setLazyInstanceMethods<const T extends Array<string | symbol>>(
+    setLazyMethods<const T extends Array<string | number | symbol>>(
         methods: LazyMethodsGuard<T, TLazyInstance, TEagerInstance>,
     ): void;
+    setLazyOverrides(methods: Array<keyof TEagerInstance>): void;
     setEagerInstance(eagerInstance: TEagerInstance): void;
     setLazyConstructor(lazyConstructor: () => TLazyInstance | Promise<TLazyInstance>): void;
     resetInstance(): void;
@@ -156,7 +165,7 @@ export type AsyncInstance<TLazyInstance extends TEagerInstance, TEagerInstance e
 /**
  * Guard type to make sure that lazy methods match what the lazy class implements.
  */
-export type LazyMethodsGuard<TMethods extends Array<string | symbol>, TLazyInstance, TEagerInstance> =
+export type LazyMethodsGuard<TMethods extends Array<string | number | symbol>, TLazyInstance, TEagerInstance> =
     TupleMatches<TMethods, Exclude<keyof TLazyInstance, keyof TEagerInstance>> extends true ? TMethods : never;
 
 /**
@@ -172,7 +181,9 @@ export function asyncInstance<TLazyInstance extends TEagerInstance, TEagerInstan
     const wrapper = createAsyncInstanceWrapper<TLazyInstance, TEagerInstance>(lazyConstructor);
 
     return new Proxy(wrapper, {
-        get: (target, property, receiver) => {
+        get: (target, p, receiver) => {
+            const property = p as keyof TEagerInstance;
+
             if (property in target) {
                 return Reflect.get(target, property, receiver);
             }
@@ -185,11 +196,19 @@ export function asyncInstance<TLazyInstance extends TEagerInstance, TEagerInstan
                     : value;
             }
 
-            if (wrapper.eagerInstance && property in wrapper.eagerInstance) {
+            if (
+                wrapper.eagerInstance &&
+                property in wrapper.eagerInstance &&
+                !wrapper.lazyOverrides?.includes(property)
+            ) {
                 return Reflect.get(wrapper.eagerInstance, property, receiver);
             }
 
-            if (wrapper.lazyInstanceMethods && !wrapper.lazyInstanceMethods.includes(property)) {
+            if (
+                wrapper.lazyMethods &&
+                !wrapper.lazyMethods.includes(property) &&
+                !wrapper.lazyOverrides?.includes(property)
+            ) {
                 return undefined;
             }
 

@@ -20,13 +20,13 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { AddonModSurveyComponentsModule } from './components/components.module';
 import { ADDON_MOD_SURVEY_OFFLINE_SITE_SCHEMA } from './services/database/survey';
 import { AddonModSurveyIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModSurveyListLinkHandler } from './services/handlers/list-link';
-import { AddonModSurveyModuleHandler, AddonModSurveyModuleHandlerService } from './services/handlers/module';
-import { AddonModSurveyPrefetchHandler } from './services/handlers/prefetch';
-import { AddonModSurveySyncCronHandler } from './services/handlers/sync-cron';
+import { AddonModSurveyModuleHandler } from './services/handlers/module';
+import { getPrefetchHandlerInstance } from './services/handlers/prefetch';
+import { getCronHandlerInstance } from './services/handlers/sync-cron';
+import { ADDON_MOD_SURVEY_PAGE_NAME } from '@addons/mod/survey/constants';
 
 /**
  * Get mod Survey services.
@@ -47,9 +47,20 @@ export async function getModSurveyServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get survey component modules.
+ *
+ * @returns Survey component modules.
+ */
+export async function getModSurveyComponentModules(): Promise<unknown[]> {
+    const { AddonModSurveyComponentsModule } = await import('@addons/mod/survey/components/components.module');
+
+    return [AddonModSurveyComponentsModule];
+}
+
 const routes: Routes = [
     {
-        path: AddonModSurveyModuleHandlerService.PAGE_NAME,
+        path: ADDON_MOD_SURVEY_PAGE_NAME,
         loadChildren: () => import('./survey-lazy.module').then(m => m.AddonModSurveyLazyModule),
     },
 ];
@@ -57,7 +68,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModSurveyComponentsModule,
     ],
     providers: [
         {
@@ -69,9 +79,10 @@ const routes: Routes = [
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
+                CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
+                CoreCronDelegate.register(getCronHandlerInstance());
+
                 CoreCourseModuleDelegate.registerHandler(AddonModSurveyModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModSurveyPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModSurveySyncCronHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModSurveyIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModSurveyListLinkHandler.instance);
             },

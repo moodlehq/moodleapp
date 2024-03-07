@@ -12,32 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { asyncInstance } from '@/core/utils/async-instance';
+import { ADDON_MOD_SURVEY_SYNC_CRON_NAME } from '@addons/mod/survey/constants';
 import { CoreCronHandler } from '@services/cron';
-import { makeSingleton } from '@singletons';
-import { AddonModSurveySync } from '../survey-sync';
+import type { AddonModSurveySyncCronHandlerLazyService } from './sync-cron-lazy';
 
-/**
- * Synchronization cron handler.
- */
-@Injectable( { providedIn: 'root' })
-export class AddonModSurveySyncCronHandlerService implements CoreCronHandler {
+export class AddonModSurveySyncCronHandlerService {
 
-    name = 'AddonModSurveySyncCronHandler';
-
-    /**
-     * @inheritdoc
-     */
-    async execute(siteId?: string, force?: boolean): Promise<void> {
-        await AddonModSurveySync.syncAllSurveys(siteId, force);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getInterval(): number {
-        return AddonModSurveySync.syncInterval;
-    }
+    name = ADDON_MOD_SURVEY_SYNC_CRON_NAME;
 
 }
-export const AddonModSurveySyncCronHandler = makeSingleton(AddonModSurveySyncCronHandlerService);
+
+/**
+ * Get cron handler instance.
+ *
+ * @returns Cron handler.
+ */
+export function getCronHandlerInstance(): CoreCronHandler {
+    const lazyHandler = asyncInstance<
+        AddonModSurveySyncCronHandlerLazyService,
+        AddonModSurveySyncCronHandlerService
+    >(async () => {
+        const { AddonModSurveySyncCronHandler } = await import('./sync-cron-lazy');
+
+        return AddonModSurveySyncCronHandler.instance;
+    });
+
+    lazyHandler.setEagerInstance(new AddonModSurveySyncCronHandlerService());
+    lazyHandler.setLazyMethods(['execute', 'getInterval']);
+
+    return lazyHandler;
+}

@@ -39,7 +39,7 @@ export function getCronHandlerInstance(): CoreCronHandler {
     });
 
     lazyHandler.setEagerInstance(new AddonModWorkshopSyncCronHandlerService());
-    lazyHandler.setLazyInstanceMethods(['execute', 'getInterval']);
+    lazyHandler.setLazyMethods(['execute', 'getInterval']);
 
     return lazyHandler;
 }
