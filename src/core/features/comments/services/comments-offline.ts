@@ -17,7 +17,6 @@ import { CoreSites } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton } from '@singletons';
 import { COMMENTS_TABLE, COMMENTS_DELETED_TABLE, CoreCommentsDBRecord, CoreCommentsDeletedDBRecord } from './database/comments';
-import { CoreArray } from '@singletons/array';
 
 /**
  * Service to handle offline comments.
@@ -38,7 +37,7 @@ export class CoreCommentsOfflineProvider {
             site.getDb().getRecords<CoreCommentsDeletedDBRecord>(COMMENTS_DELETED_TABLE),
         ]);
 
-        return CoreArray.flatten<CoreCommentsDBRecord | CoreCommentsDeletedDBRecord>(results);
+        return results.flat();
     }
 
     /**

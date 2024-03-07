@@ -213,7 +213,7 @@ export class CoreCompileProvider {
 
         const lazyImports = await Promise.all(this.LAZY_IMPORTS.map(getModules => getModules()));
         const imports = [
-            ...CoreArray.flatten(lazyImports),
+            ...lazyImports.flat(),
             ...this.IMPORTS,
             ...extraImports,
             TranslatePipeForCompile,

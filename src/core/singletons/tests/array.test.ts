@@ -16,11 +16,6 @@ import { CoreArray } from '@singletons/array';
 
 describe('CoreArray singleton', () => {
 
-    it('flattens arrays', () => {
-        expect(CoreArray.flatten([])).toEqual([]);
-        expect(CoreArray.flatten<number>([[1, 2], [3, 4], [5, 6]])).toEqual([1, 2, 3, 4, 5, 6]);
-    });
-
     it('gets array without an item', () => {
         const originalArray = ['foo', 'bar', 'baz'];
 

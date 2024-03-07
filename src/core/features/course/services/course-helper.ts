@@ -41,7 +41,6 @@ import {
     CoreCourseSearchedData,
     CoreEnrolledCourseData,
 } from '@features/courses/services/courses';
-import { CoreArray } from '@singletons/array';
 import { CoreCourseOffline } from './course-offline';
 import {
     CoreCourseOptionsDelegate,
@@ -1909,7 +1908,7 @@ export class CoreCourseHelperProvider {
      */
     async deleteCourseFiles(courseId: number): Promise<void> {
         const sections = await CoreCourse.getSections(courseId);
-        const modules = CoreArray.flatten(sections.map((section) => section.modules));
+        const modules = sections.map((section) => section.modules).flat();
 
         await Promise.all(
             modules.map((module) => this.removeModuleStoredData(module, courseId)),

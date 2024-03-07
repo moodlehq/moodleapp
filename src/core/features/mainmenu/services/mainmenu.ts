@@ -19,7 +19,6 @@ import { CoreSites } from '@services/sites';
 import { CoreConstants } from '@/core/constants';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from './mainmenu-delegate';
 import { Device, makeSingleton } from '@singletons';
-import { CoreArray } from '@singletons/array';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreScreen } from '@services/screen';
 import { CorePlatform } from '@services/platform';
@@ -73,7 +72,7 @@ export class CoreMainMenuProvider {
             this.getCustomItemsFromConfig(),
         ]);
 
-        return CoreArray.flatten(customItems);
+        return customItems.flat();
     }
 
     /**
