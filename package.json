@@ -73,7 +73,7 @@
     "@awesome-cordova-plugins/sqlite": "^6.6.0",
     "@awesome-cordova-plugins/status-bar": "^6.6.0",
     "@awesome-cordova-plugins/web-intent": "^6.6.0",
-    "@ionic/angular": "^7.6.5",
+    "@ionic/angular": "^7.7.4",
     "@ionic/cordova-builders": "^10.1.1",
     "@moodlehq/cordova-plugin-advanced-http": "3.3.1-moodle.1",
     "@moodlehq/cordova-plugin-file-opener": "4.0.0-moodle.1",
