@@ -14,8 +14,7 @@
 
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreCourse, CoreCourseAnyModuleData } from '../services/course';
-import { CoreCourseModulePrefetchDelegate } from '../services/module-prefetch-delegate';
-import { CoreCourseModulePrefetchHandlerBase } from './module-prefetch-handler';
+import { CoreCourseModulePrefetchDelegate, CoreCourseModulePrefetchHandler } from '../services/module-prefetch-delegate';
 
 /**
  * Base class to create activity sync providers. It provides some common functions.
@@ -35,7 +34,7 @@ export class CoreCourseActivitySyncBaseProvider<T = void> extends CoreSyncBasePr
      * @returns Promise resolved with boolean: true if prefetched, false if no need to prefetch.
      */
     async prefetchAfterUpdate(
-        prefetchHandler: CoreCourseModulePrefetchHandlerBase,
+        prefetchHandler: CoreCourseModulePrefetchHandler,
         module: CoreCourseAnyModuleData,
         courseId: number,
         preventDownloadRegex?: RegExp,

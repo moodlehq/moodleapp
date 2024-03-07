@@ -23,7 +23,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { AddonModSurveyPrefetchHandler } from '../../services/handlers/prefetch';
+import { getPrefetchHandlerInstance } from '../../services/handlers/prefetch';
 import {
     AddonModSurveyProvider,
     AddonModSurveySurvey,
@@ -215,7 +215,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
                 // The survey is downloaded, update the data.
                 try {
                     const prefetched = await AddonModSurveySync.prefetchAfterUpdate(
-                        AddonModSurveyPrefetchHandler.instance,
+                        getPrefetchHandlerInstance(),
                         this.module,
                         this.courseId,
                     );

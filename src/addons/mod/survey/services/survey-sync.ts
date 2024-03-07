@@ -23,7 +23,7 @@ import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { AddonModSurveyPrefetchHandler } from './handlers/prefetch';
+import { getPrefetchHandlerInstance } from './handlers/prefetch';
 import { AddonModSurvey, AddonModSurveyProvider } from './survey';
 import { AddonModSurveyAnswersDBRecordFormatted, AddonModSurveyOffline } from './survey-offline';
 
@@ -206,7 +206,7 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
                 const module = await CoreCourse.getModuleBasicInfoByInstance(surveyId, 'survey', { siteId });
 
                 CoreUtils.ignoreErrors(
-                    this.prefetchAfterUpdate(AddonModSurveyPrefetchHandler.instance, module, result.courseId, undefined, siteId),
+                    this.prefetchAfterUpdate(getPrefetchHandlerInstance(), module, result.courseId, undefined, siteId),
                 );
             }
         }

@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import { CoreConstants, ModPurpose } from '@/core/constants';
+import { ADDON_MOD_SURVEY_PAGE_NAME } from '@addons/mod/survey/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
-import { AddonModSurveyIndexComponent } from '../../components/index';
 
 /**
  * Handler to support survey modules.
@@ -25,11 +25,9 @@ import { AddonModSurveyIndexComponent } from '../../components/index';
 @Injectable( { providedIn: 'root' })
 export class AddonModSurveyModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_survey';
-
     name = 'AddonModSurvey';
     modName = 'survey';
-    protected pageName = AddonModSurveyModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_SURVEY_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,
@@ -48,6 +46,8 @@ export class AddonModSurveyModuleHandlerService extends CoreModuleHandlerBase im
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
+        const { AddonModSurveyIndexComponent } = await import('@addons/mod/survey/components/index');
+
         return AddonModSurveyIndexComponent;
     }
 

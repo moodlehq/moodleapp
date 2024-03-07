@@ -25,6 +25,7 @@ import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWar
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModSurveyOffline } from './survey-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { ADDON_MOD_SURVEY_COMPONENT } from '@addons/mod/survey/constants';
 
 const ROOT_CACHE_KEY = 'mmaModSurvey:';
 
@@ -34,7 +35,7 @@ const ROOT_CACHE_KEY = 'mmaModSurvey:';
 @Injectable( { providedIn: 'root' })
 export class AddonModSurveyProvider {
 
-    static readonly COMPONENT = 'mmaModSurvey';
+    static readonly COMPONENT = ADDON_MOD_SURVEY_COMPONENT;
 
     /**
      * Get a survey's questions.
