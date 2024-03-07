@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus, TDownloadStatus } from '@/core/constants';
 import { Component, Input, OnInit, Optional } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
@@ -495,10 +495,10 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
             return;
         }
 
-        const isOutdated = this.currentStatus === CoreConstants.OUTDATED;
+        const isOutdated = this.currentStatus === DownloadStatus.OUTDATED;
         const scorm = this.scorm;
 
-        if (!isOutdated && this.currentStatus !== CoreConstants.NOT_DOWNLOADED) {
+        if (!isOutdated && this.currentStatus !== DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED) {
             // Already downloaded, open it.
             this.openScorm(scoId, preview);
 
@@ -578,16 +578,16 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * @inheritdoc
      */
-    protected async showStatus(status: string): Promise<void> {
+    protected async showStatus(status: TDownloadStatus): Promise<void> {
 
-        if (status === CoreConstants.OUTDATED && this.scorm) {
+        if (status === DownloadStatus.OUTDATED && this.scorm) {
             // Only show the outdated message if the file should be downloaded.
             const download = await AddonModScorm.shouldDownloadMainFile(this.scorm, true);
 
             this.statusMessage = download ? 'addon.mod_scorm.scormstatusoutdated' : '';
-        } else if (status === CoreConstants.NOT_DOWNLOADED) {
+        } else if (status === DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED) {
             this.statusMessage = 'addon.mod_scorm.scormstatusnotdownloaded';
-        } else if (status === CoreConstants.DOWNLOADING) {
+        } else if (status === DownloadStatus.DOWNLOADING) {
             if (!this.downloading) {
                 // It's being downloaded right now but the view isn't tracking it. "Restore" the download.
                 this.downloadScormPackage();

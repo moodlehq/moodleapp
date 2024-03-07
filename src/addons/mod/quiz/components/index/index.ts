@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus, TDownloadStatus } from '@/core/constants';
 import { safeNumber, SafeNumber } from '@/core/utils/types';
 import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 
@@ -141,7 +141,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
         // Quiz supports offline, check if it needs to be downloaded.
         // If the site doesn't support check updates, always prefetch it because we cannot tell if there's something new.
-        const isDownloaded = this.currentStatus == CoreConstants.DOWNLOADED;
+        const isDownloaded = this.currentStatus === DownloadStatus.DOWNLOADED;
 
         if (isDownloaded) {
             // Already downloaded, open it.
@@ -543,10 +543,10 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * @param status The current status.
      * @param previousStatus The previous status. If not defined, there is no previous status.
      */
-    protected showStatus(status: string, previousStatus?: string): void {
-        this.showStatusSpinner = status == CoreConstants.DOWNLOADING;
+    protected showStatus(status: TDownloadStatus, previousStatus?: TDownloadStatus): void {
+        this.showStatusSpinner = status === DownloadStatus.DOWNLOADING;
 
-        if (status == CoreConstants.DOWNLOADED && previousStatus == CoreConstants.DOWNLOADING) {
+        if (status === DownloadStatus.DOWNLOADED && previousStatus === DownloadStatus.DOWNLOADING) {
             // Quiz downloaded now, maybe a new attempt was created. Load content again.
             this.showLoadingAndFetch();
         }

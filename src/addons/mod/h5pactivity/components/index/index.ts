@@ -15,7 +15,7 @@
 import { Component, Optional, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
@@ -161,12 +161,16 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             );
         }
 
-        if (!this.siteCanDownload || this.state == CoreConstants.DOWNLOADED) {
+        if (!this.siteCanDownload || this.state === DownloadStatus.DOWNLOADED) {
             // Cannot download the file or already downloaded, play the package directly.
             this.play();
 
-        } else if ((this.state == CoreConstants.NOT_DOWNLOADED || this.state == CoreConstants.OUTDATED) && CoreNetwork.isOnline() &&
-                    this.deployedFile?.filesize && CoreFilepool.shouldDownload(this.deployedFile.filesize)) {
+        } else if (
+            (this.state == DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED || this.state == DownloadStatus.OUTDATED) &&
+            CoreNetwork.isOnline() &&
+            this.deployedFile?.filesize &&
+            CoreFilepool.shouldDownload(this.deployedFile.filesize)
+        ) {
             // Package is small, download it automatically. Don't block this function for this.
             this.downloadAutomatically();
         }
@@ -295,13 +299,13 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      * Displays some data based on the state of the main file.
      */
     protected async showFileState(): Promise<void> {
-        if (this.state == CoreConstants.OUTDATED) {
+        if (this.state === DownloadStatus.OUTDATED) {
             this.stateMessage = 'addon.mod_h5pactivity.filestateoutdated';
             this.needsDownload = true;
-        } else if (this.state == CoreConstants.NOT_DOWNLOADED) {
+        } else if (this.state === DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED) {
             this.stateMessage = 'addon.mod_h5pactivity.filestatenotdownloaded';
             this.needsDownload = true;
-        } else if (this.state == CoreConstants.DOWNLOADING) {
+        } else if (this.state === DownloadStatus.DOWNLOADING) {
             this.stateMessage = '';
 
             if (!this.downloading) {

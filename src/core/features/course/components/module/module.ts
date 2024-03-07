@@ -27,7 +27,7 @@ import {
     CoreCourseModulePrefetchDelegate,
     CoreCourseModulePrefetchHandler,
 } from '@features/course/services/module-prefetch-delegate';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, DownloadStatus, TDownloadStatus } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { BehaviorSubject } from 'rxjs';
 
@@ -144,19 +144,19 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     /**
      * Show module status.
      *
-     * @param prefetchstatus Module status.
+     * @param prefetchStatus Module status.
      */
-    protected updateModuleStatus(prefetchstatus: string): void {
-        if (!prefetchstatus) {
+    protected updateModuleStatus(prefetchStatus: TDownloadStatus): void {
+        if (!prefetchStatus) {
             return;
         }
 
-        switch (prefetchstatus) {
-            case CoreConstants.OUTDATED:
+        switch (prefetchStatus) {
+            case DownloadStatus.OUTDATED:
                 this.prefetchStatusIcon$.next(CoreConstants.ICON_OUTDATED);
                 this.prefetchStatusText$.next('core.outdated');
                 break;
-            case CoreConstants.DOWNLOADED:
+            case DownloadStatus.DOWNLOADED:
                 this.prefetchStatusIcon$.next(CoreConstants.ICON_DOWNLOADED);
                 this.prefetchStatusText$.next('core.downloaded');
                 break;
@@ -166,7 +166,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
                 break;
         }
 
-        this.module.handlerData?.updateStatus?.(prefetchstatus);
+        this.module.handlerData?.updateStatus?.(prefetchStatus);
     }
 
     /**

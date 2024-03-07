@@ -71,7 +71,7 @@ import { getXAPIServices } from '@features/xapi/xapi.module';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, DownloadStatus } from '@/core/constants';
 import moment from 'moment-timezone';
 import { Md5 } from 'ts-md5/dist/md5';
 
@@ -305,6 +305,7 @@ export class CoreCompileProvider {
         instance['injector'] = this.injector;
         instance['Validators'] = Validators;
         instance['CoreConstants'] = CoreConstants;
+        instance['DownloadStatus'] = DownloadStatus;
         instance['CoreConfigConstants'] = CoreConstants.CONFIG;
         instance['CoreEventsProvider'] = CoreEvents;
         instance['CoreLoggerProvider'] = CoreLogger;

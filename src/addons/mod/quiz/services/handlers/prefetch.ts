@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { isSafeNumber } from '@/core/utils/types';
 
 import { Injectable } from '@angular/core';
@@ -604,7 +604,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         // Check the current status of the quiz.
         const status = await CoreFilepool.getPackageStatus(options.siteId, this.component, quiz.coursemodule);
 
-        if (status === CoreConstants.NOT_DOWNLOADED) {
+        if (status === DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED) {
             return;
         }
 
@@ -612,7 +612,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         // If no attempts or last is finished we'll mark it as not downloaded to show download icon.
         const lastAttempt = attempts[attempts.length - 1];
         const isLastFinished = !lastAttempt || AddonModQuiz.isAttemptFinished(lastAttempt.state);
-        const newStatus = isLastFinished ? CoreConstants.NOT_DOWNLOADED : CoreConstants.DOWNLOADED;
+        const newStatus = isLastFinished ? DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED : DownloadStatus.DOWNLOADED;
 
         await CoreFilepool.storePackageStatus(options.siteId, newStatus, this.component, quiz.coursemodule);
     }

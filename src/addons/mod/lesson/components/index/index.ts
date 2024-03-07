@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus, TDownloadStatus } from '@/core/constants';
 import { Component, Input, ViewChild, ElementRef, OnInit, OnDestroy, Optional } from '@angular/core';
 
 import { CoreTabsComponent } from '@components/tabs/tabs';
@@ -575,8 +575,8 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * @inheritdoc
      */
-    protected showStatus(status: string): void {
-        this.showSpinner = status == CoreConstants.DOWNLOADING;
+    protected showStatus(status: TDownloadStatus): void {
+        this.showSpinner = status === DownloadStatus.DOWNLOADING;
     }
 
     /**
@@ -590,7 +590,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        if (!AddonModLesson.isLessonOffline(this.lesson) || this.currentStatus == CoreConstants.DOWNLOADED) {
+        if (!AddonModLesson.isLessonOffline(this.lesson) || this.currentStatus == DownloadStatus.DOWNLOADED) {
             // Not downloadable or already downloaded, open it.
             this.playLesson(continueLast);
 

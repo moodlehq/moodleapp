@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
@@ -124,7 +124,7 @@ export class AddonRemoteThemesHandlerService implements CoreStyleHandler {
             // Check if the file is downloaded.
             const state = await CoreFilepool.getFileStateByUrl(siteId, url);
 
-            if (state == CoreConstants.NOT_DOWNLOADED) {
+            if (state === DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED) {
                 // File not downloaded, URL has changed or first time. Delete downloaded CSS files.
                 await CoreFilepool.removeFilesByComponent(siteId, COMPONENT, 1);
             }

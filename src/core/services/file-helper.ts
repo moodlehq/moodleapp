@@ -23,7 +23,7 @@ import { CoreWS, CoreWSFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, DownloadStatus, TDownloadStatus } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreNetworkError } from '@classes/errors/network-error';
@@ -63,7 +63,7 @@ export class CoreFileHelperProvider {
         file: CoreWSFile,
         component?: string,
         componentId?: string | number,
-        state?: string,
+        state?: TDownloadStatus,
         onProgress?: CoreFileHelperOnProgress,
         siteId?: string,
         options: CoreUtilsOpenFileOptions = {},
@@ -113,11 +113,11 @@ export class CoreFileHelperProvider {
                     state = await CoreFilepool.getFileStateByUrl(siteId, fileUrl, timemodified);
                 }
 
-                if (state == CoreConstants.DOWNLOADING) {
+                if (state === DownloadStatus.DOWNLOADING) {
                     throw new CoreError(Translate.instant('core.erroropenfiledownloading'));
                 }
 
-                if (state === CoreConstants.NOT_DOWNLOADED) {
+                if (state === DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED) {
                     // File is not downloaded, download and then return the local URL.
                     url = await this.downloadFile(fileUrl, component, componentId, timemodified, onProgress, file, siteId);
                 } else {
@@ -150,7 +150,7 @@ export class CoreFileHelperProvider {
         component?: string,
         componentId?: string | number,
         timemodified?: number,
-        state?: string,
+        state?: TDownloadStatus,
         onProgress?: CoreFileHelperOnProgress,
         siteId?: string,
         options: CoreUtilsOpenFileOptions = {},
@@ -174,7 +174,7 @@ export class CoreFileHelperProvider {
         const isWifi = CoreNetwork.isWifi();
         const isOnline = CoreNetwork.isOnline();
 
-        if (state == CoreConstants.DOWNLOADED) {
+        if (state === DownloadStatus.DOWNLOADED) {
             // File is downloaded, get the local file URL.
             return CoreFilepool.getUrlByUrl(siteId, fileUrl, component, componentId, timemodified, false, false, file);
         } else {
@@ -191,7 +191,7 @@ export class CoreFileHelperProvider {
             const shouldDownloadFirst = await CoreFilepool.shouldDownloadFileBeforeOpen(fixedUrl, file.filesize || 0, options);
             if (shouldDownloadFirst) {
                 // Download the file first.
-                if (state == CoreConstants.DOWNLOADING) {
+                if (state === DownloadStatus.DOWNLOADING) {
                     // It's already downloading, stop.
                     return fixedUrl;
                 }
@@ -304,8 +304,8 @@ export class CoreFileHelperProvider {
      * @param state The state to check.
      * @returns If file has been downloaded (or outdated).
      */
-    isStateDownloaded(state: string): boolean {
-        return state === CoreConstants.DOWNLOADED || state === CoreConstants.OUTDATED;
+    isStateDownloaded(state: TDownloadStatus): boolean {
+        return state === DownloadStatus.DOWNLOADED || state === DownloadStatus.OUTDATED;
     }
 
     /**

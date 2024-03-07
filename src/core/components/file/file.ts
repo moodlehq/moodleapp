@@ -23,7 +23,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus, TDownloadStatus } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreWSFile } from '@services/ws';
 import { CorePlatform } from '@services/platform';
@@ -53,7 +53,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     fileIcon?: string;
     fileName!: string;
     fileSizeReadable?: string;
-    state?: string;
+    state?: TDownloadStatus;
     timemodified!: number;
     isIOS = false;
     openButtonIcon = '';
@@ -138,7 +138,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
         this.canDownload = site.canDownloadFiles();
 
         this.state = state;
-        this.isDownloading = this.canDownload && state === CoreConstants.DOWNLOADING;
+        this.isDownloading = this.canDownload && state === DownloadStatus.DOWNLOADING;
         this.isDownloaded = this.canDownload && CoreFileHelper.isStateDownloaded(state);
     }
 
@@ -193,7 +193,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (!this.canDownload || !this.state || this.state == CoreConstants.NOT_DOWNLOADABLE) {
+        if (!this.canDownload || !this.state || this.state === DownloadStatus.NOT_DOWNLOADABLE) {
             // File cannot be downloaded, just open it.
             if (CoreUrlUtils.isLocalFileUrl(this.fileUrl)) {
                 CoreUtils.openFile(this.fileUrl);

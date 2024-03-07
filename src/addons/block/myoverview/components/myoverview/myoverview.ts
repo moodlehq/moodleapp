@@ -35,6 +35,7 @@ import { IonSearchbar } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { PageLoadWatcher } from '@classes/page-load-watcher';
 import { PageLoadsManager } from '@classes/page-loads-manager';
+import { DownloadStatus } from '@/core/constants';
 
 const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
     ['all', 'inprogress', 'future', 'past', 'favourite', 'allincludinghidden', 'hidden'];
@@ -54,7 +55,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     prefetchCoursesData: CorePrefetchStatusInfo = {
         icon: '',
         statusTranslatable: 'core.loading',
-        status: '',
+        status: DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED,
         loading: true,
     };
 
