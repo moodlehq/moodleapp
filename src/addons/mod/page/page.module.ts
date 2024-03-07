@@ -25,13 +25,21 @@ import { AddonModPageListLinkHandler } from './services/handlers/list-link';
 import { AddonModPageModuleHandler, AddonModPageModuleHandlerService } from './services/handlers/module';
 import { AddonModPagePluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModPagePrefetchHandler } from './services/handlers/prefetch';
-import { AddonModPageProvider } from './services/page';
-import { AddonModPageHelperProvider } from './services/page-helper';
 
-export const ADDON_MOD_PAGE_SERVICES: Type<unknown>[] = [
-    AddonModPageProvider,
-    AddonModPageHelperProvider,
-];
+/**
+ * Get mod Page services.
+ *
+ * @returns Returns mod Page services.
+ */
+export async function getModPageServices(): Promise<Type<unknown>[]> {
+    const { AddonModPageProvider } = await import('@addons/mod/page/services/page');
+    const { AddonModPageHelperProvider } = await import('@addons/mod/page/services/page-helper');
+
+    return [
+        AddonModPageProvider,
+        AddonModPageHelperProvider,
+    ];
+}
 
 const routes: Routes = [
     {

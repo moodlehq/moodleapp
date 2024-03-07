@@ -61,35 +61,35 @@ import { CoreDbProviderMock } from '@features/emulator/services/db';
     providers: [
         {
             provide: Camera,
-            useFactory: (): Camera => CorePlatform.is('cordova') ? new Camera() : new CameraMock(),
+            useFactory: (): Camera => CorePlatform.isMobile() ? new Camera() : new CameraMock(),
         },
         {
             provide: Clipboard,
-            useFactory: (): Clipboard => CorePlatform.is('cordova') ? new Clipboard() : new ClipboardMock(),
+            useFactory: (): Clipboard => CorePlatform.isMobile() ? new Clipboard() : new ClipboardMock(),
         },
         {
             provide: File,
-            useFactory: (): File => CorePlatform.is('cordova') ? new File() : new FileMock(),
+            useFactory: (): File => CorePlatform.isMobile() ? new File() : new FileMock(),
         },
         {
             provide: FileOpener,
-            useFactory: (): FileOpener => CorePlatform.is('cordova') ? new FileOpener() : new FileOpenerMock(),
+            useFactory: (): FileOpener => CorePlatform.isMobile() ? new FileOpener() : new FileOpenerMock(),
         },
         {
             provide: Geolocation,
-            useFactory: (): Geolocation => CorePlatform.is('cordova') ? new Geolocation() : new GeolocationMock(),
+            useFactory: (): Geolocation => CorePlatform.isMobile() ? new Geolocation() : new GeolocationMock(),
         },
         {
             provide: InAppBrowser,
-            useFactory: (): InAppBrowser => CorePlatform.is('cordova') ? new InAppBrowser() : new InAppBrowserMock(),
+            useFactory: (): InAppBrowser => CorePlatform.isMobile() ? new InAppBrowser() : new InAppBrowserMock(),
         },
         {
             provide: MediaCapture,
-            useFactory: (): MediaCapture => CorePlatform.is('cordova') ? new MediaCapture() : new MediaCaptureMock(),
+            useFactory: (): MediaCapture => CorePlatform.isMobile() ? new MediaCapture() : new MediaCaptureMock(),
         },
         {
             provide: Zip,
-            useFactory: (): Zip => CorePlatform.is('cordova') ? new Zip() : new ZipMock(),
+            useFactory: (): Zip => CorePlatform.isMobile() ? new Zip() : new ZipMock(),
         },
         {
             provide: LocalNotifications,
@@ -99,12 +99,12 @@ import { CoreDbProviderMock } from '@features/emulator/services/db';
         },
         {
             provide: CoreDbProvider,
-            useFactory: (): CoreDbProvider => CorePlatform.is('cordova') ? new CoreDbProvider() : new CoreDbProviderMock(),
+            useFactory: (): CoreDbProvider => CorePlatform.isMobile() ? new CoreDbProvider() : new CoreDbProviderMock(),
         },
         {
             provide: APP_INITIALIZER,
             useValue: async () => {
-                if (CorePlatform.is('cordova')) {
+                if (CorePlatform.isMobile()) {
                     return;
                 }
 

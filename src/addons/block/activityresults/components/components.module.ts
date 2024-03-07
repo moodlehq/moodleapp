@@ -24,8 +24,5 @@ import { AddonBlockActivityResultsComponent } from './activityresults/activityre
     imports: [
         CoreSharedModule,
     ],
-    exports: [
-        AddonBlockActivityResultsComponent,
-    ],
 })
 export class AddonBlockActivityResultsComponentsModule {}

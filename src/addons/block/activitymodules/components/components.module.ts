@@ -25,8 +25,5 @@ import { AddonBlockActivityModulesComponent } from './activitymodules/activitymo
     imports: [
         CoreSharedModule,
     ],
-    exports: [
-        AddonBlockActivityModulesComponent,
-    ],
 })
 export class AddonBlockActivityModulesComponentsModule {}

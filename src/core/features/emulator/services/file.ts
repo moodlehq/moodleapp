@@ -55,11 +55,13 @@ class FileError {
 
 /**
  * Native APIs used in webkit window.
+ *
+ * @deprecated since 4.4
  */
 interface WebkitWindow {
 
     /**
-     * @deprecated
+     * @deprecated since 4.4
      * @see https://www.w3.org/TR/2012/WD-file-system-api-20120417/
      */
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -69,7 +71,7 @@ interface WebkitWindow {
     };
 
     /**
-     * @deprecated
+     * @deprecated since 4.4
      * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/requestFileSystem
      */
     requestFileSystem(
@@ -80,7 +82,7 @@ interface WebkitWindow {
     ): void;
 
     /**
-     * @deprecated
+     * @deprecated since 4.4
      */
     webkitRequestFileSystem(
         type: LocalFileSystem,
@@ -90,7 +92,7 @@ interface WebkitWindow {
     ): void;
 
     /**
-     * @deprecated
+     * @deprecated since 4.4
      * @see https://www.w3.org/TR/2012/WD-file-system-api-20120417/
      */
     resolveLocalFileSystemURL(
@@ -100,7 +102,7 @@ interface WebkitWindow {
     ): void;
 
     /**
-     * @deprecated
+     * @deprecated since 4.4
      */
     webkitResolveLocalFileSystemURL(
         url: string,
@@ -112,11 +114,13 @@ interface WebkitWindow {
 
 /**
  * Native APIs used in webkit navigator.
+ *
+ * @deprecated since 4.4
  */
 interface WebkitNavigator {
 
     /**
-     * @deprecated
+     * @deprecated since 4.4
      * @see https://developer.chrome.com/docs/apps/offline_storage/
      */
     webkitPersistentStorage: {

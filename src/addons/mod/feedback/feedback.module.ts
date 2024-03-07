@@ -25,9 +25,6 @@ import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModFeedbackComponentsModule } from './components/components.module';
 import { OFFLINE_SITE_SCHEMA } from './services/database/feedback';
 import { AddonModFeedbackProvider } from './services/feedback';
-import { AddonModFeedbackHelperProvider } from './services/feedback-helper';
-import { AddonModFeedbackOfflineProvider } from './services/feedback-offline';
-import { AddonModFeedbackSyncProvider } from './services/feedback-sync';
 import { AddonModFeedbackAnalysisLinkHandler } from './services/handlers/analysis-link';
 import { AddonModFeedbackCompleteLinkHandler } from './services/handlers/complete-link';
 import { AddonModFeedbackIndexLinkHandler } from './services/handlers/index-link';
@@ -40,12 +37,24 @@ import { AddonModFeedbackShowEntriesLinkHandler } from './services/handlers/show
 import { AddonModFeedbackShowNonRespondentsLinkHandler } from './services/handlers/show-non-respondents-link';
 import { AddonModFeedbackSyncCronHandler } from './services/handlers/sync-cron';
 
-export const ADDON_MOD_FEEDBACK_SERVICES: Type<unknown>[] = [
-    AddonModFeedbackProvider,
-    AddonModFeedbackOfflineProvider,
-    AddonModFeedbackHelperProvider,
-    AddonModFeedbackSyncProvider,
-];
+/**
+ * Get mod Feedback services.
+ *
+ * @returns Returns mod Feedback services.
+ */
+export async function getModFeedbackServices(): Promise<Type<unknown>[]> {
+    const { AddonModFeedbackProvider } = await import('@addons/mod/feedback/services/feedback');
+    const { AddonModFeedbackOfflineProvider } = await import('@addons/mod/feedback/services/feedback-offline');
+    const { AddonModFeedbackHelperProvider } = await import('@addons/mod/feedback/services/feedback-helper');
+    const { AddonModFeedbackSyncProvider } = await import('@addons/mod/feedback/services/feedback-sync');
+
+    return [
+        AddonModFeedbackProvider,
+        AddonModFeedbackOfflineProvider,
+        AddonModFeedbackHelperProvider,
+        AddonModFeedbackSyncProvider,
+    ];
+}
 
 const routes: Routes = [
     {

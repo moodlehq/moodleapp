@@ -29,9 +29,6 @@ import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModGlossaryComponentsModule } from './components/components.module';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/glossary';
 import { AddonModGlossaryProvider } from './services/glossary';
-import { AddonModGlossaryHelperProvider } from './services/glossary-helper';
-import { AddonModGlossaryOfflineProvider } from './services/glossary-offline';
-import { AddonModGlossarySyncProvider } from './services/glossary-sync';
 import { AddonModGlossaryEditLinkHandler } from './services/handlers/edit-link';
 import { AddonModGlossaryEntryLinkHandler } from './services/handlers/entry-link';
 import { AddonModGlossaryIndexLinkHandler } from './services/handlers/index-link';
@@ -41,12 +38,24 @@ import { AddonModGlossaryPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModGlossarySyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModGlossaryTagAreaHandler } from './services/handlers/tag-area';
 
-export const ADDON_MOD_GLOSSARY_SERVICES: Type<unknown>[] = [
-    AddonModGlossaryProvider,
-    AddonModGlossaryOfflineProvider,
-    AddonModGlossarySyncProvider,
-    AddonModGlossaryHelperProvider,
-];
+/**
+ * Get mod Glossary services.
+ *
+ * @returns Returns mod Glossary services.
+ */
+export async function getModGlossaryServices(): Promise<Type<unknown>[]> {
+    const { AddonModGlossaryProvider } = await import('@addons/mod/glossary/services/glossary');
+    const { AddonModGlossaryOfflineProvider } = await import('@addons/mod/glossary/services/glossary-offline');
+    const { AddonModGlossarySyncProvider } = await import('@addons/mod/glossary/services/glossary-sync');
+    const { AddonModGlossaryHelperProvider } = await import('@addons/mod/glossary/services/glossary-helper');
+
+    return [
+        AddonModGlossaryProvider,
+        AddonModGlossaryOfflineProvider,
+        AddonModGlossarySyncProvider,
+        AddonModGlossaryHelperProvider,
+    ];
+}
 
 const mainMenuRoutes: Routes = [
     // Link handlers navigation.

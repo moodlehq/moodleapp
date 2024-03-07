@@ -27,18 +27,27 @@ import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CALENDAR_SITE_SCHEMA } from './services/database/calendar';
 import { CALENDAR_OFFLINE_SITE_SCHEMA } from './services/database/calendar-offline';
 import { AddonCalendarComponentsModule } from './components/components.module';
-import { AddonCalendar, AddonCalendarProvider } from './services/calendar';
+import { AddonCalendar } from './services/calendar';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { AddonCalendarOfflineProvider } from './services/calendar-offline';
-import { AddonCalendarHelperProvider } from './services/calendar-helper';
-import { AddonCalendarSyncProvider } from './services/calendar-sync';
 
-export const ADDON_CALENDAR_SERVICES: Type<unknown>[] = [
-    AddonCalendarProvider,
-    AddonCalendarOfflineProvider,
-    AddonCalendarHelperProvider,
-    AddonCalendarSyncProvider,
-];
+/**
+ * Get calendar services.
+ *
+ * @returns Returns calendar services.
+ */
+export async function getCalendarServices(): Promise<Type<unknown>[]> {
+    const { AddonCalendarProvider } = await import('@addons/calendar/services/calendar');
+    const { AddonCalendarOfflineProvider } = await import('@addons/calendar/services/calendar-offline');
+    const { AddonCalendarHelperProvider } = await import('@addons/calendar/services/calendar-helper');
+    const { AddonCalendarSyncProvider } = await import('@addons/calendar/services/calendar-sync');
+
+    return [
+        AddonCalendarProvider,
+        AddonCalendarOfflineProvider,
+        AddonCalendarHelperProvider,
+        AddonCalendarSyncProvider,
+    ];
+}
 
 const mainMenuChildrenRoutes: Routes = [
     {

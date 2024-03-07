@@ -41,7 +41,6 @@ import {
     SiteDBEntry,
     SchemaVersionsDBEntry,
 } from '@services/database/sites';
-import { CoreArray } from '../singletons/array';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreNavigator, CoreRedirectPayload } from './navigator';
 import { CoreSitesFactory } from './sites-factory';
@@ -98,7 +97,7 @@ export class CoreSitesProvider {
 
     constructor(@Optional() @Inject(CORE_SITE_SCHEMAS) siteSchemas: CoreSiteSchema[][] | null) {
         this.logger = CoreLogger.getInstance('CoreSitesProvider');
-        this.siteSchemas = CoreArray.flatten(siteSchemas ?? []).reduce(
+        this.siteSchemas = (siteSchemas ?? []).flat().reduce(
             (siteSchemas, schema) => {
                 siteSchemas[schema.name] = schema;
 

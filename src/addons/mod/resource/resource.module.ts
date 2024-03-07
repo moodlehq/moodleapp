@@ -25,11 +25,19 @@ import { AddonModResourceListLinkHandler } from './services/handlers/list-link';
 import { AddonModResourceModuleHandlerService, AddonModResourceModuleHandler } from './services/handlers/module';
 import { AddonModResourcePluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModResourcePrefetchHandler } from './services/handlers/prefetch';
-import { AddonModResourceProvider } from './services/resource';
 
-export const ADDON_MOD_RESOURCE_SERVICES: Type<unknown>[] = [
-    AddonModResourceProvider,
-];
+/**
+ * Get mod Resource services.
+ *
+ * @returns Returns mod Resource services.
+ */
+export async function getModResourceServices(): Promise<Type<unknown>[]> {
+    const { AddonModResourceProvider } = await import('@addons/mod/resource/services/resource');
+
+    return [
+        AddonModResourceProvider,
+    ];
+}
 
 const routes: Routes = [
     {

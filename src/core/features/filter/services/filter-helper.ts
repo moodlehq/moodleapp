@@ -32,6 +32,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { firstValueFrom } from 'rxjs';
+import { CoreBlockHelper } from '@features/block/services/block-helper';
 
 /**
  * Helper service to provide filter functionalities.
@@ -246,7 +247,7 @@ export class CoreFilterHelperProvider {
                 const getFilters = () => this.getCourseContexts(instanceId, siteId);
 
                 return await this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
-            } else if (contextLevel == 'block' && courseId && CoreCourse.canGetCourseBlocks(site)) {
+            } else if (contextLevel == 'block' && courseId && CoreBlockHelper.canGetCourseBlocks(site)) {
                 // Get all the course blocks filters with a single call to decrease number of WS calls.
                 const getFilters = () => this.getBlocksContexts(courseId, siteId);
 

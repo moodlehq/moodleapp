@@ -24,8 +24,6 @@ import {
     UrlSegmentGroup,
 } from '@angular/router';
 
-import { CoreArray } from '@singletons/array';
-
 const modulesRoutes: WeakMap<InjectionToken<unknown>, ModuleRoutes> = new WeakMap();
 
 /**
@@ -35,7 +33,7 @@ const modulesRoutes: WeakMap<InjectionToken<unknown>, ModuleRoutes> = new WeakMa
  * @returns App routes.
  */
 function buildAppRoutes(injector: Injector): Routes {
-    return CoreArray.flatten(injector.get<Routes[]>(APP_ROUTES, []));
+    return injector.get<Routes[]>(APP_ROUTES, []).flat();
 }
 
 /**
@@ -210,8 +208,8 @@ export function resolveModuleRoutes(injector: Injector, token: InjectionToken<Mo
     });
 
     const moduleRoutes = {
-        children: CoreArray.flatten(routes.map(r => r.children)),
-        siblings: CoreArray.flatten(routes.map(r => r.siblings)),
+        children: routes.map(r => r.children).flat(),
+        siblings: routes.map(r => r.siblings).flat(),
     };
 
     modulesRoutes.set(token, moduleRoutes);

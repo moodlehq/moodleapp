@@ -21,8 +21,7 @@ import { CoreCourseOptionsDelegate } from '@features/course/services/course-opti
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { PARTICIPANTS_PAGE_NAME } from '@features/user/user.module';
-import { CoreGradesProvider } from './services/grades';
-import { CoreGradesHelperProvider, GRADES_PAGE_NAME, GRADES_PARTICIPANTS_PAGE_NAME } from './services/grades-helper';
+import { GRADES_PAGE_NAME, GRADES_PARTICIPANTS_PAGE_NAME } from './services/grades-helper';
 import { CoreGradesCourseOptionHandler } from './services/handlers/course-option';
 import { CoreGradesOverviewLinkHandler } from './services/handlers/overview-link';
 import { CoreGradesUserHandler } from './services/handlers/user';
@@ -33,10 +32,20 @@ import { conditionalRoutes } from '@/app/app-routing.module';
 import { COURSE_INDEX_PATH } from '@features/course/course-lazy.module';
 import { CoreScreen } from '@services/screen';
 
-export const CORE_GRADES_SERVICES: Type<unknown>[] = [
-    CoreGradesProvider,
-    CoreGradesHelperProvider,
-];
+/**
+ * Get grades services.
+ *
+ * @returns Returns grades services.
+ */
+export async function getGradesServices(): Promise<Type<unknown>[]> {
+    const { CoreGradesProvider } = await import('@features/grades/services/grades');
+    const { CoreGradesHelperProvider } = await import('@features/grades/services/grades-helper');
+
+    return [
+        CoreGradesProvider,
+        CoreGradesHelperProvider,
+    ];
+}
 
 const mainMenuChildrenRoutes: Routes = [
     {

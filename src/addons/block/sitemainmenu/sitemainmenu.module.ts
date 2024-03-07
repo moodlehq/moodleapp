@@ -13,16 +13,10 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonBlockSiteMainMenuComponentsModule } from './components/components.module';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { AddonBlockSiteMainMenuHandler } from './services/block-handler';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonBlockSiteMainMenuComponentsModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,

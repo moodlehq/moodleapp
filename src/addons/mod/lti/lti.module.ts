@@ -23,13 +23,22 @@ import { AddonModLtiIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModLtiListLinkHandler } from './services/handlers/list-link';
 import { AddonModLtiModuleHandler, AddonModLtiModuleHandlerService } from './services/handlers/module';
 import { AddonModLtiPrefetchHandler } from './services/handlers/prefetch';
-import { AddonModLtiProvider } from './services/lti';
-import { AddonModLtiHelper, AddonModLtiHelperProvider } from './services/lti-helper';
+import { AddonModLtiHelper } from './services/lti-helper';
 
-export const ADDON_MOD_LTI_SERVICES: Type<unknown>[] = [
-    AddonModLtiProvider,
-    AddonModLtiHelperProvider,
-];
+/**
+ * Get mod Lti services.
+ *
+ * @returns Returns mod Lti services.
+ */
+export async function getModLtiServices(): Promise<Type<unknown>[]> {
+    const { AddonModLtiProvider } = await import('@addons/mod/lti/services/lti');
+    const { AddonModLtiHelperProvider } = await import('@addons/mod/lti/services/lti-helper');
+
+    return [
+        AddonModLtiProvider,
+        AddonModLtiHelperProvider,
+    ];
+}
 
 const routes: Routes = [
     {

@@ -26,8 +26,5 @@ import { AddonBlockMyOverviewComponent } from './myoverview/myoverview';
         CoreSharedModule,
         CoreCoursesComponentsModule,
     ],
-    exports: [
-        AddonBlockMyOverviewComponent,
-    ],
 })
 export class AddonBlockMyOverviewComponentsModule {}

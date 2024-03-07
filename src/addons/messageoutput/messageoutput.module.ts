@@ -15,11 +15,19 @@
 import { NgModule, Type } from '@angular/core';
 
 import { AddonMessageOutputAirnotifierModule } from './airnotifier/airnotifier.module';
-import { AddonMessageOutputDelegateService } from './services/messageoutput-delegate';
 
-export const ADDON_MESSAGEOUTPUT_SERVICES: Type<unknown>[] = [
-    AddonMessageOutputDelegateService,
-];
+/**
+ * Get message output services.
+ *
+ * @returns Returns message output services.
+ */
+export async function getMessageOutputServices(): Promise<Type<unknown>[]> {
+    const { AddonMessageOutputDelegateService } = await import('@addons/messageoutput/services/messageoutput-delegate');
+
+    return [
+        AddonMessageOutputDelegateService,
+    ];
+}
 
 @NgModule({
     imports: [

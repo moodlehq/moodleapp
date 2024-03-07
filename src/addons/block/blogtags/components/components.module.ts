@@ -24,8 +24,5 @@ import { AddonBlockBlogTagsComponent } from './blogtags/blogtags';
     imports: [
         CoreSharedModule,
     ],
-    exports: [
-        AddonBlockBlogTagsComponent,
-    ],
 })
 export class AddonBlockBlogTagsComponentsModule {}

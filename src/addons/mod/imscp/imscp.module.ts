@@ -25,11 +25,19 @@ import { AddonModImscpListLinkHandler } from './services/handlers/list-link';
 import { AddonModImscpModuleHandler, AddonModImscpModuleHandlerService } from './services/handlers/module';
 import { AddonModImscpPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModImscpPrefetchHandler } from './services/handlers/prefetch';
-import { AddonModImscpProvider } from './services/imscp';
 
-export const ADDON_MOD_IMSCP_SERVICES: Type<unknown>[] = [
-    AddonModImscpProvider,
-];
+/**
+ * Get mod Imscp services.
+ *
+ * @returns Returns mod Imscp services.
+ */
+export async function getModImscpServices(): Promise<Type<unknown>[]> {
+    const { AddonModImscpProvider } = await import('@addons/mod/imscp/services/imscp');
+
+    return [
+        AddonModImscpProvider,
+    ];
+}
 
 const routes: Routes = [
     {

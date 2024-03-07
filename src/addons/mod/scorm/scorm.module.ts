@@ -33,16 +33,25 @@ import { AddonModScormPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModScormPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModScormSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModScormProvider } from './services/scorm';
-import { AddonModScormHelperProvider } from './services/scorm-helper';
-import { AddonModScormOfflineProvider } from './services/scorm-offline';
-import { AddonModScormSyncProvider } from './services/scorm-sync';
 
-export const ADDON_MOD_SCORM_SERVICES: Type<unknown>[] = [
-    AddonModScormProvider,
-    AddonModScormOfflineProvider,
-    AddonModScormHelperProvider,
-    AddonModScormSyncProvider,
-];
+/**
+ * Get mod Scorm services.
+ *
+ * @returns Returns mod Scorm services.
+ */
+export async function getModScormServices(): Promise<Type<unknown>[]> {
+    const { AddonModScormProvider } = await import('@addons/mod/scorm/services/scorm');
+    const { AddonModScormOfflineProvider } = await import('@addons/mod/scorm/services/scorm-offline');
+    const { AddonModScormHelperProvider } = await import('@addons/mod/scorm/services/scorm-helper');
+    const { AddonModScormSyncProvider } = await import('@addons/mod/scorm/services/scorm-sync');
+
+    return [
+        AddonModScormProvider,
+        AddonModScormOfflineProvider,
+        AddonModScormHelperProvider,
+        AddonModScormSyncProvider,
+    ];
+}
 
 const routes: Routes = [
     {

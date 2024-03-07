@@ -39,18 +39,27 @@ import { AddonModForumTagAreaHandler } from './services/handlers/tag-area';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonModForumPushClickHandler } from './services/handlers/push-click';
 import { AddonModForumProvider } from './services/forum';
-import { AddonModForumOfflineProvider } from './services/forum-offline';
-import { AddonModForumHelperProvider } from './services/forum-helper';
-import { AddonModForumSyncProvider } from './services/forum-sync';
 import { COURSE_CONTENTS_PATH } from '@features/course/course.module';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 
-export const ADDON_MOD_FORUM_SERVICES: Type<unknown>[] = [
-    AddonModForumProvider,
-    AddonModForumOfflineProvider,
-    AddonModForumHelperProvider,
-    AddonModForumSyncProvider,
-];
+/**
+ * Get mod Forum services.
+ *
+ * @returns Returns mod Forum services.
+ */
+export async function getModForumServices(): Promise<Type<unknown>[]> {
+    const { AddonModForumProvider } = await import('@addons/mod/forum/services/forum');
+    const { AddonModForumOfflineProvider } = await import('@addons/mod/forum/services/forum-offline');
+    const { AddonModForumHelperProvider } = await import('@addons/mod/forum/services/forum-helper');
+    const { AddonModForumSyncProvider } = await import('@addons/mod/forum/services/forum-sync');
+
+    return [
+        AddonModForumProvider,
+        AddonModForumOfflineProvider,
+        AddonModForumHelperProvider,
+        AddonModForumSyncProvider,
+    ];
+}
 
 export const FORUM_SEARCH_PAGE_NAME = 'forum/search';
 

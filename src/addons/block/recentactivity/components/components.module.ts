@@ -24,8 +24,5 @@ import { AddonBlockRecentActivityComponent } from './recentactivity/recentactivi
     imports: [
         CoreSharedModule,
     ],
-    exports: [
-        AddonBlockRecentActivityComponent,
-    ],
 })
 export class AddonBlockRecentActivityComponentsModule {}

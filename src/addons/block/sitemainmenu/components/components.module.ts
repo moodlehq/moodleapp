@@ -27,8 +27,5 @@ import { AddonBlockSiteMainMenuComponent } from './sitemainmenu/sitemainmenu';
         CoreSharedModule,
         CoreCourseComponentsModule,
     ],
-    exports: [
-        AddonBlockSiteMainMenuComponent,
-    ],
 })
 export class AddonBlockSiteMainMenuComponentsModule {}

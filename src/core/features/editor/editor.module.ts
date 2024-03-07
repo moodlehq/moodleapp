@@ -17,11 +17,19 @@ import { NgModule, Type } from '@angular/core';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreEditorComponentsModule } from './components/components.module';
 import { SITE_SCHEMA } from './services/database/editor';
-import { CoreEditorOfflineProvider } from './services/editor-offline';
 
-export const CORE_EDITOR_SERVICES: Type<unknown>[] = [
-    CoreEditorOfflineProvider,
-];
+/**
+ * Get editor services.
+ *
+ * @returns Returns editor services.
+ */
+export async function getEditorServices(): Promise<Type<unknown>[]> {
+    const { CoreEditorOfflineProvider } = await import('@features/editor/services/editor-offline');
+
+    return [
+        CoreEditorOfflineProvider,
+    ];
+}
 
 @NgModule({
     imports: [

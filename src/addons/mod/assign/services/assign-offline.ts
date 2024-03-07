@@ -28,7 +28,6 @@ import {
     SUBMISSIONS_GRADES_TABLE,
     SUBMISSIONS_TABLE,
 } from './database/assign';
-import { CoreArray } from '@singletons/array';
 
 /**
  * Service to handle offline assign.
@@ -87,8 +86,7 @@ export class AddonModAssignOfflineProvider {
 
         const results = await Promise.all(promises);
         // Flatten array.
-        const flatten = CoreArray
-            .flatten<AddonModAssignSubmissionsDBRecordFormatted | AddonModAssignSubmissionsGradingDBRecordFormatted>(results);
+        const flatten = results.flat();
 
         // Get assign id.
         let assignIds: number[] = flatten.map((assign) => assign.assignid);

@@ -24,8 +24,5 @@ import { AddonBlockBlogMenuComponent } from './blogmenu/blogmenu';
     imports: [
         CoreSharedModule,
     ],
-    exports: [
-        AddonBlockBlogMenuComponent,
-    ],
 })
 export class AddonBlockBlogMenuComponentsModule {}

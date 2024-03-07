@@ -13,15 +13,23 @@
 // limitations under the License.
 
 import { NgModule, Type } from '@angular/core';
-import { CoreFilterProvider } from './services/filter';
-import { CoreFilterDelegateService } from './services/filter-delegate';
-import { CoreFilterHelperProvider } from './services/filter-helper';
 
-export const CORE_FILTER_SERVICES: Type<unknown>[] = [
-    CoreFilterProvider,
-    CoreFilterDelegateService,
-    CoreFilterHelperProvider,
-];
+/**
+ * Get filter services.
+ *
+ * @returns Returns filter services.
+ */
+export async function getFilterServices(): Promise<Type<unknown>[]> {
+    const { CoreFilterProvider } = await import('@features/filter/services/filter');
+    const { CoreFilterDelegateService } = await import('@features/filter/services/filter-delegate');
+    const { CoreFilterHelperProvider } = await import('@features/filter/services/filter-helper');
+
+    return [
+        CoreFilterProvider,
+        CoreFilterDelegateService,
+        CoreFilterHelperProvider,
+    ];
+}
 
 @NgModule({})
 export class CoreFilterModule {}

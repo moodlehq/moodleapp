@@ -15,15 +15,23 @@
 import { NgModule, Type } from '@angular/core';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { RATINGS_SITE_SCHEMA } from './services/database/rating';
-import { CoreRatingProvider } from './services/rating';
-import { CoreRatingOfflineProvider } from './services/rating-offline';
-import { CoreRatingSyncProvider } from './services/rating-sync';
 
-export const CORE_RATING_SERVICES: Type<unknown>[] = [
-    CoreRatingProvider,
-    CoreRatingSyncProvider,
-    CoreRatingOfflineProvider,
-];
+/**
+ * Get rating services.
+ *
+ * @returns Returns rating services.
+ */
+export async function getRatingServices(): Promise<Type<unknown>[]> {
+    const { CoreRatingProvider } = await import('@features/rating/services/rating');
+    const { CoreRatingOfflineProvider } = await import('@features/rating/services/rating-offline');
+    const { CoreRatingSyncProvider } = await import('@features/rating/services/rating-sync');
+
+    return [
+        CoreRatingProvider,
+        CoreRatingSyncProvider,
+        CoreRatingOfflineProvider,
+    ];
+}
 
 @NgModule({
     providers: [

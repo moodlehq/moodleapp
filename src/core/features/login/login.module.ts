@@ -12,19 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
-import { CoreLoginHelper, CoreLoginHelperProvider } from './services/login-helper';
+import { CoreLoginHelper } from './services/login-helper';
 import { redirectGuard } from '@guards/redirect';
 import { CoreLoginCronHandler } from './services/handlers/cron';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreEvents } from '@singletons/events';
 
-export const CORE_LOGIN_SERVICES = [
-    CoreLoginHelperProvider,
-];
+/**
+ * Get login services.
+ *
+ * @returns Returns login services.
+ */
+export async function getLoginServices(): Promise<Type<unknown>[]> {
+    const { CoreLoginHelperProvider } = await import('@features/login/services/login-helper');
+
+    return [
+        CoreLoginHelperProvider,
+    ];
+}
 
 const appRoutes: Routes = [
     {

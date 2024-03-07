@@ -24,8 +24,5 @@ import { AddonBlockTagsComponent } from './tags/tags';
     imports: [
         CoreSharedModule,
     ],
-    exports: [
-        AddonBlockTagsComponent,
-    ],
 })
 export class AddonBlockTagsComponentsModule {}

@@ -13,12 +13,20 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
-import { CoreStyles, CoreStylesService } from './services/styles';
+import { CoreStyles } from './services/styles';
 
-// List of providers (without handlers).
-export const CORE_STYLE_SERVICES: Type<unknown>[] = [
-    CoreStylesService,
-];
+/**
+ * Get style services.
+ *
+ * @returns Returns style services.
+ */
+export async function getStyleServices(): Promise<Type<unknown>[]> {
+    const { CoreStylesService } = await import('@features/styles/services/styles');
+
+    return [
+        CoreStylesService,
+    ];
+}
 
 @NgModule({
     providers: [

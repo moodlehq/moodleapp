@@ -27,8 +27,5 @@ import { AddonBlockRecentlyAccessedItemsComponent } from './recentlyaccesseditem
         CoreSharedModule,
         CoreCoursesComponentsModule,
     ],
-    exports: [
-        AddonBlockRecentlyAccessedItemsComponent,
-    ],
 })
 export class AddonBlockRecentlyAccessedItemsComponentsModule {}

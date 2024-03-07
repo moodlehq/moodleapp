@@ -12,15 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreRemindersComponentsModule } from './components/components.module';
 import { REMINDERS_SITE_SCHEMA } from './services/database/reminders';
-import { CoreReminders, CoreRemindersService } from './services/reminders';
-
-export const CORE_REMINDERS_SERVICES: Type<unknown>[] = [
-    CoreRemindersService,
-];
+import { CoreReminders } from './services/reminders';
 
 @NgModule({
     imports: [

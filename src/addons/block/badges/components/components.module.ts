@@ -24,8 +24,5 @@ import { AddonBlockBadgesComponent } from './badges/badges';
     imports: [
         CoreSharedModule,
     ],
-    exports: [
-        AddonBlockBadgesComponent,
-    ],
 })
 export class AddonBlockBadgesComponentsModule {}

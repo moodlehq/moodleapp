@@ -23,13 +23,23 @@ import { CoreSettingsDelegate } from '@features/settings/services/settings-deleg
 import { CoreSharedFilesComponentsModule } from './components/components.module';
 import { CoreSharedFilesSettingsHandler } from './services/handlers/settings';
 import { CoreSharedFilesUploadHandler } from './services/handlers/upload';
-import { CoreSharedFiles, CoreSharedFilesProvider } from './services/sharedfiles';
-import { CoreSharedFilesHelper, CoreSharedFilesHelperProvider } from './services/sharedfiles-helper';
+import { CoreSharedFiles } from './services/sharedfiles';
+import { CoreSharedFilesHelper } from './services/sharedfiles-helper';
 
-export const CORE_SHAREDFILES_SERVICES: Type<unknown>[] = [
-    CoreSharedFilesProvider,
-    CoreSharedFilesHelperProvider,
-];
+/**
+ * Get shared files services.
+ *
+ * @returns Returns shared files services.
+ */
+export async function getSharedFilesServices(): Promise<Type<unknown>[]> {
+    const { CoreSharedFilesProvider } = await import('@features/sharedfiles/services/sharedfiles');
+    const { CoreSharedFilesHelperProvider } = await import('@features/sharedfiles/services/sharedfiles-helper');
+
+    return [
+        CoreSharedFilesProvider,
+        CoreSharedFilesHelperProvider,
+    ];
+}
 
 export const SHAREDFILES_PAGE_NAME = 'sharedfiles';
 

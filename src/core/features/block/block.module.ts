@@ -14,13 +14,20 @@
 
 import { NgModule, Type } from '@angular/core';
 
-import { CoreBlockDelegateService } from './services/block-delegate';
-import { CoreBlockHelperProvider } from './services/block-helper';
+/**
+ * Get block services.
+ *
+ * @returns Block services.
+ */
+export async function getBlockServices(): Promise<Type<unknown>[]> {
+    const { CoreBlockDelegateService } = await import('@features/block/services/block-delegate');
+    const { CoreBlockHelperProvider } = await import('@features/block/services/block-helper');
 
-export const CORE_BLOCK_SERVICES: Type<unknown>[] = [
-    CoreBlockDelegateService,
-    CoreBlockHelperProvider,
-];
+    return [
+        CoreBlockDelegateService,
+        CoreBlockHelperProvider,
+    ];
+}
 
 @NgModule({})
 export class CoreBlockModule {}

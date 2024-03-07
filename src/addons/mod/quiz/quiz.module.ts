@@ -25,7 +25,6 @@ import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModQuizAccessRulesModule } from './accessrules/accessrules.module';
 import { AddonModQuizComponentsModule } from './components/components.module';
-import { AddonModQuizAccessRuleDelegateService } from './services/access-rules-delegate';
 import { SITE_SCHEMA } from './services/database/quiz';
 import { AddonModQuizGradeLinkHandler } from './services/handlers/grade-link';
 import { AddonModQuizIndexLinkHandler } from './services/handlers/index-link';
@@ -36,17 +35,27 @@ import { AddonModQuizPushClickHandler } from './services/handlers/push-click';
 import { AddonModQuizReviewLinkHandler } from './services/handlers/review-link';
 import { AddonModQuizSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModQuizProvider } from './services/quiz';
-import { AddonModQuizHelperProvider } from './services/quiz-helper';
-import { AddonModQuizOfflineProvider } from './services/quiz-offline';
-import { AddonModQuizSyncProvider } from './services/quiz-sync';
 
-export const ADDON_MOD_QUIZ_SERVICES: Type<unknown>[] = [
-    AddonModQuizAccessRuleDelegateService,
-    AddonModQuizProvider,
-    AddonModQuizOfflineProvider,
-    AddonModQuizHelperProvider,
-    AddonModQuizSyncProvider,
-];
+/**
+ * Get mod Quiz services.
+ *
+ * @returns Returns mod Quiz services.
+ */
+export async function getModQuizServices(): Promise<Type<unknown>[]> {
+    const { AddonModQuizProvider } = await import('@addons/mod/quiz/services/quiz');
+    const { AddonModQuizOfflineProvider } = await import('@addons/mod/quiz/services/quiz-offline');
+    const { AddonModQuizHelperProvider } = await import('@addons/mod/quiz/services/quiz-helper');
+    const { AddonModQuizSyncProvider } = await import('@addons/mod/quiz/services/quiz-sync');
+    const { AddonModQuizAccessRuleDelegateService } = await import('@addons/mod/quiz/services/access-rules-delegate');
+
+    return [
+        AddonModQuizAccessRuleDelegateService,
+        AddonModQuizProvider,
+        AddonModQuizOfflineProvider,
+        AddonModQuizHelperProvider,
+        AddonModQuizSyncProvider,
+    ];
+}
 
 const routes: Routes = [
     {

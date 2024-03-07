@@ -14,13 +14,21 @@
 
 import { NgModule, Type } from '@angular/core';
 import { CoreContentLinksComponentsModule } from './components/components.module';
-import { CoreContentLinksDelegateService } from './services/contentlinks-delegate';
-import { CoreContentLinksHelperProvider } from './services/contentlinks-helper';
 
-export const CORE_CONTENTLINKS_SERVICES: Type<unknown>[] = [
-    CoreContentLinksDelegateService,
-    CoreContentLinksHelperProvider,
-];
+/**
+ * Get content links services.
+ *
+ * @returns Content links services.
+ */
+export async function getContentLinksServices(): Promise<Type<unknown>[]> {
+    const { CoreContentLinksDelegateService } = await import('@features/contentlinks/services/contentlinks-delegate');
+    const { CoreContentLinksHelperProvider } = await import('@features/contentlinks/services/contentlinks-helper');
+
+    return [
+        CoreContentLinksDelegateService,
+        CoreContentLinksHelperProvider,
+    ];
+}
 
 @NgModule({
     imports: [

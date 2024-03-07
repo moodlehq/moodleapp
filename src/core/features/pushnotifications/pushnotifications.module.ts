@@ -19,13 +19,22 @@ import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { SITE_SCHEMA } from './services/database/pushnotifications';
 import { CorePushNotificationsRegisterCronHandler } from './services/handlers/register-cron';
 import { CorePushNotificationsUnregisterCronHandler } from './services/handlers/unregister-cron';
-import { CorePushNotificationsDelegateService } from './services/push-delegate';
-import { CorePushNotifications, CorePushNotificationsProvider } from './services/pushnotifications';
+import { CorePushNotifications } from './services/pushnotifications';
 
-export const CORE_PUSHNOTIFICATIONS_SERVICES: Type<unknown>[] = [
-    CorePushNotificationsProvider,
-    CorePushNotificationsDelegateService,
-];
+/**
+ * Get push notifications services.
+ *
+ * @returns Returns push notifications services.
+ */
+export async function getPushNotificationsServices(): Promise<Type<unknown>[]> {
+    const { CorePushNotificationsProvider } = await import('@features/pushnotifications/services/pushnotifications');
+    const { CorePushNotificationsDelegateService } = await import('@features/pushnotifications/services/push-delegate');
+
+    return [
+        CorePushNotificationsProvider,
+        CorePushNotificationsDelegateService,
+    ];
+}
 
 @NgModule({
     declarations: [

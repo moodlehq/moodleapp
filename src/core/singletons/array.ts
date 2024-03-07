@@ -39,9 +39,13 @@ export class CoreArray {
      *
      * @param arr Original array.
      * @returns Flattened array.
+     * @deprecated since 4.4 Use Array.prototype.flat() instead.
      */
     static flatten<T>(arr: T[][]): T[] {
-        return (<T[]> []).concat(...arr);
+        // eslint-disable-next-line no-console
+        console.warn('CoreArray.flatten is deprecated and will be removed soon. Please use array \'flat\' instead.');
+
+        return arr.flat();
     }
 
     /**

@@ -17,15 +17,23 @@ import { Routes } from '@angular/router';
 
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { AddonPrivateFilesProvider } from './services/privatefiles';
-import { AddonPrivateFilesHelperProvider } from './services/privatefiles-helper';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { AddonPrivateFilesUserHandler, AddonPrivateFilesUserHandlerService } from './services/handlers/user';
 
-export const ADDON_PRIVATEFILES_SERVICES: Type<unknown>[] = [
-    AddonPrivateFilesProvider,
-    AddonPrivateFilesHelperProvider,
-];
+/**
+ * Get private files services.
+ *
+ * @returns Returns private files services.
+ */
+export async function getPrivateFilesServices(): Promise<Type<unknown>[]> {
+    const { AddonPrivateFilesProvider } = await import('@addons/privatefiles/services/privatefiles');
+    const { AddonPrivateFilesHelperProvider } = await import('@addons/privatefiles/services/privatefiles-helper');
+
+    return [
+        AddonPrivateFilesProvider,
+        AddonPrivateFilesHelperProvider,
+    ];
+}
 
 const routes: Routes = [
     {

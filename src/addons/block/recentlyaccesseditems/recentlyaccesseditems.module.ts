@@ -13,16 +13,10 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
-import { AddonBlockRecentlyAccessedItemsComponentsModule } from './components/components.module';
 import { AddonBlockRecentlyAccessedItemsHandler } from './services/block-handler';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonBlockRecentlyAccessedItemsComponentsModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,

@@ -24,8 +24,5 @@ import { AddonBlockNewsItemsComponent } from './newsitems/newsitems';
     imports: [
         CoreSharedModule,
     ],
-    exports: [
-        AddonBlockNewsItemsComponent,
-    ],
 })
 export class AddonBlockNewsItemsComponentsModule {}
