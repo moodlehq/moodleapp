@@ -376,6 +376,11 @@ export class TestingBehatDomUtilsService {
 
         containers = containers
             .filter(container => {
+                if (!this.isElementVisible(container)) {
+                    // Ignore containers not visible.
+                    return false;
+                }
+
                 if (container.tagName === 'ION-ALERT') {
                     // For some reason, in Behat sometimes alerts aren't removed from DOM, the close animation doesn't finish.
                     // Filter alerts with pointer-events none since that style is set before the close animation starts.
