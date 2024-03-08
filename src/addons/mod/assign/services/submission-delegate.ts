@@ -21,6 +21,8 @@ import { CoreWSFile } from '@services/ws';
 import { AddonModAssignSubmissionsDBRecordFormatted } from './assign-offline';
 import { CoreFormFields } from '@singletons/form';
 import type { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
+import { CoreSites } from '@services/sites';
+import { ADDON_MOD_ASSIGN_FEATURE_NAME } from '../constants';
 
 /**
  * Interface that all submission handlers must implement.
@@ -278,6 +280,13 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         protected defaultHandler: AddonModAssignDefaultSubmissionHandler,
     ) {
         super('AddonModAssignSubmissionDelegate');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabled(): Promise<boolean> {
+        return !(await CoreSites.isFeatureDisabled(ADDON_MOD_ASSIGN_FEATURE_NAME));
     }
 
     /**

@@ -23,6 +23,7 @@ import { makeSingleton } from '@singletons';
 import { AddonModQuiz } from '../quiz';
 import { AddonModQuizHelper } from '../quiz-helper';
 import { isSafeNumber } from '@/core/utils/types';
+import { ADDON_MOD_QUIZ_FEATURE_NAME } from '../../constants';
 
 /**
  * Handler for quiz push notifications clicks.
@@ -32,7 +33,7 @@ export class AddonModQuizPushClickHandlerService implements CorePushNotification
 
     name = 'AddonModQuizPushClickHandler';
     priority = 200;
-    featureName = 'CoreCourseModuleDelegate_AddonModQuiz';
+    featureName = ADDON_MOD_QUIZ_FEATURE_NAME;
 
     protected readonly SUPPORTED_NAMES = ['submission', 'confirmation', 'attempt_overdue'];
 

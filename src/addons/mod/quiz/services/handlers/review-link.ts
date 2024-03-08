@@ -17,6 +17,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonModQuizHelper } from '../quiz-helper';
+import { ADDON_MOD_QUIZ_FEATURE_NAME } from '../../constants';
 
 /**
  * Handler to treat links to quiz review.
@@ -25,7 +26,7 @@ import { AddonModQuizHelper } from '../quiz-helper';
 export class AddonModQuizReviewLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModQuizReviewLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModQuiz';
+    featureName = ADDON_MOD_QUIZ_FEATURE_NAME;
     pattern = /\/mod\/quiz\/review\.php.*([&?]attempt=\d+)/;
 
     /**

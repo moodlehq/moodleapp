@@ -18,6 +18,8 @@ import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from './quiz';
+import { CoreSites } from '@services/sites';
+import { ADDON_MOD_QUIZ_FEATURE_NAME } from '../constants';
 
 /**
  * Interface that all access rules handlers must implement.
@@ -129,6 +131,13 @@ export class AddonModQuizAccessRuleDelegateService extends CoreDelegate<AddonMod
 
     constructor() {
         super('AddonModQuizAccessRulesDelegate');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabled(): Promise<boolean> {
+        return !(await CoreSites.isFeatureDisabled(ADDON_MOD_QUIZ_FEATURE_NAME));
     }
 
     /**

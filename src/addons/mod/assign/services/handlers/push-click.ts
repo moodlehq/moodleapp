@@ -20,6 +20,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonModAssign } from '../assign';
+import { ADDON_MOD_ASSIGN_FEATURE_NAME } from '../../constants';
 
 /**
  * Handler for assign push notifications clicks.
@@ -29,7 +30,7 @@ export class AddonModAssignPushClickHandlerService implements CorePushNotificati
 
     name = 'AddonModAssignPushClickHandler';
     priority = 200;
-    featureName = 'CoreCourseModuleDelegate_AddonModAssign';
+    featureName = ADDON_MOD_ASSIGN_FEATURE_NAME;
 
     /**
      * Check if a notification click is handled by this handler.
