@@ -83,7 +83,7 @@ export class AddonWorkshopAssessmentStrategyDelegateService extends CoreDelegate
     protected handlerNameProperty = 'strategyName';
 
     constructor() {
-        super('AddonWorkshopAssessmentStrategyDelegate', true);
+        super('AddonWorkshopAssessmentStrategyDelegate');
     }
 
     /**

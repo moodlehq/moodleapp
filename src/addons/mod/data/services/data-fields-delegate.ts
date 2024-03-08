@@ -132,7 +132,7 @@ export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModData
     constructor(
         protected defaultHandler: AddonModDataDefaultFieldHandler,
     ) {
-        super('AddonModDataFieldsDelegate', true);
+        super('AddonModDataFieldsDelegate');
     }
 
     /**

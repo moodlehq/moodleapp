@@ -185,7 +185,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
     constructor(
         protected defaultHandler: AddonModAssignDefaultFeedbackHandler,
     ) {
-        super('AddonModAssignFeedbackDelegate', true);
+        super('AddonModAssignFeedbackDelegate');
     }
 
     /**

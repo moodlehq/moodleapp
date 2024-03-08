@@ -286,7 +286,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
     protected handlerNameProperty = 'modName';
 
     constructor(protected defaultHandler: CoreCourseModuleDefaultHandler) {
-        super('CoreCourseModuleDelegate', true);
+        super('CoreCourseModuleDelegate');
     }
 
     /**

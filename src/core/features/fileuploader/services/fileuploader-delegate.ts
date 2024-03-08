@@ -143,7 +143,7 @@ export interface CoreFileUploaderHandlerDataToReturn extends CoreFileUploaderHan
 export class CoreFileUploaderDelegateService extends CoreDelegate<CoreFileUploaderHandler> {
 
     constructor() {
-        super('CoreFileUploaderDelegate', true);
+        super('CoreFileUploaderDelegate');
 
         CoreEvents.on(CoreEvents.LOGOUT, () => this.clearSiteHandlers());
     }

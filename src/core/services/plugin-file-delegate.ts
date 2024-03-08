@@ -30,7 +30,7 @@ import { CoreFileHelper } from './file-helper';
 export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHandler> {
 
     constructor() {
-        super('CorePluginFileDelegate', true);
+        super('CorePluginFileDelegate');
     }
 
     /**

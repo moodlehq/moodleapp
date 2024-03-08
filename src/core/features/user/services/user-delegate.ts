@@ -229,7 +229,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
     protected userHandlers: Record<number, Record<string, CoreUserDelegateHandlersData>> = {};
 
     constructor() {
-        super('CoreUserDelegate', true);
+        super('CoreUserDelegate');
 
         CoreEvents.on(USER_DELEGATE_UPDATE_HANDLER_EVENT, (data) => {
             const handlersData = this.getHandlersData(data.userId, data.context, data.contextId);

@@ -277,7 +277,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
     constructor(
         protected defaultHandler: AddonModAssignDefaultSubmissionHandler,
     ) {
-        super('AddonModAssignSubmissionDelegate', true);
+        super('AddonModAssignSubmissionDelegate');
     }
 
     /**

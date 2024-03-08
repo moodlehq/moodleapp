@@ -72,43 +72,42 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
 
     /**
      * Promise to wait for handlers to be initialized.
+     *
+     * @returns Promise resolved when handlers are enabled.
      */
-    protected handlersInitPromise: Promise<void>;
+    protected handlersInitPromise: Promise<boolean>;
 
     /**
      * Function to resolve the handlers init promise.
      */
-    protected handlersInitResolve!: () => void;
+    protected handlersInitResolve!: (enabled: boolean) => void;
 
     /**
      * Constructor of the Delegate.
      *
      * @param delegateName Delegate name used for logging purposes.
-     * @param listenSiteEvents Whether to update the handler when a site event occurs (login, site updated, ...).
      */
-    constructor(delegateName: string, listenSiteEvents: boolean = true) {
+    constructor(delegateName: string) {
         this.logger = CoreLogger.getInstance(delegateName);
 
         this.handlersInitPromise = new Promise((resolve): void => {
             this.handlersInitResolve = resolve;
         });
 
-        if (listenSiteEvents) {
-            // Update handlers on this cases.
-            CoreEvents.on(CoreEvents.LOGIN, () => this.updateHandlers());
-            CoreEvents.on(CoreEvents.SITE_UPDATED, () => this.updateHandlers());
-            CoreEvents.on(CoreEvents.SITE_PLUGINS_LOADED, () => this.updateHandlers());
-            CoreEvents.on(CoreEvents.SITE_POLICY_AGREED, (data) => {
-                if (data.siteId === CoreSites.getCurrentSiteId()) {
-                    this.updateHandlers();
-                }
-            });
-            CoreEvents.on(CoreEvents.COMPLETE_REQUIRED_PROFILE_DATA_FINISHED, (data) => {
-                if (data.siteId === CoreSites.getCurrentSiteId()) {
-                    this.updateHandlers();
-                }
-            });
-        }
+        // Update handlers on this cases.
+        CoreEvents.on(CoreEvents.LOGIN, () => this.updateHandlers());
+        CoreEvents.on(CoreEvents.SITE_UPDATED, () => this.updateHandlers());
+        CoreEvents.on(CoreEvents.SITE_PLUGINS_LOADED, () => this.updateHandlers());
+        CoreEvents.on(CoreEvents.SITE_POLICY_AGREED, (data) => {
+            if (data.siteId === CoreSites.getCurrentSiteId()) {
+                this.updateHandlers();
+            }
+        });
+        CoreEvents.on(CoreEvents.COMPLETE_REQUIRED_PROFILE_DATA_FINISHED, (data) => {
+            if (data.siteId === CoreSites.getCurrentSiteId()) {
+                this.updateHandlers();
+            }
+        });
     }
 
     /**
@@ -286,16 +285,18 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
         }
 
         // Checks if the handler is enabled.
-        this.updatePromises[siteId][handler.name] = promise.then((enabled: boolean) => {
+        this.updatePromises[siteId][handler.name] = promise.then((enabled) => {
             // Check that site hasn't changed since the check started.
-            if (CoreSites.getCurrentSiteId() === siteId) {
-                const key = handler[this.handlerNameProperty] || handler.name;
+            if (CoreSites.getCurrentSiteId() !== siteId) {
+                return;
+            }
 
-                if (enabled) {
-                    this.enabledHandlers[key] = handler;
-                } else {
-                    delete this.enabledHandlers[key];
-                }
+            const key = handler[this.handlerNameProperty] || handler.name;
+
+            if (enabled) {
+                this.enabledHandlers[key] = handler;
+            } else {
+                delete this.enabledHandlers[key];
             }
 
             return;
@@ -327,6 +328,10 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
         const enabled = await this.isEnabled();
 
         if (!enabled) {
+            this.logger.debug('Delegate not enabled.');
+
+            this.handlersInitResolve(false);
+
             return;
         }
 
@@ -351,7 +356,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
         // Verify that this call is the last one that was started.
         if (this.isLastUpdateCall(now)) {
             this.handlersInitialized = true;
-            this.handlersInitResolve();
+            this.handlersInitResolve(true);
 
             this.updateData();
         }

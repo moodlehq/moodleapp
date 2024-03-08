@@ -104,7 +104,7 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
     constructor(
         protected defaultHandler: CoreBlockDefaultHandler,
     ) {
-        super('CoreBlockDelegate', true);
+        super('CoreBlockDelegate');
 
         this.blocksUpdateObservable = new Subject<void>();
     }

@@ -84,7 +84,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
     protected handlerNameProperty = 'filterName';
 
     constructor(protected defaultHandler: CoreFilterDefaultHandler) {
-        super('CoreFilterDelegate', true);
+        super('CoreFilterDelegate');
     }
 
     /**

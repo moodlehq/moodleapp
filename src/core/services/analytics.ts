@@ -30,7 +30,7 @@ import { CoreTextUtils } from '@services/utils/text';
 export class CoreAnalyticsService extends CoreDelegate<CoreAnalyticsHandler> {
 
     constructor() {
-        super('CoreAnalyticsService', true);
+        super('CoreAnalyticsService');
 
         CoreEvents.on(CoreConfigProvider.ENVIRONMENT_UPDATED, () => this.updateHandlers());
         CoreEvents.on(CoreEvents.LOGOUT, () => this.clearSiteHandlers());

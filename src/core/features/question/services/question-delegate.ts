@@ -217,7 +217,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
     protected handlerNameProperty = 'type';
 
     constructor(protected defaultHandler: CoreQuestionDefaultHandler) {
-        super('CoreQuestionDelegate', true);
+        super('CoreQuestionDelegate');
     }
 
     /**
