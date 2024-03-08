@@ -13,17 +13,17 @@
 <!-- Edit. -->
 <ion-item *ngIf="edit && field && field.shortname && form" class="ion-text-wrap" [formGroup]="form">
     <ion-label position="stacked">
-        <span [core-mark-required]="required">
+        <label [core-mark-required]="required" for="profile-field-datetime-{{field.shortname}}-button">
             <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
                 [courseId]="courseId" [wsNotFiltered]="true" />
-        </span>
+        </label>
     </ion-label>
 
-    <ion-datetime-button datetime="datetime" />
+    <ion-datetime-button datetime="profile-field-datetime-{{field.shortname}}" id="profile-field-datetime-{{field.shortname}}-button" />
     <ion-modal [keepContentsMounted]="true">
         <ng-template>
-            <ion-datetime id="datetime" [formControlName]="modelName" [presentation]="ionDateTimePresentation" [max]="max" [min]="min"
-                [showDefaultButtons]="true">
+            <ion-datetime id="profile-field-datetime-{{field.shortname}}" [formControlName]="modelName"
+                [presentation]="ionDateTimePresentation" [max]="max" [min]="min" [showDefaultButtons]="true">
                 <span slot="title">
                     <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
                         [courseId]="courseId" [wsNotFiltered]="true" />

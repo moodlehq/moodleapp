@@ -27,9 +27,9 @@
             <!-- Date. -->
             <ion-item class="ion-text-wrap">
                 <ion-label position="stacked">
-                    <p class="item-heading" [core-mark-required]="true">{{ 'core.date' | translate }}</p>
+                    <label class="item-heading" [core-mark-required]="true" for="timestart-button">{{ 'core.date' | translate }}</label>
                 </ion-label>
-                <ion-datetime-button datetime="timestart" />
+                <ion-datetime-button datetime="timestart" id="timestart-button" />
                 <ion-modal [keepContentsMounted]="true">
                     <ng-template>
                         <ion-datetime id="timestart" formControlName="timestart" presentation="date-time" [max]="maxDate" [min]="minDate"
@@ -147,12 +147,12 @@
                     </ion-item>
                     <ion-item>
                         <ion-radio [value]="1">
-                            <p>{{ 'addon.calendar.durationuntil' | translate }}</p>
+                            <p><label for="timedurationuntil-button">{{ 'addon.calendar.durationuntil' | translate }}</label></p>
                         </ion-radio>
                     </ion-item>
                     <ion-item *ngIf="form.controls.duration.value === 1">
                         <ion-label position="stacked" />
-                        <ion-datetime-button datetime="timedurationuntil" />
+                        <ion-datetime-button datetime="timedurationuntil" id="timedurationuntil-button" />
                         <ion-modal [keepContentsMounted]="true">
                             <ng-template>
                                 <ion-datetime id="timedurationuntil" formControlName="timedurationuntil" [max]="maxDate" [min]="minDate"
@@ -164,11 +164,11 @@
                     </ion-item>
                     <ion-item>
                         <ion-radio [value]="2">
-                            <p id="durationinminutes">{{ 'addon.calendar.durationminutes' | translate }}</p>
+                            <p><label for="timedurationminutes">{{ 'addon.calendar.durationminutes' | translate }}</label></p>
                         </ion-radio>
                     </ion-item>
                     <ion-item *ngIf="form.controls.duration.value === 2">
-                        <ion-input type="number" name="timedurationminutes" labelPlacement="start" aria-labelledby="durationinminutes"
+                        <ion-input type="number" name="timedurationminutes" labelPlacement="start" id="timedurationminutes"
                             [placeholder]="'addon.calendar.durationminutes' | translate" formControlName="timedurationminutes" />
                     </ion-item>
                 </ion-radio-group>
