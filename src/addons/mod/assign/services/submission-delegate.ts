@@ -194,7 +194,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
         inputData: CoreFormFields,
-    ): boolean | Promise<boolean>;
+    ): Promise<boolean>;
 
     /**
      * Whether or not the handler is enabled for edit on a site level.

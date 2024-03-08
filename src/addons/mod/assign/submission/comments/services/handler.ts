@@ -30,11 +30,7 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
     type = 'comments';
 
     /**
-     * Whether the plugin can be edited in offline for existing submissions. In general, this should return false if the
-     * plugin uses Moodle filters. The reason is that the app only prefetches filtered data, and the user should edit
-     * unfiltered data.
-     *
-     * @returns Boolean or promise resolved with boolean: whether it can be edited in offline.
+     * @inheritdoc
      */
     canEditOffline(): boolean {
         // This plugin is read only, but return true to prevent blocking the edition.
@@ -42,44 +38,28 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
     }
 
     /**
-     * Return the Component to use to display the plugin data, either in read or in edit mode.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @param plugin The plugin object.
-     * @param edit Whether the user is editing.
-     * @returns The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
     getComponent(plugin: AddonModAssignPlugin, edit = false): Type<AddonModAssignSubmissionPluginBaseComponent> | undefined {
         return edit ? undefined : AddonModAssignSubmissionCommentsComponent;
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @returns True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Whether or not the handler is enabled for edit on a site level.
-     *
-     * @returns Whether or not the handler is enabled for edit on a site level.
+     * @inheritdoc
      */
     isEnabledForEdit(): boolean{
         return true;
     }
 
     /**
-     * Prefetch any required data for the plugin.
-     * This should NOT prefetch files. Files to be prefetched should be returned by the getPluginFiles function.
-     *
-     * @param assign The assignment.
-     * @param submission The submission.
-     * @param plugin The plugin object.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     async prefetch(
         assign: AddonModAssignAssign,

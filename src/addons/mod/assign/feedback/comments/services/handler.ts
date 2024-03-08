@@ -60,11 +60,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     }
 
     /**
-     * Discard the draft data of the feedback plugin.
-     *
-     * @param assignId The assignment ID.
-     * @param userId User ID.
-     * @param siteId Site ID. If not defined, current site.
+     * @inheritdoc
      */
     discardDraft(assignId: number, userId: number, siteId?: string): void {
         const id = this.getDraftId(assignId, userId, siteId);
@@ -74,22 +70,14 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     }
 
     /**
-     * Return the Component to use to display the plugin data.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @returns The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
     getComponent(): Type<IAddonModAssignFeedbackPluginComponent> {
         return AddonModAssignFeedbackCommentsComponent;
     }
 
     /**
-     * Return the draft saved data of the feedback plugin.
-     *
-     * @param assignId The assignment ID.
-     * @param userId User ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Data (or promise resolved with the data).
+     * @inheritdoc
      */
     getDraft(assignId: number, userId: number, siteId?: string): AddonModAssignFeedbackCommentsDraftData | undefined {
         const id = this.getDraftId(assignId, userId, siteId);
@@ -114,13 +102,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     }
 
     /**
-     * Get files used by this plugin.
-     * The files returned by this function will be prefetched when the user prefetches the assign.
-     *
-     * @param assign The assignment.
-     * @param submission The submission.
-     * @param plugin The plugin object.
-     * @returns The files (or promise resolved with the files).
+     * @inheritdoc
      */
     getPluginFiles(
         assign: AddonModAssignAssign,
@@ -131,14 +113,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     }
 
     /**
-     * Check if the feedback data has changed for this plugin.
-     *
-     * @param assign The assignment.
-     * @param submission The submission.
-     * @param plugin The plugin object.
-     * @param inputData Data entered by the user for the feedback.
-     * @param userId User ID of the submission.
-     * @returns Boolean (or promise resolved with boolean): whether the data has changed.
+     * @inheritdoc
      */
     async hasDataChanged(
         assign: AddonModAssignAssign,
@@ -172,12 +147,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     }
 
     /**
-     * Check whether the plugin has draft data stored.
-     *
-     * @param assignId The assignment ID.
-     * @param userId User ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Boolean or promise resolved with boolean: whether the plugin has draft data.
+     * @inheritdoc
      */
     hasDraftData(assignId: number, userId: number, siteId?: string): boolean | Promise<boolean> {
         const draft = this.getDraft(assignId, userId, siteId);
@@ -186,9 +156,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @returns True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         // In here we should check if comments is not disabled in site.
@@ -198,13 +166,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     }
 
     /**
-     * Prepare and add to pluginData the data to send to the server based on the draft data saved.
-     *
-     * @param assignId The assignment ID.
-     * @param userId User ID.
-     * @param plugin The plugin object.
-     * @param pluginData Object where to store the data to send.
-     * @param siteId Site ID. If not defined, current site.
+     * @inheritdoc
      */
     prepareFeedbackData(
         assignId: number,
@@ -225,13 +187,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     }
 
     /**
-     * Save draft data of the feedback plugin.
-     *
-     * @param assignId The assignment ID.
-     * @param userId User ID.
-     * @param plugin The plugin object.
-     * @param data The data to save.
-     * @param siteId Site ID. If not defined, current site.
+     * @inheritdoc
      */
     saveDraft(
         assignId: number,
