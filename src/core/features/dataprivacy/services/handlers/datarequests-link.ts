@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { CORE_DATAPRIVACY_PAGE_NAME } from '@features/dataprivacy/constants';
+import { CORE_DATAPRIVACY_FEATURE_NAME, CORE_DATAPRIVACY_PAGE_NAME } from '@features/dataprivacy/constants';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { CoreDataPrivacy } from '../dataprivacy';
@@ -28,6 +28,7 @@ export class CoreDataPrivacyDataRequestsLinkHandlerService extends CoreContentLi
 
     name = 'CoreDataPrivacyDataRequestsLinkHandler';
     pattern = /\/admin\/tool\/dataprivacy\/mydatarequests\.php/;
+    featureName = CORE_DATAPRIVACY_FEATURE_NAME;
 
     /**
      * @inheritdoc

@@ -14,3 +14,5 @@
 
 // Routing.
 export const CORE_DATAPRIVACY_PAGE_NAME = 'dataprivacy';
+
+export const CORE_DATAPRIVACY_FEATURE_NAME = 'CoreUserDelegate_CoreDataPrivacy';
