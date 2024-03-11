@@ -131,7 +131,7 @@ import { getMessageOutputServices } from '@addons/messageoutput/messageoutput.mo
 import { getMessagesServices } from '@addons/messages/messages.module';
 import { getModAssignServices } from '@addons/mod/assign/assign.module';
 import { getModBookServices } from '@addons/mod/book/book.module';
-import { getModChatServices } from '@addons/mod/chat/chat.module';
+import { getModChatServices, getModChatComponentModules } from '@addons/mod/chat/chat.module';
 import { getModChoiceServices } from '@addons/mod/choice/choice.module';
 import { getModFeedbackServices } from '@addons/mod/feedback/feedback.module';
 import { getModFolderServices } from '@addons/mod/folder/folder.module';
@@ -185,6 +185,7 @@ export class CoreCompileProvider {
     protected readonly LAZY_IMPORTS = [
         getModWorkshopComponentModules,
         getModSurveyComponentModules,
+        getModChatComponentModules,
     ];
 
     constructor(protected injector: Injector) {

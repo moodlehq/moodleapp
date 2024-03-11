@@ -17,7 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
-import { AddonModChatIndexComponent } from '../../components/index';
+import { ADDON_MOD_CHAT_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support chat modules.
@@ -25,11 +25,9 @@ import { AddonModChatIndexComponent } from '../../components/index';
 @Injectable({ providedIn: 'root' })
 export class AddonModChatModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_chat';
-
     name = 'AddonModChat';
     modName = 'chat';
-    protected pageName = AddonModChatModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_CHAT_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,
@@ -47,6 +45,8 @@ export class AddonModChatModuleHandlerService extends CoreModuleHandlerBase impl
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
+        const { AddonModChatIndexComponent } = await import('@addons/mod/chat/components/index');
+
         return AddonModChatIndexComponent;
     }
 

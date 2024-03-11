@@ -19,12 +19,11 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { AddonModChatComponentsModule } from './components/components.module';
-import { AddonModChatProvider } from './services/chat';
 import { AddonModChatIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModChatListLinkHandler } from './services/handlers/list-link';
-import { AddonModChatModuleHandler, AddonModChatModuleHandlerService } from './services/handlers/module';
-import { AddonModChatPrefetchHandler } from './services/handlers/prefetch';
+import { AddonModChatModuleHandler } from './services/handlers/module';
+import { getPrefetchHandlerInstance } from './services/handlers/prefetch';
+import { ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_PAGE_NAME } from './constants';
 
 /**
  * Get mod chat services.
@@ -41,9 +40,20 @@ export async function getModChatServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get mod chat component modules.
+ *
+ * @returns Chat component modules.
+ */
+export async function getModChatComponentModules(): Promise<unknown[]> {
+    const { AddonModChatComponentsModule } = await import('@addons/mod/chat/components/components.module');
+
+    return [AddonModChatComponentsModule];
+}
+
 const routes: Routes = [
     {
-        path: AddonModChatModuleHandlerService.PAGE_NAME,
+        path: ADDON_MOD_CHAT_PAGE_NAME,
         loadChildren: () => import('./chat-lazy.module').then(m => m.AddonModChatLazyModule),
     },
 ];
@@ -51,19 +61,19 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModChatComponentsModule,
     ],
     providers: [
         {
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
+                CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
+
                 CoreCourseModuleDelegate.registerHandler(AddonModChatModuleHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModChatIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModChatListLinkHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModChatPrefetchHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(AddonModChatProvider.COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_CHAT_COMPONENT);
             },
         },
     ],

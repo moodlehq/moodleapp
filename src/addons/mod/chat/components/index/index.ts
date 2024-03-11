@@ -19,8 +19,8 @@ import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreTime } from '@singletons/time';
-import { AddonModChat, AddonModChatChat, AddonModChatProvider } from '../../services/chat';
-import { AddonModChatModuleHandlerService } from '../../services/handlers/module';
+import { AddonModChat, AddonModChatChat } from '../../services/chat';
+import { ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_PAGE_NAME } from '../../constants';
 
 /**
  * Component that displays a chat.
@@ -31,7 +31,7 @@ import { AddonModChatModuleHandlerService } from '../../services/handlers/module
 })
 export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
-    component = AddonModChatProvider.COMPONENT;
+    component = ADDON_MOD_CHAT_COMPONENT;
     pluginName = 'chat';
     chat?: AddonModChatChat;
     chatTime?: string;
@@ -88,7 +88,7 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
         const title = this.chat?.name || this.moduleName;
 
         CoreNavigator.navigateToSitePath(
-            AddonModChatModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.module.id}/chat`,
+            `${ADDON_MOD_CHAT_PAGE_NAME}/${this.courseId}/${this.module.id}/chat`,
             {
                 params: {
                     title,
@@ -103,7 +103,7 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
      */
     viewSessions(): void {
         CoreNavigator.navigateToSitePath(
-            AddonModChatModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.module.id}/sessions`,
+            `${ADDON_MOD_CHAT_PAGE_NAME}/${this.courseId}/${this.module.id}/sessions`,
             {
                 params: {
                     chatId: this.chat!.id,
