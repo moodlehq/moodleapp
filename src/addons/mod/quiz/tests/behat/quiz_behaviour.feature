@@ -104,8 +104,9 @@ Feature: Use quizzes with different behaviours in the app
     And I press "Submit" in the app
     And I press "Submit all and finish" in the app
     And I press "Submit" near "Once you submit" in the app
-    Then I should find "CBM mark 1.50" in the app
-    And I should find "Parts, but only parts, of your response are correct" in the app
+    And I run all adhoc tasks
+    And I pull to refresh until I find "CBM mark 1.50" in the app
+    Then I should find "Parts, but only parts, of your response are correct" in the app
 
   Scenario: Interactive behaviour
     Given the following "activities" exist:
