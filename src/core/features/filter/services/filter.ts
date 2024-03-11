@@ -80,7 +80,7 @@ export class CoreFilterProvider {
      * @returns Promise resolved with boolean: whethe can get filters.
      */
     canGetFiltersInSite(site?: CoreSite): boolean {
-        return this.checkFiltersDisabledInSite(site);
+        return !this.checkFiltersDisabledInSite(site);
     }
 
     /**

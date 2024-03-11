@@ -17,6 +17,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonModDataHelper } from '../data-helper';
+import { ADDON_MOD_DATA_FEATURE_NAME } from '../../constants';
 
 /**
  * Content links handler for database delete entry.
@@ -26,7 +27,7 @@ import { AddonModDataHelper } from '../data-helper';
 export class AddonModDataDeleteLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModDataDeleteLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModData';
+    featureName = ADDON_MOD_DATA_FEATURE_NAME;
     pattern = /\/mod\/data\/view\.php.*([?&](d|delete)=\d+)/;
 
     /**

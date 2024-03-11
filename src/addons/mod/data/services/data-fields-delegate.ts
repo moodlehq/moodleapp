@@ -25,6 +25,8 @@ import { CoreFormFields } from '@singletons/form';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFileEntry } from '@services/file-helper';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
+import { CoreSites } from '@services/sites';
+import { ADDON_MOD_DATA_FEATURE_NAME } from '../constants';
 
 /**
  * Interface that all fields handlers must implement.
@@ -132,7 +134,14 @@ export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModData
     constructor(
         protected defaultHandler: AddonModDataDefaultFieldHandler,
     ) {
-        super('AddonModDataFieldsDelegate', true);
+        super('AddonModDataFieldsDelegate');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabled(): Promise<boolean> {
+        return !(await CoreSites.isFeatureDisabled(ADDON_MOD_DATA_FEATURE_NAME));
     }
 
     /**

@@ -17,6 +17,8 @@ import { CoreDelegateHandler, CoreDelegate } from '@classes/delegate';
 import { makeSingleton } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
 import { AddonModWorkshopGetAssessmentFormDefinitionData, AddonModWorkshopGetAssessmentFormFieldsParsedData } from './workshop';
+import { CoreSites } from '@services/sites';
+import { ADDON_MOD_WORKSHOP_FEATURE_NAME } from '../constants';
 
 /**
  * Interface that all assessment strategy handlers must implement.
@@ -83,7 +85,14 @@ export class AddonWorkshopAssessmentStrategyDelegateService extends CoreDelegate
     protected handlerNameProperty = 'strategyName';
 
     constructor() {
-        super('AddonWorkshopAssessmentStrategyDelegate', true);
+        super('AddonWorkshopAssessmentStrategyDelegate');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabled(): Promise<boolean> {
+        return !(await CoreSites.isFeatureDisabled(ADDON_MOD_WORKSHOP_FEATURE_NAME));
     }
 
     /**

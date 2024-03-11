@@ -15,7 +15,7 @@
 import { Injectable, ViewContainerRef } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreFilterFilter, CoreFilterFormatTextOptions } from './filter';
+import { CoreFilter, CoreFilterFilter, CoreFilterFormatTextOptions } from './filter';
 import { CoreFilterDefaultHandler } from './handlers/default-filter';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreSite } from '@classes/sites/site';
@@ -84,7 +84,14 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
     protected handlerNameProperty = 'filterName';
 
     constructor(protected defaultHandler: CoreFilterDefaultHandler) {
-        super('CoreFilterDelegate', true);
+        super('CoreFilterDelegate');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabled(): Promise<boolean> {
+        return CoreFilter.canGetFiltersInSite();
     }
 
     /**
@@ -106,7 +113,11 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
     ): Promise<string> {
 
         // Wait for filters to be initialized.
-        await this.handlersInitPromise;
+        const enabled = await this.handlersInitPromise;
+        if (!enabled) {
+            // No enabled filters, return the text.
+            return text;
+        }
 
         const site = await CoreSites.getSite(siteId);
 
@@ -189,7 +200,10 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
     ): Promise<void> {
 
         // Wait for filters to be initialized.
-        await this.handlersInitPromise;
+        const enabled = await this.handlersInitPromise;
+        if (!enabled) {
+            return;
+        }
 
         const site = await CoreSites.getSite(siteId);
 
@@ -258,15 +272,12 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
      */
     async shouldBeApplied(filters: CoreFilterFilter[], options: CoreFilterFormatTextOptions, site?: CoreSite): Promise<boolean> {
         // Wait for filters to be initialized.
-        await this.handlersInitPromise;
-
-        for (let i = 0; i < filters.length; i++) {
-            if (this.shouldFilterBeApplied(filters[i], options, site)) {
-                return true;
-            }
+        const enabled = await this.handlersInitPromise;
+        if (!enabled) {
+            return false;
         }
 
-        return false;
+        return filters.some((filter) => this.shouldFilterBeApplied(filter, options, site));
     }
 
     /**

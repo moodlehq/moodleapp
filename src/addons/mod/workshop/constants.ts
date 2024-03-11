@@ -39,3 +39,5 @@ export const ADDON_MOD_WORKSHOP_PREFETCH_UPDATE_NAMES = new RegExp(
 );
 
 export const ADDON_MOD_WORKSHOP_SYNC_CRON_NAME = 'AddonModWorkshopSyncCronHandler';
+
+export const ADDON_MOD_WORKSHOP_FEATURE_NAME = 'CoreCourseModuleDelegate_AddonModWorkshop';

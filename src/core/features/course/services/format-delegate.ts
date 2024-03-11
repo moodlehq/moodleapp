@@ -166,7 +166,7 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
     protected handlerNameProperty = 'format';
 
     constructor(protected defaultHandler: CoreCourseFormatDefaultHandler) {
-        super('CoreCoursesCourseFormatDelegate', true);
+        super('CoreCoursesCourseFormatDelegate');
     }
 
     /**

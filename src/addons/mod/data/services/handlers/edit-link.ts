@@ -22,6 +22,7 @@ import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModDataModuleHandlerService } from './module';
+import { ADDON_MOD_DATA_FEATURE_NAME } from '../../constants';
 
 /**
  * Content links handler for database add or edit entry.
@@ -31,7 +32,7 @@ import { AddonModDataModuleHandlerService } from './module';
 export class AddonModDataEditLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModDataEditLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModData';
+    featureName = ADDON_MOD_DATA_FEATURE_NAME;
     pattern = /\/mod\/data\/edit\.php.*([?&](d|rid)=\d+)/;
 
     /**

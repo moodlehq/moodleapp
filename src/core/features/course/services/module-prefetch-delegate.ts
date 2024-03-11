@@ -54,7 +54,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
     protected prefetchData: Record<string, Record<string, OngoingPrefetch>> = {};
 
     constructor() {
-        super('CoreCourseModulePrefetchDelegate', true);
+        super('CoreCourseModulePrefetchDelegate');
     }
 
     /**

@@ -17,6 +17,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonModDataHelper } from '../data-helper';
+import { ADDON_MOD_DATA_FEATURE_NAME } from '../../constants';
 
 /**
  * Content links handler for database approve/disapprove entry.
@@ -26,7 +27,7 @@ import { AddonModDataHelper } from '../data-helper';
 export class AddonModDataApproveLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModDataApproveLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModData';
+    featureName = ADDON_MOD_DATA_FEATURE_NAME;
     pattern = /\/mod\/data\/view\.php.*([?&](d|approve|disapprove)=\d+)/;
     priority = 50; // Higher priority than the default link handler for view.php.
 

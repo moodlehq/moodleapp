@@ -68,7 +68,7 @@ export class CoreQuestionBehaviourDelegateService extends CoreDelegate<CoreQuest
     protected handlerNameProperty = 'type';
 
     constructor(protected defaultHandler: CoreQuestionBehaviourDefaultHandler) {
-        super('CoreQuestionBehaviourDelegate', true);
+        super('CoreQuestionBehaviourDelegate');
     }
 
     /**

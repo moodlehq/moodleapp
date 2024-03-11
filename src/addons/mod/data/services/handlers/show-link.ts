@@ -22,6 +22,7 @@ import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModDataModuleHandlerService } from './module';
+import { ADDON_MOD_DATA_FEATURE_NAME } from '../../constants';
 
 /**
  * Content links handler for database show entry.
@@ -31,7 +32,7 @@ import { AddonModDataModuleHandlerService } from './module';
 export class AddonModDataShowLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModDataShowLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModData';
+    featureName = ADDON_MOD_DATA_FEATURE_NAME;
     pattern = /\/mod\/data\/view\.php.*([?&](d|rid|page|group|mode)=\d+)/;
     priority = 50; // Higher priority than the default link handler for view.php.
 
