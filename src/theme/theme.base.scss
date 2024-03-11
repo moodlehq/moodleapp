@@ -2022,6 +2022,11 @@ ion-item.item-label-stacked ion-datetime-button {
     align-self: self-end;
 }
 
+ion-datetime-button p {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
 // Table App styles
 table.core-table {
     border-collapse: collapse;

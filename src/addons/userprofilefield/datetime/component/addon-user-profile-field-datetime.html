@@ -19,7 +19,12 @@
         </label>
     </ion-label>
 
-    <ion-datetime-button datetime="profile-field-datetime-{{field.shortname}}" id="profile-field-datetime-{{field.shortname}}-button" />
+    <ion-datetime-button datetime="profile-field-datetime-{{field.shortname}}" id="profile-field-datetime-{{field.shortname}}-button">
+        <ng-container *ngIf="control?.value === undefined">
+            <span slot="date-target">{{ 'core.choosedots' | translate }}</span>
+            <span slot="time-target">{{ 'core.choosedots' | translate }}</span>
+        </ng-container>
+    </ion-datetime-button>
     <ion-modal [keepContentsMounted]="true">
         <ng-template>
             <ion-datetime id="profile-field-datetime-{{field.shortname}}" [formControlName]="modelName"
