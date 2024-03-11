@@ -1,8 +1,16 @@
 @use "theme/globals" as *;
 
 :host {
-    --image-size: 120px;
-    --icon-color: var(--subdued-text-color);
+    --image-size: 80px;
+    --icon-color: var(--core-empty-box-icon-color);
+
+    &.core-empty-box-clickable {
+        z-index: 0;
+    }
+
+    &.dimmed {
+        --text-color: var(--gray-700);
+    }
 
     display: flex;
     flex-direction: column;
@@ -22,31 +30,16 @@
     img {
         height: var(--image-size);
     }
-    p {
-        font-size: 120%;
-    }
 
-    &.core-empty-box-clickable {
-        z-index: 0;
+    p,
+    ::ng-deep p {
+        font-size: var(--heading-6-font-size);
+        color: var(--text-color);
     }
-
-    &.dimmed {
-        --icon-color: var(--gray-400);
-        --text-color: var(--gray-700);
-    }
-
 }
 
 :host-context(html.dark) {
-
     &.dimmed {
         --text-color: var(--gray-300);
-    }
-
-}
-
-@include media-breakpoint-down(sm) {
-    :host {
-        --image-size: 100px;
     }
 }

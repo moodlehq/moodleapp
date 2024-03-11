@@ -1,7 +1,7 @@
 .core-error-info {
     background: var(--gray-200);
     border-radius: var(--radius-xs);
-    font-size: var(--font-size-sm);
+    font-size: var(--body-font-size-sm);
     color: var(--gray-900);
 
     p:first-child {
@@ -14,7 +14,7 @@
 
     .core-error-info--code {
         padding: var(--spacing-2) var(--spacing-2) 0 var(--spacing-2);
-        font-size: var(--font-size-normal);
+        font-size: var(--body-font-size-md);
     }
 
     .core-error-info--details p {

@@ -53,7 +53,7 @@ html {
     --zoom-level: 100%;
 
     --text-color:       #{$text-color};
-    --text-size: var(--font-size-normal);
+    --text-size: var(--body-font-size-md);
     --background-color: #{$background-color};
     --stroke:            var(--gray-300);
 
@@ -78,16 +78,15 @@ html {
 
     --contrast-background: white;
 
-    --loader-background-color: rgba(0, 0, 0, .1);
-    --loader-shine: 251, 251, 251;
+    --loader-background-color: rgb(0 0 0 / 10%);
+    --loader-shine: 251 251 251;
     --loader-radius: var(--radius-xs);
     --loader-display: block;
 
-    --drop-shadow-color: 0, 0, 0, 0.5;
-    --drop-shadow-top: 0px 2px 5px rgba(var(--drop-shadow-color));
-    --drop-shadow-bottom: 0px -2px 5px rgba(var(--drop-shadow-color));
-    --drop-shadow-end: -2px 0px 5px rgba(var(--drop-shadow-color));
-    --drop-shadow-start: 2px 0px 5px rgba(var(--drop-shadow-color));
+    --drop-shadow-top: 0px 2px 5px rgb(var(--drop-shadow-color) / 50%);
+    --drop-shadow-bottom: 0px -2px 5px rgb(var(--drop-shadow-color) / 50%);
+    --drop-shadow-end: -2px 0px 5px rgb(var(--drop-shadow-color) / 50%);
+    --drop-shadow-start: 2px 0px 5px rgb(var(--drop-shadow-color) / 50%);
 
     --ion-text-color: var(--text-color);
     --ion-text-color-rgb: #{$text-color-rgb};
@@ -272,6 +271,8 @@ html {
     --core-progressbar-color: var(--primary);
     --core-progressbar-text-color: var(--medium);
     --core-progressbar-background: var(--primary-tint);
+
+    --core-empty-box-icon-color: var(--gray-300);
 
     --ion-item-background:        #{$ion-item-background};
     --ion-item-icon-color: var(--medium);

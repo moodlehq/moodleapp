@@ -136,7 +136,7 @@
                         </ng-container>
                     </ng-container>
 
-                    <ion-button expand="block" type="submit" class="ion-text-wrap ion-margin button-no-uppercase">
+                    <ion-button expand="block" type="submit" class="ion-text-wrap ion-margin">
                         {{ question.submitLabel }}
                     </ion-button>
                     <!-- Remove this once Ionic fixes this bug: https://github.com/ionic-team/ionic-framework/issues/19368 -->
@@ -150,7 +150,7 @@
                     <ion-row class="ion-align-items-center">
                         <ion-col *ngFor="let button of pageButtons" size="12" size-md="6" size-lg="3" col-xl>
                             <ion-button expand="block" fill="outline" [id]="button.id" (click)="buttonClicked(button.data)"
-                                class="ion-text-wrap button-no-uppercase">
+                                class="ion-text-wrap">
                                 {{ button.content }}
                             </ion-button>
                         </ion-col>
@@ -224,7 +224,7 @@
                 <ion-item class="ion-text-wrap" *ngIf="eolData.displayofgrade">
                     <ion-label>{{ eolData.displayofgrade.message }}</ion-label>
                 </ion-item>
-                <ion-button *ngIf="eolData.reviewlesson" expand="block" class="ion-text-wrap ion-margin button-no-uppercase"
+                <ion-button *ngIf="eolData.reviewlesson" expand="block" class="ion-text-wrap ion-margin"
                     (click)="reviewLesson(reviewPageId!)">
                     {{ 'addon.mod_lesson.reviewlesson' | translate }}
                 </ion-button>
@@ -233,7 +233,7 @@
                 </ion-item>
                 <!-- If activity link was successfully formatted, render the button. -->
                 <ion-button *ngIf="activityLink && activityLink.formatted" expand="block" fill="outline" [href]="activityLink.href"
-                    core-link [capture]="true" class="ion-text-wrap ion-margin button-no-uppercase">
+                    core-link [capture]="true" class="ion-text-wrap ion-margin">
                     <core-format-text [text]="activityLink.label" contextLevel="module" [contextInstanceId]="lesson.coursemodule"
                         [courseId]="courseId" />
                 </ion-button>

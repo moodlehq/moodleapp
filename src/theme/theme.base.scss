@@ -45,10 +45,6 @@ body {
 .core-big   { font-size: 115%; }
 .invisible { visibility: hidden; }
 
-.button-no-uppercase {
-    text-transform: none;
-}
-
 .flex { display: flex; }
 .inline-block { display: inline-block; }
 .block { display: block; }
@@ -263,6 +259,7 @@ ion-button,
 ion-fab-button,
 button,
 [role="button"] {
+    text-transform: none;
     min-height: var(--a11y-min-target-size);
     min-width: var(--a11y-min-target-size);
 
@@ -273,7 +270,7 @@ button,
 }
 
 ion-fab-button {
-    --box-shadow: 0 3px 5px -1px rgba(0, 0, 0, .2), 0 6px 10px 0 rgba(0, 0, 0, .14), 0 1px 18px 0 rgba(0, 0, 0, .12);
+    --box-shadow: 0 3px 5px -1px rgb(0 0 0 / 20%), 0 6px 10px 0 rgb(0 0 0 / 14%), 0 1px 18px 0 rgb(0 0 0 / 12%);
 }
 
 ion-button {
@@ -403,7 +400,6 @@ button[disabled] {
 }
 
 ion-button.core-button-as-link {
-    text-transform: none;
     text-decoration: underline;
     font-size: inherit;
     font-weight: normal;
@@ -675,7 +671,7 @@ body.core-iframe-fullscreen ion-router-outlet {
 
     &::part(content) {
         backdrop-filter: blur(12px);
-        --background: rgba(10, 10, 10, 0.2);
+        --background: rgb(10 10 10 / 20%);
 
         ion-content {
             --background: transparent !important;
@@ -705,7 +701,7 @@ body.core-iframe-fullscreen ion-router-outlet {
         height: 100% !important;
         width: calc(100% - var(--modal-lateral-margin));
         max-width: calc(var(--modal-lateral-max-width));
-        box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 28px 48px rgb(0 0 0 / 40%);
     }
 
     &::part(backdrop) {
@@ -943,8 +939,6 @@ ion-card {
         margin: 0 8px 8px 8px;
 
         ion-button {
-            text-transform: none;
-
             &[fill="outline"] {
                 --background: transparent;
             }
@@ -1181,7 +1175,6 @@ ion-button.button.chip {
     line-height: 1.1;
     font-size: 12px;
     min-height: 24px;
-    text-transform: none;
     margin: 4px;
     font-weight: normal;
 
@@ -1226,7 +1219,7 @@ ion-chip {
 
     &.fab-chip {
         padding: 8px 12px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, .4);
+        box-shadow: 0 2px 4px rgb(0 0 0 / 40%);
     }
 
     &.ion-color {
@@ -1935,7 +1928,7 @@ swiper-container {
         left: -45%;
         height: 100%;
         width: 45%;
-        background-image: linear-gradient(to left, rgba(var(--loader-shine), .05), rgba(var(--loader-shine), .3), rgba(var(--loader-shine), .6), rgba(var(--loader-shine), .3), rgba(var(--loader-shine), .05));
+        background-image: linear-gradient(to left, rgb(var(--loader-shine) / 5%), rgb(var(--loader-shine) / 30%), rgb(var(--loader-shine) / 60%), rgb(var(--loader-shine) / 30%), rgb(var(--loader-shine) / 5%));
         animation: loading 1s infinite;
         display: block;
         top: 0;
