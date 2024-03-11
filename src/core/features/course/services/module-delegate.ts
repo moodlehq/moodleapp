@@ -25,6 +25,7 @@ import { makeSingleton } from '@singletons';
 import { CoreCourseModuleData } from './course-helper';
 import { CoreNavigationOptions } from '@services/navigator';
 import { CoreIonicColorNames } from '@singletons/colors';
+import { TDownloadStatus } from '@/core/constants';
 
 /**
  * Interface that all course module handlers must implement.
@@ -222,7 +223,7 @@ export interface CoreCourseModuleHandlerData {
      *
      * @param status Module status.
      */
-    updateStatus?(status: string): void;
+    updateStatus?(status: TDownloadStatus): void;
 
     /**
      * On Destroy function in case it's needed.

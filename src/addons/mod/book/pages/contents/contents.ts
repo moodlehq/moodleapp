@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreSwipeSlidesItemsManager } from '@classes/items-management/swipe-slides-items-manager';
@@ -180,7 +180,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
         // Get module status to determine if it needs to be downloaded.
         const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(module, this.courseId, undefined, refresh);
 
-        if (status !== CoreConstants.DOWNLOADED) {
+        if (status !== DownloadStatus.DOWNLOADED) {
             // Download content. This function also loads module contents if needed.
             try {
                 await CoreCourseModulePrefetchDelegate.downloadModule(module, this.courseId);

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus, TDownloadStatus } from '@/core/constants';
 import { CoreAnimations } from '@components/animations';
 
 /**
@@ -31,17 +31,17 @@ import { CoreAnimations } from '@components/animations';
 })
 export class CoreDownloadRefreshComponent {
 
-    @Input() status?: string; // Download status.
+    @Input() status?: TDownloadStatus; // Download status.
     @Input() statusTranslatable?: string; // Download status translatable string.
     @Input() enabled = false; // Whether the download is enabled.
     @Input() loading = true; // Force loading status when is not downloading.
     @Input() canTrustDownload = false; // If false, refresh will be shown if downloaded.
     @Output() action: EventEmitter<boolean>; // Will emit an event when the item clicked.
 
-    statusDownloaded = CoreConstants.DOWNLOADED;
-    statusNotDownloaded = CoreConstants.NOT_DOWNLOADED;
-    statusOutdated = CoreConstants.OUTDATED;
-    statusDownloading = CoreConstants.DOWNLOADING;
+    statusDownloaded = DownloadStatus.DOWNLOADED;
+    statusNotDownloaded = DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED;
+    statusOutdated = DownloadStatus.OUTDATED;
+    statusDownloading = DownloadStatus.DOWNLOADING;
 
     constructor() {
         this.action = new EventEmitter();

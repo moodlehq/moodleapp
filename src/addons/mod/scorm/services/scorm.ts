@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
@@ -1669,8 +1669,8 @@ export class AddonModScormProvider {
                 return false;
             }
 
-            const isOutdated = data.status == CoreConstants.OUTDATED ||
-                    (data.status == CoreConstants.DOWNLOADING && data.previous == CoreConstants.OUTDATED);
+            const isOutdated = data.status === DownloadStatus.OUTDATED ||
+                    (data.status === DownloadStatus.DOWNLOADING && data.previous === DownloadStatus.OUTDATED);
 
             // Package needs to be downloaded if it's not outdated (not downloaded) or if the hash has changed.
             return !isOutdated || data.extra != scorm.sha1hash;

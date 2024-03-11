@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
@@ -66,7 +66,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     timecreated = -1;
     timemodified = -1;
     isExternalFile = false;
-    outdatedStatus = CoreConstants.OUTDATED;
+    outdatedStatus = DownloadStatus.OUTDATED;
 
     protected onlineObserver?: Subscription;
 
@@ -211,7 +211,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             downloadable = await AddonModResourceHelper.isMainFileDownloadable(this.module);
 
             if (downloadable) {
-                if (this.currentStatus === CoreConstants.OUTDATED && !this.isOnline && !this.isExternalFile) {
+                if (this.currentStatus === DownloadStatus.OUTDATED && !this.isOnline && !this.isExternalFile) {
                     // Warn the user that the file isn't updated.
                     const alert = await CoreDomUtils.showAlert(
                         undefined,

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus, TDownloadStatus } from '@/core/constants';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -82,7 +82,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
                     id: siteHomeId,
                     title: Translate.instant('core.sitehome.sitehome'),
                     totalSize: size,
-                    isDownloading: status === CoreConstants.DOWNLOADING,
+                    isDownloading: status === DownloadStatus.DOWNLOADING,
                 });
             }
         }
@@ -175,7 +175,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
      *
      * @param courseId Updated course id.
      */
-    private async onCourseUpdated(courseId: number, status: string): Promise<void> {
+    private async onCourseUpdated(courseId: number, status: TDownloadStatus): Promise<void> {
         if (courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
             this.setDownloadedCourses([]);
 
@@ -188,7 +188,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
             return;
         }
 
-        course.isDownloading = status === CoreConstants.DOWNLOADING;
+        course.isDownloading = status === DownloadStatus.DOWNLOADING;
         course.totalSize = await this.calculateDownloadedCourseSize(course.id);
 
         this.setDownloadedCourses(this.downloadedCourses);
@@ -219,7 +219,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
             id: course.id,
             title: course.displayname || course.fullname,
             totalSize,
-            isDownloading: status === CoreConstants.DOWNLOADING,
+            isDownloading: status === DownloadStatus.DOWNLOADING,
         };
     }
 

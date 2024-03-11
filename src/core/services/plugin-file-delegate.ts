@@ -17,7 +17,7 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFilepool, CoreFilepoolOnProgressCallback } from '@services/filepool';
 import { CoreWSFile } from '@services/ws';
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { makeSingleton } from '@singletons';
 import { CoreSites } from './sites';
@@ -141,7 +141,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
         await Promise.all(files.map(async (file) => {
             const state = await CoreFilepool.getFileStateByUrl(siteIdentifier, CoreFileHelper.getFileUrl(file), file.timemodified);
 
-            if (state !== CoreConstants.DOWNLOADED && state !== CoreConstants.NOT_DOWNLOADABLE) {
+            if (state !== DownloadStatus.DOWNLOADED && state !== DownloadStatus.NOT_DOWNLOADABLE) {
                 filteredFiles.push(file);
             }
         }));

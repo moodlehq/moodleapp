@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreNetwork } from '@services/network';
@@ -150,7 +150,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
     setDownloaded(id: number, siteId?: string, extra?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        return CoreFilepool.storePackageStatus(siteId, CoreConstants.DOWNLOADED, this.component, id, extra);
+        return CoreFilepool.storePackageStatus(siteId, DownloadStatus.DOWNLOADED, this.component, id, extra);
     }
 
     /**
@@ -163,7 +163,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
     setDownloading(id: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        return CoreFilepool.storePackageStatus(siteId, CoreConstants.DOWNLOADING, this.component, id);
+        return CoreFilepool.storePackageStatus(siteId, DownloadStatus.DOWNLOADING, this.component, id);
     }
 
     /**

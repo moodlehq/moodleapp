@@ -22,7 +22,7 @@ import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSite } from '@classes/sites/site';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, DownloadStatus, TDownloadStatus } from '@/core/constants';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 
@@ -268,7 +268,11 @@ export class CoreCourseProvider {
         this.logger.debug('Clear all course status for site ' + site.id);
 
         await this.statusTables[site.getId()].delete();
-        this.triggerCourseStatusChanged(CoreCourseProvider.ALL_COURSES_CLEARED, CoreConstants.NOT_DOWNLOADED, site.id);
+        this.triggerCourseStatusChanged(
+            CoreCourseProvider.ALL_COURSES_CLEARED,
+            DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED,
+            site.id,
+        );
     }
 
     /**
@@ -473,13 +477,13 @@ export class CoreCourseProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with the status.
      */
-    async getCourseStatus(courseId: number, siteId?: string): Promise<string> {
+    async getCourseStatus(courseId: number, siteId?: string): Promise<TDownloadStatus> {
         try {
             const entry = await this.getCourseStatusData(courseId, siteId);
 
-            return entry.status || CoreConstants.NOT_DOWNLOADED;
+            return entry.status || DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED;
         } catch {
-            return CoreConstants.NOT_DOWNLOADED;
+            return DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED;
         }
     }
 
@@ -490,7 +494,8 @@ export class CoreCourseProvider {
      * @returns Resolves with an array containing downloaded course ids.
      */
     async getDownloadedCourseIds(siteId?: string): Promise<number[]> {
-        const downloadedStatuses = [CoreConstants.DOWNLOADED, CoreConstants.DOWNLOADING, CoreConstants.OUTDATED];
+        const downloadedStatuses: TDownloadStatus[] =
+            [DownloadStatus.DOWNLOADED, DownloadStatus.DOWNLOADING, DownloadStatus.OUTDATED];
         const site = await CoreSites.getSite(siteId);
         const entries = await this.statusTables[site.getId()].getManyWhere({
             sql: 'status IN (?,?,?)',
@@ -1398,7 +1403,7 @@ export class CoreCourseProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the status is changed. Resolve param: new status.
      */
-    async setCoursePreviousStatus(courseId: number, siteId?: string): Promise<string> {
+    async setCoursePreviousStatus(courseId: number, siteId?: string): Promise<TDownloadStatus> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         this.logger.debug(`Set previous status for course ${courseId} in site ${siteId}`);
@@ -1410,10 +1415,10 @@ export class CoreCourseProvider {
 
         const newData = {
             id: courseId,
-            status: entry.previous || CoreConstants.NOT_DOWNLOADED,
+            status: entry.previous || DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED,
             updated: Date.now(),
             // Going back from downloading to previous status, restore previous download time.
-            downloadTime: entry.status == CoreConstants.DOWNLOADING ? entry.previousDownloadTime : entry.downloadTime,
+            downloadTime: entry.status == DownloadStatus.DOWNLOADING ? entry.previousDownloadTime : entry.downloadTime,
         };
 
         await this.statusTables[site.getId()].update(newData, { id: courseId });
@@ -1431,7 +1436,7 @@ export class CoreCourseProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the status is stored.
      */
-    async setCourseStatus(courseId: number, status: string, siteId?: string): Promise<void> {
+    async setCourseStatus(courseId: number, status: TDownloadStatus, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         this.logger.debug(`Set status '${status}' for course ${courseId} in site ${siteId}`);
@@ -1439,9 +1444,9 @@ export class CoreCourseProvider {
         const site = await CoreSites.getSite(siteId);
         let downloadTime = 0;
         let previousDownloadTime = 0;
-        let previousStatus = '';
+        let previousStatus: TDownloadStatus | undefined;
 
-        if (status == CoreConstants.DOWNLOADING) {
+        if (status === DownloadStatus.DOWNLOADING) {
             // Set download time if course is now downloading.
             downloadTime = CoreTimeUtils.timestamp();
         }
@@ -1461,7 +1466,7 @@ export class CoreCourseProvider {
             // New entry.
         }
 
-        if (previousStatus != status) {
+        if (previousStatus !== status) {
             // Status has changed, update it.
             await this.statusTables[site.getId()].insert({
                 id: courseId,
@@ -1529,7 +1534,7 @@ export class CoreCourseProvider {
      * @param status New course status.
      * @param siteId Site ID. If not defined, current site.
      */
-    protected triggerCourseStatusChanged(courseId: number, status: string, siteId?: string): void {
+    protected triggerCourseStatusChanged(courseId: number, status: TDownloadStatus, siteId?: string): void {
         CoreEvents.trigger(CoreEvents.COURSE_STATUS_CHANGED, {
             courseId: courseId,
             status: status,

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants, ModPurpose } from '@/core/constants';
+import { CoreConstants, DownloadStatus, ModPurpose } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourse } from '@features/course/services/course';
@@ -76,7 +76,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
                 return;
             }
 
-            handlerData.button.hidden = status !== CoreConstants.DOWNLOADED ||
+            handlerData.button.hidden = status !== DownloadStatus.DOWNLOADED ||
                 AddonModResourceHelper.isDisplayedInIframe(module);
         };
         handlerData.button = {
@@ -124,7 +124,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
 
         const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(module, module.course);
 
-        return status !== CoreConstants.DOWNLOADED || AddonModResourceHelper.isDisplayedInIframe(module);
+        return status !== DownloadStatus.DOWNLOADED || AddonModResourceHelper.isDisplayedInIframe(module);
     }
 
     /**

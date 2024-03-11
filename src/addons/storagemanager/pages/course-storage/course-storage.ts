@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, DownloadStatus, TDownloadStatus } from '@/core/constants';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import {
@@ -58,11 +58,11 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     prefetchCourseData: CorePrefetchStatusInfo = {
         icon: CoreConstants.ICON_LOADING,
         statusTranslatable: 'core.course.downloadcourse',
-        status: '',
+        status: DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED,
         loading: true,
     };
 
-    statusDownloaded = CoreConstants.DOWNLOADED;
+    statusDownloaded = DownloadStatus.DOWNLOADED;
 
     protected initialSectionId?: number;
     protected siteUpdatedObserver?: CoreEventObserver;
@@ -511,7 +511,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         // We are currently marking as not downloaded if size is 0 but we should take into account that
         // resources without files can be downloaded and cached.
 
-        CoreCourse.setCourseStatus(this.courseId, CoreConstants.NOT_DOWNLOADED);
+        CoreCourse.setCourseStatus(this.courseId, DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED);
     }
 
     /**
@@ -607,7 +607,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      * @param module Module to update.
      * @param status Module status.
      */
-    protected updateModuleStatus(module: AddonStorageManagerModule, status: string): void {
+    protected updateModuleStatus(module: AddonStorageManagerModule, status: TDownloadStatus): void {
         if (!status) {
             return;
         }
@@ -649,7 +649,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      *
      * @param status Status to show.
      */
-    protected updateCourseStatus(status: string): void {
+    protected updateCourseStatus(status: TDownloadStatus): void {
         const statusData = CoreCourseHelper.getCoursePrefetchStatusInfo(status);
 
         this.prefetchCourseData.status = statusData.status;
@@ -758,5 +758,5 @@ type AddonStorageManagerModule = CoreCourseModuleData & {
     calculatingSize: boolean;
     prefetchHandler?: CoreCourseModulePrefetchHandler;
     spinner?: boolean;
-    downloadStatus?: string;
+    downloadStatus?: TDownloadStatus;
 };

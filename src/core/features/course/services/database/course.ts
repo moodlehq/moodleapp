@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { TDownloadStatus } from '@/core/constants';
 import { CoreSiteSchema } from '@services/sites';
 
 /**
@@ -120,8 +121,8 @@ export const OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
 
 export type CoreCourseStatusDBRecord = {
     id: number;
-    status: string;
-    previous: string;
+    status: TDownloadStatus;
+    previous: TDownloadStatus | undefined;
     updated: number;
     downloadTime: number;
     previousDownloadTime: number;

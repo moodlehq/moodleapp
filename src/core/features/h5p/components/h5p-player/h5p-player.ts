@@ -20,7 +20,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
@@ -94,7 +94,10 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
         this.displayOptions = CoreH5P.h5pPlayer.getDisplayOptionsFromUrlParams(this.urlParams);
         this.showPackage = true;
 
-        if (!this.canDownload$.getValue() || (this.state != CoreConstants.OUTDATED && this.state != CoreConstants.NOT_DOWNLOADED)) {
+        if (
+            !this.canDownload$.getValue() ||
+            (this.state !== DownloadStatus.OUTDATED && this.state !== DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED)
+        ) {
             return;
         }
 

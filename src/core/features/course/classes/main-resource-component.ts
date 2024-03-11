@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus, TDownloadStatus } from '@/core/constants';
 import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, Optional, Inject } from '@angular/core';
 import { CoreAnyError } from '@classes/errors/error';
 import { CoreNetwork } from '@services/network';
@@ -65,7 +65,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected isCurrentView = false; // Whether the component is in the current view.
     protected siteId?: string; // Current Site ID.
     protected statusObserver?: CoreEventObserver; // Observer of package status. Only if setStatusListener is called.
-    currentStatus?: string; // The current status of the module. Only if setStatusListener is called.
+    currentStatus?: TDownloadStatus; // The current status of the module. Only if setStatusListener is called.
     downloadTimeReadable?: string; // Last download time in a readable format. Only if setStatusListener is called.
 
     protected completionObserver?: CoreEventObserver;
@@ -242,7 +242,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @returns If module has been prefetched.
      */
     protected isPrefetched(): boolean {
-        return this.currentStatus != CoreConstants.NOT_DOWNLOADABLE && this.currentStatus != CoreConstants.NOT_DOWNLOADED;
+        return this.currentStatus !== DownloadStatus.NOT_DOWNLOADABLE &&
+            this.currentStatus !== DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED;
     }
 
     /**
@@ -281,7 +282,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @param previousStatus The previous status. If not defined, there is no previous status.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected showStatus(status: string, previousStatus?: string): void {
+    protected showStatus(status: TDownloadStatus, previousStatus?: TDownloadStatus): void {
         // To be overridden.
     }
 
@@ -345,7 +346,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         // Get module status to determine if it needs to be downloaded.
         await this.setStatusListener(refresh);
 
-        if (this.currentStatus != CoreConstants.DOWNLOADED) {
+        if (this.currentStatus !== DownloadStatus.DOWNLOADED) {
             // Download content. This function also loads module contents if needed.
             try {
                 await CoreCourseModulePrefetchDelegate.downloadModule(this.module, this.courseId);

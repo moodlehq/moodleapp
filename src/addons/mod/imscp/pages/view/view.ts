@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { Component, OnInit } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar';
@@ -173,7 +173,7 @@ export class AddonModImscpViewPage implements OnInit {
         // Get module status to determine if it needs to be downloaded.
         const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(module, this.courseId, undefined, refresh);
 
-        if (status !== CoreConstants.DOWNLOADED) {
+        if (status !== DownloadStatus.DOWNLOADED) {
             // Download content. This function also loads module contents if needed.
             try {
                 await CoreCourseModulePrefetchDelegate.downloadModule(module, this.courseId);

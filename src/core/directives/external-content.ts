@@ -32,7 +32,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreConstants } from '../constants';
+import { DownloadStatus } from '../constants';
 import { CoreNetwork } from '@services/network';
 import { Translate } from '@singletons';
 import { AsyncDirective } from '@classes/async-directive';
@@ -418,7 +418,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             }
 
             state = newState;
-            if (state === CoreConstants.DOWNLOADING) {
+            if (state === DownloadStatus.DOWNLOADING) {
                 return;
             }
 
@@ -442,7 +442,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             clickableEl.addEventListener(eventName, () => {
                 // User played media or opened a downloadable link.
                 // Download the file if in wifi and it hasn't been downloaded already (for big files).
-                if (state !== CoreConstants.DOWNLOADED && state !== CoreConstants.DOWNLOADING && CoreNetwork.isWifi()) {
+                if (state !== DownloadStatus.DOWNLOADED && state !== DownloadStatus.DOWNLOADING && CoreNetwork.isWifi()) {
                     // We aren't using the result, so it doesn't matter which of the 2 functions we call.
                     CoreFilepool.getUrlByUrl(site.getId(), url, this.component, this.componentId, 0, false);
                 }

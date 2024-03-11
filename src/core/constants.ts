@@ -46,6 +46,38 @@ export const enum ModPurpose {
     MOD_PURPOSE_OTHER = 'other',
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
+/**
+ * Possible statuses for downloaded modules/files.
+ */
+export const DownloadedStatus = {
+    DOWNLOADED: 'downloaded',
+    DOWNLOADING: 'downloading',
+    OUTDATED: 'outdated',
+} as const;
+
+/**
+ * Possible statuses for not downloaded modules/files.
+ */
+export const NotDownloadedStatus = {
+    DOWNLOADABLE_NOT_DOWNLOADED: 'notdownloaded',
+    NOT_DOWNLOADABLE: 'notdownloadable',
+} as const;
+
+/**
+ * Possible statuses for modules regarding download.
+ */
+export const DownloadStatus = {
+    ...DownloadedStatus,
+    ...NotDownloadedStatus,
+} as const;
+
+export type TDownloadedStatus = typeof DownloadedStatus[keyof typeof DownloadedStatus];
+export type TNotDownloadedStatus = typeof NotDownloadedStatus[keyof typeof NotDownloadedStatus];
+export type TDownloadStatus = typeof DownloadStatus[keyof typeof DownloadStatus];
+
+/* eslint-enable @typescript-eslint/naming-convention */
+
 /**
  * Static class to contain all the core constants.
  */
@@ -99,11 +131,26 @@ export class CoreConstants {
     static readonly LOGIN_LAUNCH_DATA = 'CoreLoginLaunchData';
 
     // Download status constants.
-    static readonly DOWNLOADED = 'downloaded';
-    static readonly DOWNLOADING = 'downloading';
-    static readonly NOT_DOWNLOADED = 'notdownloaded';
-    static readonly OUTDATED = 'outdated';
-    static readonly NOT_DOWNLOADABLE = 'notdownloadable';
+    /**
+     * @deprecated since 4.4. Use DownloadStatus.DOWNLOADED instead.
+     */
+    static readonly DOWNLOADED = DownloadStatus.DOWNLOADED;
+    /**
+     * @deprecated since 4.4. Use DownloadStatus.DOWNLOADING instead.
+     */
+    static readonly DOWNLOADING = DownloadStatus.DOWNLOADING;
+    /**
+     * @deprecated since 4.4. Use DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED instead.
+     */
+    static readonly NOT_DOWNLOADED = DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED;
+    /**
+     * @deprecated since 4.4. Use DownloadStatus.OUTDATED instead.
+     */
+    static readonly OUTDATED = DownloadStatus.OUTDATED;
+    /**
+     * @deprecated since 4.4. Use DownloadStatus.NOT_DOWNLOADABLE instead.
+     */
+    static readonly NOT_DOWNLOADABLE = DownloadStatus.NOT_DOWNLOADABLE;
 
     // Download / prefetch status icon.
     static readonly ICON_DOWNLOADED = 'fam-cloud-done';
