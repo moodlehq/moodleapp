@@ -375,4 +375,5 @@ export type CoreDataPrivacyRequest = {
     approvedeny?: boolean; // Approvedeny.
     allowfiltering?: boolean; // Allowfiltering.
     canmarkcomplete?: boolean; // Canmarkcomplete.
+    downloadlink?: string; // Downloadlink.
 };
