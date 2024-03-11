@@ -273,7 +273,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             return;
         } else if (
             (page == this.attempt.currentpage && !this.showSummary) ||
-            (fromModal && this.isSequential && page != this.attempt.currentpage)
+            (fromModal && this.isSequential && page != this.attempt.currentpage && page !== this.nextPage)
         ) {
             // If the user is navigating to the current page we do nothing.
             // Also, in sequential quizzes we can only navigate to the current page.
@@ -733,6 +733,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
                 navigation: this.navigation,
                 summaryShown: this.showSummary,
                 currentPage: this.attempt?.currentpage,
+                nextPage: this.nextPage,
                 isReview: false,
                 isSequential: this.isSequential,
             },

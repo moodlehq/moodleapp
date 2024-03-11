@@ -344,6 +344,7 @@ export class AddonModQuizReviewPage implements OnInit {
                 navigation: this.navigation,
                 summaryShown: false,
                 currentPage: this.attempt?.currentpage,
+                nextPage: this.nextPage,
                 isReview: true,
                 isSequential: this.quiz && AddonModQuiz.isNavigationSequential(this.quiz),
             },
