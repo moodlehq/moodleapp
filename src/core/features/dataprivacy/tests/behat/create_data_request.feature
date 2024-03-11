@@ -58,5 +58,6 @@ Feature: Data export and delete from the privacy API
     Then I should find "Approved" near "Export all of my personal data" in the app
     When I run all adhoc tasks
     And I pull to refresh in the app
-    And I should find "Download ready" near "Export all of my personal data" in the app
-    # TODO: Add download link and test it.
+    Then I should find "Download ready" near "Export all of my personal data" in the app
+    And I press "Download" in the app
+    And the app should have opened a browser tab with url "$WWWROOTPATTERN"

@@ -2023,6 +2023,10 @@ table.core-table {
     margin: 1em auto;
     color: var(--text-color);
 
+    &.x-scrollable {
+        overflow-x: auto;
+        display: block;
+    }
 
     thead th {
         vertical-align: bottom;
@@ -2031,8 +2035,13 @@ table.core-table {
         background-color: var(--core-table-header-background);
     }
 
-    tbody th {
-        font-weight: normal;
+    tbody {
+        th {
+            font-weight: normal;
+        }
+        td {
+            font-size: 16px;
+        }
     }
 
     th, td {
@@ -2043,10 +2052,6 @@ table.core-table {
 
     tr {
         border-bottom: 1px solid var(--core-table-border-color);
-    }
-
-    tbody td {
-        font-size: 16px;
     }
 
     .odd {
@@ -2069,19 +2074,21 @@ table.core-table {
         }
     }
 
-    tbody.auto-striped tr:nth-child(odd) {
-        background-color: var(--core-table-odd-cell-background);
+    tbody.auto-striped {
+        tr:nth-child(odd) {
+            background-color: var(--core-table-odd-cell-background);
 
-        &:hover {
-            background-color: var(--core-table-even-odd-hover);
+            &:hover {
+                background-color: var(--core-table-even-odd-hover);
+            }
         }
-    }
 
-    tbody.auto-striped tr:nth-child(even) {
-        background-color: var(--core-table-even-cell-background);
+        tr:nth-child(even) {
+            background-color: var(--core-table-even-cell-background);
 
-        &:hover {
-            background-color: var(--core-table-even-cell-hover);
+            &:hover {
+                background-color: var(--core-table-even-cell-hover);
+            }
         }
     }
 
