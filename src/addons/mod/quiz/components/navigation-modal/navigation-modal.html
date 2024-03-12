@@ -44,7 +44,7 @@
 </ion-content>
 <ion-footer *ngIf="!isReview">
     <!-- In player, show button to finish attempt. -->
-    <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="loadPage(-1)">
+    <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="loadPage(-1)" [disabled]="isSequential && nextPage !== -1">
         {{ 'addon.mod_quiz.finishattemptdots' | translate }}
     </ion-button>
 </ion-footer>

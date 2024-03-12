@@ -28,6 +28,7 @@ export class AddonModQuizNavigationModalComponent {
 
     @Input() navigation?: AddonModQuizNavigationQuestion[]; // Whether the user is reviewing the attempt.
     @Input() summaryShown?: boolean; // Whether summary is currently being shown.
+    @Input() nextPage?: number; // Next page.
     @Input() currentPage?: number; // Current page.
     @Input() isReview?: boolean; // Whether the user is reviewing the attempt.
     @Input() isSequential?: boolean; // Whether quiz navigation is sequential.
