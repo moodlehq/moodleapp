@@ -20,8 +20,9 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { CoreCourse } from '@features/course/services/course';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
-import { AddonModUrl, AddonModUrlDisplayOptions, AddonModUrlProvider, AddonModUrlUrl } from '../../services/url';
+import { AddonModUrl, AddonModUrlDisplayOptions, AddonModUrlUrl } from '../../services/url';
 import { AddonModUrlHelper } from '../../services/url-helper';
+import { ADDON_MOD_URL_COMPONENT } from '../../constants';
 
 /**
  * Component that displays a url.
@@ -33,7 +34,7 @@ import { AddonModUrlHelper } from '../../services/url-helper';
 })
 export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
-    component = AddonModUrlProvider.COMPONENT;
+    component = ADDON_MOD_URL_COMPONENT;
     pluginName = 'url';
 
     url?: string;

@@ -16,7 +16,11 @@ import { Injectable } from '@angular/core';
 import { CoreCourseResourcePrefetchHandlerBase } from '@features/course/classes/resource-prefetch-handler';
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
 import { makeSingleton } from '@singletons';
-import { AddonModUrlProvider } from '../url';
+import {
+    ADDON_MOD_URL_COMPONENT,
+    ADDON_MOD_URL_MODNAME,
+    ADDON_MOD_URL_ADDON_NAME,
+} from '../../constants';
 
 /**
  * Handler to prefetch URLs. URLs cannot be prefetched, but the handler will be used to invalidate some data on course PTR.
@@ -24,16 +28,9 @@ import { AddonModUrlProvider } from '../url';
 @Injectable({ providedIn: 'root' })
 export class AddonModUrlPrefetchHandlerService extends CoreCourseResourcePrefetchHandlerBase {
 
-    name = 'AddonModUrl';
-    modName = 'url';
-    component = AddonModUrlProvider.COMPONENT;
-
-    /**
-     * @inheritdoc
-     */
-    async download(): Promise<void> {
-        return;
-    }
+    name = ADDON_MOD_URL_ADDON_NAME;
+    modName = ADDON_MOD_URL_MODNAME;
+    component = ADDON_MOD_URL_COMPONENT;
 
     /**
      * @inheritdoc
@@ -47,13 +44,6 @@ export class AddonModUrlPrefetchHandlerService extends CoreCourseResourcePrefetc
      */
     async isDownloadable(): Promise<boolean> {
         return false; // URLs aren't downloadable.
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async prefetch(): Promise<void> {
-        return;
     }
 
 }
