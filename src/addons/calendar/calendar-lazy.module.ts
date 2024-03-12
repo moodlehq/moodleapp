@@ -20,7 +20,7 @@ import { AddonCalendarEventPage } from '@addons/calendar/pages/event/event';
 import { AddonCalendarIndexPage } from '@addons/calendar/pages/index';
 import { AddonCalendarSettingsPage } from '@addons/calendar/pages/settings/settings';
 import { Injector, NgModule } from '@angular/core';
-import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { ROUTES, Routes } from '@angular/router';
 import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
@@ -70,7 +70,6 @@ function buildRoutes(injector: Injector): Routes {
         CoreMainMenuComponentsModule,
         CoreEditorComponentsModule,
     ],
-    exports: [RouterModule],
     declarations: [
         AddonCalendarDayPage,
         AddonCalendarEditEventPage,

@@ -38,6 +38,5 @@ const routes: Routes = [
     declarations: [
         CoreCoursesMyPage,
     ],
-    exports: [RouterModule],
 })
 export class CoreCoursesMyLazyModule {}

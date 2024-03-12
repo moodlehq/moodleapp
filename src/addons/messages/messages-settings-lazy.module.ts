@@ -33,6 +33,5 @@ const routes: Routes = [
     declarations: [
         AddonMessagesSettingsPage,
     ],
-    exports: [RouterModule],
 })
 export class AddonMessagesSettingsLazyModule {}

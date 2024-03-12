@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injector, NgModule } from '@angular/core';
-import { RouterModule, Routes, ROUTES } from '@angular/router';
+import { Routes, ROUTES } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
@@ -51,9 +51,6 @@ function buildRoutes(injector: Injector): Routes {
     ],
     declarations: [
         CoreMainMenuMorePage,
-    ],
-    exports: [
-        RouterModule,
     ],
 })
 export class CoreMainMenuMoreLazyModule {}

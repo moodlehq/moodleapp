@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injector, NgModule } from '@angular/core';
-import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { ROUTES, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonBlogEntriesPage } from './pages/entries/entries';
@@ -48,7 +48,6 @@ function buildRoutes(injector: Injector): Routes {
         CoreTagComponentsModule,
         CoreMainMenuComponentsModule,
     ],
-    exports: [RouterModule],
     providers: [
         {
             provide: ROUTES,

@@ -35,7 +35,6 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
     ],
-    exports: [RouterModule],
     declarations: [
         AddonStorageManagerCoursesStoragePage,
         AddonStorageManagerCourseStoragePage,

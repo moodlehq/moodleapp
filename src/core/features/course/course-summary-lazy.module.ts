@@ -34,6 +34,5 @@ const routes: Routes = [
         CoreRemindersComponentsModule,
         CoreCourseSummaryPageModule,
     ],
-    exports: [RouterModule],
 })
 export class CoreCourseSummaryLazyModule {}

@@ -53,7 +53,6 @@ const routes: Routes = [
         CoreMainMenuRoutingModule.forChild({ children: routes }),
         CoreTagComponentsModule,
     ],
-    exports: [CoreMainMenuRoutingModule],
     providers: [
         {
             provide: APP_INITIALIZER,

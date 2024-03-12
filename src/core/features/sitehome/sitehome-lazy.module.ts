@@ -37,6 +37,5 @@ const routes: Routes = [
     declarations: [
         CoreSiteHomeIndexPage,
     ],
-    exports: [RouterModule],
 })
 export class CoreSiteHomeLazyModule {}

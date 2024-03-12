@@ -18,8 +18,6 @@ import { CoreContentLinksDelegate } from '@features/contentlinks/services/conten
 import { AddonReportInsightsActionLinkHandler } from './services/handlers/action-link';
 
 @NgModule({
-    imports: [],
-    exports: [],
     providers: [
         {
             provide: APP_INITIALIZER,

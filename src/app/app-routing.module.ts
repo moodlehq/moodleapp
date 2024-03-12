@@ -226,7 +226,6 @@ export const APP_ROUTES = new InjectionToken('APP_ROUTES');
     providers: [
         { provide: ROUTES, multi: true, useFactory: buildAppRoutes, deps: [Injector] },
     ],
-    exports: [RouterModule],
 })
 export class AppRoutingModule {
 

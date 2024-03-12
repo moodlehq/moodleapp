@@ -62,7 +62,6 @@ const mainMenuChildrenRoutes: Routes = [
         CoreMainMenuRoutingModule.forChild({ children: mainMenuChildrenRoutes }),
         AddonCalendarComponentsModule,
     ],
-    exports: [CoreMainMenuRoutingModule],
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,

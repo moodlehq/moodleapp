@@ -15,7 +15,7 @@
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonPrivateFilesIndexPage } from '@addons/privatefiles/pages/index';
 import { Injector, NgModule } from '@angular/core';
-import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 
@@ -49,7 +49,6 @@ function buildRoutes(injector: Injector): Routes {
     declarations: [
         AddonPrivateFilesIndexPage,
     ],
-    exports: [RouterModule],
     providers: [
         {
             provide: ROUTES,

@@ -86,7 +86,6 @@ const courseIndexRoutes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(routes),
         CoreCourseFormatModule,
     ],
-    exports: [CoreCourseIndexRoutingModule],
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,

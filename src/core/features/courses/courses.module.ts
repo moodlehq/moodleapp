@@ -78,7 +78,6 @@ const routes: Routes = [
         CoreMainMenuRoutingModule.forChild({ children: routes }),
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
-    exports: [CoreMainMenuRoutingModule],
     providers: [
         {
             provide: APP_INITIALIZER,

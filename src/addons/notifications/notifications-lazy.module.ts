@@ -17,7 +17,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { AddonNotificationsListPage } from '@addons/notifications/pages/list/list';
 import { AddonNotificationsNotificationPage } from '@addons/notifications/pages/notification/notification';
 import { Injector, NgModule } from '@angular/core';
-import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { ROUTES, Routes } from '@angular/router';
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
@@ -69,7 +69,6 @@ function buildRoutes(injector: Injector): Routes {
         AddonNotificationsListPage,
         AddonNotificationsNotificationPage,
     ],
-    exports: [RouterModule],
     providers: [
         {
             provide: ROUTES,
