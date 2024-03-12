@@ -86,7 +86,7 @@ export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileField
      */
     protected createFormControl(field: AuthEmailSignupProfileField): FormControl<string | undefined> {
         const formData = {
-            value: field.defaultdata != '0' ? field.defaultdata : undefined,
+            value: field.defaultdata && field.defaultdata !== '0' ? field.defaultdata : undefined,
             disabled: this.disabled,
         };
 

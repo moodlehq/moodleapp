@@ -18,7 +18,7 @@ import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/ur
 import { ONBOARDING_DONE } from '@features/login/constants';
 import { CoreConfig } from '@services/config';
 import { EnvironmentConfig } from '@/types/config';
-import { LocalNotifications, makeSingleton, NgZone } from '@singletons';
+import { LocalNotifications, makeSingleton, NgZone, ToastController } from '@singletons';
 import { CoreNetwork, CoreNetworkService } from '@services/network';
 import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
 import { CoreCronDelegate, CoreCronDelegateService } from '@services/cron';
@@ -33,6 +33,7 @@ import { Swiper } from 'swiper';
 import { LocalNotificationsMock } from '@features/emulator/services/local-notifications';
 import { GetClosureArgs } from '@/core/utils/types';
 import { CoreIframeComponent } from '@components/iframe/iframe';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Behat runtime servive with public API.
@@ -743,6 +744,15 @@ export class TestingBehatRuntimeService {
         direction === 'left' ? ionContent.swipeNavigation.swipeLeft() : ionContent.swipeNavigation.swipeRight();
 
         return 'OK';
+    }
+
+    /**
+     * Wait for toast to be dismissed in the app.
+     *
+     * @returns Promise resolved when toast has been dismissed.
+     */
+    async waitToastDismiss(): Promise<void> {
+        await CoreUtils.ignoreErrors(ToastController.dismiss());
     }
 
 }

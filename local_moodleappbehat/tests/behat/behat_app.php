@@ -1211,4 +1211,13 @@ class behat_app extends behat_app_helper {
         $this->resize_app_window($width, $height);
     }
 
+    /**
+     * Wait until Toast disappears.
+     *
+     * @When I wait toast to dismiss in the app
+     */
+    public function i_wait_toast_to_dismiss_in_the_app() {
+        $this->runtime_js('waitToastDismiss()');
+    }
+
 }

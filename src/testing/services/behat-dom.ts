@@ -376,6 +376,11 @@ export class TestingBehatDomUtilsService {
 
         containers = containers
             .filter(container => {
+                if (!this.isElementVisible(container)) {
+                    // Ignore containers not visible.
+                    return false;
+                }
+
                 if (container.tagName === 'ION-ALERT') {
                     // For some reason, in Behat sometimes alerts aren't removed from DOM, the close animation doesn't finish.
                     // Filter alerts with pointer-events none since that style is set before the close animation starts.
@@ -453,7 +458,16 @@ export class TestingBehatDomUtilsService {
             const inputId = label.getAttribute('for');
 
             if (inputId) {
-                return document.getElementById(inputId) || undefined;
+                const element = document.getElementById(inputId) || undefined;
+                if (element?.tagName !== 'ION-DATETIME-BUTTON') {
+                    return element;
+                }
+
+                // Search the ion-datetime associated with the button.
+                const datetimeId = (<HTMLIonDatetimeButtonElement> element).datetime;
+                const datetime = document.querySelector<HTMLElement>(`ion-datetime#${datetimeId}`);
+
+                return datetime || undefined;
             }
 
             input = this.getShadowDOMHost(label) || undefined;
@@ -477,6 +491,19 @@ export class TestingBehatDomUtilsService {
         locator: TestingBehatElementLocator,
         options: TestingBehatFindOptions = {},
     ): HTMLElement | undefined {
+        // Remove extra spaces.
+        const treatedText = locator.text.trim().replace(/\s\s+/g, ' ');
+        if (treatedText !== locator.text) {
+            const element = this.findElementsBasedOnText({
+                ...locator,
+                text: treatedText,
+            }, options)[0];
+
+            if (element) {
+                return element;
+            }
+        }
+
         return this.findElementsBasedOnText(locator, options)[0];
     }
 
