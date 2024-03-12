@@ -23,19 +23,19 @@ Feature: Set a new reminder on course
     # Default set
     When I press "Set a reminder for \"Course 1\" (Course end date)" in the app
     Then I should find "Reminder set for " in the app
-    And I should find "Reminder set for" in the app
 
     # Set from list
-    When I press "Set a reminder for \"Course 1\" (Course end date)" in the app
+    When I wait toast to dismiss in the app
+    And I press "Set a reminder for \"Course 1\" (Course end date)" in the app
     Then I should find "Set a reminder" in the app
     And "At the time of the event" should be selected in the app
     But "12 hours before" should not be selected in the app
     When I press "12 hours before" in the app
     Then I should find "Reminder set for " in the app
-    And I should find "Reminder set for" in the app
 
     # Custom set
-    When I press "Set a reminder for \"Course 1\" (Course end date)" in the app
+    When I wait toast to dismiss in the app
+    And I press "Set a reminder for \"Course 1\" (Course end date)" in the app
     Then I should find "Set a reminder" in the app
     And "At the time of the event" should not be selected in the app
     But "12 hours before" should be selected in the app
@@ -46,10 +46,10 @@ Feature: Set a new reminder on course
        | Units | hours |
     And I press "Set reminder" in the app
     Then I should find "Reminder set for " in the app
-    And I should find "Reminder set for" in the app
 
     # Remove
-    When I press "Set a reminder for \"Course 1\" (Course end date)" in the app
+    When I wait toast to dismiss in the app
+    And I press "Set a reminder for \"Course 1\" (Course end date)" in the app
     Then "2 hours before" should be selected in the app
     When I press "Delete reminder" in the app
     Then I should find "Reminder deleted" in the app
