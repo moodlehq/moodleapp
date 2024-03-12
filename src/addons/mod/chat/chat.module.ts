@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -24,32 +24,6 @@ import { AddonModChatListLinkHandler } from './services/handlers/list-link';
 import { AddonModChatModuleHandler } from './services/handlers/module';
 import { getPrefetchHandlerInstance } from './services/handlers/prefetch';
 import { ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_PAGE_NAME } from './constants';
-
-/**
- * Get mod chat services.
- *
- * @returns Returns mod chat services.
- */
-export async function getModChatServices(): Promise<Type<unknown>[]> {
-    const { AddonModChatProvider } = await import('@addons/mod/chat/services/chat');
-    const { AddonModChatHelperProvider } = await import('@addons/mod/chat/services/chat-helper');
-
-    return [
-        AddonModChatProvider,
-        AddonModChatHelperProvider,
-    ];
-}
-
-/**
- * Get mod chat component modules.
- *
- * @returns Chat component modules.
- */
-export async function getModChatComponentModules(): Promise<unknown[]> {
-    const { AddonModChatComponentsModule } = await import('@addons/mod/chat/components/components.module');
-
-    return [AddonModChatComponentsModule];
-}
 
 const routes: Routes = [
     {

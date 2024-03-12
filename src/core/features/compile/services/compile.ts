@@ -130,31 +130,13 @@ import { getCourseCompletionServices } from '@addons/coursecompletion/coursecomp
 import { getMessageOutputServices } from '@addons/messageoutput/messageoutput.module';
 import { getMessagesServices } from '@addons/messages/messages.module';
 import { getModAssignServices } from '@addons/mod/assign/assign.module';
-import { getModBookServices } from '@addons/mod/book/book.module';
-import { getModChatServices, getModChatComponentModules } from '@addons/mod/chat/chat.module';
-import { getModChoiceServices } from '@addons/mod/choice/choice.module';
-import { getModFeedbackServices } from '@addons/mod/feedback/feedback.module';
-import { getModFolderServices } from '@addons/mod/folder/folder.module';
-import { getModForumServices } from '@addons/mod/forum/forum.module';
-import { getModGlossaryServices } from '@addons/mod/glossary/glossary.module';
-import { getModH5PActivityServices } from '@addons/mod/h5pactivity/h5pactivity.module';
-import { getModImscpServices } from '@addons/mod/imscp/imscp.module';
-import { getModLessonServices } from '@addons/mod/lesson/lesson.module';
-import { getModLtiServices } from '@addons/mod/lti/lti.module';
-import { getModPageServices } from '@addons/mod/page/page.module';
 import { getModQuizServices } from '@addons/mod/quiz/quiz.module';
-import { getModResourceServices } from '@addons/mod/resource/resource.module';
-import { getModScormServices } from '@addons/mod/scorm/scorm.module';
-import { getModSurveyComponentModules, getModSurveyServices } from '@addons/mod/survey/survey.module';
-import { getModUrlServices } from '@addons/mod/url/url.module';
-import { getModWikiServices } from '@addons/mod/wiki/wiki.module';
 import { getModWorkshopComponentModules, getModWorkshopServices } from '@addons/mod/workshop/workshop.module';
 import { getNotesServices } from '@addons/notes/notes.module';
 import { getNotificationsServices } from '@addons/notifications/notifications.module';
 import { getPrivateFilesServices } from '@addons/privatefiles/privatefiles.module';
 
 // Import some addon modules that define components, directives and pipes. Only import the important ones.
-import { AddonModAssignComponentsModule } from '@addons/mod/assign/components/components.module';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 
@@ -177,15 +159,20 @@ export class CoreCompileProvider {
 
     // List of imports for dynamic module. Since the template can have any component we need to import all core components modules.
     protected readonly IMPORTS = [
-        CoreSharedModule, CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreUserComponentsModule,
-        CoreCourseDirectivesModule, CoreQuestionComponentsModule, AddonModAssignComponentsModule,
-        CoreBlockComponentsModule, CoreEditorComponentsModule, CoreSearchComponentsModule, CoreSitePluginsDirectivesModule,
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+        CoreCoursesComponentsModule,
+        CoreUserComponentsModule,
+        CoreCourseDirectivesModule,
+        CoreQuestionComponentsModule,
+        CoreBlockComponentsModule,
+        CoreEditorComponentsModule,
+        CoreSearchComponentsModule,
+        CoreSitePluginsDirectivesModule,
     ];
 
     protected readonly LAZY_IMPORTS = [
         getModWorkshopComponentModules,
-        getModSurveyComponentModules,
-        getModChatComponentModules,
     ];
 
     constructor(protected injector: Injector) {
@@ -393,24 +380,7 @@ export class CoreCompileProvider {
             getMessageOutputServices(),
             getMessagesServices(),
             getModAssignServices(),
-            getModBookServices(),
-            getModChatServices(),
-            getModChoiceServices(),
-            getModFeedbackServices(),
-            getModFolderServices(),
-            getModForumServices(),
-            getModGlossaryServices(),
-            getModH5PActivityServices(),
-            getModImscpServices(),
-            getModLessonServices(),
-            getModLtiServices(),
-            getModPageServices(),
             getModQuizServices(),
-            getModResourceServices(),
-            getModScormServices(),
-            getModSurveyServices(),
-            getModUrlServices(),
-            getModWikiServices(),
             getModWorkshopServices(),
             getNotesServices(),
             getNotificationsServices(),

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -34,25 +34,6 @@ import { AddonModLessonPushClickHandler } from './services/handlers/push-click';
 import { AddonModLessonReportLinkHandler } from './services/handlers/report-link';
 import { AddonModLessonSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModLessonProvider } from './services/lesson';
-
-/**
- * Get mod Lesson services.
- *
- * @returns Returns mod Lesson services.
- */
-export async function getModLessonServices(): Promise<Type<unknown>[]> {
-    const { AddonModLessonProvider } = await import('@addons/mod/lesson/services/lesson');
-    const { AddonModLessonOfflineProvider } = await import('@addons/mod/lesson/services/lesson-offline');
-    const { AddonModLessonSyncProvider } = await import('@addons/mod/lesson/services/lesson-sync');
-    const { AddonModLessonHelperProvider } = await import('@addons/mod/lesson/services/lesson-helper');
-
-    return [
-        AddonModLessonProvider,
-        AddonModLessonOfflineProvider,
-        AddonModLessonSyncProvider,
-        AddonModLessonHelperProvider,
-    ];
-}
 
 const routes: Routes = [
     {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { conditionalRoutes } from '@/app/app-routing.module';
@@ -42,25 +42,6 @@ import { AddonModForumProvider } from './services/forum';
 import { COURSE_CONTENTS_PATH } from '@features/course/course.module';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from './constants';
-
-/**
- * Get mod Forum services.
- *
- * @returns Returns mod Forum services.
- */
-export async function getModForumServices(): Promise<Type<unknown>[]> {
-    const { AddonModForumProvider } = await import('@addons/mod/forum/services/forum');
-    const { AddonModForumOfflineProvider } = await import('@addons/mod/forum/services/forum-offline');
-    const { AddonModForumHelperProvider } = await import('@addons/mod/forum/services/forum-helper');
-    const { AddonModForumSyncProvider } = await import('@addons/mod/forum/services/forum-sync');
-
-    return [
-        AddonModForumProvider,
-        AddonModForumOfflineProvider,
-        AddonModForumHelperProvider,
-        AddonModForumSyncProvider,
-    ];
-}
 
 const mainMenuRoutes: Routes = [
     {

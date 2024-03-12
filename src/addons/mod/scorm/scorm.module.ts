@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -33,25 +33,6 @@ import { AddonModScormPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModScormPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModScormSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModScormProvider } from './services/scorm';
-
-/**
- * Get mod Scorm services.
- *
- * @returns Returns mod Scorm services.
- */
-export async function getModScormServices(): Promise<Type<unknown>[]> {
-    const { AddonModScormProvider } = await import('@addons/mod/scorm/services/scorm');
-    const { AddonModScormOfflineProvider } = await import('@addons/mod/scorm/services/scorm-offline');
-    const { AddonModScormHelperProvider } = await import('@addons/mod/scorm/services/scorm-helper');
-    const { AddonModScormSyncProvider } = await import('@addons/mod/scorm/services/scorm-sync');
-
-    return [
-        AddonModScormProvider,
-        AddonModScormOfflineProvider,
-        AddonModScormHelperProvider,
-        AddonModScormSyncProvider,
-    ];
-}
 
 const routes: Routes = [
     {

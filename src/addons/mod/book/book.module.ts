@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -27,19 +27,6 @@ import { AddonModBookPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModBookTagAreaHandler } from './services/handlers/tag-area';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { BOOK_SITE_SCHEMA } from './services/database/book';
-
-/**
- * Get mod book services.
- *
- * @returns Returns mod book services.
- */
-export async function getModBookServices(): Promise<Type<unknown>[]> {
-    const { AddonModBookProvider } = await import('@addons/mod/book/services/book');
-
-    return [
-        AddonModBookProvider,
-    ];
-}
 
 const routes: Routes = [
     {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -25,21 +25,6 @@ import { AddonModPageListLinkHandler } from './services/handlers/list-link';
 import { AddonModPageModuleHandler, AddonModPageModuleHandlerService } from './services/handlers/module';
 import { AddonModPagePluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModPagePrefetchHandler } from './services/handlers/prefetch';
-
-/**
- * Get mod Page services.
- *
- * @returns Returns mod Page services.
- */
-export async function getModPageServices(): Promise<Type<unknown>[]> {
-    const { AddonModPageProvider } = await import('@addons/mod/page/services/page');
-    const { AddonModPageHelperProvider } = await import('@addons/mod/page/services/page-helper');
-
-    return [
-        AddonModPageProvider,
-        AddonModPageHelperProvider,
-    ];
-}
 
 const routes: Routes = [
     {

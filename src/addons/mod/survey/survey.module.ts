@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -27,36 +27,6 @@ import { AddonModSurveyModuleHandler } from './services/handlers/module';
 import { getPrefetchHandlerInstance } from './services/handlers/prefetch';
 import { getCronHandlerInstance } from './services/handlers/sync-cron';
 import { ADDON_MOD_SURVEY_PAGE_NAME } from '@addons/mod/survey/constants';
-
-/**
- * Get mod Survey services.
- *
- * @returns Returns mod Survey services.
- */
-export async function getModSurveyServices(): Promise<Type<unknown>[]> {
-    const { AddonModSurveyProvider } = await import('@addons/mod/survey/services/survey');
-    const { AddonModSurveyOfflineProvider } = await import('@addons/mod/survey/services/survey-offline');
-    const { AddonModSurveySyncProvider } = await import('@addons/mod/survey/services/survey-sync');
-    const { AddonModSurveyHelperProvider } = await import('@addons/mod/survey/services/survey-helper');
-
-    return [
-        AddonModSurveyProvider,
-        AddonModSurveyHelperProvider,
-        AddonModSurveySyncProvider,
-        AddonModSurveyOfflineProvider,
-    ];
-}
-
-/**
- * Get survey component modules.
- *
- * @returns Survey component modules.
- */
-export async function getModSurveyComponentModules(): Promise<unknown[]> {
-    const { AddonModSurveyComponentsModule } = await import('@addons/mod/survey/components/components.module');
-
-    return [AddonModSurveyComponentsModule];
-}
 
 const routes: Routes = [
     {

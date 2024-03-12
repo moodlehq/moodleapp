@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -36,25 +36,6 @@ import { AddonModFeedbackPushClickHandler } from './services/handlers/push-click
 import { AddonModFeedbackShowEntriesLinkHandler } from './services/handlers/show-entries-link';
 import { AddonModFeedbackShowNonRespondentsLinkHandler } from './services/handlers/show-non-respondents-link';
 import { AddonModFeedbackSyncCronHandler } from './services/handlers/sync-cron';
-
-/**
- * Get mod Feedback services.
- *
- * @returns Returns mod Feedback services.
- */
-export async function getModFeedbackServices(): Promise<Type<unknown>[]> {
-    const { AddonModFeedbackProvider } = await import('@addons/mod/feedback/services/feedback');
-    const { AddonModFeedbackOfflineProvider } = await import('@addons/mod/feedback/services/feedback-offline');
-    const { AddonModFeedbackHelperProvider } = await import('@addons/mod/feedback/services/feedback-helper');
-    const { AddonModFeedbackSyncProvider } = await import('@addons/mod/feedback/services/feedback-sync');
-
-    return [
-        AddonModFeedbackProvider,
-        AddonModFeedbackOfflineProvider,
-        AddonModFeedbackHelperProvider,
-        AddonModFeedbackSyncProvider,
-    ];
-}
 
 const routes: Routes = [
     {

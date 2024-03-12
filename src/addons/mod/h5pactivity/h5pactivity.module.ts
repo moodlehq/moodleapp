@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -25,21 +25,6 @@ import { AddonModH5PActivityModuleHandler, AddonModH5PActivityModuleHandlerServi
 import { AddonModH5PActivityPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModH5PActivityReportLinkHandler } from './services/handlers/report-link';
 import { AddonModH5PActivitySyncCronHandler } from './services/handlers/sync-cron';
-
-/**
- * Get mod H5P activity services.
- *
- * @returns Returns mod H5P activity services.
- */
-export async function getModH5PActivityServices(): Promise<Type<unknown>[]> {
-    const { AddonModH5PActivityProvider } = await import('@addons/mod/h5pactivity/services/h5pactivity');
-    const { AddonModH5PActivitySyncProvider } = await import('@addons/mod/h5pactivity/services/h5pactivity-sync');
-
-    return [
-        AddonModH5PActivityProvider,
-        AddonModH5PActivitySyncProvider,
-    ];
-}
 
 const routes: Routes = [
     {

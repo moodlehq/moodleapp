@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { COURSE_CONTENTS_PATH } from '@features/course/course.module';
@@ -37,25 +37,6 @@ import { AddonModGlossaryModuleHandler, AddonModGlossaryModuleHandlerService } f
 import { AddonModGlossaryPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModGlossarySyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModGlossaryTagAreaHandler } from './services/handlers/tag-area';
-
-/**
- * Get mod Glossary services.
- *
- * @returns Returns mod Glossary services.
- */
-export async function getModGlossaryServices(): Promise<Type<unknown>[]> {
-    const { AddonModGlossaryProvider } = await import('@addons/mod/glossary/services/glossary');
-    const { AddonModGlossaryOfflineProvider } = await import('@addons/mod/glossary/services/glossary-offline');
-    const { AddonModGlossarySyncProvider } = await import('@addons/mod/glossary/services/glossary-sync');
-    const { AddonModGlossaryHelperProvider } = await import('@addons/mod/glossary/services/glossary-helper');
-
-    return [
-        AddonModGlossaryProvider,
-        AddonModGlossaryOfflineProvider,
-        AddonModGlossarySyncProvider,
-        AddonModGlossaryHelperProvider,
-    ];
-}
 
 const mainMenuRoutes: Routes = [
     // Link handlers navigation.

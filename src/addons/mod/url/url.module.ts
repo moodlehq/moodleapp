@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -24,21 +24,6 @@ import { AddonModUrlListLinkHandler } from './services/handlers/list-link';
 import { AddonModUrlModuleHandler } from './services/handlers/module';
 import { AddonModUrlPrefetchHandler } from './services/handlers/prefetch';
 import { ADDON_MOD_URL_PAGE_NAME } from './constants';
-
-/**
- * Get mod Url services.
- *
- * @returns Returns mod Url services.
- */
-export async function getModUrlServices(): Promise<Type<unknown>[]> {
-    const { AddonModUrlProvider } = await import('@addons/mod/url/services/url');
-    const { AddonModUrlHelperProvider } = await import('@addons/mod/url/services/url-helper');
-
-    return [
-        AddonModUrlProvider,
-        AddonModUrlHelperProvider,
-    ];
-}
 
 const routes: Routes = [
     {
