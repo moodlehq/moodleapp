@@ -19,7 +19,6 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
-import { AddonModBookComponentsModule } from './components/components.module';
 import { AddonModBookModuleHandler, AddonModBookModuleHandlerService } from './services/handlers/module';
 import { AddonModBookIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModBookListLinkHandler } from './services/handlers/list-link';
@@ -38,7 +37,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModBookComponentsModule,
     ],
     providers: [
         {

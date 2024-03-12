@@ -22,7 +22,6 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { AddonModChoiceComponentsModule } from './components/components.module';
 import { AddonModChoiceProvider } from './services/choice';
 import { OFFLINE_SITE_SCHEMA } from './services/database/choice';
 import { AddonModChoiceIndexLinkHandler } from './services/handlers/index-link';
@@ -41,7 +40,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModChoiceComponentsModule,
     ],
     providers: [
         {

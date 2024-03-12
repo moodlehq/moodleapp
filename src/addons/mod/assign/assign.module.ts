@@ -22,7 +22,6 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { AddonModAssignComponentsModule } from './components/components.module';
 import { AddonModAssignFeedbackModule } from './feedback/feedback.module';
 import { AddonModAssignProvider } from './services/assign';
 import { OFFLINE_SITE_SCHEMA } from './services/database/assign';
@@ -57,6 +56,17 @@ export async function getModAssignServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get assign component modules.
+ *
+ * @returns Assign component modules.
+ */
+export async function getModAssignComponentModules(): Promise<unknown[]> {
+    const { AddonModAssignComponentsModule } = await import('@addons/mod/assign/components/components.module');
+
+    return [AddonModAssignComponentsModule];
+}
+
 const routes: Routes = [
     {
         path: AddonModAssignModuleHandlerService.PAGE_NAME,
@@ -67,7 +77,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModAssignComponentsModule,
         AddonModAssignSubmissionModule,
         AddonModAssignFeedbackModule,
     ],

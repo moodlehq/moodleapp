@@ -26,7 +26,6 @@ import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreScreen } from '@services/screen';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { AddonModGlossaryComponentsModule } from './components/components.module';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/glossary';
 import { AddonModGlossaryProvider } from './services/glossary';
 import { AddonModGlossaryEditLinkHandler } from './services/handlers/edit-link';
@@ -86,7 +85,6 @@ const courseContentsRoutes: Routes = conditionalRoutes(
     imports: [
         CoreMainMenuTabRoutingModule.forChild(mainMenuRoutes),
         CoreCourseContentsRoutingModule.forChild({ children: courseContentsRoutes }),
-        AddonModGlossaryComponentsModule,
     ],
     providers: [
         {

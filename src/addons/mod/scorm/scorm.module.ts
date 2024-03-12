@@ -22,7 +22,6 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CoreCronDelegate } from '@services/cron';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { AddonModScormComponentsModule } from './components/components.module';
 import { OFFLINE_SITE_SCHEMA } from './services/database/scorm';
 import { AddonModScormGradeLinkHandler } from './services/handlers/grade-link';
 import { AddonModScormIndexLinkHandler } from './services/handlers/index-link';
@@ -44,7 +43,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModScormComponentsModule,
     ],
     providers: [
         {

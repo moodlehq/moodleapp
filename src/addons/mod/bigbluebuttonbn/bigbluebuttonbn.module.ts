@@ -17,7 +17,6 @@ import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { AddonModBBBComponentsModule } from './components/components.module';
 import { AddonModBBBIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModBBBListLinkHandler } from './services/handlers/list-link';
 import { AddonModBBBModuleHandler, ADDON_MOD_BBB_MAIN_MENU_PAGE_NAME } from './services/handlers/module';
@@ -32,7 +31,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModBBBComponentsModule,
     ],
     providers: [
         {

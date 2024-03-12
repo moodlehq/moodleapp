@@ -19,7 +19,6 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCronDelegate } from '@services/cron';
-import { AddonModH5PActivityComponentsModule } from './components/components.module';
 import { AddonModH5PActivityIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModH5PActivityModuleHandler, AddonModH5PActivityModuleHandlerService } from './services/handlers/module';
 import { AddonModH5PActivityPrefetchHandler } from './services/handlers/prefetch';
@@ -36,7 +35,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModH5PActivityComponentsModule,
     ],
     providers: [
         {

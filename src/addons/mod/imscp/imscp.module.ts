@@ -19,7 +19,6 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
-import { AddonModImscpComponentsModule } from './components/components.module';
 import { AddonModImscpIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModImscpListLinkHandler } from './services/handlers/list-link';
 import { AddonModImscpModuleHandler, AddonModImscpModuleHandlerService } from './services/handlers/module';
@@ -36,7 +35,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModImscpComponentsModule,
     ],
     providers: [
         {

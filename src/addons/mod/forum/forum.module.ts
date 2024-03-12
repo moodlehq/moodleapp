@@ -22,7 +22,6 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreScreen } from '@services/screen';
 
-import { AddonModForumComponentsModule } from './components/components.module';
 import { AddonModForumModuleHandler, AddonModForumModuleHandlerService } from './services/handlers/module';
 import { SITE_SCHEMA } from './services/database/offline';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
@@ -94,7 +93,6 @@ const courseContentsRoutes: Routes = conditionalRoutes(
     imports: [
         CoreMainMenuTabRoutingModule.forChild(mainMenuRoutes),
         CoreCourseContentsRoutingModule.forChild({ children: courseContentsRoutes }),
-        AddonModForumComponentsModule,
     ],
     providers: [
         {

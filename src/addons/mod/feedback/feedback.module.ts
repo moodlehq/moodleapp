@@ -22,7 +22,6 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { AddonModFeedbackComponentsModule } from './components/components.module';
 import { OFFLINE_SITE_SCHEMA } from './services/database/feedback';
 import { AddonModFeedbackProvider } from './services/feedback';
 import { AddonModFeedbackAnalysisLinkHandler } from './services/handlers/analysis-link';
@@ -47,7 +46,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModFeedbackComponentsModule,
     ],
     providers: [
         {
