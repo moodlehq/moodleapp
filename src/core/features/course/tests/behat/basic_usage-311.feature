@@ -5,7 +5,8 @@ Feature: Test basic usage of one course in app
   I need basic course functionality to work
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username | firstname | lastname | email |
       | teacher1 | Teacher | teacher | teacher1@example.com |
       | student1 | Student | student | student1@example.com |
@@ -72,8 +73,7 @@ Feature: Test basic usage of one course in app
       | workshop      | Test workshop name    | Test workshop     | C1     | workshop       | 0         | 3       |
 
   Scenario: Self enrol
-    Given the Moodle site is compatible with this feature
-    And I log in as "teacher1"
+    Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I add "Self enrolment" enrolment method with:
       | Custom instance name | Student self enrolment |

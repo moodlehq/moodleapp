@@ -1,4 +1,4 @@
-@core_course @app @javascript
+@core_course @app @javascript @lms_upto4.3
 Feature: Test basic usage of one course in app
   In order to participate in one course while using the mobile app
   As a student
@@ -12,14 +12,12 @@ Feature: Test basic usage of one course in app
       | student1 | Student | student | student1@example.com |
       | student2 | Student2 | student2 | student2@example.com |
     And the following "courses" exist:
-      | fullname | shortname | category | initsections |
-      | Course 1 | C1        | 0        | 1            |
+      | fullname | shortname | category |
+      | Course 1 | C1 | 0 |
     And the following "course enrolments" exist:
       | user | course | role |
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
-    And I enable "chat" "mod" plugin
-    And I enable "survey" "mod" plugin
     And the following "activities" exist:
       | activity | name            | intro                   | course | idnumber | option                       | section |
       | choice   | Choice course 1 | Test choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 1       |
@@ -83,93 +81,6 @@ Feature: Test basic usage of one course in app
     And I click on "Move right" "link" in the "assignment" activity
     And I log out
 
-  Scenario: View course contents
-    When I entered the course "Course 1" as "student1" in the app
-    Then the header should be "Course 1" in the app
-    And I should find "Test forum name" in the app
-    And I should find "Test wiki name" in the app
-    And I should find "Choice course 1" in the app
-    And I should find "assignment" in the app
-    And I should find "Test external name" in the app
-    And I should find "Test survey name" in the app
-    And I should find "Test chat name" in the app
-    And I should find "Quiz 1" in the app
-    And I should find "Test scorm name" in the app
-    And I should find "Test feedback name" in the app
-    And I should find "Test lesson name" in the app
-    And I should find "Test workshop name" in the app
-    And I should not find "Web links" in the app
-    And I should not find "Test glossary" in the app
-
-    When I set "page-core-course-index .core-course-thumb" styles to "background" "lightblue"
-    And I set "page-core-course-index .core-course-thumb img" styles to "display" "none"
-    Then the UI should match the snapshot
-
-    # Test infinite scroll on course
-    When I scroll to "Test workshop name" in the app
-    Then I should find "Web links" in the app
-    And I should find "Test glossary" in the app
-
-    # Test Collapsible header
-    And the UI should match the snapshot
-
-    When I press "Choice course 1" in the app
-    Then the header should be "Choice course 1" in the app
-
-    When I press the back button in the app
-    And I press "assignment" in the app
-    Then the header should be "assignment" in the app
-
-    When I press the back button in the app
-    And I press "Test forum name" in the app
-    Then the header should be "Test forum name" in the app
-
-    When I press the back button in the app
-    And I press "Test chat name" in the app
-    Then the header should be "Test chat name" in the app
-
-    When I press the back button in the app
-    And I press "Web links" in the app
-    Then the header should be "Web links" in the app
-
-    When I press the back button in the app
-    And I press "Test external name" in the app
-    Then the header should be "Test external name" in the app
-
-    When I press the back button in the app
-    And I press "Test feedback name" in the app
-    And I press "OK" in the app
-    Then the header should be "Test feedback name" in the app
-
-    When I press the back button in the app
-    And I press "Test glossary" in the app
-    Then the header should be "Test glossary" in the app
-
-    When I press the back button in the app
-    And I press "Quiz 1" in the app
-    Then the header should be "Quiz 1" in the app
-
-    When I press the back button in the app
-    And I press "Test survey name" in the app
-    Then the header should be "Test survey name" in the app
-
-    When I press the back button in the app
-    And I press "Test wiki name" in the app
-    Then the header should be "Test wiki name" in the app
-
-    When I press the back button in the app
-    And I press "Test lesson name" in the app
-    Then the header should be "Test lesson name" in the app
-
-    When I press the back button in the app
-    And I press "Test scorm name" in the app
-    Then the header should be "Test scorm name" in the app
-
-    When I press the back button in the app
-    And I press "Test workshop name" in the app
-    Then the header should be "Test workshop name" in the app
-
-  @lms_from4.4
   Scenario: View section contents
     When I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
@@ -214,7 +125,7 @@ Feature: Test basic usage of one course in app
 
     When I press the back button in the app
     And I press "Course index" in the app
-    And I press "Section 1" in the app
+    And I press "Topic 1" in the app
     Then I should find "Choice course 1" in the app
     And I should find "assignment" in the app
     And I should find "Test external name" in the app
@@ -247,7 +158,7 @@ Feature: Test basic usage of one course in app
 
     When I press the back button in the app
     And I press "Course index" in the app
-    And I press "Section 2" in the app
+    And I press "Topic 2" in the app
     Then I should find "Quiz 1" in the app
     And I should find "Test chat name" in the app
     And I should find "Test scorm name" in the app
@@ -276,7 +187,7 @@ Feature: Test basic usage of one course in app
 
     When I press the back button in the app
     And I press "Course index" in the app
-    And I press "Section 3" in the app
+    And I press "Topic 3" in the app
     Then I should find "Test feedback name" in the app
     And I should find "Test lesson name" in the app
     And I should find "Test workshop name" in the app
@@ -306,7 +217,7 @@ Feature: Test basic usage of one course in app
 
     When I press the back button in the app
     And I press "Course index" in the app
-    And I press "Section 4" in the app
+    And I press "Topic 4" in the app
     Then I should find "Web links" in the app
     But I should not find "Choice course 1" in the app
     And I should not find "assignment" in the app
@@ -327,7 +238,7 @@ Feature: Test basic usage of one course in app
 
     When I press the back button in the app
     And I press "Course index" in the app
-    And I press "Section 5" in the app
+    And I press "Topic 5" in the app
     Then I should find "Test glossary" in the app
     But I should not find "Choice course 1" in the app
     And I should not find "assignment" in the app
@@ -346,7 +257,6 @@ Feature: Test basic usage of one course in app
     When I press "Test glossary" in the app
     Then the header should be "Test glossary" in the app
 
-  @lms_from4.4
   Scenario: Navigation between sections using the bottom arrows
     When I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
@@ -368,112 +278,58 @@ Feature: Test basic usage of one course in app
     When I press "Course index" in the app
     And I press "General" in the app
     Then I should find "General" in the app
-    And I should find "Next: Section 1" in the app
-    But I should not find "Section 2" in the app
-    And I should not find "Section 3" in the app
-    And I should not find "Section 4" in the app
-    And I should not find "Section 5" in the app
+    And I should find "Next: Topic 1" in the app
+    But I should not find "Topic 2" in the app
+    And I should not find "Topic 3" in the app
+    And I should not find "Topic 4" in the app
+    And I should not find "Topic 5" in the app
     And I should not find "Previous:" in the app
 
     When I press "Next:" in the app
-    Then I should find "Section 1" in the app
+    Then I should find "Topic 1" in the app
     And I should find "Previous: General" in the app
-    And I should find "Next: Section 2" in the app
-    But I should not find "Section 3" in the app
-    And I should not find "Section 4" in the app
-    And I should not find "Section 5" in the app
+    And I should find "Next: Topic 2" in the app
+    But I should not find "Topic 3" in the app
+    And I should not find "Topic 4" in the app
+    And I should not find "Topic 5" in the app
 
     When I press "Next:" in the app
-    Then I should find "Section 2" in the app
-    And I should find "Previous: Section 1" in the app
-    And I should find "Next: Section 3" in the app
+    Then I should find "Topic 2" in the app
+    And I should find "Previous: Topic 1" in the app
+    And I should find "Next: Topic 3" in the app
     But I should not find "General" in the app
-    And I should not find "Section 4" in the app
-    And I should not find "Section 5" in the app
+    And I should not find "Topic 4" in the app
+    And I should not find "Topic 5" in the app
 
     When I press "Next:" in the app
-    Then I should find "Section 3" in the app
-    And I should find "Previous: Section 2" in the app
-    And I should find "Next: Section 4" in the app
+    Then I should find "Topic 3" in the app
+    And I should find "Previous: Topic 2" in the app
+    And I should find "Next: Topic 4" in the app
     But I should not find "General" in the app
-    And I should not find "Section 1" in the app
-    And I should not find "Section 5" in the app
+    And I should not find "Topic 1" in the app
+    And I should not find "Topic 5" in the app
 
     When I press "Next:" in the app
-    Then I should find "Section 4" in the app
-    And I should find "Previous: Section 3" in the app
-    And I should find "Next: Section 5" in the app
+    Then I should find "Topic 4" in the app
+    And I should find "Previous: Topic 3" in the app
+    And I should find "Next: Topic 5" in the app
     But I should not find "General" in the app
-    And I should not find "Section 1" in the app
-    And I should not find "Section 2" in the app
+    And I should not find "Topic 1" in the app
+    And I should not find "Topic 2" in the app
 
     When I press "Next:" in the app
-    Then I should find "Section 5" in the app
-    And I should find "Previous: Section 4" in the app
+    Then I should find "Topic 5" in the app
+    And I should find "Previous: Topic 4" in the app
     But I should not find "General" in the app
-    And I should not find "Section 1" in the app
-    And I should not find "Section 2" in the app
-    And I should not find "Section 3" in the app
+    And I should not find "Topic 1" in the app
+    And I should not find "Topic 2" in the app
+    And I should not find "Topic 3" in the app
     And I should not find "Next:" in the app
 
     When I press "Previous:" in the app
-    Then I should find "Section 4" in the app
-    And I should find "Previous: Section 3" in the app
-    And I should find "Next: Section 5" in the app
+    Then I should find "Topic 4" in the app
+    And I should find "Previous: Topic 3" in the app
+    And I should find "Next: Topic 5" in the app
     But I should not find "General" in the app
-    And I should not find "Section 1" in the app
-    And I should not find "Section 2" in the app
-
-  @lms_from4.0
-  Scenario: Self enrol
-    Given I log in as "teacher1"
-    And I add "Self enrolment" enrolment method in "Course 1" with:
-      | Custom instance name | Student self enrolment |
-    And I entered the app as "student2"
-    When I press "Site home" in the app
-    And I press "Available courses" in the app
-    And I press "Course 1" in the app
-    And I press "Enrol me" in the app
-    And I press "OK" in the app
-    And I wait loading to finish in the app
-    Then the header should be "Course 1" in the app
-    And I should find "Test forum name" in the app
-    And I should find "Test wiki name" in the app
-    And I should find "Choice course 1" in the app
-    And I should find "assignment" in the app
-    And I should find "Test external name" in the app
-    And I should find "Test survey name" in the app
-    And I should find "Test chat name" in the app
-    And I should find "Quiz 1" in the app
-    And I should find "Test scorm name" in the app
-    And I should find "Test feedback name" in the app
-    And I should find "Test lesson name" in the app
-    And I should find "Test workshop name" in the app
-    And I should not find "Web links" in the app
-    And I should not find "Test glossary" in the app
-
-  Scenario: View blocks on drawer
-    Given the following "blocks" exist:
-      | blockname        | contextlevel | reference | pagetypepattern | defaultregion | configdata                                                                                                   |
-      | html             | Course       | C1        | course-view-*   | site-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
-      | activity_modules | Course       | C1        | course-view-*   | site-pre      |                                                                                                              |
-    And I entered the course "Course 1" as "student1" in the app
-    Then the header should be "Course 1" in the app
-    And I should find "Test forum name" in the app
-    And I should find "Test wiki name" in the app
-    And I should find "Choice course 1" in the app
-    And I should find "assignment" in the app
-    And I should find "Test external name" in the app
-    And I should find "Test survey name" in the app
-    And I should find "Test chat name" in the app
-    And I should find "Quiz 1" in the app
-    And I should find "Test scorm name" in the app
-    And I should find "Test feedback name" in the app
-    And I should find "Test lesson name" in the app
-    And I should find "Test workshop name" in the app
-    And I should not find "Web links" in the app
-    And I should not find "Test glossary" in the app
-    Then I press "Open block drawer" in the app
-    And I should find "HTML title test" in the app
-    And I should find "body test" in the app
-    And I should find "Activities" in the app
+    And I should not find "Topic 1" in the app
+    And I should not find "Topic 2" in the app
