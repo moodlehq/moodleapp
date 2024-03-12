@@ -127,6 +127,14 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
         // No icon or local icon (not legacy), colorize it.
         if (!this.iconUrl || this.isLocalUrl) {
+
+            // Exception for bigbluebuttonbn, it's the only one that has a branded icon.
+            if (this.iconVersion === IconVersion.VERSION_4_0 && this.modname === 'bigbluebuttonbn') {
+                this.isBranded = true;
+
+                return;
+            }
+
             this.isBranded = false;
 
             return;
@@ -136,8 +144,8 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
         // If it's an Moodle Theme icon, check if filtericon is set and use it.
         if (this.iconUrl && CoreUrlUtils.isThemeImageUrl(this.iconUrl)) {
-            const iconParams = CoreUrlUtils.extractUrlParams(this.iconUrl);
-            if (iconParams['filtericon'] === '1') {
+            const filter = CoreUrlUtils.getThemeImageUrlParam(this.iconUrl, 'filtericon');
+            if (filter === '1') {
                 this.isBranded =  false;
 
                 return;
