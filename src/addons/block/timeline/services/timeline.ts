@@ -15,25 +15,20 @@
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import {
-    AddonCalendarEvents,
-    AddonCalendarEventsGroupedByCourse,
     AddonCalendarEvent,
-    AddonCalendarGetActionEventsByCourseWSParams,
-    AddonCalendarGetActionEventsByTimesortWSParams,
-    AddonCalendarGetActionEventsByCoursesWSParams,
 } from '@addons/calendar/services/calendar';
 import moment from 'moment-timezone';
 import { makeSingleton } from '@singletons';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-
-// Cache key was maintained from block myoverview when blocks were splitted.
-const ROOT_CACHE_KEY = 'myoverview:';
 
 /**
  * Service that provides some features regarding course overview.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonBlockTimelineProvider {
+
+    // Cache key was maintained from block myoverview when blocks were splitted.
+    protected static readonly ROOT_CACHE_KEY = 'myoverview:';
 
     static readonly EVENTS_LIMIT = 20;
     static readonly EVENTS_LIMIT_PER_COURSE = 10;
@@ -57,7 +52,7 @@ export class AddonBlockTimelineProvider {
 
         const time = this.getDayStart(-14); // Check two weeks ago.
 
-        const data: AddonCalendarGetActionEventsByCourseWSParams = {
+        const data: AddonBlockTimelineGetActionEventsByCourseWSParams = {
             timesortfrom: time,
             courseid: courseId,
             limitnum: AddonBlockTimelineProvider.EVENTS_LIMIT_PER_COURSE,
@@ -75,7 +70,7 @@ export class AddonBlockTimelineProvider {
             preSets.getFromCache = false;
         }
 
-        const courseEvents = await site.read<AddonCalendarEvents>(
+        const courseEvents = await site.read<AddonBlockTimelineGetActionEventsByCourseWSResponse>(
             'core_calendar_get_action_events_by_course',
             data,
             preSets,
@@ -115,7 +110,7 @@ export class AddonBlockTimelineProvider {
 
         const time = this.getDayStart(-14); // Check two weeks ago.
 
-        const data: AddonCalendarGetActionEventsByCoursesWSParams = {
+        const data: AddonBlockTimelineGetActionEventsByCoursesWSParams = {
             timesortfrom: time,
             courseids: courseIds,
             limitnum: AddonBlockTimelineProvider.EVENTS_LIMIT_PER_COURSE,
@@ -129,7 +124,7 @@ export class AddonBlockTimelineProvider {
             preSets.getFromCache = false;
         }
 
-        const events = await site.read<AddonCalendarEventsGroupedByCourse>(
+        const events = await site.read<AddonBlockTimelineGetActionEventsByCoursesWSResponse>(
             'core_calendar_get_action_events_by_courses',
             data,
             preSets,
@@ -150,7 +145,7 @@ export class AddonBlockTimelineProvider {
      * @returns Cache key.
      */
     protected getActionEventsByCoursesCacheKey(): string {
-        return ROOT_CACHE_KEY + 'bycourse';
+        return AddonBlockTimelineProvider.ROOT_CACHE_KEY + 'bycourse';
     }
 
     /**
@@ -171,7 +166,7 @@ export class AddonBlockTimelineProvider {
         const timesortfrom = this.getDayStart(-14); // Check two weeks ago.
         const limitnum = AddonBlockTimelineProvider.EVENTS_LIMIT;
 
-        const data: AddonCalendarGetActionEventsByTimesortWSParams = {
+        const data: AddonBlockTimelineGetActionEventsByTimesortWSParams = {
             timesortfrom,
             limitnum,
             limittononsuspendedevents: true,
@@ -192,7 +187,7 @@ export class AddonBlockTimelineProvider {
             preSets.cacheKey += ':' + searchValue;
         }
 
-        const result = await site.read<AddonCalendarEvents>(
+        const result = await site.read<AddonBlockTimelineGetActionEventsByTimesortWSResponse>(
             'core_calendar_get_action_events_by_timesort',
             data,
             preSets,
@@ -215,7 +210,7 @@ export class AddonBlockTimelineProvider {
      * @returns Cache key.
      */
     protected getActionEventsByTimesortPrefixCacheKey(): string {
-        return ROOT_CACHE_KEY + 'bytimesort:';
+        return AddonBlockTimelineProvider.ROOT_CACHE_KEY + 'bytimesort:';
     }
 
     /**
@@ -264,7 +259,7 @@ export class AddonBlockTimelineProvider {
      * @returns Object with course events and last loaded event id if more can be loaded.
      */
     protected treatCourseEvents(
-        course: AddonCalendarEvents,
+        course: AddonBlockTimelineEvents,
         timeFrom: number,
     ): { events: AddonCalendarEvent[]; canLoadMore?: number } {
 
@@ -293,3 +288,77 @@ export class AddonBlockTimelineProvider {
 }
 
 export const AddonBlockTimeline = makeSingleton(AddonBlockTimelineProvider);
+
+/**
+ * Params of core_calendar_get_action_events_by_timesort WS.
+ */
+type AddonBlockTimelineGetActionEventsByTimesortWSParams = {
+    timesortfrom?: number; // Time sort from.
+    timesortto?: number; // Time sort to.
+    aftereventid?: number; // The last seen event id.
+    limitnum?: number; // Limit number.
+    limittononsuspendedevents?: boolean; // Limit the events to courses the user is not suspended in.
+    userid?: number; // The user id.
+    searchvalue?: string; // The value a user wishes to search against.
+};
+
+/**
+ * Data returned by core_calendar_get_action_events_by_timesort WS.
+ *
+ * WS Description: Get calendar action events by tiemsort
+ */
+type AddonBlockTimelineGetActionEventsByTimesortWSResponse = AddonBlockTimelineEvents;
+
+/**
+ * Params of core_calendar_get_action_events_by_course WS.
+ */
+type AddonBlockTimelineGetActionEventsByCourseWSParams = {
+    courseid: number; // Course id.
+    timesortfrom?: number; // Time sort from.
+    timesortto?: number; // Time sort to.
+    aftereventid?: number; // The last seen event id.
+    limitnum?: number; // Limit number.
+    searchvalue?: string; // The value a user wishes to search against.
+};
+
+/**
+ * Params of core_calendar_get_action_events_by_courses WS.
+ */
+type AddonBlockTimelineGetActionEventsByCoursesWSParams = {
+    courseids: number[];
+    timesortfrom?: number; // Time sort from.
+    timesortto?: number; // Time sort to.
+    limitnum?: number; // Limit number.
+    searchvalue?: string; // The value a user wishes to search against.
+};
+
+/**
+ * Data returned by calendar's events_grouped_by_course_exporter.
+ * Data returned by core_calendar_get_action_events_by_courses WS.
+ */
+type AddonBlockTimelineGetActionEventsByCoursesWSResponse = {
+    groupedbycourse: AddonBlockTimelineEventsSameCourse[]; // Groupped by course.
+};
+
+/**
+ * Data returned by calendar's events_same_course_exporter.
+ */
+type AddonBlockTimelineEventsSameCourse = AddonBlockTimelineEvents & {
+    courseid: number; // Courseid.
+};
+
+/**
+ * Data returned by core_calendar_get_action_events_by_course WS.
+ *
+ * WS Description: Get calendar action events by course
+ */
+type AddonBlockTimelineGetActionEventsByCourseWSResponse = AddonBlockTimelineEvents;
+
+/**
+ * Data returned by calendar's events_exporter.
+ */
+export type AddonBlockTimelineEvents = {
+    events: AddonCalendarEvent[]; // Events.
+    firstid: number; // Firstid.
+    lastid: number; // Lastid.
+};

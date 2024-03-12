@@ -40,7 +40,7 @@
             --color: white;
 
             @each $type, $value in $activity-icon-background-colors {
-                &.#{$type} {
+                &.#{$type}:not(.branded) {
                     background-color: var(--activity-40-#{$type});
                 }
             }

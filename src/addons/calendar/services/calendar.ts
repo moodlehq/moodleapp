@@ -1745,67 +1745,6 @@ export class AddonCalendarProvider {
 export const AddonCalendar = makeSingleton(AddonCalendarProvider);
 
 /**
- * Data returned by calendar's events_exporter.
- * Data returned by core_calendar_get_action_events_by_course and core_calendar_get_action_events_by_timesort WS.
- */
-export type AddonCalendarEvents = {
-    events: AddonCalendarEvent[]; // Events.
-    firstid: number; // Firstid.
-    lastid: number; // Lastid.
-};
-
-/**
- * Params of core_calendar_get_action_events_by_courses WS.
- */
-export type AddonCalendarGetActionEventsByCoursesWSParams = {
-    courseids: number[];
-    timesortfrom?: number; // Time sort from.
-    timesortto?: number; // Time sort to.
-    limitnum?: number; // Limit number.
-    searchvalue?: string; // The value a user wishes to search against.
-};
-
-/**
- * Data returned by calendar's events_grouped_by_course_exporter.
- * Data returned by core_calendar_get_action_events_by_courses WS.
- */
-export type AddonCalendarEventsGroupedByCourse = {
-    groupedbycourse: AddonCalendarEventsSameCourse[]; // Groupped by course.
-};
-
-/**
- * Params of core_calendar_get_action_events_by_course WS.
- */
-export type AddonCalendarGetActionEventsByCourseWSParams = {
-    courseid: number; // Course id.
-    timesortfrom?: number; // Time sort from.
-    timesortto?: number; // Time sort to.
-    aftereventid?: number; // The last seen event id.
-    limitnum?: number; // Limit number.
-    searchvalue?: string; // The value a user wishes to search against.
-};
-
-/**
- * Params of core_calendar_get_action_events_by_timesort WS.
- */
-export type AddonCalendarGetActionEventsByTimesortWSParams = {
-    timesortfrom?: number; // Time sort from.
-    timesortto?: number; // Time sort to.
-    aftereventid?: number; // The last seen event id.
-    limitnum?: number; // Limit number.
-    limittononsuspendedevents?: boolean; // Limit the events to courses the user is not suspended in.
-    userid?: number; // The user id.
-    searchvalue?: string; // The value a user wishes to search against.
-};
-
-/**
- * Data returned by calendar's events_same_course_exporter.
- */
-export type AddonCalendarEventsSameCourse = AddonCalendarEvents & {
-    courseid: number; // Courseid.
-};
-
-/**
  * Data returned by calendar's event_exporter_base.
  */
 export type AddonCalendarEventBase = {
@@ -1889,14 +1828,15 @@ export type AddonCalendarEventBase = {
     groupname?: string; // Groupname.
     normalisedeventtype: string; // @since 3.7. Normalisedeventtype.
     normalisedeventtypetext: string; // @since 3.7. Normalisedeventtypetext.
+    url: string; // Url.
+    purpose?: string; // Purpose. @since 4.0
+    branded?: boolean; // Branded. @since 4.4
 };
 
 /**
  * Data returned by calendar's event_exporter. Don't confuse it with AddonCalendarCalendarEvent.
  */
 export type AddonCalendarEvent = AddonCalendarEventBase & {
-    url: string; // Url.
-    purpose?: string; // Purpose. @since 4.0
     action?: {
         name: string; // Name.
         url: string; // Url.
@@ -1910,7 +1850,6 @@ export type AddonCalendarEvent = AddonCalendarEventBase & {
  * Data returned by calendar's calendar_event_exporter. Don't confuse it with AddonCalendarEvent.
  */
 export type AddonCalendarCalendarEvent = AddonCalendarEventBase & {
-    url: string; // Url.
     islastday: boolean; // Islastday.
     popupname: string; // Popupname.
     mindaytimestamp?: number; // Mindaytimestamp.
@@ -2124,7 +2063,7 @@ export type AddonCalendarGetCalendarEventsWSResponse = {
 };
 
 /**
- * Event data returned by WS core_calendar_get_calendar_events.
+ * Event data returned by WS core_calendar_get_calendar_events (no exporter used).
  */
 export type AddonCalendarGetEventsEvent = {
     id: number; // Event id.
