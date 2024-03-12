@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injector, NgModule } from '@angular/core';
-import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { ROUTES, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -55,9 +55,6 @@ function buildRoutes(injector: Injector): Routes {
     ],
     declarations: [
         CoreMainMenuHomePage,
-    ],
-    exports: [
-        RouterModule,
     ],
 })
 export class CoreMainMenuHomeLazyModule {}

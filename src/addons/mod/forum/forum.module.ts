@@ -41,6 +41,7 @@ import { AddonModForumPushClickHandler } from './services/handlers/push-click';
 import { AddonModForumProvider } from './services/forum';
 import { COURSE_CONTENTS_PATH } from '@features/course/course.module';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from './constants';
 
 /**
  * Get mod Forum services.
@@ -61,11 +62,9 @@ export async function getModForumServices(): Promise<Type<unknown>[]> {
     ];
 }
 
-export const FORUM_SEARCH_PAGE_NAME = 'forum/search';
-
 const mainMenuRoutes: Routes = [
     {
-        path: FORUM_SEARCH_PAGE_NAME,
+        path: ADDON_MOD_FORUM_SEARCH_PAGE_NAME,
         loadChildren: () => import('./forum-search-lazy.module').then(m => m.AddonModForumSearchLazyModule),
     },
     {

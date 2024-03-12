@@ -38,6 +38,7 @@ import { CoreCategoryData } from '@features/courses/services/courses';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
+import { ADDON_CALENDAR_COMPONENT } from '../constants';
 
 /**
  * Context levels enumeration.
@@ -330,7 +331,7 @@ export class AddonCalendarHelperProvider {
         const reminders = await CoreReminders.getReminders(
             {
                 instanceId: eventId,
-                component: AddonCalendarProvider.COMPONENT,
+                component: ADDON_CALENDAR_COMPONENT,
             },
             siteId,
         );

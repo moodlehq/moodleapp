@@ -16,14 +16,13 @@ import { Injectable } from '@angular/core';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonBlog } from '../blog';
+import { ADDON_BLOG_MAINMENU_PAGE_NAME } from '@addons/blog/constants';
 
 /**
  * Handler to inject an option into main menu.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonBlogMainMenuHandlerService implements CoreMainMenuHandler {
-
-    static readonly PAGE_NAME = 'blog';
 
     name = 'AddonBlog';
     priority = 500;
@@ -42,7 +41,7 @@ export class AddonBlogMainMenuHandlerService implements CoreMainMenuHandler {
         return {
             icon: 'far-newspaper',
             title: 'addon.blog.siteblogheading',
-            page: AddonBlogMainMenuHandlerService.PAGE_NAME,
+            page: ADDON_BLOG_MAINMENU_PAGE_NAME,
             class: 'addon-blog-handler',
         };
     }

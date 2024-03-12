@@ -14,7 +14,7 @@
 
 import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { AddonBlog } from '@addons/blog/services/blog';
-import { AddonBlogMainMenuHandlerService } from '@addons/blog/services/handlers/mainmenu';
+import { ADDON_BLOG_MAINMENU_PAGE_NAME } from '@addons/blog/constants';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreCourse } from '@features/course/services/course';
@@ -238,7 +238,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
     async gotoBlog(): Promise<void> {
         const params: Params = { cmId: this.moduleId };
 
-        await CoreNavigator.navigateToSitePath(AddonBlogMainMenuHandlerService.PAGE_NAME, { params });
+        await CoreNavigator.navigateToSitePath(ADDON_BLOG_MAINMENU_PAGE_NAME, { params });
     }
 
     /**

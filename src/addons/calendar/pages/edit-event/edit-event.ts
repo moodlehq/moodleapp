@@ -45,6 +45,7 @@ import { CoreForms } from '@singletons/form';
 import { CoreReminders, CoreRemindersService, CoreRemindersUnits } from '@features/reminders/services/reminders';
 import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
 import moment from 'moment-timezone';
+import { ADDON_CALENDAR_COMPONENT } from '@addons/calendar/constants';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -60,7 +61,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     @ViewChild('editEventForm') formElement!: ElementRef;
 
     title = 'addon.calendar.newevent';
-    component = AddonCalendarProvider.COMPONENT;
+    component = ADDON_CALENDAR_COMPONENT;
     loaded = false;
     hasOffline = false;
     eventTypes: AddonCalendarEventTypeOption[] = [];
@@ -179,7 +180,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
                 promises.push(AddonCalendarSync.waitForSync(AddonCalendarSyncProvider.SYNC_ID).then(async () => {
                     // Do not block if the scope is already destroyed.
                     if (!this.isDestroyed && this.eventId) {
-                        CoreSync.blockOperation(AddonCalendarProvider.COMPONENT, eventId);
+                        CoreSync.blockOperation(ADDON_CALENDAR_COMPONENT, eventId);
                     }
 
                     let eventForm: AddonCalendarEvent | AddonCalendarOfflineEventDBRecord | undefined;
@@ -597,7 +598,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
      */
     protected unblockSync(): void {
         if (this.eventId) {
-            CoreSync.unblockOperation(AddonCalendarProvider.COMPONENT, this.eventId);
+            CoreSync.unblockOperation(ADDON_CALENDAR_COMPONENT, this.eventId);
         }
     }
 
