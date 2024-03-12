@@ -43,7 +43,6 @@ const mainMenuHomeRoutes: Routes = [
 
 @NgModule({
     imports: [CoreMainMenuHomeRoutingModule.forChild({ children: mainMenuHomeRoutes })],
-    exports: [CoreMainMenuHomeRoutingModule],
     providers: [
         {
             provide: APP_INITIALIZER,

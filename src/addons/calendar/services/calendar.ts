@@ -51,6 +51,7 @@ import {
 import { CoreReminderDBRecord } from '@features/reminders/services/database/reminders';
 import { CoreEvents } from '@singletons/events';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { ADDON_CALENDAR_COMPONENT } from '../constants';
 
 const ROOT_CACHE_KEY = 'mmaCalendar:';
 
@@ -103,7 +104,6 @@ declare module '@singletons/events' {
 export class AddonCalendarProvider {
 
     static readonly DAYS_INTERVAL = 30;
-    static readonly COMPONENT = 'AddonCalendarEvents';
 
     static readonly STARTING_WEEK_DAY = 'addon_calendar_starting_week_day';
     static readonly NEW_EVENT_EVENT = 'addon_calendar_new_event';
@@ -279,7 +279,7 @@ export class AddonCalendarProvider {
         ));
         promises.push(CoreReminders.removeReminders({
             instanceId: eventId,
-            component: AddonCalendarProvider.COMPONENT,
+            component: ADDON_CALENDAR_COMPONENT,
         } , siteId));
 
         await CoreUtils.ignoreErrors(Promise.all(promises));
@@ -292,7 +292,7 @@ export class AddonCalendarProvider {
      */
     async initialize(): Promise<void> {
         CoreLocalNotifications.registerClick<CoreRemindersPushNotificationData>(
-            AddonCalendarProvider.COMPONENT,
+            ADDON_CALENDAR_COMPONENT,
             async (notification) => {
                 await ApplicationInit.donePromise;
 
@@ -740,7 +740,7 @@ export class AddonCalendarProvider {
 
         const previousReminders = await CoreReminders.getReminders({
             instanceId: event.id,
-            component: AddonCalendarProvider.COMPONENT,
+            component: ADDON_CALENDAR_COMPONENT,
         }, siteId);
 
         if (previousReminders.some((reminder) => reminder.timebefore === timebefore)) {
@@ -753,7 +753,7 @@ export class AddonCalendarProvider {
             : '';
 
         const reminder: CoreReminderData = {
-            component: AddonCalendarProvider.COMPONENT,
+            component: ADDON_CALENDAR_COMPONENT,
             instanceId: event.id,
             type: event.eventtype,
             time: event.timestart,
@@ -887,7 +887,7 @@ export class AddonCalendarProvider {
     async getEventReminders(eventId: number, siteId?: string): Promise<CoreReminderDBRecord[]> {
         return CoreReminders.getReminders({
             instanceId: eventId,
-            component: AddonCalendarProvider.COMPONENT,
+            component: ADDON_CALENDAR_COMPONENT,
         }, siteId);
     }
 
@@ -1448,12 +1448,12 @@ export class AddonCalendarProvider {
                 // The event has already started, don't schedule it.
 
                 // @TODO Decide when to completelly remove expired events.
-                return CoreReminders.cancelReminder(event.id, AddonCalendarProvider.COMPONENT, siteId);
+                return CoreReminders.cancelReminder(event.id, ADDON_CALENDAR_COMPONENT, siteId);
             }
 
             const reminders = await CoreReminders.getReminders({
                 instanceId: event.id,
-                component: AddonCalendarProvider.COMPONENT,
+                component: ADDON_CALENDAR_COMPONENT,
             }, siteId);
 
             await Promise.all(reminders.map(async (reminder) => {
@@ -1572,7 +1572,7 @@ export class AddonCalendarProvider {
 
         const reminders = await CoreReminders.getReminders({
             instanceId: event.id,
-            component: AddonCalendarProvider.COMPONENT,
+            component: ADDON_CALENDAR_COMPONENT,
         }, siteId);
 
         if (reminders.length > 0) {
@@ -1725,7 +1725,7 @@ export class AddonCalendarProvider {
                     { instanceId: result.event.id },
                     {
                         instanceId: eventId,
-                        component: AddonCalendarProvider.COMPONENT,
+                        component: ADDON_CALENDAR_COMPONENT,
                     },
                     siteId,
                 ),

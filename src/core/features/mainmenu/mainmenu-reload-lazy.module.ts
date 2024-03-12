@@ -32,6 +32,5 @@ const routes: Routes = [
     declarations: [
         CoreMainMenuReloadPage,
     ],
-    exports: [RouterModule],
 })
 export class CoreMainMenuReloadLazyModule {}

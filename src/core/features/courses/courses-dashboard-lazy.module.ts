@@ -35,6 +35,5 @@ const routes: Routes = [
     declarations: [
         CoreCoursesDashboardPage,
     ],
-    exports: [RouterModule],
 })
 export class CoreCoursesDashboardLazyModule {}

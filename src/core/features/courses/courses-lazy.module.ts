@@ -14,7 +14,7 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { Injector, NgModule } from '@angular/core';
-import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { ROUTES, Routes } from '@angular/router';
 import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
 import { CoreCoursesCategoriesPage } from '@features/courses/pages/categories/categories';
 import { CoreCoursesListPage } from '@features/courses/pages/list/list';
@@ -70,7 +70,6 @@ function buildRoutes(injector: Injector): Routes {
         CoreCoursesCategoriesPage,
         CoreCoursesListPage,
     ],
-    exports: [RouterModule],
     providers: [
         {
             provide: ROUTES,

@@ -33,7 +33,6 @@ const routes: Routes = [
         CoreCommentsComponentsModule,
         CoreTagComponentsModule,
     ],
-    exports: [RouterModule],
     declarations: [
         AddonCourseCompletionReportPage,
     ],

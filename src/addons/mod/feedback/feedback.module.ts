@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -22,7 +22,6 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { AddonModFeedbackComponentsModule } from './components/components.module';
 import { OFFLINE_SITE_SCHEMA } from './services/database/feedback';
 import { AddonModFeedbackProvider } from './services/feedback';
 import { AddonModFeedbackAnalysisLinkHandler } from './services/handlers/analysis-link';
@@ -37,25 +36,6 @@ import { AddonModFeedbackShowEntriesLinkHandler } from './services/handlers/show
 import { AddonModFeedbackShowNonRespondentsLinkHandler } from './services/handlers/show-non-respondents-link';
 import { AddonModFeedbackSyncCronHandler } from './services/handlers/sync-cron';
 
-/**
- * Get mod Feedback services.
- *
- * @returns Returns mod Feedback services.
- */
-export async function getModFeedbackServices(): Promise<Type<unknown>[]> {
-    const { AddonModFeedbackProvider } = await import('@addons/mod/feedback/services/feedback');
-    const { AddonModFeedbackOfflineProvider } = await import('@addons/mod/feedback/services/feedback-offline');
-    const { AddonModFeedbackHelperProvider } = await import('@addons/mod/feedback/services/feedback-helper');
-    const { AddonModFeedbackSyncProvider } = await import('@addons/mod/feedback/services/feedback-sync');
-
-    return [
-        AddonModFeedbackProvider,
-        AddonModFeedbackOfflineProvider,
-        AddonModFeedbackHelperProvider,
-        AddonModFeedbackSyncProvider,
-    ];
-}
-
 const routes: Routes = [
     {
         path: AddonModFeedbackModuleHandlerService.PAGE_NAME,
@@ -66,7 +46,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModFeedbackComponentsModule,
     ],
     providers: [
         {

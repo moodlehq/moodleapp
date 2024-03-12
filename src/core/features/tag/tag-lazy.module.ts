@@ -15,7 +15,7 @@
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreSharedModule } from '@/core/shared.module';
 import { Injector, NgModule } from '@angular/core';
-import { Route, RouterModule, ROUTES, Routes } from '@angular/router';
+import { Route, ROUTES, Routes } from '@angular/router';
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
@@ -86,7 +86,6 @@ function buildRoutes(injector: Injector): Routes {
         CoreTagSearchPage,
         CoreTagIndexAreaPage,
     ],
-    exports: [RouterModule],
     providers: [
         {
             provide: ROUTES,

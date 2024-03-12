@@ -32,6 +32,5 @@ const routes: Routes = [
     declarations: [
         CoreUserCompleteProfilePage,
     ],
-    exports: [RouterModule],
 })
 export class CoreUserAppLazyModule {}

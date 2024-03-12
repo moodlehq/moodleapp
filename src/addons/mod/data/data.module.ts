@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -34,29 +34,7 @@ import { AddonModDataShowLinkHandler } from './services/handlers/show-link';
 import { AddonModDataSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModDataTagAreaHandler } from './services/handlers/tag-area';
 import { AddonModDataFieldModule } from './fields/field.module';
-import { AddonModDataComponentsModule } from './components/components.module';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-
-/**
- * Get mod data services.
- *
- * @returns Returns mod data services.
- */
-export async function getModDataServices(): Promise<Type<unknown>[]> {
-    const { AddonModDataProvider } = await import('@addons/mod/data/services/data');
-    const { AddonModDataOfflineProvider } = await import('@addons/mod/data/services/data-offline');
-    const { AddonModDataSyncProvider } = await import('@addons/mod/data/services/data-sync');
-    const { AddonModDataHelperProvider } = await import('@addons/mod/data/services/data-helper');
-    const { AddonModDataFieldsDelegateService } = await import('@addons/mod/data/services/data-fields-delegate');
-
-    return [
-        AddonModDataProvider,
-        AddonModDataHelperProvider,
-        AddonModDataSyncProvider,
-        AddonModDataOfflineProvider,
-        AddonModDataFieldsDelegateService,
-    ];
-}
 
 const routes: Routes = [
     {
@@ -69,7 +47,6 @@ const routes: Routes = [
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
         AddonModDataFieldModule,
-        AddonModDataComponentsModule,
     ],
     providers: [
         {

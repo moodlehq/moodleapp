@@ -22,7 +22,7 @@ import { AddonMessagesGroupConversationsPage } from '@addons/messages/pages/grou
 import { AddonMessagesSearchPage } from '@addons/messages/pages/search/search';
 import { AddonMessagesMainMenuHandlerService } from '@addons/messages/services/handlers/mainmenu';
 import { Injector, NgModule } from '@angular/core';
-import { Route, RouterModule, ROUTES, Routes } from '@angular/router';
+import { Route, ROUTES, Routes } from '@angular/router';
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
@@ -139,7 +139,6 @@ function buildRoutes(injector: Injector): Routes {
         AddonMessagesGroupConversationsPage,
         AddonMessagesSearchPage,
     ],
-    exports: [RouterModule],
     providers: [
         {
             provide: ROUTES,

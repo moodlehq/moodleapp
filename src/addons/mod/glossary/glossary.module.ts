@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { COURSE_CONTENTS_PATH } from '@features/course/course.module';
@@ -26,7 +26,6 @@ import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreScreen } from '@services/screen';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { AddonModGlossaryComponentsModule } from './components/components.module';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/glossary';
 import { AddonModGlossaryProvider } from './services/glossary';
 import { AddonModGlossaryEditLinkHandler } from './services/handlers/edit-link';
@@ -37,25 +36,6 @@ import { AddonModGlossaryModuleHandler, AddonModGlossaryModuleHandlerService } f
 import { AddonModGlossaryPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModGlossarySyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModGlossaryTagAreaHandler } from './services/handlers/tag-area';
-
-/**
- * Get mod Glossary services.
- *
- * @returns Returns mod Glossary services.
- */
-export async function getModGlossaryServices(): Promise<Type<unknown>[]> {
-    const { AddonModGlossaryProvider } = await import('@addons/mod/glossary/services/glossary');
-    const { AddonModGlossaryOfflineProvider } = await import('@addons/mod/glossary/services/glossary-offline');
-    const { AddonModGlossarySyncProvider } = await import('@addons/mod/glossary/services/glossary-sync');
-    const { AddonModGlossaryHelperProvider } = await import('@addons/mod/glossary/services/glossary-helper');
-
-    return [
-        AddonModGlossaryProvider,
-        AddonModGlossaryOfflineProvider,
-        AddonModGlossarySyncProvider,
-        AddonModGlossaryHelperProvider,
-    ];
-}
 
 const mainMenuRoutes: Routes = [
     // Link handlers navigation.
@@ -105,7 +85,6 @@ const courseContentsRoutes: Routes = conditionalRoutes(
     imports: [
         CoreMainMenuTabRoutingModule.forChild(mainMenuRoutes),
         CoreCourseContentsRoutingModule.forChild({ children: courseContentsRoutes }),
-        AddonModGlossaryComponentsModule,
     ],
     providers: [
         {

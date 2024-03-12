@@ -35,6 +35,5 @@ const routes: Routes = [
     declarations: [
         CoreLoginReconnectPage,
     ],
-    exports: [RouterModule],
 })
 export class CoreLoginReconnectLazyModule {}

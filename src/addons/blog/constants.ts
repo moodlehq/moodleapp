@@ -12,20 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
-
-import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
-import { AddonReportInsightsActionLinkHandler } from './services/handlers/action-link';
-
-@NgModule({
-    providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreContentLinksDelegate.registerHandler(AddonReportInsightsActionLinkHandler.instance);
-            },
-        },
-    ],
-})
-export class AddonReportInsightsModule {}
+export const ADDON_BLOG_MAINMENU_PAGE_NAME = 'blog';

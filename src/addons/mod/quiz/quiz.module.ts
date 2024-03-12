@@ -24,7 +24,6 @@ import { CorePushNotificationsDelegate } from '@features/pushnotifications/servi
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModQuizAccessRulesModule } from './accessrules/accessrules.module';
-import { AddonModQuizComponentsModule } from './components/components.module';
 import { SITE_SCHEMA } from './services/database/quiz';
 import { AddonModQuizGradeLinkHandler } from './services/handlers/grade-link';
 import { AddonModQuizIndexLinkHandler } from './services/handlers/index-link';
@@ -57,6 +56,17 @@ export async function getModQuizServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get quiz component modules.
+ *
+ * @returns Quiz component modules.
+ */
+export async function getModQuizComponentModules(): Promise<unknown[]> {
+    const { AddonModQuizComponentsModule } = await import('@addons/mod/quiz/components/components.module');
+
+    return [AddonModQuizComponentsModule];
+}
+
 const routes: Routes = [
     {
         path: AddonModQuizModuleHandlerService.PAGE_NAME,
@@ -67,7 +77,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModQuizComponentsModule,
         AddonModQuizAccessRulesModule,
     ],
     providers: [

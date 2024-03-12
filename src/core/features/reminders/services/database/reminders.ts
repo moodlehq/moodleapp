@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonCalendarProvider } from '@addons/calendar/services/calendar';
+import { ADDON_CALENDAR_COMPONENT } from '@addons/calendar/constants';
 import { AddonCalendarEventDBRecord, EVENTS_TABLE } from '@addons/calendar/services/database/calendar';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreSiteSchema } from '@services/sites';
@@ -194,7 +194,7 @@ const createReminder = async (
     reminderTime: number,
 ): Promise<void> => {
     const reminder: CoreReminderData = {
-        component: AddonCalendarProvider.COMPONENT,
+        component: ADDON_CALENDAR_COMPONENT,
         instanceId: event.id,
         type: event.eventtype,
         timebefore: reminderTime,

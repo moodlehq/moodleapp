@@ -24,13 +24,14 @@ import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { AddonBlogCourseOptionHandler } from './services/handlers/course-option';
 import { AddonBlogIndexLinkHandler } from './services/handlers/index-link';
-import { AddonBlogMainMenuHandler, AddonBlogMainMenuHandlerService } from './services/handlers/mainmenu';
+import { AddonBlogMainMenuHandler } from './services/handlers/mainmenu';
 import { AddonBlogTagAreaHandler } from './services/handlers/tag-area';
 import { AddonBlogUserHandler } from './services/handlers/user';
+import { ADDON_BLOG_MAINMENU_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonBlogMainMenuHandlerService.PAGE_NAME,
+        path: ADDON_BLOG_MAINMENU_PAGE_NAME,
         loadChildren: () => import('@addons/blog/blog-lazy.module').then(m => m.AddonBlogLazyModule),
     },
 ];
@@ -41,7 +42,6 @@ const routes: Routes = [
         CoreMainMenuRoutingModule.forChild({ children: routes }),
         CoreCourseIndexRoutingModule.forChild({ children: routes }),
     ],
-    exports: [CoreMainMenuRoutingModule],
     providers: [
         {
             provide: APP_INITIALIZER,

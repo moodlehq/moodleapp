@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
-import { AddonModBookComponentsModule } from './components/components.module';
 import { AddonModBookModuleHandler, AddonModBookModuleHandlerService } from './services/handlers/module';
 import { AddonModBookIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModBookListLinkHandler } from './services/handlers/list-link';
@@ -27,19 +26,6 @@ import { AddonModBookPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModBookTagAreaHandler } from './services/handlers/tag-area';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { BOOK_SITE_SCHEMA } from './services/database/book';
-
-/**
- * Get mod book services.
- *
- * @returns Returns mod book services.
- */
-export async function getModBookServices(): Promise<Type<unknown>[]> {
-    const { AddonModBookProvider } = await import('@addons/mod/book/services/book');
-
-    return [
-        AddonModBookProvider,
-    ];
-}
 
 const routes: Routes = [
     {
@@ -51,7 +37,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModBookComponentsModule,
     ],
     providers: [
         {

@@ -14,7 +14,7 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule, Injector } from '@angular/core';
-import { RouterModule, Routes, ROUTES } from '@angular/router';
+import { Routes, ROUTES } from '@angular/router';
 import { CoreSearchGlobalSearchPage } from './pages/global-search/global-search';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
@@ -38,7 +38,6 @@ function buildRoutes(injector: Injector): Routes {
         CoreSearchComponentsModule,
         CoreMainMenuComponentsModule,
     ],
-    exports: [RouterModule],
     declarations: [
         CoreSearchGlobalSearchPage,
     ],

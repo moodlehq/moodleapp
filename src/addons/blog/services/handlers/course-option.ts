@@ -26,7 +26,7 @@ import { CoreSites } from '@services/sites';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonBlog } from '../blog';
-import { AddonBlogMainMenuHandlerService } from './mainmenu';
+import { ADDON_BLOG_MAINMENU_PAGE_NAME } from '@addons/blog/constants';
 
 /**
  * Course nav handler.
@@ -75,7 +75,7 @@ export class AddonBlogCourseOptionHandlerService implements CoreCourseOptionsHan
         return {
             title: 'addon.blog.blog',
             class: 'addon-blog-handler',
-            page: AddonBlogMainMenuHandlerService.PAGE_NAME,
+            page: ADDON_BLOG_MAINMENU_PAGE_NAME,
         };
     }
 

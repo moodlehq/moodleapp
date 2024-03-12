@@ -12,34 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
-import { AddonModFolderComponentsModule } from './components/components.module';
 import { AddonModFolderIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModFolderListLinkHandler } from './services/handlers/list-link';
 import { AddonModFolderModuleHandler, AddonModFolderModuleHandlerService } from './services/handlers/module';
 import { AddonModFolderPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModFolderPrefetchHandler } from './services/handlers/prefetch';
-
-/**
- * Get mod Folder services.
- *
- * @returns Returns mod Folder services.
- */
-export async function getModFolderServices(): Promise<Type<unknown>[]> {
-    const { AddonModFolderProvider } = await import('@addons/mod/folder/services/folder');
-    const { AddonModFolderHelperProvider } = await import('@addons/mod/folder/services/folder-helper');
-
-    return [
-        AddonModFolderProvider,
-        AddonModFolderHelperProvider,
-    ];
-}
 
 const routes: Routes = [
     {
@@ -51,7 +35,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModFolderComponentsModule,
     ],
     providers: [
         {

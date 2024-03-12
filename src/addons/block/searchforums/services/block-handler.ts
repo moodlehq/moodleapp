@@ -17,7 +17,7 @@ import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreBlockOnlyTitleComponent } from '@features/block/components/only-title-block/only-title-block';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
-import { FORUM_SEARCH_PAGE_NAME } from '@addons/mod/forum/forum.module';
+import { ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from '@addons/mod/forum/constants';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
 
@@ -60,7 +60,7 @@ export class AddonBlockSearchForumsHandlerService extends CoreBlockBaseHandler {
             title: 'addon.block_searchforums.pluginname',
             class: 'addon-block-search-forums',
             component: CoreBlockOnlyTitleComponent,
-            link: FORUM_SEARCH_PAGE_NAME,
+            link: ADDON_MOD_FORUM_SEARCH_PAGE_NAME,
             linkParams: { courseId: instanceId },
         };
     }

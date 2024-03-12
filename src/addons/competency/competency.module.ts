@@ -25,7 +25,6 @@ import { AddonCompetencyPushClickHandler } from './services/handlers/push-click'
 import { AddonCompetencyUserCompetencyLinkHandler } from './services/handlers/user-competency-link';
 import { AddonCompetencyUserHandler } from './services/handlers/user';
 import { Routes } from '@angular/router';
-import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
 import { COURSE_PAGE_NAME } from '@features/course/course.module';
@@ -77,7 +76,6 @@ const courseIndexRoutes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(mainMenuChildrenRoutes),
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
     ],
-    exports: [CoreMainMenuRoutingModule],
     providers: [
         {
             provide: APP_INITIALIZER,

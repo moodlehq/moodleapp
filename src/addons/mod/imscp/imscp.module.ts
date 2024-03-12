@@ -12,32 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
-import { AddonModImscpComponentsModule } from './components/components.module';
 import { AddonModImscpIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModImscpListLinkHandler } from './services/handlers/list-link';
 import { AddonModImscpModuleHandler, AddonModImscpModuleHandlerService } from './services/handlers/module';
 import { AddonModImscpPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModImscpPrefetchHandler } from './services/handlers/prefetch';
-
-/**
- * Get mod Imscp services.
- *
- * @returns Returns mod Imscp services.
- */
-export async function getModImscpServices(): Promise<Type<unknown>[]> {
-    const { AddonModImscpProvider } = await import('@addons/mod/imscp/services/imscp');
-
-    return [
-        AddonModImscpProvider,
-    ];
-}
 
 const routes: Routes = [
     {
@@ -49,7 +35,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModImscpComponentsModule,
     ],
     providers: [
         {

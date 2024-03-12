@@ -64,7 +64,6 @@ const preferencesRoutes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(routes),
         CoreSitePreferencesRoutingModule.forChild(preferencesRoutes),
     ],
-    exports: [CoreMainMenuRoutingModule],
     providers: [
         {
             provide: APP_INITIALIZER,

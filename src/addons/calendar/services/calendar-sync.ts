@@ -21,7 +21,6 @@ import { CoreUtils } from '@services/utils/utils';
 import {
     AddonCalendar,
     AddonCalendarEvent,
-    AddonCalendarProvider,
     AddonCalendarSubmitCreateUpdateFormDataWSParams,
 } from './calendar';
 import { AddonCalendarOffline } from './calendar-offline';
@@ -30,6 +29,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import moment from 'moment-timezone';
+import { ADDON_CALENDAR_COMPONENT } from '../constants';
 
 /**
  * Service to sync calendar.
@@ -173,7 +173,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
     protected async syncOfflineEvent(eventId: number, result: AddonCalendarSyncEvents, siteId?: string): Promise<void> {
 
         // Verify that event isn't blocked.
-        if (CoreSync.isBlocked(AddonCalendarProvider.COMPONENT, eventId, siteId)) {
+        if (CoreSync.isBlocked(ADDON_CALENDAR_COMPONENT, eventId, siteId)) {
             this.logger.debug('Cannot sync event ' + eventId + ' because it is blocked.');
 
             throw new CoreSyncBlockedError(Translate.instant(

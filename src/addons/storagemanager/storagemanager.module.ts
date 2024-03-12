@@ -33,7 +33,6 @@ const routes: Routes = [
         CoreMainMenuRoutingModule.forChild({ children: routes }),
         CoreSitePreferencesRoutingModule.forChild(routes),
     ],
-    exports: [CoreMainMenuRoutingModule],
     providers: [
         {
             provide: APP_INITIALIZER,

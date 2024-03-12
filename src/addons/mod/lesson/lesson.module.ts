@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -23,7 +23,6 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { AddonModLessonComponentsModule } from './components/components.module';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA, SYNC_SITE_SCHEMA } from './services/database/lesson';
 import { AddonModLessonGradeLinkHandler } from './services/handlers/grade-link';
 import { AddonModLessonIndexLinkHandler } from './services/handlers/index-link';
@@ -35,25 +34,6 @@ import { AddonModLessonReportLinkHandler } from './services/handlers/report-link
 import { AddonModLessonSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModLessonProvider } from './services/lesson';
 
-/**
- * Get mod Lesson services.
- *
- * @returns Returns mod Lesson services.
- */
-export async function getModLessonServices(): Promise<Type<unknown>[]> {
-    const { AddonModLessonProvider } = await import('@addons/mod/lesson/services/lesson');
-    const { AddonModLessonOfflineProvider } = await import('@addons/mod/lesson/services/lesson-offline');
-    const { AddonModLessonSyncProvider } = await import('@addons/mod/lesson/services/lesson-sync');
-    const { AddonModLessonHelperProvider } = await import('@addons/mod/lesson/services/lesson-helper');
-
-    return [
-        AddonModLessonProvider,
-        AddonModLessonOfflineProvider,
-        AddonModLessonSyncProvider,
-        AddonModLessonHelperProvider,
-    ];
-}
-
 const routes: Routes = [
     {
         path: AddonModLessonModuleHandlerService.PAGE_NAME,
@@ -64,7 +44,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModLessonComponentsModule,
     ],
     providers: [
         {

@@ -35,6 +35,5 @@ const routes: Routes = [
     declarations: [
         CoreLoginCredentialsPage,
     ],
-    exports: [RouterModule],
 })
 export class CoreLoginCredentialsLazyModule {}
