@@ -160,6 +160,7 @@ export class AddonModQuizOfflineProvider {
             const state = CoreQuestion.getState(dbQuestion.state);
             question.state = dbQuestion.state;
             question.status = Translate.instant('core.question.' + state.status);
+            question.stateclass = state.stateclass;
         }));
 
         return questions;
