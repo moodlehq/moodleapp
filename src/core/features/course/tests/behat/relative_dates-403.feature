@@ -1,4 +1,4 @@
-@core_course @app @javascript @lms_from4.4
+@core_course @app @javascript @lms_from4.0 @lms_upto4.3
 Feature: Check relative dates feature.
 
   Background:
@@ -10,8 +10,8 @@ Feature: Check relative dates feature.
       | student1 | Student   | 1        | student1@example.com |
       | teacher1 | Student   | 1        | student1@example.com |
     And the following "courses" exist:
-      | fullname | shortname | category | startdate            | enddate              | relativedatesmode | showactivitydates | initsections |
-      | Course 1 | C1        | 0        | ## 1 January 2022 ## | ## 1 January 2023 ## | 1                 | 1                 | 1            |
+      | fullname | shortname | category | startdate            | enddate              | relativedatesmode | showactivitydates |
+      | Course 1 | C1        | 0        | ## 1 January 2022 ## | ## 1 January 2023 ## | 1                 | 1                 |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | student1 | C1     | student        |
@@ -24,23 +24,23 @@ Feature: Check relative dates feature.
   Scenario: Relative dates (student)
     Given I entered the course "Course 1" as "student1" in the app
     When I press "Course index" in the app
-    And I press "Section 1" in the app
+    And I press "Topic 1" in the app
     Then I should find "20 January 2022, 12:00 AM" near "Opened:" in the app
     And I should find "31 July 2022, 12:00 AM" near "Due:" in the app
 
     When I press "Course index" in the app
-    And I press "Section 2" in the app
+    And I press "Topic 2" in the app
     And I should find "1 December 2021, 12:00 AM" near "Opened:" in the app
     And I should find "31 January 2023, 10:00 AM" near "Due:" in the app
 
   Scenario: Relative dates (teacher)
     Given I entered the course "Course 1" as "teacher1" in the app
     When I press "Course index" in the app
-    And I press "Section 1" in the app
+    And I press "Topic 1" in the app
     Then I should find "19 days after course start" near "Opened:" in the app
     And I should find "211 days after course start" near "Due:" in the app
 
     When I press "Course index" in the app
-    And I press "Section 2" in the app
+    And I press "Topic 2" in the app
     And I should find "31 days before course start" near "Opened:" in the app
     And I should find "1 year 30 days 10 hours after course start" near "Due:" in the app
