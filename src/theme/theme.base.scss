@@ -1965,6 +1965,10 @@ ion-modal {
             display: none;
         }
     }
+
+    &.modal-sheet::part(handle) {
+        background: var(--core-header-buttons-color);
+    }
 }
 
 ion-popover {
