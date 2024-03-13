@@ -35,6 +35,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { firstValueFrom } from 'rxjs';
 import { ContextLevel } from '@/core/constants';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Helper service to provide filter functionalities.
@@ -104,6 +105,39 @@ export class CoreFilterHelperProvider {
         this.storeInMemoryCache(options.courseId ?? -1, contextLevel, filters, siteId);
 
         return filters[contextLevel][instanceId] || [];
+    }
+
+    /**
+     * Return contexts of enrolled courses categories to decrease number of WS requests.
+     * If cannot retrieve categories or current category is not in the list, return only the context of the current category.
+     *
+     * @param categoryId Category ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved with the contexts.
+     */
+    async getCategoryContexts(categoryId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
+        // Get the categories of courses the user is enrolled in to decrease the number of WS requests.
+        // Using CoreCourses.getCategories would group more categories, but it would require a new WS request.
+        const courses = await CoreUtils.ignoreErrors(CoreCourses.getUserCourses(true, siteId));
+
+        const categoriesIds = (courses ?? []).map(course => course.categoryid)
+            .filter((categoryId): categoryId is number => categoryId !== undefined);
+
+        if (!categoriesIds.includes(categoryId)) {
+            return [
+                {
+                    contextlevel: ContextLevel.COURSECAT,
+                    instanceid: categoryId,
+                },
+            ];
+        }
+
+        categoriesIds.sort((a, b) => b - a);
+
+        return categoriesIds.map((categoryId) => ({
+            contextlevel: ContextLevel.COURSECAT,
+            instanceid: categoryId,
+        }));
     }
 
     /**
@@ -235,6 +269,11 @@ export class CoreFilterHelperProvider {
             } else if (contextLevel === ContextLevel.COURSE) {
                 // If enrolled, get all enrolled courses filters with a single call to decrease number of WS calls.
                 const getFilters = () => this.getCourseContexts(instanceId, siteId);
+
+                return await this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
+            } else if (contextLevel === ContextLevel.COURSECAT) {
+                // Try to get all the categories with a single call.
+                const getFilters = () => this.getCategoryContexts(instanceId, siteId);
 
                 return await this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
             }
