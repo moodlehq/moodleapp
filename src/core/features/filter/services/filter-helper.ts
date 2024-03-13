@@ -202,6 +202,8 @@ export class CoreFilterHelperProvider {
 
             const filters = await this.getFiltersInContextUsingAllStates(contextLevel, instanceId, options, site);
             if (filters) {
+                options.filter = true;
+
                 return filters;
             }
 
