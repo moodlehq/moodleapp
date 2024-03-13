@@ -18,7 +18,7 @@
                 </span>
             </div>
 
-            <div *ngIf="hiddable" class="core-timer-visibility">
+            <div *ngIf="hidable" class="core-timer-visibility">
                 ( <button class="as-link" *ngIf="showTimeLeft" (click)="toggleTimeLeftVisibility()">{{ 'core.hide' | translate }}</button>
                 <button class="as-link" *ngIf="!showTimeLeft" (click)="toggleTimeLeftVisibility()">{{ 'core.show' | translate }}</button> )
             </div>
