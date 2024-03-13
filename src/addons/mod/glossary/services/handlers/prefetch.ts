@@ -25,6 +25,7 @@ import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModGlossary, AddonModGlossaryEntry, AddonModGlossaryGlossary, AddonModGlossaryProvider } from '../glossary';
 import { AddonModGlossarySync, AddonModGlossarySyncResult } from '../glossary-sync';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Handler to prefetch forums.
@@ -161,7 +162,7 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
                 // Don't fetch individual entries, it's too many WS calls.
                 if (glossary.allowcomments && commentsEnabled) {
                     promises.push(CoreComments.getComments(
-                        'module',
+                        ContextLevel.MODULE,
                         glossary.coursemodule,
                         'mod_glossary',
                         entry.id,

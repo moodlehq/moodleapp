@@ -24,6 +24,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCommentsDBRecord, CoreCommentsDeletedDBRecord } from './database/comments';
 import { CoreSyncResult } from '@services/sync';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Service to sync omments.
@@ -121,7 +122,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
      * @returns Promise resolved when the comments are synced or if they don't need to be synced.
      */
     private async syncCommentsIfNeeded(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         component: string,
         itemId: number,
@@ -149,7 +150,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
      * @returns Promise resolved if sync is successful, rejected otherwise.
      */
     syncComments(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         component: string,
         itemId: number,
@@ -185,7 +186,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
      * @returns Promise resolved if sync is successful, rejected otherwise.
      */
     private async performSyncComments(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         component: string,
         itemId: number,
@@ -312,7 +313,13 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
      * @param area String comment area. Default empty.
      * @returns Sync ID.
      */
-    protected getSyncId(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = ''): string {
+    protected getSyncId(
+        contextLevel: ContextLevel,
+        instanceId: number,
+        component: string,
+        itemId: number,
+        area: string = '',
+    ): string {
         return contextLevel + '#' + instanceId + '#' + component + '#' + itemId + '#' + area;
     }
 
@@ -325,7 +332,7 @@ export type CoreCommentsSyncResult = CoreSyncResult;
  * Data passed to AUTO_SYNCED event.
  */
 export type CoreCommentsSyncAutoSyncData = {
-    contextLevel: string;
+    contextLevel: ContextLevel;
     instanceId: number;
     componentName: string;
     itemId: number;

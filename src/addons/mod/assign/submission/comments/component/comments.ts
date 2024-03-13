@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ContextLevel } from '@/core/constants';
 import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { Component, ViewChild } from '@angular/core';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
@@ -43,7 +44,7 @@ export class AddonModAssignSubmissionCommentsComponent extends AddonModAssignSub
      */
     invalidate(): Promise<void> {
         return CoreComments.invalidateCommentsData(
-            'module',
+            ContextLevel.MODULE,
             this.assign.cmid,
             'assignsubmission_comments',
             this.submission.id,

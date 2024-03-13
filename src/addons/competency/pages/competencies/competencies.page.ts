@@ -48,7 +48,7 @@ export class AddonCompetencyCompetenciesPage implements AfterViewInit, OnDestroy
     >;
 
     title = '';
-    contextLevel?: string;
+    contextLevel?: ContextLevel;
     contextInstanceId?: number;
 
     protected logView: () => void;

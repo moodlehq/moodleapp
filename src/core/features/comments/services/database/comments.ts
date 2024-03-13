@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ContextLevel } from '@/core/constants';
 import { CoreSiteSchema } from '@services/sites';
 
 /**
@@ -95,7 +96,7 @@ export const COMMENTS_OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
 };
 
 export type CoreCommentsDBRecord = {
-    contextlevel: string; // Primary key.
+    contextlevel: ContextLevel; // Primary key.
     instanceid: number; // Primary key.
     component: string; // Primary key.
     itemid: number; // Primary key.
@@ -106,7 +107,7 @@ export type CoreCommentsDBRecord = {
 
 export type CoreCommentsDeletedDBRecord = {
     commentid: number; // Primary key.
-    contextlevel: string;
+    contextlevel: ContextLevel;
     instanceid: number;
     component: string;
     itemid: number;

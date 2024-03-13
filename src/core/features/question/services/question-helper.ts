@@ -28,6 +28,7 @@ import { CoreQuestion, CoreQuestionProvider, CoreQuestionQuestionParsed, CoreQue
 import { CoreQuestionDelegate } from './question-delegate';
 import { CoreIcons } from '@singletons/icons';
 import { CoreUrlUtils } from '@services/utils/url';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Service with some common functions to handle questions.
@@ -868,7 +869,7 @@ export class CoreQuestionHelperProvider {
         element: HTMLElement,
         component?: string,
         componentId?: number,
-        contextLevel?: string,
+        contextLevel?: ContextLevel,
         contextInstanceId?: number,
         courseId?: number,
     ): void {

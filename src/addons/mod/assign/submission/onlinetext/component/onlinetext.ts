@@ -21,6 +21,7 @@ import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModAssignSubmissionOnlineTextPluginData } from '../services/handler';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Component to render an onlinetext submission plugin.
@@ -86,7 +87,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
                             component: this.component,
                             componentId: this.assign.cmid,
                             filter: true,
-                            contextLevel: 'module',
+                            contextLevel: ContextLevel.MODULE,
                             instanceId: this.assign.cmid,
                             courseId: this.assign.course,
                         });

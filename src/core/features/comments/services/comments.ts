@@ -24,6 +24,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreCommentsOffline } from './comments-offline';
 import { CoreCommentsSyncAutoSyncData, CoreCommentsSyncProvider } from './comments-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { ContextLevel } from '@/core/constants';
 
 const ROOT_CACHE_KEY = 'mmComments:';
 
@@ -80,7 +81,7 @@ export class CoreCommentsProvider {
      */
     async addComment(
         content: string,
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         component: string,
         itemId: number,
@@ -128,7 +129,7 @@ export class CoreCommentsProvider {
      */
     async addCommentOnline(
         content: string,
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         component: string,
         itemId: number,
@@ -318,7 +319,7 @@ export class CoreCommentsProvider {
      */
     async deleteCommentsOnline(
         commentIds: number[],
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         component: string,
         itemId: number,
@@ -367,7 +368,7 @@ export class CoreCommentsProvider {
      * @returns Cache key.
      */
     protected getCommentsCacheKey(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         component: string,
         itemId: number,
@@ -383,7 +384,7 @@ export class CoreCommentsProvider {
      * @param instanceId The Instance id of item associated with the context level.
      * @returns Cache key.
      */
-    protected getCommentsPrefixCacheKey(contextLevel: string, instanceId: number): string {
+    protected getCommentsPrefixCacheKey(contextLevel: ContextLevel, instanceId: number): string {
         return ROOT_CACHE_KEY + 'comments:' + contextLevel + ':' + instanceId;
     }
 
@@ -400,7 +401,7 @@ export class CoreCommentsProvider {
      * @returns Promise resolved with the comments.
      */
     async getComments(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         component: string,
         itemId: number,
@@ -449,7 +450,7 @@ export class CoreCommentsProvider {
      * @returns Comments count with plus sign if needed.
      */
     async getCommentsCount(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         component: string,
         itemId: number,
@@ -514,7 +515,7 @@ export class CoreCommentsProvider {
      * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCommentsData(
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
         component: string,
         itemId: number,
@@ -545,7 +546,7 @@ export class CoreCommentsProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the data is invalidated.
      */
-    async invalidateCommentsByInstance(contextLevel: string, instanceId: number, siteId?: string): Promise<void> {
+    async invalidateCommentsByInstance(contextLevel: ContextLevel, instanceId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKeyStartingWith(this.getCommentsPrefixCacheKey(contextLevel, instanceId));
@@ -587,7 +588,7 @@ type CoreCommentsAddCommentsWSParams = {
 
 export type CoreCommentsCommentBasicData = {
     id?: number; // Comment ID.
-    contextlevel: string; // Contextlevel system, course, user...
+    contextlevel: ContextLevel; // Contextlevel system, course, user...
     instanceid: number; // The id of item associated with the contextlevel.
     component: string; // Component.
     content: string; // Component.
@@ -628,7 +629,7 @@ type CoreCommentsDeleteCommentsWSParams = {
  * Params of core_comment_get_comments WS.
  */
 type CoreCommentsGetCommentsWSParams = {
-    contextlevel: string; // Contextlevel system, course, user...
+    contextlevel: ContextLevel; // Contextlevel system, course, user...
     instanceid: number; // The Instance id of item associated with the context level.
     component: string; // Component.
     itemid: number; // Associated id.
@@ -652,7 +653,7 @@ export type CoreCommentsGetCommentsWSResponse = {
  * Data sent by COMMENTS_COUNT_CHANGED_EVENT event.
  */
 export type CoreCommentsCountChangedEventData = {
-    contextLevel: string;
+    contextLevel: ContextLevel;
     instanceId: number;
     component: string;
     itemId: number;
@@ -664,7 +665,7 @@ export type CoreCommentsCountChangedEventData = {
  * Data sent by REFRESH_COMMENTS_EVENT event.
  */
 export type CoreCommentsRefreshCommentsEventData = {
-    contextLevel?: string;
+    contextLevel?: ContextLevel;
     instanceId?: number;
     component?: string;
     itemId?: number;

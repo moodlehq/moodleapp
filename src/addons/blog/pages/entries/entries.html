@@ -30,7 +30,7 @@
                         <div class="flex-row ion-justify-content-between ion-align-items-center">
                             <h2>
                                 <core-format-text [text]="entry.subject" [contextLevel]="contextLevel"
-                                    [contextInstanceId]="contextInstanceId" />
+                                    [contextInstanceId]="contextInstanceId" [courseId]="entry.courseid" />
                             </h2>
                             <ion-note class="ion-text-end">
                                 {{ 'addon.blog.' + entry.publishTranslated! | translate}}
@@ -47,8 +47,8 @@
                 <ion-card-content>
                     <ion-item class="ion-text-wrap">
                         <ion-label>
-                            <core-format-text [text]="entry.summary" [component]="this.component" [componentId]="entry.id"
-                                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" />
+                            <core-format-text [text]="entry.summary" [component]="component" [componentId]="entry.id"
+                                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="entry.courseid" />
                         </ion-label>
                     </ion-item>
                     <ion-item class="ion-text-wrap" *ngIf="tagsEnabled && entry.tags && entry.tags!.length > 0">
@@ -57,10 +57,9 @@
                             <core-tag-list [tags]="entry.tags" />
                         </ion-label>
                     </ion-item>
-                    <core-comments *ngIf="commentsEnabled" [component]="this.component" [itemId]="entry.id" area="format_blog"
-                        [instanceId]="entry.userid" contextLevel="user" [showItem]="true" />
-                    <core-file *ngFor="let file of entry.attachmentfiles" [file]="file" [component]="this.component"
-                        [componentId]="entry.id" />
+                    <core-comments *ngIf="commentsEnabled" [component]="component" [itemId]="entry.id" area="format_blog"
+                        [instanceId]="entry.userid" contextLevel="user" [showItem]="true" [courseId]="entry.courseid" />
+                    <core-file *ngFor="let file of entry.attachmentfiles" [file]="file" [component]="component" [componentId]="entry.id" />
                     <ion-item *ngIf="entry.uniquehash" [href]="entry.uniquehash" core-link [detail]="true">
                         <ion-label>{{ 'addon.blog.linktooriginalentry' | translate }}</ion-label>
                     </ion-item>

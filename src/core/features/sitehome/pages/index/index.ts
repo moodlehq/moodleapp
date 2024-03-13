@@ -31,6 +31,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreBlockSideBlocksComponent } from '@features/block/components/side-blocks/side-blocks';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Page that displays site home index.
@@ -233,7 +234,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
             CoreDomUtils.openSideModal({
                 component: CoreBlockSideBlocksComponent,
                 componentProps: {
-                    contextLevel: 'course',
+                    contextLevel: ContextLevel.COURSE,
                     instanceId: this.siteHomeId,
                     initialBlockInstanceId: blockInstanceId,
                 },

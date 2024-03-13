@@ -44,6 +44,7 @@ import { CoreDom } from '@singletons/dom';
 import { CorePlatform } from '@services/platform';
 import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Component to display a rich text editor if enabled.
@@ -71,7 +72,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     @Input() component?: string; // The component to link the files to.
     @Input() componentId?: number; // An ID to use in conjunction with the component.
     @Input() autoSave?: boolean | string; // Whether to auto-save the contents in a draft. Defaults to true.
-    @Input() contextLevel?: string; // The context level of the text.
+    @Input() contextLevel?: ContextLevel; // The context level of the text.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() elementId?: string; // An ID to set to the element.
     @Input() draftExtraParams?: Record<string, unknown>; // Extra params to identify the draft.
@@ -267,7 +268,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             // Save a draft so the original content is saved.
             this.lastDraft = newValue ?? '';
             CoreEditorOffline.saveDraft(
-                this.contextLevel || '',
+                this.contextLevel || ContextLevel.SYSTEM,
                 this.contextInstanceId || 0,
                 this.elementId || '',
                 this.draftExtraParams || {},
@@ -923,7 +924,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     protected async restoreDraft(): Promise<void> {
         try {
             const entry = await CoreEditorOffline.resumeDraft(
-                this.contextLevel || '',
+                this.contextLevel || ContextLevel.SYSTEM,
                 this.contextInstanceId || 0,
                 this.elementId || '',
                 this.draftExtraParams || {},
@@ -983,7 +984,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
             try {
                 await CoreEditorOffline.saveDraft(
-                    this.contextLevel || '',
+                    this.contextLevel || ContextLevel.SYSTEM,
                     this.contextInstanceId || 0,
                     this.elementId || '',
                     this.draftExtraParams || {},
@@ -1011,7 +1012,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             if (data.form && form && data.form == form) {
                 try {
                     await CoreEditorOffline.deleteDraft(
-                        this.contextLevel || '',
+                        this.contextLevel || ContextLevel.SYSTEM,
                         this.contextInstanceId || 0,
                         this.elementId || '',
                         this.draftExtraParams || {},

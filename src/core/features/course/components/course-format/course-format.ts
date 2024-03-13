@@ -52,6 +52,7 @@ import { CoreDom } from '@singletons/dom';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreBlockSideBlocksComponent } from '@features/block/components/side-blocks/side-blocks';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -318,7 +319,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             CoreDomUtils.openSideModal({
                 component: CoreBlockSideBlocksComponent,
                 componentProps: {
-                    contextLevel: 'course',
+                    contextLevel: ContextLevel.COURSE,
                     instanceId: this.course.id,
                     initialBlockInstanceId: this.initialBlockInstanceId,
                 },

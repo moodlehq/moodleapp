@@ -28,7 +28,7 @@ import {
     CoreCourseModuleCompletionStatus,
     CoreCourseGetContentsWSModule,
 } from './course';
-import { CoreConstants, DownloadStatus, TDownloadStatus } from '@/core/constants';
+import { CoreConstants, DownloadStatus, TDownloadStatus, ContextLevel } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
@@ -1636,7 +1636,7 @@ export class CoreCourseHelperProvider {
                 promises.push(CoreCourse.getActivitiesCompletionStatus(course.id));
             }
 
-            promises.push(CoreFilterHelper.getFilters('course', course.id));
+            promises.push(CoreFilterHelper.getFilters(ContextLevel.COURSE, course.id));
 
             await CoreUtils.allPromises(promises);
 

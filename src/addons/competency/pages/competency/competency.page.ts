@@ -58,7 +58,7 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
     user?: CoreUserSummary;
     competency?: AddonCompetencyDataForUserCompetencySummaryWSResponse;
     userCompetency?: AddonCompetencyUserCompetencyPlan | AddonCompetencyUserCompetency | AddonCompetencyUserCompetencyCourse;
-    contextLevel?: string;
+    contextLevel?: ContextLevel;
     contextInstanceId?: number;
 
     protected logView: () => void;

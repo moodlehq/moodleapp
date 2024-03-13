@@ -55,6 +55,7 @@ import { MediaElementController } from '@classes/element-controllers/MediaElemen
 import { FrameElement, FrameElementController } from '@classes/element-controllers/FrameElementController';
 import { CoreUrl } from '@singletons/url';
 import { CoreIcons } from '@singletons/icons';
+import { ContextLevel } from '../constants';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -81,7 +82,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     @Input() singleLine?: boolean | string; // Whether new lines should be removed (all text in single line). Only if clean=true.
     @Input() highlight?: string; // Text to highlight.
     @Input() filter?: boolean | string; // Whether to filter the text. If not defined, true if contextLevel and instanceId are set.
-    @Input() contextLevel?: string; // The context level of the text.
+    @Input() contextLevel?: ContextLevel; // The context level of the text.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Input() wsNotFiltered?: boolean | string; // If true it means the WS didn't filter the text for some reason.
@@ -397,11 +398,13 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
         const siteId = site?.getId();
 
-        if (site && this.contextLevel == 'course' && this.contextInstanceId !== undefined && this.contextInstanceId <= 0) {
+        if (
+            site && this.contextLevel === ContextLevel.COURSE && this.contextInstanceId !== undefined && this.contextInstanceId <= 0
+        ) {
             this.contextInstanceId = site.getSiteHomeId();
         }
 
-        if (this.contextLevel === 'course' && this.contextInstanceId === undefined && this.courseId !== undefined) {
+        if (this.contextLevel === ContextLevel.COURSE && this.contextInstanceId === undefined && this.courseId !== undefined) {
             this.contextInstanceId = this.courseId;
         }
 
@@ -422,7 +425,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         if (filter) {
             const filterResult = await CoreFilterHelper.getFiltersAndFormatText(
                 this.text || '',
-                this.contextLevel || '',
+                this.contextLevel || ContextLevel.SYSTEM,
                 this.contextInstanceId ?? -1,
                 options,
                 siteId,

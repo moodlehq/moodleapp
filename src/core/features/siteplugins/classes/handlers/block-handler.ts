@@ -23,6 +23,7 @@ import { CoreSitePluginsOnlyTitleBlockComponent } from '@features/siteplugins/co
 import { CoreSitePluginsBlockHandlerData, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSitePluginsBaseHandler } from './base-handler';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Handler to support a block using a site plugin.
@@ -48,7 +49,7 @@ export class CoreSitePluginsBlockHandler extends CoreSitePluginsBaseHandler impl
      */
     async getDisplayData(
         block: CoreCourseBlock,
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
     ): Promise<CoreBlockHandlerData> {
         const className = this.handlerSchema.displaydata?.class || 'block_' + block.name;

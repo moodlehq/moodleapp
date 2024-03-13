@@ -20,6 +20,7 @@ import { makeSingleton } from '@singletons';
 import { ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from '@addons/mod/forum/constants';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Block handler.
@@ -42,10 +43,10 @@ export class AddonBlockSearchForumsHandlerService extends CoreBlockBaseHandler {
      */
     async getDisplayData(
         block: CoreCourseBlock,
-        contextLevel: string,
+        contextLevel: ContextLevel,
         instanceId: number,
     ): Promise<undefined | CoreBlockHandlerData> {
-        if (contextLevel !== 'course') {
+        if (contextLevel !== ContextLevel.COURSE) {
             return;
         }
 

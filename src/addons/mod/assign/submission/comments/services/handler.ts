@@ -19,6 +19,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreComments } from '@features/comments/services/comments';
 import { makeSingleton } from '@singletons';
 import { AddonModAssignSubmissionCommentsComponent } from '../component/comments';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Handler for comments submission plugin.
@@ -68,7 +69,7 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
         siteId?: string,
     ): Promise<void> {
         await CoreComments.getComments(
-            'module',
+            ContextLevel.MODULE,
             assign.cmid,
             'assignsubmission_comments',
             submission.id,

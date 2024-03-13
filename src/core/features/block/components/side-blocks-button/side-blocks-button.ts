@@ -20,6 +20,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDom } from '@singletons/dom';
 import { CoreBlockSideBlocksTourComponent } from '../side-blocks-tour/side-blocks-tour';
 import { CoreBlockSideBlocksComponent } from '../side-blocks/side-blocks';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Component that displays a button to open blocks.
@@ -31,7 +32,7 @@ import { CoreBlockSideBlocksComponent } from '../side-blocks/side-blocks';
 })
 export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
 
-    @Input() contextLevel!: string;
+    @Input() contextLevel!: ContextLevel;
     @Input() instanceId!: number;
     @Input() myDashboardPage?: string;
 
