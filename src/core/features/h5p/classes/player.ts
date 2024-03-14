@@ -298,6 +298,11 @@ export class CoreH5PPlayer {
             params.state = otherOptions.state;
         }
 
+        const customCssUrl = await CoreUtils.ignoreErrors(CoreH5P.getCustomCssSrc(siteId));
+        if (customCssUrl) {
+            params.customCssUrl = customCssUrl;
+        }
+
         return CoreUrlUtils.addParamsToUrl(path, params);
     }
 
