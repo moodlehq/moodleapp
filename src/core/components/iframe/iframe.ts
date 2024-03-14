@@ -40,7 +40,12 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
     static loadingTimeout = 15000;
 
-    @ViewChild('iframe') iframe?: ElementRef;
+    @ViewChild('iframe') set iframeElement(iframeRef: ElementRef | undefined) {
+        this.iframe = iframeRef?.nativeElement;
+
+        this.initIframeElement();
+    }
+
     @Input() src?: string;
     @Input() id: string | null = null;
     @Input() iframeWidth?: string;
@@ -59,6 +64,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
     initialized = false;
 
+    protected iframe?: HTMLIFrameElement;
     protected style?: HTMLStyleElement;
     protected orientationObs?: CoreEventObserver;
     protected navSubscription?: Subscription;
@@ -79,11 +85,6 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             return;
         }
 
-        const iframe: HTMLIFrameElement | undefined = this.iframe?.nativeElement;
-        if (!iframe) {
-            return;
-        }
-
         this.initialized = true;
 
         if (this.showFullscreenOnToolbar || this.autoFullscreenOnRotate) {
@@ -97,7 +98,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
                 });
 
             const shadow =
-                iframe.closest('.ion-page')?.querySelector('ion-header ion-toolbar')?.shadowRoot;
+                this.elementRef.nativeElement.closest('.ion-page')?.querySelector('ion-header ion-toolbar')?.shadowRoot;
             if (shadow) {
                 this.style = document.createElement('style');
                 shadow.appendChild(this.style);
@@ -119,23 +120,32 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         // Show loading only with external URLs.
         this.loading = !this.src || !CoreUrlUtils.isLocalFileUrl(this.src);
 
-        CoreIframeUtils.treatFrame(iframe, false);
-
-        iframe.addEventListener('load', () => {
-            this.loading = false;
-            this.loaded.emit(iframe); // Notify iframe was loaded.
-        });
-
-        iframe.addEventListener('error', () => {
-            this.loading = false;
-            CoreDomUtils.showErrorModal('core.errorloadingcontent', true);
-        });
-
         if (this.loading) {
             setTimeout(() => {
                 this.loading = false;
             }, CoreIframeComponent.loadingTimeout);
         }
+    }
+
+    /**
+     * Initialize things related to the iframe element.
+     */
+    protected initIframeElement(): void {
+        if (!this.iframe) {
+            return;
+        }
+
+        CoreIframeUtils.treatFrame(this.iframe, false);
+
+        this.iframe.addEventListener('load', () => {
+            this.loading = false;
+            this.loaded.emit(this.iframe); // Notify iframe was loaded.
+        });
+
+        this.iframe.addEventListener('error', () => {
+            this.loading = false;
+            CoreDomUtils.showErrorModal('core.errorloadingcontent', true);
+        });
     }
 
     /**
@@ -252,8 +262,8 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
         document.body.classList.toggle('core-iframe-fullscreen', this.fullscreen);
 
-        if (notifyIframe && this.iframe?.nativeElement) {
-            (<HTMLIFrameElement> this.iframe.nativeElement).contentWindow?.postMessage(
+        if (notifyIframe && this.iframe) {
+            this.iframe.contentWindow?.postMessage(
                 this.fullscreen ? 'enterFullScreen' : 'exitFullScreen',
                 '*',
             );
