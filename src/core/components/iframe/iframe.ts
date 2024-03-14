@@ -216,7 +216,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             await CoreIframeUtils.fixIframeCookies(url);
         }
 
-        this.safeUrl = DomSanitizer.bypassSecurityTrustResourceUrl(url ? CoreFile.convertFileSrc(url) : '');
+        this.safeUrl = url ? DomSanitizer.bypassSecurityTrustResourceUrl(CoreFile.convertFileSrc(url)) : undefined;
 
         // Now that the URL has been set, initialize the iframe. Wait for the iframe to the added to the DOM.
         setTimeout(() => {
