@@ -16,7 +16,7 @@
 
         .core-avatar-extra-img {
             background: var(--background-color);
-            border-radius: var(--radius-sm);
+            border-radius: var(--mdl-shape-borderRadius-sm);
             img {
                 max-width: var(--extra-icon-size);
                 max-height: var(--extra-icon-size);
@@ -39,7 +39,7 @@
         }
         padding: 0px;
         background: var(--background-color);
-        border-radius: var(--radius-xs);
+        border-radius: var(--mdl-shape-borderRadius-xs);
         @include margin(6px, 8px, 6px, 0px);
     }
 

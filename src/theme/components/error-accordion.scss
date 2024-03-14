@@ -4,18 +4,25 @@
     --background-color: var(--gray-300);
     --toggle-icon-size: 16px;
 
+    --text-color-secondary: var(--gray-800);
+
+    --state-color-hover: rgb(40 40 40, 4%); // --gray-900 4%
+    --state-color-pressed: rgb(40 40 40, 12%); // --gray-900 12%
+    --state-color-focused: rgb(40 40 40, 12%); // --gray-900 12%
+    --state-color-keyboard-focus: var(--a11y-focus-color);
+
     background: var(--background-color);
-    border-radius: var(--radius-xs);
+    border-radius: var(--mdl-shape-borderRadius-xs);
 
     .core-error-accordion--code {
         margin: 0;
         text-align: start;
-        color: var(--text-color-main);
-        font: var(--subtitle-md-font);
-        padding-top: var(--spacing-2);
-        padding-bottom: var(--spacing-2);
-        padding-inline-start: var(--spacing-3);
-        padding-inline-end: var(--spacing-3);
+        color: var(--text-color);
+        font: var(--mdl-typography-subtitle-font-md);
+        padding-top: var(--mdl-spacing-2);
+        padding-bottom: var(--mdl-spacing-2);
+        padding-inline-start: var(--mdl-spacing-3);
+        padding-inline-end: var(--mdl-spacing-3);
     }
 
     .core-error-accordion--details {
@@ -30,12 +37,12 @@
 
         p {
             margin: 0;
-            padding-top: var(--spacing-2);
-            padding-bottom: var(--spacing-2);
-            padding-inline-start: var(--spacing-3);
-            padding-inline-end: var(--spacing-3);
+            padding-top: var(--mdl-spacing-2);
+            padding-bottom: var(--mdl-spacing-2);
+            padding-inline-start: var(--mdl-spacing-3);
+            padding-inline-end: var(--mdl-spacing-3);
             text-align: start;
-            font: var(--body-md-font);
+            font: var(--mdl-typography-body-font-md);
             color: var(--text-color-secondary);
         }
 
@@ -48,11 +55,11 @@
         background: transparent;
         justify-content: space-between;
         color: var(--text-color-secondary);
-        font: var(--label-lg-font);
-        padding-top: var(--spacing-2);
-        padding-bottom: var(--spacing-2);
-        padding-inline-start: var(--spacing-3);
-        padding-inline-end: var(--spacing-3);
+        font: var(--mdl-typography-label-font-lg);
+        padding-top: var(--mdl-spacing-2);
+        padding-bottom: var(--mdl-spacing-2);
+        padding-inline-start: var(--mdl-spacing-3);
+        padding-inline-end: var(--mdl-spacing-3);
 
         .core-error-accordion--toggle-text {
             display: flex;
@@ -67,7 +74,7 @@
 
         ion-icon {
             width: var(--toggle-icon-size);
-            margin-inline-start: var(--spacing-4);
+            margin-inline-start: var(--mdl-spacing-4);
             transition: transform var(--toggle-icon-animation-duration) var(--toggle-icon-animation-function);
             transform: rotate(0);
         }

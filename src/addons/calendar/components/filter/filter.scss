@@ -8,7 +8,7 @@
 
         > ion-icon {
             padding: 4px;
-            font-size: 20px;
+            font-size: var(--mdl-typography-icon-fontSize-md);
         }
     }
 }

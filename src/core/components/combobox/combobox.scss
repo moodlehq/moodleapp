@@ -21,7 +21,7 @@
 
             ion-icon {
                 margin: var(--icon-margin);
-                font-size: 20px;
+                font-size: var(--mdl-typography-icon-fontSize-md);
             }
         }
     }
@@ -49,7 +49,7 @@
         color: var(--color);
         text-overflow: ellipsis;
         white-space: nowrap;
-        min-height: var(--a11y-min-target-size);
+        min-height: var(--a11y-sizing-minTargetSize);
         overflow: hidden;
         box-shadow: var(--box-shadow);
 
@@ -110,9 +110,7 @@
         flex: 1;
 
         &::part(native) {
-            font-weight: var(--label-font-weight);
-            font-size: var(--label-lg-font-size);
-            line-height: var(--label-lg-line-height);
+            font: var(--mdl-typography-label-font-lg);
             border-radius: var(--core-combobox-radius);
         }
 

@@ -53,7 +53,7 @@ html {
     --zoom-level: 100%;
 
     --text-color:       #{$text-color};
-    --text-size: var(--body-font-size-md);
+    --text-size: var(--mdl-typography-body-fontSize-md);
     --background-color: #{$background-color};
     --stroke:            var(--gray-300);
 
@@ -67,12 +67,12 @@ html {
     --core-input-stroke: var(--gray-500);
     --core-input-text: var(--dark);
     --core-input-background: var(--ion-background-color);
-    --core-input-radius: var(--radius-xs);
+    --core-input-radius: var(--mdl-shape-borderRadius-xs);
     --core-input-border-width: 1px;
 
     --list-item-max-width: 768px;
 
-    --modal-radius: var(--radius-md);
+    --modal-radius: var(--mdl-shape-borderRadius-md);
     --modal-lateral-max-width: 320px;
     --modal-lateral-margin: 56px;
 
@@ -80,13 +80,13 @@ html {
 
     --loader-background-color: rgb(0 0 0 / 10%);
     --loader-shine: 251 251 251;
-    --loader-radius: var(--radius-xs);
+    --loader-radius: var(--mdl-shape-borderRadius-xs);
     --loader-display: block;
 
-    --drop-shadow-top: 0px 2px 5px rgb(var(--drop-shadow-color) / 50%);
-    --drop-shadow-bottom: 0px -2px 5px rgb(var(--drop-shadow-color) / 50%);
-    --drop-shadow-end: -2px 0px 5px rgb(var(--drop-shadow-color) / 50%);
-    --drop-shadow-start: 2px 0px 5px rgb(var(--drop-shadow-color) / 50%);
+    --drop-shadow-top: 0px 2px 5px rgb(var(--mdl-shadow-boxShadowColor) / 50%);
+    --drop-shadow-bottom: 0px -2px 5px rgb(var(--mdl-shadow-boxShadowColor) / 50%);
+    --drop-shadow-end: -2px 0px 5px rgb(var(--mdl-shadow-boxShadowColor) / 50%);
+    --drop-shadow-start: 2px 0px 5px rgb(var(--mdl-shadow-boxShadowColor) / 50%);
 
     --ion-text-color: var(--text-color);
     --ion-text-color-rgb: #{$text-color-rgb};
@@ -95,7 +95,7 @@ html {
     --ion-card-color: var(--text-color);
     --ion-card-vertical-margin: 12px;
     --ion-card-horizontal-margin: 12px;
-    --ion-card-radius: var(--radius-lg);
+    --ion-card-radius: var(--mdl-shape-borderRadius-lg);
     --ion-card-border-width: 1px;
     --ion-card-border-color: var(--stroke);
     ion-card {
@@ -135,7 +135,7 @@ html {
         color: var(--core-link-color);
     }
 
-    --core-header-toolbar-button-image-size: var(--a11y-min-target-size);
+    --core-header-toolbar-button-image-size: var(--a11y-sizing-minTargetSize);
     --core-header-toolbar-background: var(--white);
     --core-header-toolbar-border-width: 0px;
     --core-header-toolbar-border-color: var(--stroke);
@@ -183,7 +183,7 @@ html {
     --ion-searchbar-background: var(--ion-background-color);
     --ion-searchbar-border-color: var(--core-input-stroke);
     --ion-searchbar-border-radius: var(--core-input-radius);
-    --ion-searchbar-height: var(--a11y-min-target-size);
+    --ion-searchbar-height: var(--a11y-sizing-minTargetSize);
     --ion-searchbar-color: var(--text-color);
     --ion-searchbar-icon-color: var(--core-input-stroke);
     ion-searchbar,
@@ -277,7 +277,7 @@ html {
     --ion-item-background:        #{$ion-item-background};
     --ion-item-icon-color: var(--medium);
     --ion-item-detail-icon-color: var(--dark);
-    --ion-item-detail-icon-font-size: 20px;
+    --ion-item-detail-icon-font-size: var(--mdl-typography-icon-fontSize-md);
     --ion-item-detail-icon-opacity: 1;
     --core-more-icon: var(--ion-item-icon-color);
     ion-item {
@@ -290,7 +290,7 @@ html {
         }
     }
 
-    --item-divider-min-height: calc(var(--a11y-min-target-size) + 8px);
+    --item-divider-min-height: calc(var(--a11y-sizing-minTargetSize) + 8px);
     --item-divider-background: var(--ion-item-background);
     --item-divider-color: var(--text-color);
     --item-divider-border-width: 0px;
@@ -310,8 +310,8 @@ html {
     }
 
     ion-back-button {
-        --min-height: var(--a11y-min-target-size);
-        --min-width: var(--a11y-min-target-size);
+        --min-height: var(--a11y-sizing-minTargetSize);
+        --min-width: var(--a11y-sizing-minTargetSize);
     }
 
     --selected-item-color: var(--primary);
@@ -330,11 +330,11 @@ html {
     --core-star-color: var(--primary);
 
     --core-large-avatar-size: 80px;
-    --core-avatar-size: var(--a11y-min-target-size);
+    --core-avatar-size: var(--a11y-sizing-minTargetSize);
     --core-avatar-radius: 50%;
 
     --core-courseimage-on-course-size: 72px;
-    --core-courseimage-radius: var(--radius-sm);
+    --core-courseimage-radius: var(--mdl-shape-borderRadius-sm);
 
     --core-navigation-background: var(--contrast-background);
 

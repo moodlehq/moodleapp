@@ -11,14 +11,14 @@
 
     .message-box {
         --background: var(--message-background);
-        --min-height: var(--a11y-min-target-size);
+        --min-height: var(--a11y-sizing-minTargetSize);
 
         display: flex;
         flex-direction: row;
         position: relative;
 
         border: 0;
-        border-radius: var(--radius-sm);
+        border-radius: var(--mdl-shape-borderRadius-sm);
         margin: 8px;
         width: 90%;
         max-width: var(--list-item-max-width);

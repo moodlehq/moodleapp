@@ -58,7 +58,7 @@ ion-tab-bar {
             text-overflow: unset;
             overflow: visible;
             text-align: center;
-            font-size: 24px;
+            font-size: var(--mdl-typography-icon-fontSize-lg);
         }
 
         ion-badge.core-tab-badge {

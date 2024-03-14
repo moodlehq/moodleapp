@@ -35,7 +35,7 @@
             margin-bottom: 0px;
             --module-icon-padding: 0px;
             --module-legacy-icon-padding: 4px;
-            --module-icon-radius: var(--radius-xs);
+            --module-icon-radius: var(--mdl-shape-borderRadius-xs);
 
             @include margin-horizontal(null, 8px);
             align-self: self-start;
@@ -75,7 +75,7 @@
                 --padding-start: 0px;
                 --padding-end: 0px;
                 ion-icon {
-                    font-size: 20px;
+                    font-size: var(--mdl-typography-icon-fontSize-md);
                 }
             }
 
@@ -101,7 +101,7 @@
 
     .core-module-description ::ng-deep img,
     .activity-title .item-heading core-format-text ::ng-deep img {
-        border-radius: var(--radius-lg);
+        border-radius: var(--mdl-shape-borderRadius-lg);
     }
 
     core-course-module-completion {
@@ -132,7 +132,7 @@
     .activity-description-availabilityinfo {
         .core-module-availabilityinfo {
             background: var(--gray-300);
-            border-radius: var(--radius-sm);
+            border-radius: var(--mdl-shape-borderRadius-sm);
             margin-top: 8px;
             padding: 8px;
             font-size: 14px;

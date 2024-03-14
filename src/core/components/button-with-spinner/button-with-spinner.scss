@@ -5,8 +5,8 @@
     align-items: center;
     justify-content: space-around;
     align-content: center;
-    min-height: var(--a11y-min-target-size);
-    min-width: var(--a11y-min-target-size);
+    min-height: var(--a11y-sizing-minTargetSize);
+    min-width: var(--a11y-sizing-minTargetSize);
     position: relative;
 
     > * {

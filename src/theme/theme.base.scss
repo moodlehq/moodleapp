@@ -161,7 +161,7 @@ ion-header {
             --color: var(--core-header-buttons-color);
             --background: var(--core-header-buttons-background);
             --ion-toolbar-color: var(--core-header-buttons-color);
-            --border-radius: var(--radius-xl);
+            --border-radius: var(--mdl-shape-borderRadius-xl);
             --primary: var(--core-header-buttons-color);
         }
         ion-back-button::part(text) {
@@ -175,10 +175,10 @@ ion-header {
 
         .button.button-clear.button-has-icon-only,
         .button.button-solid.button-has-icon-only {
-            width: var(--a11y-min-target-size);
-            height: var(--a11y-min-target-size);
+            width: var(--a11y-sizing-minTargetSize);
+            height: var(--a11y-sizing-minTargetSize);
             ion-icon {
-                font-size: 24px;
+                font-size: var(--mdl-typography-icon-fontSize-lg);
             }
         }
 
@@ -213,7 +213,7 @@ ion-header {
         }
 
         h1, h2, .subheading {
-            font-size: 20px;
+            font-size: var(--mdl-typography-label-lineHeight-lg);
             font-weight: 500;
             letter-spacing: .0125em;
             text-align: start;
@@ -236,7 +236,7 @@ ion-header {
             text-align: start;
 
             h1, h2, .subheading {
-                font-size: 17px;
+                font-size: var(--mdl-typography-label-lineHeight-md);
                 font-weight: 600;
             }
 
@@ -266,8 +266,8 @@ ion-fab-button,
 button,
 [role="button"] {
     text-transform: none;
-    min-height: var(--a11y-min-target-size);
-    min-width: var(--a11y-min-target-size);
+    min-height: var(--a11y-sizing-minTargetSize);
+    min-width: var(--a11y-sizing-minTargetSize);
 
     &.button-large {
         min-height: 2.8em;
@@ -352,7 +352,7 @@ ion-button:not(.button-has-icon-only):not(.button-small) > ion-icon {
 }
 
 ion-button.button.button-clear.button-has-icon-only {
-    --border-radius: var(--radius-xl);
+    --border-radius: var(--mdl-shape-borderRadius-xl);
 }
 
 ion-button.button.button-clear {
@@ -736,7 +736,7 @@ body.core-iframe-fullscreen ion-router-outlet {
 }
 
 .core-password-modal {
-    --border-radius: var(--radius-sm);
+    --border-radius: var(--mdl-shape-borderRadius-sm);
     --min-width: auto;
     --min-height: 300px;
     --width: 384px;
@@ -800,7 +800,7 @@ body.core-iframe-fullscreen ion-router-outlet {
     }
 
     ion-button {
-        --a11y-min-target-size: 40px;
+        --a11y-sizing-minTargetSize: 40px;
     }
 
     &.item-directory ion-icon {
@@ -835,7 +835,7 @@ body.core-iframe-fullscreen ion-router-outlet {
         --border-width: 0;
 
         --border-color: var(--color-tint);
-        --border-radius: var(--radius-sm);
+        --border-radius: var(--mdl-shape-borderRadius-sm);
         --background: var(--color-tint);
         --color: var(--color-shade);
 
@@ -957,7 +957,7 @@ ion-card {
 }
 
 .section-summary core-format-text img {
-    border-radius: var(--radius-lg);
+    border-radius: var(--mdl-shape-borderRadius-lg);
 }
 
 ion-list.core-course-module-list-wrapper,
@@ -1008,7 +1008,7 @@ ion-action-sheet.md {
     }
 
     .action-sheet-group:first-child {
-        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        border-radius: var(--mdl-shape-borderRadius-lg) var(--mdl-shape-borderRadius-lg) 0 0;
     }
 
     .action-sheet-group-cancel {
@@ -1173,7 +1173,7 @@ ion-select-popover {
 ion-badge {
     line-height: 1.1;
     padding: 2px 8px;
-    border-radius: var(--radius-lg);
+    border-radius: var(--mdl-shape-borderRadius-lg);
 }
 
 ion-chip,
@@ -1185,8 +1185,8 @@ ion-button.button.chip {
     font-weight: normal;
 
     ion-icon {
-        font-size: 16px;
-        min-width: 16px;
+        font-size: var(--mdl-typography-icon-fontSize-sm);
+        min-width: var(--mdl-typography-icon-fontSize-sm);
         @include margin(0, 8px, 0, 0);
     }
 
@@ -1196,7 +1196,7 @@ ion-button.button.chip {
 }
 
 ion-button.button.chip {
-    --border-radius: var(--radius-md);
+    --border-radius: var(--mdl-shape-borderRadius-md);
     min-height: 32px;
     font-size: 14px;
 
@@ -1258,7 +1258,7 @@ ion-chip {
 
 ion-searchbar {
     height: var(--height) !important;
-    --border-radius: var(--radius-xs);
+    --border-radius: var(--mdl-shape-borderRadius-xs);
 
     .searchbar-input-container {
         color: var(--color) !important;
@@ -1266,7 +1266,7 @@ ion-searchbar {
     }
 
     .searchbar-input {
-        --border-radius: var(--radius-xs);
+        --border-radius: var(--mdl-shape-borderRadius-xs);
 
         height: var(--height) !important;
         border: 1px solid var(--border-color) !important;
@@ -1334,7 +1334,7 @@ mark, .matchtext {
 
 // Monospaced font.
 .core-monospaced {
-    font-family: Andale Mono,Monaco,Courier New,DejaVu Sans Mono,monospace;
+    font-family: var(--mdl-typography-monospace-font);
 }
 
 .core-iframe-offline-disabled {
@@ -1370,7 +1370,7 @@ details summary {
 }
 
 textarea {
-    min-height: var(--a11y-min-target-size);
+    min-height: var(--a11y-sizing-minTargetSize);
 }
 
 textarea:not([core-auto-rows]) {

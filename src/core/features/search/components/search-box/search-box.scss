@@ -1,5 +1,5 @@
 :host {
-    --height: var(--a11y-min-target-size);
+    --height: var(--a11y-sizing-minTargetSize);
     --search-height: calc(var(--height) - 2px);
     min-height: var(--height);
     display: block;
@@ -28,7 +28,7 @@
 
         ion-button.button {
             margin: 0;
-            --a11y-min-target-size: var(--search-height);
+            --a11y-sizing-minTargetSize: var(--search-height);
             --padding-start: 0px;
             --padding-end: 0px;
             font-size: 12px;
@@ -50,7 +50,7 @@
         }
 
         ion-item {
-            --min-height: var(--a11y-min-target-size);
+            --min-height: var(--a11y-sizing-minTargetSize);
             --border-width: 0px;
             --background: var(--core-search-box-background);
 

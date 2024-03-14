@@ -17,7 +17,7 @@
             --module-icon-size: var(--core-global-search-result-icon-size);
             --module-legacy-icon-size: var(--core-global-search-result-icon-size);
 
-            margin-inline-end: var(--spacing-2);
+            margin-inline-end: var(--mdl-spacing-2);
             margin-top: 0px;
             margin-bottom: 0px;
             flex-shrink: 0;
@@ -27,7 +27,7 @@
             width: var(--core-global-search-result-icon-size);
             height: var(--core-global-search-result-icon-size);
 
-            margin-inline-end: var(--spacing-2);
+            margin-inline-end: var(--mdl-spacing-2);
             flex-shrink: 0;
         }
 
@@ -36,15 +36,15 @@
     core-user-avatar {
         --core-avatar-size: var(--core-global-search-result-image-size);
 
-        margin-top: var(--spacing-3);
-        margin-bottom: var(--spacing-3);
+        margin-top: var(--mdl-spacing-3);
+        margin-bottom: var(--mdl-spacing-3);
     }
 
     core-course-image {
         --core-image-size: var(--core-global-search-result-image-size);
 
-        margin-top: var(--spacing-3);
-        margin-bottom: var(--spacing-3);
+        margin-top: var(--mdl-spacing-3);
+        margin-bottom: var(--mdl-spacing-3);
     }
 
     ion-label {
@@ -72,12 +72,12 @@
                 justify-items: center;
                 align-items: center;
                 color: var(--core-global-search-result-context-color);
-                margin-top: var(--spacing-2);
-                margin-inline-end: var(--spacing-4);
+                margin-top: var(--mdl-spacing-2);
+                margin-inline-end: var(--mdl-spacing-4);
                 font-size: 12px;
 
                 ion-icon {
-                    margin-inline-end: var(--spacing-1);
+                    margin-inline-end: var(--mdl-spacing-1);
                     flex-shrink: 0;
                 }
 

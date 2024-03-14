@@ -1,146 +1,160 @@
+@import "./globals.scss";
+
 html {
 
-    // Spacing
+    // Variables in the design system should be named using the following pattern:
+    // SYSTEM-CATEGORY-CONCEPT-PROPERTY-VARIANT (where the only required part is SYSTEM)
+    // SYSTEM: The name of the design system (e.g. ion, mdl, app, etc.)
+    // CATEGORY: The category of the component (e.g. color, typography, spacing, etc.)
+    // CONCEPT: The concept of the category (e.g. component name)
+    // PROPERTY: The property of the concept in camel case (e.g. color, fontSize, spacing, etc.)
+    // VARIANT: The variant of the property (e.g. primary, size[sm, md, lg], dark/light, state  etc.)
+    //
+    // Some guide: https://medium.com/eightshapes-llc/naming-tokens-in-design-systems-9e86c7444676
+
+    // ***** SPACING category ***** //
     @for $i from 0 to 6 {
-        --spacing-#{$i}: #{$i*4}px;
+        --mdl-spacing-#{$i}: #{$i*4}px;
     }
 
-    // Typography
-    --font-size-sm: 12px;
-    --font-size-md: 14px;
-    --font-size-lg: 16px;
+    // ***** TYPOGRAPHY category ***** //
+    // Sintaxis:[ <font-style> || <font-variant> || <font-weight> ]? <font-size> [ / <line-height> ]? <font-family>
+    --mdl-typography-fontSize-sm: #{dynamic-font(12px)}; // 0.75rem
+    --mdl-typography-fontSize-md: #{dynamic-font(14px)}; // 0.875rem
+    --mdl-typography-fontSize-lg: #{dynamic-font(16px)}; // 1rem
 
-    --font-weight-normal: 400;
-    --font-weight-medium: 500;
+    --mdl-typography-fontWeight-normal: 400;
+    --mdl-typography-fontWeight-medium: 500;
 
-    // Typography - Body
-    --body-font-size-sm: var(--font-size-sm);
-    --body-font-size-md: var(--font-size-md);
-    --body-font-size-lg: var(--font-size-lg);
-    --body-font-weight: var(--font-weight-normal);
-    --body-line-height: 150%;
+    --mdl-typography-monospace-font: Andale Mono,Monaco,Courier New,DejaVu Sans Mono,monospace;
 
-    --body-sm-font: normal normal var(--body-font-weight) var(--body-font-size-sm)/var(--body-line-height) var(--ion-font-family);
-    --body-md-font: normal normal var(--body-font-weight) var(--body-font-size-md)/var(--body-line-height) var(--ion-font-family);
-    --body-lg-font: normal normal var(--body-font-weight) var(--body-font-size-lg)/var(--body-line-height) var(--ion-font-family);
+    // Body font size
+    --mdl-typography-body-fontSize-sm: var(--mdl-typography-fontSize-sm);
+    --mdl-typography-body-fontSize-md: var(--mdl-typography-fontSize-md);
+    --mdl-typography-body-fontSize-lg: var(--mdl-typography-fontSize-lg);
 
-    // Typography - Links
-    --link-sm-font-size: var(--font-size-sm);
-    --link-md-font-size: var(--font-size-md);
-    --link-lg-font-size: var(--font-size-lg);
-    --link-font-weight: var(--font-weight-normal);
-    --link-line-height: 150%;
+    --mdl-typography-body-fontWeight: var(--mdl-typography-fontWeight-normal);
+    --mdl-typography-body-lineHeight: 150%;
+    --mdl-typography-body-letterSpacing: 0.5px;
+    --mdl-typography-body-paragraphSpacing: 150%;
 
-    --link-sm-font: normal normal var(--link-font-weight) var(--link-sm-font-size)/var(--link-line-height) var(--ion-font-family);
-    --link-md-font: normal normal var(--link-font-weight) var(--link-md-font-size)/var(--link-line-height) var(--ion-font-family);
-    --link-lg-font: normal normal var(--link-font-weight) var(--link-lg-font-size)/var(--link-line-height) var(--ion-font-family);
+    --mdl-typography-body-font-sm: normal normal var(--mdl-typography-body-fontWeight) var(--mdl-typography-body-fontSize-sm)/var(--mdl-typography-body-lineHeight) var(--ion-font-family);
+    --mdl-typography-body-font-md: normal normal var(--mdl-typography-body-fontWeight) var(--mdl-typography-body-fontSize-md)/var(--mdl-typography-body-lineHeight) var(--ion-font-family);
+    --mdl-typography-body-font-lg: normal normal var(--mdl-typography-body-fontWeight) var(--mdl-typography-body-fontSize-lg)/var(--mdl-typography-body-lineHeight) var(--ion-font-family);
 
-    // Typography - Labels
-    --label-sm-font-size: 10px;
-    --label-md-font-size: 12px;
-    --label-lg-font-size: 14px;
-    --label-font-weight: var(--font-weight-medium);
+    // Links
+    --mdl-typography-link-fontSize-sm: var(--mdl-typography-fontSize-sm);
+    --mdl-typography-link-fontSize-md: var(--mdl-typography-fontSize-md);
+    --mdl-typography-link-fontSize-lg: var(--mdl-typography-fontSize-lg);
 
-    --label-sm-line-height: 16px;
-    --label-md-line-height: 16px;
-    --label-lg-line-height: 20px;
+    --mdl-typography-link-fontWeight: var(--mdl-typography-fontWeight-normal);
+    --mdl-typography-link-lineHeight: 150%;
+    --mdl-typography-link-letterSpacing: 0.5px;
+    --mdl-typography-link-paragraphSpacing: 150%;
 
-    --label-sm-font: normal normal var(--label-font-weight) var(--label-sm-font-size)/var(--label-sm-line-height) var(--ion-font-family);
-    --label-md-font: normal normal var(--label-font-weight) var(--label-md-font-size)/var(--label-md-line-height) var(--ion-font-family);
-    --label-lg-font: normal normal var(--label-font-weight) var(--label-lg-font-size)/var(--label-lg-line-height) var(--ion-font-family);
+    --mdl-typography-link-font-sm: normal normal var(--mdl-typography-link-fontWeight) var(--mdl-typography-link-fontSize-sm)/var(--mdl-typography-link-lineHeight) var(--ion-font-family);
+    --mdl-typography-link-font-md: normal normal var(--mdl-typography-link-fontWeight) var(--mdl-typography-link-fontSize-md)/var(--mdl-typography-link-lineHeight) var(--ion-font-family);
+    --mdl-typography-link-font-lg: normal normal var(--mdl-typography-link-fontWeight) var(--mdl-typography-link-fontSize-lg)/var(--mdl-typography-link-lineHeight) var(--ion-font-family);
 
-    // Typography - Subtitles
-    --subtitle-sm-font-size: 14px;
-    --subtitle-md-font-size: 16px;
-    --subtitle-lg-font-size: 20px;
+    // Labels
+    --mdl-typography-label-fontSize-sm: #{dynamic-font(10px)}; // 0.625rem
+    --mdl-typography-label-fontSize-md: #{dynamic-font(12px)};
+    --mdl-typography-label-fontSize-lg: #{dynamic-font(14px)};
 
-    --subtitle-font-weight: var(--font-weight-medium);
-    --subtitle-line-height: 150%;
+    --mdl-typography-label-fontWeight: var(--mdl-typography-fontWeight-medium);
 
-    --subtitle-sm-font: normal normal var(--subtitle-font-weight) var(--subtitle-sm-font-size)/var(--subtitle-line-height) var(--ion-font-family);
-    --subtitle-md-font: normal normal var(--subtitle-font-weight) var(--subtitle-md-font-size)/var(--subtitle-line-height) var(--ion-font-family);
-    --subtitle-lg-font: normal normal var(--subtitle-font-weight) var(--subtitle-lg-font-size)/var(--subtitle-line-height) var(--ion-font-family);
+    --mdl-typography-label-lineHeight-sm: #{dynamic-font(16px)};
+    --mdl-typography-label-lineHeight-md: #{dynamic-font(16px)};
+    --mdl-typography-label-lineHeight-lg: #{dynamic-font(20px)};
 
-    // Typography - Headings
-    --heading-1-font-size: 28px;
-    --heading-2-font-size: 24px;
-    --heading-3-font-size: 22px;
-    --heading-4-font-size: 20px;
-    --heading-5-font-size: 18px;
-    --heading-6-font-size: 16px;
+    --mdl-typography-label-letterSpacing: 0.1px;
 
-    --heading-1-font-weight: var(--font-weight-normal);
-    --heading-2-font-weight: var(--font-weight-normal);
-    --heading-3-font-weight: var(--font-weight-normal);
-    --heading-4-font-weight: var(--font-weight-medium);
-    --heading-5-font-weight: var(--font-weight-medium);
-    --heading-6-font-weight: var(--font-weight-medium);
+    --mdl-typography-label-font-sm: normal normal var(--mdl-typography-label-fontWeight) var(--mdl-typography-label-fontSize-sm)/var(--mdl-typography-label-lineHeight-sm) var(--ion-font-family);
+    --mdl-typography-label-font-md: normal normal var(--mdl-typography-label-fontWeight) var(--mdl-typography-label-fontSize-md)/var(--mdl-typography-label-lineHeight-md) var(--ion-font-family);
+    --mdl-typography-label-font-lg: normal normal var(--mdl-typography-label-fontWeight) var(--mdl-typography-label-fontSize-lg)/var(--mdl-typography-label-lineHeight-lg) var(--ion-font-family);
 
-    --heading-line-height: 130%;
+    // Subtitles
+    --mdl-typography-subtitle-fontSize-sm: #{dynamic-font(14px)};
+    --mdl-typography-subtitle-fontSize-md: #{dynamic-font(16px)};
+    --mdl-typography-subtitle-fontSize-lg: #{dynamic-font(20px)};
 
-    --heading-1-font: normal normal var(--heading-1-font-weight) var(--heading-1-font-size)/var(--heading-line-height) var(--ion-font-family);
-    --heading-2-font: normal normal var(--heading-2-font-weight) var(--heading-2-font-size)/var(--heading-line-height) var(--ion-font-family);
-    --heading-3-font: normal normal var(--heading-3-font-weight) var(--heading-3-font-size)/var(--heading-line-height) var(--ion-font-family);
-    --heading-4-font: normal normal var(--heading-4-font-weight) var(--heading-4-font-size)/var(--heading-line-height) var(--ion-font-family);
-    --heading-5-font: normal normal var(--heading-5-font-weight) var(--heading-5-font-size)/var(--heading-line-height) var(--ion-font-family);
-    --heading-6-font: normal normal var(--heading-6-font-weight) var(--heading-6-font-size)/var(--heading-line-height) var(--ion-font-family);
+    --mdl-typography-subtitle-fontWeight: var(--mdl-typography-fontWeight-medium);
+    --mdl-typography-subtitle-lineHeight: 150%;
+    --mdl-typography-subtitle-letterSpacing: 0.1px;
 
-    // Radiuses
-    --radius-none: 0px;
-    --radius-xs: 4px;
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
-    --radius-round: 50%;
+    --mdl-typography-subtitle-font-sm: normal normal var(--mdl-typography-subtitle-fontWeight) var(--mdl-typography-subtitle-fontSize-sm)/var(--mdl-typography-subtitle-lineHeight) var(--ion-font-family);
+    --mdl-typography-subtitle-font-md: normal normal var(--mdl-typography-subtitle-fontWeight) var(--mdl-typography-subtitle-fontSize-md)/var(--mdl-typography-subtitle-lineHeight) var(--ion-font-family);
+    --mdl-typography-subtitle-font-lg: normal normal var(--mdl-typography-subtitle-fontWeight) var(--mdl-typography-subtitle-fontSize-lg)/var(--mdl-typography-subtitle-lineHeight) var(--ion-font-family);
 
-    // Shadows / Elevation
-    --drop-shadow-color: 40 40 40; //#282828;
-    --drop-shadow-00: 0px 0px 0px 0px rgb(var(--drop-shadow-color) / 20%);
-    --drop-shadow-outline: 0px 0px 0px 2px rgb(var(--drop-shadow-color) / 15%), 0px 2px 4px 0px rgb(var(--drop-shadow-color) / 2%);
-    --drop-shadow-01dp: 0px 1px 3px 0px rgb(var(--drop-shadow-color) / 20%), 0px 2px 1px 0px rgb(var(--drop-shadow-color) / 12%), 0px 1px 1px 0px rgb(var(--drop-shadow-color) / 14%);
-    --drop-shadow-02dp: 0px 1px 5px 0px rgb(var(--drop-shadow-color) / 20%), 0px 3px 1px 0px rgb(var(--drop-shadow-color) / 12%), 0px 2px 2px 0px rgb(var(--drop-shadow-color) / 14%);
-    --drop-shadow-03dp: 0px 1px 8px 0px rgb(var(--drop-shadow-color) / 20%), 0px 3px 3px 0px rgb(var(--drop-shadow-color) / 12%), 0px 3px 4px 0px rgb(var(--drop-shadow-color) / 14%);
-    --drop-shadow-04dp: 0px 2px 4px 0px rgb(var(--drop-shadow-color) / 20%), 0px 1px 10px 0px rgb(var(--drop-shadow-color) / 12%), 0px 4px 5px 0px rgb(var(--drop-shadow-color) / 14%);
-    --drop-shadow-06dp: 0px 3px 5px 0px rgb(var(--drop-shadow-color) / 20%), 0px 1px 18px 0px rgb(var(--drop-shadow-color) / 12%), 0px 6px 10px 0px rgb(var(--drop-shadow-color) / 14%);
-    --drop-shadow-08dp: 0px 5px 5px 0px rgb(var(--drop-shadow-color) / 20%), 0px 3px 14px 0px rgb(var(--drop-shadow-color) / 12%), 0px 8px 10px 0px rgb(var(--drop-shadow-color) / 14%);
-    --drop-shadow-12dp: 0px 7px 8px 0px rgb(var(--drop-shadow-color) / 20%),0px 5px 22px 0px rgb(var(--drop-shadow-color) / 12%),0px 12px 17px 0px rgb(var(--drop-shadow-color) / 14%);
-    --drop-shadow-16dp: 0px 7px 8px 0px rgb(var(--drop-shadow-color) / 20%),0px 5px 22px 0px rgb(var(--drop-shadow-color) / 12%),0px 12px 17px 0px rgb(var(--drop-shadow-color) / 14%);
-    --drop-shadow-24dp: 0px 11px 15px 0px rgb(var(--drop-shadow-color) / 20%), 0px 9px 46px 0px rgb(var(--drop-shadow-color) / 12%), 0px 24px 38px 0px rgb(var(--drop-shadow-color) / 14%);
+    // Headings
+    --mdl-typography-heading1-fontSize: #{dynamic-font(28px)}; // 1.75rem
+    --mdl-typography-heading2-fontSize: #{dynamic-font(24px)}; // 1.5rem
+    --mdl-typography-heading3-fontSize: #{dynamic-font(22px)}; // 1.375rem
+    --mdl-typography-heading4-fontSize: #{dynamic-font(20px)}; // 1.25rem
+    --mdl-typography-heading5-fontSize: #{dynamic-font(18px)}; // 1.125rem
+    --mdl-typography-heading6-fontSize: #{dynamic-font(16px)}; // 1rem
 
-    // A11y
-    --a11y-min-target-size: 44px;
+    --mdl-typography-heading1-fontWeight: var(--mdl-typography-fontWeight-normal);
+    --mdl-typography-heading2-fontWeight: var(--mdl-typography-fontWeight-normal);
+    --mdl-typography-heading3-fontWeight: var(--mdl-typography-fontWeight-normal);
+    --mdl-typography-heading4-fontWeight: var(--mdl-typography-fontWeight-medium);
+    --mdl-typography-heading5-fontWeight: var(--mdl-typography-fontWeight-medium);
+    --mdl-typography-heading6-fontWeight: var(--mdl-typography-fontWeight-medium);
 
-    // Colors
-    --blue: #0f6cbf;
+    --mdl-typography-heading-lineHeight: 130%;
 
-    --text-color-main: var(--gray-900);
-    --text-color-secondary: var(--gray-800);
+    --mdl-typography-heading1-font: normal normal var(--mdl-typography-heading1-fontWeight) var(--mdl-typography-heading1-fontSize)/var(--mdl-typography-heading-lineHeight) var(--ion-font-family);
+    --mdl-typography-heading2-font: normal normal var(--mdl-typography-heading2-fontWeight) var(--mdl-typography-heading2-fontSize)/var(--mdl-typography-heading-lineHeight) var(--ion-font-family);
+    --mdl-typography-heading3-font: normal normal var(--mdl-typography-heading3-fontWeight) var(--mdl-typography-heading3-fontSize)/var(--mdl-typography-heading-lineHeight) var(--ion-font-family);
+    --mdl-typography-heading4-font: normal normal var(--mdl-typography-heading4-fontWeight) var(--mdl-typography-heading4-fontSize)/var(--mdl-typography-heading-lineHeight) var(--ion-font-family);
+    --mdl-typography-heading5-font: normal normal var(--mdl-typography-heading5-fontWeight) var(--mdl-typography-heading5-fontSize)/var(--mdl-typography-heading-lineHeight) var(--ion-font-family);
+    --mdl-typography-heading6-font: normal normal var(--mdl-typography-heading6-fontWeight) var(--mdl-typography-heading6-fontSize)/var(--mdl-typography-heading-lineHeight) var(--ion-font-family);
 
-    --state-color-hover: rgb(40 40 40, 4%); // --gray-900 4%
-    --state-color-pressed: rgb(40 40 40, 12%); // --gray-900 12%
-    --state-color-focused: rgb(40 40 40, 12%); // --gray-900 12%
-    --state-color-keyboard-focus: var(--blue);
+    // Icons
+    --mdl-typography-icon-fontSize-sm: #{dynamic-font(16px)};
+    --mdl-typography-icon-fontSize-md: #{dynamic-font(20px)};
+    --mdl-typography-icon-fontSize-lg: #{dynamic-font(24px)};
 
-}
 
-html.dark {
+    // ***** SHAPE category ***** //
+    --mdl-shape-borderRadius-none: 0px;
+    --mdl-shape-borderRadius-xs: 4px;
+    --mdl-shape-borderRadius-sm: 8px;
+    --mdl-shape-borderRadius-md: 12px;
+    --mdl-shape-borderRadius-lg: 16px;
+    --mdl-shape-borderRadius-xl: 24px;
+    --mdl-shape-borderRadius-round: 50%;
 
-    // Colors
-    --text-color-main: var(--gray-200);
-    --text-color-secondary: var(--gray-300);
+    // ***** SHADOW category ***** //
+    --mdl-shadow-boxShadowColor: 40 40 40; //#282828;
+    --mdl-shadow-boxShadow-00: 0px 0px 0px 0px rgb(var(--mdl-shadow-boxShadowColor) / 20%);
+    --mdl-shadow-boxShadow-outline: 0px 0px 0px 2px rgb(var(--mdl-shadow-boxShadowColor) / 15%), 0px 2px 4px 0px rgb(var(--mdl-shadow-boxShadowColor) / 2%);
+    --mdl-shadow-boxShadow-01: 0px 1px 3px 0px rgb(var(--mdl-shadow-boxShadowColor) / 20%), 0px 2px 1px 0px rgb(var(--mdl-shadow-boxShadowColor) / 12%), 0px 1px 1px 0px rgb(var(--mdl-shadow-boxShadowColor) / 14%);
+    --mdl-shadow-boxShadow-02: 0px 1px 5px 0px rgb(var(--mdl-shadow-boxShadowColor) / 20%), 0px 3px 1px 0px rgb(var(--mdl-shadow-boxShadowColor) / 12%), 0px 2px 2px 0px rgb(var(--mdl-shadow-boxShadowColor) / 14%);
+    --mdl-shadow-boxShadow-03: 0px 1px 8px 0px rgb(var(--mdl-shadow-boxShadowColor) / 20%), 0px 3px 3px 0px rgb(var(--mdl-shadow-boxShadowColor) / 12%), 0px 3px 4px 0px rgb(var(--mdl-shadow-boxShadowColor) / 14%);
+    --mdl-shadow-boxShadow-04: 0px 2px 4px 0px rgb(var(--mdl-shadow-boxShadowColor) / 20%), 0px 1px 10px 0px rgb(var(--mdl-shadow-boxShadowColor) / 12%), 0px 4px 5px 0px rgb(var(--mdl-shadow-boxShadowColor) / 14%);
+    --mdl-shadow-boxShadow-06: 0px 3px 5px 0px rgb(var(--mdl-shadow-boxShadowColor) / 20%), 0px 1px 18px 0px rgb(var(--mdl-shadow-boxShadowColor) / 12%), 0px 6px 10px 0px rgb(var(--mdl-shadow-boxShadowColor) / 14%);
+    --mdl-shadow-boxShadow-08: 0px 5px 5px 0px rgb(var(--mdl-shadow-boxShadowColor) / 20%), 0px 3px 14px 0px rgb(var(--mdl-shadow-boxShadowColor) / 12%), 0px 8px 10px 0px rgb(var(--mdl-shadow-boxShadowColor) / 14%);
+    --mdl-shadow-boxShadow-12: 0px 7px 8px 0px rgb(var(--mdl-shadow-boxShadowColor) / 20%),0px 5px 22px 0px rgb(var(--mdl-shadow-boxShadowColor) / 12%),0px 12px 17px 0px rgb(var(--mdl-shadow-boxShadowColor) / 14%);
+    --mdl-shadow-boxShadow-16: 0px 7px 8px 0px rgb(var(--mdl-shadow-boxShadowColor) / 20%),0px 5px 22px 0px rgb(var(--mdl-shadow-boxShadowColor) / 12%),0px 12px 17px 0px rgb(var(--mdl-shadow-boxShadowColor) / 14%);
+    --mdl-shadow-boxShadow-24: 0px 11px 15px 0px rgb(var(--mdl-shadow-boxShadowColor) / 20%), 0px 9px 46px 0px rgb(var(--mdl-shadow-boxShadowColor) / 12%), 0px 24px 38px 0px rgb(var(--mdl-shadow-boxShadowColor) / 14%);
 
+    // ***** ACCESSIBILITY ***** //
+    --a11y-sizing-minTargetSize: 44px;
+    --a11y-shadow-focus-boxShadowSpread: 2px;
+    --a11y-shadow-focus-boxShadow: inset 0 0 var(--a11y-shadow-focus-boxShadowSpread) 1px var(--a11y-focus-color);
 }
 
 /** @deprecated since 4.3 **/
 html {
-    --small-radius: var(--radius-xs);
-    --medium-radius: var(--radius-sm);
-    --big-radius: var(--radius-lg);
-    --huge-radius: var(--radius-xl);
+    --small-radius: var(--mdl-shape-borderRadius-xs);
+    --medium-radius: var(--mdl-shape-borderRadius-sm);
+    --big-radius: var(--mdl-shape-borderRadius-lg);
+    --huge-radius: var(--mdl-shape-borderRadius-xl);
 }
 
 /** @deprecated since 4.4 **/
 html {
-    --font-size-normal: var(--font-size-md);
+    --font-size-normal: var(--mdl-typography-fontSize-md);
+    --a11y-min-target-size: var(--a11y-sizing-minTargetSize);
 }

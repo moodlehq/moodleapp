@@ -5,7 +5,7 @@
         @include padding(4px, 0px, 0px, 0px);
 
         ion-icon {
-            font-size: 24px;
+            font-size: var(--mdl-typography-icon-fontSize-lg);
         }
     }
 
