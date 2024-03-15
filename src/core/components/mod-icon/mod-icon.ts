@@ -354,6 +354,11 @@ export class CoreModIconComponent implements OnInit, OnChanges {
                 scripts[i].parentNode?.removeChild(scripts[i]);
             }
 
+            // Has own styles, do not apply colors.
+            if (doc.documentElement.getElementsByTagName('style').length > 0) {
+                this.isBranded = true;
+            }
+
             // Recursively remove attributes starting with on.
             const removeAttributes = (element: Element): void => {
                 Array.from(element.attributes).forEach((attr) => {
