@@ -115,6 +115,7 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
             this.prefetchWSData(h5pActivity, siteId),
             CoreFilepool.addFilesToQueue(siteId, introFiles, AddonModH5PActivityProvider.COMPONENT, module.id),
             this.prefetchMainFile(module, h5pActivity, siteId),
+            CoreH5P.getCustomCssSrc(siteId),
         ]);
     }
 

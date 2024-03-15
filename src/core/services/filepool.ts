@@ -1719,6 +1719,24 @@ export class CoreFilepoolProvider {
     }
 
     /**
+     * Returns the local src of a file.
+     *
+     * @param siteId The site ID.
+     * @param fileUrl The file URL.
+     * @returns Src URL.
+     */
+    async getInternalSrcByUrl(siteId: string, fileUrl: string): Promise<string> {
+        if (!CoreFile.isAvailable()) {
+            throw new CoreError('File system cannot be used.');
+        }
+
+        const file = await this.fixPluginfileURL(siteId, fileUrl);
+        const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
+
+        return this.getInternalSrcById(siteId, fileId);
+    }
+
+    /**
      * Returns the local URL of a file.
      *
      * @param siteId The site ID.
