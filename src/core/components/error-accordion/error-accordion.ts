@@ -14,7 +14,12 @@
 
 import { Component, ElementRef, Input, OnChanges, OnInit } from '@angular/core';
 import { Translate } from '@singletons';
+import { CoreUtils } from '@services/utils/utils';
+import { CoreDom } from '@singletons/dom';
 import { CoreForms } from '@singletons/form';
+import { CoreLogger } from '@singletons/logger';
+
+const logger = CoreLogger.getInstance('CoreErrorAccordionComponent');
 
 /**
  * Component to show error details.
@@ -32,41 +37,91 @@ export class CoreErrorAccordionComponent implements OnInit, OnChanges {
     /**
      * Render an instance of the component into an HTML string.
      *
-     * @param errorDetails Error details.
+     * @param element Root element.
      * @param errorCode Error code.
-     * @returns Component HTML.
+     * @param errorDetails Error details.
      */
-    static render(errorDetails: string, errorCode: string): string {
-        const toggleId = CoreForms.uniqueId('error-accordion-toggle');
+    static async render(element: Element, errorCode: string, errorDetails: string): Promise<void> {
+        const html = this.html(errorCode, errorDetails);
+
+        element.innerHTML = html;
+
+        await this.hydrate(element);
+    }
+
+    /**
+     * Get component html.
+     *
+     * @param errorCode Error code.
+     * @param errorDetails Error details.
+     * @returns HTML.
+     */
+    static html(errorCode: string, errorDetails: string): string {
+        const contentId = CoreForms.uniqueId('error-accordion-content');
         const errorCodeLabel = Translate.instant('core.errorcode', { errorCode });
         const hideDetailsLabel = Translate.instant('core.errordetailshide');
         const showDetailsLabel = Translate.instant('core.errordetailsshow');
 
         return `
             <div class="core-error-accordion">
-                <input id="${toggleId}" type="checkbox" class="core-error-accordion--checkbox" />
-                <div class="core-error-accordion--code"><strong>${errorCodeLabel}</strong></div>
-                <div class="core-error-accordion--details">
+                <h3 class="core-error-accordion--code">${errorCodeLabel}</h3>
+                <div id="${contentId}" class="core-error-accordion--details" role="region" aria-hidden="true">
                     <p>${errorDetails}</p>
                 </div>
-                <label for="${toggleId}" class="core-error-accordion--toggle" aria-hidden="true">
-                    <span class="core-error-accordion--hide-content">
-                        ${hideDetailsLabel}
-                        <ion-icon name="chevron-up" />
-                    </span>
-                    <span class="core-error-accordion--show-content">
-                        ${showDetailsLabel}
-                        <ion-icon name="chevron-down" />
-                    </span>
-                </label>
+                <button type="button" class="core-error-accordion--toggle" aria-expanded="false" aria-controls="${contentId}">
+                    <div class="core-error-accordion--toggle-text">
+                        <span class="core-error-accordion--show-details">
+                            ${showDetailsLabel}
+                        </span>
+                        <span class="core-error-accordion--hide-details">
+                            ${hideDetailsLabel}
+                        </span>
+                    </div>
+                    <ion-icon name="chevron-down" />
+                </button>
             </div>
         `;
     }
 
-    @Input() errorDetails!: string;
-    @Input() errorCode!: string;
+    /**
+     * Hydrate component.
+     *
+     * @param element Root element.
+     */
+    static async hydrate(element: Element): Promise<void> {
+        const wrapper = element.querySelector<HTMLDivElement>('.core-error-accordion');
+        const description = element.querySelector<HTMLParagraphElement>('.core-error-accordion--details');
+        const button = element.querySelector<HTMLButtonElement>('.core-error-accordion--toggle');
+        const hideText = element.querySelector<HTMLSpanElement>('.core-error-accordion--hide-details');
 
-    constructor(private element: ElementRef) {}
+        if (!wrapper || !description || !button || !hideText) {
+            logger.error('Couldn\'t render error-accordion, one of the child elements is missing');
+
+            return;
+        }
+
+        await CoreDom.waitToBeVisible(wrapper);
+
+        button.onclick = () => {
+            wrapper.classList.toggle('expanded');
+            description.setAttribute('aria-hidden', description.getAttribute('aria-hidden') === 'true' ? 'false' : 'true');
+            button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+        };
+
+        hideText.style.display = 'none';
+        wrapper.style.setProperty('--width', `${wrapper.clientWidth}px`);
+        wrapper.style.setProperty('--description-height', `${description.clientHeight}px`);
+        wrapper.classList.add('hydrated');
+
+        await CoreUtils.nextTick();
+
+        hideText.style.display = 'revert';
+    }
+
+    @Input() errorCode!: string;
+    @Input() errorDetails!: string;
+
+    constructor(private element: ElementRef<HTMLElement>) {}
 
     /**
      * @inheritdoc
@@ -85,8 +140,8 @@ export class CoreErrorAccordionComponent implements OnInit, OnChanges {
     /**
      * Render component html in the element created by Angular.
      */
-    private render(): void {
-        this.element.nativeElement.innerHTML = CoreErrorAccordionComponent.render(this.errorDetails, this.errorCode);
+    private async render(): Promise<void> {
+        await CoreErrorAccordionComponent.render(this.element.nativeElement, this.errorCode, this.errorDetails);
     }
 
 }

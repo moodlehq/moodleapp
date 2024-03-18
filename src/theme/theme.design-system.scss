@@ -5,9 +5,7 @@ html {
         --spacing-#{$i}: #{$i*4}px;
     }
 
-    // Font sizes
-
-    // Body font size
+    // Typography
     --font-size-sm: 12px;
     --font-size-md: 14px;
     --font-size-lg: 16px;
@@ -15,19 +13,29 @@ html {
     --font-weight-normal: 400;
     --font-weight-medium: 500;
 
+    // Typography - Body
     --body-font-size-sm: var(--font-size-sm);
     --body-font-size-md: var(--font-size-md);
     --body-font-size-lg: var(--font-size-lg);
     --body-font-weight: var(--font-weight-normal);
     --body-line-height: 150%;
 
+    --body-sm-font: normal normal var(--body-font-weight) var(--body-font-size-sm)/var(--body-line-height) var(--ion-font-family);
+    --body-md-font: normal normal var(--body-font-weight) var(--body-font-size-md)/var(--body-line-height) var(--ion-font-family);
+    --body-lg-font: normal normal var(--body-font-weight) var(--body-font-size-lg)/var(--body-line-height) var(--ion-font-family);
+
+    // Typography - Links
     --link-sm-font-size: var(--font-size-sm);
     --link-md-font-size: var(--font-size-md);
     --link-lg-font-size: var(--font-size-lg);
     --link-font-weight: var(--font-weight-normal);
     --link-line-height: 150%;
 
-    // Labels
+    --link-sm-font: normal normal var(--link-font-weight) var(--link-sm-font-size)/var(--link-line-height) var(--ion-font-family);
+    --link-md-font: normal normal var(--link-font-weight) var(--link-md-font-size)/var(--link-line-height) var(--ion-font-family);
+    --link-lg-font: normal normal var(--link-font-weight) var(--link-lg-font-size)/var(--link-line-height) var(--ion-font-family);
+
+    // Typography - Labels
     --label-sm-font-size: 10px;
     --label-md-font-size: 12px;
     --label-lg-font-size: 14px;
@@ -37,7 +45,11 @@ html {
     --label-md-line-height: 16px;
     --label-lg-line-height: 20px;
 
-    // Subtitles
+    --label-sm-font: normal normal var(--label-font-weight) var(--label-sm-font-size)/var(--label-sm-line-height) var(--ion-font-family);
+    --label-md-font: normal normal var(--label-font-weight) var(--label-md-font-size)/var(--label-md-line-height) var(--ion-font-family);
+    --label-lg-font: normal normal var(--label-font-weight) var(--label-lg-font-size)/var(--label-lg-line-height) var(--ion-font-family);
+
+    // Typography - Subtitles
     --subtitle-sm-font-size: 14px;
     --subtitle-md-font-size: 16px;
     --subtitle-lg-font-size: 20px;
@@ -45,7 +57,11 @@ html {
     --subtitle-font-weight: var(--font-weight-medium);
     --subtitle-line-height: 150%;
 
-    // Headings
+    --subtitle-sm-font: normal normal var(--subtitle-font-weight) var(--subtitle-sm-font-size)/var(--subtitle-line-height) var(--ion-font-family);
+    --subtitle-md-font: normal normal var(--subtitle-font-weight) var(--subtitle-md-font-size)/var(--subtitle-line-height) var(--ion-font-family);
+    --subtitle-lg-font: normal normal var(--subtitle-font-weight) var(--subtitle-lg-font-size)/var(--subtitle-line-height) var(--ion-font-family);
+
+    // Typography - Headings
     --heading-1-font-size: 28px;
     --heading-2-font-size: 24px;
     --heading-3-font-size: 22px;
@@ -94,6 +110,26 @@ html {
 
     // A11y
     --a11y-min-target-size: 44px;
+
+    // Colors
+    --blue: #0f6cbf;
+
+    --text-color-main: var(--gray-900);
+    --text-color-secondary: var(--gray-800);
+
+    --state-color-hover: rgb(40 40 40, 4%); // --gray-900 4%
+    --state-color-pressed: rgb(40 40 40, 12%); // --gray-900 12%
+    --state-color-focused: rgb(40 40 40, 12%); // --gray-900 12%
+    --state-color-keyboard-focus: var(--blue);
+
+}
+
+html.dark {
+
+    // Colors
+    --text-color-main: var(--gray-200);
+    --text-color-secondary: var(--gray-300);
+
 }
 
 /** @deprecated since 4.3 **/

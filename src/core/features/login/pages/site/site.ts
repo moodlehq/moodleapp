@@ -460,7 +460,7 @@ export class CoreLoginSitePage implements OnInit {
             const containerElement = alertElement.querySelector('.core-error-accordion-container');
 
             if (containerElement) {
-                containerElement.innerHTML = CoreErrorAccordionComponent.render(debug.details, debug.code);
+                await CoreErrorAccordionComponent.render(containerElement, debug.code, debug.details);
             }
         }
     }

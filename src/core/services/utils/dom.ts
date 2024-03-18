@@ -1065,7 +1065,7 @@ export class CoreDomUtilsProvider {
             const containerElement = alertElement.querySelector('.core-error-accordion-container');
 
             if (containerElement) {
-                containerElement.innerHTML = CoreErrorAccordionComponent.render(error.debug.details, error.debug.code);
+                await CoreErrorAccordionComponent.render(containerElement, error.debug.code, error.debug.details);
             }
         }
 
