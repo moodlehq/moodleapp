@@ -86,6 +86,7 @@ jobs:
               "@addon_mod_survey"
               "@addon_mod_workshop"
               "@addon_notifications"
+              "@addon_blog"
               "@core"
               "@core_comments"
               "@core_course"
