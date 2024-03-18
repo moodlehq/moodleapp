@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { CoreUser } from '@features/user/services/user';
 
 import { CoreTimeUtils } from '@services/utils/time';
 
@@ -34,11 +35,17 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
     @Input() timeLeftClass?: string; // Name of the class to apply with each second. By default, 'core-timer-timeleft-'.
     @Input() timeLeftClassThreshold = 100; // Number of seconds to start adding the timeLeftClass. Set it to -1 to not add it.
     @Input() align = 'start'; // Where to align the time and text. Defaults to 'start'. Other values: 'center', 'end'.
-    @Input() hiddable = false; // Whether the user can hide the time left.
+    @Input() hidable = false; // Whether the user can hide the time left.
     @Input() timeUpText?: string; // Text to show when the timer reaches 0. If not defined, 'core.timesup'.
     @Input() mode: CoreTimerMode = CoreTimerMode.ITEM; // How to display data.
     @Input() underTimeClassThresholds = []; // Number of seconds to add the class 'core-timer-under-'.
+    @Input() timerHiddenPreferenceName?: string; // Name of the preference to store the timer visibility.
     @Output() finished = new EventEmitter<void>(); // Will emit an event when the timer reaches 0.
+
+    /**
+     * @deprecated since 4.4. Use hidable instead.
+     */
+    @Input() hiddable?: boolean; // Whether the user can hide the time left.
 
     timeLeft?: number; // Seconds left to end.
     modeBasic = CoreTimerMode.BASIC;
@@ -54,7 +61,13 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
+        // eslint-disable-next-line deprecation/deprecation
+        if (this.hiddable !== undefined && this.hidable === undefined) {
+            // eslint-disable-next-line deprecation/deprecation
+            this.hidable = this.hiddable;
+        }
+
         const timeLeftClass = this.timeLeftClass || 'core-timer-timeleft-';
         const endTime = Math.round(this.endTime);
         this.underTimeClassThresholds.sort((a, b) => a - b); // Sort by increase order.
@@ -66,6 +79,16 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
             this.align = 'end';
         }
 
+        if (this.hidable && this.timerHiddenPreferenceName) {
+            try {
+                const hidden = await CoreUser.getUserPreference(this.timerHiddenPreferenceName);
+
+                this.showTimeLeft = hidden !== '1';
+            } catch{
+                // Ignore errors.
+            }
+        }
+
         let container: HTMLElement | undefined;
 
         // Check time left every 200ms.
@@ -74,7 +97,7 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
             this.timeLeft = Math.max(endTime - CoreTimeUtils.timestamp(), 0);
 
             if (this.timeLeft <= 100) {
-                this.hiddable = false;
+                this.hidable = false;
                 this.showTimeLeft = true;
             }
 
@@ -118,6 +141,10 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
      */
     toggleTimeLeftVisibility(): void {
         this.showTimeLeft = !this.showTimeLeft;
+
+        if (this.hidable && this.timerHiddenPreferenceName) {
+            CoreUser.setUserPreference(this.timerHiddenPreferenceName, this.showTimeLeft ? '0' : '1');
+        }
     }
 
     /**
