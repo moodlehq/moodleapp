@@ -1,0 +1,93 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate" />
+        </ion-buttons>
+        <ion-title>
+            <h1>{{ entry ? entry.subject : 'addon.blog.addnewentry' | translate }}</h1>
+        </ion-title>
+        <ion-buttons slot="end" />
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <form [formGroup]="form">
+            <ion-item>
+                <ion-input labelPlacement="stacked" formControlName="subject" type="text"
+                    [placeholder]="'addon.blog.entrytitle' | translate" name="title">
+                    <p>{{ 'addon.blog.entrytitle' | translate }}</p>
+                </ion-input>
+            </ion-item>
+
+            <ion-item>
+                <ion-label position="stacked" for="addon_blog_entry_body">{{ 'addon.blog.entrybody' | translate }}</ion-label>
+                <core-rich-text-editor name="addon_blog_entry_body" [attr.aria-label]="'addon.blog.entrybody' | translate"
+                    [control]="form.controls.summary" [placeholder]="'addon.blog.entrybody' | translate" [componentId]="component"
+                    [autoSave]="true" [contextInstanceId]="contextInstanceId" [contextLevel]="contextLevel"
+                    [elementId]="entry?.id ?? 'new_entry'" />
+            </ion-item>
+
+            <ion-item>
+                <core-combobox name="addon_blog_publish_to" formControlName="publishState" [label]="'addon.blog.publishto' | translate">
+                    <ion-select-option class="core-select-option-title" [value]="publishState.draft">
+                        {{ 'addon.blog.publishtonoone' | translate }}
+                    </ion-select-option>
+                    <ion-select-option class="core-select-option-title" [value]="publishState.site">
+                        {{ 'addon.blog.publishtosite' | translate }}
+                    </ion-select-option>
+                </core-combobox>
+            </ion-item>
+
+            <core-attachments [files]="files" [maxSubmissions]="maxFiles" [maxSize]="0" [component]="component" [allowOffline]="true"
+                [componentId]="entry?.id ?? 0" />
+
+            @if (entry && courseId && associatedCourse) {
+            <ion-item class="divider section" (click)="toggleAssociations()" button [detail]="false"
+                [attr.aria-label]="(associationsExpanded ? 'core.collapse' : 'core.expand') | translate"
+                [attr.aria-expanded]="associationsExpanded" aria-controls="addon-blog-associations"
+                [class.expandable-status-icon-expanded]="associationsExpanded">
+                <ion-icon [name]="associationsExpanded ? 'fas-chevron-down' : 'fas-chevron-right'" flip-rtl slot="start"
+                    class="expandable-status-icon" />
+                <ion-label>
+                    <h2>{{ 'addon.blog.associations' | translate }}</h2>
+                </ion-label>
+            </ion-item>
+            <div id="addon-blog-associations">
+                @if (associationsExpanded) {
+                <ion-item>
+                    @if (associatedModule) {
+                    <ion-toggle formControlName="associateWithModule">
+                        <core-format-text [text]="'addon.blog.associatewithmodule' | translate: {
+                            $a: { modtype: associatedModule.modname, modname: associatedModule.name }
+                            }" [component]="component" [componentId]="entry.id" [contextLevel]="contextLevel"
+                            [contextInstanceId]="contextInstanceId" [courseId]="entry.courseid" />
+                    </ion-toggle>
+                    } @else if (associatedCourse) {
+                    <ion-toggle formControlName="associateWithCourse">
+                        <core-format-text
+                            [text]="'addon.blog.associatewithcourse' | translate: { $a: { coursename: associatedCourse.fullname } }"
+                            [component]="component" [componentId]="entry.id" [contextLevel]="contextLevel"
+                            [contextInstanceId]="contextInstanceId" [courseId]="entry.courseid" />
+                    </ion-toggle>
+                    }
+                </ion-item>
+                }
+            </div>
+            }
+
+            <ion-item class="addon-blog-entry-buttons">
+                <ion-label>
+                    <ion-row>
+                        <ion-col>
+                            <ion-button expand="block" [attr.aria-label]="(entry ? 'core.save' : 'addon.blog.addnewentry') | translate"
+                                [disabled]="form.invalid || (entry && !hasDataChangedForEdit)" (click)="save()">
+                                {{ (entry ? 'core.save' : 'addon.blog.addnewentry') | translate }}
+                            </ion-button>
+                        </ion-col>
+                    </ion-row>
+                </ion-label>
+            </ion-item>
+
+        </form>
+    </core-loading>
+</ion-content>

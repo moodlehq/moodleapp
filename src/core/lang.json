@@ -12,6 +12,7 @@
     "areyousure": "Are you sure?",
     "back": "Back",
     "browser": "Browser",
+    "bynameondate": "by {{$a.name}} - {{$a.date}}",
     "calculating": "Calculating",
     "cancel": "Cancel",
     "cannotconnect": "Can't connect to site",

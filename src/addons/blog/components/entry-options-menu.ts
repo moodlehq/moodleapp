@@ -11,6 +11,22 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+import { Component } from '@angular/core';
+import { PopoverController } from '@singletons';
 
-export const ADDON_BLOG_MAINMENU_PAGE_NAME = 'blog';
-export const ADDON_BLOG_ENTRY_UPDATED = 'blog_entry_updated';
+@Component({
+    selector: 'addon-blog-entry-options-menu',
+    templateUrl: './entry-options-menu.html',
+})
+export class AddonBlogEntryOptionsMenuComponent {
+
+    /**
+     * Do an action over the course.
+     *
+     * @param action Action name to take.
+     */
+    action(action: string): void {
+        PopoverController.dismiss(action);
+    }
+
+}

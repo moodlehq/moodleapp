@@ -13,29 +13,33 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
+import { AddonBlogEntryOptionsMenuComponent } from '@addons/blog/components/entry-options-menu';
+import { ADDON_BLOG_ENTRY_UPDATED } from '@addons/blog/constants';
 import { AddonBlog, AddonBlogFilter, AddonBlogPost, AddonBlogProvider } from '@addons/blog/services/blog';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
 
 /**
  * Page that displays the list of blog entries.
  */
 @Component({
-    selector: 'page-addon-blog-entries',
-    templateUrl: 'entries.html',
+    selector: 'page-addon-blog-index',
+    templateUrl: 'index.html',
+    styleUrl: './index.scss',
 })
-export class AddonBlogEntriesPage implements OnInit {
+export class AddonBlogIndexPage implements OnInit, OnDestroy {
 
     title = '';
 
@@ -59,6 +63,8 @@ export class AddonBlogEntriesPage implements OnInit {
     tagsEnabled = false;
     contextLevel: ContextLevel = ContextLevel.SYSTEM;
     contextInstanceId = 0;
+    entryUpdateObserver: CoreEventObserver;
+    optionsAvailable = false;
 
     constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
@@ -81,6 +87,12 @@ export class AddonBlogEntriesPage implements OnInit {
                     cmid: undefined,
                 }),
             });
+        });
+
+        this.entryUpdateObserver = CoreEvents.on(ADDON_BLOG_ENTRY_UPDATED, async () => {
+            this.loaded = false;
+            await CoreUtils.ignoreErrors(this.refresh());
+            this.loaded = true;
         });
     }
 
@@ -146,6 +158,7 @@ export class AddonBlogEntriesPage implements OnInit {
         deepLinkManager.treatLink();
 
         await this.fetchEntries();
+        this.optionsAvailable = await AddonBlog.isEditingEnabled();
     }
 
     /**
@@ -165,7 +178,15 @@ export class AddonBlogEntriesPage implements OnInit {
         const loadPage = this.onlyMyEntries ? this.userPageLoaded : this.pageLoaded;
 
         try {
-            const result = await AddonBlog.getEntries(this.filter, loadPage);
+            const result = await AddonBlog.getEntries(
+                this.filter,
+                {
+                    page: loadPage,
+                    readingStrategy: refresh
+                        ? CoreSitesReadingStrategy.PREFER_NETWORK
+                        : undefined,
+                },
+            );
 
             const promises = result.entries.map(async (entry: AddonBlogPostFormatted) => {
                 switch (entry.publishstate) {
@@ -271,7 +292,7 @@ export class AddonBlogEntriesPage implements OnInit {
      *
      * @param refresher Refresher instance.
      */
-    refresh(refresher?: HTMLIonRefresherElement): void {
+    async refresh(refresher?: HTMLIonRefresherElement): Promise<void> {
         const promises = this.entries.map((entry) =>
             CoreComments.invalidateCommentsData(ContextLevel.USER, entry.userid, this.component, entry.id, 'format_blog'));
 
@@ -287,13 +308,70 @@ export class AddonBlogEntriesPage implements OnInit {
 
         }
 
-        CoreUtils.allPromises(promises).finally(() => {
-            this.fetchEntries(true).finally(() => {
-                if (refresher) {
-                    refresher?.complete();
-                }
-            });
+        await CoreUtils.allPromises(promises);
+        await this.fetchEntries(true);
+        refresher?.complete();
+    }
+
+    /**
+     * Redirect to entry creation form.
+     */
+    createNewEntry(): void {
+        CoreNavigator.navigateToSitePath('blog/edit/0');
+    }
+
+    /**
+     * Delete entry by id.
+     *
+     * @param id Entry id.
+     */
+    async deleteEntry(id: number): Promise<void> {
+        const loading = await CoreDomUtils.showModalLoading();
+        try {
+            await AddonBlog.deleteEntry({ entryid: id });
+            await this.refresh();
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'addon.blog.errorloadentries', true);
+        } finally {
+            loading.dismiss();
+        }
+    }
+
+    /**
+     * Show the context menu.
+     *
+     * @param event Click Event.
+     */
+    async showEntryActionsPopover(event: Event, entry: AddonBlogPostFormatted): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const popoverData = await CoreDomUtils.openPopover<string>({
+            component: AddonBlogEntryOptionsMenuComponent,
+            event,
         });
+
+        switch (popoverData) {
+            case 'edit':
+                await CoreNavigator.navigateToSitePath(`blog/edit/${entry.id}`, {
+                    params: this.filter.cmid
+                        ? { cmId: this.filter.cmid, filters: this.filter, lastModified: entry.lastmodified }
+                        : { filters: this.filter, lastModified: entry.lastmodified },
+                });
+                break;
+            case 'delete':
+                await this.deleteEntry(entry.id);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.entryUpdateObserver.off();
     }
 
 }
