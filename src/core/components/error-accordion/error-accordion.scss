@@ -1,4 +1,4 @@
-.core-error-info {
+.core-error-accordion {
     background: var(--gray-200);
     border-radius: var(--radius-xs);
     font-size: var(--body-font-size-sm);
@@ -12,26 +12,26 @@
         margin-bottom: 0;
     }
 
-    .core-error-info--code {
+    .core-error-accordion--code {
         padding: var(--spacing-2) var(--spacing-2) 0 var(--spacing-2);
         font-size: var(--body-font-size-md);
     }
 
-    .core-error-info--details p {
+    .core-error-accordion--details p {
         padding: var(--spacing-2) var(--spacing-2) 0 var(--spacing-2);
         color: var(--gray-500);
     }
 
-    .core-error-info--checkbox {
+    .core-error-accordion--checkbox {
         display: none;
 
-        & + .core-error-info--details,
-        & + .core-error-info--code + .core-error-info--details {
+        & + .core-error-accordion--details,
+        & + .core-error-accordion--code + .core-error-accordion--details {
             max-height: 0;
             overflow: hidden;
             transition: max-height 600ms ease-in-out;
 
-            & + .core-error-info--toggle {
+            & + .core-error-accordion--toggle {
                 display: flex;
                 padding: var(--spacing-2);
                 min-height: var(--a11y-min-target-size);
@@ -48,7 +48,7 @@
                     width: 11px;
                 }
 
-                .core-error-info--hide-content {
+                .core-error-accordion--hide-content {
                     display: none;
                 }
 
@@ -56,15 +56,15 @@
 
         }
 
-        &:checked + .core-error-info--details,
-        &:checked + .core-error-info--code + .core-error-info--details {
+        &:checked + .core-error-accordion--details,
+        &:checked + .core-error-accordion--code + .core-error-accordion--details {
             max-height: 110px;
 
-            & + .core-error-info--toggle .core-error-info--hide-content {
+            & + .core-error-accordion--toggle .core-error-accordion--hide-content {
                 display: flex;
             }
 
-            & + .core-error-info--toggle .core-error-info--show-content {
+            & + .core-error-accordion--toggle .core-error-accordion--show-content {
                 display: none;
             }
 

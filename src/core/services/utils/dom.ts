@@ -52,7 +52,7 @@ import { Subscription } from 'rxjs';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
-import { CoreErrorInfoComponent } from '@components/error-info/error-info';
+import { CoreErrorAccordionComponent } from '@components/error-accordion/error-accordion';
 import { CorePlatform } from '@services/platform';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLang } from '@services/lang';
@@ -1038,7 +1038,7 @@ export class CoreDomUtilsProvider {
             alertOptions.buttons = error.buttons;
         } else if (error instanceof CoreSiteError) {
             if (error.debug) {
-                alertOptions.message = `<p>${alertOptions.message}</p><div class="core-error-info-container"></div>`;
+                alertOptions.message = `<p>${alertOptions.message}</p><div class="core-error-accordion-container"></div>`;
             }
 
             const supportConfig = error.supportConfig;
@@ -1062,10 +1062,10 @@ export class CoreDomUtilsProvider {
         const alertElement = await this.showAlertWithOptions(alertOptions, autocloseTime);
 
         if (error instanceof CoreSiteError && error.debug) {
-            const containerElement = alertElement.querySelector('.core-error-info-container');
+            const containerElement = alertElement.querySelector('.core-error-accordion-container');
 
             if (containerElement) {
-                containerElement.innerHTML = CoreErrorInfoComponent.render(error.debug.details, error.debug.code);
+                containerElement.innerHTML = CoreErrorAccordionComponent.render(error.debug.details, error.debug.code);
             }
         }
 

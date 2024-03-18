@@ -40,7 +40,7 @@ import { CoreForms } from '@singletons/form';
 import { AlertButton } from '@ionic/core';
 import { CoreSiteError, CoreSiteErrorDebug } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
-import { CoreErrorInfoComponent } from '@components/error-info/error-info';
+import { CoreErrorAccordionComponent } from '@components/error-accordion/error-accordion';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreLoginError } from '@classes/errors/loginerror';
@@ -421,7 +421,7 @@ export class CoreLoginSitePage implements OnInit {
         }
 
         if (debug) {
-            errorMessage = `<p>${errorMessage}</p><div class="core-error-info-container"></div>`;
+            errorMessage = `<p>${errorMessage}</p><div class="core-error-accordion-container"></div>`;
         }
 
         const alertSupportConfig = supportConfig;
@@ -457,9 +457,10 @@ export class CoreLoginSitePage implements OnInit {
         });
 
         if (debug) {
-            const containerElement = alertElement.querySelector('.core-error-info-container');
+            const containerElement = alertElement.querySelector('.core-error-accordion-container');
+
             if (containerElement) {
-                containerElement.innerHTML = CoreErrorInfoComponent.render(debug.details, debug.code);
+                containerElement.innerHTML = CoreErrorAccordionComponent.render(debug.details, debug.code);
             }
         }
     }
