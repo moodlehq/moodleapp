@@ -1,0 +1,81 @@
+@use "theme/globals" as *;
+
+:host {
+    hr {
+        background: var(--black);
+        margin: 0 16px;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        height: 100%;
+
+        ion-item, .core-info-card {
+            flex-shrink: 0;
+        }
+
+        ion-item {
+            --inner-border-width: 0;
+        }
+
+        .core-site-policy-top-bar, .core-site-policy-bottom-bar {
+            font-size: 0.875rem;
+        }
+
+        .core-site-policy-top-bar ion-label {
+            margin-bottom: 0;
+        }
+        .core-site-policy-bottom-bar ion-label {
+            margin-top: 0;
+        }
+
+        .core-site-policy-link {
+            p {
+                text-decoration: underline;
+                font-size: 1rem;
+
+                ion-icon {
+                    font-size: 0.875rem;
+                    @include margin-horizontal(4px, 0);
+                }
+            }
+        }
+
+        .core-site-policy-iframe-container {
+            margin: 8px;
+            display: flex;
+            flex-grow: 1;
+        }
+
+        .core-site-policy-content ion-label {
+            margin-top: 0;
+        }
+
+        .core-site-policy-go-top-button {
+            --border-radius: 50%;
+            --box-shadow: 0 3px 5px -1px rgba(0, 0, 0, .2), 0 6px 10px 0 rgba(0, 0, 0, .14), 0 1px 18px 0 rgba(0, 0, 0, .12);
+            margin-bottom: 8px;
+        }
+
+        .core-site-policy-buttons {
+            text-align: center;
+
+            ion-button {
+                margin-left: 0;
+                margin-right: 0;
+                margin-bottom: 12px;
+            }
+        }
+
+        .item ::ng-deep ion-label .core-site-policy-full-policy-link {
+            color: var(--core-link-color);
+        }
+
+    }
+}

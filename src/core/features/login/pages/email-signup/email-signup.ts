@@ -118,7 +118,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         };
         this.passwordErrors = { required: 'core.login.passwordrequired' };
         this.emailErrors = { required: 'core.login.missingemail' };
-        this.policyErrors = { required: 'core.login.policyagree' };
+        this.policyErrors = { required: 'core.policy.policyagree' };
         this.email2Errors = {
             required: 'core.login.missingemail',
             pattern: 'core.login.emailnotmatch',
@@ -215,11 +215,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * @returns Promise resolved when done.
      */
     protected async getSignupSettings(): Promise<void> {
-        this.settings = await CoreWS.callAjax<AuthEmailSignupSettings>(
-            'auth_email_get_signup_settings',
-            {},
-            { siteUrl: this.site.getURL() },
-        );
+        this.settings = await CoreLoginHelper.getEmailSignupSettings(this.site.getURL());
 
         if (CoreUserProfileFieldDelegate.hasRequiredUnsupportedField(this.settings.profilefields)) {
             this.allRequiredSupported = false;

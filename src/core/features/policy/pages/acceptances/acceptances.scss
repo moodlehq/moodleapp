@@ -1,0 +1,129 @@
+@use "theme/globals" as *;
+
+:host {
+    .core-policy-revision ion-badge {
+        @include margin-horizontal(0px, 4px);
+    }
+
+    .core-policy-responseby-name {
+        color: var(--core-link-color);
+        text-decoration: none;
+    }
+
+    .core-policy-user-agreement-info {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        justify-content: flex-start;
+
+        ion-icon {
+            @include margin-horizontal(0px, 8px);
+            font-size: 1rem;
+        }
+
+        ion-button {
+            --background: transparent;
+            color: var(--ion-color-primary);
+            margin-top: 0px;
+            margin-bottom: 0px;
+            text-transform: none;
+
+            &:first-child:not(:last-child) {
+                @include margin-horizontal(null, 0px);
+            }
+            &:not(:first-child) {
+                @include margin-horizontal(0px, null);
+            }
+        }
+    }
+
+    .core-policy-mobile-container {
+        .core-policy-title div[slot="start"] {
+            display: flex;
+            align-items: center;
+            margin: 0px;
+
+            ion-icon {
+                font-size: 1.125rem;
+                margin: 0px;
+            }
+        }
+
+        .core-policy-details {
+            .item:not(.core-policy-title) {
+                --background: var(--gray-100);
+            }
+
+            .core-policy-user-agreement.core-policy-agreement-has-actions {
+                ion-label {
+                    margin-bottom: 0px;
+                }
+
+                .core-policy-user-agreement-status {
+                    line-height: 44px;
+                }
+            }
+
+            .core-policy-user-agreement-info {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+
+                .core-policy-user-agreement-status {
+                    flex-grow: 1;
+                }
+            }
+        }
+    }
+
+    table.core-policy-tablet-container {
+        th {
+            &:first-child {
+                @include padding-horizontal(24px, 0px);
+            }
+        }
+
+        th, td {
+            min-width: 200px;
+            text-wrap: nowrap;
+        }
+
+        p {
+            margin: 0px;
+        }
+
+        .core-policy-title {
+            display: flex;
+            align-items: center;
+
+            ion-icon {
+                font-size: 1.125rem;
+                padding: 13px;
+                margin: 3px;
+            }
+
+            .core-policy-icon-placeholder {
+                visibility: hidden;
+            }
+        }
+
+        .core-policy-revision p {
+            margin-bottom: 4px;
+        }
+
+    }
+
+    .core-policy-mobile-container .core-policy-title .expandable-status-icon,
+    .core-policy-tablet-container .core-policy-title ion-icon {
+        min-height: auto;
+        min-width: auto;
+        font-size: 1.125rem;
+        padding: 13px;
+    }
+
+    .core-policy-title .expandable-status-icon {
+        border-radius: 50%;
+        &:hover {
+            background: var(--secondary);
+        }
+    }
+}

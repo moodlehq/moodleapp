@@ -2,7 +2,10 @@
     <ng-container *ngFor="let error of errorKeys">
         <div *ngIf="control.hasError(error)" class="core-input-error">
             <ng-container *ngIf="error !== 'pattern'">
-                <span *ngIf="errorMessages && errorMessages[error]">{{ errorMessages[error] | translate }}</span>
+                <span *ngIf="errorMessages && errorMessages[error]">
+                    <ion-icon *ngIf="error === 'required'" name="fas-circle-exclamation" aria-hidden="true" />
+                    {{ errorMessages[error] | translate }}
+                </span>
                 <span *ngIf="(!errorMessages || !errorMessages[error]) && error === 'max' && control.errors?.max">
                     {{ 'core.login.invalidvaluemax' | translate:{$a: control.errors!.max.max} }}
                 </span>
