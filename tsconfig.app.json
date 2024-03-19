@@ -25,7 +25,6 @@
     "src/**/tests/**",
     "src/**/stories/**",
     "src/testing/**",
-    "src/storybook/**",
     "src/**/*.test.ts",
     "src/**/*.stories.*"
   ]

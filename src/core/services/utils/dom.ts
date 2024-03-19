@@ -52,7 +52,7 @@ import { Subscription } from 'rxjs';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
-import { CoreErrorInfoComponent } from '@components/error-info/error-info';
+import { CoreErrorAccordion } from '@services/error-accordion';
 import { CorePlatform } from '@services/platform';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLang } from '@services/lang';
@@ -1037,8 +1037,8 @@ export class CoreDomUtilsProvider {
         if (typeof error !== 'string' && 'buttons' in error && typeof error.buttons !== 'undefined') {
             alertOptions.buttons = error.buttons;
         } else if (error instanceof CoreSiteError) {
-            if (error.errorDetails) {
-                alertOptions.message = `<p>${alertOptions.message}</p><div class="core-error-info-container"></div>`;
+            if (error.debug) {
+                alertOptions.message = `<p>${alertOptions.message}</p><div class="core-error-accordion-container"></div>`;
             }
 
             const supportConfig = error.supportConfig;
@@ -1051,7 +1051,7 @@ export class CoreDomUtilsProvider {
                     handler: () => CoreUserSupport.contact({
                         supportConfig,
                         subject: alertOptions.header,
-                        message: `${error.errorcode}\n\n${error.errorDetails}`,
+                        message: `${error.debug?.code}\n\n${error.debug?.details}`,
                     }),
                 });
             }
@@ -1061,11 +1061,11 @@ export class CoreDomUtilsProvider {
 
         const alertElement = await this.showAlertWithOptions(alertOptions, autocloseTime);
 
-        if (error instanceof CoreSiteError && error.errorDetails) {
-            const containerElement = alertElement.querySelector('.core-error-info-container');
+        if (error instanceof CoreSiteError && error.debug) {
+            const containerElement = alertElement.querySelector('.core-error-accordion-container');
 
             if (containerElement) {
-                containerElement.innerHTML = CoreErrorInfoComponent.render(error.errorDetails, error.errorcode);
+                await CoreErrorAccordion.render(containerElement, error.debug.code, error.debug.details);
             }
         }
 

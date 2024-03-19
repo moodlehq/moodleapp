@@ -39,7 +39,6 @@ import { CorePushNotifications } from '@features/pushnotifications/services/push
 import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { SafeHtml } from '@angular/platform-browser';
-import { CoreLoginError } from '@classes/errors/loginerror';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import {
     CoreSiteIdentityProvider,
@@ -916,8 +915,8 @@ export class CoreLoginHelperProvider {
     /**
      * Show a modal warning that the credentials introduced were not correct.
      */
-    protected showInvalidLoginModal(error: CoreLoginError): void {
-        CoreDomUtils.showErrorModal(error.errorDetails ?? error.message);
+    protected showInvalidLoginModal(error: CoreWSError): void {
+        CoreDomUtils.showErrorModal(error.message);
     }
 
     /**
