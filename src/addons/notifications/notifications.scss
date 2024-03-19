@@ -2,10 +2,11 @@
 
 :host {
     --icon-size: 32px;
-    --core-avatar-size: var(--icon-size);
     --extra-icon-size: 12px;
 
-    ::ng-deep core-user-avatar {
+    ion-item ::ng-deep core-user-avatar {
+        --core-avatar-size: var(--icon-size);
+
         .core-avatar-extra-img {
             margin: 0 !important;
             position: absolute;
