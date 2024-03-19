@@ -111,6 +111,19 @@ export class TestingBehatRuntimeService {
     }
 
     /**
+     * Get coverage data.
+     *
+     * @returns Coverage data.
+     */
+    getCoverage(): string | null {
+        if (!('__coverage__' in window)) {
+            return null;
+        }
+
+        return JSON.stringify(window.__coverage__);
+    }
+
+    /**
      * Check whether the service has been initialized or not.
      *
      * @returns Whether the service has been initialized or not.

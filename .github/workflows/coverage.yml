@@ -1,4 +1,4 @@
-name: Acceptance tests (Behat)
+name: Coverage
 
 on:
   workflow_dispatch:
@@ -13,11 +13,9 @@ on:
         description: 'Moodle repository'
         required: true
         default: 'https://github.com/moodle/moodle.git'
-  pull_request:
-    branches: [ main, v*.x ]
 
 concurrency:
-    group: acceptance-${{ github.ref }}
+    group: coverage-${{ github.ref }}
     cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
@@ -44,6 +42,8 @@ jobs:
       - name: Build app
         working-directory: app
         run: npm run build:test
+        env:
+          MOODLE_APP_COVERAGE: true
 
       - name: Generate SSL certificates
         working-directory: app
@@ -92,6 +92,42 @@ jobs:
             app/node_modules/**/*
             app/www/**/*
             plugin/**/*
+
+  jest:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+
+      - uses: actions/checkout@v4
+        with:
+          path: app
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: 'app/.nvmrc'
+
+      - uses: actions/cache/restore@v4
+        with:
+          key: build-${{ github.sha }}
+          path: |
+            app/ssl/**/*
+            app/node_modules/**/*
+            app/www/**/*
+            plugin/**/*
+
+      - name: Run Jest tests
+        working-directory: app
+        run: |
+          NODE_ENV=testing npx gulp
+          npx jest --coverage --coverageReporters=json
+          mkdir ../coverage-jsons
+          mv coverage/coverage-final.json ../coverage-jsons/jest.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-jsons-jest
+          path: coverage-jsons
 
   behat:
     runs-on: ubuntu-latest
@@ -174,13 +210,32 @@ jobs:
           MOODLE_BEHAT_DEFAULT_BROWSER: chrome
 
       - name: Update config
-        run: moodle-plugin-ci add-config 'define("TEST_MOD_BIGBLUEBUTTONBN_MOCK_SERVER", "http://localhost:8002/hash" . sha1($CFG->wwwroot));'
+        run: |
+          moodle-plugin-ci add-config "\$CFG->behat_extraallowedsettings = ['forced_plugin_settings'];"
+          moodle-plugin-ci add-config "\$CFG->forced_plugin_settings = ['local_moodleappbehat' => ['coverage_path' => '$GITHUB_WORKSPACE/moodle/coverage/']];"
+          moodle-plugin-ci add-config 'define("TEST_MOD_BIGBLUEBUTTONBN_MOCK_SERVER", "http://localhost:8002/hash" . sha1($CFG->wwwroot));'
 
       - name: Run Behat tests
         run: moodle-plugin-ci behat --auto-rerun 3 --profile chrome --tags="@app&&~@local&&$BEHAT_TAGS"
         env:
           BEHAT_TAGS: ${{ matrix.tags }}
           MOODLE_BEHAT_SELENIUM_IMAGE: selenium/standalone-chrome:120.0
+
+      - name: Merge Coverage jsons
+        working-directory: app
+        run: |
+          mkdir ../coverage-jsons
+          mkdir -p ../moodle/coverage/
+          echo "{}" > ../moodle/coverage/base.json
+          npx nyc merge ../moodle/coverage/ ../coverage-jsons/$BEHAT_TAGS.json
+        env:
+          BEHAT_TAGS: ${{ matrix.tags }}
+
+      - name: Upload Coverage JSONs
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-jsons-${{ matrix.tags }}
+          path: coverage-jsons
 
       - name: Upload Snapshot failures
         uses: actions/upload-artifact@v4
@@ -198,13 +253,36 @@ jobs:
 
   complete:
     runs-on: ubuntu-latest
-    needs: [behat]
+    needs: [behat, jest]
 
     steps:
+
+      - uses: actions/checkout@v4
+        with:
+          path: app
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: 'app/.nvmrc'
+
+      - uses: actions/cache/restore@v4
+        with:
+          key: build-${{ github.sha }}
+          path: |
+            app/ssl/**/*
+            app/node_modules/**/*
+            app/www/**/*
+            plugin/**/*
 
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
+
+      - name: Prepare coverage jsons
+        run: |
+          mkdir ./app/coverage-jsons
+          mv ./artifacts/coverage-jsons-*/* ./app/coverage-jsons
+          rm ./artifacts/coverage-jsons* -r
 
       - name: Check failure artifacts
         run: |
@@ -213,3 +291,16 @@ jobs:
             echo "There were some failures in the previous jobs"
             exit 1
           fi
+
+      - name: Generate Coverage report
+        working-directory: app
+        run: |
+          npx nyc merge ./coverage-jsons/ .nyc_output/out.json
+          npx nyc report --reporter=html-spa
+          cp .nyc_output/out.json coverage/coverage-final.json
+
+      - name: Upload Coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: app/coverage/*
