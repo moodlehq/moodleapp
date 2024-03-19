@@ -52,7 +52,7 @@ import { Subscription } from 'rxjs';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
-import { CoreErrorAccordionComponent } from '@components/error-accordion/error-accordion';
+import { CoreErrorAccordion } from '@services/error-accordion';
 import { CorePlatform } from '@services/platform';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLang } from '@services/lang';
@@ -1065,7 +1065,7 @@ export class CoreDomUtilsProvider {
             const containerElement = alertElement.querySelector('.core-error-accordion-container');
 
             if (containerElement) {
-                await CoreErrorAccordionComponent.render(containerElement, error.debug.code, error.debug.details);
+                await CoreErrorAccordion.render(containerElement, error.debug.code, error.debug.details);
             }
         }
 

@@ -40,7 +40,7 @@ import { CoreForms } from '@singletons/form';
 import { AlertButton } from '@ionic/core';
 import { CoreSiteError, CoreSiteErrorDebug } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
-import { CoreErrorAccordionComponent } from '@components/error-accordion/error-accordion';
+import { CoreErrorAccordion } from '@services/error-accordion';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreLoginError } from '@classes/errors/loginerror';
@@ -460,7 +460,7 @@ export class CoreLoginSitePage implements OnInit {
             const containerElement = alertElement.querySelector('.core-error-accordion-container');
 
             if (containerElement) {
-                await CoreErrorAccordionComponent.render(containerElement, debug.code, debug.details);
+                await CoreErrorAccordion.render(containerElement, debug.code, debug.details);
             }
         }
     }

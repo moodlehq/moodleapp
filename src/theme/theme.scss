@@ -22,12 +22,12 @@
 /* Components */
 @import "components/collapsible-header.scss";
 @import "components/collapsible-item.scss";
+@import "components/error-accordion.scss";
 @import "components/format-text.scss";
-@import "components/rubrics.scss";
-@import "components/mod-label.scss";
 @import "components/ion-icon.scss";
+@import "components/mod-label.scss";
+@import "components/rubrics.scss";
 @import "components/videojs.scss";
-@import "../core/components/error-accordion/error-accordion.scss";
 
 /* Some styles from 3rd party libraries. */
 @import "bootstrap.scss";
