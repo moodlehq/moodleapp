@@ -1,0 +1,8 @@
+ion-back-button {
+    --min-height: var(--a11y-sizing-minTargetSize);
+    --min-width: var(--a11y-sizing-minTargetSize);
+
+    &.md::part(text) {
+        display: none;
+    }
+}

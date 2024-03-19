@@ -48,12 +48,9 @@ html {
     }
 
     // Accessibility vars.
-    --a11y-focus-color: var(--primary);
-    --a11y-focus-width: 2px;
-    --zoom-level: 100%;
+    --a11y-shadow-focus-boxShadowColor: var(--primary);
 
     --text-color:       #{$text-color};
-    --text-size: var(--mdl-typography-body-fontSize-md);
     --background-color: #{$background-color};
     --stroke:            var(--gray-300);
 
@@ -67,53 +64,22 @@ html {
     --core-input-stroke: var(--gray-500);
     --core-input-text: var(--dark);
     --core-input-background: var(--ion-background-color);
-    --core-input-radius: var(--mdl-shape-borderRadius-xs);
-    --core-input-border-width: 1px;
-
-    --list-item-max-width: 768px;
-
-    --modal-radius: var(--mdl-shape-borderRadius-md);
-    --modal-lateral-max-width: 320px;
-    --modal-lateral-margin: 56px;
 
     --contrast-background: white;
 
     --loader-background-color: rgb(0 0 0 / 10%);
     --loader-shine: 251 251 251;
-    --loader-radius: var(--mdl-shape-borderRadius-xs);
-    --loader-display: block;
-
-    --drop-shadow-top: 0px 2px 5px rgb(var(--mdl-shadow-boxShadowColor) / 50%);
-    --drop-shadow-bottom: 0px -2px 5px rgb(var(--mdl-shadow-boxShadowColor) / 50%);
-    --drop-shadow-end: -2px 0px 5px rgb(var(--mdl-shadow-boxShadowColor) / 50%);
-    --drop-shadow-start: 2px 0px 5px rgb(var(--mdl-shadow-boxShadowColor) / 50%);
 
     --ion-text-color: var(--text-color);
     --ion-text-color-rgb: #{$text-color-rgb};
     --subdued-text-color: var(--medium);
 
     --ion-card-color: var(--text-color);
-    --ion-card-vertical-margin: 12px;
-    --ion-card-horizontal-margin: 12px;
-    --ion-card-radius: var(--mdl-shape-borderRadius-lg);
-    --ion-card-border-width: 1px;
     --ion-card-border-color: var(--stroke);
-    ion-card {
-        --border-width: var(--ion-card-border-width);
-        --border-style: solid;
-        --border-color: var(--ion-card-border-color);
-        --box-shadow: none;
-        --border-radius: var(--ion-card-radius);
-    }
 
     --text-hightlight-background-color: #{$core-text-hightlight-background-color};
 
     --ion-placeholder-color: var(--subdued-text-color);
-
-    ion-content {
-        --background: var(--ion-background-color);
-        --background-alternative: var(--gray-200);
-    }
 
     --core-bottom-tabs-background: var(--white);
     --core-bottom-tabs-color: var(--dark);
@@ -121,121 +87,27 @@ html {
     --core-bottom-tabs-background-selected: transparent;
     --core-bottom-tabs-badge-color: var(--primary);
     --core-bottom-tabs-badge-text-color: var(--primary-contrast);
-    --bottom-tabs-size: 48px;
-    --side-tabs-size: 56px;
-    ion-tab-bar.mainmenu-tabs {
-        --background: var(--core-bottom-tabs-background);
-        --color: var(--core-bottom-tabs-color);
-        --color-selected: var(--core-bottom-tabs-color-selected);
-        --background-selected: var(--core-bottom-tabs-background-selected);
-    }
 
     --core-link-color: var(--info);
-    a {
-        color: var(--core-link-color);
-    }
 
-    --core-header-toolbar-button-image-size: var(--a11y-sizing-minTargetSize);
     --core-header-toolbar-background: var(--white);
-    --core-header-toolbar-border-width: 0px;
     --core-header-toolbar-border-color: var(--stroke);
     --core-header-toolbar-color: var(--text-color);
-    --core-header-toolbar-height: 48px;
-    --core-header-shadow: none;
     --core-header-buttons-background: var(--core-header-toolbar-background);
     --core-header-buttons-color: var(--core-header-toolbar-color);
 
-    ion-header, ion-header.header-md {
-        box-shadow: var(--core-header-shadow, none);
-        transition: box-shadow 0.5s;
-
-        ion-toolbar {
-            --color: var(--core-header-toolbar-color);
-            --background: var(--core-header-toolbar-background);
-            --border-width: 0 0 var(--core-header-toolbar-border-width) 0;
-            --border-color: var(--core-header-toolbar-border-color);
-
-            ion-button {
-                --ion-toolbar-color: var(--core-header-toolbar-color);
-                --color: var(--core-header-toolbar-color);
-            }
-
-            ion-spinner {
-                --ion-color-base: var(--core-header-toolbar-color);
-                --color: var(--core-header-toolbar-color);
-            }
-        }
-    }
-
-
-    ion-header.core-header-shadow {
-        --core-header-shadow: var(--drop-shadow-bottom, none);
-    }
-
-    ion-header::after {
-        display: none;
-    }
-
-    ion-header.header-ios ion-toolbar:last-of-type {
-        --border-width: 0 0 var(--core-header-toolbar-border-width) 0;
-    }
-
     --ion-searchbar-background: var(--ion-background-color);
     --ion-searchbar-border-color: var(--core-input-stroke);
-    --ion-searchbar-border-radius: var(--core-input-radius);
-    --ion-searchbar-height: var(--a11y-sizing-minTargetSize);
     --ion-searchbar-color: var(--text-color);
     --ion-searchbar-icon-color: var(--core-input-stroke);
-    ion-searchbar,
-    .ios ion-searchbar {
-        --background: var(--ion-searchbar-background);
-        --border-color: var(--ion-searchbar-border-color);
-        --color: var(--ion-searchbar-color);
-        --border-radius: var(--ion-searchbar-border-radius);
-        --icon-color: var(--ion-searchbar-icon-color);
-        --height: var(--ion-searchbar-height);
-    }
 
     --core-search-box-background: var(--ion-background-color);
     --core-search-box-border-color: var(--core-input-stroke);
-    --core-search-box-border-radius: var(--core-input-radius);
     --core-search-box-color: var(--core-input-text);
 
     --core-combobox-background: var(--core-input-background);
     --core-combobox-color: var(--core-input-text);
     --core-combobox-border-color: var(--core-input-stroke);
-    --core-combobox-border-width: var(--core-input-border-width);
-    --core-combobox-radius: var(--core-input-radius);
-    --core-combobox-box-shadow: none;
-
-    ion-action-sheet {
-        --button-color: var(--ion-text-color);
-        --button-color-selected: var(--ion-text-color);
-
-        .action-sheet-title {
-            --color: var(--ion-text-color);
-            font-weight: bold;
-        }
-
-        @media (min-height: 500px) {
-            --max-height: 50%;
-            --height: 100%;
-        }
-
-        .action-sheet-cancel {
-            --button-color: var(--danger);
-        }
-    }
-
-    ion-popover.ios {
-        --min-width: 250px;
-    }
-
-    ion-toast {
-        --color: var(--ion-color-step-50);
-        --button-color: var(--primary);
-        --background: var(--ion-color-step-800);
-    }
 
     --core-tabs-background: var(--white);
     --core-tab-background: var(--core-tabs-background);
@@ -243,31 +115,9 @@ html {
     --core-tab-border-color: var(--stroke);
     --core-tab-color-active: var(--dark);
     --core-tab-border-color-active: var(--primary);
-    --core-tab-font-weight-active: normal;
-    --core-tabs-height: 48px;
-    core-tabs, core-tabs-outlet {
-        swiper-slide {
-            --background: var(--core-tab-background);
-            --color: var(--core-tab-color);
-            --border-color: var(--core-tab-border-color);
-            --color-active: var(--core-tab-color-active);
-            --border-color-active: var(--core-tab-border-color-active);
-            --color-selected: var(--border-color-active);
-            --font-weight-active: var(--core-tab-font-weight-active);
-        }
-    }
 
     --core-loading-spinner: var(--primary);
-    ion-loading {
-        --spinner-color: var(--core-loading-spinner);
-    }
-    ion-spinner, ion-refresher {
-        --ion-color-base: var(--core-loading-spinner);
-        --ion-color-primary: var(--core-loading-spinner);
-        --color: var(--core-loading-spinner);
-    }
 
-    --core-progressbar-height: 8px;
     --core-progressbar-color: var(--primary);
     --core-progressbar-text-color: var(--medium);
     --core-progressbar-background: var(--primary-tint);
@@ -277,45 +127,14 @@ html {
     --ion-item-background:        #{$ion-item-background};
     --ion-item-icon-color: var(--medium);
     --ion-item-detail-icon-color: var(--dark);
-    --ion-item-detail-icon-font-size: var(--mdl-typography-icon-fontSize-md);
-    --ion-item-detail-icon-opacity: 1;
     --core-more-icon: var(--ion-item-icon-color);
-    ion-item {
-        --detail-icon-color: var(--ion-item-detail-icon-color);
-        --detail-icon-font-size: var(--ion-item-detail-icon-font-size);
-        --detail-icon-opacity: var(--ion-item-detail-icon-opacity);
 
-        > ion-icon[slot] {
-            color: var(--ion-item-icon-color);
-        }
-    }
-
-    --item-divider-min-height: calc(var(--a11y-sizing-minTargetSize) + 8px);
     --item-divider-background: var(--ion-item-background);
     --item-divider-color: var(--text-color);
-    --item-divider-border-width: 0px;
-    --item-divider-font-size: 16px;
-    --item-divider-font-size-big: 20px;
-    ion-item-divider, ion-item.divider {
-        --background: var(--item-divider-background);
-        --color: var(--item-divider-color);
-        --min-height: var(--item-divider-min-height);
-    }
 
-    --spacer-vertical: 8px;
     --spacer-color: var(--gray-300);
 
-    ion-note {
-        --color: var(--subdued-text-color);
-    }
-
-    ion-back-button {
-        --min-height: var(--a11y-sizing-minTargetSize);
-        --min-width: var(--a11y-sizing-minTargetSize);
-    }
-
     --selected-item-color: var(--primary);
-    --selected-item-border-width: 5px;
 
     --collapsible-toggle-background: transparent;
     --collapsible-toggle-text: var(--medium);
@@ -329,18 +148,9 @@ html {
 
     --core-star-color: var(--primary);
 
-    --core-large-avatar-size: 80px;
-    --core-avatar-size: var(--a11y-sizing-minTargetSize);
-    --core-avatar-radius: 50%;
-
-    --core-courseimage-on-course-size: 72px;
-    --core-courseimage-radius: var(--mdl-shape-borderRadius-sm);
-
     --core-navigation-background: var(--contrast-background);
 
     --core-collapsible-footer-background: var(--contrast-background);
-
-    --core-user-menu-site-logo-max-height: 32px;
 
     --addon-calendar-today-border-color: var(--primary);
     --addon-calendar-border-color: var(--stroke);
@@ -348,10 +158,8 @@ html {
     --core-messages-message-bg: var(--white);
     --core-messages-message-activated-bg: var(--gray-200);
     --core-messages-message-note-text: var(--gray-500);
-    --core-messages-message-note-font-size: 75%;
     --core-messages-message-mine-bg: var(--gray-300);
     --core-messages-message-mine-activated-bg: var(--gray-400);
-    --core-messages-avatar-size: 30px;
     --core-messages-discussion-badge: var(--primary);
     --core-messages-discussion-badge-text: var(--white);
 
@@ -376,8 +184,7 @@ html {
     --core-question-feedback-color: var(--warning-shade);
     --core-question-feedback-background-color: var(--warning-tint);
 
-    --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-500);
-    --core-dd-question-radius: 10px;
+
     --core-dd-question-border: var(--medium);
 
     --core-table-header-background: var(--white);
@@ -386,11 +193,6 @@ html {
     --core-table-even-cell-background: var(--white);
     --core-table-even-cell-hover: var(--light);
     --core-table-border-color: var(--stroke);
-
-    --rotate-expandable: rotate(90deg);
-    &[dir=rtl] {
-        --rotate-expandable: rotate(-90deg);
-    }
 
     @for $i from 0 to length($core-course-image-background) {
         --core-course-color-#{$i}: #{nth($core-course-image-background, $i + 1)};
@@ -410,16 +212,6 @@ html {
     // Make activtity colours available for custom modules.
     @each $type, $value in $activity-icon-background-colors {
         --activity-40-#{$type}: #{$value};
-    }
-
-    --core-mainpage-sitename-display: none;
-    --core-mainpage-headerlogo-display: none;
-    --core-mainpage-headerlogo-maxheight: calc(var(--core-header-toolbar-height) - 16px);
-
-    @if ($core-dashboard-logo) {
-        --core-mainpage-headerlogo-display: inline;
-    } @else {
-        --core-mainpage-sitename-display: inline;
     }
 
     --rte-editor-background: var(--core-input-background);

@@ -1,4 +1,6 @@
 @import "./globals.scss";
+@import "theme.light.scss";
+@import "theme.dark.scss";
 
 html {
 
@@ -115,7 +117,6 @@ html {
     --mdl-typography-icon-fontSize-md: #{dynamic-font(20px)};
     --mdl-typography-icon-fontSize-lg: #{dynamic-font(24px)};
 
-
     // ***** SHAPE category ***** //
     --mdl-shape-borderRadius-none: 0px;
     --mdl-shape-borderRadius-xs: 4px;
@@ -143,6 +144,92 @@ html {
     --a11y-sizing-minTargetSize: 44px;
     --a11y-shadow-focus-boxShadowSpread: 2px;
     --a11y-shadow-focus-boxShadow: inset 0 0 var(--a11y-shadow-focus-boxShadowSpread) 1px var(--a11y-focus-color);
+
+    // @TODO ***** VARIABLES TO BE REVIEWED, RENAMED AND TIDIED ***** //
+    --text-size: var(--mdl-typography-body-fontSize-md);
+
+    --core-input-radius: var(--mdl-shape-borderRadius-xs);
+    --core-input-border-width: 1px;
+
+    --list-item-max-width: 768px;
+
+    --modal-radius: var(--mdl-shape-borderRadius-md);
+    --modal-lateral-max-width: 320px;
+    --modal-lateral-margin: 56px;
+
+    --loader-radius: var(--mdl-shape-borderRadius-xs);
+    --loader-display: block;
+
+    --drop-shadow-top: 0px 2px 5px rgb(var(--mdl-shadow-boxShadowColor) / 50%);
+    --drop-shadow-bottom: 0px -2px 5px rgb(var(--mdl-shadow-boxShadowColor) / 50%);
+    --drop-shadow-end: -2px 0px 5px rgb(var(--mdl-shadow-boxShadowColor) / 50%);
+    --drop-shadow-start: 2px 0px 5px rgb(var(--mdl-shadow-boxShadowColor) / 50%);
+
+    --ion-card-vertical-margin: 12px;
+    --ion-card-horizontal-margin: 12px;
+    --ion-card-radius: var(--mdl-shape-borderRadius-lg);
+    --ion-card-border-width: 1px;
+
+    --bottom-tabs-size: 48px;
+    --side-tabs-size: 56px;
+
+    --core-header-toolbar-button-image-size: var(--a11y-sizing-minTargetSize);
+    --core-header-toolbar-border-width: 0px;
+    --core-header-toolbar-height: 48px;
+    --core-header-shadow: none;
+
+    --ion-searchbar-height: var(--a11y-sizing-minTargetSize);
+    --ion-searchbar-border-radius: var(--core-input-radius);
+
+    --core-search-box-border-radius: var(--core-input-radius);
+
+    --core-combobox-radius: var(--core-input-radius);
+    --core-combobox-border-width: var(--core-input-border-width);
+    --core-combobox-box-shadow: none;
+
+    --core-tab-font-weight-active: normal;
+    --core-tabs-height: 48px;
+
+    --core-progressbar-height: 8px;
+
+    --ion-item-detail-icon-font-size: var(--mdl-typography-icon-fontSize-md);
+    --ion-item-detail-icon-opacity: 1;
+
+    --item-divider-min-height: calc(var(--a11y-sizing-minTargetSize) + 8px);
+    --item-divider-border-width: 0px;
+    --item-divider-font-size: 16px;
+    --item-divider-font-size-big: 20px;
+
+    --spacer-vertical: 8px;
+
+    --selected-item-border-width: 5px;
+
+    --core-large-avatar-size: 80px;
+    --core-avatar-size: var(--a11y-sizing-minTargetSize);
+    --core-avatar-radius: 50%;
+
+    --core-courseimage-on-course-size: 72px;
+    --core-courseimage-radius: var(--mdl-shape-borderRadius-sm);
+
+    --core-user-menu-site-logo-max-height: 32px;
+
+    --core-messages-message-note-font-size: 75%;
+    --core-messages-avatar-size: 30px;
+
+    --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-500);
+    --core-dd-question-radius: 10px;
+
+    --rotate-expandable: rotate(90deg);
+
+    --core-mainpage-sitename-display: none;
+    --core-mainpage-headerlogo-display: none;
+    --core-mainpage-headerlogo-maxheight: calc(var(--core-header-toolbar-height) - 16px);
+
+    @if ($core-dashboard-logo) {
+        --core-mainpage-headerlogo-display: inline;
+    } @else {
+        --core-mainpage-sitename-display: inline;
+    }
 }
 
 /** @deprecated since 4.3 **/
@@ -157,4 +244,6 @@ html {
 html {
     --font-size-normal: var(--mdl-typography-fontSize-md);
     --a11y-min-target-size: var(--a11y-sizing-minTargetSize);
+    --a11y-focus-width: var(--a11y-shadow-focus-boxShadowSpread);
+    --a11y-focus-color: var(--a11y-shadow-focus-boxShadowColor);
 }

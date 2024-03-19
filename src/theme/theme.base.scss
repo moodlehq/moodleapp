@@ -9,11 +9,21 @@ html.force-safe-area-margins {
 
 // @todo MOBILE-3790 non-standard property, doesn't work everywhere.
 html {
+    --zoom-level: 100%;
     zoom: var(--zoom-level);
 }
 
 body {
     -webkit-text-size-adjust: var(--zoom-level);
+}
+
+a {
+    color: var(--core-link-color);
+    cursor: pointer;
+}
+
+html[dir=rtl] {
+    --rotate-expandable: rotate(-90deg);
 }
 
 // Common styles.
@@ -144,117 +154,13 @@ ion-toolbar {
     --min-height: var(--core-header-toolbar-height);
 }
 
-// Header.
-ion-header {
-    z-index: 12; // To hide swiper-container on scroll.
-
-    ion-toolbar {
-        ion-spinner {
-            margin: 10px;
-        }
-
-        ion-back-button,
-        .in-toolbar.button-clear,
-        .in-toolbar.button-solid,
-        .button.button-clear,
-        .button.button-solid {
-            --color: var(--core-header-buttons-color);
-            --background: var(--core-header-buttons-background);
-            --ion-toolbar-color: var(--core-header-buttons-color);
-            --border-radius: var(--mdl-shape-borderRadius-xl);
-            --primary: var(--core-header-buttons-color);
-        }
-        ion-back-button::part(text) {
-            display: none;
-        }
-
-        // Style fake back button like the original ones.
-        ion-button.ion-back-button {
-            width: 48px !important;
-        }
-
-        .button.button-clear.button-has-icon-only,
-        .button.button-solid.button-has-icon-only {
-            width: var(--a11y-sizing-minTargetSize);
-            height: var(--a11y-sizing-minTargetSize);
-            ion-icon {
-                font-size: var(--mdl-typography-icon-fontSize-lg);
-            }
-        }
-
-        .core-navbar-button-hidden {
-            display: none !important;
-        }
-    }
-
-    ion-title {
-        @include padding(0, 16px);
-
-        h1, h2, .subheading {
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-            margin: 0;
-        }
-
-        .filter_mathjaxloader_equation div {
-            display: inline !important;
-        }
-
-        h1 {
-            .core-header-logo {
-                max-height: var(--core-mainpage-headerlogo-maxheight);
-                display: var( --core-mainpage-headerlogo-display);
-            }
-
-            .core-header-sitename {
-                display: var(--core-mainpage-sitename-display);
-            }
-        }
-
-        h1, h2, .subheading {
-            font-size: var(--mdl-typography-label-lineHeight-lg);
-            font-weight: 500;
-            letter-spacing: .0125em;
-            text-align: start;
-            padding: 0;
-        }
-
-        h1 + h2,
-        h1 + .subheading {
-            font-size: var(--text-size);
-            font-weight: 400;
-        }
-
-        &.ios {
-            position: static;
-            width: auto;
-            height: auto;
-            left: auto;
-            right: auto;
-            top: auto;
-            text-align: start;
-
-            h1, h2, .subheading {
-                font-size: var(--mdl-typography-label-lineHeight-md);
-                font-weight: 600;
-            }
-
-            h1 + h2,
-            h1 + .subheading {
-                font-size: var(--text-size);
-                font-weight: 400;
-            }
-        }
-    }
-}
-
 ion-tabs.hide-header ion-header {
     display: none;
 }
 
 ion-footer {
     background-color: var(--contrast-background);
+
     > ion-toolbar:only-child {
         top: 1px;
     }
@@ -277,113 +183,6 @@ button,
 
 ion-fab-button {
     --box-shadow: 0 3px 5px -1px rgb(0 0 0 / 20%), 0 6px 10px 0 rgb(0 0 0 / 14%), 0 1px 18px 0 rgb(0 0 0 / 12%);
-}
-
-ion-button {
-    margin: 4px 8px;
-
-    ion-spinner[slot=start],
-    img[slot=start] {
-        @include margin-horizontal(-0.3em, 0.3em);
-    }
-
-    ion-spinner[slot=end],
-    img[slot=end] {
-        @include margin-horizontal(-0.3em, 0.3em);
-    }
-
-    ion-spinner[slot] {
-        width: 20px;
-        color: inherit;
-    }
-}
-
-ion-button.button-outline {
-    --border-width: var(--core-input-border-width);
-    --border-color: var(--core-input-stroke);
-    --background: var(--core-input-background);
-    --color: var(--core-input-text);
-    --ion-color-primary: var(--core-input-text);
-    &.ios {
-        --color-activated: var(--contrast-background);
-    }
-}
-
-ion-button.button-solid {
-    --box-shadow: none;
-}
-
-ion-button core-format-text {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-    line-height: 1.2;
-}
-
-ion-button > * {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-ion-button.ion-text-wrap {
-    white-space: normal;
-    core-format-text {
-        white-space: normal;
-        display: contents;
-    }
-
-    & > * {
-        white-space: normal;
-    }
-}
-
-ion-button ion-spinner {
-    --color: inherit !important;
-}
-
-ion-button.button-has-icon-only {
-    margin: 2px;
-}
-
-ion-button:not(.button-has-icon-only):not(.button-small) > ion-icon {
-    min-width: 20px;
-}
-
-ion-button.button.button-clear.button-has-icon-only {
-    --border-radius: var(--mdl-shape-borderRadius-xl);
-}
-
-ion-button.button.button-clear {
-    --color: var(--core-input-text);
-    --ion-color-primary: var(--core-input-text);
-}
-
-ion-button.button.button-solid,
-ion-button.button.button-outline {
-    --border-radius: var(--core-input-radius);
-}
-
-ion-button .select-icon {
-    margin: var(--icon-margin);
-    width: 19px;
-    height: 19px;
-    position: relative;
-
-    .select-icon-inner {
-        left: 5px;
-        top: 50%;
-        margin-top: -2px;
-        position: absolute;
-        width: 0px;
-        height: 0px;
-        color: currentcolor;
-        pointer-events: none;
-        border-top: 5px solid;
-        border-right: 5px solid transparent;
-        border-left: 5px solid transparent;
-    }
 }
 
 [role="button"],
@@ -525,31 +324,6 @@ ion-alert {
     }
 }
 
-ion-loading {
-    --border-radius: var(--modal-radius);
-
-    .loading-wrapper {
-        border-radius: var(--border-radius) !important;
-    }
-}
-
-// Toasts.
-ion-toast {
-    @include media-breakpoint-down(sm) {
-        &::part(container) {
-            flex-direction: column;
-        }
-    }
-}
-
-@each $color-name, $unused in $colors {
-    ion-toast.core-#{$color-name}-toast {
-        --background: var(--ion-color-#{$color-name}-tint);
-        --color: var(--ion-color-#{$color-name}-shade);
-        --button-color: var(--ion-color-#{$color-name}-shade);
-    }
-}
-
 // Ionic list.
 ion-list {
     padding: 0 !important;
@@ -582,6 +356,17 @@ ion-tabs.placement-bottom .tabs-inner {
     --ion-safe-area-bottom: 0px;
 }
 
+core-tabs, core-tabs-outlet {
+    swiper-slide {
+        --background: var(--core-tab-background);
+        --color: var(--core-tab-color);
+        --border-color: var(--core-tab-border-color);
+        --color-active: var(--core-tab-color-active);
+        --border-color-active: var(--core-tab-border-color-active);
+        --color-selected: var(--border-color-active);
+        --font-weight-active: var(--core-tab-font-weight-active);
+    }
+}
 
 core-split-view.menu-and-content {
     .menu {
@@ -914,44 +699,6 @@ img[core-external-content]:not([src]) {
     visibility: hidden;
 }
 
-ion-card {
-    box-shadow: var(--box-shadow);
-    margin: var(--ion-card-vertical-margin) var(--ion-card-horizontal-margin);
-    border-width: var(--border-width);
-    border-style: var(--border-style);
-    border-color: var(--border-color);
-    border-radius: var(--border-radius);
-
-    &::part(native) {
-        --border-width: 0;
-    }
-
-    ion-item:only-child {
-        --inner-border-width: 0px;
-    }
-
-    ion-card-title {
-        font-size: 20px;
-    }
-
-    &.core-card-with-buttons .item ion-label {
-        margin-bottom: 0;
-    }
-
-    .core-card-buttons {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        margin: 0px 8px 8px 8px;
-
-        ion-button {
-            &[fill="outline"] {
-                --background: transparent;
-            }
-        }
-    }
-}
-
 .core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation div {
     display: inline !important;
 }
@@ -994,26 +741,6 @@ ion-toolbar h1 .core-bar-button-image img {
     max-height: var(--core-header-toolbar-button-image-size);
     border-radius: 50%;
     display: block;
-}
-
-// Action sheet.
-ion-action-sheet.md {
-    .action-sheet-title {
-        @include padding(4px, null, 4px, 16px);
-        font-size: 12px;
-        min-height: auto;
-        color: var(--medium);
-        line-height: 2em;
-        font-weight: normal;
-    }
-
-    .action-sheet-group:first-child {
-        border-radius: var(--mdl-shape-borderRadius-lg) var(--mdl-shape-borderRadius-lg) 0 0;
-    }
-
-    .action-sheet-group-cancel {
-        box-shadow: var(--drop-shadow-top, none);
-    }
 }
 
 // Radio.
@@ -1176,115 +903,6 @@ ion-badge {
     border-radius: var(--mdl-shape-borderRadius-lg);
 }
 
-ion-chip,
-ion-button.button.chip {
-    line-height: 1.1;
-    font-size: 12px;
-    min-height: 24px;
-    margin: 4px;
-    font-weight: normal;
-
-    ion-icon {
-        font-size: var(--mdl-typography-icon-fontSize-sm);
-        min-width: var(--mdl-typography-icon-fontSize-sm);
-        @include margin(0, 8px, 0, 0);
-    }
-
-    ion-label {
-        white-space: normal !important;
-    }
-}
-
-ion-button.button.chip {
-    --border-radius: var(--mdl-shape-borderRadius-md);
-    min-height: 32px;
-    font-size: 14px;
-
-    ion-icon[slot=start] {
-        @include margin(0, 8px, 0, 0);
-    }
-
-    ion-icon[slot=end] {
-        @include margin(0, 0, 0, 8px);
-    }
-}
-
-ion-chip {
-    padding: 4px 8px;
-    height: auto;
-
-    // Chips are not currently clickable, only if specified explicitly.
-    &.ion-activatable:not(.clickable) {
-        cursor: auto;
-        pointer-events: none;
-    }
-    &.clickable {
-        cursor: pointer;
-        pointer-events: auto;
-    }
-
-    &.fab-chip {
-        padding: 8px 12px;
-        box-shadow: 0 2px 4px rgb(0 0 0 / 40%);
-    }
-
-    &.ion-color {
-        background: var(--ion-color-tint);
-        &.chip-outline {
-            background-color: transparent;
-            border-color: var(--ion-color-base);
-            color: var(--ion-color-base);
-        }
-        &.fab-chip {
-            background: var(--ion-color);
-            color: var(--ion-color-contrast);
-        }
-
-        &.ion-color-light,
-        &.ion-color-medium,
-        &.ion-color-dark,
-        &.ion-color-secondary {
-            color: var(--gray-900);
-            &.chip-outline {
-                color: var(--text-color);
-            }
-        }
-    }
-
-    &:not(.ion-color) ion-icon {
-        color: var(--text-color);
-    }
-}
-
-ion-searchbar {
-    height: var(--height) !important;
-    --border-radius: var(--mdl-shape-borderRadius-xs);
-
-    .searchbar-input-container {
-        color: var(--color) !important;
-        height: var(--height) !important;
-    }
-
-    .searchbar-input {
-        --border-radius: var(--mdl-shape-borderRadius-xs);
-
-        height: var(--height) !important;
-        border: 1px solid var(--border-color) !important;
-        box-shadow: none !important;
-        border-radius: var(--border-radius) !important;
-        background: var(--background) !important;
-        @include padding-horizontal(var(--height) !important);
-    }
-
-    .searchbar-search-icon {
-        @include position(null, null, null, calc(var(--height) / 4) !important);
-    }
-
-    button {
-        @include position(null, 0 !important, null, null);
-    }
-}
-
 // File uploader.
 .action-sheet-button input.core-fileuploader-file-handler-input {
     position: absolute;
@@ -1377,10 +995,6 @@ textarea:not([core-auto-rows]) {
     height: 200px;
 }
 
-ion-back-button.md::part(text) {
-    display: none;
-}
-
 // Hide close button because when present is read on voice over.
 ion-fab[core-fab] {
     ion-fab-button::part(close-icon) {
@@ -1424,131 +1038,12 @@ audio.core-media-adapt-width {
     width: 100%;
 }
 
-ion-item.item-lines-default {
-    --inner-border-width: 0px;
-    --border-width: 0px;
-}
-
-ion-item.ion-valid,
-ion-item.ion-invalid {
-    --inner-border-width: 0 0 1px 0;
-
-    &.ion-touched {
-        &.ion-invalid {
-            --ion-item-border-color: var(--highlight-color-invalid);
-            --highlight-background: var(--ion-item-border-color);
-            --border-color: var(--ion-item-border-color);
-        }
-        &.ion-valid {
-            --ion-item-border-color: var(--highlight-color-valid);
-            --highlight-background: var(--ion-item-border-color);
-            --border-color: var(--ion-item-border-color);
-        }
-    }
-}
-
-// Fake item.
-div.fake-ion-item {
-    position: relative;
-    align-items: center;
-    justify-content: space-between;
-    outline: none;
-    color: var(--ion-text-color);
-    background: var(--ion-item-background);
-    text-align: initial;
-    text-decoration: none;
-    overflow: hidden;
-    box-sizing: border-box;
-}
-
-html.md div.fake-ion-item {
-    font-size: 16px;
-    font-weight: normal;
-    text-transform: none;
-    @include padding(null, 16px, null, 16px);
-    @include margin(11px, null, 10px, null);
-
-    h1 {
-        @include margin(0, 0, 2px);
-        font-size: 24px;
-        font-weight: normal;
-    }
-
-    h2 {
-        @include margin(2px, 0);
-        font-size: 16px;
-        font-weight: normal;
-    }
-
-    h3,
-    h4,
-    h5,
-    h6 {
-        @include margin(2px, 0);
-
-        font-size: var(--text-size);
-        font-weight: normal;
-
-        line-height: normal;
-    }
-
-    p {
-        @include margin(0, 0, 2px);
-        font-size: var(--text-size);
-        line-height: 20px;
-        text-overflow: inherit;
-        overflow: inherit;
-    }
-}
-
-html.ios div.fake-ion-item {
-    font-size: var(--text-size);
-    @include padding(null, 10px, null, 20px);
-    @include margin(10px, 8px, 10px, null);
-
-    h1 {
-        @include margin(3px, 0, 2px);
-        font-size: 22px;
-        font-weight: normal;
-    }
-
-    h2 {
-        @include margin(0, 0, 2px);
-        font-size: 17px;
-        font-weight: normal;
-    }
-
-    h3,
-    h4,
-    h5,
-    h6 {
-        @include margin(0, 0, 3px);
-        font-size: var(--text-size);
-        font-weight: normal;
-        line-height: normal;
-    }
-
-    p {
-        @include margin(0, 0, 2px 0);
-        font-size: var(--text-size);
-        line-height: normal;
-        text-overflow: inherit;
-        overflow: inherit;
-    }
-
-}
-
 // Disabled items.
 ion-item.item-disabled,
 ion-button.button-disabled,
 ion-item.item-interactive-disabled:not(.item-multiple-inputs) ion-label,
 ion-datetime.datetime-disabled {
     opacity: .65 !important;
-}
-
-// Hide details on items to align badges.
-ion-item.hide-detail {
-    --detail-icon-opacity: 0;
 }
 
 // Make links clickable when inside radio or checkbox items. Style part.
@@ -1600,10 +1095,6 @@ ion-item.item-multiple-inputs.only-links {
     }
 }
 
-a {
-    cursor: pointer;
-}
-
 // Case with ion-input + ion-select inside.
 ion-item.item-input.item-multiple-inputs {
     .flex-row {
@@ -1611,24 +1102,6 @@ ion-item.item-input.item-multiple-inputs {
         ion-select {
             position: relative;
         }
-    }
-}
-
-ion-item-divider.item,
-ion-item.item.divider {
-    min-height: var(--min-height);
-    border-bottom-width: var(--item-divider-border-width);
-    --border-width: var(--item-divider-border-width);
-    --inner-border-width: 0 0 var(--item-divider-border-width) 0;
-
-    ion-label h2,
-    ion-label p.item-heading {
-        font-size: var(--item-divider-font-size);
-        font-weight: 500;
-        line-height: 1.5;
-    }
-    ion-label h2.big {
-        font-size: var(--item-divider-font-size-big);
     }
 }
 
@@ -1821,14 +1294,6 @@ ion-grid.core-no-grid > ion-row {
     }
 }
 
-ion-header.no-title {
-    --core-header-toolbar-border-width: 0;
-    --core-header-toolbar-background: transparent;
-    --core-header-shadow: none !important;
-    --core-header-buttons-background: var(--ion-background-color);
-    --core-header-buttons-color: var(--text-color);
-}
-
 // To make core-swipe-slides fill the remaining height.
 .core-swipe-slides-container {
     display: flex;
@@ -1978,21 +1443,6 @@ ion-modal {
     }
 }
 
-ion-popover {
-    &::part(content) {
-        border-radius: var(--modal-radius);
-    }
-    &.md {
-        margin-top: 2px;
-        margin-bottom: 2px;
-
-        // Never show backdrop on popovers on Android
-        // @todo Apply box shadow on ios and make it transparent too. The main problem is the box arrow.
-        &::part(backdrop) {
-            background: transparent;
-        }
-    }
-}
 
 /*
 * This is to solve popver issue in chrome 114

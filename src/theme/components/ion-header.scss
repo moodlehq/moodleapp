@@ -1,0 +1,140 @@
+ion-header,
+ion-header.header-md {
+    z-index: 12; // To hide swiper-container on scroll.
+
+    box-shadow: var(--core-header-shadow, none);
+    transition: box-shadow 0.5s;
+
+    ion-toolbar {
+        --color: var(--core-header-toolbar-color);
+        --background: var(--core-header-toolbar-background);
+        --border-width: 0 0 var(--core-header-toolbar-border-width) 0;
+        --border-color: var(--core-header-toolbar-border-color);
+
+        ion-button {
+            --ion-toolbar-color: var(--core-header-toolbar-color);
+            --color: var(--core-header-toolbar-color);
+        }
+
+        ion-spinner {
+            --ion-color-base: var(--core-header-toolbar-color);
+            --color: var(--core-header-toolbar-color);
+            margin: 10px;
+        }
+
+        ion-back-button,
+        .in-toolbar.button-clear,
+        .in-toolbar.button-solid,
+        .button.button-clear,
+        .button.button-solid {
+            --color: var(--core-header-buttons-color);
+            --background: var(--core-header-buttons-background);
+            --ion-toolbar-color: var(--core-header-buttons-color);
+            --border-radius: var(--mdl-shape-borderRadius-xl);
+            --primary: var(--core-header-buttons-color);
+        }
+
+        ion-back-button::part(text) {
+            display: none;
+        }
+
+        // Style fake back button like the original ones.
+        ion-button.ion-back-button {
+            width: 48px !important;
+        }
+
+        .button.button-clear.button-has-icon-only,
+        .button.button-solid.button-has-icon-only {
+            width: var(--a11y-sizing-minTargetSize);
+            height: var(--a11y-sizing-minTargetSize);
+            ion-icon {
+                font-size: var(--mdl-typography-icon-fontSize-lg);
+            }
+        }
+
+        .core-navbar-button-hidden {
+            display: none !important;
+        }
+    }
+
+    ion-title {
+        @include padding(0, 16px);
+
+        h1, h2, .subheading {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        .filter_mathjaxloader_equation div {
+            display: inline !important;
+        }
+
+        h1 {
+            .core-header-logo {
+                max-height: var(--core-mainpage-headerlogo-maxheight);
+                display: var( --core-mainpage-headerlogo-display);
+            }
+
+            .core-header-sitename {
+                display: var(--core-mainpage-sitename-display);
+            }
+        }
+
+        h1, h2, .subheading {
+            font-size: var(--mdl-typography-label-lineHeight-lg);
+            font-weight: 500;
+            letter-spacing: .0125em;
+            text-align: start;
+            padding: 0;
+        }
+
+        h1 + h2,
+        h1 + .subheading {
+            font-size: var(--text-size);
+            font-weight: 400;
+        }
+
+        &.ios {
+            position: static;
+            width: auto;
+            height: auto;
+            left: auto;
+            right: auto;
+            top: auto;
+            text-align: start;
+
+            h1, h2, .subheading {
+                font-size: var(--mdl-typography-label-lineHeight-md);
+                font-weight: 600;
+            }
+
+            h1 + h2,
+            h1 + .subheading {
+                font-size: var(--text-size);
+                font-weight: 400;
+            }
+        }
+    }
+
+    &.core-header-shadow {
+        --core-header-shadow: var(--drop-shadow-bottom, none);
+    }
+
+    &::after {
+        display: none;
+    }
+
+    &.header-ios ion-toolbar:last-of-type {
+        --border-width: 0 0 var(--core-header-toolbar-border-width) 0;
+    }
+
+    &.no-title {
+        --core-header-toolbar-border-width: 0;
+        --core-header-toolbar-background: transparent;
+        --core-header-shadow: none !important;
+        --core-header-buttons-background: var(--ion-background-color);
+        --core-header-buttons-color: var(--text-color);
+    }
+}

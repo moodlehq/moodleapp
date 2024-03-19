@@ -1,0 +1,35 @@
+ion-searchbar,
+.ios ion-searchbar {
+    --background: var(--ion-searchbar-background);
+    --border-color: var(--ion-searchbar-border-color);
+    --color: var(--ion-searchbar-color);
+    --border-radius: var(--mdl-shape-borderRadius-xs);
+    --icon-color: var(--ion-searchbar-icon-color);
+    --height: var(--ion-searchbar-height);
+
+    height: var(--height) !important;
+
+    .searchbar-input-container {
+        color: var(--color) !important;
+        height: var(--height) !important;
+    }
+
+    .searchbar-input {
+        --border-radius: var(--mdl-shape-borderRadius-xs);
+
+        height: var(--height) !important;
+        border: 1px solid var(--border-color) !important;
+        box-shadow: none !important;
+        border-radius: var(--border-radius) !important;
+        background: var(--background) !important;
+        @include padding-horizontal(var(--height) !important);
+    }
+
+    .searchbar-search-icon {
+        @include position(null, null, null, calc(var(--height) / 4) !important);
+    }
+
+    button {
+        @include position(null, 0px !important, null, null);
+    }
+}

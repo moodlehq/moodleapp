@@ -13,10 +13,8 @@
 @import "globals.scss";
 
 /* Application styles */
-@import "theme.light.scss";
-@import "theme.dark.scss";
-@import "theme.custom.scss";
 @import "theme.design-system.scss";
+@import "theme.custom.scss";
 @import "theme.base.scss";
 
 /* Components */
@@ -24,10 +22,30 @@
 @import "components/collapsible-item.scss";
 @import "components/error-accordion.scss";
 @import "components/format-text.scss";
-@import "components/ion-icon.scss";
 @import "components/mod-label.scss";
 @import "components/rubrics.scss";
 @import "components/videojs.scss";
+
+/* Ionic components overrides */
+html {
+    @import "components/ion-action-sheet.scss";
+    @import "components/ion-back-button.scss";
+    @import "components/ion-button.scss";
+    @import "components/ion-card.scss";
+    @import "components/ion-chip.scss";
+    @import "components/ion-content.scss";
+    @import "components/ion-header.scss";
+    @import "components/ion-icon.scss";
+    @import "components/ion-item.scss";
+    @import "components/ion-item-divider.scss";
+    @import "components/ion-loading.scss";
+    @import "components/ion-note.scss";
+    @import "components/ion-popover.scss";
+    @import "components/ion-searchbar.scss";
+    @import "components/ion-spinner.scss";
+    @import "components/ion-tab-bar.scss";
+    @import "components/ion-toast.scss";
+}
 
 /* Some styles from 3rd party libraries. */
 @import "bootstrap.scss";
