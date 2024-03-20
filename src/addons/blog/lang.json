@@ -1,12 +1,21 @@
 {
+    "addnewentry": "Add a new entry",
+    "associations": "Associations",
+    "attachment": "Attachment",
     "blog": "Blog",
     "blogentries": "Blog entries",
+    "entrybody": "Blog entry body",
+    "entrytitle": "Entry title",
     "errorloadentries": "Error loading blog entries.",
     "linktooriginalentry": "Link to original blog entry",
     "noentriesyet": "No visible entries here",
+    "publishto": "Publish to",
     "publishtonoone": "Yourself (draft)",
     "publishtosite": "Anyone on this site",
     "publishtoworld": "Anyone in the world",
     "showonlyyourentries": "Show only your entries",
-    "siteblogheading": "Site blog"
+    "siteblogheading": "Site blog",
+    "tags": "Tags",
+    "associatewithcourse": "Blog about course {{$a.coursename}}",
+    "associatewithmodule": "Blog about {{$a.modtype}}: {{$a.modname}}"
 }

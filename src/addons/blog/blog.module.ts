@@ -23,6 +23,7 @@ import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-deleg
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { AddonBlogCourseOptionHandler } from './services/handlers/course-option';
+import { AddonBlogEditEntryLinkHandler } from './services/handlers/edit-entry-link';
 import { AddonBlogIndexLinkHandler } from './services/handlers/index-link';
 import { AddonBlogMainMenuHandler } from './services/handlers/mainmenu';
 import { AddonBlogTagAreaHandler } from './services/handlers/tag-area';
@@ -48,6 +49,7 @@ const routes: Routes = [
             multi: true,
             useValue: () => {
                 CoreContentLinksDelegate.registerHandler(AddonBlogIndexLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonBlogEditEntryLinkHandler.instance);
                 CoreMainMenuDelegate.registerHandler(AddonBlogMainMenuHandler.instance);
                 CoreUserDelegate.registerHandler(AddonBlogUserHandler.instance);
                 CoreTagAreaDelegate.registerHandler(AddonBlogTagAreaHandler.instance);

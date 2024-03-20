@@ -1,0 +1,16 @@
+<ion-content>
+    <ion-list>
+        <ion-item button class="ion-text-wrap" (click)="action('edit')" [detail]="false">
+            <ion-icon name="fas-pen" slot="start" aria-hidden="true" />
+            <ion-label>
+                <p class="item-heading">{{ 'core.edit' | translate }}</p>
+            </ion-label>
+        </ion-item>
+        <ion-item button class="ion-text-wrap" (click)="action('delete')" [detail]="false">
+            <ion-icon name="fas-trash" slot="start" aria-hidden="true" color="danger" />
+            <ion-label color="danger">
+                <p class="item-heading">{{ 'core.delete' | translate }}</p>
+            </ion-label>
+        </ion-item>
+    </ion-list>
+</ion-content>

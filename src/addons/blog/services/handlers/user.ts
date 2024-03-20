@@ -73,7 +73,7 @@ export class AddonBlogUserHandlerService implements CoreUserProfileHandler {
             action: (event, user, context, contextId): void => {
                 event.preventDefault();
                 event.stopPropagation();
-                CoreNavigator.navigateToSitePath('/blog', {
+                CoreNavigator.navigateToSitePath('/blog/index', {
                     params: { courseId: contextId, userId: user.id },
                 });
             },
