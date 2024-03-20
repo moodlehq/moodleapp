@@ -9,7 +9,6 @@
     --state-color-hover: rgb(40 40 40, 4%); // --gray-900 4%
     --state-color-pressed: rgb(40 40 40, 12%); // --gray-900 12%
     --state-color-focused: rgb(40 40 40, 12%); // --gray-900 12%
-    --state-color-keyboard-focus: var(--a11y-focus-color);
 
     background: var(--background-color);
     border-radius: var(--mdl-shape-borderRadius-xs);
@@ -89,8 +88,7 @@
         }
 
         &:focus-visible {
-            box-shadow: none;
-            outline: 2px solid var(--state-color-keyboard-focus);
+            @include core-focus-style();
         }
 
         &:active {

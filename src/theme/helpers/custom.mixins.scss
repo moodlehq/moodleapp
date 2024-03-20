@@ -69,8 +69,9 @@
 @mixin core-focus() {
     outline: none;
     position: relative;
+
     &::after {
-        @include position(0, 0, 0, 0);
+        @include position(0px, 0px, 0px, 0px);
         position: absolute;
         content: "";
         opacity: 1;
@@ -83,7 +84,7 @@
     box-shadow: var(--a11y-shadow-focus-boxShadow);
     border-radius: var(--border-radius);
     // Thicker option:
-    // border: var(--a11y-shadow-focus-boxShadowSpread) solid var(--a11y-shadow-focus-boxShadowColor);
+    // outline: var(--a11y-shadow-focus-outline);
 }
 
 @mixin core-transition($properties: all, $duration: 500ms, $timing-function: ease-in-out) {

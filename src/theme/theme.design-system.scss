@@ -142,8 +142,9 @@ html {
 
     // ***** ACCESSIBILITY ***** //
     --a11y-sizing-minTargetSize: 44px;
-    --a11y-shadow-focus-boxShadowSpread: 2px;
-    --a11y-shadow-focus-boxShadow: inset 0 0 var(--a11y-shadow-focus-boxShadowSpread) 1px var(--a11y-focus-color);
+    --a11y-shadow-focus-borderWidth: 2px;
+    --a11y-shadow-focus-boxShadow: inset 0 0 var(--a11y-shadow-focus-borderWidth) 1px var(--a11y-focus-color);
+    --a11y-shadow-focus-outline: var(--a11y-shadow-focus-borderWidth) solid var(--a11y-focus-color);
 
     // @TODO ***** VARIABLES TO BE REVIEWED, RENAMED AND TIDIED ***** //
     --text-size: var(--mdl-typography-body-fontSize-md);
