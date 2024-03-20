@@ -75,7 +75,7 @@
         }
     }
 
-    table.core-policy-tablet-container {
+    .core-policy-tablet-container table {
         th {
             &:first-child {
                 @include padding-horizontal(24px, 0px);
@@ -83,7 +83,6 @@
         }
 
         th, td {
-            min-width: 200px;
             text-wrap: nowrap;
         }
 

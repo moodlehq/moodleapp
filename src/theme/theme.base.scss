@@ -2031,6 +2031,11 @@ ion-datetime-button p {
     margin-bottom: 4px;
 }
 
+.x-scrollable {
+    overflow-x: auto;
+    display: block;
+}
+
 // Table App styles
 table.core-table {
     border-collapse: collapse;
@@ -2038,11 +2043,6 @@ table.core-table {
     width: 98%;
     margin: 1em auto;
     color: var(--text-color);
-
-    &.x-scrollable {
-        overflow-x: auto;
-        display: block;
-    }
 
     thead th {
         vertical-align: bottom;

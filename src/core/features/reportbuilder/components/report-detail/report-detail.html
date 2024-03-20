@@ -21,8 +21,8 @@
                 </ion-card>
             </ng-container>
 
-            <ng-container *ngIf="!isCardLayout">
-                <table class="core-table x-scrollable">
+            <div *ngIf="!isCardLayout" class="x-scrollable">
+                <table class="core-table">
                     <thead>
                         <tr>
                             <th *ngFor="let header of state.report.data.headers">
@@ -40,7 +40,7 @@
                         </tr>
                     </tbody>
                 </table>
-            </ng-container>
+            </div>
 
         </ng-container>
 
