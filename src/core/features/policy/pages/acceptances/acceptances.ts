@@ -24,7 +24,7 @@ import { CorePolicyViewPolicyModalComponent } from '@features/policy/components/
 import { CoreTime } from '@singletons/time';
 import { CoreScreen } from '@services/screen';
 import { Subscription } from 'rxjs';
-import { CORE_DATAPRIVACY_PAGE_NAME } from '@features/dataprivacy/constants';
+import { CORE_DATAPRIVACY_FEATURE_NAME, CORE_DATAPRIVACY_PAGE_NAME } from '@features/dataprivacy/constants';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDataPrivacy } from '@features/dataprivacy/services/dataprivacy';
 
@@ -81,6 +81,13 @@ export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
      * Check if user can contact DPO.
      */
     protected async fetchCanContactDPO(): Promise<void> {
+        const site = CoreSites.getCurrentSite();
+        if (!site || site.isFeatureDisabled(CORE_DATAPRIVACY_FEATURE_NAME)) {
+            this.canContactDPO = false;
+
+            return;
+        }
+
         this.canContactDPO = await CoreUtils.ignoreErrors(CoreDataPrivacy.isEnabled(), false);
     }
 

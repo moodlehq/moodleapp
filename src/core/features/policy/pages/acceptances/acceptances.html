@@ -28,26 +28,28 @@
             </ion-card>
         </div>
 
-        <table *ngIf="isTablet && policies.length" class="core-table x-scrollable core-policy-tablet-container">
-            <thead>
-                <tr>
-                    <th>{{ 'core.policy.policydocname' | translate }}</th>
-                    <th>{{ 'core.policy.policydocrevision' | translate }}</th>
-                    <th>{{ 'core.policy.response' | translate }}</th>
-                    <th>{{ 'core.policy.responseon' | translate }}</th>
-                    <ng-container *ngIf="hasOnBehalf">
-                        <th>{{ 'core.policy.responseby' | translate }}</th>
-                        <th>{{ 'core.policy.acceptancenote' | translate }}</th>
+        <div class="x-scrollable core-policy-tablet-container">
+            <table *ngIf="isTablet && policies.length" class="core-table">
+                <thead>
+                    <tr>
+                        <th>{{ 'core.policy.policydocname' | translate }}</th>
+                        <th>{{ 'core.policy.policydocrevision' | translate }}</th>
+                        <th>{{ 'core.policy.response' | translate }}</th>
+                        <th>{{ 'core.policy.responseon' | translate }}</th>
+                        <ng-container *ngIf="hasOnBehalf">
+                            <th>{{ 'core.policy.responseby' | translate }}</th>
+                            <th>{{ 'core.policy.acceptancenote' | translate }}</th>
+                        </ng-container>
+                    </tr>
+                </thead>
+                <tbody class="auto-striped">
+                    <ng-container *ngFor="let policy of policies">
+                        <ng-container
+                            *ngTemplateOutlet="policyTabletTemplate; context: {policy: policy, isPreviousVersion: false, hidden: false}" />
                     </ng-container>
-                </tr>
-            </thead>
-            <tbody class="auto-striped">
-                <ng-container *ngFor="let policy of policies">
-                    <ng-container
-                        *ngTemplateOutlet="policyTabletTemplate; context: {policy: policy, isPreviousVersion: false, hidden: false}" />
-                </ng-container>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
 
         <div *ngIf="!isTablet && policies.length" class="core-policy-mobile-container">
             <ng-container *ngFor="let policy of policies">
