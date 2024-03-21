@@ -38,7 +38,7 @@ export class CoreGradesCourseParticipantsOptionHandlerService implements CoreCou
     async invalidateEnabledForCourse(courseId: number, navOptions?: CoreCourseUserAdminOrNavOptionIndexed): Promise<void> {
         await CoreGrades.invalidateCourseGradesPermissionsData(courseId);
 
-        if (navOptions && navOptions.grades !== undefined) {
+        if (navOptions?.grades !== undefined) {
             // No need to invalidate user courses.
             return;
         }

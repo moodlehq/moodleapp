@@ -80,7 +80,7 @@ declare module '@singletons/events' {
 /**
  * Course Module completion status enumeration.
  */
-export enum CoreCourseModuleCompletionStatus {
+export const enum CoreCourseModuleCompletionStatus {
     COMPLETION_INCOMPLETE = 0,
     COMPLETION_COMPLETE = 1,
     COMPLETION_COMPLETE_PASS = 2,
@@ -90,7 +90,7 @@ export enum CoreCourseModuleCompletionStatus {
 /**
  * @deprecated since 4.3 Not used anymore.
  */
-export enum CoreCourseCompletionMode {
+export const enum CoreCourseCompletionMode {
     FULL = 'full',
     BASIC = 'basic',
 }
@@ -98,11 +98,19 @@ export enum CoreCourseCompletionMode {
 /**
  * Completion tracking valid values.
  */
-export enum CoreCourseModuleCompletionTracking {
+export const enum CoreCourseModuleCompletionTracking {
     COMPLETION_TRACKING_NONE = 0,
     COMPLETION_TRACKING_MANUAL = 1,
     COMPLETION_TRACKING_AUTOMATIC = 2,
 }
+
+export const CoreCourseAccessDataType = {
+    ACCESS_GUEST: 'courses_access_guest', // eslint-disable-line @typescript-eslint/naming-convention
+    ACCESS_DEFAULT: 'courses_access_default', // eslint-disable-line @typescript-eslint/naming-convention
+} as const;
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type CoreCourseAccessDataType = typeof CoreCourseAccessDataType[keyof typeof CoreCourseAccessDataType];
 
 /**
  * Service that provides some features regarding a course.
@@ -112,9 +120,16 @@ export class CoreCourseProvider {
 
     static readonly ALL_SECTIONS_ID = -2;
     static readonly STEALTH_MODULES_SECTION_ID = -1;
-    static readonly ACCESS_GUEST = 'courses_access_guest';
-    static readonly ACCESS_DEFAULT = 'courses_access_default';
     static readonly ALL_COURSES_CLEARED = -1;
+
+    /**
+     * @deprecated since 4.4 Not used anymore. Use CoreCourseAccessDataType instead.
+     */
+    static readonly ACCESS_GUEST = CoreCourseAccessDataType.ACCESS_GUEST;
+    /**
+     * @deprecated since 4.4 Not used anymore. Use CoreCourseAccessDataType instead.
+     */
+    static readonly ACCESS_DEFAULT = CoreCourseAccessDataType.ACCESS_DEFAULT;
 
     static readonly COMPONENT = 'CoreCourse';
 
