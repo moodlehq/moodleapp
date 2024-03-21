@@ -28,6 +28,7 @@
     "sitepolicynotagreederror": "Site policy not agreed.",
     "steppolicies": "Policy {{$a.numpolicy}} out of {{$a.totalpolicies}}",
     "status1": "Active",
+    "status2": "Inactive",
     "useracceptanceactionaccept": "Accept",
     "useracceptanceactionacceptone": "Accept {{$a}}",
     "useracceptanceactiondecline": "Decline",
