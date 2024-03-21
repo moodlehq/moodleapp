@@ -12,4 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+export const ADDON_MOD_QUIZ_COMPONENT = 'mmaModQuiz';
+
 export const ADDON_MOD_QUIZ_FEATURE_NAME = 'CoreCourseModuleDelegate_AddonModQuiz';
+
+export const ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT = 'addon_mod_quiz_attempt_finished';
+
+export const ADDON_MOD_QUIZ_SHOW_TIME_BEFORE_DEADLINE = 3600;
+
+/**
+ * Possible grade methods for a quiz.
+ */
+export const enum AddonModQuizGradeMethods {
+    HIGHEST_GRADE = 1,
+    AVERAGE_GRADE = 2,
+    FIRST_ATTEMPT = 3,
+    LAST_ATTEMPT = 4,
+}
+
+/**
+ * Possible states for an attempt.
+ */
+export const enum AddonModQuizAttemptStates {
+    IN_PROGRESS = 'inprogress',
+    OVERDUE = 'overdue',
+    FINISHED = 'finished',
+    ABANDONED = 'abandoned',
+}

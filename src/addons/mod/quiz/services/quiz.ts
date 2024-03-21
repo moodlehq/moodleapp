@@ -42,8 +42,12 @@ import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-of
 import { AddonModQuizAutoSyncData, AddonModQuizSyncProvider } from './quiz-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { QUESTION_INVALID_STATE_CLASSES, QUESTION_TODO_STATE_CLASSES } from '@features/question/constants';
-
-const ROOT_CACHE_KEY = 'mmaModQuiz:';
+import {
+    ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT,
+    AddonModQuizAttemptStates,
+    ADDON_MOD_QUIZ_COMPONENT,
+    AddonModQuizGradeMethods,
+} from '../constants';
 
 declare module '@singletons/events' {
 
@@ -53,7 +57,7 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [AddonModQuizProvider.ATTEMPT_FINISHED_EVENT]: AddonModQuizAttemptFinishedData;
+        [ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT]: AddonModQuizAttemptFinishedData;
         [AddonModQuizSyncProvider.AUTO_SYNCED]: AddonModQuizAutoSyncData;
     }
 
@@ -65,27 +69,7 @@ declare module '@singletons/events' {
 @Injectable({ providedIn: 'root' })
 export class AddonModQuizProvider {
 
-    static readonly COMPONENT = 'mmaModQuiz';
-    static readonly ATTEMPT_FINISHED_EVENT = 'addon_mod_quiz_attempt_finished';
-
-    // Grade methods.
-    static readonly GRADEHIGHEST = 1;
-    static readonly GRADEAVERAGE = 2;
-    static readonly ATTEMPTFIRST = 3;
-    static readonly ATTEMPTLAST  = 4;
-
-    // Question options.
-    static readonly QUESTION_OPTIONS_MAX_ONLY = 1;
-    static readonly QUESTION_OPTIONS_MARK_AND_MAX = 2;
-
-    // Attempt state.
-    static readonly ATTEMPT_IN_PROGRESS = 'inprogress';
-    static readonly ATTEMPT_OVERDUE     = 'overdue';
-    static readonly ATTEMPT_FINISHED    = 'finished';
-    static readonly ATTEMPT_ABANDONED   = 'abandoned';
-
-    // Show the countdown timer if there is less than this amount of time left before the the quiz close date.
-    static readonly QUIZ_SHOW_TIME_BEFORE_DEADLINE = 3600;
+    protected static readonly ROOT_CACHE_KEY = 'mmaModQuiz:';
 
     protected logger: CoreLogger;
 
@@ -164,7 +148,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getAttemptAccessInformationCommonCacheKey(quizId: number): string {
-        return ROOT_CACHE_KEY + 'attemptAccessInformation:' + quizId;
+        return AddonModQuizProvider.ROOT_CACHE_KEY + 'attemptAccessInformation:' + quizId;
     }
 
     /**
@@ -189,7 +173,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptAccessInformationCacheKey(quizId, attemptId),
-            component: AddonModQuizProvider.COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -215,7 +199,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getAttemptDataCommonCacheKey(attemptId: number): string {
-        return ROOT_CACHE_KEY + 'attemptData:' + attemptId;
+        return AddonModQuizProvider.ROOT_CACHE_KEY + 'attemptData:' + attemptId;
     }
 
     /**
@@ -248,7 +232,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptDataCacheKey(attemptId, page),
-            component: AddonModQuizProvider.COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -288,10 +272,10 @@ export class AddonModQuizProvider {
         }
 
         switch (attempt.state) {
-            case AddonModQuizProvider.ATTEMPT_IN_PROGRESS:
+            case AddonModQuizAttemptStates.IN_PROGRESS:
                 return dueDate * 1000;
 
-            case AddonModQuizProvider.ATTEMPT_OVERDUE:
+            case AddonModQuizAttemptStates.OVERDUE:
                 return (dueDate + (quiz.graceperiod ?? 0)) * 1000;
 
             default:
@@ -311,7 +295,7 @@ export class AddonModQuizProvider {
     getAttemptDueDateWarning(quiz: AddonModQuizQuizWSData, attempt: AddonModQuizAttemptWSData): string | undefined {
         const dueDate = this.getAttemptDueDate(quiz, attempt);
 
-        if (attempt.state === AddonModQuizProvider.ATTEMPT_OVERDUE) {
+        if (attempt.state === AddonModQuizAttemptStates.OVERDUE) {
             return Translate.instant(
                 'addon.mod_quiz.overduemustbesubmittedby',
                 { $a: CoreTimeUtils.userDate(dueDate) },
@@ -334,10 +318,10 @@ export class AddonModQuizProvider {
         }
 
         switch (attempt.state) {
-            case AddonModQuizProvider.ATTEMPT_IN_PROGRESS:
+            case AddonModQuizAttemptStates.IN_PROGRESS:
                 return [Translate.instant('addon.mod_quiz.stateinprogress')];
 
-            case AddonModQuizProvider.ATTEMPT_OVERDUE: {
+            case AddonModQuizAttemptStates.OVERDUE: {
                 const sentences: string[] = [];
                 const dueDate = this.getAttemptDueDate(quiz, attempt);
 
@@ -353,7 +337,7 @@ export class AddonModQuizProvider {
                 return sentences;
             }
 
-            case AddonModQuizProvider.ATTEMPT_FINISHED:
+            case AddonModQuizAttemptStates.FINISHED:
                 return [
                     Translate.instant('addon.mod_quiz.statefinished'),
                     Translate.instant(
@@ -362,7 +346,7 @@ export class AddonModQuizProvider {
                     ),
                 ];
 
-            case AddonModQuizProvider.ATTEMPT_ABANDONED:
+            case AddonModQuizAttemptStates.ABANDONED:
                 return [Translate.instant('addon.mod_quiz.stateabandoned')];
 
             default:
@@ -378,16 +362,16 @@ export class AddonModQuizProvider {
      */
     getAttemptReadableStateName(state: string): string {
         switch (state) {
-            case AddonModQuizProvider.ATTEMPT_IN_PROGRESS:
+            case AddonModQuizAttemptStates.IN_PROGRESS:
                 return Translate.instant('addon.mod_quiz.stateinprogress');
 
-            case AddonModQuizProvider.ATTEMPT_OVERDUE:
+            case AddonModQuizAttemptStates.OVERDUE:
                 return Translate.instant('addon.mod_quiz.stateoverdue');
 
-            case AddonModQuizProvider.ATTEMPT_FINISHED:
+            case AddonModQuizAttemptStates.FINISHED:
                 return Translate.instant('addon.mod_quiz.statefinished');
 
-            case AddonModQuizProvider.ATTEMPT_ABANDONED:
+            case AddonModQuizAttemptStates.ABANDONED:
                 return Translate.instant('addon.mod_quiz.stateabandoned');
 
             default:
@@ -413,7 +397,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getAttemptReviewCommonCacheKey(attemptId: number): string {
-        return ROOT_CACHE_KEY + 'attemptReview:' + attemptId;
+        return AddonModQuizProvider.ROOT_CACHE_KEY + 'attemptReview:' + attemptId;
     }
 
     /**
@@ -438,7 +422,7 @@ export class AddonModQuizProvider {
         const preSets = {
             cacheKey: this.getAttemptReviewCacheKey(attemptId, page),
             cacheErrors: ['noreview'],
-            component: AddonModQuizProvider.COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -457,7 +441,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getAttemptSummaryCacheKey(attemptId: number): string {
-        return ROOT_CACHE_KEY + 'attemptSummary:' + attemptId;
+        return AddonModQuizProvider.ROOT_CACHE_KEY + 'attemptSummary:' + attemptId;
     }
 
     /**
@@ -487,7 +471,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptSummaryCacheKey(attemptId),
-            component: AddonModQuizProvider.COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -521,7 +505,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getCombinedReviewOptionsCommonCacheKey(quizId: number): string {
-        return ROOT_CACHE_KEY + 'combinedReviewOptions:' + quizId;
+        return AddonModQuizProvider.ROOT_CACHE_KEY + 'combinedReviewOptions:' + quizId;
     }
 
     /**
@@ -544,7 +528,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCombinedReviewOptionsCacheKey(quizId, userId),
-            component: AddonModQuizProvider.COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -581,7 +565,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getFeedbackForGradeCommonCacheKey(quizId: number): string {
-        return ROOT_CACHE_KEY + 'feedbackForGrade:' + quizId;
+        return AddonModQuizProvider.ROOT_CACHE_KEY + 'feedbackForGrade:' + quizId;
     }
 
     /**
@@ -606,7 +590,7 @@ export class AddonModQuizProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFeedbackForGradeCacheKey(quizId, grade),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModQuizProvider.COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -719,7 +703,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getQuizDataCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'quiz:' + courseId;
+        return AddonModQuizProvider.ROOT_CACHE_KEY + 'quiz:' + courseId;
     }
 
     /**
@@ -746,7 +730,7 @@ export class AddonModQuizProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuizDataCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModQuizProvider.COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -797,7 +781,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getQuizAccessInformationCacheKey(quizId: number): string {
-        return ROOT_CACHE_KEY + 'quizAccessInformation:' + quizId;
+        return AddonModQuizProvider.ROOT_CACHE_KEY + 'quizAccessInformation:' + quizId;
     }
 
     /**
@@ -818,7 +802,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuizAccessInformationCacheKey(quizId),
-            component: AddonModQuizProvider.COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -842,13 +826,13 @@ export class AddonModQuizProvider {
         }
 
         switch (method) {
-            case AddonModQuizProvider.GRADEHIGHEST:
+            case AddonModQuizGradeMethods.HIGHEST_GRADE:
                 return Translate.instant('addon.mod_quiz.gradehighest');
-            case AddonModQuizProvider.GRADEAVERAGE:
+            case AddonModQuizGradeMethods.AVERAGE_GRADE:
                 return Translate.instant('addon.mod_quiz.gradeaverage');
-            case AddonModQuizProvider.ATTEMPTFIRST:
+            case AddonModQuizGradeMethods.FIRST_ATTEMPT:
                 return Translate.instant('addon.mod_quiz.attemptfirst');
-            case AddonModQuizProvider.ATTEMPTLAST:
+            case AddonModQuizGradeMethods.LAST_ATTEMPT:
                 return Translate.instant('addon.mod_quiz.attemptlast');
             default:
                 return '';
@@ -862,7 +846,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getQuizRequiredQtypesCacheKey(quizId: number): string {
-        return ROOT_CACHE_KEY + 'quizRequiredQtypes:' + quizId;
+        return AddonModQuizProvider.ROOT_CACHE_KEY + 'quizRequiredQtypes:' + quizId;
     }
 
     /**
@@ -881,7 +865,7 @@ export class AddonModQuizProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuizRequiredQtypesCacheKey(quizId),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
-            component: AddonModQuizProvider.COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1015,7 +999,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getUserAttemptsCommonCacheKey(quizId: number): string {
-        return ROOT_CACHE_KEY + 'userAttempts:' + quizId;
+        return AddonModQuizProvider.ROOT_CACHE_KEY + 'userAttempts:' + quizId;
     }
 
     /**
@@ -1045,7 +1029,7 @@ export class AddonModQuizProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserAttemptsCacheKey(quizId, userId),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
-            component: AddonModQuizProvider.COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1073,7 +1057,7 @@ export class AddonModQuizProvider {
      * @returns Cache key.
      */
     protected getUserBestGradeCommonCacheKey(quizId: number): string {
-        return ROOT_CACHE_KEY + 'userBestGrade:' + quizId;
+        return AddonModQuizProvider.ROOT_CACHE_KEY + 'userBestGrade:' + quizId;
     }
 
     /**
@@ -1093,7 +1077,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserBestGradeCacheKey(quizId, userId),
-            component: AddonModQuizProvider.COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1430,7 +1414,7 @@ export class AddonModQuizProvider {
      * @returns Whether it's finished.
      */
     isAttemptFinished(state?: string): boolean {
-        return state == AddonModQuizProvider.ATTEMPT_FINISHED || state == AddonModQuizProvider.ATTEMPT_ABANDONED;
+        return state === AddonModQuizAttemptStates.FINISHED || state === AddonModQuizAttemptStates.ABANDONED;
     }
 
     /**
@@ -1461,7 +1445,7 @@ export class AddonModQuizProvider {
      * @returns Whether it's nearly over or over.
      */
     isAttemptTimeNearlyOver(quiz: AddonModQuizQuizWSData, attempt: AddonModQuizAttemptWSData): boolean {
-        if (attempt.state != AddonModQuizProvider.ATTEMPT_IN_PROGRESS) {
+        if (attempt.state !== AddonModQuizAttemptStates.IN_PROGRESS) {
             // Attempt not in progress, return true.
             return true;
         }
@@ -1600,7 +1584,7 @@ export class AddonModQuizProvider {
         return CoreCourseLogHelper.log(
             'mod_quiz_view_attempt_review',
             params,
-            AddonModQuizProvider.COMPONENT,
+            ADDON_MOD_QUIZ_COMPONENT,
             quizId,
             siteId,
         );
@@ -1633,7 +1617,7 @@ export class AddonModQuizProvider {
         return CoreCourseLogHelper.log(
             'mod_quiz_view_attempt_summary',
             params,
-            AddonModQuizProvider.COMPONENT,
+            ADDON_MOD_QUIZ_COMPONENT,
             quizId,
             siteId,
         );
@@ -1654,7 +1638,7 @@ export class AddonModQuizProvider {
         return CoreCourseLogHelper.log(
             'mod_quiz_view_quiz',
             params,
-            AddonModQuizProvider.COMPONENT,
+            ADDON_MOD_QUIZ_COMPONENT,
             id,
             siteId,
         );
@@ -1897,7 +1881,7 @@ export class AddonModQuizProvider {
     shouldShowTimeLeft(rules: string[], attempt: AddonModQuizAttemptWSData, endTime: number): boolean {
         const timeNow = CoreTimeUtils.timestamp();
 
-        if (attempt.state != AddonModQuizProvider.ATTEMPT_IN_PROGRESS) {
+        if (attempt.state !== AddonModQuizAttemptStates.IN_PROGRESS) {
             return false;
         }
 
@@ -2392,7 +2376,7 @@ export type AddonModQuizViewQuizWSParams = {
 };
 
 /**
- * Data passed to ATTEMPT_FINISHED_EVENT event.
+ * Data passed to ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT event.
  */
 export type AddonModQuizAttemptFinishedData = {
     quizId: number;

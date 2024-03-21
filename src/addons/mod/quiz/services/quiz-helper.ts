@@ -30,10 +30,11 @@ import {
     AddonModQuizAttemptWSData,
     AddonModQuizCombinedReviewOptions,
     AddonModQuizGetQuizAccessInformationWSResponse,
-    AddonModQuizProvider,
     AddonModQuizQuizWSData,
 } from './quiz';
 import { AddonModQuizOffline } from './quiz-offline';
+import { AddonModQuizAttemptStates } from '../constants';
+import { QuestionDisplayOptionsMarks } from '@features/question/constants';
 
 /**
  * Helper service that provides some features for quiz.
@@ -291,7 +292,7 @@ export class AddonModQuizHelperProvider {
 
             // Highlight the highest grade if appropriate.
             formattedAttempt.highlightGrade = !!(highlight && !attempt.preview &&
-                attempt.state == AddonModQuizProvider.ATTEMPT_FINISHED && formattedAttempt.readableGrade == bestGrade);
+                attempt.state === AddonModQuizAttemptStates.FINISHED && formattedAttempt.readableGrade == bestGrade);
         } else {
             formattedAttempt.readableGrade = '';
         }
@@ -317,7 +318,7 @@ export class AddonModQuizHelperProvider {
         formattedQuiz.gradeFormatted = AddonModQuiz.formatGrade(quiz.grade, quiz.decimalpoints);
 
         formattedQuiz.showAttemptColumn = quiz.attempts != 1;
-        formattedQuiz.showGradeColumn = options.someoptions.marks >= AddonModQuizProvider.QUESTION_OPTIONS_MARK_AND_MAX &&
+        formattedQuiz.showGradeColumn = options.someoptions.marks >= QuestionDisplayOptionsMarks.MARK_AND_MAX &&
             AddonModQuiz.quizHasGrades(quiz);
         formattedQuiz.showMarkColumn = formattedQuiz.showGradeColumn && quiz.grade != quiz.sumgrades;
         formattedQuiz.showFeedbackColumn = !!quiz.hasfeedback && !!options.alloptions.overallfeedback;
@@ -356,7 +357,7 @@ export class AddonModQuizHelperProvider {
 
         try {
             if (attempt) {
-                if (attempt.state != AddonModQuizProvider.ATTEMPT_OVERDUE && !attempt.finishedOffline) {
+                if (attempt.state !== AddonModQuizAttemptStates.OVERDUE && !attempt.finishedOffline) {
                     // We're continuing an attempt. Call getAttemptData to validate the preflight data.
                     await AddonModQuiz.getAttemptData(attempt.id, attempt.currentpage ?? 0, preflightData, modOptions);
 

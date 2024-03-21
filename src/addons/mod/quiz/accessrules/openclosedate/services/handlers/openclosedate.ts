@@ -15,8 +15,9 @@
 import { Injectable } from '@angular/core';
 
 import { AddonModQuizAccessRuleHandler } from '@addons/mod/quiz/services/access-rules-delegate';
-import { AddonModQuizAttemptWSData, AddonModQuizProvider } from '@addons/mod/quiz/services/quiz';
+import { AddonModQuizAttemptWSData } from '@addons/mod/quiz/services/quiz';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_QUIZ_SHOW_TIME_BEFORE_DEADLINE } from '@addons/mod/quiz/constants';
 
 /**
  * Handler to support open/close date access rule.
@@ -50,8 +51,8 @@ export class AddonModQuizAccessOpenCloseDateHandlerService implements AddonModQu
             return false;
         }
 
-        // Show the time left only if it's less than QUIZ_SHOW_TIME_BEFORE_DEADLINE.
-        if (timeNow > endTime - AddonModQuizProvider.QUIZ_SHOW_TIME_BEFORE_DEADLINE) {
+        // Show the time left only if it's less than ADDON_MOD_QUIZ_SHOW_TIME_BEFORE_DEADLINE.
+        if (timeNow > endTime - ADDON_MOD_QUIZ_SHOW_TIME_BEFORE_DEADLINE) {
             return true;
         }
 

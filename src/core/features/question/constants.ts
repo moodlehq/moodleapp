@@ -19,3 +19,8 @@ export const QUESTION_NEEDS_GRADING_STATE_CLASSES = ['requiresgrading', 'complet
 export const QUESTION_FINISHED_STATE_CLASSES = ['complete'] as const;
 export const QUESTION_GAVE_UP_STATE_CLASSES = ['notanswered'] as const;
 export const QUESTION_GRADED_STATE_CLASSES = ['complete', 'incorrect', 'partiallycorrect', 'correct'] as const;
+
+export const enum QuestionDisplayOptionsMarks {
+    MAX_ONLY = 1,
+    MARK_AND_MAX = 2,
+}

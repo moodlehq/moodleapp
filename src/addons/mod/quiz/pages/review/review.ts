@@ -32,12 +32,13 @@ import {
     AddonModQuizAttemptWSData,
     AddonModQuizCombinedReviewOptions,
     AddonModQuizGetAttemptReviewResponse,
-    AddonModQuizProvider,
     AddonModQuizQuizWSData,
     AddonModQuizWSAdditionalData,
 } from '../../services/quiz';
 import { AddonModQuizHelper } from '../../services/quiz-helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
+import { QuestionDisplayOptionsMarks } from '@features/question/constants';
 
 /**
  * Page that allows reviewing a quiz attempt.
@@ -52,7 +53,7 @@ export class AddonModQuizReviewPage implements OnInit {
     @ViewChild(IonContent) content?: IonContent;
 
     attempt?: AddonModQuizAttemptWSData; // The attempt being reviewed.
-    component = AddonModQuizProvider.COMPONENT; // Component to link the files to.
+    component = ADDON_MOD_QUIZ_COMPONENT; // Component to link the files to.
     showAll = false; // Whether to view all questions in the same page.
     numPages = 1; // Number of pages.
     showCompleted = false; // Whether to show completed time.
@@ -265,7 +266,7 @@ export class AddonModQuizReviewPage implements OnInit {
 
         this.readableState = AddonModQuiz.getAttemptReadableStateName(this.attempt.state ?? '');
 
-        if (this.attempt.state != AddonModQuizProvider.ATTEMPT_FINISHED) {
+        if (this.attempt.state !== AddonModQuizAttemptStates.FINISHED) {
             return;
         }
 
@@ -299,7 +300,7 @@ export class AddonModQuizReviewPage implements OnInit {
         }
 
         // Treat grade.
-        if (this.options && this.options.someoptions.marks >= AddonModQuizProvider.QUESTION_OPTIONS_MARK_AND_MAX &&
+        if (this.options && this.options.someoptions.marks >= QuestionDisplayOptionsMarks.MARK_AND_MAX &&
                 AddonModQuiz.quizHasGrades(this.quiz)) {
 
             if (data.grade === null || data.grade === undefined) {

@@ -36,7 +36,6 @@ import {
     AddonModQuizGetAttemptAccessInformationWSResponse,
     AddonModQuizGetQuizAccessInformationWSResponse,
     AddonModQuizGetUserBestGradeWSResponse,
-    AddonModQuizProvider,
 } from '../../services/quiz';
 import { AddonModQuizAttempt, AddonModQuizHelper, AddonModQuizQuizData } from '../../services/quiz-helper';
 import {
@@ -45,6 +44,8 @@ import {
     AddonModQuizSyncProvider,
     AddonModQuizSyncResult,
 } from '../../services/quiz-sync';
+import { ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT, ADDON_MOD_QUIZ_COMPONENT, AddonModQuizGradeMethods } from '../../constants';
+import { QuestionDisplayOptionsMarks } from '@features/question/constants';
 
 /**
  * Component that displays a quiz entry page.
@@ -56,7 +57,7 @@ import {
 })
 export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
-    component = AddonModQuizProvider.COMPONENT;
+    component = ADDON_MOD_QUIZ_COMPONENT;
     pluginName = 'quiz';
     quiz?: AddonModQuizQuizData; // The quiz.
     now?: number; // Current time.
@@ -110,7 +111,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
         // Listen for attempt finished events.
         this.finishedObserver = CoreEvents.on(
-            AddonModQuizProvider.ATTEMPT_FINISHED_EVENT,
+            ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT,
             (data) => {
                 // Go to review attempt if an attempt in this quiz was finished and synced.
                 if (this.quiz && data.quizId == this.quiz.id) {
@@ -609,12 +610,12 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         // Calculate data to construct the header of the attempts table.
         AddonModQuizHelper.setQuizCalculatedData(quiz, this.options);
 
-        this.overallStats = !!lastFinished && this.options.alloptions.marks >= AddonModQuizProvider.QUESTION_OPTIONS_MARK_AND_MAX;
+        this.overallStats = !!lastFinished && this.options.alloptions.marks >= QuestionDisplayOptionsMarks.MARK_AND_MAX;
 
         // Calculate data to show for each attempt.
         const formattedAttempts = await Promise.all(attempts.map((attempt, index) => {
             // Highlight the highest grade if appropriate.
-            const shouldHighlight = this.overallStats && quiz.grademethod == AddonModQuizProvider.GRADEHIGHEST &&
+            const shouldHighlight = this.overallStats && quiz.grademethod === AddonModQuizGradeMethods.HIGHEST_GRADE &&
                 attempts.length > 1;
             const isLast = index == attempts.length - 1;
 

@@ -23,9 +23,9 @@ import {
     AddonModQuiz,
     AddonModQuizAttemptWSData,
     AddonModQuizGetQuizAccessInformationWSResponse,
-    AddonModQuizProvider,
 } from '../../services/quiz';
 import { AddonModQuizAttempt, AddonModQuizHelper, AddonModQuizQuizData } from '../../services/quiz-helper';
+import { ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
 
 /**
  * Page that displays some summary data about an attempt.
@@ -39,7 +39,7 @@ export class AddonModQuizAttemptPage implements OnInit {
     courseId!: number; // The course ID the quiz belongs to.
     quiz?: AddonModQuizQuizData; // The quiz the attempt belongs to.
     attempt?: AddonModQuizAttempt; // The attempt to view.
-    component = AddonModQuizProvider.COMPONENT; // Component to link the files to.
+    component = ADDON_MOD_QUIZ_COMPONENT; // Component to link the files to.
     componentId?: number; // Component ID to use in conjunction with the component.
     loaded = false; // Whether data has been loaded.
     feedback?: string; // Attempt feedback.
