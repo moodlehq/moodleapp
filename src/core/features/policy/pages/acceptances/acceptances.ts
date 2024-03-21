@@ -41,6 +41,7 @@ export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
     dataLoaded = false;
     policies: ActiveSitePolicy[] = [];
     activeStatus = CorePolicyStatus.Active;
+    inactiveStatus = CorePolicyStatus.Archived;
     isTablet = false;
     hasOnBehalf = false;
     canContactDPO = false;
