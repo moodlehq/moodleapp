@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreCourseProvider } from '@features/course/services/course';
+import { CoreCourseAccessDataType } from '@features/course/services/course';
 import {
     CoreCourseAccess,
     CoreCourseOptionsHandler,
@@ -50,11 +50,11 @@ export class AddonCompetencyCourseOptionHandlerService implements CoreCourseOpti
         accessData: CoreCourseAccess,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<boolean> {
-        if (accessData && accessData.type === CoreCourseProvider.ACCESS_GUEST) {
+        if (accessData && accessData.type === CoreCourseAccessDataType.ACCESS_GUEST) {
             return false; // Not enabled for guest access.
         }
 
-        if (navOptions && navOptions.competencies !== undefined) {
+        if (navOptions?.competencies !== undefined) {
             return navOptions.competencies;
         }
 
@@ -82,7 +82,7 @@ export class AddonCompetencyCourseOptionHandlerService implements CoreCourseOpti
      * @inheritdoc
      */
     async invalidateEnabledForCourse(courseId: number, navOptions?: CoreCourseUserAdminOrNavOptionIndexed): Promise<void> {
-        if (navOptions && navOptions.competencies !== undefined) {
+        if (navOptions?.competencies !== undefined) {
             // No need to invalidate anything.
             return;
         }

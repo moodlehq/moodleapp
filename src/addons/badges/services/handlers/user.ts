@@ -64,7 +64,7 @@ export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
             return false;
         }
 
-        if (navOptions && navOptions.badges !== undefined) {
+        if (navOptions?.badges !== undefined) {
             return navOptions.badges;
         }
 

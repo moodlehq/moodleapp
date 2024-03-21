@@ -104,6 +104,11 @@ export enum CoreCourseModuleCompletionTracking {
     COMPLETION_TRACKING_AUTOMATIC = 2,
 }
 
+export enum CoreCourseAccessDataType {
+    ACCESS_GUEST = 'courses_access_guest',
+    ACCESS_DEFAULT = 'courses_access_default',
+}
+
 /**
  * Service that provides some features regarding a course.
  */
@@ -112,9 +117,16 @@ export class CoreCourseProvider {
 
     static readonly ALL_SECTIONS_ID = -2;
     static readonly STEALTH_MODULES_SECTION_ID = -1;
-    static readonly ACCESS_GUEST = 'courses_access_guest';
-    static readonly ACCESS_DEFAULT = 'courses_access_default';
     static readonly ALL_COURSES_CLEARED = -1;
+
+    /**
+     * @deprecated since 4.4 Not used anymore. Use CoreCourseAccessDataType enum instead.
+     */
+    static readonly ACCESS_GUEST = CoreCourseAccessDataType.ACCESS_GUEST;
+    /**
+     * @deprecated since 4.4 Not used anymore. Use CoreCourseAccessDataType enum instead.
+     */
+    static readonly ACCESS_DEFAULT = CoreCourseAccessDataType.ACCESS_DEFAULT;
 
     static readonly COMPONENT = 'CoreCourse';
 

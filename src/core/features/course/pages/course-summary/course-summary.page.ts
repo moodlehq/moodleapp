@@ -254,7 +254,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     protected async loadMenuHandlers(refresh?: boolean): Promise<void> {
-        if (!this.course) {
+        if (!this.course || !this.canAccessCourse) {
             return;
         }
 

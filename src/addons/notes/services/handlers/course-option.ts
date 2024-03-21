@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreCourseProvider } from '@features/course/services/course';
+import { CoreCourseAccessDataType } from '@features/course/services/course';
 import {
     CoreCourseAccess,
     CoreCourseOptionsHandler,
@@ -47,11 +47,11 @@ export class AddonNotesCourseOptionHandlerService implements CoreCourseOptionsHa
         accessData: CoreCourseAccess,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<boolean> {
-        if (accessData && accessData.type === CoreCourseProvider.ACCESS_GUEST) {
+        if (accessData && accessData.type === CoreCourseAccessDataType.ACCESS_GUEST) {
             return false; // Not enabled for guest access.
         }
 
-        if (navOptions && navOptions.notes !== undefined) {
+        if (navOptions?.notes !== undefined) {
             return navOptions.notes;
         }
 
