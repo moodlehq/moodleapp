@@ -33,5 +33,18 @@ module.exports = config => {
         }),
     );
 
+    if (process.env.MOODLE_APP_COVERAGE) {
+        const tsConfig = config.module.rules[2];
+
+        config.module.rules.splice(2, 0, {
+            ...tsConfig,
+            exclude: /node_modules/,
+            use: [
+                '@jsdevtools/coverage-istanbul-loader',
+                ...tsConfig.use,
+            ],
+        });
+    }
+
     return config;
 };

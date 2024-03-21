@@ -20,6 +20,7 @@ require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 require_once(__DIR__ . '/behat_app_helper.php');
 
 use Behat\Behat\Hook\Scope\ScenarioScope;
+use Behat\Behat\Hook\Scope\AfterStepScope;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ExpectationException;
@@ -44,7 +45,10 @@ class behat_app extends behat_app_helper {
         ],
     ];
 
-    protected $featurepath = '';
+    protected $featurepath;
+    protected $coveragepath;
+    protected $scenarioslug;
+    protected $scenariolaststep;
 
     /**
      * @BeforeScenario
@@ -56,7 +60,35 @@ class behat_app extends behat_app_helper {
             return;
         }
 
+        $steps = $scope->getScenario()->getSteps();
+
+        $this->scenarioslug = $this->get_scenario_slug($scope);
+        $this->scenariolaststep = $steps[count($steps) - 1];
         $this->featurepath = dirname($feature->getFile());
+        $this->coveragepath = get_config('local_moodleappbehat', 'coverage_path') ?: ($this->featurepath . DIRECTORY_SEPARATOR . 'coverage' . DIRECTORY_SEPARATOR);
+    }
+
+    /**
+     * @AfterStep
+     */
+    public function after_step(AfterStepScope $scope) {
+        $step = $scope->getStep();
+
+        if ($step !== $this->scenariolaststep || empty($this->coveragepath)) {
+            return;
+        }
+
+        if (!is_dir($this->coveragepath)) {
+            if (!@mkdir($this->coveragepath, 0777, true)) {
+                throw new Exception("Cannot create {$this->coveragepath} directory.");
+            }
+        }
+
+        $coverage = $this->runtime_js('getCoverage()');
+
+        if (!is_null($coverage)) {
+            file_put_contents($this->coveragepath . $this->scenarioslug . '.json', $coverage);
+        }
     }
 
     /**
