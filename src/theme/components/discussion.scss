@@ -1,5 +1,3 @@
-@use "theme/globals" as *;
-
 :host-context(.ios) {
     ion-footer .toolbar:last-child {
         padding-bottom: 4px;

@@ -20,7 +20,7 @@
             --icon-size: 1.8em;
 
             // Offset padding for visual alignment.
-            margin: calc((var(--icon-size) - var(--a11y-min-target-size)) / 2);
+            margin: calc((var(--icon-size) - var(--a11y-sizing-minTargetSize)) / 2);
         }
 
     }

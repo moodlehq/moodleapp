@@ -1,0 +1,21 @@
+ion-item-divider.item,
+ion-item.item.divider {
+    --background: var(--item-divider-background);
+    --color: var(--item-divider-color);
+    --min-height: var(--item-divider-min-height);
+
+    min-height: var(--min-height);
+    border-bottom-width: var(--item-divider-border-width);
+    --border-width: var(--item-divider-border-width);
+    --inner-border-width: 0 0 var(--item-divider-border-width) 0;
+
+    ion-label h2,
+    ion-label p.item-heading {
+        font-size: var(--item-divider-font-size);
+        font-weight: 500;
+        line-height: 1.5;
+    }
+    ion-label h2.big {
+        font-size: var(--item-divider-font-size-big);
+    }
+}

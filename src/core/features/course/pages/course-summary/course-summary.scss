@@ -43,8 +43,8 @@
 
     .course-container {
         position: relative;
-        top: calc(var(--thumb-height) - var(--radius-lg));
-        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        top: calc(var(--thumb-height) - var(--mdl-shape-borderRadius-lg));
+        border-radius: var(--mdl-shape-borderRadius-lg) var(--mdl-shape-borderRadius-lg) 0 0;
         background-color: var(--ion-background-color);
         box-shadow: var(--drop-shadow-top);
         clip-path: inset(-5px 0px 0px 0px);
@@ -68,7 +68,7 @@
 
     .core-course-dates {
         background: var(--light);
-        border-radius: var(--radius-xs);
+        border-radius: var(--mdl-shape-borderRadius-xs);
         padding: 8px;
         width: 100%;
 

@@ -1,0 +1,80 @@
+
+ion-chip {
+    padding: 4px 8px;
+    height: auto;
+
+    // Chips are not currently clickable, only if specified explicitly.
+    &.ion-activatable:not(.clickable) {
+        cursor: auto;
+        pointer-events: none;
+    }
+    &.clickable {
+        cursor: pointer;
+        pointer-events: auto;
+    }
+
+    &.fab-chip {
+        padding: 8px 12px;
+        box-shadow: 0 2px 4px rgb(0 0 0 / 40%);
+    }
+
+    &.ion-color {
+        background: var(--ion-color-tint);
+        &.chip-outline {
+            background-color: transparent;
+            border-color: var(--ion-color-base);
+            color: var(--ion-color-base);
+        }
+        &.fab-chip {
+            background: var(--ion-color);
+            color: var(--ion-color-contrast);
+        }
+
+        &.ion-color-light,
+        &.ion-color-medium,
+        &.ion-color-dark,
+        &.ion-color-secondary {
+            color: var(--gray-900);
+            &.chip-outline {
+                color: var(--text-color);
+            }
+        }
+    }
+
+    &:not(.ion-color) ion-icon {
+        color: var(--text-color);
+    }
+}
+
+ion-chip,
+ion-button.button.chip {
+    line-height: 1.1;
+    font-size: 12px;
+    min-height: 24px;
+    margin: 4px;
+    font-weight: normal;
+
+    ion-icon {
+        font-size: var(--mdl-typography-icon-fontSize-sm);
+        min-width: var(--mdl-typography-icon-fontSize-sm);
+        @include margin(0, 8px, 0, 0);
+    }
+
+    ion-label {
+        white-space: normal !important;
+    }
+}
+
+ion-button.button.chip {
+    --border-radius: var(--mdl-shape-borderRadius-md);
+    min-height: 32px;
+    font-size: 14px;
+
+    ion-icon[slot=start] {
+        @include margin(0, 8px, 0, 0);
+    }
+
+    ion-icon[slot=end] {
+        @include margin(0, 0, 0, 8px);
+    }
+}

@@ -1,0 +1,8 @@
+ion-loading {
+    --spinner-color: var(--core-loading-spinner);
+    --border-radius: var(--modal-radius);
+
+    .loading-wrapper {
+        border-radius: var(--border-radius) !important;
+    }
+}

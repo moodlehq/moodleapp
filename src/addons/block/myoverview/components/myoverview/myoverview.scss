@@ -11,7 +11,7 @@
 
         ion-button,
         core-combobox ::ng-deep ion-select {
-            --a11y-min-target-size: 40px;
+            --a11y-sizing-minTargetSize: 40px;
             margin: 0;
         }
 
@@ -19,7 +19,7 @@
             --border-width: 0;
 
             ion-icon {
-                font-size: 20px;
+                font-size: var(--mdl-typography-icon-fontSize-md);
             }
         }
 

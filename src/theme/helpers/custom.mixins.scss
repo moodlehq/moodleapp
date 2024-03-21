@@ -69,8 +69,9 @@
 @mixin core-focus() {
     outline: none;
     position: relative;
+
     &::after {
-        @include position(0, 0, 0, 0);
+        @include position(0px, 0px, 0px, 0px);
         position: absolute;
         content: "";
         opacity: 1;
@@ -80,10 +81,10 @@
 }
 
 @mixin core-focus-style() {
-    box-shadow: inset 0 0 var(--a11y-focus-width) 1px var(--a11y-focus-color);
+    box-shadow: var(--a11y-shadow-focus-boxShadow);
     border-radius: var(--border-radius);
     // Thicker option:
-    // border: var(--a11y-focus-width) solid var(--a11y-focus-color);
+    // outline: var(--a11y-shadow-focus-outline);
 }
 
 @mixin core-transition($properties: all, $duration: 500ms, $timing-function: ease-in-out) {
@@ -198,22 +199,22 @@
 
 @mixin core-headings() {
     h1 {
-        font: var(--heading-1-font);
+        font: var(--mdl-typography-heading1-font);
     }
     h2, .item-heading {
-        font: var(--heading-2-font);
+        font: var(--mdl-typography-heading2-font);
     }
     h3 {
-        font: var(--heading-3-font);
+        font: var(--mdl-typography-heading3-font);
     }
     h4 {
-        font: var(--heading-4-font);
+        font: var(--mdl-typography-heading4-font);
     }
     h5 {
-        font: var(--heading-5-font);
+        font: var(--mdl-typography-heading5-font);
     }
     h6 {
-        font: var(--heading-6-font);
+        font: var(--mdl-typography-heading6-font);
     }
 }
 

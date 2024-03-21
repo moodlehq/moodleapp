@@ -1,0 +1,43 @@
+ion-card {
+    --border-width: var(--ion-card-border-width);
+    --border-style: solid;
+    --border-color: var(--ion-card-border-color);
+    --box-shadow: none;
+    --border-radius: var(--ion-card-radius);
+
+    box-shadow: var(--box-shadow);
+    margin: var(--ion-card-vertical-margin) var(--ion-card-horizontal-margin);
+    border-width: var(--border-width);
+    border-style: var(--border-style);
+    border-color: var(--border-color);
+    border-radius: var(--border-radius);
+
+    &::part(native) {
+        --border-width: 0;
+    }
+
+    ion-item:only-child {
+        --inner-border-width: 0px;
+    }
+
+    ion-card-title {
+        font-size: 20px;
+    }
+
+    &.core-card-with-buttons .item ion-label {
+        margin-bottom: 0;
+    }
+
+    .core-card-buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        margin: 0px 8px 8px 8px;
+
+        ion-button {
+            &[fill="outline"] {
+                --background: transparent;
+            }
+        }
+    }
+}

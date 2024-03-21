@@ -125,7 +125,7 @@
             margin: 0 auto;
             font-size: 18px;
             background-color: var(--toobar-background);
-            border-radius: var(--radius-xs);
+            border-radius: var(--mdl-shape-borderRadius-xs);
             @include core-transition(background-color, 200ms);
             color: var(--button-color);
             cursor: pointer;

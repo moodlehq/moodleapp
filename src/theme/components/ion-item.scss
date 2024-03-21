@@ -1,0 +1,127 @@
+ion-item {
+    --detail-icon-color: var(--ion-item-detail-icon-color);
+    --detail-icon-font-size: var(--ion-item-detail-icon-font-size);
+    --detail-icon-opacity: var(--ion-item-detail-icon-opacity);
+
+    > ion-icon[slot] {
+        color: var(--ion-item-icon-color);
+    }
+
+    &.item-lines-default {
+        --inner-border-width: 0px;
+        --border-width: 0px;
+    }
+
+    &.ion-valid,
+    &.ion-invalid {
+        --inner-border-width: 0 0 1px 0;
+
+        &.ion-touched {
+            &.ion-invalid {
+                --ion-item-border-color: var(--highlight-color-invalid);
+                --highlight-background: var(--ion-item-border-color);
+                --border-color: var(--ion-item-border-color);
+            }
+            &.ion-valid {
+                --ion-item-border-color: var(--highlight-color-valid);
+                --highlight-background: var(--ion-item-border-color);
+                --border-color: var(--ion-item-border-color);
+            }
+        }
+    }
+
+    // Hide details on items to align badges.
+    &.hide-detail {
+        --detail-icon-opacity: 0;
+    }
+}
+// Fake item.
+div.fake-ion-item {
+    position: relative;
+    align-items: center;
+    justify-content: space-between;
+    outline: none;
+    color: var(--ion-text-color);
+    background: var(--ion-item-background);
+    text-align: initial;
+    text-decoration: none;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.md div.fake-ion-item {
+    font-size: 16px;
+    font-weight: normal;
+    text-transform: none;
+    @include padding(null, 16px, null, 16px);
+    @include margin(11px, null, 10px, null);
+
+    h1 {
+        @include margin(0, 0, 2px);
+        font-size: 24px;
+        font-weight: normal;
+    }
+
+    h2 {
+        @include margin(2px, 0);
+        font-size: 16px;
+        font-weight: normal;
+    }
+
+    h3,
+    h4,
+    h5,
+    h6 {
+        @include margin(2px, 0);
+
+        font-size: var(--text-size);
+        font-weight: normal;
+
+        line-height: normal;
+    }
+
+    p {
+        @include margin(0, 0, 2px);
+        font-size: var(--text-size);
+        line-height: 20px;
+        text-overflow: inherit;
+        overflow: inherit;
+    }
+}
+
+.ios div.fake-ion-item {
+    font-size: var(--text-size);
+    @include padding(null, 10px, null, 20px);
+    @include margin(10px, 8px, 10px, null);
+
+    h1 {
+        @include margin(3px, 0, 2px);
+        font-size: 22px;
+        font-weight: normal;
+    }
+
+    h2 {
+        @include margin(0, 0, 2px);
+        font-size: 17px;
+        font-weight: normal;
+    }
+
+    h3,
+    h4,
+    h5,
+    h6 {
+        @include margin(0, 0, 3px);
+        font-size: var(--text-size);
+        font-weight: normal;
+        line-height: normal;
+    }
+
+    p {
+        @include margin(0, 0, 2px 0);
+        font-size: var(--text-size);
+        line-height: normal;
+        text-overflow: inherit;
+        overflow: inherit;
+    }
+
+}

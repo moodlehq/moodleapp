@@ -12,20 +12,20 @@
         ion-button,
         core-combobox ::ng-deep ion-button {
             --border-width: 0;
-            --a11y-min-target-size: 40px;
+            --a11y-sizing-minTargetSize: 40px;
             margin: 0;
 
             .select-icon {
                 display: none;
             }
             ion-icon {
-                font-size: 20px;
+                font-size: var(--mdl-typography-icon-fontSize-md);
             }
         }
 
         core-combobox ::ng-deep ion-select {
             margin: 0;
-            --a11y-min-target-size: 40px;
+            --a11y-sizing-minTargetSize: 40px;
         }
 
        core-search-box {

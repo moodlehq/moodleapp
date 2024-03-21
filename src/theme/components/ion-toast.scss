@@ -1,0 +1,21 @@
+@import "../globals.scss";
+
+ion-toast {
+    --color: var(--ion-color-step-50);
+    --button-color: var(--primary);
+    --background: var(--ion-color-step-800);
+
+    @include media-breakpoint-down(sm) {
+        &::part(container) {
+            flex-direction: column;
+        }
+    }
+
+    @each $color-name, $unused in $colors {
+        &.core-#{$color-name}-toast {
+            --background: var(--ion-color-#{$color-name}-tint);
+            --color: var(--ion-color-#{$color-name}-shade);
+            --button-color: var(--ion-color-#{$color-name}-shade);
+        }
+    }
+}

@@ -1,0 +1,107 @@
+
+ion-button {
+    margin: 4px 8px;
+
+    ion-spinner[slot=start],
+    img[slot=start] {
+        @include margin-horizontal(-0.3em, 0.3em);
+    }
+
+    ion-spinner[slot=end],
+    img[slot=end] {
+        @include margin-horizontal(-0.3em, 0.3em);
+    }
+
+    ion-spinner[slot] {
+        width: 20px;
+        color: inherit;
+    }
+
+    &.button-outline {
+        --border-width: var(--core-input-border-width);
+        --border-color: var(--core-input-stroke);
+        --background: var(--core-input-background);
+        --color: var(--core-input-text);
+        --ion-color-primary: var(--core-input-text);
+        &.ios {
+            --color-activated: var(--contrast-background);
+        }
+    }
+
+    &.button-solid {
+        --box-shadow: none;
+    }
+
+    core-format-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        line-height: 1.2;
+    }
+
+    > * {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &.ion-text-wrap {
+        white-space: normal;
+        core-format-text {
+            white-space: normal;
+            display: contents;
+        }
+
+        & > * {
+            white-space: normal;
+        }
+    }
+
+    ion-spinner {
+        --color: inherit !important;
+    }
+
+    &.button-has-icon-only {
+        margin: 2px;
+    }
+
+    &:not(.button-has-icon-only):not(.button-small) > ion-icon {
+        min-width: 20px;
+    }
+
+    &.button.button-clear.button-has-icon-only {
+        --border-radius: var(--mdl-shape-borderRadius-xl);
+    }
+
+    &.button.button-clear {
+        --color: var(--core-input-text);
+        --ion-color-primary: var(--core-input-text);
+    }
+
+    &.button.button-solid,
+    &.button.button-outline {
+        --border-radius: var(--core-input-radius);
+    }
+
+    .select-icon {
+        margin: var(--icon-margin);
+        width: 19px;
+        height: 19px;
+        position: relative;
+
+        .select-icon-inner {
+            left: 5px;
+            top: 50%;
+            margin-top: -2px;
+            position: absolute;
+            width: 0px;
+            height: 0px;
+            color: currentcolor;
+            pointer-events: none;
+            border-top: 5px solid;
+            border-right: 5px solid transparent;
+            border-left: 5px solid transparent;
+        }
+    }
+}

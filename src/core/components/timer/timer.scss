@@ -20,7 +20,7 @@
     div.core-timer {
         background: var(--timer-background);
         color: var(--timer-text-color, var(--text-color));
-        border-radius: var(--radius-lg);
+        border-radius: var(--mdl-shape-borderRadius-lg);
     }
 
     button {
