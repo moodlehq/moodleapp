@@ -1,4 +1,4 @@
-@addon_mod_bigbluebuttonbn @app @javascript @lms_from4.0
+@addon_mod_bigbluebuttonbn @mod_bigbluebuttonbn @app @javascript @lms_from4.0
 Feature: Test basic usage of BBB activity in app
   In order to join a BBB meeting while using the mobile app
   As a student
