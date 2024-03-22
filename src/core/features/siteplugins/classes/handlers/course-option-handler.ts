@@ -87,7 +87,7 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
         const args = {
             courseid: course.id,
         };
-        const hash = <string> Md5.hashAsciiStr(JSON.stringify(args));
+        const hash = Md5.hashAsciiStr(JSON.stringify(args));
 
         return {
             title: this.title,

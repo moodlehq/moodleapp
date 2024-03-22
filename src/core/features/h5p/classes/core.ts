@@ -140,7 +140,7 @@ export class CoreH5PCore {
         toHash.sort((a, b) => a.localeCompare(b));
 
         // Calculate hash.
-        return <string> Md5.hashAsciiStr(toHash.join(''));
+        return Md5.hashAsciiStr(toHash.join(''));
     }
 
     /**

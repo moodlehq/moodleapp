@@ -218,7 +218,7 @@ export class CoreStylesService {
             contents = (await handler.getStyle(siteId, config)).trim();
         }
 
-        const hash = <string>Md5.hashAsciiStr(contents);
+        const hash = Md5.hashAsciiStr(contents);
 
         // Update the styles only if they have changed.
         if (this.stylesEls[siteId][handler.name] === hash) {

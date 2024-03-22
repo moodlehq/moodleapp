@@ -138,7 +138,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
             subfolder: folder,
         };
 
-        const hash = <string> Md5.hashAsciiStr(folder.filepath);
+        const hash = Md5.hashAsciiStr(folder.filepath);
 
         CoreNavigator.navigateToSitePath(
             `${AddonModFolderModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/${hash}`,
