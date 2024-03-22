@@ -98,7 +98,7 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
                     courseid: contextId,
                     userid: user.id,
                 };
-                const hash = <string> Md5.hashAsciiStr(JSON.stringify(args));
+                const hash = Md5.hashAsciiStr(JSON.stringify(args));
 
                 CoreNavigator.navigateToSitePath(
                     `siteplugins/content/${this.plugin.component}/${this.handlerSchema.method}/${hash}`,

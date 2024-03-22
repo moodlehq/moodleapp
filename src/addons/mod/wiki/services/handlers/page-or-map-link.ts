@@ -59,7 +59,7 @@ export class AddonModWikiPageOrMapLinkHandlerService extends CoreContentLinksHan
                         { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
                     );
 
-                    const hash = <string> Md5.hashAsciiStr(JSON.stringify({
+                    const hash = Md5.hashAsciiStr(JSON.stringify({
                         pageId: page.id,
                         pageTitle: page.title,
                         subwikiId: page.subwikiid,

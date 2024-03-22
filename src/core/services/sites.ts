@@ -721,7 +721,7 @@ export class CoreSitesProvider {
      * @returns Site ID.
      */
     createSiteID(siteUrl: string, username: string): string {
-        return <string> Md5.hashAsciiStr(siteUrl + username);
+        return Md5.hashAsciiStr(siteUrl + username);
     }
 
     /**

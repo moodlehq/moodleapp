@@ -99,7 +99,7 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
         } else {
             const component = this.component || this.parentContent?.component;
             const method = this.method || this.parentContent?.method;
-            const hash = <string> Md5.hashAsciiStr(JSON.stringify(args));
+            const hash = Md5.hashAsciiStr(JSON.stringify(args));
 
             CoreNavigator.navigateToSitePath(`siteplugins/content/${component}/${method}/${hash}`, {
                 params: {

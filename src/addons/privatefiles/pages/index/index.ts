@@ -267,7 +267,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
             params.filename = '';
         }
 
-        const hash = <string> Md5.hashAsciiStr(JSON.stringify(params));
+        const hash = Md5.hashAsciiStr(JSON.stringify(params));
 
         CoreNavigator.navigate(`../${hash}`, { params });
     }

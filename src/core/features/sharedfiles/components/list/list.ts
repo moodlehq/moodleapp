@@ -123,7 +123,7 @@ export class CoreSharedFilesListComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const hash = <string> Md5.hashAsciiStr(path);
+        const hash = Md5.hashAsciiStr(path);
 
         CoreNavigator.navigate(`../${hash}`, {
             params: {
