@@ -32,6 +32,7 @@ Feature: It opens external links properly.
     When I close the browser tab opened by the app
     And I press the back button in the app
     And I press "Information" in the app
+    And I set "core-course-module-summary ion-button.core-module-oib-button" styles to "display" "block !important"
     And I press "Open in browser" in the app
     Then the app should have opened a browser tab
 
