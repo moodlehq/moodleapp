@@ -4,22 +4,22 @@ Feature: It opens external links properly.
   Background:
     Given the following "users" exist:
       | username |
-      | student1 |
+      | teacher1 |
     And the following "courses" exist:
       | fullname | shortname |
       | Course 1 | C1        |
     And the following "course enrolments" exist:
       | user     | course | role    |
-      | student1 | C1     | student |
+      | teacher1 | C1     | teacher |
     And the following "activities" exist:
       | activity   | name       | intro       | course | idnumber |
       | forum      | Test forum | Test forum  | C1     | forum    |
     And the following forum discussions exist in course "Course 1":
       | forum      | user     | name        | message       |
-      | Test forum | student1 | Forum topic | See <a href="https://moodle.org/">moodle.org external link</a> |
+      | Test forum | teacher1 | Forum topic | See <a href="https://moodle.org/">moodle.org external link</a> |
 
   Scenario: Click an external link
-    Given I entered the forum activity "Test forum" on course "Course 1" as "student1" in the app
+    Given I entered the forum activity "Test forum" on course "Course 1" as "teacher1" in the app
     When I press "Forum topic" in the app
     And I press "moodle.org external link" in the app
     Then I should find "You are about to leave the app" in the app

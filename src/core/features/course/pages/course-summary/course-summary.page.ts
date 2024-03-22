@@ -73,6 +73,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
     progress?: number;
     courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
     displayOpenInBrowser = false;
+    isTeacher = false;
 
     protected actionSheet?: HTMLIonActionSheetElement;
     protected waitStart = 0;
@@ -171,6 +172,9 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         }
 
         await this.loadMenuHandlers(refresh);
+
+        // After loading menu handlers, admOptions should be available.
+        this.isTeacher = await CoreUtils.ignoreErrors(CoreCourseHelper.guessIsTeacher(this.courseId, this.course), false);
 
         this.dataLoaded = true;
     }

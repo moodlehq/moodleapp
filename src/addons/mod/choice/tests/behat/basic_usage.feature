@@ -176,10 +176,8 @@ Feature: Test basic usage of choice activity in app
     Given I entered the choice activity "Choice name" on course "Course 1" as "teacher1" in the app
     Then I should find "Test choice description" in the app
 
-    When I press "Information" in the app
-    And I press "Open in browser" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "teacher1"
+    When I open a browser tab with url "$WWWROOT"
+    And I am on the "choice1" Activity page logged in as teacher1
     And I follow "Responses"
     And I press "Download in text format"
     # TODO Then I should find "..." in the downloads folder

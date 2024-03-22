@@ -207,12 +207,9 @@ Feature: Attempt a quiz in app
     And I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(3) p:nth-child(2)" with "[Completed on date]"
     Then the UI should match the snapshot
 
-    Given I entered the quiz activity "Quiz 1" on course "Course 1" as "teacher1" in the app
-    When I press "Information" in the app
-    And I press "Open in browser" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "teacher1"
-    And I follow "Attempts: 1"
+    Given I open a browser tab with url "$WWWROOT"
+    And I am on the "quiz1" Activity page logged in as teacher1
+    When I follow "Attempts: 1"
     And I follow "Review attempt"
     Then I should see "Finished"
     And I should see "1.00/2.00"

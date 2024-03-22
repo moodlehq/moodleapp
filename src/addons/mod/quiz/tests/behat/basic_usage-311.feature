@@ -206,11 +206,8 @@ Feature: Attempt a quiz in app
     When I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(1) p:nth-child(2)" with "[Started on date]"
     And I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(3) p:nth-child(2)" with "[Completed on date]"
 
-    Given I entered the quiz activity "Quiz 1" on course "Course 1" as "teacher1" in the app
-    When I press "Information" in the app
-    And I press "Open in browser" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "teacher1"
+    Given I open a browser tab with url "$WWWROOT"
+    When I am on the "quiz1" Activity page logged in as teacher1
     And I follow "Attempts: 1"
     And I follow "Review attempt"
     Then I should see "Finished"

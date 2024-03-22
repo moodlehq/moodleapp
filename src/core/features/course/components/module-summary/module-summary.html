@@ -24,7 +24,8 @@
                 </h1>
             </ion-label>
             <ion-button fill="clear" *ngIf="displayOptions.displayOpenInBrowser && externalUrl" [href]="externalUrl" core-link
-                [showBrowserWarning]="false" [attr.aria-label]="'core.openinbrowser' | translate" slot="end">
+                [showBrowserWarning]="false" [attr.aria-label]="'core.openinbrowser' | translate" slot="end" [class.hidden]="!isTeacher"
+                class="core-module-oib-button">
                 <ion-icon name="fas-up-right-from-square" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-item>

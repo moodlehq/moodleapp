@@ -23,8 +23,7 @@ Feature: Test basic usage of guest access course in app
 
   @lms_from4.0
   Scenario: Guest access without password (student)
-    Given I log in as "teacher1"
-    And I am on the "Course 1" "enrolment methods" page
+    Given I am on the "Course 1" "enrolment methods" page logged in as "teacher1"
     And I click on "Edit" "link" in the "Guest access" "table_row"
     And I set the following fields to these values:
       | Allow guest access | Yes |
@@ -47,8 +46,7 @@ Feature: Test basic usage of guest access course in app
 
   @lms_from4.3
   Scenario: Guest access with password (student)
-    Given I log in as "teacher1"
-    And I am on the "Course 1" "enrolment methods" page
+    Given I am on the "Course 1" "enrolment methods" page logged in as "teacher1"
     And I click on "Edit" "link" in the "Guest access" "table_row"
     And I set the following fields to these values:
       | Allow guest access | Yes |

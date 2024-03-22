@@ -79,14 +79,11 @@ Feature: Test basic usage of BBB activity in app
     And I should not be able to press "Join session" in the app
 
     # Join the session as moderator in a browser.
-    When I press "Information" in the app
-    And I press "Open in browser" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "teacher1"
+    When I open a browser tab with url "$WWWROOT"
+    And I am on the "bbb1" Activity page logged in as teacher1
     And I click on "Join session" "link"
     And I wait for the BigBlueButton room to start
     And I switch back to the app
-    And I press "Close" in the app
     And I pull to refresh until I find "The session is in progress" in the app
     Then I should find "1" near "Moderator" in the app
     And I should find "0" near "Viewer" in the app
