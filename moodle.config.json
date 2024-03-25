@@ -1,8 +1,8 @@
 {
     "app_id": "com.akademiprogramlari.dgsakademi",
     "appname": "DGS Akademi",
-    "versioncode": 101,
-    "versionname": "1.0.1",
+    "versioncode": 102,
+    "versionname": "1.0.2",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,

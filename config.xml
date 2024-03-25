@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="101" id="com.akademiprogramlari.dgsakademi" ios-CFBundleVersion="4.4.0.0" version="1.0.1" versionCode="101" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="102" id="com.akademiprogramlari.dgsakademi" ios-CFBundleVersion="4.4.0.0" version="1.0.2" versionCode="102" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>DGS Akademi</name>
     <description>DGS Akademi E-Kurs Mobil Uygulaması</description>
     <author email="haktanaltunkaya@gmail.com" href="http://dgsakademi.com">Akademi Programları</author>
