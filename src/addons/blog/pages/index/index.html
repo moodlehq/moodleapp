@@ -28,7 +28,6 @@
         }
 
         @for (entry of entries; track entry.id) {
-        @if (!onlyMyEntries || entry.userid === currentUserId) {
         <div class="entry ion-padding-start ion-padding-top ion-padding-end" [id]="'entry-' + entry.id">
             <div class="entry-subject flex ion-text-wrap ion-justify-content-between ion-align-items-center">
                 <h3>
@@ -56,10 +55,13 @@
                     <core-user-avatar [user]="entry.user" [courseId]="entry.courseid" />
                 </span>
 
+                @if (entry.user?.fullname && entry.created) {
                 <span [innerHTML]="'core.bynameondate' | translate: {
-                        '$a': { name: '<strong>' + entry?.user?.fullname + '</strong>', date: (entry.created | coreDateDayOrTime) }
-                    }">
-                </span>
+                    '$a': { name: '<strong>' + entry.user?.fullname + '</strong>', date: (entry.created | coreDateDayOrTime) }
+                }"></span>
+                } @else if (!entry.user?.fullname && entry.created) {
+                <span>{{ entry.created | coreDateDayOrTime }}</span>
+                }
             </div>
 
 
@@ -92,20 +94,22 @@
                 </div>
             </ion-label>
 
-            @if (entry.lastmodified > entry.created) {
-            <div class="entry-last-modification flex ion-justify-content-between border-bottom ion-padding-top ion-padding-bottom">
-                <ion-note class="flex ion-align-items-center">
+            @if (entry.lastmodified > entry.created || (entry.userid === currentUserId && entry.publishstate !== 'draft')) {
+            <ion-item class="entry-last-modification">
+                @if (entry.lastmodified > entry.created) {
+                <ion-note class="flex ion-align-items-center" slot="start">
                     <ion-icon name="fas-clock" [attr.aria-label]="'core.lastmodified' | translate" />
                     {{ entry.lastmodified | coreTimeAgo }}
                 </ion-note>
+                }
 
                 @if (entry.userid === currentUserId && entry.publishstate !== 'draft') {
-                <ion-badge class="entry-visibility-permission" color="success">
+                <ion-badge class="entry-visibility-permission" color="success" slot="end">
                     <ion-icon name="fas-eye" />
                     {{ 'addon.blog.' + entry.publishTranslated | translate }}
                 </ion-badge>
                 }
-            </div>
+            </ion-item>
             }
 
             @if (commentsEnabled) {
@@ -114,7 +118,6 @@
             }
 
         </div>
-        }
         } @empty {
         <core-empty-box icon="far-newspaper" [message]="'addon.blog.noentriesyet' | translate" />
         }

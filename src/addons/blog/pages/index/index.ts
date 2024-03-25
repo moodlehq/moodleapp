@@ -229,6 +229,8 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
                     .sort((a, b) => b.created - a.created);
             }
 
+            this.entries = this.entries.filter(entry => !this.onlyMyEntries || entry.userid === this.currentUserId);
+
             if (this.onlyMyEntries) {
                 const count = this.entries.filter((entry) => entry.userid == this.currentUserId).length;
                 this.canLoadMoreUserEntries = result.totalentries > count;
@@ -273,6 +275,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
             // First time but no entry loaded. Try to load some.
             this.loadMore();
         }
+
     }
 
     /**
