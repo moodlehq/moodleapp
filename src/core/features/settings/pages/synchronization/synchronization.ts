@@ -131,6 +131,8 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
         // Using syncOnlyOnWifi false to force manual sync.
         try {
             await CoreSettingsHelper.synchronizeSite(false, siteId);
+
+            CoreDomUtils.showToast('core.settings.sitesynccompleted', true);
         } catch (error) {
             if (this.isDestroyed) {
                 return;

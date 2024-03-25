@@ -116,6 +116,8 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
         try {
             // Using syncOnlyOnWifi false to force manual sync.
             await CoreSettingsHelper.synchronizeSite(false, this.siteId);
+
+            CoreDomUtils.showToast('core.settings.sitesynccompleted', true);
         } catch (error) {
             if (this.isDestroyed) {
                 return;
