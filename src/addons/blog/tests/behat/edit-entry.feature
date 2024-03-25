@@ -41,7 +41,7 @@ Feature: Edit blog entries
     And I set the field "Blog entry body" to "This is a new blog entry." in the app
     And I press "Publish to" in the app
     And I press "Anyone on this site" in the app
-    And I press "Add a new entry" "button" in the app
+    And I press "Save" "button" in the app
 
     Then I should find "Blog entries" in the app
     And I should find "New blog entry" in the app
@@ -60,7 +60,7 @@ Feature: Edit blog entries
     And I press "Add file" in the app
     And I upload "stub7.txt" to "File" ".action-sheet-button" in the app
 
-    And I press "Add a new entry" "button" in the app
+    And I press "Save" "button" in the app
 
     Then I should find "Blog entries" in the app
     And I should find "Entry with attachments" in the app

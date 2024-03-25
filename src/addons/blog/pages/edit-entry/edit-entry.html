@@ -75,18 +75,10 @@
             </div>
             }
 
-            <ion-item class="addon-blog-entry-buttons">
-                <ion-label>
-                    <ion-row>
-                        <ion-col>
-                            <ion-button expand="block" [attr.aria-label]="(entry ? 'core.save' : 'addon.blog.addnewentry') | translate"
-                                [disabled]="form.invalid || (entry && !hasDataChangedForEdit)" (click)="save()">
-                                {{ (entry ? 'core.save' : 'addon.blog.addnewentry') | translate }}
-                            </ion-button>
-                        </ion-col>
-                    </ion-row>
-                </ion-label>
-            </ion-item>
+            <ion-button class="ion-margin" expand="block" [attr.aria-label]="'core.save' | translate"
+                [disabled]="form.invalid || (entry && !hasDataChangedForEdit)" (click)="save()">
+                {{ 'core.save' | translate }}
+            </ion-button>
 
         </form>
     </core-loading>
