@@ -32,6 +32,7 @@ Feature: Test basic usage of choice activity in app
     Then I should find "Test choice description" in the app
 
     When I press "Information" in the app
+    And I set "core-course-module-summary ion-button.core-module-oib-button" styles to "display" "block !important"
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"

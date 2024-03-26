@@ -1303,7 +1303,7 @@ export class CoreFilepoolProvider {
      * @returns File download ID.
      */
     protected getFileDownloadId(fileUrl: string, filePath: string): string {
-        return <string> Md5.hashAsciiStr(fileUrl + '###' + filePath);
+        return Md5.hashAsciiStr(fileUrl + '###' + filePath);
     }
 
     /**
@@ -1867,7 +1867,7 @@ export class CoreFilepoolProvider {
      * @returns Package ID.
      */
     getPackageId(component: string, componentId?: string | number): string {
-        return <string> Md5.hashAsciiStr(component + '#' + this.fixComponentId(componentId));
+        return Md5.hashAsciiStr(component + '#' + this.fixComponentId(componentId));
     }
 
     /**

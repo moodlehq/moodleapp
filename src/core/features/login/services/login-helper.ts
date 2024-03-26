@@ -1104,14 +1104,14 @@ export class CoreLoginHelperProvider {
 
         // Validate the signature.
         // We need to check both http and https.
-        let signature = <string> Md5.hashAsciiStr(launchSiteURL + passport);
+        let signature = Md5.hashAsciiStr(launchSiteURL + passport);
         if (signature != params[0]) {
             if (launchSiteURL.indexOf('https://') != -1) {
                 launchSiteURL = launchSiteURL.replace('https://', 'http://');
             } else {
                 launchSiteURL = launchSiteURL.replace('http://', 'https://');
             }
-            signature = <string> Md5.hashAsciiStr(launchSiteURL + passport);
+            signature = Md5.hashAsciiStr(launchSiteURL + passport);
         }
 
         if (signature == params[0]) {

@@ -22,7 +22,7 @@ import {
     CoreCourseSearchedData,
     CoreCourseUserAdminOrNavOptionIndexed,
 } from '@features/courses/services/courses';
-import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
+import { CoreCourse, CoreCourseAccessDataType } from '@features/course/services/course';
 import {
     CoreGrades,
     CoreGradesGradeItem,
@@ -680,11 +680,11 @@ export class CoreGradesHelperProvider {
         accessData: CoreCourseAccess,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<boolean> {
-        if (accessData && accessData.type == CoreCourseProvider.ACCESS_GUEST) {
+        if (accessData && accessData.type === CoreCourseAccessDataType.ACCESS_GUEST) {
             return false; // Not enabled for guests.
         }
 
-        if (navOptions && navOptions.grades !== undefined) {
+        if (navOptions?.grades !== undefined) {
             return navOptions.grades;
         }
 

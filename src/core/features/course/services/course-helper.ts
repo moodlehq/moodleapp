@@ -2058,6 +2058,30 @@ export class CoreCourseHelperProvider {
         }
     }
 
+    /**
+     * Guess if the user is a teacher in a course.
+     *
+     * @param courseId Course Id.
+     * @param course Course object.
+     * @returns Promise resolved with boolean: whether the user is a teacher.
+     */
+    async guessIsTeacher(
+        courseId: number,
+        course?: CoreEnrolledCourseData | CoreCourseSearchedData,
+    ): Promise<boolean> {
+        if (course && 'admOptions' in course && course.admOptions) {
+            return !!course.admOptions['reports'];
+        }
+
+        // Not loaded yet, try to load it.
+        const adminOptions = await CoreCourses.getUserAdministrationOptions(
+            [courseId],
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return !!adminOptions[courseId]?.['reports'];
+    }
+
 }
 
 export const CoreCourseHelper = makeSingleton(CoreCourseHelperProvider);

@@ -181,7 +181,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
 
         component = component || this.component;
         method = method || this.method;
-        const hash = <string> Md5.hashAsciiStr(JSON.stringify(args));
+        const hash = Md5.hashAsciiStr(JSON.stringify(args));
 
         CoreNavigator.navigateToSitePath(`siteplugins/content/${component}/${method}/${hash}`, {
             params: {

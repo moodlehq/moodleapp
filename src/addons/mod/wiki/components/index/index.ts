@@ -638,7 +638,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * @returns Promise.
      */
     protected async openPageOrSubwiki(options: AddonModWikiOpenPageOptions): Promise<void> {
-        const hash = <string> Md5.hashAsciiStr(JSON.stringify({
+        const hash = Md5.hashAsciiStr(JSON.stringify({
             ...options,
             timestamp: Date.now(),
         }));

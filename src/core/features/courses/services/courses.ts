@@ -27,8 +27,6 @@ import { AddonEnrolSelf } from '@addons/enrol/self/services/self';
 import { CoreEnrol, CoreEnrolEnrolmentInfo, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 
-const ROOT_CACHE_KEY = 'mmCourses:';
-
 declare module '@singletons/events' {
 
     /**
@@ -49,6 +47,8 @@ declare module '@singletons/events' {
  */
 @Injectable({ providedIn: 'root' })
 export class CoreCoursesProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'mmCourses:';
 
     static readonly SEARCH_PER_PAGE = 20;
     static readonly RECENT_PER_PAGE = 10;
@@ -114,7 +114,7 @@ export class CoreCoursesProvider {
      * @returns Cache key.
      */
     protected getCategoriesCacheKey(categoryId: number, addSubcategories?: boolean): string {
-        return ROOT_CACHE_KEY + 'categories:' + categoryId + ':' + !!addSubcategories;
+        return `${CoreCoursesProvider.ROOT_CACHE_KEY}categories:${categoryId}:${!!addSubcategories}`;
     }
 
     /**
@@ -131,16 +131,16 @@ export class CoreCoursesProvider {
         if (courseIds.length == 1) {
             // Only 1 course, check if it belongs to the user courses. If so, use all user courses.
             return this.getCourseIdsIfEnrolled(courseIds[0], siteId);
-        } else {
-            if (courseIds.length > 1 && courseIds.indexOf(siteHomeId) == -1) {
-                courseIds.push(siteHomeId);
-            }
-
-            // Sort the course IDs.
-            courseIds.sort((a, b) => b - a);
-
-            return courseIds;
         }
+
+        if (courseIds.length > 1 && courseIds.indexOf(siteHomeId) == -1) {
+            courseIds.push(siteHomeId);
+        }
+
+        // Sort the course IDs.
+        courseIds.sort((a, b) => b - a);
+
+        return courseIds;
     }
 
     /**
@@ -363,7 +363,7 @@ export class CoreCoursesProvider {
      * @returns Cache key.
      */
     protected getCoursesCacheKey(ids: number[]): string {
-        return ROOT_CACHE_KEY + 'course:' + JSON.stringify(ids);
+        return `${CoreCoursesProvider.ROOT_CACHE_KEY}course:${JSON.stringify(ids)}`;
     }
 
     /**
@@ -536,7 +536,7 @@ export class CoreCoursesProvider {
      * @returns Cache key.
      */
     protected getCoursesByFieldCacheKey(field: string = '', value: string | number = ''): string {
-        return ROOT_CACHE_KEY + 'coursesbyfield:' + field + ':' + value;
+        return `${CoreCoursesProvider.ROOT_CACHE_KEY}coursesbyfield:${field}:${value}`;
     }
 
     /**
@@ -651,7 +651,7 @@ export class CoreCoursesProvider {
      * @returns Cache key.
      */
     protected getRecentCoursesCacheKey(userId: number): string {
-        return `${ROOT_CACHE_KEY}:recentcourses:${userId}`;
+        return `${CoreCoursesProvider.ROOT_CACHE_KEY}:recentcourses:${userId}`;
     }
 
     /**
@@ -684,7 +684,7 @@ export class CoreCoursesProvider {
      * @returns Cache key.
      */
     protected getUserAdministrationOptionsCommonCacheKey(): string {
-        return ROOT_CACHE_KEY + 'administrationOptions:';
+        return `${CoreCoursesProvider.ROOT_CACHE_KEY}administrationOptions:`;
     }
 
     /**
@@ -701,11 +701,14 @@ export class CoreCoursesProvider {
      * Get user administration options for a set of courses.
      *
      * @param courseIds IDs of courses to get.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Options.
      * @returns Promise resolved with administration options for each course.
      */
-    getUserAdministrationOptions(courseIds: number[], siteId?: string): Promise<CoreCourseUserAdminOrNavOptionCourseIndexed> {
-        return firstValueFrom(this.getUserAdministrationOptionsObservable(courseIds, { siteId }));
+    getUserAdministrationOptions(
+        courseIds: number[],
+        options?: CoreSitesCommonWSOptions,
+    ): Promise<CoreCourseUserAdminOrNavOptionCourseIndexed> {
+        return firstValueFrom(this.getUserAdministrationOptionsObservable(courseIds, options));
     }
 
     /**
@@ -752,7 +755,7 @@ export class CoreCoursesProvider {
      * @returns Cache key.
      */
     protected getUserNavigationOptionsCommonCacheKey(): string {
-        return ROOT_CACHE_KEY + 'navigationOptions:';
+        return `${CoreCoursesProvider.ROOT_CACHE_KEY}navigationOptions:`;
     }
 
     /**
@@ -768,11 +771,14 @@ export class CoreCoursesProvider {
      * Get user navigation options for a set of courses.
      *
      * @param courseIds IDs of courses to get.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Options.
      * @returns Promise resolved with navigation options for each course.
      */
-    async getUserNavigationOptions(courseIds: number[], siteId?: string): Promise<CoreCourseUserAdminOrNavOptionCourseIndexed> {
-        return firstValueFrom(this.getUserNavigationOptionsObservable(courseIds, { siteId }));
+    getUserNavigationOptions(
+        courseIds: number[],
+        options?: CoreSitesCommonWSOptions,
+    ): Promise<CoreCourseUserAdminOrNavOptionCourseIndexed> {
+        return firstValueFrom(this.getUserNavigationOptionsObservable(courseIds, options));
     }
 
     /**
@@ -981,7 +987,7 @@ export class CoreCoursesProvider {
      * @returns Cache key.
      */
     protected getUserCoursesCacheKey(): string {
-        return ROOT_CACHE_KEY + 'usercourses';
+        return `${CoreCoursesProvider.ROOT_CACHE_KEY}usercourses`;
     }
 
     /**

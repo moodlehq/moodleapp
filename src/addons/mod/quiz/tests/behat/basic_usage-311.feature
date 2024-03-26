@@ -208,6 +208,7 @@ Feature: Attempt a quiz in app
 
     Given I entered the quiz activity "Quiz 1" on course "Course 1" as "teacher1" in the app
     When I press "Information" in the app
+    And I set "core-course-module-summary ion-button.core-module-oib-button" styles to "display" "block !important"
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"
