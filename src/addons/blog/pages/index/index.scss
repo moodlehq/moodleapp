@@ -45,6 +45,18 @@
         }
 
         &-last-modification {
+            --border-width: 0 0 1px 0;
+
+            &::part(native) {
+                padding: 0;
+            }
+
+            ion-note {
+                padding-top: 0.9rem;
+                font-size: 0.875rem;
+                font-weight: 500;
+            }
+
             ion-icon {
                 margin-right: .3rem;
             }
