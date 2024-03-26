@@ -2493,6 +2493,7 @@
   "core.settings.showdownloadoptions": "local_moodlemobileapp",
   "core.settings.siteinfo": "local_moodlemobileapp",
   "core.settings.sites": "moodle",
+  "core.settings.sitesynccompleted": "local_moodlemobileapp",
   "core.settings.sitesyncfailed": "local_moodlemobileapp",
   "core.settings.spaceusage": "local_moodlemobileapp",
   "core.settings.syncdatasaver": "local_moodlemobileapp",

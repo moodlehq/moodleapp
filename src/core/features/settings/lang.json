@@ -71,6 +71,7 @@
     "showdownloadoptions": "Show download options",
     "siteinfo": "Site info",
     "sites": "Sites",
+    "sitesynccompleted": "Site synchronisation completed.",
     "sitesyncfailed": "Site synchronisation failed",
     "spaceusage": "Space usage",
     "syncdatasaver": "Data saver: Synchronise only when on Wi-Fi",
