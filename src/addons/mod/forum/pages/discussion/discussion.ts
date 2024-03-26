@@ -863,7 +863,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             });
         }
 
-        if (!this.courseId || !this.cmId) {
+        if (!this.courseId || !this.cmId || !this.trackPosts) {
             return;
         }
 

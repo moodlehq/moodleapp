@@ -966,6 +966,7 @@ export type CoreUserData = {
     theme?: string; // Theme name such as "standard", must exist on server.
     timezone?: string; // Timezone code such as Australia/Perth, or 99 for default.
     mailformat?: number; // Mail format code is 0 for plain text, 1 for HTML etc.
+    trackforums?: number; // @since 4.4. Whether the user is tracking forums.
     description?: string; // User profile description.
     descriptionformat?: number; // Int format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     city?: string; // Home city of the user.

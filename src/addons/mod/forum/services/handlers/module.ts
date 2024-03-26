@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
-import { AddonModForum, AddonModForumProvider } from '../forum';
+import { AddonModForum, AddonModForumProvider, AddonModForumTracking } from '../forum';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -21,6 +21,8 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/
 import { CoreConstants, ModPurpose } from '@/core/constants';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreTextUtils } from '@services/utils/text';
+import { CoreUser } from '@features/user/services/user';
 
 /**
  * Handler to support forum modules.
@@ -54,6 +56,29 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
      */
     async getData(module: CoreCourseModuleData, courseId: number): Promise<CoreCourseModuleHandlerData> {
         const data = await super.getData(module, courseId);
+
+        const customData = module.customdata ?
+            CoreTextUtils.parseJSON<{ trackingtype?: string | number } | ''>(module.customdata, {}) : {};
+        const trackingType = typeof customData !== 'string' && customData.trackingtype !== undefined ?
+            Number(customData.trackingtype) : undefined;
+
+        if (trackingType === AddonModForumTracking.OFF) {
+            // Tracking is disabled in forum.
+            data.extraBadge = '';
+
+            return data;
+        }
+
+        if (trackingType === AddonModForumTracking.OPTIONAL) {
+            // Forum has tracking optional, check if user has tracking enabled.
+            const user = await CoreUser.getProfile(CoreSites.getCurrentSiteUserId());
+
+            if (user.trackforums === 0) {
+                data.extraBadge = '';
+
+                return data;
+            }
+        }
 
         if ('afterlink' in module && !!module.afterlink) {
             const match = />(\d+)[^<]+/.exec(module.afterlink);

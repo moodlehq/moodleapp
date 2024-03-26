@@ -2134,3 +2134,12 @@ export type AddonModForumMarkReadData = {
     courseId: number;
     moduleId: number;
 };
+
+/**
+ * Tracking options.
+ */
+export const enum AddonModForumTracking {
+    OFF = 0,
+    OPTIONAL = 1,
+    FORCED = 2,
+}
