@@ -133,8 +133,10 @@ ion-checkbox.ion-text-wrap::part(label) {
 }
 
 .item.ion-text-wrap > ion-label,
-.item.ion-text-wrap > ion-checkbox::part(label),
-ion-checkbox.ion-text-wrap::part(label) {
+.item.ion-text-wrap ion-checkbox::part(label),
+ion-checkbox.ion-text-wrap::part(label),
+.item.ion-text-wrap ion-radio::part(label),
+ion-radio.ion-text-wrap::part(label) {
     white-space: normal !important;
 }
 
