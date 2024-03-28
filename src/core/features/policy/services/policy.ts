@@ -102,6 +102,10 @@ export class CorePolicyService {
 
         for (const i in policies) {
             const policy = policies[i];
+            if (policy.status !== CorePolicyStatus.Active) {
+                continue;
+            }
+
             const hasAccepted = policy.acceptance?.status === 1;
             const hasDeclined = policy.acceptance?.status === 0;
 
