@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DownloadStatus, TDownloadStatus } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, Optional, Inject } from '@angular/core';
 import { CoreAnyError } from '@classes/errors/error';
 import { CoreNetwork } from '@services/network';
@@ -65,7 +65,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected isCurrentView = false; // Whether the component is in the current view.
     protected siteId?: string; // Current Site ID.
     protected statusObserver?: CoreEventObserver; // Observer of package status. Only if setStatusListener is called.
-    currentStatus?: TDownloadStatus; // The current status of the module. Only if setStatusListener is called.
+    currentStatus?: DownloadStatus; // The current status of the module. Only if setStatusListener is called.
     downloadTimeReadable?: string; // Last download time in a readable format. Only if setStatusListener is called.
 
     protected completionObserver?: CoreEventObserver;
@@ -282,7 +282,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @param previousStatus The previous status. If not defined, there is no previous status.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected showStatus(status: TDownloadStatus, previousStatus?: TDownloadStatus): void {
+    protected showStatus(status: DownloadStatus, previousStatus?: DownloadStatus): void {
         // To be overridden.
     }
 

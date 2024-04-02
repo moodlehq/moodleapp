@@ -29,7 +29,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils, CoreUtilsOpenFileOptions } from '@services/utils/utils';
 import { CoreError } from '@classes/errors/error';
-import { DownloadStatus, TDownloadStatus } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { ApplicationInit, makeSingleton, NgZone, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
@@ -686,7 +686,7 @@ export class CoreFilepoolProvider {
      * @param packageStatus Status of one of the packages.
      * @returns New status for the list of packages;
      */
-    determinePackagesStatus(current: TDownloadStatus, packageStatus: TDownloadStatus): TDownloadStatus {
+    determinePackagesStatus(current: DownloadStatus, packageStatus: DownloadStatus): DownloadStatus {
         if (!current) {
             current = DownloadStatus.NOT_DOWNLOADABLE;
         }
@@ -1525,7 +1525,7 @@ export class CoreFilepoolProvider {
         timemodified: number = 0,
         filePath?: string,
         revision?: number,
-    ): Promise<TDownloadStatus> {
+    ): Promise<DownloadStatus> {
         let file: CoreWSFile;
 
         try {
@@ -1878,7 +1878,7 @@ export class CoreFilepoolProvider {
      * @param componentId An ID to use in conjunction with the component.
      * @returns Promise resolved with the status.
      */
-    async getPackagePreviousStatus(siteId: string, component: string, componentId?: string | number): Promise<TDownloadStatus> {
+    async getPackagePreviousStatus(siteId: string, component: string, componentId?: string | number): Promise<DownloadStatus> {
         try {
             const entry = await this.getPackageData(siteId, component, componentId);
 
@@ -1896,7 +1896,7 @@ export class CoreFilepoolProvider {
      * @param componentId An ID to use in conjunction with the component.
      * @returns Promise resolved with the status.
      */
-    async getPackageStatus(siteId: string, component: string, componentId?: string | number): Promise<TDownloadStatus> {
+    async getPackageStatus(siteId: string, component: string, componentId?: string | number): Promise<DownloadStatus> {
         try {
             const entry = await this.getPackageData(siteId, component, componentId);
 
@@ -2830,7 +2830,7 @@ export class CoreFilepoolProvider {
      * @param componentId An ID to use in conjunction with the component.
      * @returns Promise resolved when the status is changed. Resolve param: new status.
      */
-    async setPackagePreviousStatus(siteId: string, component: string, componentId?: string | number): Promise<TDownloadStatus> {
+    async setPackagePreviousStatus(siteId: string, component: string, componentId?: string | number): Promise<DownloadStatus> {
         componentId = this.fixComponentId(componentId);
         this.logger.debug(`Set previous status for package ${component} ${componentId}`);
 
@@ -2909,7 +2909,7 @@ export class CoreFilepoolProvider {
      */
     async storePackageStatus(
         siteId: string,
-        status: TDownloadStatus,
+        status: DownloadStatus,
         component: string,
         componentId?: string | number,
         extra?: string,
@@ -2926,7 +2926,7 @@ export class CoreFilepoolProvider {
             downloadTime = CoreTimeUtils.timestamp();
         }
 
-        let previousStatus: TDownloadStatus | undefined;
+        let previousStatus: DownloadStatus | undefined;
         // Search current status to set it as previous status.
         try {
             const entry = await this.packagesTables[siteId].getOneByPrimaryKey({ id: packageId });
@@ -3075,7 +3075,7 @@ export class CoreFilepoolProvider {
      */
     protected triggerPackageStatusChanged(
         siteId: string,
-        status: TDownloadStatus,
+        status: DownloadStatus,
         component: string,
         componentId?: string | number,
     ): void {

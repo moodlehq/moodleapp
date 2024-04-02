@@ -28,7 +28,7 @@ import {
     CoreCourseModuleCompletionStatus,
     CoreCourseGetContentsWSModule,
 } from './course';
-import { CoreConstants, DownloadStatus, TDownloadStatus, ContextLevel } from '@/core/constants';
+import { CoreConstants, DownloadStatus, ContextLevel } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
@@ -82,7 +82,7 @@ import { LazyRoutesModule } from '@/app/app-routing.module';
 export type CoreCourseModulePrefetchInfo = CoreCourseModulePackageLastDownloaded & {
     size: number; // Downloaded size.
     sizeReadable: string; // Downloadable size in a readable format.
-    status: TDownloadStatus; // Module status.
+    status: DownloadStatus; // Module status.
     statusIcon?: string; // Icon's name of the module status.
 };
 
@@ -120,7 +120,7 @@ export type CoreCourseCoursesProgress = {
 };
 
 export type CorePrefetchStatusInfo = {
-    status: TDownloadStatus; // Status of the prefetch.
+    status: DownloadStatus; // Status of the prefetch.
     statusTranslatable: string; // Status translatable string.
     icon: string; // Icon based on the status.
     loading: boolean; // If it's a loading status.
@@ -328,7 +328,7 @@ export class CoreCourseHelperProvider {
         checkUpdates: boolean = true,
     ): Promise<CoreCourseSectionWithStatus[]> {
         let allSectionsSection: CoreCourseSectionWithStatus | undefined;
-        let allSectionsStatus = DownloadStatus.NOT_DOWNLOADABLE as TDownloadStatus;
+        let allSectionsStatus = DownloadStatus.NOT_DOWNLOADABLE as DownloadStatus;
 
         const promises = sections.map(async (section: CoreCourseSectionWithStatus) => {
             section.isCalculating = true;
@@ -632,9 +632,9 @@ export class CoreCourseHelperProvider {
      * @param courses Courses
      * @returns Promise resolved with the status.
      */
-    async determineCoursesStatus(courses: CoreCourseBasicData[]): Promise<TDownloadStatus> {
+    async determineCoursesStatus(courses: CoreCourseBasicData[]): Promise<DownloadStatus> {
         // Get the status of each course.
-        const promises: Promise<TDownloadStatus>[] = [];
+        const promises: Promise<DownloadStatus>[] = [];
         const siteId = CoreSites.getCurrentSiteId();
 
         courses.forEach((course) => {
@@ -817,7 +817,7 @@ export class CoreCourseHelperProvider {
         files?: CoreCourseModuleContentFile[],
         siteId?: string,
         options: CoreUtilsOpenFileOptions = {},
-    ): Promise<{ fixedUrl: string; path: string; status?: TDownloadStatus }> {
+    ): Promise<{ fixedUrl: string; path: string; status?: DownloadStatus }> {
 
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -910,7 +910,7 @@ export class CoreCourseHelperProvider {
         courseId: number,
         fixedUrl: string,
         files: CoreCourseModuleContentFile[],
-        status: TDownloadStatus,
+        status: DownloadStatus,
         component?: string,
         componentId?: string | number,
         siteId?: string,
@@ -1239,7 +1239,7 @@ export class CoreCourseHelperProvider {
      * @param status Course status.
      * @returns Prefetch status info.
      */
-    getCoursePrefetchStatusInfo(status: TDownloadStatus): CorePrefetchStatusInfo {
+    getCoursePrefetchStatusInfo(status: DownloadStatus): CorePrefetchStatusInfo {
         const prefetchStatus: CorePrefetchStatusInfo = {
             status: status,
             icon: this.getPrefetchStatusIcon(status, false),
@@ -1266,7 +1266,7 @@ export class CoreCourseHelperProvider {
      * @param status Courses status.
      * @returns Prefetch status info.
      */
-    getCoursesPrefetchStatusInfo(status: TDownloadStatus): CorePrefetchStatusInfo {
+    getCoursesPrefetchStatusInfo(status: DownloadStatus): CorePrefetchStatusInfo {
         const prefetchStatus: CorePrefetchStatusInfo = {
             status: status,
             icon: this.getPrefetchStatusIcon(status, false),
@@ -1294,7 +1294,7 @@ export class CoreCourseHelperProvider {
      * @param trustDownload True to show download success, false to show an outdated status when downloaded.
      * @returns Icon name.
      */
-    getPrefetchStatusIcon(status: TDownloadStatus, trustDownload: boolean = false): string {
+    getPrefetchStatusIcon(status: DownloadStatus, trustDownload: boolean = false): string {
         if (status === DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED) {
             return CoreConstants.ICON_NOT_DOWNLOADED;
         }
@@ -1714,7 +1714,7 @@ export class CoreCourseHelperProvider {
         }
 
         // Download all the sections except "All sections".
-        let allSectionsStatus = DownloadStatus.NOT_DOWNLOADABLE as TDownloadStatus;
+        let allSectionsStatus = DownloadStatus.NOT_DOWNLOADABLE as DownloadStatus;
 
         section.isDownloading = true;
         const promises = sections.map(async (section) => {
@@ -2073,7 +2073,7 @@ export type CoreCourseSection = CoreCourseWSSection & {
  * Section with data about prefetch.
  */
 export type CoreCourseSectionWithStatus = CoreCourseSection & {
-    downloadStatus?: TDownloadStatus; // Section status.
+    downloadStatus?: DownloadStatus; // Section status.
     isDownloading?: boolean; // Whether section is being downloaded.
     total?: number; // Total of modules being downloaded.
     count?: number; // Number of downloaded modules.

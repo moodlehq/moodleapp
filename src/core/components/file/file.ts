@@ -23,7 +23,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
-import { DownloadStatus, TDownloadStatus } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreWSFile } from '@services/ws';
 import { CorePlatform } from '@services/platform';
@@ -53,7 +53,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     fileIcon?: string;
     fileName!: string;
     fileSizeReadable?: string;
-    state?: TDownloadStatus;
+    state?: DownloadStatus;
     timemodified!: number;
     isIOS = false;
     openButtonIcon = '';

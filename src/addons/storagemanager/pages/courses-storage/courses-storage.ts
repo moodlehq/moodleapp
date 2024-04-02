@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DownloadStatus, TDownloadStatus } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -175,7 +175,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
      *
      * @param courseId Updated course id.
      */
-    private async onCourseUpdated(courseId: number, status: TDownloadStatus): Promise<void> {
+    private async onCourseUpdated(courseId: number, status: DownloadStatus): Promise<void> {
         if (courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
             this.setDownloadedCourses([]);
 

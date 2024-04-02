@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DownloadStatus, TDownloadStatus } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreCourseResourcePrefetchHandlerBase } from '@features/course/classes/resource-prefetch-handler';
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
@@ -36,7 +36,7 @@ export class AddonModResourcePrefetchHandlerService extends CoreCourseResourcePr
     /**
      * @inheritdoc
      */
-    determineStatus(module: CoreCourseAnyModuleData, status: TDownloadStatus): TDownloadStatus {
+    determineStatus(module: CoreCourseAnyModuleData, status: DownloadStatus): DownloadStatus {
         if (status === DownloadStatus.DOWNLOADED && module) {
             // If the main file is an external file, always display the module as outdated.
             if ('contentsinfo' in module && module.contentsinfo) {

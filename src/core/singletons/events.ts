@@ -21,7 +21,7 @@ import { CoreRedirectPayload } from '@services/navigator';
 import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 import { CoreScreenOrientation } from '@services/screen';
 import { CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
-import { TDownloadStatus } from '../constants';
+import { DownloadStatus } from '../constants';
 
 /**
  * Observer instance to stop listening to an event.
@@ -327,7 +327,7 @@ export type CoreEventLoadingChangedData = {
  */
 export type CoreEventCourseStatusChanged = {
     courseId: number; // Course Id.
-    status: TDownloadStatus;
+    status: DownloadStatus;
 };
 
 /**
@@ -336,7 +336,7 @@ export type CoreEventCourseStatusChanged = {
 export type CoreEventPackageStatusChanged = {
     component: string;
     componentId: string | number;
-    status: TDownloadStatus;
+    status: DownloadStatus;
 };
 
 /**
