@@ -335,6 +335,6 @@ export type AddonBlogGetEntriesOptions = CoreSitesCommonWSOptions & {
     page?: number;
 };
 
-export const ADDON_BLOG_PUBLISH_STATE = { draft: 'draft', site: 'site', public: 'public' } as const;
-
-export type AddonBlogPublishState = typeof ADDON_BLOG_PUBLISH_STATE[keyof typeof ADDON_BLOG_PUBLISH_STATE];
+export const AddonBlogPublishState = { draft: 'draft', site: 'site', public: 'public' } as const;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type AddonBlogPublishState = typeof AddonBlogPublishState[keyof typeof AddonBlogPublishState];

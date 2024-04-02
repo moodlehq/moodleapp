@@ -21,7 +21,6 @@ import {
     AddonBlogPost,
     AddonBlogProvider,
     AddonBlogPublishState,
-    ADDON_BLOG_PUBLISH_STATE,
 } from '@addons/blog/services/blog';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -55,12 +54,12 @@ import { CoreEvents } from '@singletons/events';
 })
 export class AddonBlogEditEntryPage implements CanLeave, OnInit {
 
-    publishState = ADDON_BLOG_PUBLISH_STATE;
+    publishState = AddonBlogPublishState;
     form = new FormGroup({
         subject: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
         summary: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
         publishState: new FormControl<AddonBlogPublishState>(
-            ADDON_BLOG_PUBLISH_STATE.site,
+            AddonBlogPublishState.site,
             { nonNullable: true, validators: [Validators.required] },
         ),
         associateWithCourse: new FormControl<boolean>(false, { nonNullable: true, validators: [Validators.required] }),
@@ -110,7 +109,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
 
         return form.subject.value !== '' ||
             form.summary.value !== '' ||
-            form.publishState.value !== ADDON_BLOG_PUBLISH_STATE.site ||
+            form.publishState.value !== AddonBlogPublishState.site ||
             CoreFileUploader.areFileListDifferent(this.files, this.initialFiles);
     }
 
@@ -165,7 +164,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
         this.form.setValue({
             subject: this.entry?.subject ?? '',
             summary: this.entry?.summary ?? '',
-            publishState: this.entry?.publishstate ?? ADDON_BLOG_PUBLISH_STATE.site,
+            publishState: this.entry?.publishstate ?? AddonBlogPublishState.site,
             associateWithCourse: this.form.controls.associateWithCourse.value,
             associateWithModule: this.form.controls.associateWithModule.value,
         });
