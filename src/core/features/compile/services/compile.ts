@@ -43,8 +43,8 @@ import { makeSingleton } from '@singletons';
 import { getCoreServices } from '@/core/core.module';
 import { getBlockServices } from '@features/block/block.module';
 import { getCommentsServices } from '@features/comments/comments.module';
-import { getContentLinksServices } from '@features/contentlinks/contentlinks.module';
-import { getCourseServices } from '@features/course/course.module';
+import { getContentLinksExportedObjects, getContentLinksServices } from '@features/contentlinks/contentlinks.module';
+import { getCourseExportedObjects, getCourseServices } from '@features/course/course.module';
 import { getCoursesServices } from '@features/courses/courses.module';
 import { getEditorServices } from '@features/editor/editor.module';
 import { getEnrolServices } from '@features/enrol/enrol.module';
@@ -88,13 +88,8 @@ import { CoreUrl } from '@singletons/url';
 import { CoreWindow } from '@singletons/window';
 import { CoreCache } from '@classes/cache';
 import { CoreDelegate } from '@classes/delegate';
-import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
-import { CoreContentLinksModuleGradeHandler } from '@features/contentlinks/classes/module-grade-handler';
-import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
-import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
-import { CoreCourseResourcePrefetchHandlerBase } from '@features/course/classes/resource-prefetch-handler';
 import { CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
-import { CORE_ERRORS_CLASSES } from '@classes/errors/errors';
+import { getCoreErrorsExportedObjects } from '@classes/errors/errors';
 import { CoreNetwork } from '@services/network';
 
 // Import all core modules that define components, directives and pipes.
@@ -108,19 +103,6 @@ import { CoreQuestionComponentsModule } from '@features/question/components/comp
 import { CoreBlockComponentsModule } from '@features/block/components/components.module';
 import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
-
-// Import some components so they can be injected dynamically.
-import { CoreCourseUnsupportedModuleComponent } from '@features/course/components/unsupported-module/unsupported-module';
-import { CoreCourseFormatSingleActivityComponent } from '@features/course/format/singleactivity/components/singleactivity';
-import { CoreSitePluginsModuleIndexComponent } from '@features/siteplugins/components/module-index/module-index';
-import { CoreSitePluginsBlockComponent } from '@features/siteplugins/components/block/block';
-import { CoreSitePluginsCourseFormatComponent } from '@features/siteplugins/components/course-format/course-format';
-import { CoreSitePluginsQuestionComponent } from '@features/siteplugins/components/question/question';
-import { CoreSitePluginsQuestionBehaviourComponent } from '@features/siteplugins/components/question-behaviour/question-behaviour';
-import { CoreSitePluginsUserProfileFieldComponent } from '@features/siteplugins/components/user-profile-field/user-profile-field';
-import { CoreSitePluginsQuizAccessRuleComponent } from '@features/siteplugins/components/quiz-access-rule/quiz-access-rule';
-import { CoreSitePluginsAssignFeedbackComponent } from '@features/siteplugins/components/assign-feedback/assign-feedback';
-import { CoreSitePluginsAssignSubmissionComponent } from '@features/siteplugins/components/assign-submission/assign-submission';
 
 // Import addon providers. Do not import database module because it causes circular dependencies.
 import { getBadgesServices } from '@addons/badges/badges.module';
@@ -142,6 +124,8 @@ import { CorePlatform } from '@services/platform';
 
 import { CoreAutoLogoutService } from '@features/autologout/services/autologout';
 import { CoreSitePluginsProvider } from '@features/siteplugins/services/siteplugins';
+import { getSitePluginsExportedObjects } from '@features/siteplugins/siteplugins.module';
+import { CoreError } from '@classes/errors/error';
 
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
@@ -176,6 +160,9 @@ export class CoreCompileProvider {
         getModQuizComponentModules,
         getModWorkshopComponentModules,
     ];
+
+    protected libraries?: unknown[];
+    protected exportedObjects?: Record<string, unknown>;
 
     constructor(protected injector: Injector) {
         this.logger = CoreLogger.getInstance('CoreCompileProvider');
@@ -264,26 +251,28 @@ export class CoreCompileProvider {
      * Inject all the core libraries in a certain object.
      *
      * @param instance The instance where to inject the libraries.
-     * @param extraProviders Extra imported providers if needed and not imported by this class.
+     * @param extraLibraries Extra imported providers if needed and not imported by this class.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    injectLibraries(instance: any, extraProviders: Type<unknown>[] = []): void {
-        const providers = [
-            ...extraProviders,
-            CoreAutoLogoutService,
-            CoreSitePluginsProvider,
-            ...this.OTHER_SERVICES,
+    injectLibraries(instance: any, extraLibraries: Type<unknown>[] = []): void {
+        if (!this.libraries || !this.exportedObjects) {
+            throw new CoreError('Libraries not loaded. You need to call loadLibraries before calling injectLibraries.');
+        }
+
+        const libraries = [
+            ...this.libraries,
+            ...extraLibraries,
         ];
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
-        for (const i in providers) {
-            const providerDef = providers[i];
-            if (typeof providerDef === 'function' && providerDef.name) {
+        for (const i in libraries) {
+            const libraryDef = libraries[i];
+            if (typeof libraryDef === 'function' && libraryDef.name) {
                 try {
                     // Inject the provider to the instance. We use the class name as the property name.
-                    instance[providerDef.name.replace(/DelegateService$/, 'Delegate')] = this.injector.get<Provider>(providerDef);
+                    instance[libraryDef.name.replace(/DelegateService$/, 'Delegate')] = this.injector.get<Provider>(libraryDef);
                 } catch (ex) {
-                    this.logger.error('Error injecting provider', providerDef.name, ex);
+                    this.logger.error('Error injecting provider', libraryDef.name, ex);
                 }
             }
         }
@@ -319,27 +308,26 @@ export class CoreCompileProvider {
         instance['CoreCache'] = CoreCache; // @deprecated since 4.4, plugins should use plain objects instead.
         instance['CoreDelegate'] = CoreDelegate;
         instance['CorePromisedValue'] = CorePromisedValue;
-        instance['CoreContentLinksHandlerBase'] = CoreContentLinksHandlerBase;
-        instance['CoreContentLinksModuleGradeHandler'] = CoreContentLinksModuleGradeHandler;
-        instance['CoreContentLinksModuleIndexHandler'] = CoreContentLinksModuleIndexHandler;
-        instance['CoreCourseActivityPrefetchHandlerBase'] = CoreCourseActivityPrefetchHandlerBase;
-        instance['CoreCourseResourcePrefetchHandlerBase'] = CoreCourseResourcePrefetchHandlerBase;
-        instance['CoreCourseUnsupportedModuleComponent'] = CoreCourseUnsupportedModuleComponent;
-        instance['CoreCourseFormatSingleActivityComponent'] = CoreCourseFormatSingleActivityComponent;
-        instance['CoreSitePluginsModuleIndexComponent'] = CoreSitePluginsModuleIndexComponent;
-        instance['CoreSitePluginsBlockComponent'] = CoreSitePluginsBlockComponent;
-        instance['CoreSitePluginsCourseFormatComponent'] = CoreSitePluginsCourseFormatComponent;
-        instance['CoreSitePluginsQuestionComponent'] = CoreSitePluginsQuestionComponent;
-        instance['CoreSitePluginsQuestionBehaviourComponent'] = CoreSitePluginsQuestionBehaviourComponent;
-        instance['CoreSitePluginsUserProfileFieldComponent'] = CoreSitePluginsUserProfileFieldComponent;
-        instance['CoreSitePluginsQuizAccessRuleComponent'] = CoreSitePluginsQuizAccessRuleComponent;
-        instance['CoreSitePluginsAssignFeedbackComponent'] = CoreSitePluginsAssignFeedbackComponent;
-        instance['CoreSitePluginsAssignSubmissionComponent'] = CoreSitePluginsAssignSubmissionComponent;
         instance['CoreGeolocationError'] = CoreGeolocationError;
         instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason;
-        CORE_ERRORS_CLASSES.forEach((classDef) => {
-            instance[classDef.name] = classDef;
-        });
+
+        // Inject exported objects.
+        for (const name in this.exportedObjects) {
+            instance[name] = this.exportedObjects[name];
+        }
+    }
+
+    /**
+     * Load all the libraries needed for the compile service.
+     */
+    async loadLibraries(): Promise<void> {
+        if (!this.libraries) {
+            this.libraries = await this.getLibraries();
+        }
+
+        if (!this.exportedObjects) {
+            this.exportedObjects = await this.getExportedObjects();
+        }
     }
 
     /**
@@ -347,7 +335,7 @@ export class CoreCompileProvider {
      *
      * @returns Lazy libraries.
      */
-    async getLazyLibraries(): Promise<Type<unknown>[]> {
+    protected async getLibraries(): Promise<unknown[]> {
         const services = await Promise.all([
             getCoreServices(),
             getBlockServices(),
@@ -389,7 +377,30 @@ export class CoreCompileProvider {
             getPrivateFilesServices(),
         ]);
 
-        return services.flat();
+        const lazyLibraries = services.flat();
+
+        return [
+            ...lazyLibraries,
+            CoreAutoLogoutService,
+            CoreSitePluginsProvider,
+            ...this.OTHER_SERVICES,
+        ];
+    }
+
+    /**
+     * Get lazy exported objects to inject.
+     *
+     * @returns Lazy exported objects.
+     */
+    protected async getExportedObjects(): Promise<Record<string, unknown>> {
+        const objects = await Promise.all([
+            getCoreErrorsExportedObjects(),
+            getCourseExportedObjects(),
+            getContentLinksExportedObjects(),
+            getSitePluginsExportedObjects(),
+        ]);
+
+        return Object.assign({}, ...objects);
     }
 
 }

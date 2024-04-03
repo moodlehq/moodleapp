@@ -34,6 +34,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreEnrolAction, CoreEnrolInfoIcon } from '@features/enrol/services/enrol-delegate';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreUserProfileHandlerType } from '@features/user/services/user-delegate';
+import { CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '../constants';
 
 const ROOT_CACHE_KEY = 'CoreSitePlugins:';
 
@@ -44,7 +45,7 @@ const ROOT_CACHE_KEY = 'CoreSitePlugins:';
 export class CoreSitePluginsProvider {
 
     static readonly COMPONENT = 'CoreSitePlugins';
-    static readonly UPDATE_COURSE_CONTENT = 'siteplugins_update_course_content';
+    static readonly UPDATE_COURSE_CONTENT = CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT;
 
     protected logger: CoreLogger;
     protected sitePlugins: {[name: string]: CoreSitePluginsHandler} = {}; // Site plugins registered.
@@ -995,7 +996,7 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [CoreSitePluginsProvider.UPDATE_COURSE_CONTENT]: CoreSitePluginsUpdateCourseContentEvent;
+        [CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT]: CoreSitePluginsUpdateCourseContentEvent;
     }
 
 }

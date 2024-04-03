@@ -29,11 +29,12 @@ import { Md5 } from 'ts-md5';
 
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
-import { CoreSitePlugins, CoreSitePluginsContent, CoreSitePluginsProvider } from '@features/siteplugins/services/siteplugins';
+import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '@features/siteplugins/constants';
 
 /**
  * Component to render a site plugin content.
@@ -261,7 +262,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
      * @param alreadyFetched Whether course data has already been fetched (no need to fetch it again).
      */
     updateModuleCourseContent(cmId: number, alreadyFetched?: boolean): void {
-        CoreEvents.trigger(CoreSitePluginsProvider.UPDATE_COURSE_CONTENT, { cmId, alreadyFetched });
+        CoreEvents.trigger(CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT, { cmId, alreadyFetched });
     }
 
     /**

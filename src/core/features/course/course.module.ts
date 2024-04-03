@@ -62,6 +62,31 @@ export async function getCourseServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get course exported objects.
+ *
+ * @returns Course exported objects.
+ */
+export async function getCourseExportedObjects(): Promise<Record<string, unknown>> {
+    const { CoreCourseActivityPrefetchHandlerBase } = await import('@features/course/classes/activity-prefetch-handler');
+    const { CoreCourseResourcePrefetchHandlerBase } = await import('@features/course/classes/resource-prefetch-handler');
+    const { CoreCourseAccessDataType } = await import('@features/course/services/course');
+    const { CoreCourseUnsupportedModuleComponent } =
+        await import ('@features/course/components/unsupported-module/unsupported-module');
+    const { CoreCourseFormatSingleActivityComponent } =
+        await import ('@features/course/format/singleactivity/components/singleactivity');
+
+    /* eslint-disable @typescript-eslint/naming-convention */
+    return {
+        CoreCourseActivityPrefetchHandlerBase,
+        CoreCourseResourcePrefetchHandlerBase,
+        CoreCourseUnsupportedModuleComponent,
+        CoreCourseFormatSingleActivityComponent,
+        CoreCourseAccessDataType,
+    };
+    /* eslint-enable @typescript-eslint/naming-convention */
+}
+
 export const COURSE_PAGE_NAME = 'course';
 export const CONTENTS_PAGE_NAME = 'contents';
 export const COURSE_CONTENTS_PATH = `${COURSE_PAGE_NAME}/${COURSE_INDEX_PATH}/${CONTENTS_PAGE_NAME}`;

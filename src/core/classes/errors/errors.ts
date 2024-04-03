@@ -12,32 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Type } from '@angular/core';
+/**
+ * Get core errors exported objects.
+ *
+ * @returns Core errors exported objects.
+ */
+export async function getCoreErrorsExportedObjects(): Promise<Record<string, unknown>> {
 
-import { CoreError } from './error';
-import { CoreWSError } from './wserror';
-import { CoreCanceledError } from './cancelederror';
-import { CoreSilentError } from './silenterror';
-import { CoreAjaxError } from './ajaxerror';
-import { CoreAjaxWSError } from './ajaxwserror';
-import { CoreCaptureError } from './captureerror';
-import { CoreNetworkError } from './network-error';
-import { CoreSiteError } from './siteerror';
-import { CoreLoginError } from './loginerror';
-import { CoreErrorWithOptions } from './errorwithoptions';
-import { CoreHttpError } from './httperror';
+    const { CoreError } = await import('./error');
+    const { CoreWSError } = await import('./wserror');
+    const { CoreCanceledError } = await import('./cancelederror');
+    const { CoreSilentError } = await import('./silenterror');
+    const { CoreAjaxError } = await import('./ajaxerror');
+    const { CoreAjaxWSError } = await import('./ajaxwserror');
+    const { CoreCaptureError } = await import('./captureerror');
+    const { CoreNetworkError } = await import('./network-error');
+    const { CoreSiteError } = await import('./siteerror');
+    const { CoreLoginError } = await import('./loginerror');
+    const { CoreErrorWithOptions } = await import('./errorwithoptions');
+    const { CoreHttpError } = await import('./httperror');
 
-export const CORE_ERRORS_CLASSES: Type<unknown>[] = [
-    CoreAjaxError,
-    CoreAjaxWSError,
-    CoreCanceledError,
-    CoreCaptureError,
-    CoreError,
-    CoreNetworkError,
-    CoreSilentError,
-    CoreSiteError,
-    CoreLoginError,
-    CoreWSError,
-    CoreErrorWithOptions,
-    CoreHttpError,
-];
+    /* eslint-disable @typescript-eslint/naming-convention */
+    return {
+        CoreError,
+        CoreWSError,
+        CoreCanceledError,
+        CoreSilentError,
+        CoreAjaxError,
+        CoreAjaxWSError,
+        CoreCaptureError,
+        CoreNetworkError,
+        CoreSiteError,
+        CoreLoginError,
+        CoreErrorWithOptions,
+        CoreHttpError,
+    };
+    /* eslint-enable @typescript-eslint/naming-convention */
+}
