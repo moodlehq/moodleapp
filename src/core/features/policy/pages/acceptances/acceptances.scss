@@ -83,7 +83,7 @@
         }
 
         th, td {
-            text-wrap: nowrap;
+            white-space: nowrap;
         }
 
         p {
@@ -94,15 +94,22 @@
             display: flex;
             align-items: center;
 
+            a {
+                white-space: normal;
+                width: 304px;
+            }
+
             ion-icon {
                 font-size: 1.125rem;
                 padding: 13px;
                 margin: 3px;
+
+                &.core-policy-icon-bullet {
+                    font-size: 6px;
+                    width: 18px;
+                }
             }
 
-            .core-policy-icon-placeholder {
-                visibility: hidden;
-            }
         }
 
         .core-policy-revision p {
