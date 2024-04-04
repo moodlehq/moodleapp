@@ -71,8 +71,8 @@
                 (ariaButtonClick)="toggle($event, policy)" class="expandable-status-icon"
                 [class.expandable-status-icon-expanded]="policy.expanded" [attr.aria-expanded]="policy.expanded"
                 [attr.aria-label]="(policy.expanded ? 'core.collapse' : 'core.expand') | translate" />
-            <ion-icon *ngIf="!isPreviousVersion && !policy.previousVersions.length" class="core-policy-icon-placeholder"
-                aria-hidden="true" />
+            <ion-icon *ngIf="!isPreviousVersion && !policy.previousVersions.length" name="fas-circle" color="secondary"
+                class="core-policy-icon-bullet" aria-hidden="true" />
 
             <a href="#" (click)="viewFullPolicy($event, policy)">{{ policy.name }}</a>
         </td>
