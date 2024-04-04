@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
@@ -27,7 +27,7 @@ import { AddonBlockTimelineDayEvents } from '@addons/block/timeline/classes/sect
     templateUrl: 'addon-block-timeline-events.html',
     styleUrls: ['events.scss'],
 })
-export class AddonBlockTimelineEventsComponent {
+export class AddonBlockTimelineEventsComponent implements OnInit {
 
     @Input() events: AddonBlockTimelineDayEvents[] = []; // The events to render.
     @Input() course?: CoreEnrolledCourseDataWithOptions; // Whether to show the course name.
@@ -35,6 +35,16 @@ export class AddonBlockTimelineEventsComponent {
     @Input() canLoadMore = false; // Whether more events can be loaded.
     @Input() loadingMore = false; // Whether loading is ongoing.
     @Output() loadMore = new EventEmitter(); // Notify that more events should be loaded.
+
+    colorizeIcons = false;
+
+    /**
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        // Only colorize icons on 4.0 to 4.3 sites.
+        this.colorizeIcons = !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.4');
+    }
 
     /**
      * Action clicked.
