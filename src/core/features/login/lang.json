@@ -119,6 +119,8 @@
     "stillcantconnect": "Still can't connect?",
     "supplyinfo": "More details",
     "toggleremove": "Edit accounts list",
+    "unsupportedsite": "Site not accessible through the app",
+    "unsupportedsitemessage": "{{site}} can't be accessed through this app.\nYou can still access it using a web browser",
     "username": "Username",
     "usernamelowercase": "Only lowercase letters allowed",
     "usernameoremail": "Enter either username or email address",

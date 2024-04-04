@@ -2194,6 +2194,8 @@
   "core.login.stillcantconnect": "local_moodlemobileapp",
   "core.login.supplyinfo": "moodle",
   "core.login.toggleremove": "local_moodlemobileapp",
+  "core.login.unsupportedsite": "local_moodlemobileapp",
+  "core.login.unsupportedsitemessage": "local_moodlemobileapp",
   "core.login.username": "moodle",
   "core.login.usernamelowercase": "moodle",
   "core.login.usernameoremail": "moodle",

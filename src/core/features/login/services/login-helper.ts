@@ -48,6 +48,7 @@ import {
     TypeOfLogin,
 } from '@classes/sites/unauthenticated-site';
 import {
+    APP_UNSUPPORTED_CHURN,
     EMAIL_SIGNUP_FEATURE_NAME,
     FAQ_QRCODE_IMAGE_HTML,
     FAQ_QRCODE_INFO_DONE,
@@ -56,7 +57,7 @@ import {
     IDENTITY_PROVIDER_FEATURE_NAME_PREFIX,
 } from '../constants';
 import { LazyRoutesModule } from '@/app/app-routing.module';
-import { CoreSiteError } from '@classes/errors/siteerror';
+import { CoreSiteError, CoreSiteErrorDebug } from '@classes/errors/siteerror';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -65,6 +66,15 @@ import { CoreSiteError } from '@classes/errors/siteerror';
 export class CoreLoginHelperProvider {
 
     protected static readonly PASSWORD_RESETS_CONFIG_KEY = 'password-resets';
+
+    private static readonly APP_UNSUPPORTED_ERRORS = [
+        'loginfailed',
+        'logintokenempty',
+        'logintokenerror',
+        'mobileservicesnotenabled',
+        'sitehasredirect',
+        'webservicesnotenabled',
+    ];
 
     protected logger: CoreLogger;
     protected sessionExpiredCheckingSite: Record<string, boolean> = {};
@@ -932,6 +942,54 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Check whether the given error means that the app is not working in the site.
+     *
+     * @param error Site error.
+     * @returns Whether the given error means that the app is not working in the site.
+     */
+    isAppUnsupportedError(error: CoreSiteError): boolean {
+        return CoreLoginHelperProvider.APP_UNSUPPORTED_ERRORS.includes(error.debug?.code ?? '');
+    }
+
+    /**
+     * Show modal indicating that the app is not supported in the site.
+     *
+     * @param siteUrl Site url.
+     * @param site Site instance.
+     * @param debug Error debug information.
+     */
+    async showAppUnsupportedModal(siteUrl: string, site?: CoreUnauthenticatedSite, debug?: CoreSiteErrorDebug): Promise<void> {
+        const siteName = await site?.getSiteName() ?? siteUrl;
+
+        await CoreDomUtils.showAlertWithOptions({
+            header: Translate.instant('core.login.unsupportedsite'),
+            message: Translate.instant('core.login.unsupportedsitemessage', { site: siteName }),
+            buttons: [
+                {
+                    text: Translate.instant('core.cancel'),
+                    role: 'cancel',
+                },
+                {
+                    text: Translate.instant('core.openinbrowser'),
+                    handler: () => this.openInBrowserFallback(site?.getURL() ?? siteUrl, debug),
+                },
+            ],
+        });
+    }
+
+    /**
+     * Open site in browser as fallback when it is not supported in the app.
+     *
+     * @param siteUrl Site url.
+     * @param debug Error debug information.
+     */
+    async openInBrowserFallback(siteUrl: string, debug?: CoreSiteErrorDebug): Promise<void> {
+        CoreEvents.trigger(APP_UNSUPPORTED_CHURN, { siteUrl, debug });
+
+        await CoreUtils.openInBrowser(siteUrl, { showBrowserWarning: false });
+    }
+
+    /**
      * Show a modal warning that the credentials introduced were not correct.
      */
     protected showInvalidLoginModal(error: CoreError): void {
@@ -1622,3 +1680,16 @@ export type CoreLoginSiteFinderSettings = {
     displayurl: boolean;
     defaultimageurl?: string;
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [APP_UNSUPPORTED_CHURN]: { siteUrl: string; debug?: CoreSiteErrorDebug };
+    }
+
+}
