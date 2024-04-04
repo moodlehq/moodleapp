@@ -56,6 +56,7 @@ import {
     IDENTITY_PROVIDER_FEATURE_NAME_PREFIX,
 } from '../constants';
 import { LazyRoutesModule } from '@/app/app-routing.module';
+import { CoreSiteError } from '@classes/errors/siteerror';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -933,8 +934,10 @@ export class CoreLoginHelperProvider {
     /**
      * Show a modal warning that the credentials introduced were not correct.
      */
-    protected showInvalidLoginModal(error: CoreWSError): void {
-        CoreDomUtils.showErrorModal(error.message);
+    protected showInvalidLoginModal(error: CoreError): void {
+        const errorDetails = error instanceof CoreSiteError ? error.debug?.details : null;
+
+        CoreDomUtils.showErrorModal(errorDetails ?? error.message);
     }
 
     /**
@@ -1074,8 +1077,10 @@ export class CoreLoginHelperProvider {
      * @param username Username.
      * @param password User password.
      */
-    treatUserTokenError(siteUrl: string, error: CoreWSError, username?: string, password?: string): void {
-        switch (error.errorcode) {
+    treatUserTokenError(siteUrl: string, error: CoreError, username?: string, password?: string): void {
+        const errorCode = 'errorcode' in error ? error.errorcode : null;
+
+        switch (errorCode) {
             case 'forcepasswordchangenotice':
                 this.openChangePassword(siteUrl, CoreTextUtils.getErrorMessageFromError(error) ?? '');
                 break;
