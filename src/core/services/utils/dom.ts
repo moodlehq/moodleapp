@@ -1456,7 +1456,7 @@ export class CoreDomUtilsProvider {
         const listenCloseEvents = closeOnNavigate ?? true; // Default to true.
 
         // TODO: Improve this if we need two modals with same component open at the same time.
-        const modalId = <string> Md5.hashAsciiStr(options.component?.toString() || '');
+        const modalId = Md5.hashAsciiStr(options.component?.toString() || '');
 
         const modal = this.displayedModals[modalId]
             ? this.displayedModals[modalId]

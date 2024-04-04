@@ -30,6 +30,25 @@ export async function getContentLinksServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get content links exported objects.
+ *
+ * @returns Content links exported objects.
+ */
+export async function getContentLinksExportedObjects(): Promise<Record<string, unknown>> {
+    const { CoreContentLinksHandlerBase } = await import ('@features/contentlinks/classes/base-handler');
+    const { CoreContentLinksModuleGradeHandler } = await import ('@features/contentlinks/classes/module-grade-handler');
+    const { CoreContentLinksModuleIndexHandler } = await import ('@features/contentlinks/classes/module-index-handler');
+
+    /* eslint-disable @typescript-eslint/naming-convention */
+    return {
+        CoreContentLinksHandlerBase,
+        CoreContentLinksModuleGradeHandler,
+        CoreContentLinksModuleIndexHandler,
+    };
+    /* eslint-enable @typescript-eslint/naming-convention */
+}
+
 @NgModule({
     imports: [
         CoreContentLinksComponentsModule,

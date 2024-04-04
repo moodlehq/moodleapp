@@ -171,7 +171,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     protected async getComponentClass(): Promise<Type<unknown>> {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const compileInstance = this;
-        const lazyLibraries = await CoreCompile.getLazyLibraries();
+        await CoreCompile.loadLibraries();
 
         // Create the component, using the text as the template.
         return class CoreCompileHtmlFakeComponent implements OnInit, AfterContentInit, AfterViewInit, OnDestroy {
@@ -187,10 +187,10 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                 this['dataArray'] = [];
 
                 // Inject the libraries.
-                CoreCompile.injectLibraries(this, [
-                    ...lazyLibraries,
-                    ...compileInstance.extraProviders,
-                ]);
+                CoreCompile.injectLibraries(
+                    this,
+                    compileInstance.extraProviders,
+                );
 
                 // Always add these elements, they could be needed on component init (componentObservable).
                 this['ChangeDetectorRef'] = compileInstance.changeDetector;

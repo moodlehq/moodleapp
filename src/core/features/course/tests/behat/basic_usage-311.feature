@@ -101,18 +101,9 @@ Feature: Test basic usage of one course in app
     And I should not find "Test glossary" in the app
 
   Scenario: Guest access
-    Given I entered the course "Course 1" as "teacher1" in the app
-    And I press "Course summary" in the app
-    And I press "Open in browser" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "teacher1"
-    And I press "Actions menu"
-    And I follow "More..."
-    And I follow "Users"
-    And I follow "Enrolment methods"
+    Given I am on the "Course 1" "enrolment methods" page logged in as "teacher1"
     And I click on "Enable" "icon" in the "Guest access" "table_row"
-    And I close the browser tab opened by the app
-    Given I entered the app as "student2"
+    And I entered the app as "student2"
     When I press "Site home" in the app
     And I press "Available courses" in the app
     And I press "Course 1" in the app

@@ -151,7 +151,7 @@ export class CoreSharedFilesProvider {
      * @returns File ID.
      */
     protected getFileId(entry: FileEntry): string {
-        return <string> Md5.hashAsciiStr(entry.name);
+        return Md5.hashAsciiStr(entry.name);
     }
 
     /**

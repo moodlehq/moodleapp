@@ -70,6 +70,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
     course?: CoreEnrolledCourseData;
     modicon = '';
     moduleNameTranslated = '';
+    isTeacher = false;
 
     protected onlineSubscription: Subscription; // It will observe the status of the network connection.
     protected packageStatusObserver?: CoreEventObserver; // Observer of package status.
@@ -269,13 +270,14 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
      * Fetch course.
      */
     protected async fetchCourse(): Promise<void> {
-        // Fix that.
         try {
             this.course = await CoreCourses.getUserCourse(this.courseId, true);
         } catch {
             // The user is not enrolled in the course. Use getCourses to see if it's an admin/manager and can see the course.
             this.course = await CoreCourses.getCourse(this.courseId);
         }
+
+        this.isTeacher = await CoreUtils.ignoreErrors(CoreCourseHelper.guessIsTeacher(this.courseId, this.course), false);
     }
 
     /**

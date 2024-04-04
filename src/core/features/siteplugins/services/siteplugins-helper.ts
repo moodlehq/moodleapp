@@ -268,13 +268,13 @@ export class CoreSitePluginsHelperProvider {
         }
 
         // Create a "fake" instance to hold all the libraries.
-        const lazyLibraries = await CoreCompile.getLazyLibraries();
         const instance = {
             // eslint-disable-next-line @typescript-eslint/naming-convention
             HANDLER_DISABLED: HANDLER_DISABLED,
         };
 
-        CoreCompile.injectLibraries(instance, lazyLibraries);
+        await CoreCompile.loadLibraries();
+        CoreCompile.injectLibraries(instance);
 
         // Add some data of the WS call result.
         const jsData = CoreSitePlugins.createDataForJS(result);

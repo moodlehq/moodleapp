@@ -1010,7 +1010,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected getCacheId(method: string, data: any): string {
-        return <string> Md5.hashAsciiStr(method + ':' + CoreUtils.sortAndStringify(data));
+        return Md5.hashAsciiStr(method + ':' + CoreUtils.sortAndStringify(data));
     }
 
     /**

@@ -233,8 +233,7 @@ Feature: Test basic usage of SCORM activity in app
     Then I should find "2 / 11" in the app
 
     When I open a browser tab with url "$WWWROOT"
-    And I log in as "admin"
-    And I am on the "System logs report" page
+    And I am on the "System logs report" page logged in as "admin"
     And I set the field "id" to "Course 1"
     And I set the field "user" to "Student student"
     And I press "Get these logs"
