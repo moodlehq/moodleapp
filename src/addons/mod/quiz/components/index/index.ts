@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DownloadStatus, TDownloadStatus } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { safeNumber, SafeNumber } from '@/core/utils/types';
 import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 
@@ -543,7 +543,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * @param status The current status.
      * @param previousStatus The previous status. If not defined, there is no previous status.
      */
-    protected showStatus(status: TDownloadStatus, previousStatus?: TDownloadStatus): void {
+    protected showStatus(status: DownloadStatus, previousStatus?: DownloadStatus): void {
         this.showStatusSpinner = status === DownloadStatus.DOWNLOADING;
 
         if (status === DownloadStatus.DOWNLOADED && previousStatus === DownloadStatus.DOWNLOADING) {

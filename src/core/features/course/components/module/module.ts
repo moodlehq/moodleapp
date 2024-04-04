@@ -27,7 +27,7 @@ import {
     CoreCourseModulePrefetchDelegate,
     CoreCourseModulePrefetchHandler,
 } from '@features/course/services/module-prefetch-delegate';
-import { CoreConstants, DownloadStatus, TDownloadStatus } from '@/core/constants';
+import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { BehaviorSubject } from 'rxjs';
 
@@ -146,7 +146,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      *
      * @param prefetchStatus Module status.
      */
-    protected updateModuleStatus(prefetchStatus: TDownloadStatus | null): void {
+    protected updateModuleStatus(prefetchStatus: DownloadStatus | null): void {
         if (!prefetchStatus) {
             return;
         }

@@ -46,7 +46,7 @@ export const enum ModPurpose {
     MOD_PURPOSE_OTHER = 'other',
 }
 
-/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-redeclare */
 /**
  * Possible statuses for downloaded modules/files.
  */
@@ -55,6 +55,7 @@ export const DownloadedStatus = {
     DOWNLOADING: 'downloading',
     OUTDATED: 'outdated',
 } as const;
+export type DownloadedStatus = typeof DownloadedStatus[keyof typeof DownloadedStatus];
 
 /**
  * Possible statuses for not downloaded modules/files.
@@ -63,6 +64,7 @@ export const NotDownloadedStatus = {
     DOWNLOADABLE_NOT_DOWNLOADED: 'notdownloaded',
     NOT_DOWNLOADABLE: 'notdownloadable',
 } as const;
+export type NotDownloadedStatus = typeof NotDownloadedStatus[keyof typeof NotDownloadedStatus];
 
 /**
  * Possible statuses for modules regarding download.
@@ -71,12 +73,8 @@ export const DownloadStatus = {
     ...DownloadedStatus,
     ...NotDownloadedStatus,
 } as const;
-
-export type TDownloadedStatus = typeof DownloadedStatus[keyof typeof DownloadedStatus];
-export type TNotDownloadedStatus = typeof NotDownloadedStatus[keyof typeof NotDownloadedStatus];
-export type TDownloadStatus = typeof DownloadStatus[keyof typeof DownloadStatus];
-
-/* eslint-enable @typescript-eslint/naming-convention */
+export type DownloadStatus = typeof DownloadStatus[keyof typeof DownloadStatus];
+/* eslint-enable @typescript-eslint/naming-convention, @typescript-eslint/no-redeclare */
 
 /**
  * Static class to contain all the core constants.

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DownloadStatus, TDownloadStatus } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourseProvider, CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
@@ -60,7 +60,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     progress = -1;
     completionUserTracked: boolean | undefined = false;
 
-    protected courseStatus: TDownloadStatus = DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED;
+    protected courseStatus: DownloadStatus = DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED;
     protected isDestroyed = false;
     protected courseStatusObserver?: CoreEventObserver;
 
@@ -211,7 +211,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
      *
      * @param status Status to show.
      */
-    protected updateCourseStatus(status: TDownloadStatus): void {
+    protected updateCourseStatus(status: DownloadStatus): void {
         const statusData = CoreCourseHelper.getCoursePrefetchStatusInfo(status);
 
         this.courseStatus = status;

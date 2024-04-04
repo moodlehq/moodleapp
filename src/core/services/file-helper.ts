@@ -23,7 +23,7 @@ import { CoreWS, CoreWSFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
-import { CoreConstants, DownloadStatus, TDownloadStatus } from '@/core/constants';
+import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreNetworkError } from '@classes/errors/network-error';
@@ -63,7 +63,7 @@ export class CoreFileHelperProvider {
         file: CoreWSFile,
         component?: string,
         componentId?: string | number,
-        state?: TDownloadStatus,
+        state?: DownloadStatus,
         onProgress?: CoreFileHelperOnProgress,
         siteId?: string,
         options: CoreUtilsOpenFileOptions = {},
@@ -150,7 +150,7 @@ export class CoreFileHelperProvider {
         component?: string,
         componentId?: string | number,
         timemodified?: number,
-        state?: TDownloadStatus,
+        state?: DownloadStatus,
         onProgress?: CoreFileHelperOnProgress,
         siteId?: string,
         options: CoreUtilsOpenFileOptions = {},
@@ -304,7 +304,7 @@ export class CoreFileHelperProvider {
      * @param state The state to check.
      * @returns If file has been downloaded (or outdated).
      */
-    isStateDownloaded(state: TDownloadStatus): boolean {
+    isStateDownloaded(state: DownloadStatus): boolean {
         return state === DownloadStatus.DOWNLOADED || state === DownloadStatus.OUTDATED;
     }
 

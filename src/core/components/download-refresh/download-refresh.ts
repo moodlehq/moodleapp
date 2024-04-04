@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { DownloadStatus, TDownloadStatus } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { CoreAnimations } from '@components/animations';
 
 /**
@@ -31,7 +31,7 @@ import { CoreAnimations } from '@components/animations';
 })
 export class CoreDownloadRefreshComponent {
 
-    @Input() status?: TDownloadStatus; // Download status.
+    @Input() status?: DownloadStatus; // Download status.
     @Input() statusTranslatable?: string; // Download status translatable string.
     @Input() enabled = false; // Whether the download is enabled.
     @Input() loading = true; // Force loading status when is not downloading.

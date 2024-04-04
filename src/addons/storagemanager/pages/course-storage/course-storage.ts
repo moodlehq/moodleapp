@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants, DownloadStatus, TDownloadStatus } from '@/core/constants';
+import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import {
@@ -607,7 +607,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      * @param module Module to update.
      * @param status Module status.
      */
-    protected updateModuleStatus(module: AddonStorageManagerModule, status: TDownloadStatus): void {
+    protected updateModuleStatus(module: AddonStorageManagerModule, status: DownloadStatus): void {
         if (!status) {
             return;
         }
@@ -649,7 +649,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      *
      * @param status Status to show.
      */
-    protected updateCourseStatus(status: TDownloadStatus): void {
+    protected updateCourseStatus(status: DownloadStatus): void {
         const statusData = CoreCourseHelper.getCoursePrefetchStatusInfo(status);
 
         this.prefetchCourseData.status = statusData.status;
@@ -758,5 +758,5 @@ type AddonStorageManagerModule = CoreCourseModuleData & {
     calculatingSize: boolean;
     prefetchHandler?: CoreCourseModulePrefetchHandler;
     spinner?: boolean;
-    downloadStatus?: TDownloadStatus;
+    downloadStatus?: DownloadStatus;
 };

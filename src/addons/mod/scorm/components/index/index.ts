@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DownloadStatus, TDownloadStatus } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { Component, Input, OnInit, Optional } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
@@ -578,7 +578,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * @inheritdoc
      */
-    protected async showStatus(status: TDownloadStatus): Promise<void> {
+    protected async showStatus(status: DownloadStatus): Promise<void> {
 
         if (status === DownloadStatus.OUTDATED && this.scorm) {
             // Only show the outdated message if the file should be downloaded.

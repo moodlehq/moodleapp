@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { TDownloadStatus } from '@/core/constants';
+import { DownloadStatus } from '@/core/constants';
 import { CoreAppSchema } from '@services/app';
 import { CoreSiteSchema } from '@services/sites';
 
@@ -315,12 +315,12 @@ export type CoreFilepoolPackageEntry = {
     /**
      * Package status.
      */
-    status?: TDownloadStatus;
+    status?: DownloadStatus;
 
     /**
      * Package previous status.
      */
-    previous?: TDownloadStatus;
+    previous?: DownloadStatus;
 
     /**
      * Timestamp when this package was updated.
