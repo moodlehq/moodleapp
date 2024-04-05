@@ -61,7 +61,7 @@
                                     <ion-icon class="completioninfo completion_complete" name="fas-circle"
                                         *ngIf="module.completionStatus === 1 || module.completionStatus === 2" color="success" slot="start"
                                         [attr.aria-label]="'core.course.done' | translate" />
-                                    <ion-icon class="completioninfo completion_fail" name="fas-circle" *ngIf="module.completionStatus === 3"
+                                    <ion-icon class="completioninfo completion_fail" name="fas-xmark" *ngIf="module.completionStatus === 3"
                                         color="danger" slot="start" [attr.aria-label]="'core.course.failed' | translate" />
                                     <ion-label>
                                         <p class="item-heading">
