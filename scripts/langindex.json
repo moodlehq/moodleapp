@@ -143,6 +143,8 @@
   "addon.calendar.mon": "calendar",
   "addon.calendar.monday": "calendar",
   "addon.calendar.monthlyview": "calendar",
+  "addon.calendar.monthnext": "calendar",
+  "addon.calendar.monthprev": "calendar",
   "addon.calendar.newevent": "calendar",
   "addon.calendar.noevents": "local_moodlemobileapp",
   "addon.calendar.nopermissiontoupdatecalendar": "error",

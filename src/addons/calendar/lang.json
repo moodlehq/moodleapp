@@ -39,6 +39,8 @@
     "mon": "Mon",
     "monday": "Monday",
     "monthlyview": "Monthly view",
+    "monthnext": "Next month",
+    "monthprev": "Previous month",
     "newevent": "New event",
     "noevents": "There are no events",
     "nopermissiontoupdatecalendar": "Sorry, but you do not have permission to update the calendar event.",
