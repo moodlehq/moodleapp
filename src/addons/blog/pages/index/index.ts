@@ -12,19 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ContextLevel } from '@/core/constants';
-import { ADDON_BLOG_ENTRY_UPDATED } from '@addons/blog/constants';
-import { AddonBlog, AddonBlogFilter, AddonBlogPost, AddonBlogProvider } from '@addons/blog/services/blog';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ContextLevel, CoreConstants } from '@/core/constants';
+import {
+    ADDON_BLOG_AUTO_SYNCED,
+    ADDON_BLOG_ENTRY_UPDATED,
+    ADDON_BLOG_MANUAL_SYNCED,
+} from '@addons/blog/constants';
+import {
+    AddonBlog,
+    AddonBlogFilter,
+    AddonBlogOfflinePostFormatted,
+    AddonBlogPostFormatted,
+    AddonBlogProvider,
+} from '@addons/blog/services/blog';
+import { AddonBlogOffline, AddonBlogOfflineEntry } from '@addons/blog/services/blog-offline';
+import { AddonBlogSync } from '@addons/blog/services/blog-sync';
+import { Component, computed, OnDestroy, OnInit, signal } from '@angular/core';
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreTag } from '@features/tag/services/tag';
-import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
+import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreFileHelper } from '@services/file-helper';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreArray } from '@singletons/array';
@@ -32,6 +43,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
 import { CorePopovers } from '@services/popovers';
 import { CoreLoadings } from '@services/loadings';
+import { Subscription } from 'rxjs';
 
 /**
  * Page that displays the list of blog entries.
@@ -50,10 +62,13 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
     protected siteHomeId: number;
     protected logView: () => void;
 
-    loaded = false;
+    loaded = signal(false);
     canLoadMore = false;
     loadMoreError = false;
-    entries: AddonBlogPostFormatted[] = [];
+    entries: (AddonBlogOfflinePostFormatted | AddonBlogPostFormatted)[] = [];
+    entriesToRemove: { id: number; subject: string }[] = [];
+    entriesToUpdate: AddonBlogOfflineEntry[] = [];
+    offlineEntries: AddonBlogOfflineEntry[] = [];
     currentUserId: number;
     showMyEntriesToggle = false;
     onlyMyEntries = false;
@@ -63,11 +78,20 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
     contextLevel: ContextLevel = ContextLevel.SYSTEM;
     contextInstanceId = 0;
     entryUpdateObserver: CoreEventObserver;
+    syncObserver: CoreEventObserver;
+    onlineObserver: Subscription;
     optionsAvailable = false;
+    hasOfflineDataToSync = signal(false);
+    isOnline = signal(false);
+    siteId: string;
+    syncIcon = CoreConstants.ICON_SYNC;
+    syncHidden = computed(() => !this.loaded() || !this.isOnline() || !this.hasOfflineDataToSync());
 
     constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
+        this.siteId = CoreSites.getCurrentSiteId();
+        this.isOnline.set(CoreNetwork.isOnline());
 
         this.logView = CoreTime.once(async () => {
             await CoreUtils.ignoreErrors(AddonBlog.logView(this.filter));
@@ -89,10 +113,35 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
         });
 
         this.entryUpdateObserver = CoreEvents.on(ADDON_BLOG_ENTRY_UPDATED, async () => {
-            this.loaded = false;
+            this.loaded.set(false);
             await CoreUtils.ignoreErrors(this.refresh());
-            this.loaded = true;
+            this.loaded.set(true);
         });
+
+        this.syncObserver = CoreEvents.onMultiple([ADDON_BLOG_MANUAL_SYNCED, ADDON_BLOG_AUTO_SYNCED], async ({ source }) => {
+            if (this === source) {
+                return;
+            }
+
+            this.loaded.set(false);
+            await CoreUtils.ignoreErrors(this.refresh(false));
+            this.loaded.set(true);
+        });
+
+        // Refresh online status when changes.
+        this.onlineObserver = CoreNetwork.onChange().subscribe(async () => {
+            this.isOnline.set(CoreNetwork.isOnline());
+        });
+    }
+
+    /**
+     * Retrieves an unique id to be used in template.
+     *
+     * @param entry Entry.
+     * @returns Entry template ID.
+     */
+    getEntryTemplateId(entry: AddonBlogOfflinePostFormatted | AddonBlogPostFormatted): string {
+        return 'entry-' + ('id' in entry && entry.id ? entry.id : ('created-' + entry.created));
     }
 
     /**
@@ -156,8 +205,18 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
         const deepLinkManager = new CoreMainMenuDeepLinkManager();
         deepLinkManager.treatLink();
 
-        await this.fetchEntries();
+        await this.fetchEntries(false, false, true);
         this.optionsAvailable = await AddonBlog.isEditingEnabled();
+    }
+
+    /**
+     * Retrieves entry id or undefined.
+     *
+     * @param entry Entry.
+     * @returns Entry id or undefined.
+     */
+    getEntryId(entry: AddonBlogPostFormatted | AddonBlogOfflinePostFormatted): number | undefined {
+        return this.isOnlineEntry(entry) ? entry.id : undefined;
     }
 
     /**
@@ -166,11 +225,30 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
      * @param refresh Empty events array first.
      * @returns Promise with the entries.
      */
-    protected async fetchEntries(refresh: boolean = false): Promise<void> {
+    protected async fetchEntries(refresh: boolean, showSyncErrors = false, sync?: boolean): Promise<void> {
         this.loadMoreError = false;
 
         if (refresh) {
             this.pageLoaded = 0;
+        }
+
+        if (this.isOnline() && sync) {
+            // Try to synchronize offline events.
+            try {
+                const result = await AddonBlogSync.syncEntriesForSite(CoreSites.getCurrentSiteId());
+
+                if (result.warnings && result.warnings.length) {
+                    CoreDomUtils.showAlert(undefined, result.warnings[0]);
+                }
+
+                if (result.updated) {
+                    CoreEvents.trigger(ADDON_BLOG_MANUAL_SYNCED, { ...result, source: this });
+                }
+            } catch (error) {
+                if (showSyncErrors) {
+                    CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
+                }
+            }
         }
 
         try {
@@ -184,57 +262,70 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
                 },
             );
 
-            const promises = result.entries.map(async (entry: AddonBlogPostFormatted) => {
-                switch (entry.publishstate) {
-                    case 'draft':
-                        entry.publishTranslated = 'publishtonoone';
-                        break;
-                    case 'site':
-                        entry.publishTranslated = 'publishtosite';
-                        break;
-                    case 'public':
-                        entry.publishTranslated = 'publishtoworld';
-                        break;
-                    default:
-                        entry.publishTranslated = 'privacy:unknown';
-                        break;
-                }
+            await Promise.all(result.entries.map(async (entry: AddonBlogPostFormatted) => AddonBlog.formatEntry(entry)));
 
-                // Calculate the context. This code was inspired by calendar events, Moodle doesn't do this for blogs.
-                if (entry.moduleid || entry.coursemoduleid) {
-                    entry.contextLevel = ContextLevel.MODULE;
-                    entry.contextInstanceId = entry.moduleid || entry.coursemoduleid;
-                } else if (entry.courseid) {
-                    entry.contextLevel = ContextLevel.COURSE;
-                    entry.contextInstanceId = entry.courseid;
-                } else {
-                    entry.contextLevel = ContextLevel.USER;
-                    entry.contextInstanceId = entry.userid;
-                }
+            this.entries = refresh
+                ? result.entries
+                : this.entries.concat(result.entries).sort((a, b) => {
+                    if ('id' in a && !('id' in b)) {
+                        return 1;
+                    } else if ('id' in b && !('id' in a)) {
+                        return -1;
+                    }
 
-                entry.summary = CoreFileHelper.replacePluginfileUrls(entry.summary, entry.summaryfiles || []);
-
-                entry.user = await CoreUtils.ignoreErrors(CoreUser.getProfile(entry.userid, entry.courseid, true));
-            });
-
-            if (refresh) {
-                this.entries = result.entries;
-            } else {
-                this.entries = CoreArray.unique(this.entries
-                    .concat(result.entries), 'id')
-                    .sort((a, b) => b.created - a.created);
-            }
+                    return b.created - a.created;
+                });
 
             this.canLoadMore = result.totalentries > this.entries.length;
+            await this.loadOfflineEntries(this.pageLoaded === 0);
+            this.entries = CoreArray.unique(this.entries, 'id');
+
             this.pageLoaded++;
-            await Promise.all(promises);
             this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.blog.errorloadentries', true);
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
         } finally {
-            this.loaded = true;
+            this.loaded.set(true);
         }
+    }
+
+    /**
+     * Load offline entries and format them.
+     *
+     * @param loadCreated Load offline entries to create or not.
+     */
+    async loadOfflineEntries(loadCreated: boolean): Promise<void> {
+        if (loadCreated) {
+            this.offlineEntries = await AddonBlogOffline.getOfflineEntries(this.filter);
+            this.entriesToUpdate = this.offlineEntries.filter(entry => !!entry.id);
+            this.entriesToRemove = await AddonBlogOffline.getEntriesToRemove();
+            const entriesToCreate = this.offlineEntries.filter(entry => !entry.id);
+
+            const formattedEntries = await Promise.all(entriesToCreate.map(async (entryToCreate) =>
+                await AddonBlog.formatOfflineEntry(entryToCreate)));
+
+            this.entries = [...formattedEntries, ...this.entries];
+        }
+
+        if (this.entriesToUpdate.length) {
+            this.entries = await Promise.all(this.entries.map(async (entry) => {
+                const entryToUpdate = this.entriesToUpdate.find(entryToUpdate =>
+                    this.isOnlineEntry(entry) && entryToUpdate.id === entry.id);
+
+                return !entryToUpdate || !('id' in entry) ? entry : await AddonBlog.formatOfflineEntry(entryToUpdate, entry);
+            }));
+        }
+
+        for (const entryToRemove of this.entriesToRemove) {
+            const foundEntry = this.entries.find(entry => ('id' in entry && entry.id === entryToRemove.id));
+
+            if (foundEntry) {
+                foundEntry.deleted = true;
+            }
+        }
+
+        this.hasOfflineDataToSync.set(this.offlineEntries.length > 0 || this.entriesToRemove.length > 0);
     }
 
     /**
@@ -258,13 +349,23 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Check if provided entry is online.
+     *
+     * @param entry Entry.
+     * @returns Whether it's an online entry.
+     */
+    isOnlineEntry(entry: AddonBlogOfflinePostFormatted | AddonBlogPostFormatted): entry is AddonBlogPostFormatted {
+        return 'id' in entry;
+    }
+
+    /**
      * Function to load more entries.
      *
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
      * @returns Resolved when done.
      */
     loadMore(infiniteComplete?: () => void): Promise<void> {
-        return this.fetchEntries().finally(() => {
+        return this.fetchEntries(false).finally(() => {
             infiniteComplete && infiniteComplete();
         });
     }
@@ -272,11 +373,21 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
     /**
      * Refresh blog entries on PTR.
      *
+     * @param sync Sync entries.
      * @param refresher Refresher instance.
      */
-    async refresh(refresher?: HTMLIonRefresherElement): Promise<void> {
-        const promises = this.entries.map((entry) =>
-            CoreComments.invalidateCommentsData(ContextLevel.USER, entry.userid, this.component, entry.id, 'format_blog'));
+    async refresh(sync = true, refresher?: HTMLIonRefresherElement): Promise<void> {
+        const promises = this.entries.map((entry) => {
+            if (this.isOnlineEntry(entry)) {
+                return CoreComments.invalidateCommentsData(
+                    ContextLevel.USER,
+                    entry.userid,
+                    this.component,
+                    entry.id,
+                    'format_blog',
+                );
+            }
+        });
 
         promises.push(AddonBlog.invalidateEntries(this.filter));
 
@@ -291,7 +402,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
         }
 
         await CoreUtils.allPromises(promises);
-        await this.fetchEntries(true);
+        await this.fetchEntries(true, false, sync);
         refresher?.complete();
     }
 
@@ -303,15 +414,21 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Delete entry by id.
+     * Delete entry.
      *
-     * @param id Entry id.
+     * @param entryToRemove Entry.
      */
-    async deleteEntry(id: number): Promise<void> {
+    async deleteEntry(entryToRemove: AddonBlogOfflinePostFormatted | AddonBlogPostFormatted): Promise<void> {
         const loading = await CoreLoadings.show();
+
         try {
-            await AddonBlog.deleteEntry({ entryid: id });
-            await this.refresh();
+            if ('id' in entryToRemove && entryToRemove.id) {
+                await AddonBlog.deleteEntry({ entryid: entryToRemove.id, subject: entryToRemove.subject });
+            } else {
+                await AddonBlogOffline.deleteOfflineEntryRecord({ created: entryToRemove.created });
+            }
+
+            CoreEvents.trigger(ADDON_BLOG_ENTRY_UPDATED);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.blog.errorloadentries', true);
         } finally {
@@ -323,8 +440,9 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
      * Show the context menu.
      *
      * @param event Click Event.
+     * @param entry Entry to remove.
      */
-    async showEntryActionsPopover(event: Event, entry: AddonBlogPostFormatted): Promise<void> {
+    async showEntryActionsPopover(event: Event, entry: AddonBlogPostFormatted | AddonBlogOfflinePostFormatted): Promise<void> {
         event.preventDefault();
         event.stopPropagation();
 
@@ -337,15 +455,18 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
         });
 
         switch (popoverData) {
-            case 'edit':
-                await CoreNavigator.navigateToSitePath(`blog/edit/${entry.id}`, {
-                    params: this.filter.cmid
-                        ? { cmId: this.filter.cmid, filters: this.filter, lastModified: entry.lastmodified }
-                        : { filters: this.filter, lastModified: entry.lastmodified },
+            case 'edit': {
+                await CoreNavigator.navigateToSitePath(`blog/edit/${this.isOnlineEntry(entry) && entry.id
+                    ? entry.id
+                    : 'new-' + entry.created}`, {
+                        params: this.filter.cmid
+                            ? { cmId: this.filter.cmid, filters: this.filter, lastModified: entry.lastmodified }
+                            : { filters: this.filter, lastModified: entry.lastmodified },
                 });
                 break;
+            }
             case 'delete':
-                await this.deleteEntry(entry.id);
+                await this.deleteEntry(entry);
                 break;
             default:
                 break;
@@ -353,20 +474,22 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Undo entry deletion.
+     *
+     * @param entry Entry to prevent deletion.
+     */
+    async undoDelete(entry: AddonBlogOfflinePostFormatted | AddonBlogPostFormatted): Promise<void> {
+        await AddonBlogOffline.unmarkEntryAsRemoved('id' in entry ? entry.id : entry.created);
+        CoreEvents.trigger(ADDON_BLOG_ENTRY_UPDATED);
+    }
+
+    /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
         this.entryUpdateObserver.off();
+        this.syncObserver.off();
+        this.onlineObserver.unsubscribe();
     }
 
 }
-
-/**
- * Blog post with some calculated data.
- */
-type AddonBlogPostFormatted = AddonBlogPost & {
-    publishTranslated?: string; // Calculated in the app. Key of the string to translate the publish state of the post.
-    user?: CoreUserProfile; // Calculated in the app. Data of the user that wrote the post.
-    contextLevel?: ContextLevel; // Calculated in the app. The context level of the entry.
-    contextInstanceId?: number; // Calculated in the app. The context instance id.
-};
