@@ -45,9 +45,6 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
 
     protected filter: AddonBlogFilter = {};
     protected pageLoaded = 0;
-    protected userPageLoaded = 0;
-    protected canLoadMoreEntries = false;
-    protected canLoadMoreUserEntries = true;
     protected siteHomeId: number;
     protected logView: () => void;
 
@@ -172,16 +169,13 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
 
         if (refresh) {
             this.pageLoaded = 0;
-            this.userPageLoaded = 0;
         }
-
-        const loadPage = this.onlyMyEntries ? this.userPageLoaded : this.pageLoaded;
 
         try {
             const result = await AddonBlog.getEntries(
                 this.filter,
                 {
-                    page: loadPage,
+                    page: this.pageLoaded,
                     readingStrategy: refresh
                         ? CoreSitesReadingStrategy.PREFER_NETWORK
                         : undefined,
@@ -229,21 +223,9 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
                     .sort((a, b) => b.created - a.created);
             }
 
-            this.entries = this.entries.filter(entry => !this.onlyMyEntries || entry.userid === this.currentUserId);
-
-            if (this.onlyMyEntries) {
-                const count = this.entries.filter((entry) => entry.userid == this.currentUserId).length;
-                this.canLoadMoreUserEntries = result.totalentries > count;
-                this.canLoadMore = this.canLoadMoreUserEntries;
-                this.userPageLoaded++;
-            } else {
-                this.canLoadMoreEntries = result.totalentries > this.entries.length;
-                this.canLoadMore = this.canLoadMoreEntries;
-                this.pageLoaded++;
-            }
-
+            this.canLoadMore = result.totalentries > this.entries.length;
+            this.pageLoaded++;
             await Promise.all(promises);
-
             this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.blog.errorloadentries', true);
@@ -258,24 +240,19 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
      *
      * @param enabled If true, filter my entries. False otherwise.
      */
-    onlyMyEntriesToggleChanged(enabled: boolean): void {
-        this.canLoadMore = enabled ? this.canLoadMoreUserEntries : this.canLoadMoreEntries;
+    async onlyMyEntriesToggleChanged(enabled: boolean): Promise<void> {
+        const loading = await CoreDomUtils.showModalLoading();
 
-        if (!enabled) {
-            delete this.filter.userid;
-
-            return;
+        try {
+            this.filter.userid = !enabled ? undefined : this.currentUserId;
+            await this.fetchEntries(true);
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'addon.blog.errorloadentries', true);
+            this.onlyMyEntries = !enabled;
+            this.filter.userid = !enabled ? this.currentUserId : undefined;
+        } finally {
+            loading.dismiss();
         }
-
-        const count = this.entries.filter((entry) => entry.userid == this.currentUserId).length;
-        this.userPageLoaded = Math.floor(count / AddonBlogProvider.ENTRIES_PER_PAGE);
-        this.filter.userid = this.currentUserId;
-
-        if (count == 0 && this.canLoadMoreUserEntries) {
-            // First time but no entry loaded. Try to load some.
-            this.loadMore();
-        }
-
     }
 
     /**
