@@ -61,6 +61,13 @@ Feature: Test basic usage of messages in app
     And I press "Teacher teacher" in the app
     Then the header should be "Teacher teacher" in the app
     And I should find "heeey student" in the app
+    And the following events should have been logged for "teacher1" in the app:
+      | name                              | relateduser |
+      | \core\event\message_contact_added | student1    |
+      | \core\event\message_sent	      | student1    |
+    And the following events should have been logged for "student1" in the app:
+      | name                       | relateduser |
+      | \core\event\message_viewed | teacher1    |
 
   Scenario: Search users
     Given I entered the app as "student1"

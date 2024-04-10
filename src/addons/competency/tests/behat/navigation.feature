@@ -175,6 +175,13 @@ Feature: Test competency navigation
     Then I should find "Desserts are important" in the app
     But I should not find "Cakes" in the app
 
+    # Event logs
+    And the following events should have been logged for "student1" in the app:
+      | name                                                    | object     | objectname | course   |
+      | \core\event\competency_user_competency_viewed_in_plan	|            |            |          |
+      | \core\event\competency_viewed	                        | competency | Desserts   |          |
+      | \core\event\competency_user_competency_viewed_in_course |            |            | Course 1 |
+
   Scenario: Mobile navigation (teacher)
     Given I entered the course "Course 1" as "teacher1" in the app
 

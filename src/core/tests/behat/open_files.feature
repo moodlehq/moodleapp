@@ -52,6 +52,11 @@ Feature: It opens files properly.
     And I press "Test DOC" in the app
     And I press "Open" in the app
     Then I should find "This file may not work as expected on this device" in the app
+    And the following events should have been logged for "student1" in the app:
+      | name                                     | activity | activityname | course   |
+      | \mod_resource\event\course_module_viewed | resource | Test TXT     | Course 1 |
+      | \mod_resource\event\course_module_viewed | resource | Test RTF     | Course 1 |
+      | \mod_resource\event\course_module_viewed | resource | Test DOC     | Course 1 |
 
   @lms_from4.3
   Scenario: Open a PDF embedded using an iframe

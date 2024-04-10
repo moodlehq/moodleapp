@@ -91,6 +91,10 @@ Feature: Users can manage entries in database activities
     And I entered the data activity "Data with comments" on course "Course 1" as "student1" in the app
     When I press "Show more" near "Moodle community site" in the app
     Then I should not find "Comments" in the app
+    But the following events should have been logged for "student1" in the app:
+      | name                                 | activity | activityname       | course   |
+      | \mod_data\event\course_module_viewed | data     | Data with comments | Course 1 |
+      | \mod_data\event\record_created       | data     | Data with comments | Course 1 |
 
   Scenario: Students can not edit or delete other user's entries from list and single view in the app
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app

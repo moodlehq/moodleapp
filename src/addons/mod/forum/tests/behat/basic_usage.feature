@@ -66,6 +66,12 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     Then I should find "Initial discussion message" in the app
     And I should find "ReplyMessage" in the app
+    And the following events should have been logged for "student1" in the app:
+      | name                                             | activity | activityname    | course   |
+      | \mod_forum\event\course_module_viewed            | forum    | Test forum name | Course 1 |
+      | \mod_forum\event\assessable_uploaded             | forum    | Test forum name | Course 1 |
+      | \mod_forum\event\post_created                    | forum    | Test forum name | Course 1 |
+      | \mod_forum\event\discussion_subscription_created | forum    | Test forum name | Course 1 |
 
   Scenario: Star and pin discussions (student)
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app

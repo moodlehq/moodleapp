@@ -377,6 +377,9 @@ Feature: Test feedback navigation
     But I should not find "Student 21" in the app
     And I should not find "Anonymous entries" in the app
     And I should not find "Response number: 22" in the app
+    And the following events should have been logged for "teacher1" in the app:
+      | name                                     | activity | activityname | course   |
+      | \mod_feedback\event\course_module_viewed | feedback | Feedback     | Course 1 |
 
   Scenario: Tablet navigation
     Given I entered the course "Course 1" as "teacher1" in the app
