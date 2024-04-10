@@ -613,12 +613,12 @@ export class CoreLoginHelperProvider {
      * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
      * @returns True if success, false if error.
      */
-    openBrowserForOAuthLogin(
+    async openBrowserForOAuthLogin(
         siteUrl: string,
         provider: CoreSiteIdentityProvider,
         launchUrl?: string,
         redirectData?: CoreRedirectPayload,
-    ): boolean {
+    ): Promise<boolean> {
         launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
 
         this.logger.debug('openBrowserForOAuthLogin launchUrl:', launchUrl);
@@ -633,15 +633,25 @@ export class CoreLoginHelperProvider {
             return false;
         }
 
-        const loginUrl = this.prepareForSSOLogin(siteUrl, undefined, launchUrl, redirectData, {
-            oauthsso: params.id,
-        });
+        const modal = await CoreDomUtils.showModalLoading();
 
-        // Always open it in browser because the user might have the session stored in there.
-        CoreUtils.openInBrowser(loginUrl, { showBrowserWarning: false });
-        CoreApp.closeApp();
+        try {
+            const loginUrl = await this.prepareForSSOLogin(siteUrl, undefined, launchUrl, redirectData, {
+                oauthsso: params.id,
+            });
 
-        return true;
+            // Always open it in browser because the user might have the session stored in there.
+            CoreUtils.openInBrowser(loginUrl, { showBrowserWarning: false });
+            CoreApp.closeApp();
+
+            return true;
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'Error opening browser');
+        } finally {
+            modal.dismiss();
+        }
+
+        return false;
     }
 
     /**
@@ -653,25 +663,33 @@ export class CoreLoginHelperProvider {
      * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
      * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
      */
-    openBrowserForSSOLogin(
+    async openBrowserForSSOLogin(
         siteUrl: string,
         typeOfLogin: TypeOfLogin,
         service?: string,
         launchUrl?: string,
         redirectData?: CoreRedirectPayload,
-    ): void {
-        const loginUrl = this.prepareForSSOLogin(siteUrl, service, launchUrl, redirectData);
+    ): Promise<void> {
+        const modal = await CoreDomUtils.showModalLoading();
 
-        this.logger.debug('openBrowserForSSOLogin loginUrl:', loginUrl);
+        try {
+            const loginUrl = await this.prepareForSSOLogin(siteUrl, service, launchUrl, redirectData);
 
-        if (this.isSSOEmbeddedBrowser(typeOfLogin)) {
-            CoreUtils.openInApp(loginUrl, {
-                clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
-                closebuttoncaption: Translate.instant('core.login.cancel'),
-            });
-        } else {
-            CoreUtils.openInBrowser(loginUrl, { showBrowserWarning: false });
-            CoreApp.closeApp();
+            this.logger.debug('openBrowserForSSOLogin loginUrl:', loginUrl);
+
+            if (this.isSSOEmbeddedBrowser(typeOfLogin)) {
+                CoreUtils.openInApp(loginUrl, {
+                    clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
+                    closebuttoncaption: Translate.instant('core.login.cancel'),
+                });
+            } else {
+                CoreUtils.openInBrowser(loginUrl, { showBrowserWarning: false });
+                CoreApp.closeApp();
+            }
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'Error opening browser');
+        } finally {
+            modal.dismiss();
         }
     }
 
@@ -779,13 +797,13 @@ export class CoreLoginHelperProvider {
      * @param urlParams Other params to add to the URL.
      * @returns Login Url.
      */
-    prepareForSSOLogin(
+    async prepareForSSOLogin(
         siteUrl: string,
         service?: string,
         launchUrl?: string,
         redirectData: CoreRedirectPayload = {},
         urlParams?: CoreUrlParams,
-    ): string {
+    ): Promise<string> {
 
         service = service || CoreConstants.CONFIG.wsservice;
         launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
@@ -802,7 +820,7 @@ export class CoreLoginHelperProvider {
 
         // Store the siteurl and passport in CoreConfigProvider for persistence.
         // We are "configuring" the app to wait for an SSO. CoreConfigProvider shouldn't be used as a temporary storage.
-        CoreConfig.set(CoreConstants.LOGIN_LAUNCH_DATA, JSON.stringify(<StoredLoginLaunchData> {
+        await CoreConfig.set(CoreConstants.LOGIN_LAUNCH_DATA, JSON.stringify(<StoredLoginLaunchData> {
             siteUrl: siteUrl,
             passport: passport,
             ...redirectData,

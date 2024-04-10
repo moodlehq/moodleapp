@@ -92,8 +92,8 @@ export class CoreLoginMethodsComponent implements OnInit {
      *
      * @param provider The provider that was clicked.
      */
-    oauthClicked(provider: CoreSiteIdentityProvider): void {
-        const result = CoreLoginHelper.openBrowserForOAuthLogin(
+    async oauthClicked(provider: CoreSiteIdentityProvider): Promise<void> {
+        const result = await CoreLoginHelper.openBrowserForOAuthLogin(
             this.siteUrl,
             provider,
             this.siteConfig?.launchurl,
