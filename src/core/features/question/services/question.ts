@@ -627,8 +627,9 @@ export type CoreQuestionQuestionWSData = {
     hasautosavedstep?: boolean; // Whether this question attempt has autosaved data.
     flagged: boolean; // Whether the question is flagged or not.
     questionnumber?: string; // @since 4.2. Question ordering number in the quiz.
-    state?: string; // The state where the question is in. It won't be returned if the user cannot see it.
-    status?: string; // Current formatted state of the question.
+    state?: string; // The state where the question is in terms of correctness.
+                    // It will not be returned if the user cannot see it due to the quiz display correctness settings.
+    status?: string; // Human readable state of the question.
     stateclass?: // @since 4.4. A machine-readable class name for the state that this question attempt is in.
         typeof QUESTION_TODO_STATE_CLASSES[number] |
         typeof QUESTION_INVALID_STATE_CLASSES[number] |

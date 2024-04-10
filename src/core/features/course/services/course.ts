@@ -1659,6 +1659,8 @@ export type CoreCourseCompletionActivityStatus = {
             description: string; // Completion description.
         };
     }[];
+    isoverallcomplete?: boolean; // @since 4.4.
+                                // Whether the overall completion state of this course module should be marked as complete or not.
     offline?: boolean; // Whether the completions is offline and not yet synced.
 };
 
@@ -1840,6 +1842,8 @@ export type CoreCourseModuleWSCompletionData = {
     istrackeduser?: boolean; // @since 3.11. Whether completion is being tracked for this user.
     uservisible?: boolean; // @since 3.11. Whether this activity is visible to the user.
     details?: CoreCourseModuleWSRuleDetails[]; // @since 3.11. An array of completion details.
+    isoverallcomplete?: boolean; // @since 4.4.
+                                // Whether the overall completion state of this course module should be marked as complete or not.
 };
 
 /**
