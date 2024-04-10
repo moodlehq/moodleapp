@@ -502,6 +502,29 @@ export class CoreCustomURLSchemesProvider {
         }
     }
 
+    /**
+     * Get the last URL used to open the app using a URL scheme.
+     *
+     * @returns URL.
+     */
+    getLastLaunchURL(): Promise<string | undefined> {
+        return new Promise((resolve) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (<any> window).plugins.launchmyapp.getLastIntent(intent => resolve(intent), () => resolve(undefined));
+        });
+    }
+
+    /**
+     * Check if the last URL used to open the app was a token URL.
+     *
+     * @returns Whether was launched with token URL.
+     */
+    async appLaunchedWithTokenURL(): Promise<boolean> {
+        const launchUrl = await this.getLastLaunchURL();
+
+        return !!launchUrl && this.isCustomURLToken(launchUrl);
+    }
+
 }
 
 /**
