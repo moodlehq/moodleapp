@@ -27,10 +27,14 @@ Feature: Attempt a quiz in app
       | questioncategory | qtype       | name  | questiontext                |
       | Test questions   | truefalse   | TF1   | Text of the first question  |
       | Test questions   | truefalse   | TF2   | Text of the second question |
+    Given the following "mod_quiz > grade items" exist:
+      | quiz   | name      |
+      | Quiz 1 | Logic     |
+      | Quiz 1 | Cognition |
     And quiz "Quiz 1" contains the following questions:
-      | question | page |
-      | TF1      | 1    |
-      | TF2      | 2    |
+      | question | page | grade item |
+      | TF1      | 1    | Logic      |
+      | TF2      | 2    | Cognition  |
     And the following "activities" exist:
       | activity   | name   | intro              | course | idnumber |
       | quiz       | Quiz 2 | Quiz 2 description | C1     | quiz2    |
@@ -126,13 +130,25 @@ Feature: Attempt a quiz in app
     And I press "Submit" near "Once you submit" in the app
     Then I should find "Review" in the app
     And I should find "Started on" in the app
-    And I should find "State" in the app
     And I should find "Completed on" in the app
     And I should find "Time taken" in the app
-    And I should find "Marks" in the app
-    And I should find "Grade" in the app
+    And I should find "Finished" within "State" "ion-item" in the app
+    And I should find "0 out of 1" within "Logic" "ion-item" in the app
+    And I should find "0 out of 1" within "Cognition" "ion-item" in the app
+    And I should find "0/2" within "Marks" "ion-item" in the app
+    And I should find "0 out of 100" within "Grade" "ion-item" in the app
     And I should find "Question 1" in the app
     And I should find "Question 2" in the app
+
+    When I press the back button in the app
+    And I press "Finished" in the app
+    Then I should find "1" within "Attempt" "ion-item" in the app
+    And I should find "Finished" within "State" "ion-item" in the app
+    And I should find "0" within "Logic / 1" "ion-item" in the app
+    And I should find "0" within "Cognition / 1" "ion-item" in the app
+    And I should find "0" within "Marks / 2" "ion-item" in the app
+    And I should find "0" within "Grade / 100" "ion-item" in the app
+    And I should find "Review" in the app
 
   Scenario: Attempt a quiz (all question types)
     Given I entered the quiz activity "Quiz 2" on course "Course 1" as "student1" in the app
