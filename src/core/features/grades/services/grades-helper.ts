@@ -118,6 +118,12 @@ export class CoreGradesHelperProvider {
                 row.gradeClass = column.class.includes('gradepass') ? 'text-success' :
                     (column.class.includes('gradefail') ? 'text-danger' : '');
 
+                if (content.includes('action-menu')) {
+                    content = CoreTextUtils.processHTML(content, (element) => {
+                        element.querySelector('.action-menu')?.parentElement?.remove();
+                    });
+                }
+
                 if (content.includes('fa-check')) {
                     row.gradeIcon = 'fas-check';
                     row.gradeIconAlt = Translate.instant('core.grades.pass');
