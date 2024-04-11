@@ -34,6 +34,7 @@ import { SafeHtml } from '@angular/platform-browser';
 import { CorePlatform } from '@services/platform';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { EMAIL_SIGNUP_FEATURE_NAME, FORGOTTEN_PASSWORD_FEATURE_NAME } from '@features/login/constants';
+import { CoreCustomURLSchemes } from '@services/urlschemes';
 
 /**
  * Page to enter the user credentials.
@@ -107,7 +108,10 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         await this.checkSite();
 
         if (this.isBrowserSSO && CoreLoginHelper.shouldSkipCredentialsScreenOnSSO()) {
-            this.openBrowserSSO();
+            const launchedWithTokenURL = await CoreCustomURLSchemes.appLaunchedWithTokenURL();
+            if (!launchedWithTokenURL) {
+                this.openBrowserSSO();
+            }
         }
 
         if (CorePlatform.isIOS() && !this.isBrowserSSO) {

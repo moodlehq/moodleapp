@@ -318,7 +318,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         };
 
         if (this.siteConfig?.launchurl) {
-            params.redirect = CoreLoginHelper.prepareForSSOLogin(this.site.getURL(), undefined, this.siteConfig.launchurl);
+            params.redirect = await CoreLoginHelper.prepareForSSOLogin(this.site.getURL(), undefined, this.siteConfig.launchurl);
         }
 
         // Get the recaptcha response (if needed).
