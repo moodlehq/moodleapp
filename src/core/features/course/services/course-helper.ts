@@ -2082,6 +2082,29 @@ export class CoreCourseHelperProvider {
         return !!adminOptions[courseId]?.['reports'];
     }
 
+    /**
+     * Get the completion status of a module.
+     *
+     * @param completion Completion data.
+     * @returns Completion status or undefined if not available.
+     */
+    getCompletionStatus(completion?: CoreCourseModuleCompletionData): CoreCourseModuleCompletionStatus | undefined {
+        if (completion === undefined) {
+            return undefined;
+        }
+
+        if (completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE) {
+            return undefined;
+        }
+
+        if (completion.isoverallcomplete === true) {
+            // If the module is marked as overall complete, we'll show it as complete.
+            return CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE;
+        }
+
+        return completion.state;
+    }
+
 }
 
 export const CoreCourseHelper = makeSingleton(CoreCourseHelperProvider);

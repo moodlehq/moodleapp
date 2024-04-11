@@ -2105,6 +2105,7 @@ export type AddonModQuizGetAttemptSummaryWSParams = {
  */
 export type AddonModQuizGetAttemptSummaryWSResponse = {
     questions: CoreQuestionQuestionWSData[];
+    totalunanswered?: number; // @since 4.4. Total unanswered questions.
     warnings?: CoreWSExternalWarning[];
 };
 

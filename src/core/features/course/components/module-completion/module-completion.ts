@@ -17,7 +17,6 @@ import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange } from '@a
 import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classes/module-completion';
 import {
     CoreCourseModuleCompletionStatus,
-    CoreCourseModuleCompletionTracking,
 } from '@features/course/services/course';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourseModuleCompletionDetailsComponent } from '../module-completion-details/module-completion-details';
@@ -87,9 +86,7 @@ export class CoreCourseModuleCompletionComponent
             return;
         }
 
-        const completionStatus = this.completion.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE
-            ? undefined
-            : this.completion.state;
+        const completionStatus = CoreCourseHelper.getCompletionStatus(this.completion);
 
         this.completed = completionStatus !== CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE &&
             completionStatus !== CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_FAIL;
