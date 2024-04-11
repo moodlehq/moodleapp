@@ -47,6 +47,16 @@ Feature: Test basic usage of login in app
     And I press "Connect to your site" in the app
     Then I should find "Can't connect to site" in the app
 
+  Scenario: Attempt invalid login
+    When I launch the app
+    And I set the field "Your site" to "$WWWROOT" in the app
+    And I press "Connect to your site" in the app
+    And I set the following fields to these values in the app:
+      | Username | student1      |
+      | Password | wrongpassword |
+    And I press "Log in" near "Lost password?" in the app
+    Then I should find "Invalid login" in the app
+
   Scenario: Add a non existing account from accounts switcher
     Given I entered the app as "student1"
     And I press the user menu button in the app

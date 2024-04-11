@@ -35,6 +35,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { EMAIL_SIGNUP_FEATURE_NAME, FORGOTTEN_PASSWORD_FEATURE_NAME } from '@features/login/constants';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
+import { CoreSiteError } from '@classes/errors/siteerror';
 
 /**
  * Page to enter the user credentials.
@@ -292,7 +293,11 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
             await CoreNavigator.navigateToSiteHome({ params: { urlToOpen: this.urlToOpen } });
         } catch (error) {
-            CoreLoginHelper.treatUserTokenError(siteUrl, error, username, password);
+            if (error instanceof CoreSiteError && CoreLoginHelper.isAppUnsupportedError(error)) {
+                await CoreLoginHelper.showAppUnsupportedModal(siteUrl, this.site, error.debug);
+            } else {
+                CoreLoginHelper.treatUserTokenError(siteUrl, error, username, password);
+            }
 
             if (error.loggedout) {
                 CoreNavigator.navigate('/login/sites', { reset: true });

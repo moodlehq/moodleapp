@@ -72,6 +72,15 @@ export class CoreUserGuestSupportConfig extends CoreUserSupportConfig {
     }
 
     /**
+     * Get site.
+     *
+     * @returns site.
+     */
+    getSite(): CoreUnauthenticatedSite {
+        return this.site;
+    }
+
+    /**
      * @inheritdoc
      */
     getSupportPageLang(): string | null {

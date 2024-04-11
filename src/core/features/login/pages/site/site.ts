@@ -48,6 +48,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreReferrer } from '@services/referrer';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { ONBOARDING_DONE } from '@features/login/constants';
+import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -301,7 +302,7 @@ export class CoreLoginSitePage implements OnInit {
         url = url.trim();
 
         if (url.match(/^(https?:\/\/)?campus\.example\.edu/)) {
-            this.showLoginIssue(null, new CoreError(Translate.instant('core.login.errorexampleurl')));
+            this.showLoginIssue(url, new CoreError(Translate.instant('core.login.errorexampleurl')));
 
             return;
         }
@@ -403,17 +404,23 @@ export class CoreLoginSitePage implements OnInit {
      * @param url The URL the user was trying to connect to.
      * @param error Error to display.
      */
-    protected async showLoginIssue(url: string | null, error: CoreError): Promise<void> {
+    protected async showLoginIssue(url: string, error: CoreError): Promise<void> {
         let errorMessage = CoreDomUtils.getErrorMessage(error);
-        let siteExists = false;
-        let supportConfig: CoreUserSupportConfig | undefined = undefined;
-        let errorTitle: string | undefined;
         let debug: CoreSiteErrorDebug | undefined;
+        let errorTitle: string | undefined;
+        let site: CoreUnauthenticatedSite | undefined;
+        let supportConfig: CoreUserSupportConfig | undefined;
 
         if (error instanceof CoreSiteError) {
             supportConfig = error.supportConfig;
-            siteExists = supportConfig instanceof CoreUserGuestSupportConfig;
+            site = supportConfig instanceof CoreUserGuestSupportConfig ? supportConfig.getSite() : undefined;
             debug = error.debug;
+
+            if (CoreLoginHelper.isAppUnsupportedError(error)) {
+                await CoreLoginHelper.showAppUnsupportedModal(url, site, debug);
+
+                return;
+            }
         }
 
         if (error instanceof CoreLoginError) {
@@ -440,7 +447,7 @@ export class CoreLoginSitePage implements OnInit {
                     }),
                 }
                 : (
-                    !siteExists
+                    !site
                         ? {
                             text: Translate.instant('core.needhelp'),
                             cssClass: 'core-login-need-help',
