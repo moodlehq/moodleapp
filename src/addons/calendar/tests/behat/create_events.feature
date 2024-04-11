@@ -66,5 +66,8 @@ Feature: Test creation of calendar events in app
     And I press "Barcelona" in the app
     And I press "OK" in the app
     Then the app should have opened a browser tab with url "google.com"
+    And the following events should have been logged for "student1" in the app:
+      | name                               | other                    |
+      | \core\event\calendar_event_created | {"name":"User Event 01"} |
 
   # @todo Add more Scenarios to test teacher, different values, and creating events from other views (e.g. day view).

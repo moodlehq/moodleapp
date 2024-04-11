@@ -54,6 +54,10 @@ Feature: Test basic usage of BBB activity in app
     Then I should find "The session is in progress." in the app
     And I should find "1" near "Viewer" in the app
     And I should find "0" near "Moderator" in the app
+    And the following events should have been logged for "student1" in the app:
+      | name                                            | activity        | activityname | course   |
+      | \mod_bigbluebuttonbn\event\course_module_viewed | bigbluebuttonbn | Test BBB     | Course 1 |
+      | \mod_bigbluebuttonbn\event\meeting_joined	    | bigbluebuttonbn | Test BBB     | Course 1 |
 
   Scenario: Join meeting (moderator)
     Given the following "activities" exist:

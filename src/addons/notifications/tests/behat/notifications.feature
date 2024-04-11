@@ -78,6 +78,16 @@ Feature: Notifications
     Then I should find "Test 10 description" in the app
     But I should not find "Test 09 description" in the app
 
+
+    # Check event logs
+    And the following events should not have been logged for "student1" in the app:
+      | name                             | object        | objectname |
+      | \core\event\notification_viewed	 | notifications | Test 10    |
+      | \core\event\notification_viewed	 | notifications | Test 11    |
+    But the following events should have been logged for "student1" in the app:
+      | name                             | object        | objectname |
+      | \core\event\notification_viewed	 | notifications | Test 30    |
+
   Scenario: Tablet navigation
     Given I entered the app as "student1"
     And I change viewport size to "1200x640" in the app

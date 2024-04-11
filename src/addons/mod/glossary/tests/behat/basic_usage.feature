@@ -45,6 +45,10 @@ Feature: Test basic usage of glossary in app
     When I press "Potato" in the app
     Then I should find "Potato" in the app
     And I should find "To make chips" in the app
+    And the following events should have been logged for "student1" in the app:
+      | name                                     | activity | activityname  | object           | objectname | course   |
+      | \mod_glossary\event\course_module_viewed | glossary | Test glossary |                  |            | Course 1 |
+      | \mod_glossary\event\entry_viewed         | glossary | Test glossary | glossary_entries | Potato     | Course 1 |
 
   Scenario: Navigate to glossary terms by link (auto-linking)
     Given the "glossary" filter is "on"

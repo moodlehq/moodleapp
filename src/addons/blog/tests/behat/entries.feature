@@ -18,6 +18,9 @@ Feature: Blog entries
     And I press "Blog entries" in the app
     Then I should find "Blog post one" in the app
     And I should find "Blog post two" in the app
+    And the following events should have been logged for "testuser" in the app:
+      | name                            |
+      | \core\event\blog_entries_viewed |
 
   Scenario: Delete blog entry
     Given I entered the app as "testuser"

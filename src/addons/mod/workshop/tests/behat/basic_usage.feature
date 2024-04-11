@@ -114,6 +114,20 @@ Feature: Test basic usage of workshop activity in app
     And I pull to refresh in the app
     Then I should find "Closed" in the app
     And I should find "Conclusion 1" in the app
+    And the following events should have been logged for "student1" in the app:
+      | name                                     | activity | activityname  | course   |
+      | \mod_workshop\event\course_module_viewed | workshop | Test workshop | Course 1 |
+      | \mod_workshop\event\submission_created   | workshop | Test workshop | Course 1 |
+      | \mod_workshop\event\submission_updated   | workshop | Test workshop | Course 1 |
+      | \mod_workshop\event\assessable_uploaded  | workshop | Test workshop | Course 1 |
+    And the following events should have been logged for "student2" in the app:
+      | name                                     | activity | activityname  | relateduser | course   |
+      | \mod_workshop\event\course_module_viewed | workshop | Test workshop |             | Course 1 |
+      | \mod_workshop\event\submission_viewed    | workshop | Test workshop | student1    | Course 1 |
+      | \mod_workshop\event\submission_assessed  | workshop | Test workshop | student1    | Course 1 |
+    And the following events should have been logged for "teacher1" in the app:
+      | name                                     | activity | activityname  | course   |
+      | \mod_workshop\event\course_module_viewed | workshop | Test workshop | Course 1 |
 
   Scenario: Prefetch a workshop
     Given I entered the workshop activity "workshop" on course "Course 1" as "teacher1" in the app

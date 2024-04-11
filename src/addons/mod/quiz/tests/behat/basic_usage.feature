@@ -133,6 +133,16 @@ Feature: Attempt a quiz in app
     And I should find "Grade" in the app
     And I should find "Question 1" in the app
     And I should find "Question 2" in the app
+    And the following events should have been logged for "student1" in the app:
+      | name                                   | activity | activityname | course   | other        |
+      | \mod_quiz\event\course_module_viewed   | quiz     | Quiz 1       | Course 1 |              |
+      | \mod_quiz\event\attempt_started        | quiz     | Quiz 1       | Course 1 |              |
+      | \mod_quiz\event\attempt_viewed         | quiz     | Quiz 1       | Course 1 | {"page":"0"} |
+      | \mod_quiz\event\attempt_viewed         | quiz     | Quiz 1       | Course 1 | {"page":"1"} |
+      | \mod_quiz\event\attempt_updated        | quiz     | Quiz 1       | Course 1 | {"page":"0"} |
+      | \mod_quiz\event\attempt_updated        | quiz     | Quiz 1       | Course 1 | {"page":"1"} |
+      | \mod_quiz\event\attempt_reviewed       | quiz     | Quiz 1       | Course 1 |              |
+      | \mod_quiz\event\attempt_summary_viewed | quiz     | Quiz 1       | Course 1 |              |
 
   Scenario: Attempt a quiz (all question types)
     Given I entered the quiz activity "Quiz 2" on course "Course 1" as "student1" in the app

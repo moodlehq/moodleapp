@@ -969,6 +969,40 @@ class behat_app extends behat_app_helper {
     }
 
     /**
+     * Check that an event has been logged.
+     *
+     * @Then /^the following events should( not)? have been logged for (".+"|the system) in the app:$/
+     */
+    public function the_event_should_have_been_logged(bool $not, string $username, TableNode $data) {
+        $userid = $this->get_event_userid($username);
+
+        foreach ($data->getColumnsHash() as $event) {
+            $eventname = $event['name'];
+            $logs = $this->get_event_logs($userid, $event);
+
+            if (!$not && empty($logs)) {
+                throw new ExpectationException("Logs for event '$eventname' not found", $this->getSession()->getDriver());
+            }
+
+            if ($not && !empty($logs) && empty($event['other'])) {
+                throw new ExpectationException("Logs for event '$eventname' found, but shouldn't have", $this->getSession()->getDriver());
+            }
+
+            if (!empty($event['other'])) {
+                $log = $this->find_event_log_with_other($logs, json_decode($event['other'], true));
+
+                if (!$not && is_null($log)) {
+                    throw new ExpectationException("Other data for event '$eventname' does not match", $this->getSession()->getDriver());
+                }
+
+                if ($not && !is_null($log)) {
+                    throw new ExpectationException("Logs for event '$eventname' found, but shouldn't have", $this->getSession()->getDriver());
+                }
+            }
+        }
+    }
+
+    /**
      * Switches to a newly-opened browser tab.
      *
      * This assumes the app opened a new tab.

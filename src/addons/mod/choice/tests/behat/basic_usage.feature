@@ -38,6 +38,10 @@ Feature: Test basic usage of choice activity in app
     Then I should find "Option 1: 0" in the app
     And I should find "Option 2: 1" in the app
     And I should find "Option 3: 0" in the app
+    And the following events should have been logged for "student1" in the app:
+      | name                                   | activity | activityname            | course   |
+      | \mod_choice\event\course_module_viewed | choice   | Test single choice name | Course 1 |
+      | \mod_choice\event\answer_created       | choice   | Test single choice name | Course 1 |
 
   Scenario: Answer a choice (multi or single, update answer) & View results & Delete choice
     Given the following "activities" exist:

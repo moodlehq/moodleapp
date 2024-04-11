@@ -54,6 +54,14 @@ Feature: Test basic usage of chat in app
     When I set the field "New message" to "Hi David, I am Pau." in the app
     And I press "Send" in the app
     Then I should find "Hi David, I am Pau." in the app
+    And the following events should have been logged for "student1" in the app:
+      | name                                 | activity | activityname   | course   |
+      | \mod_chat\event\course_module_viewed | chat     | Test chat name | Course 1 |
+      | \mod_chat\event\message_sent         | chat     | Test chat name | Course 1 |
+    And the following events should have been logged for "student2" in the app:
+      | name                                 | activity | activityname   | course   |
+      | \mod_chat\event\course_module_viewed | chat     | Test chat name | Course 1 |
+      | \mod_chat\event\message_sent         | chat     | Test chat name | Course 1 |
 
   Scenario: Past sessions shown
     # Send messages as student1
