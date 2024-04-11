@@ -274,6 +274,21 @@ export class CoreTextUtilsProvider {
     }
 
     /**
+     * Process HTML string.
+     *
+     * @param text HTML string.
+     * @param process Method to process the HTML.
+     * @returns Processed HTML string.
+     */
+    processHTML(text: string, process: (element: HTMLElement) => unknown): string {
+        const element = this.convertToElement(text);
+
+        process(element);
+
+        return element.innerHTML;
+    }
+
+    /**
      * Clean HTML tags.
      *
      * @param text The text to be cleaned.
