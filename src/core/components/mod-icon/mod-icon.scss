@@ -37,11 +37,12 @@
         &.version_40 {
             background-color: var(--gray-100);
 
-            --color: white;
-
             @each $type, $value in $activity-icon-background-colors {
                 &.#{$type}:not(.branded) {
                     background-color: var(--activity-40-#{$type});
+                    ::ng-deep svg, img {
+                        filter: brightness(0) invert(1);
+                    }
                 }
             }
         }
@@ -56,10 +57,10 @@
         --padding-bottom: var(--module-legacy-icon-padding, 8px);
     }
 
-    &:not(.branded) {
+    &.version_current:not(.branded) {
         ::ng-deep svg,
         ::ng-deep svg * {
-            fill: var(--color);
+            fill: var(--color) !important;
         }
     }
 
