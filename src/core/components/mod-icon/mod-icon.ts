@@ -92,7 +92,6 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
         this.modNameTranslated = CoreCourse.translateModuleName(this.modname, this.fallbackTranslation);
 
-        this.setIsBranded();
         this.setPurposeClass();
 
         await this.setIcon();
@@ -113,7 +112,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
      * @returns wether the icon does not need to be filtered.
      */
     protected async setIsBranded(): Promise<void> {
-        if (!this.colorize || this.isBranded !== undefined) {
+        if (!this.colorize) {
             // It doesn't matter.
             return;
         }
@@ -127,7 +126,6 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
         // No icon or local icon (not legacy), colorize it.
         if (!this.iconUrl || this.isLocalUrl) {
-
             // Exception for bigbluebuttonbn, it's the only one that has a branded icon.
             if (this.iconVersion === IconVersion.VERSION_4_0 && this.modname === 'bigbluebuttonbn') {
                 this.isBranded = true;
@@ -174,6 +172,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
         if (!this.iconUrl) {
             this.loadFallbackIcon();
+            this.setIsBranded();
 
             return;
         }
@@ -188,6 +187,8 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             !!this.componentId &&
             !this.isLocalUrl &&
             this.getComponentNameFromIconUrl(this.iconUrl) != this.modname;
+
+        this.setIsBranded();
 
         await this.setSVGIcon();
     }
