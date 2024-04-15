@@ -12,7 +12,7 @@
                 [message]="'core.user.noparticipants' | translate" />
 
             <core-empty-box *ngIf="participants.empty && !searchInProgress && searchQuery" icon="fas-magnifying-glass"
-                [message]="'core.noresults' | translate" />
+                [message]="'core.noresults' | translate" [attr.role]="searchQuery ? 'alert' : null" />
 
             <ion-list *ngIf="!participants.empty">
                 <ion-item *ngFor="let participant of participants.items" class="ion-text-wrap"

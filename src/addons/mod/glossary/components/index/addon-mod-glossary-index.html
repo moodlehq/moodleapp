@@ -24,7 +24,7 @@
     <core-search-box *ngIf="isSearch" (onSubmit)="search($event)" [placeholder]="'addon.mod_glossary.searchquery' | translate"
         [autoFocus]="true" [lengthCheck]="2" (onClear)="toggleSearch()" searchArea="AddonModGlossary-{{module.id}}" />
 
-    <core-loading [hideUntil]="!showLoading">
+    <core-loading [hideUntil]="!showLoading" [message]="loadingMessage">
         <!-- Activity info. -->
         <core-course-module-info *ngIf="!isSearch" [module]="module" [description]="description" [component]="component"
             [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()" />
@@ -65,7 +65,7 @@
         </ion-list>
 
         <core-empty-box *ngIf="(!entries || !entries.hasEntries) && (!isSearch || hasSearched)" icon="fas-list"
-            [message]="'addon.mod_glossary.noentriesfound' | translate" />
+            [message]="'addon.mod_glossary.noentriesfound' | translate" [attr.role]="hasSearched ? 'alert' : null" />
 
         <core-infinite-loading [enabled]="entries && !entries.completed && (!isSearch || hasSearched)" [error]="loadMoreError"
             (action)="loadMoreEntries($event)" />

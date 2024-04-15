@@ -28,7 +28,7 @@
             </ion-list>
 
             <core-empty-box *ngIf="displayResults && !contacts.results.length && !nonContacts.results.length && !messages.results.length"
-                icon="fas-magnifying-glass" [message]="'core.noresults' | translate" />
+                icon="fas-magnifying-glass" [message]="'core.noresults' | translate" role="alert" />
         </core-loading>
     </core-split-view>
 </ion-content>
