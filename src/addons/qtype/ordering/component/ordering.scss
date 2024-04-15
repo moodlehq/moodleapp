@@ -1,0 +1,81 @@
+@use "theme/globals" as *;
+
+:host {
+    ion-reorder-group .item {
+        ion-label {
+            display: list-item;
+            list-style-position: inside;
+            list-style-type: none;
+        }
+
+        .core-correct-icon {
+            @include margin-horizontal(0px, 8px);
+            vertical-align: middle;
+        }
+    }
+
+    ion-reorder-group.numbering123 .item ion-label {
+        list-style-type: decimal;
+    }
+    ion-reorder-group.numberingabc .item ion-label {
+        list-style-type: lower-alpha;
+    }
+    ion-reorder-group.numberingABCD .item ion-label {
+        list-style-type: upper-alpha;
+    }
+    ion-reorder-group.numberingiii .item ion-label {
+        list-style-type: lower-roman;
+    }
+    ion-reorder-group.numberingIIII .item ion-label {
+        list-style-type: upper-roman;
+    }
+
+    ion-reorder-group ion-card {
+        contain: layout paint; // This is needed to make list-style to work properly (otherwise all items were 1/a/i).
+
+        &:first-of-type [data-action="move-backward"],
+        &:last-of-type [data-action="move-forward"] {
+            visibility: hidden;
+        }
+
+        &.core-question-answer-correct {
+            --border-color: var(--core-question-correct-color);
+            .item {
+                --color: var(--core-question-correct-color);
+                --background: var(--core-question-correct-color-bg);
+            }
+        }
+
+        &.core-question-answer-incorrect {
+            --border-color: var(--core-question-incorrect-color);
+            .item {
+                --color: var(--core-question-incorrect-color);
+                --background: var(--core-question-incorrect-color-bg);
+            }
+        }
+
+        &.core-question-answer-partial66 {
+            --border-color: #ff9900;
+            .item {
+                --color: var(--core-question-correct-color);
+                --background: var(--core-question-correct-color-bg);
+            }
+        }
+
+        &.core-question-answer-partial33 {
+            --border-color: #ff9900;
+            .item {
+                --color: var(--core-question-feedback-color);
+                --background: var(--core-question-feedback-color-bg);
+            }
+        }
+
+        &.core-question-answer-partial00 {
+            --border-color: #ff9900;
+            .item {
+                --color: var(--core-question-incorrect-color);
+                --background: var(--core-question-incorrect-color-bg);
+            }
+        }
+    }
+}

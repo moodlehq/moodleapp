@@ -1,0 +1,3 @@
+{
+    "moved": "{{$a.item}} moved. New position: {{$a.position}} of {{$a.total}}."
+}
