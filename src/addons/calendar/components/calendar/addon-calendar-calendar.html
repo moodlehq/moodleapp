@@ -55,7 +55,8 @@
                                     "weekend": day.isweekend,
                                     "duration_finish": day.haslastdayofevent
                                 }' [class.addon-calendar-event-past-day]="month.isPastMonth || day.ispast" role="cell"
-                                (ariaButtonClick)="dayClicked(day.mday)" [tabindex]="activeView ? 0 : -1">
+                                (ariaButtonClick)="dayClicked(day.mday)" [tabindex]="activeView ? 0 : -1"
+                                [attr.aria-current]="month.isCurrentMonth && day.istoday ? 'date' : null">
                                 <p class="addon-calendar-day-number">
                                     <span aria-hidden="true">{{ day.mday }}</span>
                                     <span class="sr-only">{{ day.periodName | translate }}</span>
