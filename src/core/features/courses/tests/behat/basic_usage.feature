@@ -66,7 +66,7 @@ Feature: Test basic usage of courses in app
     Then I should not find "Hidden course" in the app
     And I should not find "Hidden from students" in the app
 
-  @lms_from4.0
+  @lms_from4.3
   Scenario: See my courses
     Given I entered the app as "student1"
     When the header should be "Acceptance test site" in the app
