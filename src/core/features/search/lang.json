@@ -8,5 +8,6 @@
     "globalsearch": "Global search",
     "noresults": "No results for \"{{$a}}\"",
     "noresultshelp": "Check for typos or try using different keywords",
+    "err_minlength": "You must enter at least {{$a.format}} characters here.",
     "resultby": "By {{$a}}"
 }

@@ -2407,6 +2407,7 @@
   "core.search.allcategories": "local_moodlemobileapp",
   "core.search.allcourses": "search",
   "core.search.empty": "local_moodlemobileapp",
+  "core.search.err_minlength": "form",
   "core.search.filtercategories": "local_moodlemobileapp",
   "core.search.filtercourses": "local_moodlemobileapp",
   "core.search.filterheader": "search",

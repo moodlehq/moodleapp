@@ -26,7 +26,7 @@
 
     <core-search-box *ngIf="searchEnabled" (onSubmit)="search($event)" (onClear)="clearSearch()"
         [placeholder]="'core.courses.search' | translate" [searchLabel]="'core.courses.search' | translate" [autoFocus]="searchMode"
-        searchArea="CoreCoursesSearch" />
+        searchArea="CoreCoursesSearch" [lengthCheck]="1" />
 
     <core-loading [hideUntil]="loaded">
         <ng-container *ngIf="searchMode && searchTotal > 0">

@@ -62,6 +62,7 @@ export class CoreSearchBoxComponent implements OnInit {
     searchText = '';
     history: CoreSearchHistoryDBRecord[] = [];
     historyShown = false;
+    showLengthAlert = false;
 
     constructor() {
         this.onSubmit = new EventEmitter<string>();
@@ -86,13 +87,16 @@ export class CoreSearchBoxComponent implements OnInit {
      * @param e Event.
      */
     submitForm(e?: Event): void {
-        e && e.preventDefault();
-        e && e.stopPropagation();
+        e?.preventDefault();
+        e?.stopPropagation();
 
         if (this.searchText.length < this.lengthCheck) {
-            // The view should handle this case, but we check it here too just in case.
+            this.showLengthAlert = true;
+
             return;
         }
+
+        this.showLengthAlert = false;
 
         if (this.searchArea) {
             this.saveSearchToHistory(this.searchText);
@@ -147,6 +151,7 @@ export class CoreSearchBoxComponent implements OnInit {
     clearForm(): void {
         this.searched = '';
         this.searchText = '';
+        this.showLengthAlert = false;
         this.onClear.emit();
     }
 
