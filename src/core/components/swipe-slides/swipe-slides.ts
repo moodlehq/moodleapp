@@ -72,7 +72,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     protected hostElement: HTMLElement;
     protected unsubscribe?: () => void;
     protected resizeListener: CoreEventObserver;
-    protected activeSlideIndexes: number[] = [];
+    protected activeSlideIndex?: number;
     protected onReadyPromise = new CorePromisedValue<void>();
 
     constructor(
@@ -112,7 +112,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      * @returns Whether the slide is active.
      */
     isActive(index: number): boolean {
-        return this.activeSlideIndexes.includes(index);
+        return this.activeSlideIndex === index;
     }
 
     /**
@@ -153,7 +153,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
             item: items[initialIndex],
         };
 
-        this.activeSlideIndexes = [initialIndex];
+        this.activeSlideIndex = initialIndex;
 
         this.manager.setSelectedItem(items[initialIndex]);
         this.onWillChange.emit(initialItemData);
@@ -268,7 +268,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
             return;
         }
 
-        this.activeSlideIndexes.push(currentItemData.index);
+        this.activeSlideIndex = undefined;
         this.manager?.setSelectedItem(currentItemData.item);
 
         this.onWillChange.emit(currentItemData);
@@ -283,12 +283,12 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     async slideDidChange(): Promise<void> {
         const currentItemData = await this.getCurrentSlideItemData();
         if (!currentItemData) {
-            this.activeSlideIndexes = [];
+            this.activeSlideIndex = undefined;
 
             return;
         }
 
-        this.activeSlideIndexes = [currentItemData.index];
+        this.activeSlideIndex = currentItemData.index;
 
         this.onDidChange.emit(currentItemData);
 
