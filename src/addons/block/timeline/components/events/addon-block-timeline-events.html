@@ -16,48 +16,43 @@
         <ion-item class="addon-block-timeline-activity" [detail]="false" (click)="action($event, event.url)" [attr.aria-label]="event.name"
             button lines="full">
             <ion-label>
-                <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding">
-                    <ion-col class="addon-block-timeline-activity-main ion-no-padding">
-                        <ion-row class="ion-justify-content-between ion-align-items-center ion-nowrap ion-no-padding">
-                            <ion-col class="addon-block-timeline-activity-time ion-no-padding ion-text-nowrap">
-                                <small>{{event.timesort * 1000 | coreFormatDate:"strftimetime24" }}</small>
-                                <core-mod-icon *ngIf="event.iconUrl" [modicon]="event.iconUrl" [componentId]="event.instance"
-                                    [modname]="event.modulename" [purpose]="event.purpose" [colorize]="colorizeIcons"
-                                    [isBranded]="event.branded" />
-                            </ion-col>
-                            <ion-col class="addon-block-timeline-activity-name ion-no-padding">
-                                <p class="item-heading">
-                                    <span>
-                                        <core-format-text [text]="event.activityname || event.name" contextLevel="module"
-                                            [contextInstanceId]="event.id" [courseId]="event.course?.id" />
-                                    </span>
-                                    <ion-badge *ngIf="event.overdue" color="danger">{{ 'addon.block_timeline.overdue' | translate }}
-                                    </ion-badge>
-                                </p>
-                                <p *ngIf="showInlineCourse && event.course">
-                                    <span>
-                                        <core-format-text [text]="event.course.fullnamedisplay" contextLevel="course"
-                                            [contextInstanceId]="event.course.id" />
-                                    </span>
-                                </p>
-                                <p *ngIf="event.activitystr">
-                                    <span>
-                                        <core-format-text *ngIf="event.activitystr" [text]="event.activitystr" contextLevel="module"
-                                            [contextInstanceId]="event.id" />
-                                    </span>
-                                </p>
-                            </ion-col>
-                        </ion-row>
+                <ion-row class="ion-justify-content-between ion-align-items-center ion-nowrap ion-no-padding">
+                    <ion-col class="addon-block-timeline-activity-time ion-no-padding ion-text-nowrap">
+                        <small>{{event.timesort * 1000 | coreFormatDate:"strftimetime24" }}</small>
+                        <core-mod-icon *ngIf="event.iconUrl" [modicon]="event.iconUrl" [componentId]="event.instance"
+                            [modname]="event.modulename" [purpose]="event.purpose" [colorize]="colorizeIcons" [isBranded]="event.branded" />
                     </ion-col>
-                    <ion-col class="addon-block-timeline-activity-action ion-no-padding" *ngIf="event.action && event.action.actionable">
-                        <ion-button fill="outline" (click)="action($event, event.action.url)" [title]="event.action.name" class="chip">
-                            {{event.action.name}}
-                            <ion-badge slot="end" class="ion-margin-start" *ngIf="event.action.showitemcount">
-                                {{event.action.itemcount}}
+                    <ion-col class="addon-block-timeline-activity-name ion-no-padding">
+                        <p class="item-heading">
+                            <span>
+                                <core-format-text [text]="event.activityname || event.name" contextLevel="module"
+                                    [contextInstanceId]="event.id" [courseId]="event.course?.id" />
+                            </span>
+                            <ion-badge *ngIf="event.overdue" color="danger">{{ 'addon.block_timeline.overdue' | translate }}
                             </ion-badge>
-                        </ion-button>
+                        </p>
+                        <p *ngIf="showInlineCourse && event.course">
+                            <span>
+                                <core-format-text [text]="event.course.fullnamedisplay" contextLevel="course"
+                                    [contextInstanceId]="event.course.id" />
+                            </span>
+                        </p>
+                        <p *ngIf="event.activitystr">
+                            <span>
+                                <core-format-text *ngIf="event.activitystr" [text]="event.activitystr" contextLevel="module"
+                                    [contextInstanceId]="event.id" />
+                            </span>
+                        </p>
                     </ion-col>
                 </ion-row>
+                <div class="addon-block-timeline-activity-action" *ngIf="event.action && event.action.actionable">
+                    <ion-button fill="outline" (click)="action($event, event.action.url)" [title]="event.action.name" class="chip">
+                        {{event.action.name}}
+                        <ion-badge slot="end" class="ion-margin-start" *ngIf="event.action.showitemcount">
+                            {{event.action.itemcount}}
+                        </ion-badge>
+                    </ion-button>
+                </div>
             </ion-label>
         </ion-item>
     </ng-container>
