@@ -242,7 +242,7 @@ class behat_app_helper extends behat_base {
             // Assert initial page.
             $this->spin(function($context) {
                 $page = $context->getSession()->getPage();
-                $element = $page->find('xpath', '//page-core-login-site//input[@name="url"]');
+                $element = $page->find('xpath', '//page-core-login-site');
 
                 if ($element) {
                     // Login screen found.

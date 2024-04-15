@@ -599,7 +599,10 @@ class behat_app extends behat_app_helper {
      */
     public function the_app_has_the_following_config(TableNode $data) {
         foreach ($data->getRows() as $configrow) {
-            $this->appconfig[$configrow[0]] = json_decode($configrow[1]);
+            $name = $configrow[0];
+            $value = $this->replace_wwwroot($configrow[1]);
+
+            $this->appconfig[$name] = json_decode($value);
         }
     }
 
