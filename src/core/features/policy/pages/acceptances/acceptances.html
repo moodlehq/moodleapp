@@ -210,6 +210,9 @@
                 <ion-badge color="success" *ngIf="policy.status === activeStatus">
                     {{ 'core.policy.status1' | translate }}
                 </ion-badge>
+                <ion-badge color="danger" *ngIf="!isPreviousVersion && policy.status === inactiveStatus">
+                    {{ 'core.policy.status2' | translate }}
+                </ion-badge>
                 <ion-badge color="info" *ngIf="policy.optional">
                     {{ 'core.policy.policydocoptionalyes' | translate }}
                 </ion-badge>
