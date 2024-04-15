@@ -59,6 +59,7 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreNavigator } from '@services/navigator';
 import { ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from '@addons/mod/forum/constants';
+import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
 /**
  * Component that displays a forum entry page.
  */
@@ -85,6 +86,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     hasOfflineRatings = false;
     showQAMessage = false;
     isSetPinAvailable = false;
+    showSearch = false;
     sortOrderSelectorModalOptions: ModalOptions = {
         component: AddonModForumSortOrderSelectorComponent,
     };
@@ -306,6 +308,9 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 this.hasOffline = this.hasOffline || this.hasOfflineRatings;
             }
         });
+
+        // Initialize search.
+        this.showSearch = await this.isSearchEnabled();
     }
 
     async ngAfterViewInit(): Promise<void> {
@@ -688,6 +693,21 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         } finally {
             modal.dismiss();
         }
+    }
+
+    /**
+     * Check if forum search is available.
+     *
+     * @returns Whether forum search is available.
+     */
+    protected async isSearchEnabled(): Promise<boolean> {
+        if (!CoreSearchGlobalSearch.isEnabled()) {
+            return false;
+        }
+
+        const searchAreas = await CoreSearchGlobalSearch.getSearchAreas();
+
+        return !!searchAreas.find(({ id }) => id === 'mod_forum-post');
     }
 
 }
