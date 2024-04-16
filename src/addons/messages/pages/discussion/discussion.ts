@@ -25,6 +25,7 @@ import {
     AddonMessages,
     AddonMessagesConversationMessageFormatted,
     AddonMessagesSendMessageResults,
+    AddonMessagesUpdateConversationAction,
 } from '../../services/messages';
 import { AddonMessagesOffline, AddonMessagesOfflineMessagesDBRecordFormatted } from '../../services/messages-offline';
 import { AddonMessagesSync, AddonMessagesSyncProvider } from '../../services/messages-sync';
@@ -1298,7 +1299,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
             CoreEvents.trigger(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, {
                 conversationId: this.conversation.id,
-                action: 'favourite',
+                action: AddonMessagesUpdateConversationAction.FAVOURITE,
                 value: this.conversation.isfavourite,
             }, this.siteId);
         } catch (error) {
@@ -1330,7 +1331,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
             CoreEvents.trigger(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, {
                 conversationId: this.conversation.id,
-                action: 'mute',
+                action: AddonMessagesUpdateConversationAction.MUTE,
                 value: this.conversation.ismuted,
             }, this.siteId);
 
@@ -1446,7 +1447,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                         AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT,
                         {
                             conversationId: this.conversation.id,
-                            action: 'delete',
+                            action: AddonMessagesUpdateConversationAction.DELETE,
                         },
                         this.siteId,
                     );
