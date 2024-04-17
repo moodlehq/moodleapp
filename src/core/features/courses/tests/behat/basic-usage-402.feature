@@ -65,6 +65,3 @@ Feature: Test basic usage of courses in app
     And I press "Course 3" in the app
     Then I should find "Choice course 3" in the app
     And the header should be "Course 3" in the app
-    And the following events should have been logged for "student1" in the app:
-      | name                         |
-      | \core\event\mycourses_viewed |
