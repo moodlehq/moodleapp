@@ -37,9 +37,8 @@ Feature: Test basic usage of login in app
       | Username | student1 |
       | Password | student1 |
     And I press "Log in" near "Lost password?" in the app
-    Then I should find "Acceptance test site" in the app
+    Then the header should be "Acceptance test site" in the app
     And the UI should match the snapshot
-    But I should not find "Log in" in the app
 
   Scenario: Add a non existing account
     When I launch the app
@@ -160,3 +159,21 @@ Feature: Test basic usage of login in app
     When I press "OK" in the app
     And I press "Lost password?" in the app
     Then I should find "Contact support" in the app
+
+  Scenario: Shows sites list
+    Given the app has the following config:
+      | sites | [{"name":"Xavier's School for Gifted Youngsters","alias":"XSGY","imageurl":"https://x-school.campus.edu/logo.png","city":"North Salem","countrycode":"US","url":"https://x-school.campus.edu"},{"name":"Hogwarts", "url":"https://hogwarts.campus.edu"},{"name":"Acceptance test site","url":"$WWWROOT"}] |
+    When I launch the app
+    Then I should find "Xavier's School for Gifted Youngsters (XSGY)" in the app
+
+    When I replace "/.*/" within "ion-list ion-item:last-of-type ion-label p:last-of-type" with "campus.example.edu"
+    Then the UI should match the snapshot
+
+    When I press "Acceptance test site" in the app
+    Then I should find "Log in" in the app
+
+    When I set the following fields to these values in the app:
+      | Username | student1 |
+      | Password | student1 |
+    And I press "Log in" near "Lost password?" in the app
+    Then the header should be "Acceptance test site" in the app

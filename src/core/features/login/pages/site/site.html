@@ -120,7 +120,7 @@
         </ion-thumbnail>
         <ion-label>
             <p *ngIf="site.title" class="item-heading ion-text-wrap">{{site.title}}</p>
-            <p *ngIf="displaySiteUrl(site.siteUrl)">{{site.noProtocolUrl}}</p>
+            <p *ngIf="displaySiteUrl(site.url)">{{site.noProtocolUrl}}</p>
             <p *ngIf="site.location">{{site.location}}</p>
         </ion-label>
     </ion-item>
