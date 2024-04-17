@@ -102,7 +102,14 @@ export class AddonModQuizAttemptPage implements OnInit {
             this.showReviewColumn = accessInfo.canreviewmyattempts;
             AddonModQuizHelper.setQuizCalculatedData(this.quiz, options);
 
-            this.attempt = await AddonModQuizHelper.setAttemptCalculatedData(this.quiz, attempt, false, undefined, true);
+            this.attempt = await AddonModQuizHelper.setAttemptCalculatedData(
+                this.quiz,
+                accessInfo,
+                attempt,
+                false,
+                undefined,
+                true,
+            );
 
             // Check if the feedback should be displayed.
             const grade = Number(this.attempt.rescaledGrade);

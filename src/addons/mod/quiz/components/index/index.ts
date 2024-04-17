@@ -234,7 +234,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         this.unsupportedQuestions = AddonModQuiz.getUnsupportedQuestions(types);
         this.hasSupportedQuestions = !!types.find((type) => type != 'random' && this.unsupportedQuestions.indexOf(type) == -1);
 
-        await this.getAttempts(quiz);
+        await this.getAttempts(quiz, this.quizAccessInfo);
 
         // Quiz is ready to be shown, move it to the variable that is displayed.
         this.quiz = quiz;
@@ -246,7 +246,10 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * @param quiz Quiz instance.
      * @returns Promise resolved when done.
      */
-    protected async getAttempts(quiz: AddonModQuizQuizData): Promise<void> {
+    protected async getAttempts(
+        quiz: AddonModQuizQuizData,
+        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
+    ): Promise<void> {
         // Always get the best grade because it includes the grade to pass.
         this.bestGrade = await AddonModQuiz.getUserBestGrade(quiz.id, { cmId: this.module.id });
 
@@ -256,7 +259,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         // Get attempts.
         const attempts = await AddonModQuiz.getUserAttempts(quiz.id, { cmId: this.module.id });
 
-        this.attempts = await this.treatAttempts(quiz, attempts);
+        this.attempts = await this.treatAttempts(quiz, accessInfo, attempts);
 
         // Check if user can create/continue attempts.
         if (this.attempts.length) {
@@ -572,11 +575,13 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * Treat user attempts.
      *
      * @param quiz Quiz data.
+     * @param accessInfo Quiz access information.
      * @param attempts The attempts to treat.
      * @returns Promise resolved when done.
      */
     protected async treatAttempts(
         quiz: AddonModQuizQuizData,
+        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
         attempts: AddonModQuizAttemptWSData[],
     ): Promise<AddonModQuizAttempt[]> {
         if (!attempts || !attempts.length) {
@@ -619,7 +624,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
                 attempts.length > 1;
             const isLast = index == attempts.length - 1;
 
-            return AddonModQuizHelper.setAttemptCalculatedData(quiz, attempt, shouldHighlight, quizGrade, isLast);
+            return AddonModQuizHelper.setAttemptCalculatedData(quiz, accessInfo, attempt, shouldHighlight, quizGrade, isLast);
         }));
 
         return formattedAttempts;

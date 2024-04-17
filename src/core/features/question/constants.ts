@@ -20,7 +20,20 @@ export const QUESTION_FINISHED_STATE_CLASSES = ['complete'] as const;
 export const QUESTION_GAVE_UP_STATE_CLASSES = ['notanswered'] as const;
 export const QUESTION_GRADED_STATE_CLASSES = ['complete', 'incorrect', 'partiallycorrect', 'correct'] as const;
 
+/**
+ * Possible values to display marks in a question.
+ */
 export const enum QuestionDisplayOptionsMarks {
     MAX_ONLY = 1,
     MARK_AND_MAX = 2,
+}
+
+/**
+ * Possible values that most of the display options take.
+ */
+export const enum QuestionDisplayOptionsValues {
+    SHOW_ALL = -1,
+    HIDDEN = 0,
+    VISIBLE = 1,
+    EDITABLE = 2,
 }

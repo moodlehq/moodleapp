@@ -41,12 +41,19 @@ import { AddonModQuizAttempt } from './quiz-helper';
 import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-offline';
 import { AddonModQuizAutoSyncData, AddonModQuizSyncProvider } from './quiz-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { QUESTION_INVALID_STATE_CLASSES, QUESTION_TODO_STATE_CLASSES } from '@features/question/constants';
+import {
+    QUESTION_INVALID_STATE_CLASSES,
+    QUESTION_TODO_STATE_CLASSES,
+    QuestionDisplayOptionsMarks,
+    QuestionDisplayOptionsValues,
+} from '@features/question/constants';
 import {
     ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT,
     AddonModQuizAttemptStates,
     ADDON_MOD_QUIZ_COMPONENT,
     AddonModQuizGradeMethods,
+    AddonModQuizDisplayOptionsAttemptStates,
+    ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD,
 } from '../constants';
 
 declare module '@singletons/events' {
@@ -303,6 +310,105 @@ export class AddonModQuizProvider {
         } else if (dueDate) {
             return Translate.instant('addon.mod_quiz.mustbesubmittedby', { $a: CoreTimeUtils.userDate(dueDate) });
         }
+    }
+
+    /**
+     * Get the display option value related to the attempt state.
+     * Equivalent to LMS quiz_attempt_state.
+     *
+     * @param quiz Quiz.
+     * @param attempt Attempt.
+     * @returns Display option value.
+     */
+    getAttemptStateDisplayOption(
+        quiz: AddonModQuizQuizWSData,
+        attempt: AddonModQuizAttemptWSData,
+    ): AddonModQuizDisplayOptionsAttemptStates {
+        if (attempt.state === AddonModQuizAttemptStates.IN_PROGRESS) {
+            return AddonModQuizDisplayOptionsAttemptStates.DURING;
+        } else if (quiz.timeclose && Date.now() >= quiz.timeclose * 1000) {
+            return AddonModQuizDisplayOptionsAttemptStates.AFTER_CLOSE;
+        } else if (Date.now() < ((attempt.timefinish ?? 0) + ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD) * 1000) {
+            return AddonModQuizDisplayOptionsAttemptStates.IMMEDIATELY_AFTER;
+        }
+
+        return AddonModQuizDisplayOptionsAttemptStates.LATER_WHILE_OPEN;
+    }
+
+    /**
+     * Get display options for a certain quiz.
+     * Equivalent to LMS display_options::make_from_quiz.
+     *
+     * @param quiz Quiz.
+     * @param state State.
+     * @returns Display options.
+     */
+    getDisplayOptionsForQuiz(
+        quiz: AddonModQuizQuizWSData,
+        state: AddonModQuizDisplayOptionsAttemptStates,
+    ): AddonModQuizDisplayOptions {
+        const marksOption = this.calculateDisplayOptionValue(
+            quiz.reviewmarks ?? 0,
+            state,
+            QuestionDisplayOptionsMarks.MARK_AND_MAX,
+            QuestionDisplayOptionsMarks.MAX_ONLY,
+        );
+        const feedbackOption = this.calculateDisplayOptionValue(quiz.reviewspecificfeedback ?? 0, state);
+
+        return {
+            attempt: this.calculateDisplayOptionValue(quiz.reviewattempt ?? 0, state, true, false),
+            correctness: this.calculateDisplayOptionValue(quiz.reviewcorrectness ?? 0, state),
+            marks: quiz.reviewmaxmarks !== undefined ?
+                this.calculateDisplayOptionValue<QuestionDisplayOptionsMarks | QuestionDisplayOptionsValues>(
+                    quiz.reviewmaxmarks,
+                    state,
+                    marksOption,
+                    QuestionDisplayOptionsValues.HIDDEN,
+                ) :
+                marksOption,
+            feedback: feedbackOption,
+            generalfeedback: this.calculateDisplayOptionValue(quiz.reviewgeneralfeedback ?? 0, state),
+            rightanswer: this.calculateDisplayOptionValue(quiz.reviewrightanswer ?? 0, state),
+            overallfeedback: this.calculateDisplayOptionValue(quiz.reviewoverallfeedback ?? 0, state),
+            numpartscorrect: feedbackOption,
+            manualcomment: feedbackOption,
+            markdp: quiz.questiondecimalpoints !== undefined && quiz.questiondecimalpoints !== -1 ?
+                quiz.questiondecimalpoints :
+                (quiz.decimalpoints ?? 0),
+        };
+    }
+
+    /**
+     * Calculate the value for a certain display option.
+     *
+     * @param setting Setting value related to the option.
+     * @param state Display options state.
+     * @param whenSet Value to return if setting is set.
+     * @param whenNotSet Value to return if setting is not set.
+     * @returns Display option.
+     */
+    protected calculateDisplayOptionValue<T = AddonModQuizDisplayOptionValue>(
+        setting: number,
+        state: AddonModQuizDisplayOptionsAttemptStates,
+        whenSet: T,
+        whenNotSet: T,
+    ): T;
+    protected calculateDisplayOptionValue(
+        setting: number,
+        state: AddonModQuizDisplayOptionsAttemptStates,
+    ): QuestionDisplayOptionsValues;
+    protected calculateDisplayOptionValue(
+        setting: number,
+        state: AddonModQuizDisplayOptionsAttemptStates,
+        whenSet: AddonModQuizDisplayOptionValue = QuestionDisplayOptionsValues.VISIBLE,
+        whenNotSet: AddonModQuizDisplayOptionValue = QuestionDisplayOptionsValues.HIDDEN,
+    ): AddonModQuizDisplayOptionValue {
+        // eslint-disable-next-line no-bitwise
+        if (setting & state) {
+            return whenSet;
+        }
+
+        return whenNotSet;
     }
 
     /**
@@ -2189,6 +2295,7 @@ export type AddonModQuizQuizWSData = {
     questiondecimalpoints?: number; // Number of decimal points to use when displaying question grades.
     reviewattempt?: number; // Whether users are allowed to review their quiz attempts at various times.
     reviewcorrectness?: number; // Whether users are allowed to review their quiz attempts at various times.
+    reviewmaxmarks?: number; // @since 4.3. Whether users are allowed to review their quiz attempts at various times.
     reviewmarks?: number; // Whether users are allowed to review their quiz attempts at various times.
     reviewspecificfeedback?: number; // Whether users are allowed to review their quiz attempts at various times.
     reviewgeneralfeedback?: number; // Whether users are allowed to review their quiz attempts at various times.
@@ -2382,4 +2489,25 @@ export type AddonModQuizAttemptFinishedData = {
     quizId: number;
     attemptId: number;
     synced: boolean;
+};
+
+/**
+ * Quiz display option value.
+ */
+export type AddonModQuizDisplayOptionValue = QuestionDisplayOptionsMarks | QuestionDisplayOptionsValues | boolean;
+
+/**
+ * Quiz display options, it can be used to determine which options to display.
+ */
+export type AddonModQuizDisplayOptions = {
+    attempt: boolean;
+    correctness: QuestionDisplayOptionsValues;
+    marks: QuestionDisplayOptionsMarks | QuestionDisplayOptionsValues;
+    feedback: QuestionDisplayOptionsValues;
+    generalfeedback: QuestionDisplayOptionsValues;
+    rightanswer: QuestionDisplayOptionsValues;
+    overallfeedback: QuestionDisplayOptionsValues;
+    numpartscorrect: QuestionDisplayOptionsValues;
+    manualcomment: QuestionDisplayOptionsValues;
+    markdp: number;
 };

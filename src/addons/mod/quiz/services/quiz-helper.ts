@@ -33,14 +33,93 @@ import {
     AddonModQuizQuizWSData,
 } from './quiz';
 import { AddonModQuizOffline } from './quiz-offline';
-import { AddonModQuizAttemptStates } from '../constants';
+import { AddonModQuizAttemptStates, AddonModQuizDisplayOptionsAttemptStates } from '../constants';
 import { QuestionDisplayOptionsMarks } from '@features/question/constants';
+import { CoreGroups } from '@services/groups';
 
 /**
  * Helper service that provides some features for quiz.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonModQuizHelperProvider {
+
+    /**
+     * Check if current user can review an attempt.
+     *
+     * @param quiz Quiz.
+     * @param accessInfo Access info.
+     * @param attempt Attempt.
+     * @returns Whether user can review the attempt.
+     */
+    async canReviewAttempt(
+        quiz: AddonModQuizQuizWSData,
+        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
+        attempt: AddonModQuizAttemptWSData,
+    ): Promise<boolean> {
+        if (!this.hasReviewCapabilityForAttempt(quiz, accessInfo, attempt)) {
+            return false;
+        }
+
+        if (attempt.userid !== CoreSites.getCurrentSiteUserId()) {
+            return this.canReviewOtherUserAttempt(quiz, accessInfo, attempt);
+        }
+
+        if (!AddonModQuiz.isAttemptFinished(attempt.state)) {
+            // Cannot review own unfinished attempts.
+            return false;
+        }
+
+        if (attempt.preview && accessInfo.canpreview) {
+            // A teacher can always review their own preview no matter the review options settings.
+            return true;
+        }
+
+        if (!attempt.preview && accessInfo.canviewreports) {
+            // Users who can see reports should be shown everything, except during preview.
+            // In LMS, the capability 'moodle/grade:viewhidden' is also checked but the app doesn't have this info.
+            return true;
+        }
+
+        const options = AddonModQuiz.getDisplayOptionsForQuiz(quiz, AddonModQuiz.getAttemptStateDisplayOption(quiz, attempt));
+
+        return options.attempt;
+    }
+
+    /**
+     * Check if current user can review another user attempt.
+     *
+     * @param quiz Quiz.
+     * @param accessInfo Access info.
+     * @param attempt Attempt.
+     * @returns Whether user can review the attempt.
+     */
+    protected async canReviewOtherUserAttempt(
+        quiz: AddonModQuizQuizWSData,
+        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
+        attempt: AddonModQuizAttemptWSData,
+    ): Promise<boolean> {
+        if (!accessInfo.canviewreports) {
+            return false;
+        }
+
+        try {
+            const groupInfo = await CoreGroups.getActivityGroupInfo(quiz.coursemodule);
+            if (groupInfo.canAccessAllGroups || !groupInfo.separateGroups) {
+                return true;
+            }
+
+            // Check if the current user and the attempt's user share any group.
+            if (!groupInfo.groups.length) {
+                return false;
+            }
+
+            const attemptUserGroups = await CoreGroups.getUserGroupsInCourse(quiz.course, undefined, attempt.userid);
+
+            return attemptUserGroups.some(attemptUserGroup => groupInfo.groups.find(group => attemptUserGroup.id === group.id));
+        } catch {
+            return false;
+        }
+    }
 
     /**
      * Validate a preflight data or show a modal to input the preflight data if required.
@@ -254,9 +333,33 @@ export class AddonModQuizHelperProvider {
     }
 
     /**
+     * Check if current user has the necessary capabilities to review an attempt.
+     *
+     * @param quiz Quiz.
+     * @param accessInfo Access info.
+     * @param attempt Attempt.
+     * @returns Whether user has the capability.
+     */
+    hasReviewCapabilityForAttempt(
+        quiz: AddonModQuizQuizWSData,
+        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
+        attempt: AddonModQuizAttemptWSData,
+    ): boolean {
+        if (accessInfo.canviewreports || accessInfo.canpreview) {
+            return true;
+        }
+
+        const displayOption = AddonModQuiz.getAttemptStateDisplayOption(quiz, attempt);
+
+        return displayOption === AddonModQuizDisplayOptionsAttemptStates.IMMEDIATELY_AFTER ?
+            accessInfo.canattempt : accessInfo.canreviewmyattempts;
+    }
+
+    /**
      * Add some calculated data to the attempt.
      *
      * @param quiz Quiz.
+     * @param accessInfo Quiz access info.
      * @param attempt Attempt.
      * @param highlight Whether we should check if attempt should be highlighted.
      * @param bestGrade Quiz's best grade (formatted). Required if highlight=true.
@@ -266,6 +369,7 @@ export class AddonModQuizHelperProvider {
      */
     async setAttemptCalculatedData(
         quiz: AddonModQuizQuizData,
+        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
         attempt: AddonModQuizAttemptWSData,
         highlight?: boolean,
         bestGrade?: string,
@@ -300,6 +404,8 @@ export class AddonModQuizHelperProvider {
         if (isLastAttempt || isLastAttempt === undefined) {
             formattedAttempt.finishedOffline = await AddonModQuiz.isAttemptFinishedOffline(attempt.id, siteId);
         }
+
+        formattedAttempt.canReview = await this.canReviewAttempt(quiz, accessInfo, attempt);
 
         return formattedAttempt;
     }
@@ -434,4 +540,5 @@ export type AddonModQuizAttempt = AddonModQuizAttemptWSData & {
     readableMark?: string;
     readableGrade?: string;
     highlightGrade?: boolean;
+    canReview?: boolean;
 };

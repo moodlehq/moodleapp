@@ -19,6 +19,7 @@ export const ADDON_MOD_QUIZ_FEATURE_NAME = 'CoreCourseModuleDelegate_AddonModQui
 export const ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT = 'addon_mod_quiz_attempt_finished';
 
 export const ADDON_MOD_QUIZ_SHOW_TIME_BEFORE_DEADLINE = 3600;
+export const ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD = 120; // Time considered 'immedately after the attempt', in seconds.
 
 /**
  * Possible grade methods for a quiz.
@@ -38,4 +39,14 @@ export const enum AddonModQuizAttemptStates {
     OVERDUE = 'overdue',
     FINISHED = 'finished',
     ABANDONED = 'abandoned',
+}
+
+/**
+ * Bitmask patterns to determine if data should be displayed based on the attempt state.
+ */
+export const enum AddonModQuizDisplayOptionsAttemptStates {
+    DURING = 0x10000,
+    IMMEDIATELY_AFTER = 0x01000,
+    LATER_WHILE_OPEN = 0x00100,
+    AFTER_CLOSE = 0x00010,
 }

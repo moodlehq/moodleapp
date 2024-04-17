@@ -383,6 +383,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         // Get the last attempt. If it's finished, start a new one.
         this.lastAttempt = await AddonModQuizHelper.setAttemptCalculatedData(
             this.quiz,
+            this.quizAccessInfo,
             attempts[attempts.length - 1],
             false,
             undefined,
