@@ -1,6 +1,6 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
-    <ion-button fill="clear" (click)="openSearch()" [attr.aria-label]="'core.search' | translate">
+    <ion-button fill="clear" *ngIf="showSearch" (click)="openSearch()" [attr.aria-label]="'core.search' | translate">
         <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
     </ion-button>
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
