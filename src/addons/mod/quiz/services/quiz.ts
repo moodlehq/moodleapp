@@ -2048,6 +2048,11 @@ export type AddonModQuizAttemptWSData = {
     timemodifiedoffline?: number; // Last modified time via webservices.
     timecheckstate?: number; // Next time quiz cron should check attempt for state changes. NULL means never check.
     sumgrades?: SafeNumber | null; // Total marks for this attempt.
+    gradeitemmarks?: { // @since 4.4. If the quiz has additional grades set up, the mark for each grade for this attempt.
+        name: string; // The name of this grade item.
+        grade: number; // The grade this attempt earned for this item.
+        maxgrade: number; // The total this grade is out of.
+    }[];
 };
 
 /**

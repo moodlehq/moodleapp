@@ -66,6 +66,7 @@ export class AddonModQuizReviewPage implements OnInit {
     readableGrade?: string;
     readableMark?: string;
     timeTaken?: string;
+    gradeItemMarks: { name: string; grade: string }[] = [];
     overTime?: string;
     quiz?: AddonModQuizQuizWSData; // The quiz the attempt belongs to.
     courseId!: number; // The course ID the quiz belongs to.
@@ -283,6 +284,15 @@ export class AddonModQuizReviewPage implements OnInit {
         } else {
             this.timeTaken = undefined;
         }
+
+        // Treat grade item marks.
+        this.gradeItemMarks = this.attempt.gradeitemmarks?.map((gradeItemMark) => ({
+            name: gradeItemMark.name,
+            grade: Translate.instant('addon.mod_quiz.outof', { $a: {
+                grade: AddonModQuiz.formatGrade(gradeItemMark.grade, this.quiz?.decimalpoints),
+                maxgrade: AddonModQuiz.formatGrade(gradeItemMark.maxgrade, this.quiz?.decimalpoints),
+            } }),
+        })) ?? [];
 
         // Treat grade.
         if (this.options && this.options.someoptions.marks >= AddonModQuizProvider.QUESTION_OPTIONS_MARK_AND_MAX &&

@@ -54,6 +54,12 @@
                         <p>{{ overTime }}</p>
                     </ion-label>
                 </ion-item>
+                <ion-item *ngFor="let gradeItemMark of gradeItemMarks" class="ion-text-wrap">
+                    <ion-label>
+                        <p class="item-heading">{{ gradeItemMark.name }}</p>
+                        <p>{{ gradeItemMark.grade }}</p>
+                    </ion-label>
+                </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="readableMark">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.mod_quiz.marks' | translate }}</p>
