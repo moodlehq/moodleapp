@@ -114,7 +114,7 @@ export class AddonModQuizAttemptPage implements OnInit {
             // Check if the feedback should be displayed.
             const grade = Number(this.attempt.rescaledGrade);
 
-            if (this.quiz.showFeedbackColumn && AddonModQuiz.isAttemptFinished(this.attempt.state) &&
+            if (this.quiz.showFeedbackColumn && AddonModQuiz.isAttemptCompleted(this.attempt.state) &&
                     options.someoptions.overallfeedback && isSafeNumber(grade)) {
 
                 // Feedback should be displayed, get the feedback for the grade.

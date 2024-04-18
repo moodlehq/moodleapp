@@ -754,12 +754,12 @@ export class AddonModQuizProvider {
     }
 
     /**
-     * Given a list of attempts, returns the last finished attempt.
+     * Given a list of attempts, returns the last completed attempt.
      *
      * @param attempts Attempts sorted. First attempt should be the first on the list.
-     * @returns Last finished attempt.
+     * @returns Last completed attempt.
      */
-    getLastFinishedAttemptFromList(attempts?: AddonModQuizAttemptWSData[]): AddonModQuizAttemptWSData | undefined {
+    getLastCompletedAttemptFromList(attempts?: AddonModQuizAttemptWSData[]): AddonModQuizAttemptWSData | undefined {
         if (!attempts) {
             return;
         }
@@ -767,7 +767,7 @@ export class AddonModQuizProvider {
         for (let i = attempts.length - 1; i >= 0; i--) {
             const attempt = attempts[i];
 
-            if (this.isAttemptFinished(attempt.state)) {
+            if (this.isAttemptCompleted(attempt.state)) {
                 return attempt;
             }
         }
@@ -1514,12 +1514,12 @@ export class AddonModQuizProvider {
     }
 
     /**
-     * Check if an attempt is finished based on its state.
+     * Check if an attempt is "completed": finished or abandoned.
      *
      * @param state Attempt's state.
      * @returns Whether it's finished.
      */
-    isAttemptFinished(state?: string): boolean {
+    isAttemptCompleted(state?: string): boolean {
         return state === AddonModQuizAttemptStates.FINISHED || state === AddonModQuizAttemptStates.ABANDONED;
     }
 

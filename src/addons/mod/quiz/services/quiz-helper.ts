@@ -64,8 +64,8 @@ export class AddonModQuizHelperProvider {
             return this.canReviewOtherUserAttempt(quiz, accessInfo, attempt);
         }
 
-        if (!AddonModQuiz.isAttemptFinished(attempt.state)) {
-            // Cannot review own unfinished attempts.
+        if (!AddonModQuiz.isAttemptCompleted(attempt.state)) {
+            // Cannot review own uncompleted attempts.
             return false;
         }
 
@@ -379,16 +379,16 @@ export class AddonModQuizHelperProvider {
         const formattedAttempt = <AddonModQuizAttempt> attempt;
 
         formattedAttempt.rescaledGrade = AddonModQuiz.rescaleGrade(attempt.sumgrades, quiz, false);
-        formattedAttempt.finished = AddonModQuiz.isAttemptFinished(attempt.state);
+        formattedAttempt.completed = AddonModQuiz.isAttemptCompleted(attempt.state);
         formattedAttempt.readableState = AddonModQuiz.getAttemptReadableState(quiz, attempt);
 
-        if (quiz.showMarkColumn && formattedAttempt.finished) {
+        if (quiz.showMarkColumn && formattedAttempt.completed) {
             formattedAttempt.readableMark = AddonModQuiz.formatGrade(attempt.sumgrades, quiz.decimalpoints);
         } else {
             formattedAttempt.readableMark = '';
         }
 
-        if (quiz.showGradeColumn && formattedAttempt.finished) {
+        if (quiz.showGradeColumn && formattedAttempt.completed) {
             formattedAttempt.readableGrade = AddonModQuiz.formatGrade(
                 Number(formattedAttempt.rescaledGrade),
                 quiz.decimalpoints,
@@ -535,7 +535,7 @@ export type AddonModQuizQuizData = AddonModQuizQuizWSData & {
 export type AddonModQuizAttempt = AddonModQuizAttemptWSData & {
     finishedOffline?: boolean;
     rescaledGrade?: string;
-    finished?: boolean;
+    completed?: boolean;
     readableState?: string[];
     readableMark?: string;
     readableGrade?: string;

@@ -115,8 +115,8 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         let files: CoreWSFile[] = [];
 
         await Promise.all(attempts.map(async (attempt) => {
-            if (!AddonModQuiz.isAttemptFinished(attempt.state)) {
-                // Attempt not finished, no feedback files.
+            if (!AddonModQuiz.isAttemptCompleted(attempt.state)) {
+                // Attempt not completed, no feedback files.
                 return;
             }
 
@@ -241,9 +241,9 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             siteId,
         });
 
-        const isLastFinished = !attempts.length || AddonModQuiz.isAttemptFinished(attempts[attempts.length - 1].state);
+        const isLastCompleted = !attempts.length || AddonModQuiz.isAttemptCompleted(attempts[attempts.length - 1].state);
 
-        return quiz.attempts === 0 || (quiz.attempts ?? 0) > attempts.length || !isLastFinished;
+        return quiz.attempts === 0 || (quiz.attempts ?? 0) > attempts.length || !isLastCompleted;
     }
 
     /**
@@ -330,7 +330,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         let startAttempt = false;
 
         if (canStart || attempt) {
-            if (canStart && (!attempt || AddonModQuiz.isAttemptFinished(attempt.state))) {
+            if (canStart && (!attempt || AddonModQuiz.isAttemptCompleted(attempt.state))) {
                 // Check if the user can attempt the quiz.
                 if (attemptAccessInfo.preventnewattemptreasons.length) {
                     throw new CoreError(CoreTextUtils.buildMessage(attemptAccessInfo.preventnewattemptreasons));
@@ -420,7 +420,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             siteId,
         };
 
-        if (AddonModQuiz.isAttemptFinished(attempt.state)) {
+        if (AddonModQuiz.isAttemptCompleted(attempt.state)) {
             // Attempt is finished, get feedback and review data.
             const attemptGrade = AddonModQuiz.rescaleGrade(attempt.sumgrades, quiz, false);
             const attemptGradeNumber = attemptGrade !== undefined && Number(attemptGrade);
@@ -611,8 +611,8 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         // Quiz was downloaded, set the new status.
         // If no attempts or last is finished we'll mark it as not downloaded to show download icon.
         const lastAttempt = attempts[attempts.length - 1];
-        const isLastFinished = !lastAttempt || AddonModQuiz.isAttemptFinished(lastAttempt.state);
-        const newStatus = isLastFinished ? DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED : DownloadStatus.DOWNLOADED;
+        const isLastCompleted = !lastAttempt || AddonModQuiz.isAttemptCompleted(lastAttempt.state);
+        const newStatus = isLastCompleted ? DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED : DownloadStatus.DOWNLOADED;
 
         await CoreFilepool.storePackageStatus(options.siteId, newStatus, this.component, quiz.coursemodule);
     }

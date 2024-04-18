@@ -390,7 +390,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             true,
         );
 
-        this.newAttempt = AddonModQuiz.isAttemptFinished(this.lastAttempt.state);
+        this.newAttempt = AddonModQuiz.isAttemptCompleted(this.lastAttempt.state);
     }
 
     /**

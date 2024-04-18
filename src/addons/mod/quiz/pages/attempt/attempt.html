@@ -30,7 +30,7 @@
                     <p *ngFor="let sentence of attempt.readableState">{{ sentence }}</p>
                 </ion-label>
             </ion-item>
-            <ng-container *ngIf="attempt.finished && attempt.sumgrades !== null">
+            <ng-container *ngIf="attempt.completed && attempt.sumgrades !== null">
                 <ion-item *ngFor="let gradeItemMark of attempt.gradeitemmarks ?? []" class="ion-text-wrap">
                     <ion-label>
                         <p class="item-heading">{{ gradeItemMark.name }} / {{ gradeItemMark.maxgrade }}</p>
@@ -67,7 +67,7 @@
             </ion-item>
         </ion-list>
 
-        <div collapsible-footer appearOnBottom *ngIf="loaded && attempt && showReviewColumn && attempt.finished" slot="fixed">
+        <div collapsible-footer appearOnBottom *ngIf="loaded && attempt && showReviewColumn && attempt.completed" slot="fixed">
             <div class="list-item-limited-width">
                 <ion-button class="ion-margin ion-text-wrap" expand="block" (click)="reviewAttempt()">
                     <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true" />

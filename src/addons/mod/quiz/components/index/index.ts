@@ -264,7 +264,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         // Check if user can create/continue attempts.
         if (this.attempts.length) {
             const last = this.attempts[this.attempts.length - 1];
-            this.moreAttempts = !AddonModQuiz.isAttemptFinished(last.state) || !this.attemptAccessInfo.isfinished;
+            this.moreAttempts = !AddonModQuiz.isAttemptCompleted(last.state) || !this.attemptAccessInfo.isfinished;
         } else {
             this.moreAttempts = !this.attemptAccessInfo.isfinished;
         }
@@ -283,7 +283,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         this.buttonText = '';
 
         if (quiz.hasquestions !== 0) {
-            if (this.attempts.length && !AddonModQuiz.isAttemptFinished(this.attempts[this.attempts.length - 1].state)) {
+            if (this.attempts.length && !AddonModQuiz.isAttemptCompleted(this.attempts[this.attempts.length - 1].state)) {
                 // Last attempt is unfinished.
                 if (this.quizAccessInfo?.canattempt) {
                     this.buttonText = 'addon.mod_quiz.continueattemptquiz';
@@ -591,10 +591,10 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             return [];
         }
 
-        const lastFinished = AddonModQuiz.getLastFinishedAttemptFromList(attempts);
+        const lastCompleted = AddonModQuiz.getLastCompletedAttemptFromList(attempts);
         let openReview = false;
 
-        if (this.autoReview && lastFinished && lastFinished.id >= this.autoReview.attemptId) {
+        if (this.autoReview && lastCompleted && lastCompleted.id >= this.autoReview.attemptId) {
             // User just finished an attempt in offline and it seems it's been synced, since it's finished in online.
             // Go to the review of this attempt if the user hasn't left this view.
             if (!this.isDestroyed && this.isCurrentView) {
@@ -615,7 +615,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         // Calculate data to construct the header of the attempts table.
         AddonModQuizHelper.setQuizCalculatedData(quiz, this.options);
 
-        this.overallStats = !!lastFinished && this.options.alloptions.marks >= QuestionDisplayOptionsMarks.MARK_AND_MAX;
+        this.overallStats = !!lastCompleted && this.options.alloptions.marks >= QuestionDisplayOptionsMarks.MARK_AND_MAX;
 
         // Calculate data to show for each attempt.
         const formattedAttempts = await Promise.all(attempts.map((attempt, index) => {
