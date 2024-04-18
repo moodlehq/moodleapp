@@ -60,7 +60,7 @@
                         <p>{{ gradeItemMark.grade }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="readableMark">
+                <ion-item class="ion-text-wrap" *ngIf="readableMark && attempt?.sumgrades !== null">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.mod_quiz.marks' | translate }}</p>
                         <p>{{ readableMark }}</p>

@@ -30,7 +30,7 @@
                     <p *ngFor="let sentence of attempt.readableState">{{ sentence }}</p>
                 </ion-label>
             </ion-item>
-            <ng-container *ngIf="attempt.finished">
+            <ng-container *ngIf="attempt.finished && attempt.sumgrades !== null">
                 <ion-item *ngFor="let gradeItemMark of attempt.gradeitemmarks ?? []" class="ion-text-wrap">
                     <ion-label>
                         <p class="item-heading">{{ gradeItemMark.name }} / {{ gradeItemMark.maxgrade }}</p>
@@ -38,7 +38,7 @@
                     </ion-label>
                 </ion-item>
             </ng-container>
-            <ion-item class="ion-text-wrap" *ngIf="quiz!.showMarkColumn && attempt.readableMark !== ''">
+            <ion-item class="ion-text-wrap" *ngIf="quiz!.showMarkColumn && attempt.readableMark !== '' && attempt.sumgrades !== null">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.mod_quiz.marks' | translate }} / {{ quiz!.sumGradesFormatted }}</p>
                     <p>{{ attempt.readableMark }}</p>
