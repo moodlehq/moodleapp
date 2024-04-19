@@ -47,6 +47,7 @@
         &[value]::-webkit-progress-value {
             background-color: var(--progressbar-color);
             border-radius: var(--height);
+            transition: width 500ms ease-in-out;
         }
     }
 
