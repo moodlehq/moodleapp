@@ -11,6 +11,7 @@
     "grade": "Grade",
     "gradebook": "Gradebook",
     "gradeitem": "Grade item",
+    "gradelong": "{{$a.grade}} / {{$a.max}}",
     "gradepass": "Grade to pass",
     "grades": "Grades",
     "lettergrade": "Letter grade",

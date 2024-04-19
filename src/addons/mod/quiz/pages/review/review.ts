@@ -19,7 +19,6 @@ import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { Translate } from '@singletons';
 import { CoreDom } from '@singletons/dom';
 import { CoreTime } from '@singletons/time';
 import {
@@ -31,14 +30,12 @@ import {
     AddonModQuiz,
     AddonModQuizAttemptWSData,
     AddonModQuizCombinedReviewOptions,
-    AddonModQuizGetAttemptReviewResponse,
     AddonModQuizQuizWSData,
     AddonModQuizWSAdditionalData,
 } from '../../services/quiz';
 import { AddonModQuizHelper } from '../../services/quiz-helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
-import { QuestionDisplayOptionsMarks } from '@features/question/constants';
+import { ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
 
 /**
  * Page that allows reviewing a quiz attempt.
@@ -63,7 +60,6 @@ export class AddonModQuizReviewPage implements OnInit {
     questions: QuizQuestion[] = []; // Questions of the current page.
     nextPage = -2; // Next page.
     previousPage = -2; // Previous page.
-    readableState?: string;
     readableGrade?: string;
     readableMark?: string;
     timeTaken?: string;
@@ -159,6 +155,8 @@ export class AddonModQuizReviewPage implements OnInit {
 
             this.options = await AddonModQuiz.getCombinedReviewOptions(this.quiz.id, { cmId: this.cmId });
 
+            AddonModQuizHelper.setQuizCalculatedData(this.quiz, this.options);
+
             // Load the navigation data.
             await this.loadNavigation();
 
@@ -178,14 +176,16 @@ export class AddonModQuizReviewPage implements OnInit {
      * @returns Promise resolved when done.
      */
     protected async loadPage(page: number): Promise<void> {
-        const data = await AddonModQuiz.getAttemptReview(this.attemptId, { page, cmId: this.quiz?.coursemodule });
+        if (!this.quiz) {
+            return;
+        }
 
-        this.attempt = data.attempt;
+        const data = await AddonModQuiz.getAttemptReview(this.attemptId, { page, cmId: this.quiz.coursemodule });
+
+        this.attempt = await AddonModQuizHelper.setAttemptCalculatedData(this.quiz, data.attempt);
         this.attempt.currentpage = page;
+        this.additionalData = data.additionaldata;
         this.currentPage = page;
-
-        // Set the summary data.
-        this.setSummaryCalculatedData(data);
 
         this.questions = data.questions;
         this.nextPage = page + 1;
@@ -252,91 +252,6 @@ export class AddonModQuizReviewPage implements OnInit {
             this.elementRef.nativeElement,
             `#addon-mod_quiz-question-${slot}`,
         );
-    }
-
-    /**
-     * Calculate review summary data.
-     *
-     * @param data Result of getAttemptReview.
-     */
-    protected setSummaryCalculatedData(data: AddonModQuizGetAttemptReviewResponse): void {
-        if (!this.attempt || !this.quiz) {
-            return;
-        }
-
-        this.readableState = AddonModQuiz.getAttemptReadableStateName(this.attempt.state ?? '');
-
-        if (this.attempt.state !== AddonModQuizAttemptStates.FINISHED) {
-            return;
-        }
-
-        this.showCompleted = true;
-        this.additionalData = data.additionaldata;
-
-        const timeTaken = (this.attempt.timefinish || 0) - (this.attempt.timestart || 0);
-        if (timeTaken > 0) {
-            // Format time taken.
-            this.timeTaken = CoreTime.formatTime(timeTaken);
-
-            // Calculate overdue time.
-            if (this.quiz.timelimit && timeTaken > this.quiz.timelimit + 60) {
-                this.overTime = CoreTime.formatTime(timeTaken - this.quiz.timelimit);
-            }
-        } else {
-            this.timeTaken = undefined;
-        }
-
-        // Treat grade item marks.
-        if (this.attempt.sumgrades === null || !this.attempt.gradeitemmarks) {
-            this.gradeItemMarks = [];
-        } else {
-            this.gradeItemMarks = this.attempt.gradeitemmarks.map((gradeItemMark) => ({
-                name: gradeItemMark.name,
-                grade: Translate.instant('addon.mod_quiz.outof', { $a: {
-                    grade: AddonModQuiz.formatGrade(gradeItemMark.grade, this.quiz?.decimalpoints),
-                    maxgrade: AddonModQuiz.formatGrade(gradeItemMark.maxgrade, this.quiz?.decimalpoints),
-                } }),
-            }));
-        }
-
-        // Treat grade.
-        if (this.options && this.options.someoptions.marks >= QuestionDisplayOptionsMarks.MARK_AND_MAX &&
-                AddonModQuiz.quizHasGrades(this.quiz)) {
-
-            if (data.grade === null || data.grade === undefined) {
-                this.readableGrade = AddonModQuiz.formatGrade(data.grade, this.quiz.decimalpoints);
-            } else {
-                // Show raw marks only if they are different from the grade (like on the entry page).
-                if (this.quiz.grade != this.quiz.sumgrades) {
-                    this.readableMark = Translate.instant('addon.mod_quiz.outofshort', { $a: {
-                        grade: AddonModQuiz.formatGrade(this.attempt.sumgrades, this.quiz.decimalpoints),
-                        maxgrade: AddonModQuiz.formatGrade(this.quiz.sumgrades, this.quiz.decimalpoints),
-                    } });
-                }
-
-                // Now the scaled grade.
-                const gradeObject: Record<string, unknown> = {
-                    grade: AddonModQuiz.formatGrade(Number(data.grade), this.quiz.decimalpoints),
-                    maxgrade: AddonModQuiz.formatGrade(this.quiz.grade, this.quiz.decimalpoints),
-                };
-
-                if (this.quiz.grade != 100) {
-                    gradeObject.percent = AddonModQuiz.formatGrade(
-                        (this.attempt.sumgrades ?? 0) * 100 / (this.quiz.sumgrades ?? 1),
-                        this.quiz.decimalpoints,
-                    );
-                    this.readableGrade = Translate.instant('addon.mod_quiz.outofpercent', { $a: gradeObject });
-                } else {
-                    this.readableGrade = Translate.instant('addon.mod_quiz.outof', { $a: gradeObject });
-                }
-            }
-        }
-
-        // Treat additional data.
-        this.additionalData.forEach((data) => {
-            // Remove help links from additional data.
-            data.content = CoreDomUtils.removeElementFromHtml(data.content, '.helptooltip');
-        });
     }
 
     /**

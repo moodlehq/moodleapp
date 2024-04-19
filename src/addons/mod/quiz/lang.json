@@ -1,5 +1,6 @@
 {
     "answercolon": "Answer:",
+    "attempt": "Attempt {{$a}}",
     "attemptduration": "Duration",
     "attemptfirst": "First attempt",
     "attemptlast": "Last attempt",
@@ -30,7 +31,7 @@
     "errorsaveattempt": "An error occurred while saving the attempt data.",
     "feedback": "Feedback",
     "finishattemptdots": "Finish attempt...",
-    "finishnotsynced": "Finished but not synchronised",
+    "finishedofflinenotice": "Your attempt has been submitted and saved. It will be sent to the site when you're online again.",
     "grade": "Grade",
     "gradeaverage": "Average grade",
     "gradehighest": "Highest grade",

@@ -359,53 +359,28 @@ export class AddonModQuizHelperProvider {
      * Add some calculated data to the attempt.
      *
      * @param quiz Quiz.
-     * @param accessInfo Quiz access info.
      * @param attempt Attempt.
-     * @param highlight Whether we should check if attempt should be highlighted.
-     * @param bestGrade Quiz's best grade (formatted). Required if highlight=true.
-     * @param isLastAttempt Whether the attempt is the last one.
      * @param siteId Site ID.
-     * @returns Quiz attemptw with calculated data.
+     * @returns Quiz attempt with calculated data.
      */
     async setAttemptCalculatedData(
         quiz: AddonModQuizQuizData,
-        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
         attempt: AddonModQuizAttemptWSData,
-        highlight?: boolean,
-        bestGrade?: string,
-        isLastAttempt?: boolean,
         siteId?: string,
     ): Promise<AddonModQuizAttempt> {
         const formattedAttempt = <AddonModQuizAttempt> attempt;
 
-        formattedAttempt.rescaledGrade = AddonModQuiz.rescaleGrade(attempt.sumgrades, quiz, false);
+        formattedAttempt.finished = attempt.state === AddonModQuizAttemptStates.FINISHED;
         formattedAttempt.completed = AddonModQuiz.isAttemptCompleted(attempt.state);
-        formattedAttempt.readableState = AddonModQuiz.getAttemptReadableState(quiz, attempt);
+        formattedAttempt.rescaledGrade = Number(AddonModQuiz.rescaleGrade(attempt.sumgrades, quiz, false));
 
-        if (quiz.showMarkColumn && formattedAttempt.completed) {
-            formattedAttempt.readableMark = AddonModQuiz.formatGrade(attempt.sumgrades, quiz.decimalpoints);
+        if (quiz.showAttemptsGrades && formattedAttempt.finished) {
+            formattedAttempt.formattedGrade = AddonModQuiz.formatGrade(formattedAttempt.rescaledGrade, quiz.decimalpoints);
         } else {
-            formattedAttempt.readableMark = '';
+            formattedAttempt.formattedGrade = '';
         }
 
-        if (quiz.showGradeColumn && formattedAttempt.completed) {
-            formattedAttempt.readableGrade = AddonModQuiz.formatGrade(
-                Number(formattedAttempt.rescaledGrade),
-                quiz.decimalpoints,
-            );
-
-            // Highlight the highest grade if appropriate.
-            formattedAttempt.highlightGrade = !!(highlight && !attempt.preview &&
-                attempt.state === AddonModQuizAttemptStates.FINISHED && formattedAttempt.readableGrade == bestGrade);
-        } else {
-            formattedAttempt.readableGrade = '';
-        }
-
-        if (isLastAttempt || isLastAttempt === undefined) {
-            formattedAttempt.finishedOffline = await AddonModQuiz.isAttemptFinishedOffline(attempt.id, siteId);
-        }
-
-        formattedAttempt.canReview = await this.canReviewAttempt(quiz, accessInfo, attempt);
+        formattedAttempt.finishedOffline = await AddonModQuiz.isAttemptFinishedOffline(attempt.id, siteId);
 
         return formattedAttempt;
     }
@@ -423,11 +398,10 @@ export class AddonModQuizHelperProvider {
         formattedQuiz.sumGradesFormatted = AddonModQuiz.formatGrade(quiz.sumgrades, quiz.decimalpoints);
         formattedQuiz.gradeFormatted = AddonModQuiz.formatGrade(quiz.grade, quiz.decimalpoints);
 
-        formattedQuiz.showAttemptColumn = quiz.attempts != 1;
-        formattedQuiz.showGradeColumn = options.someoptions.marks >= QuestionDisplayOptionsMarks.MARK_AND_MAX &&
+        formattedQuiz.showAttemptsGrades = options.someoptions.marks >= QuestionDisplayOptionsMarks.MARK_AND_MAX &&
             AddonModQuiz.quizHasGrades(quiz);
-        formattedQuiz.showMarkColumn = formattedQuiz.showGradeColumn && quiz.grade != quiz.sumgrades;
-        formattedQuiz.showFeedbackColumn = !!quiz.hasfeedback && !!options.alloptions.overallfeedback;
+        formattedQuiz.showAttemptsMarks = formattedQuiz.showAttemptsGrades && quiz.grade !== quiz.sumgrades;
+        formattedQuiz.showFeedback = !!quiz.hasfeedback && !!options.alloptions.overallfeedback;
 
         return formattedQuiz;
     }
@@ -523,10 +497,9 @@ export const AddonModQuizHelper = makeSingleton(AddonModQuizHelperProvider);
 export type AddonModQuizQuizData = AddonModQuizQuizWSData & {
     sumGradesFormatted?: string;
     gradeFormatted?: string;
-    showAttemptColumn?: boolean;
-    showGradeColumn?: boolean;
-    showMarkColumn?: boolean;
-    showFeedbackColumn?: boolean;
+    showAttemptsGrades?: boolean;
+    showAttemptsMarks?: boolean;
+    showFeedback?: boolean;
 };
 
 /**
@@ -534,11 +507,8 @@ export type AddonModQuizQuizData = AddonModQuizQuizWSData & {
  */
 export type AddonModQuizAttempt = AddonModQuizAttemptWSData & {
     finishedOffline?: boolean;
-    rescaledGrade?: string;
+    rescaledGrade?: number;
+    finished?: boolean;
     completed?: boolean;
-    readableState?: string[];
-    readableMark?: string;
-    readableGrade?: string;
-    highlightGrade?: boolean;
-    canReview?: boolean;
+    formattedGrade?: string;
 };

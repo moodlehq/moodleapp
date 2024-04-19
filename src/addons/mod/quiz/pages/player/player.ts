@@ -40,7 +40,7 @@ import {
     AddonModQuizGetQuizAccessInformationWSResponse,
     AddonModQuizQuizWSData,
 } from '../../services/quiz';
-import { AddonModQuizAttempt, AddonModQuizHelper } from '../../services/quiz-helper';
+import { AddonModQuizHelper } from '../../services/quiz-helper';
 import { AddonModQuizSync } from '../../services/quiz-sync';
 import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
@@ -66,7 +66,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     @ViewChild('quizForm') formElement?: ElementRef;
 
     quiz?: AddonModQuizQuizWSData; // The quiz the attempt belongs to.
-    attempt?: AddonModQuizAttempt; // The attempt being attempted.
+    attempt?: QuizAttempt; // The attempt being attempted.
     moduleUrl?: string; // URL to the module in the site.
     component = ADDON_MOD_QUIZ_COMPONENT; // Component to link the files to.
     loaded = false; // Whether data has been loaded.
@@ -91,7 +91,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     protected preflightData: Record<string, string> = {}; // Preflight data to attempt the quiz.
     protected quizAccessInfo?: AddonModQuizGetQuizAccessInformationWSResponse; // Quiz access information.
     protected attemptAccessInfo?: AddonModQuizGetAttemptAccessInformationWSResponse; // Attempt access info.
-    protected lastAttempt?: AddonModQuizAttemptWSData; // Last user attempt before a new one is created (if needed).
+    protected lastAttempt?: QuizAttempt; // Last user attempt before a new one is created (if needed).
     protected newAttempt = false; // Whether the user is starting a new attempt.
     protected quizDataLoaded = false; // Whether the quiz data has been loaded.
     protected timeUpCalled = false; // Whether the time up function has been called.
@@ -381,14 +381,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         }
 
         // Get the last attempt. If it's finished, start a new one.
-        this.lastAttempt = await AddonModQuizHelper.setAttemptCalculatedData(
-            this.quiz,
-            this.quizAccessInfo,
-            attempts[attempts.length - 1],
-            false,
-            undefined,
-            true,
-        );
+        this.lastAttempt = attempts[attempts.length - 1];
+
+        this.lastAttempt.finishedOffline = await AddonModQuiz.isAttemptFinishedOffline(this.lastAttempt.id);
 
         this.newAttempt = AddonModQuiz.isAttemptCompleted(this.lastAttempt.state);
     }
@@ -944,4 +939,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
  */
 type QuizQuestion = CoreQuestionQuestionParsed & {
     readableMark?: string;
+};
+
+/**
+ * Attempt with some calculated data for the view.
+ */
+type QuizAttempt = AddonModQuizAttemptWSData & {
+    finishedOffline?: boolean;
 };

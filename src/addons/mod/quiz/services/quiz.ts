@@ -37,7 +37,6 @@ import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWar
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
-import { AddonModQuizAttempt } from './quiz-helper';
 import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-offline';
 import { AddonModQuizAutoSyncData, AddonModQuizSyncProvider } from './quiz-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -55,6 +54,7 @@ import {
     AddonModQuizDisplayOptionsAttemptStates,
     ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD,
 } from '../constants';
+import { CoreIonicColorNames } from '@singletons/colors';
 
 declare module '@singletons/events' {
 
@@ -412,61 +412,17 @@ export class AddonModQuizProvider {
     }
 
     /**
-     * Turn attempt's state into a readable state, including some extra data depending on the state.
-     *
-     * @param quiz Quiz.
-     * @param attempt Attempt.
-     * @returns List of state sentences.
-     */
-    getAttemptReadableState(quiz: AddonModQuizQuizWSData, attempt: AddonModQuizAttempt): string[] {
-        if (attempt.finishedOffline) {
-            return [Translate.instant('addon.mod_quiz.finishnotsynced')];
-        }
-
-        switch (attempt.state) {
-            case AddonModQuizAttemptStates.IN_PROGRESS:
-                return [Translate.instant('addon.mod_quiz.stateinprogress')];
-
-            case AddonModQuizAttemptStates.OVERDUE: {
-                const sentences: string[] = [];
-                const dueDate = this.getAttemptDueDate(quiz, attempt);
-
-                sentences.push(Translate.instant('addon.mod_quiz.stateoverdue'));
-
-                if (dueDate) {
-                    sentences.push(Translate.instant(
-                        'addon.mod_quiz.stateoverduedetails',
-                        { $a: CoreTimeUtils.userDate(dueDate) },
-                    ));
-                }
-
-                return sentences;
-            }
-
-            case AddonModQuizAttemptStates.FINISHED:
-                return [
-                    Translate.instant('addon.mod_quiz.statefinished'),
-                    Translate.instant(
-                        'addon.mod_quiz.statefinisheddetails',
-                        { $a: CoreTimeUtils.userDate((attempt.timefinish ?? 0) * 1000) },
-                    ),
-                ];
-
-            case AddonModQuizAttemptStates.ABANDONED:
-                return [Translate.instant('addon.mod_quiz.stateabandoned')];
-
-            default:
-                return [];
-        }
-    }
-
-    /**
-     * Turn attempt's state into a readable state name, without any more data.
+     * Turn attempt's state into a readable state name.
      *
      * @param state State.
+     * @param finishedOffline Whether the attempt was finished offline.
      * @returns Readable state name.
      */
-    getAttemptReadableStateName(state: string): string {
+    getAttemptReadableStateName(state: string, finishedOffline = false): string {
+        if (finishedOffline) {
+            return Translate.instant('core.submittedoffline');
+        }
+
         switch (state) {
             case AddonModQuizAttemptStates.IN_PROGRESS:
                 return Translate.instant('addon.mod_quiz.stateinprogress');
@@ -479,6 +435,36 @@ export class AddonModQuizProvider {
 
             case AddonModQuizAttemptStates.ABANDONED:
                 return Translate.instant('addon.mod_quiz.stateabandoned');
+
+            default:
+                return '';
+        }
+    }
+
+    /**
+     * Get the color to apply to the attempt state.
+     *
+     * @param state State.
+     * @param finishedOffline Whether the attempt was finished offline.
+     * @returns State color.
+     */
+    getAttemptStateColor(state: string, finishedOffline = false): string {
+        if (finishedOffline) {
+            return CoreIonicColorNames.MEDIUM;
+        }
+
+        switch (state) {
+            case AddonModQuizAttemptStates.IN_PROGRESS:
+                return CoreIonicColorNames.WARNING;
+
+            case AddonModQuizAttemptStates.OVERDUE:
+                return CoreIonicColorNames.INFO;
+
+            case AddonModQuizAttemptStates.FINISHED:
+                return CoreIonicColorNames.SUCCESS;
+
+            case AddonModQuizAttemptStates.ABANDONED:
+                return CoreIonicColorNames.DANGER;
 
             default:
                 return '';

@@ -45,64 +45,74 @@
     </ion-card>
 
     <!-- List of user attempts. -->
-    <ion-card class="addon-mod_quiz-table" *ngIf="quiz && attempts.length">
+    <ion-card class="addon-mod_quiz-attempts-summary" *ngIf="quiz && attempts.length">
         <ion-card-header class="ion-text-wrap">
             <ion-card-title>{{ 'addon.mod_quiz.summaryofattempts' | translate }}</ion-card-title>
         </ion-card-header>
-        <ion-card-content role="table">
-            <!-- "Header" of the table -->
-            <ion-item class="ion-text-wrap addon-mod_quiz-table-header hide-detail" [detail]="true">
-                <ion-label role="rowgroup">
-                    <ion-row class="ion-align-items-center" role="row">
-                        <ion-col class="ion-text-center" *ngIf="quiz.showAttemptColumn" role="columnheader">
-                            <strong class="ion-hide-md-up" aria-hidden="true">#</strong>
-                            <span class="sr-only ion-hide-md-up">{{ 'addon.mod_quiz.attemptnumber' | translate }}</span>
-                            <strong class="ion-hide-md-down">{{ 'addon.mod_quiz.attemptnumber' | translate }}</strong>
-                        </ion-col>
-                        <ion-col size="7" role="columnheader">
-                            <strong>{{ 'addon.mod_quiz.attemptstate' | translate }}</strong>
-                        </ion-col>
-                        <ion-col class="ion-text-center ion-hide-md-down" *ngIf="quiz.showMarkColumn" role="columnheader">
-                            <strong>{{ 'addon.mod_quiz.marks' | translate }} / {{ quiz.sumGradesFormatted }}</strong>
-                        </ion-col>
-                        <ion-col class="ion-text-center" *ngIf="quiz.showGradeColumn" role="columnheader">
-                            <strong>{{ 'addon.mod_quiz.grade' | translate }} / {{ quiz.gradeFormatted }}</strong>
-                        </ion-col>
-                    </ion-row>
-                </ion-label>
-            </ion-item>
-            <div role="rowgroup">
-                <!-- List of attempts. -->
-                <ion-item button [detail]="true" *ngFor="let attempt of attempts" class="ion-text-wrap"
-                    [ngClass]='{"addon-mod_quiz-highlighted": attempt.highlightGrade}' [attr.aria-label]="'core.seemoredetail' | translate"
-                    (click)="viewAttempt(attempt.id)">
+
+        <ion-accordion-group>
+            @for (attempt of attempts; track attempt.id) {
+            <ion-accordion [value]="attempt.id" toggleIconSlot="start">
+                <ion-item slot="header" class="ion-text-wrap addon-mod_quiz-attempt-title" lines="none">
                     <ion-label>
-                        <ion-row class="ion-align-items-center" role="row">
-                            <ion-col class="ion-text-center" *ngIf="quiz.showAttemptColumn && attempt.preview" role="cell">
-                                {{ 'addon.mod_quiz.preview' | translate }}
-                            </ion-col>
-                            <ion-col class="ion-text-center" *ngIf="quiz.showAttemptColumn && !attempt.preview" role="cell">
-                                {{ attempt.attempt }}
-                            </ion-col>
-                            <ion-col size="7" role="cell">
-                                <p *ngFor="let sentence of attempt.readableState">{{ sentence }}</p>
-                            </ion-col>
-                            <ion-col class="ion-text-center ion-hide-md-down" *ngIf="quiz.showMarkColumn" role="cell">
-                                <p>{{ attempt.readableMark }}</p>
-                            </ion-col>
-                            <ion-col class="ion-text-center" *ngIf="quiz.showGradeColumn" role="cell">
-                                <p>{{ attempt.readableGrade }}</p>
-                            </ion-col>
-                        </ion-row>
+                        <h3>{{ 'addon.mod_quiz.attempt' | translate:{ $a: attempt.attempt } }}</h3>
                     </ion-label>
+                    <div slot="end" class="addon-mod_quiz-attempt-title-info">
+                        <addon-mod-quiz-attempt-state [state]="attempt.state" [finishedOffline]="attempt.finishedOffline" />
+                        @if (attempt.finished && quiz.showAttemptsGrades) {
+                        @if (attempt.rescaledGrade !== undefined && attempt.rescaledGrade >= 0) {
+                        <p>
+                            {{ 'core.grades.gradelong' | translate: { $a: {
+                            grade: attempt.formattedGrade,
+                            max: quiz.gradeFormatted,
+                            } } }}
+                        </p>
+                        } @else {
+                        <p>{{ 'addon.mod_quiz.notyetgraded' | translate }}</p>
+                        }
+                        }
+                    </div>
                 </ion-item>
-            </div>
-        </ion-card-content>
+                <div class="addon-mod_quiz-attempt-details" slot="content">
+                    <addon-mod-quiz-attempt-info [quiz]="quiz" [attempt]="attempt" [additionalData]="attempt.additionalData" />
+
+                    @if (attempt.canReview) {
+                    <hr>
+                    <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="reviewAttempt(attempt.id)" fill="outline">
+                        <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true" />
+                        {{ 'addon.mod_quiz.review' | translate }}
+                    </ion-button>
+                    } @else if (attempt.completed) {
+                    <hr>
+                    <ion-item class="ion-text-wrap addon-mod_quiz-attempt-noreview">
+                        <ion-label>
+                            <p>
+                                <ion-icon name="fas-circle-info" color="info" slot="start" aria-hidden="true" />
+                                {{ 'addon.mod_quiz.noreviewattempt' | translate }}
+                                <!-- TODO: Check if we can calculate the time when the attempt can be reviewed. -->
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                    } @else if (attempt.finishedOffline) {
+                    <hr>
+                    <ion-item class="ion-text-wrap addon-mod_quiz-attempt-finishedoffline">
+                        <ion-label>
+                            <p>
+                                <ion-icon name="fas-clock" slot="start" aria-hidden="true" />
+                                {{ 'addon.mod_quiz.finishedofflinenotice' | translate }}
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                    }
+                </div>
+            </ion-accordion>
+            }
+        </ion-accordion-group>
     </ion-card>
 
     <!-- Result info. -->
     <ion-card *ngIf="quiz && showResults &&
-        (gradeResult || gradeOverridden || gradebookFeedback || (quiz.showFeedbackColumn && overallFeedback))">
+        (gradeResult || gradeOverridden || gradebookFeedback || (quiz.showFeedback && overallFeedback))">
         <ion-list>
             <ion-item class="ion-text-wrap" *ngIf="gradeResult">
                 <ion-label>{{ gradeResult }}</ion-label>
@@ -119,7 +129,7 @@
                     </p>
                 </ion-label>
             </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="quiz.showFeedbackColumn && overallFeedback">
+            <ion-item class="ion-text-wrap" *ngIf="quiz.showFeedback && overallFeedback">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.mod_quiz.overallfeedback' | translate }}</p>
                     <p>

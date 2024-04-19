@@ -1,33 +1,43 @@
+@use "theme/globals" as *;
+
 :host {
 
-    .addon-mod_quiz-table {
-        ion-card-content {
-            padding-left: 0;
-            padding-right: 0;
-        }
+    .addon-mod_quiz-attempt-title-info {
+        text-align: end;
+        padding-top: 8px;
+        padding-bottom: 8px;
 
-        .item:nth-child(even) {
-            --background: var(--light);
-        }
-
-        .addon-mod_quiz-highlighted,
-        .item.addon-mod_quiz-highlighted,
-        .addon-mod_quiz-highlighted p,
-        .item.addon-mod_quiz-highlighted p {
-            --background: var(--primary-tint);
-            color: var(--primary-shade);
+        p {
+            margin: 0px;
+            margin-top: 4px;
         }
     }
-}
 
-:host-context(html.dark) {
-    .addon-mod_quiz-table {
-        .addon-mod_quiz-highlighted,
-        .item.addon-mod_quiz-highlighted,
-        .addon-mod_quiz-highlighted p,
-        .item.addon-mod_quiz-highlighted p {
-            --background: var(--primary-shade);
-            color: var(--primary-tint);
+    .accordion-expanded	.addon-mod_quiz-attempt-title-info,
+    .accordion-expanding .addon-mod_quiz-attempt-title-info {
+        visibility: hidden;
+    }
+
+    hr {
+        background-color: var(--stroke);
+        height: 1px;
+        margin: 0px 16px;
+    }
+
+    ion-accordion:nth-child(odd) {
+        background-color: var(--core-table-odd-cell-background);
+
+        ::ng-deep ion-item {
+            --background: var(--core-table-odd-cell-background);
         }
     }
+
+    ion-accordion:nth-child(even) {
+        background-color: var(--core-table-even-cell-background);
+
+        ::ng-deep ion-item {
+            --background: var(--core-table-even-cell-background);
+        }
+    }
+
 }
