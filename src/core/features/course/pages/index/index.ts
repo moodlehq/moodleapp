@@ -20,7 +20,7 @@ import { CoreCourseFormatDelegate } from '../../services/format-delegate';
 import { CoreCourseOptionsDelegate } from '../../services/course-options-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreCourse, CoreCourseModuleCompletionStatus, CoreCourseWSSection } from '@features/course/services/course';
+import { CoreCourse, CoreCourseProvider, CoreCourseWSSection } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
@@ -29,6 +29,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { CoreColors } from '@singletons/colors';
 import { CorePath } from '@singletons/path';
+import { CoreSites } from '@services/sites';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -54,7 +55,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     protected currentPagePath = '';
     protected fullScreenObserver: CoreEventObserver;
     protected selectTabObserver: CoreEventObserver;
-    protected completionObserver: CoreEventObserver;
+    protected progressObserver: CoreEventObserver;
     protected sections: CoreCourseWSSection[] = []; // List of course sections.
     protected firstTabName?: string;
     protected module?: CoreCourseModuleData;
@@ -89,33 +90,16 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
             }
         });
 
-        // The completion of any of the modules have changed.
-        this.completionObserver = CoreEvents.on(CoreEvents.MANUAL_COMPLETION_CHANGED, (data) => {
-            if (data.completion.courseId != this.course?.id) {
+        const siteId = CoreSites.getCurrentSiteId();
+
+        this.progressObserver = CoreEvents.on(CoreCourseProvider.PROGRESS_UPDATED, (data) => {
+            if (!this.course || this.course.id !== data.courseId || !('progress' in this.course)) {
                 return;
             }
 
-            if (data.completion.valueused !== false || !this.course || !('progress' in this.course) ||
-                    typeof this.course.progress != 'number') {
-                return;
-            }
-
-            // If the completion value is not used, the page won't be reloaded, so update the progress bar.
-            const completionModules = (<CoreCourseModuleData[]> [])
-                .concat(...this.sections.map((section) => section.modules))
-                .map((module) => module.completion && module.completion > 0 ? 1 : module.completion)
-                .reduce((accumulator, currentValue) => (accumulator || 0) + (currentValue || 0), 0);
-
-            const moduleProgressPercent = 100 / (completionModules || 1);
-            // Use min/max here to avoid floating point rounding errors over/under-flowing the progress bar.
-            if (data.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE) {
-                this.course.progress = Math.min(100, this.course.progress + moduleProgressPercent);
-            } else {
-                this.course.progress = Math.max(0, this.course.progress - moduleProgressPercent);
-            }
-
+            this.course.progress = data.progress;
             this.updateProgress();
-        });
+        }, siteId);
 
         this.fullScreenObserver = CoreEvents.on(CoreEvents.FULL_SCREEN_CHANGED, (event: { enabled: boolean }) => {
             this.fullScreenEnabled = event.enabled;
@@ -267,7 +251,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
         CoreNavigator.decreaseRouteDepth(path.replace(/(\/deep)+/, ''));
         this.selectTabObserver?.off();
-        this.completionObserver?.off();
+        this.progressObserver?.off();
         this.fullScreenObserver?.off();
     }
 

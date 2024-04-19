@@ -65,9 +65,19 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     protected courseStatusObserver?: CoreEventObserver;
 
     protected element: HTMLElement;
+    protected progressObserver: CoreEventObserver;
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
+        const siteId = CoreSites.getCurrentSiteId();
+        this.progressObserver = CoreEvents.on(CoreCourseProvider.PROGRESS_UPDATED, (data) => {
+            if (!this.course || this.course.id !== data.courseId || !('progress' in this.course)) {
+                return;
+            }
+
+            this.course.progress = data.progress;
+            this.progress = this.course.progress ?? undefined;
+        }, siteId);
     }
 
     /**
@@ -387,6 +397,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.courseStatusObserver?.off();
+        this.progressObserver.off();
     }
 
 }
