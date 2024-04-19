@@ -64,6 +64,8 @@ import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-si
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
+export type CoreCourseProgressUpdated = { progress: number; courseId: number };
+
 declare module '@singletons/events' {
 
     /**
@@ -73,6 +75,7 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [CoreCourseSyncProvider.AUTO_SYNCED]: CoreCourseAutoSyncData;
+        [CoreCourseProvider.PROGRESS_UPDATED]: CoreCourseProgressUpdated;
     }
 
 }
@@ -121,6 +124,7 @@ export class CoreCourseProvider {
     static readonly ALL_SECTIONS_ID = -2;
     static readonly STEALTH_MODULES_SECTION_ID = -1;
     static readonly ALL_COURSES_CLEARED = -1;
+    static readonly PROGRESS_UPDATED = 'progress_updated';
 
     /**
      * @deprecated since 4.4 Not used anymore. Use CoreCourseAccessDataType instead.
