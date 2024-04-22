@@ -128,24 +128,14 @@ export class AddonModQuizHelperProvider {
      * @param quiz Quiz.
      * @param accessInfo Quiz access info.
      * @param preflightData Object where to store the preflight data.
-     * @param attempt Attempt to continue. Don't pass any value if the user needs to start a new attempt.
-     * @param offline Whether the attempt is offline.
-     * @param prefetch Whether user is prefetching.
-     * @param title The title to display in the modal and in the submit button.
-     * @param siteId Site ID. If not defined, current site.
-     * @param retrying Whether we're retrying after a failure.
+     * @param options Options.
      * @returns Promise resolved when the preflight data is validated. The resolve param is the attempt.
      */
     async getAndCheckPreflightData(
         quiz: AddonModQuizQuizWSData,
         accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
         preflightData: Record<string, string>,
-        attempt?: AddonModQuizAttemptWSData,
-        offline?: boolean,
-        prefetch?: boolean,
-        title?: string,
-        siteId?: string,
-        retrying?: boolean,
+        options: GetAndCheckPreflightOptions = {},
     ): Promise<AddonModQuizAttemptWSData> {
 
         const rules = accessInfo?.activerulenames;
@@ -154,30 +144,37 @@ export class AddonModQuizHelperProvider {
         const preflightCheckRequired = await AddonModQuizAccessRuleDelegate.isPreflightCheckRequired(
             rules,
             quiz,
-            attempt,
-            prefetch,
-            siteId,
+            options.attempt,
+            options.prefetch,
+            options.siteId,
         );
 
         if (preflightCheckRequired) {
             // Preflight check is required. Show a modal with the preflight form.
-            const data = await this.getPreflightData(quiz, accessInfo, attempt, prefetch, title, siteId);
+            const data = await this.getPreflightData(quiz, accessInfo, options);
 
             // Data entered by the user, add it to preflight data and check it again.
             Object.assign(preflightData, data);
         }
 
         // Get some fixed preflight data from access rules (data that doesn't require user interaction).
-        await AddonModQuizAccessRuleDelegate.getFixedPreflightData(rules, quiz, preflightData, attempt, prefetch, siteId);
+        await AddonModQuizAccessRuleDelegate.getFixedPreflightData(
+            rules,
+            quiz,
+            preflightData,
+            options.attempt,
+            options.prefetch,
+            options.siteId,
+        );
 
         try {
             // All the preflight data is gathered, now validate it.
-            return await this.validatePreflightData(quiz, accessInfo, preflightData, attempt, offline, prefetch, siteId);
+            return await this.validatePreflightData(quiz, accessInfo, preflightData, options);
         } catch (error) {
 
-            if (prefetch) {
+            if (options.prefetch) {
                 throw error;
-            } else if (retrying && !preflightCheckRequired) {
+            } else if (options.retrying && !preflightCheckRequired) {
                 // We're retrying after a failure, but the preflight check wasn't required.
                 // This means there's something wrong with some access rule or user is offline and data isn't cached.
                 // Don't retry again because it would lead to an infinite loop.
@@ -190,17 +187,10 @@ export class AddonModQuizHelperProvider {
                 CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
             }, 100);
 
-            return this.getAndCheckPreflightData(
-                quiz,
-                accessInfo,
-                preflightData,
-                attempt,
-                offline,
-                prefetch,
-                title,
-                siteId,
-                true,
-            );
+            return this.getAndCheckPreflightData(quiz, accessInfo, preflightData, {
+                ...options,
+                retrying: true,
+            });
         }
     }
 
@@ -209,19 +199,13 @@ export class AddonModQuizHelperProvider {
      *
      * @param quiz Quiz.
      * @param accessInfo Quiz access info.
-     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param prefetch Whether the user is prefetching the quiz.
-     * @param title The title to display in the modal and in the submit button.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Options.
      * @returns Promise resolved with the preflight data. Rejected if user cancels.
      */
     async getPreflightData(
         quiz: AddonModQuizQuizWSData,
         accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
-        attempt?: AddonModQuizAttemptWSData,
-        prefetch?: boolean,
-        title?: string,
-        siteId?: string,
+        options: GetPreflightOptions = {},
     ): Promise<Record<string, string>> {
         const notSupported: string[] = [];
         const rules = accessInfo?.activerulenames;
@@ -243,11 +227,11 @@ export class AddonModQuizHelperProvider {
         const modalData = await CoreDomUtils.openModal<Record<string, string>>({
             component: AddonModQuizPreflightModalComponent,
             componentProps: {
-                title: title,
+                title: options.title,
                 quiz,
-                attempt,
-                prefetch: !!prefetch,
-                siteId: siteId,
+                attempt: options.attempt,
+                prefetch: !!options.prefetch,
+                siteId: options.siteId,
                 rules: rules,
             },
         });
@@ -412,36 +396,32 @@ export class AddonModQuizHelperProvider {
      * @param quiz Quiz.
      * @param accessInfo Quiz access info.
      * @param preflightData Object where to store the preflight data.
-     * @param attempt Attempt to continue. Don't pass any value if the user needs to start a new attempt.
-     * @param offline Whether the attempt is offline.
-     * @param prefetch Whether user is prefetching.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Options
      * @returns Promise resolved when the preflight data is validated.
      */
     async validatePreflightData(
         quiz: AddonModQuizQuizWSData,
         accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
         preflightData: Record<string, string>,
-        attempt?: AddonModQuizAttempt,
-        offline?: boolean,
-        prefetch?: boolean,
-        siteId?: string,
+        options: ValidatePreflightOptions = {},
     ): Promise<AddonModQuizAttempt> {
 
         const rules = accessInfo.activerulenames;
         const modOptions = {
             cmId: quiz.coursemodule,
-            readingStrategy: offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
-            siteId,
+            readingStrategy: options.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
+            siteId: options.siteId,
         };
+        let attempt = options.attempt;
 
         try {
+
             if (attempt) {
-                if (attempt.state !== AddonModQuizAttemptStates.OVERDUE && !attempt.finishedOffline) {
+                if (attempt.state !== AddonModQuizAttemptStates.OVERDUE && !options.finishedOffline) {
                     // We're continuing an attempt. Call getAttemptData to validate the preflight data.
                     await AddonModQuiz.getAttemptData(attempt.id, attempt.currentpage ?? 0, preflightData, modOptions);
 
-                    if (offline) {
+                    if (options.offline) {
                         // Get current page stored in local.
                         const storedAttempt = await CoreUtils.ignoreErrors(
                             AddonModQuizOffline.getAttemptById(attempt.id),
@@ -456,7 +436,7 @@ export class AddonModQuizHelperProvider {
                 }
             } else {
                 // We're starting a new attempt, call startAttempt.
-                attempt = await AddonModQuiz.startAttempt(quiz.id, preflightData, false, siteId);
+                attempt = await AddonModQuiz.startAttempt(quiz.id, preflightData, false, options.siteId);
             }
 
             // Preflight data validated.
@@ -465,8 +445,8 @@ export class AddonModQuizHelperProvider {
                 quiz,
                 attempt,
                 preflightData,
-                prefetch,
-                siteId,
+                options.prefetch,
+                options.siteId,
             );
 
             return attempt;
@@ -478,8 +458,8 @@ export class AddonModQuizHelperProvider {
                     quiz,
                     attempt,
                     preflightData,
-                    prefetch,
-                    siteId,
+                    options.prefetch,
+                    options.siteId,
                 );
             }
 
@@ -512,3 +492,27 @@ export type AddonModQuizAttempt = AddonModQuizAttemptWSData & {
     completed?: boolean;
     formattedGrade?: string;
 };
+
+/**
+ * Options to validate preflight data.
+ */
+type ValidatePreflightOptions = {
+    attempt?: AddonModQuizAttemptWSData; // Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+    offline?: boolean; // Whether the attempt is offline.
+    finishedOffline?: boolean; // Whether the attempt is finished offline.
+    prefetch?: boolean; // Whether user is prefetching.
+    siteId?: string; // Site ID. If not defined, current site.
+};
+
+/**
+ * Options to check preflight data.
+ */
+type GetAndCheckPreflightOptions = ValidatePreflightOptions & {
+    title?: string; // The title to display in the modal and in the submit button.
+    retrying?: boolean; // Whether we're retrying after a failure.
+};
+
+/**
+ * Options to get preflight data.
+ */
+type GetPreflightOptions = Omit<GetAndCheckPreflightOptions, 'offline'|'finishedOffline'|'retrying'>;

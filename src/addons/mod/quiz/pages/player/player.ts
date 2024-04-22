@@ -884,10 +884,12 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             this.quiz,
             this.quizAccessInfo,
             this.preflightData,
-            attempt,
-            this.offline,
-            false,
-            'addon.mod_quiz.startattempt',
+            {
+                attempt,
+                offline: this.offline,
+                finishedOffline: attempt?.finishedOffline,
+                title: 'addon.mod_quiz.startattempt',
+            },
         );
 
         // Re-fetch attempt access information with the right attempt (might have changed because a new attempt was created).

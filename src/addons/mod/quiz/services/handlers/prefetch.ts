@@ -167,11 +167,12 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
                 quiz,
                 accessInfo,
                 preflightData,
-                attempt,
-                false,
-                true,
-                title,
-                siteId,
+                {
+                    attempt,
+                    prefetch: true,
+                    title,
+                    siteId,
+                },
             );
         } else {
             // Get some fixed preflight data from access rules (data that doesn't require user interaction).
