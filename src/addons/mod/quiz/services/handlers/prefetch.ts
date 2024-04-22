@@ -380,7 +380,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
         // We have quiz data, now we'll get specific data for each attempt.
         await Promise.all(attempts.map(async (attempt) => {
-            await this.prefetchAttempt(quiz, attempt, preflightData, siteId);
+            await this.prefetchAttempt(quiz, quizAccessInfo, attempt, preflightData, siteId);
         }));
 
         if (!canStart) {
@@ -400,6 +400,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * Prefetch all WS data for an attempt.
      *
      * @param quiz Quiz.
+     * @param accessInfo Quiz access info.
      * @param attempt Attempt.
      * @param preflightData Preflight required data (like password).
      * @param siteId Site ID. If not defined, current site.
@@ -407,11 +408,11 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      */
     async prefetchAttempt(
         quiz: AddonModQuizQuizWSData,
+        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
         attempt: AddonModQuizAttemptWSData,
         preflightData: Record<string, string>,
         siteId?: string,
     ): Promise<void> {
-        const pages = AddonModQuiz.getPagesFromLayout(attempt.layout);
         const isSequential = AddonModQuiz.isNavigationSequential(quiz);
         let promises: Promise<unknown>[] = [];
 
@@ -429,16 +430,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
                 promises.push(AddonModQuiz.getFeedbackForGrade(quiz.id, attemptGradeNumber, modOptions));
             }
 
-            // Get the review for each page.
-            pages.forEach((page) => {
-                promises.push(CoreUtils.ignoreErrors(AddonModQuiz.getAttemptReview(attempt.id, {
-                    page,
-                    ...modOptions, // Include all options.
-                })));
-            });
-
-            // Get the review for all questions in same page.
-            promises.push(this.prefetchAttemptReviewFiles(quiz, attempt, modOptions, siteId));
+            promises.push(this.prefetchAttemptReview(quiz, accessInfo, attempt, modOptions));
         } else {
 
             // Attempt not finished, get data needed to continue the attempt.
@@ -447,6 +439,8 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
             if (attempt.state === AddonModQuizAttemptStates.IN_PROGRESS) {
                 // Get data for each page.
+                const pages = AddonModQuiz.getPagesFromLayout(attempt.layout);
+
                 promises = promises.concat(pages.map(async (page) => {
                     if (isSequential && typeof attempt.currentpage === 'number' && page < attempt.currentpage) {
                         // Sequential quiz, cannot get pages before the current one.
@@ -474,19 +468,56 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
     }
 
     /**
+     * Prefetch attempt review data.
+     *
+     * @param quiz Quiz.
+     * @param accessInfo Quiz access info.
+     * @param attempt Attempt.
+     * @param modOptions Other options.
+     * @param siteId Site ID.
+     * @returns Promise resolved when done.
+     */
+    protected async prefetchAttemptReview(
+        quiz: AddonModQuizQuizWSData,
+        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
+        attempt: AddonModQuizAttemptWSData,
+        modOptions: CoreCourseCommonModWSOptions,
+    ): Promise<void> {
+        // Check if attempt can be reviewed.
+        const canReview = await AddonModQuizHelper.canReviewAttempt(quiz, accessInfo, attempt);
+        if (!canReview) {
+            return;
+        }
+
+        const pages = AddonModQuiz.getPagesFromLayout(attempt.layout);
+        const promises: Promise<unknown>[] = [];
+
+        // Get the review for each page.
+        pages.forEach((page) => {
+            promises.push(CoreUtils.ignoreErrors(AddonModQuiz.getAttemptReview(attempt.id, {
+                page,
+                ...modOptions, // Include all options.
+            })));
+        });
+
+        // Get the review for all questions in same page.
+        promises.push(this.prefetchAttemptReviewFiles(quiz, attempt, modOptions));
+
+        await Promise.all(promises);
+    }
+
+    /**
      * Prefetch attempt review and its files.
      *
      * @param quiz Quiz.
      * @param attempt Attempt.
      * @param modOptions Other options.
-     * @param siteId Site ID.
      * @returns Promise resolved when done.
      */
     protected async prefetchAttemptReviewFiles(
         quiz: AddonModQuizQuizWSData,
         attempt: AddonModQuizAttemptWSData,
         modOptions: CoreCourseCommonModWSOptions,
-        siteId?: string,
     ): Promise<void> {
         // Get the review for all questions in same page.
         const data = await CoreUtils.ignoreErrors(AddonModQuiz.getAttemptReview(attempt.id, {
@@ -503,7 +534,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
                 question,
                 this.component,
                 quiz.coursemodule,
-                siteId,
+                modOptions.siteId,
                 attempt.uniqueid,
             );
         }));
@@ -569,7 +600,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             preflightData = await this.getPreflightData(quiz, quizAccessInfo, lastAttempt, askPreflight, 'core.download', siteId);
 
             // Get data for last attempt.
-            await this.prefetchAttempt(quiz, lastAttempt, preflightData, siteId);
+            await this.prefetchAttempt(quiz, quizAccessInfo, lastAttempt, preflightData, siteId);
         }
 
         // Prefetch finished, set the right status.

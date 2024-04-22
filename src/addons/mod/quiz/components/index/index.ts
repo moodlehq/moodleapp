@@ -196,15 +196,9 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         if (AddonModQuiz.isQuizOffline(quiz)) {
             if (sync) {
                 // Try to sync the quiz.
-                try {
-                    await this.syncActivity(showErrors);
-                } catch {
-                    // Ignore errors, keep getting data even if sync fails.
-                    this.autoReview = undefined;
-                }
+                await CoreUtils.ignoreErrors(this.syncActivity(showErrors));
             }
         } else {
-            this.autoReview = undefined;
             this.showStatusSpinner = false;
         }
 
@@ -400,7 +394,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      *
      * @returns Promise resolved when done.
      */
-    protected async goToAutoReview(): Promise<void> {
+    protected async goToAutoReview(attempts: AddonModQuizAttemptWSData[]): Promise<void> {
         if (!this.autoReview) {
             return;
         }
@@ -409,20 +403,19 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         this.checkCompletion();
 
         // Verify that user can see the review.
-        const attemptId = this.autoReview.attemptId;
+        const attempt = attempts.find(attempt => attempt.id === this.autoReview?.attemptId);
         this.autoReview = undefined;
 
-        if (this.quizAccessInfo?.canreviewmyattempts) {
-            try {
-                await AddonModQuiz.getAttemptReview(attemptId, { page: -1, cmId: this.module.id });
-
-                await CoreNavigator.navigateToSitePath(
-                    `${AddonModQuizModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/review/${attemptId}`,
-                );
-            } catch {
-                // Ignore errors.
-            }
+        if (!this.quiz || !this.quizAccessInfo || !attempt) {
+            return;
         }
+
+        const canReview = await AddonModQuizHelper.canReviewAttempt(this.quiz, this.quizAccessInfo, attempt);
+        if (!canReview) {
+            return;
+        }
+
+        await this.reviewAttempt(attempt.id);
     }
 
     /**
@@ -451,22 +444,15 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         this.hasPlayed = false;
-        let promise = Promise.resolve();
-
-        // Update data when we come back from the player since the attempt status could have changed.
-        // Check if we need to go to review an attempt automatically.
-        if (this.autoReview && this.autoReview.synced) {
-            promise = this.goToAutoReview();
-        }
 
         // Refresh data.
         this.showLoading = true;
         this.content?.scrollToTop();
 
-        await promise;
         await CoreUtils.ignoreErrors(this.refreshContent(true));
 
         this.showLoading = false;
+        this.autoReview = undefined;
     }
 
     /**
@@ -605,7 +591,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         const [options] = await Promise.all([
             AddonModQuiz.getCombinedReviewOptions(quiz.id, { cmId: this.module.id }),
             this.getQuizGrade(),
-            openReview ? this.goToAutoReview() : undefined,
+            openReview ? this.goToAutoReview(attempts) : undefined,
         ]);
 
         this.options = options;

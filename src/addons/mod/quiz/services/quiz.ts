@@ -513,7 +513,6 @@ export class AddonModQuizProvider {
         };
         const preSets = {
             cacheKey: this.getAttemptReviewCacheKey(attemptId, page),
-            cacheErrors: ['noreview'],
             component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
