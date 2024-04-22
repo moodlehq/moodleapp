@@ -348,23 +348,10 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             gradeToShow = formattedBestGrade;
         }
 
-        if (this.overallStats) {
-            // Show the quiz grade. The message shown is different if the quiz is finished.
-            if (this.moreAttempts) {
-                this.gradeResult = Translate.instant('addon.mod_quiz.gradesofar', { $a: {
-                    method: this.gradeMethodReadable,
-                    mygrade: gradeToShow,
-                    quizgrade: quiz.gradeFormatted,
-                } });
-            } else {
-                const outOfShort = Translate.instant('addon.mod_quiz.outofshort', { $a: {
-                    grade: gradeToShow,
-                    maxgrade: quiz.gradeFormatted,
-                } });
-
-                this.gradeResult = Translate.instant('addon.mod_quiz.yourfinalgradeis', { $a: outOfShort });
-            }
-        }
+        this.gradeResult = Translate.instant('core.grades.gradelong', { $a: {
+            grade: gradeToShow,
+            max: quiz.gradeFormatted,
+        } });
 
         if (quiz.showFeedback) {
             // Get the quiz overall feedback.
