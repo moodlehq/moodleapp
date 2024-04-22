@@ -496,18 +496,27 @@ export class TestingBehatRuntimeService {
     getHeader(): string {
         this.log('Action - Get header');
 
-        let titles = Array.from(document.querySelectorAll<HTMLElement>('.ion-page:not(.ion-page-hidden) > ion-header h1'));
-        titles = titles.filter((title) => TestingBehatDomUtils.isElementVisible(title, document.body));
+        let titles = Array.from(document.querySelectorAll<HTMLElement>('.ion-page:not(.ion-page-hidden) > ion-header h1'))
+            .filter((title) => TestingBehatDomUtils.isElementVisible(title, document.body))
+            .map((title) => title.innerText.trim());
+
+        // Collapsed title, get the floating title.
+        if (titles.length < 0 || (titles.length === 1 && titles[0] === '')) {
+            titles = Array.from(document.querySelectorAll<HTMLElement>(
+                '.ion-page:not(.ion-page-hidden) h1.collapsible-header-floating-title',
+                )).filter((title) => TestingBehatDomUtils.isElementVisible(title, document.body))
+                .map((title) => title.innerText.trim());
+        }
 
         if (titles.length > 1) {
-            return 'ERROR: Too many possible titles ('+titles.length+').';
-        } else if (!titles.length) {
-            return 'ERROR: No title found.';
-        } else {
-            const title = titles[0].innerText.trim();
-
-            return 'OK:' + title;
+            return `ERROR: Too many possible titles (${titles.length}).`;
         }
+
+        if (!titles.length) {
+            return 'ERROR: No title found.';
+        }
+
+        return `OK: ${titles[0]}`;
     }
 
     /**
