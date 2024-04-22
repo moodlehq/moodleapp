@@ -235,7 +235,7 @@ export class CoreLoginSitePage implements OnInit {
     /**
      * Validate Url.
      *
-     * @returns {ValidatorFn} Validation results.
+     * @returns Validation results.
      */
     protected moodleUrlValidator(): ValidatorFn {
         return (control: AbstractControl): ValidationErrors | null => {

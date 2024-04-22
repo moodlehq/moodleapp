@@ -1129,7 +1129,7 @@ td {
     @include core-focus-background();
 }
 
-:not(.hydrated):not(.native-input) { // Not an ionic component.
+:not(.hydrated):not(.native-input):not(.native-textarea) { // Not an ionic component.
     @include core-focus-outline();
 }
 
