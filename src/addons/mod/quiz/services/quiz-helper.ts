@@ -33,9 +33,14 @@ import {
     AddonModQuizQuizWSData,
 } from './quiz';
 import { AddonModQuizOffline } from './quiz-offline';
-import { AddonModQuizAttemptStates, AddonModQuizDisplayOptionsAttemptStates } from '../constants';
+import {
+    ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD,
+    AddonModQuizAttemptStates,
+    AddonModQuizDisplayOptionsAttemptStates,
+} from '../constants';
 import { QuestionDisplayOptionsMarks } from '@features/question/constants';
 import { CoreGroups } from '@services/groups';
+import { CoreTimeUtils } from '@services/utils/time';
 
 /**
  * Helper service that provides some features for quiz.
@@ -118,6 +123,47 @@ export class AddonModQuizHelperProvider {
             return attemptUserGroups.some(attemptUserGroup => groupInfo.groups.find(group => attemptUserGroup.id === group.id));
         } catch {
             return false;
+        }
+    }
+
+    /**
+     * Get cannot review message.
+     *
+     * @param quiz Quiz.
+     * @param attempt Attempt.
+     * @param short Whether to use a short message or not.
+     * @returns Cannot review message, or empty string if no message to display.
+     */
+    getCannotReviewMessage(quiz: AddonModQuizQuizWSData, attempt: AddonModQuizAttemptWSData, short = false): string {
+        const displayOption = AddonModQuiz.getAttemptStateDisplayOption(quiz, attempt);
+
+        let reviewFrom = 0;
+        switch (displayOption) {
+            case AddonModQuizDisplayOptionsAttemptStates.DURING:
+                return '';
+
+            case AddonModQuizDisplayOptionsAttemptStates.IMMEDIATELY_AFTER:
+                // eslint-disable-next-line no-bitwise
+                if ((quiz.reviewattempt ?? 0) & AddonModQuizDisplayOptionsAttemptStates.LATER_WHILE_OPEN) {
+                    reviewFrom = (attempt.timefinish ?? Date.now()) + ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD;
+                    break;
+                }
+                // Fall through.
+
+            case AddonModQuizDisplayOptionsAttemptStates.LATER_WHILE_OPEN:
+                // eslint-disable-next-line no-bitwise
+                if (quiz.timeclose && ((quiz.reviewattempt ?? 0) & AddonModQuizDisplayOptionsAttemptStates.AFTER_CLOSE)) {
+                    reviewFrom = quiz.timeclose;
+                    break;
+                }
+        }
+
+        if (reviewFrom) {
+            return Translate.instant('addon.mod_quiz.noreviewuntil' + (short ? 'short' : ''), {
+                $a: CoreTimeUtils.userDate(reviewFrom * 1000, short ? 'core.strftimedatetimeshort': undefined),
+            });
+        } else {
+            return Translate.instant('addon.mod_quiz.noreviewattempt');
         }
     }
 

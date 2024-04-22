@@ -82,14 +82,13 @@
                         <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true" />
                         {{ 'addon.mod_quiz.review' | translate }}
                     </ion-button>
-                    } @else if (attempt.completed) {
+                    } @else if (attempt.completed && attempt.cannotReviewMessage) {
                     <hr>
                     <ion-item class="ion-text-wrap addon-mod_quiz-attempt-noreview">
                         <ion-label>
                             <p>
                                 <ion-icon name="fas-circle-info" color="info" slot="start" aria-hidden="true" />
-                                {{ 'addon.mod_quiz.noreviewattempt' | translate }}
-                                <!-- TODO: Check if we can calculate the time when the attempt can be reviewed. -->
+                                {{ attempt.cannotReviewMessage }}
                             </p>
                         </ion-label>
                     </ion-item>

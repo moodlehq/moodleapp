@@ -914,6 +914,8 @@
   "addon.mod_quiz.mustbesubmittedby": "quiz",
   "addon.mod_quiz.noquestions": "quiz",
   "addon.mod_quiz.noreviewattempt": "quiz",
+  "addon.mod_quiz.noreviewuntil": "quiz",
+  "addon.mod_quiz.noreviewuntilshort": "quiz",
   "addon.mod_quiz.notyetgraded": "quiz",
   "addon.mod_quiz.opentoc": "local_moodlemobileapp",
   "addon.mod_quiz.outof": "quiz",

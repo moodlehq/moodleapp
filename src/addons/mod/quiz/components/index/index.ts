@@ -622,6 +622,9 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             ]);
 
             formattedAttempt.canReview = canReview;
+            if (!canReview) {
+                formattedAttempt.cannotReviewMessage = AddonModQuizHelper.getCannotReviewMessage(quiz, attempt, true);
+            }
 
             if (quiz.showFeedback && attempt.state === AddonModQuizAttemptStates.FINISHED &&
                     options.someoptions.overallfeedback && isSafeNumber(formattedAttempt.rescaledGrade)) {
@@ -698,5 +701,6 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
 type QuizAttempt = AddonModQuizAttempt & {
     canReview?: boolean;
+    cannotReviewMessage?: string;
     additionalData?: AddonModQuizWSAdditionalData[]; // Additional data to display for the attempt.
 };
