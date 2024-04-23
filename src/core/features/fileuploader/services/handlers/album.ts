@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CorePlatform } from '@services/platform';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { makeSingleton } from '@singletons';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderHandlerResult } from '../fileuploader-delegate';
 import { CoreFileUploaderHelper } from '../fileuploader-helper';
@@ -41,7 +41,7 @@ export class CoreFileUploaderAlbumHandlerService implements CoreFileUploaderHand
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
         // Album allows picking images and videos.
-        return CoreUtils.filterByRegexp(mimetypes, /^(image|video)\//);
+        return CoreArray.filterByRegexp(mimetypes, /^(image|video)\//);
     }
 
     /**

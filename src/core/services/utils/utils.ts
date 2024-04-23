@@ -40,6 +40,7 @@ import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrlUtils } from './url';
 import { QRScanner } from '@features/native/plugins';
+import { CoreArray } from '@singletons/array';
 
 export type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -350,6 +351,7 @@ export class CoreUtilsProvider {
      * @param from Object to copy the properties from.
      * @param to Object where to store the properties.
      * @param clone Whether the properties should be cloned (so they are different instances).
+     * @deprecated since 4.4. Not used anymore.
      */
     copyProperties(from: Record<string, unknown>, to: Record<string, unknown>, clone: boolean = true): void {
         for (const name in from) {
@@ -387,6 +389,7 @@ export class CoreUtilsProvider {
      * Empties an array without losing its reference.
      *
      * @param array Array to empty.
+     * @deprecated since 4.4. Not used anymore.
      */
     emptyArray(array: unknown[]): void {
         array.length = 0; // Empty array without losing its reference.
@@ -396,6 +399,7 @@ export class CoreUtilsProvider {
      * Removes all properties from an object without losing its reference.
      *
      * @param object Object to remove the properties.
+     * @deprecated since 4.4. Not used anymore.
      */
     emptyObject(object: Record<string, unknown>): void {
         for (const key in object) {
@@ -482,17 +486,10 @@ export class CoreUtilsProvider {
      * @param array Array to filter.
      * @param regex RegExp to apply to each string.
      * @returns Filtered array.
+     * @deprecated since 4.4. Use CoreArray.filterByRegexp instead.
      */
     filterByRegexp(array: string[], regex: RegExp): string[] {
-        if (!array || !array.length) {
-            return [];
-        }
-
-        return array.filter((entry) => {
-            const matches = entry.match(regex);
-
-            return matches && matches.length;
-        });
+        return CoreArray.filterByRegexp(array, regex);
     }
 
     /**
@@ -956,7 +953,7 @@ export class CoreUtilsProvider {
      * @returns Merged array.
      */
     mergeArraysWithoutDuplicates<T>(array1: T[], array2: T[], key?: string): T[] {
-        return this.uniqueArray(array1.concat(array2), key) as T[];
+        return CoreArray.unique(array1.concat(array2), key) as T[];
     }
 
     /**
@@ -1390,6 +1387,7 @@ export class CoreUtilsProvider {
      * @param data Object.
      * @param prefix Prefix to add.
      * @returns Prefixed object.
+     * @deprecated since 4.4. Not used anymore.
      */
     prefixKeys(data: Record<string, unknown>, prefix: string): Record<string, unknown> {
         const newObj = {};
@@ -1611,21 +1609,10 @@ export class CoreUtilsProvider {
      * @param array The array to treat.
      * @param [key] Key of the property that must be unique. If not specified, the whole entry.
      * @returns Array without duplicate values.
+     * @deprecated since 4.4. Use CoreArray.unique instead.
      */
     uniqueArray<T>(array: T[], key?: string): T[] {
-        const unique = {}; // Use an object to make it faster to check if it's duplicate.
-
-        return array.filter(entry => {
-            const value = key ? entry[key] : entry;
-
-            if (value in unique) {
-                return false;
-            }
-
-            unique[value] = true;
-
-            return true;
-        });
+        return CoreArray.unique(array, key);
     }
 
     /**

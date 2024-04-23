@@ -40,6 +40,7 @@ import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreArray } from '@singletons/array';
 
 /**
  * Directive to handle external content.
@@ -279,7 +280,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             return;
         }
 
-        const urls = CoreUtils.uniqueArray(Array.from(inlineStyles.match(/https?:\/\/[^"') ;]*/g) ?? []));
+        const urls = CoreArray.unique(Array.from(inlineStyles.match(/https?:\/\/[^"') ;]*/g) ?? []));
         if (!urls.length) {
             return;
         }
