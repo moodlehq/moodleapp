@@ -8,8 +8,8 @@
             </ion-button>
             <swiper-container #swiperRef [slidesPerView]="swiperOpts.slidesPerView" role="tablist" [attr.aria-label]="description">
                 <ng-container *ngFor="let tab of tabs">
-                    <swiper-slide *ngIf="tab.id" role="presentation" [id]="tab.id + '-tab'" tabindex="-1"
-                        [class.selected]="selected === tab.id" class="{{tab.class}}">
+                    <swiper-slide *ngIf="tab.id" role="presentation" [id]="tab.id + '-tab'" [class.selected]="selected === tab.id"
+                        class="{{tab.class}}">
                         <ion-tab-button (ionTabButtonClick)="selectTab(tab.id, $event)" (keydown)="tabAction.keyDown(tab.id, $event)"
                             (keyup)="tabAction.keyUp(tab.id, $event)" [tab]="tab.page" [layout]="layout" role="tab"
                             [attr.aria-controls]="tab.id" [attr.aria-selected]="selected === tab.id"

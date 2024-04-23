@@ -16,7 +16,7 @@ ion-item {
     &.ion-invalid {
         --inner-border-width: 0 0 1px 0;
 
-        &.ion-touched {
+        &.ion-touched:not(.ion-no-validation) {
             &.ion-invalid {
                 --ion-item-border-color: var(--highlight-color-invalid);
                 --highlight-background: var(--ion-item-border-color);
@@ -30,11 +30,25 @@ ion-item {
         }
     }
 
+    &.ion-no-validation {
+        --inner-border-width: 0 0 1px 0;
+    }
+
     // Hide details on items to align badges.
     &.hide-detail {
         --detail-icon-opacity: 0;
     }
+
+    &:not(.item-input) {
+        --show-full-highlight: 0;
+        --show-inset-highlight: 0;
+    }
+
+    &.item-has-interactive-control:focus-within {
+        @include core-focus-outline();
+    }
 }
+
 // Fake item.
 div.fake-ion-item {
     position: relative;

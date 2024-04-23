@@ -345,7 +345,7 @@
                     </ion-item>
 
                     <!--- Apply grade to all team members. -->
-                    <ion-item class="ion-text-wrap" *ngIf="assign!.teamsubmission && canSaveGrades">
+                    <ion-item class="ion-text-wrap ion-no-validation" *ngIf="assign!.teamsubmission && canSaveGrades">
                         <ion-toggle [(ngModel)]="grade.applyToAll">
                             <p class="item-heading">{{ 'addon.mod_assign.groupsubmissionsettings' | translate }}</p>
                             <p>{{ 'addon.mod_assign.applytoteam' | translate }}</p>
@@ -371,7 +371,7 @@
                                 </p>
                             </ion-label>
                         </ion-item>
-                        <ion-item *ngIf="canSaveGrades && allowAddAttempt">
+                        <ion-item *ngIf="canSaveGrades && allowAddAttempt" class="ion-no-validation">
                             <ion-toggle [(ngModel)]="grade.addAttempt">
                                 <p>{{ 'addon.mod_assign.addattempt' | translate }}</p>
                             </ion-toggle>

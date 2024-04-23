@@ -1122,68 +1122,15 @@ td {
 }
 
 // Change default outline.
-:focus-visible {
-    @include core-focus-style();
-    border-radius: inherit;
-    outline: none;
+.ion-activatable,
+.clickable,
+.ion-focusable.ion-focused,
+.ion-selectable {
+    @include core-focus-background();
 }
 
-// Focus highlight for accessibility.
-.ion-focused:not(.item-multiple-inputs):not(:focus),
-ion-input.has-focus,
-ion-card:focus {
-    @include core-focus();
-
-    :focus-visible,
-    .clickable:focus {
-        box-shadow: none;
-    }
-}
-
-.ion-focused.item-multiple-inputs {
-    ion-toggle:focus-within,
-    ion-select:focus-within,
-    ion-checkbox:focus-within,
-    ion-radio:focus-within {
-        @include core-focus();
-    }
-}
-
-// Treat cases where there's a focusable element inside an item, like a button.
-ion-item.item-input:not(.item-multiple-inputs):not(:focus),
-ion-item.item-has-focus:not(.item-multiple-inputs):not(:focus),
-ion-item.item-input ion-input.has-focus {
-    position: relative;
-    &::after {
-        box-shadow: revert;
-        opacity: revert;
-        z-index: revert;
-    }
-    .item-highlight, .item-inner-highlight {
-        position: unset;
-    }
-}
-
-textarea, button, select, input, a, .clickable {
-    &:focus {
-        @include core-focus-style();
-        outline: none;
-    }
-}
-
-ion-loading:focus-visible,
-ion-alert:focus-visible,
-ion-popover:focus-visible,
-ion-modal:focus-visible {
-    box-shadow: none;
-    border-radius: 0;
-}
-
-ion-input .native-input {
-    &:focus, &:focus-visible {
-        box-shadow: none;
-        outline: none;
-    }
+:not(.hydrated):not(.native-input) { // Not an ionic component.
+    @include core-focus-outline();
 }
 
 ion-input,

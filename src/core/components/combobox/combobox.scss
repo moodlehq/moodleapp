@@ -26,12 +26,25 @@
         }
     }
 
-
     ion-select,
     ion-button {
         --icon-margin: 0 4px;
 
         --background: var(--core-combobox-background);
+        --background-hover: var(--ion-text-color);
+        --background-activated: var(--ion-text-color);
+        --background-focused: var(--ion-text-color);
+        --background-hover-opacity: .04;
+
+        &.md {
+            --background-activated-opacity: 0;
+            --background-focused-opacity: .12;
+        }
+
+        &.ios {
+            --background-activated-opacity: .12;
+            --background-focused-opacity: .15;
+        }
 
         --border-color: var(--core-combobox-border-color);
         --border-style: solid;
@@ -53,10 +66,7 @@
         overflow: hidden;
         box-shadow: var(--box-shadow);
 
-        &:focus,
-        &:focus-within {
-            @include core-focus-style();
-        }
+        --highlight-color: transparent !important;
     }
 
     ion-select {
@@ -65,6 +75,7 @@
         border-width: var(--border-width);
         border-radius: var(--core-combobox-radius);
         margin: 8px;
+        width: auto;
 
         &.combobox-icon-only {
             &::part(text) {
@@ -80,6 +91,21 @@
         &::part(icon) {
             margin: var(--icon-margin);
             opacity: 1;
+            --highlight-color: currentColor;
+        }
+
+        &:hover {
+            --background: rgba(var(--ion-text-color-rgb), var(--background-hover-opacity));
+        }
+
+        &:focus,
+        &:focus-visible,
+        &.ion-focused {
+            --background: rgba(var(--ion-text-color-rgb), var(--background-focused-opacity));
+        }
+
+        &.ion-activated {
+            --background: rgba(var(--ion-text-color-rgb), var(--background-activated-opacity));
         }
     }
 
@@ -88,21 +114,6 @@
         --color-activated: var(--core-combobox-color);
         --color-focused: currentcolor;
         --color-hover: currentcolor;
-
-        --background-hover: black;
-        --background-activated: black;
-        --background-focused: black;
-        --background-hover-opacity: .04;
-
-        &.md {
-            --background-activated-opacity: 0;
-            --background-focused-opacity: .12;
-        }
-
-        &.ios {
-            --background-activated-opacity: .12;
-            --background-focused-opacity: .15;
-        }
 
         border-radius: var(--core-combobox-radius);
         margin: 4px 8px;

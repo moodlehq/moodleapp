@@ -11,16 +11,16 @@
 </ion-header>
 <ion-content>
     <ion-list class="list-item-limited-width">
-        <ion-item class="ion-text-wrap" lines="none">
+        <ion-item class="ion-text-wrap ion-no-validation" lines="none">
             <ion-select [(ngModel)]="selectedLanguage" (ionChange)="languageChanged($event)" interface="action-sheet"
                 [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.settings.language' | translate}">
-                <div slot="label" class="item-heading">{{ 'core.settings.language' | translate }}</div>
+                <div slot="label" class="item-heading ion-text-wrap">{{ 'core.settings.language' | translate }}</div>
                 <ion-select-option *ngFor="let entry of languages" [value]="entry.code">{{ entry.name }}</ion-select-option>
             </ion-select>
         </ion-item>
-        <ion-item class="ion-text-wrap core-settings-general-font-size item-interactive" lines="none">
+        <ion-item class="ion-text-wrap core-settings-general-font-size item-interactive ion-no-validation" lines="none">
             <ion-label>
-                <p class="item-heading">{{ 'core.settings.fontsize' | translate }}</p>
+                <p class="item-heading ion-text-wrap">{{ 'core.settings.fontsize' | translate }}</p>
             </ion-label>
             <ion-segment [(ngModel)]="selectedZoomLevel" color="primary">
                 <ion-segment-button *ngFor=" let zoomLevel of zoomLevels" [value]="zoomLevel.value"
@@ -33,12 +33,12 @@
                 </ion-segment-button>
             </ion-segment>
         </ion-item>
-        <ion-item class="ion-text-wrap core-settings-general-color-scheme" *ngIf="colorSchemes.length > 0" lines="none">
+        <ion-item class="ion-text-wrap core-settings-general-color-scheme ion-no-validation" *ngIf="colorSchemes.length > 0" lines="none">
             <ion-select [(ngModel)]="selectedScheme" (ionChange)="colorSchemeChanged($event)" interface="action-sheet"
                 [cancelText]="'core.cancel' | translate" [disabled]="colorSchemeDisabled"
                 [interfaceOptions]="{header: 'core.settings.colorscheme' | translate}">
                 <div slot="label">
-                    <p class="item-heading">{{ 'core.settings.colorscheme' | translate }}</p>
+                    <p class="item-heading ion-text-wrap">{{ 'core.settings.colorscheme' | translate }}</p>
                     <p *ngIf="colorSchemeDisabled" class="text-danger">{{ 'core.settings.forcedsetting' | translate }}</p>
                 </div>
                 <ion-select-option *ngFor="let scheme of colorSchemes" [value]="scheme">
@@ -47,34 +47,34 @@
         </ion-item>
         <ion-item *ngIf="colorSchemes.length> 0 && selectedScheme==='system' && isAndroid" lines="none">
             <ion-label class="ion-text-wrap">
-                <p>{{ 'core.settings.colorscheme-system-notice' | translate }}</p>
+                <p class="ion-text-wrap">{{ 'core.settings.colorscheme-system-notice' | translate }}</p>
             </ion-label>
         </ion-item>
-        <ion-item class="ion-text-wrap">
+        <ion-item class="ion-no-validation">
             <ion-toggle [(ngModel)]="richTextEditor" (ionChange)="richTextEditorChanged($event)">
-                <p class="item-heading">{{ 'core.settings.enablerichtexteditor' | translate }}</p>
-                <p>{{ 'core.settings.enablerichtexteditordescription' | translate }}</p>
+                <p class="item-heading ion-text-wrap">{{ 'core.settings.enablerichtexteditor' | translate }}</p>
+                <p class="ion-text-wrap">{{ 'core.settings.enablerichtexteditordescription' | translate }}</p>
             </ion-toggle>
         </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="displayIframeHelp">
+        <ion-item *ngIf="displayIframeHelp" class="ion-no-validation">
             <ion-label>
-                <p class="item-heading">{{ 'core.settings.ioscookies' | translate }}</p>
-                <p>{{ 'core.settings.ioscookiesdescription' | translate }}</p>
+                <p class="item-heading ion-text-wrap">{{ 'core.settings.ioscookies' | translate }}</p>
+                <p class="ion-text-wrap">{{ 'core.settings.ioscookiesdescription' | translate }}</p>
                 <ion-button expand="block" (click)="openNativeSettings($event)">
                     {{ 'core.opensettings' | translate }}
                 </ion-button>
             </ion-label>
         </ion-item>
-        <ion-item class="ion-text-wrap">
+        <ion-item class="ion-no-validation">
             <ion-toggle [(ngModel)]="debugDisplay" (ionChange)="debugDisplayChanged($event)">
-                <p class="item-heading">{{ 'core.settings.debugdisplay' | translate }}</p>
-                <p>{{ 'core.settings.debugdisplaydescription' | translate }}</p>
+                <p class="item-heading ion-text-wrap">{{ 'core.settings.debugdisplay' | translate }}</p>
+                <p class="ion-text-wrap">{{ 'core.settings.debugdisplaydescription' | translate }}</p>
             </ion-toggle>
         </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="analyticsAvailable">
+        <ion-item *ngIf="analyticsAvailable" class="ion-no-validation">
             <ion-label>
-                <p class="item-heading">{{ 'core.settings.enableanalytics' | translate }}</p>
-                <p>{{ 'core.settings.enableanalyticsdescription' | translate }}</p>
+                <p class="item-heading ion-text-wrap">{{ 'core.settings.enableanalytics' | translate }}</p>
+                <p class="ion-text-wrap">{{ 'core.settings.enableanalyticsdescription' | translate }}</p>
             </ion-label>
             <ion-toggle [(ngModel)]="analyticsEnabled" (ionChange)="analyticsEnabledChanged($event)" slot="end" />
         </ion-item>

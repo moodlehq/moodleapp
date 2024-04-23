@@ -18,7 +18,7 @@
 
 <ion-content>
     <ion-list class="list-item-limited-width">
-        <ion-item *ngIf="showDevOptions" [detail]="true" (click)="gotoDevOptions()">
+        <ion-item *ngIf="showDevOptions" [detail]="true" (click)="gotoDevOptions()" button>
             <ion-icon name="fas-terminal" slot="start" aria-hidden="true" />
             <ion-label class="ion-text-wrap">
                 <p class="item-heading">{{ 'core.settings.developeroptions' | translate }}</p>

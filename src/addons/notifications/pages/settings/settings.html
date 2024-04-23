@@ -21,12 +21,12 @@
     </ion-refresher>
     <core-loading [hideUntil]="preferencesLoaded">
         <ion-card>
-            <ion-item class="ion-text-wrap" *ngIf="preferences">
+            <ion-item class="ion-text-wrap ion-no-validation" *ngIf="preferences">
                 <ion-toggle [(ngModel)]="preferences.enableall" (ngModelChange)="enableAll(preferences.enableall)">
                     <p class="item-heading">{{ 'addon.notifications.allownotifications' | translate }}</p>
                 </ion-toggle>
             </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="canChangeSound">
+            <ion-item class="ion-text-wrap ion-no-validation" *ngIf="canChangeSound">
                 <ion-toggle [(ngModel)]="notificationSound" (ngModelChange)="changeNotificationSound(notificationSound)">
                     <p class="item-heading">{{ 'addon.notifications.playsound' | translate }}</p>
                 </ion-toggle>
@@ -79,7 +79,7 @@
         </ion-card-header>
         <ng-container *ngFor="let notification of component.notifications">
             <!-- Tablet view -->
-            <ion-item class="ion-text-wrap ion-hide-md-down addon-notifications-table-content only-links">
+            <ion-item class="ion-text-wrap ion-hide-md-down addon-notifications-table-content only-links ion-no-validation">
                 <ion-label>
                     <ion-row class="ion-no-padding ion-align-items-center">
                         <ion-col class="ion-margin-horizontal ion-no-padding">

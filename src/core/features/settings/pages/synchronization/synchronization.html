@@ -23,7 +23,7 @@
                     <h2>{{ 'core.settings.syncsettings' | translate }}</h2>
                 </ion-label>
             </ion-item-divider>
-            <ion-item class="ion-text-wrap">
+            <ion-item class="ion-text-wrap ion-no-validation">
                 <ion-toggle [(ngModel)]="dataSaver" (ngModelChange)="syncOnlyOnWifiChanged()">
                     {{ 'core.settings.syncdatasaver' | translate }}
                 </ion-toggle>

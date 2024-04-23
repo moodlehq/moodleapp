@@ -53,17 +53,17 @@
                         <h2>{{ 'addon.mod_glossary.linking' | translate }}</h2>
                     </ion-label>
                 </ion-item-divider>
-                <ion-item class="ion-text-wrap">
+                <ion-item class="ion-text-wrap ion-no-validation">
                     <ion-toggle [(ngModel)]="data.usedynalink" name="usedynalink">
                         {{ 'addon.mod_glossary.entryusedynalink' | translate }}
                     </ion-toggle>
                 </ion-item>
-                <ion-item class="ion-text-wrap">
+                <ion-item class="ion-text-wrap ion-no-validation">
                     <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.casesensitive" name="casesensitive">
                         {{ 'addon.mod_glossary.casesensitive' | translate }}
                     </ion-toggle>
                 </ion-item>
-                <ion-item class="ion-text-wrap">
+                <ion-item class="ion-text-wrap ion-no-validation">
                     <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.fullmatch" name="fullmatch">
                         {{ 'addon.mod_glossary.fullmatch' | translate }}
                     </ion-toggle>

@@ -54,7 +54,7 @@
             </ion-item>
             <div id="addon-blog-associations">
                 @if (associationsExpanded) {
-                <ion-item>
+                <ion-item class="ion-no-validation">
                     @if (associatedModule) {
                     <ion-toggle formControlName="associateWithModule">
                         <core-format-text [text]="'addon.blog.associatewithmodule' | translate: {
