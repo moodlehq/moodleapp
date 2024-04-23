@@ -348,7 +348,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
             return;
         }
 
-        this.swiper?.update();
+        this.swiper.update();
 
         // We need to ensure the slides are updated before continuing.
         await CoreUtils.nextTicks(2);
