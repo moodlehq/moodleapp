@@ -72,77 +72,6 @@ html[dir=rtl] {
 .font-lg { font-size: 1.7rem; }
 .font-sm { font-size: 1.2rem; }
 
-// Item Headings.
-// Some styles taken from ion-label
-.item > ion-label,
-.fake-ion-item > ion-label,
-ion-item .in-item {
-    p {
-        --color: var(--subdued-text-color);
-        color: var(--color);
-        @include margin(2px, 0);
-        font-size: 0.875rem;
-    }
-
-    .item-heading {
-        @include margin(2px, 0);
-
-        font-size: 1rem;
-        font-weight: normal;
-
-        text-overflow: inherit;
-        overflow: inherit;
-        --color: initial;
-        color: var(--color);
-
-        &.item-heading-secondary {
-            @include margin(2px, 0);
-
-            font-size: var(--text-size);
-            font-weight: normal;
-            line-height: normal;
-
-            --color: var(--subdued-text-color);
-        }
-    }
-}
-
-// Correctly inherit ion-text-wrap onto labels.
-.item > ion-label,
-.fake-ion-item,
-.item.ion-text-wrap > ion-checkbox::part(label),
-ion-checkbox.ion-text-wrap::part(label) {
-    core-format-text,
-    core-format-text > *:not(pre) {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-}
-
-.item.ion-text-wrap > ion-label,
-ion-item > .in-item,
-.fake-ion-item.ion-text-wrap,
-.item.ion-text-wrap > ion-checkbox::part(label),
-ion-checkbox.ion-text-wrap::part(label) {
-    core-format-text,
-    core-format-text > *:not(pre) {
-        white-space: normal;
-        overflow: inherit;
-    }
-}
-
-.item.ion-text-wrap > ion-label,
-.item.ion-text-wrap ion-checkbox::part(label),
-ion-checkbox.ion-text-wrap::part(label),
-.item.ion-text-wrap ion-radio::part(label),
-ion-radio.ion-text-wrap::part(label) {
-    white-space: normal !important;
-}
-
-ion-item .core-input-errors-wrapper {
-    width: 100%;
-}
 
 @each $color-name, $unused in $colors {
     .text-#{$color-name},
@@ -566,47 +495,6 @@ body.core-iframe-fullscreen ion-router-outlet {
     }
 }
 
-.item.item-file {
-    ion-thumbnail {
-        --size: 32px;
-        width: var(--size);
-        height: var(--size);
-    }
-
-    p.item-heading {
-        font-size: var(--text-size);
-    }
-
-    p {
-        font-size: 12px;
-    }
-
-    ion-label {
-        margin-top: 8px;
-        margin-bottom: 8px;
-    }
-
-    ion-button {
-        --a11y-sizing-minTargetSize: 40px;
-    }
-
-    &.item-directory ion-icon {
-        @include margin-horizontal(0px, 16px);
-    }
-
-    [slot=end] {
-        @include margin-horizontal(16px, null);
-    }
-}
-
-.item-dimmed {
-    opacity: 0.7;
-    --background: var(--light);
-    ion-item {
-        --background: var(--light);
-    }
-}
-
 // Extra text colors.
 .text-gray {
     color: var(--gray-500);
@@ -626,24 +514,39 @@ body.core-iframe-fullscreen ion-router-outlet {
         --background: var(--color-tint);
         --color: var(--color-shade);
 
-        ion-item {
+        ion-item.item {
             --background: var(--color-tint);
             --color: var(--color-shade);
             --inner-border-width: 0px;
             --border-width: 0px;
             font-size: var(--text-size);
 
-            ion-label, ion-label > p {
+            &.item-label > ion-label,
+            &.item-label > ion-label > p {
                 --color: var(--color-shade);
+            }
+
+            > ion-icon[slot] {
+                color: var(--color-shade);
+                @include margin-horizontal(null, 16px);
             }
         }
 
         ion-label {
             white-space: normal !important;
         }
-        ion-item > ion-icon[slot] {
-            color: var(--color-shade);
-            @include margin-horizontal(null, 16px);
+    }
+
+    ion-item.item.core-#{$color-name}-item {
+        --color-base: var(--ion-color-#{$color-name});
+        --color-shade: var(--ion-color-#{$color-name}-shade);
+
+        --border-width: 0 0 3px 0;
+        --border-color: var(--color-base);
+        --inner-border-width: 0px;
+
+        > ion-icon[slot] {
+            color: var(--color-base);
         }
     }
 
@@ -748,7 +651,7 @@ ion-toolbar h1 .core-bar-button-image img {
 // Radio.
 ion-radio,
 input[type=radio],
-.select-alert.ios .alert-radio-icon {
+.select-alert .alert-radio-icon {
     --border-radius: 50%;
     --border-width: 2px;
     --outer-border-width: 2px;
@@ -760,7 +663,6 @@ input[type=radio],
         --color-checked: var(--color);
     }
 }
-
 
 .ios ion-radio,
 .ios input[type=radio],
@@ -803,43 +705,6 @@ input[type=radio],
     }
 }
 
-.select-alert.ios {
-    .alert-radio-icon {
-        height: var(--size);
-        width: var(--size);
-        min-width: var(--size);
-        border-radius: var(--border-radius);
-        border-width: var(--outer-border-width);
-        border-style: var(--border-style);
-        border-color: var(--color);
-        @include margin(10px, 8px, 10px, 8px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        .alert-radio-inner {
-            top: auto;
-            left: auto;
-            position: static;
-            border-radius: var(--inner-border-radius);
-            width: calc(50% + var(--outer-border-width));
-            height: calc(50% + var(--outer-border-width));
-            transform: scale3d(0, 0, 0);
-            transition: transform 280ms cubic-bezier(.4, 0, .2, 1);
-            background: var(--contrast-background);
-            border: 0 !important;
-        }
-    }
-
-    button[aria-checked=true] .alert-radio-icon {
-        border-color: var(--color-checked);
-        background: var(--color-checked);
-
-        .alert-radio-inner {
-            transform: scale3d(1, 1, 1);
-        }
-    }
-}
 
 // Checkbox.
 ion-checkbox,
@@ -857,46 +722,8 @@ input[type=checkbox] {
     }
 }
 
-
 .ios input[type=checkbox] {
     --outer-border-width: 1px;
-}
-
-.select-alert.ios .alert-checkbox-icon {
-    border-radius: 2px;
-}
-
-// Select.
-ion-select {
-    &::part(text) {
-        white-space: normal;
-    }
-    &::part(icon) {
-        opacity: 1;
-    }
-    &::part(label) {
-        max-width: none;
-    }
-}
-
-ion-select-popover {
-    ion-list ion-radio-group ion-item.select-interface-option ion-radio.hydrated::part(container) {
-        opacity: 1;
-    }
-
-    ion-item {
-        font-size: 14px;
-    }
-    ion-item.core-select-option-border-bottom {
-        border-bottom: 1px solid var(--stroke);
-    }
-
-    ion-item.core-select-option-title {
-        cursor: pointer;
-        ion-radio::part(container) {
-            display: none;
-        }
-    }
 }
 
 ion-badge {
@@ -1046,65 +873,6 @@ ion-button.button-disabled,
 ion-item.item-interactive-disabled:not(.item-multiple-inputs) ion-label,
 ion-datetime.datetime-disabled {
     opacity: .65 !important;
-}
-
-// Make links clickable when inside radio or checkbox items. Style part.
-@media (hover: hover) {
-    ion-item.item-multiple-inputs:not(.item-rte):hover::part(native) {
-        color: var(--color-hover);
-
-        &::after {
-            background: var(--background-hover);
-            opacity: var(--background-hover-opacity);
-        }
-    }
-
-    ion-item.ion-color.item-multiple-inputs:hover::part(native) {
-        color: #{current-color(contrast)};
-
-        &::after {
-            background: #{current-color(contrast)};
-        }
-    }
-}
-
-
-// It fixes the click on links where ion-ripple-effect is present.
-// Make links clickable when inside radio or checkbox items. Pointer and cursor part.
-ion-item.item-multiple-inputs:not(.only-links):not(.item-rte),
-ion-item.ion-activatable:not(.only-links) {
-    cursor: pointer;
-    ion-label {
-        z-index: 3;
-        pointer-events: none;
-
-        ion-anchor, a,
-        ion-button, button,
-        ion-item.ion-focusable,
-        audio, video, select, input, iframe {
-            pointer-events: visible;
-        }
-    }
-
-    ion-checkbox, ion-datetime, ion-radio, ion-select{
-        position: static;
-    }
-}
-
-ion-item.item-multiple-inputs.only-links {
-    a {
-        cursor: pointer;
-    }
-}
-
-// Case with ion-input + ion-select inside.
-ion-item.item-input.item-multiple-inputs {
-    .flex-row {
-        width: 100%;
-        ion-select {
-            position: relative;
-        }
-    }
 }
 
 ion-item-divider.item,

@@ -1,0 +1,81 @@
+// Select.
+ion-select {
+    &::part(text) {
+        white-space: normal;
+    }
+    &::part(icon) {
+        opacity: 1;
+    }
+}
+
+ion-select-popover {
+    ion-list ion-radio-group ion-item.select-interface-option ion-radio.hydrated::part(container) {
+        opacity: 1;
+    }
+
+    ion-item {
+        font-size: var(--text-size);
+    }
+    ion-item.core-select-option-border-bottom {
+        border-bottom: 1px solid var(--stroke);
+    }
+
+    ion-item.core-select-option-title {
+        cursor: pointer;
+        ion-radio::part(container) {
+            display: none;
+        }
+    }
+}
+
+// Case with ion-input + ion-select inside.
+ion-item.item-input.item-multiple-inputs {
+    .flex-row {
+        width: 100%;
+        ion-select {
+            position: relative;
+        }
+    }
+}
+
+.select-alert.ios {
+    .alert-checkbox-icon {
+        border-radius: 2px;
+    }
+
+    .alert-radio-icon {
+        height: var(--size);
+        width: var(--size);
+        min-width: var(--size);
+        border-radius: var(--border-radius);
+        border-width: var(--outer-border-width);
+        border-style: var(--border-style);
+        border-color: var(--color);
+        @include margin(10px, 8px, 10px, 8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .alert-radio-inner {
+            top: auto;
+            left: auto;
+            position: static;
+            border-radius: var(--inner-border-radius);
+            width: calc(50% + var(--outer-border-width));
+            height: calc(50% + var(--outer-border-width));
+            transform: scale3d(0, 0, 0);
+            transition: transform 280ms cubic-bezier(.4, 0, .2, 1);
+            background: var(--contrast-background);
+            border: 0 !important;
+        }
+    }
+
+    button[aria-checked=true] .alert-radio-icon {
+        border-color: var(--color-checked);
+        background: var(--color-checked);
+
+        .alert-radio-inner {
+            transform: scale3d(1, 1, 1);
+        }
+    }
+}

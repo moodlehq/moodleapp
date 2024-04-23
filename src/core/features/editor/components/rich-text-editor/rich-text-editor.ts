@@ -1014,7 +1014,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
                 // Draft saved, notify the user.
                 this.lastDraft = newText;
                 this.showMessage('core.editor.autosavesucceeded', this.SAVE_MESSAGE_CLEAR_TIME);
-            } catch (error) {
+            } catch {
                 // Error saving draft.
             }
         }, this.DRAFT_AUTOSAVE_FREQUENCY);

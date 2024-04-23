@@ -15,11 +15,14 @@
         flex-grow: 1;
     }
 
-    div.flew-row {
+    div.flex-row {
         width: 100%;
-        display: flex;
-        flex-direction: row;
         justify-content: space-between;
         align-items: center;
+    }
+
+    ion-item.question-rows {
+        --inner-padding-top: var(--mdl-spacing-2);
+        --inner-padding-bottom: var(--mdl-spacing-2);
     }
 }

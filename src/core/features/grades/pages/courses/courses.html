@@ -21,7 +21,9 @@
                     [attr.aria-current]="courses.getItemAriaCurrent(course)" class="ion-text-wrap" button [detail]="true"
                     (click)="courses.select(course)">
                     <ion-label>
-                        <core-format-text [text]="course.courseFullName" [contextInstanceId]="course.courseid" contextLevel="course" />
+                        <p class="item-heading">
+                            <core-format-text [text]="course.courseFullName" [contextInstanceId]="course.courseid" contextLevel="course" />
+                        </p>
                     </ion-label>
                     <ion-badge slot="end" color="light">
                         <span class="sr-only" *ngIf="course.grade && course.grade !== '-'">
