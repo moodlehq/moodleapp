@@ -44,7 +44,7 @@ export class CoreLinkDirective implements OnInit {
     @Input() autoLogin: boolean | string = true; // Whether to try to use auto-login. Values yes/no/check are deprecated.
     @Input() showBrowserWarning = true; // Whether to show a warning before opening browser. Defaults to true.
 
-    protected element: HTMLElement;
+    protected element: HTMLElement | HTMLIonFabButtonElement | HTMLIonButtonElement | HTMLIonItemElement;
 
     constructor(
         element: ElementRef,
@@ -54,10 +54,18 @@ export class CoreLinkDirective implements OnInit {
     }
 
     /**
-     * Function executed when the component is initialized.
+     * @inheritdoc
      */
-    ngOnInit(): void {
-        CoreDom.initializeClickableElementA11y(this.element, (event) => this.performAction(event));
+    async ngOnInit(): Promise<void> {
+        let hasNativeButton = false;
+        if ('componentOnReady' in this.element) {
+            await this.element.componentOnReady();
+
+            // Native buttons may be already accessible and does not neet to set TabIndex and role.
+            hasNativeButton = !!this.element.shadowRoot?.querySelector('.button-native');
+        }
+
+        CoreDom.initializeClickableElementA11y(this.element, (event) => this.performAction(event), !hasNativeButton);
     }
 
     /**
@@ -79,7 +87,7 @@ export class CoreLinkDirective implements OnInit {
 
         href = href || this.element.getAttribute('href') || this.element.getAttribute('xlink:href');
 
-        if (!href || CoreUrlUtils.getUrlScheme(href) == 'javascript') {
+        if (!href || CoreUrlUtils.getUrlScheme(href) === 'javascript') {
             return;
         }
 
