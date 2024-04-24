@@ -108,17 +108,18 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
     /**
      * Sets the isBranded property when undefined.
-     *
-     * @returns wether the icon does not need to be filtered.
      */
     protected async setIsBranded(): Promise<void> {
         if (!this.colorize) {
+            this.isBranded = false;
+
             // It doesn't matter.
             return;
         }
 
         // Earlier 4.0, icons were never colorized.
         if (this.iconVersion === IconVersion.LEGACY_VERSION) {
+            this.isBranded = false;
             this.colorize = false;
 
             return;
@@ -133,7 +134,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
                 return;
             }
 
-            this.isBranded = false;
+            this.isBranded ??= false;
 
             return;
         }
