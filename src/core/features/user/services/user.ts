@@ -26,7 +26,6 @@ import { CoreEvents, CoreEventSiteData, CoreEventUserDeletedData, CoreEventUserS
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
-import { CoreUserHelper } from './user-helper';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreConstants } from '@/core/constants';
@@ -669,11 +668,8 @@ export class CoreUserProvider {
             }
 
             // Do not prefetch when initials are set and image is default.
-            if ('firstname' in entry || 'lastname' in entry) {
-                const initials = CoreUserHelper.getUserInitials(entry);
-                if (initials && imageUrl && CoreUrlUtils.isThemeImageUrl(imageUrl)) {
-                    return;
-                }
+            if (imageUrl && CoreUrlUtils.isThemeImageUrl(imageUrl)) {
+                return;
             }
 
             treated[imageUrl] = true;

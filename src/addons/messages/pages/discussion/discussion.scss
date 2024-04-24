@@ -35,7 +35,19 @@
             padding: 0px;
 
             .core-bar-button-image {
+                --userpicture-padding: 4px;
                 @include margin-horizontal(null, 6px);
+            }
+
+            // Group avatar.
+            img.core-bar-button-image {
+                padding: var(--userpicture-padding);
+                width: var(--core-header-toolbar-button-image-size);
+                height: var(--core-header-toolbar-button-image-size);
+                max-width: var(--core-header-toolbar-button-image-size);
+                max-height: var(--core-header-toolbar-button-image-size);
+                border-radius: var(--core-avatar-radius);
+                display: block;
             }
 
             core-format-text {
