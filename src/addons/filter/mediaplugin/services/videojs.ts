@@ -165,6 +165,14 @@ export class AddonFilterMediaPluginVideoJSService {
         const videoWidth = player.videoWidth();
         const videoHeight = player.videoHeight();
         const playerDimensions = player.currentDimensions();
+        const offsetParentWidth = player.el().offsetParent?.clientWidth;
+
+        if (offsetParentWidth && playerDimensions.width > offsetParentWidth) {
+            // The player is bigger than the container. Resize it.
+            player.dimension('width', offsetParentWidth);
+            playerDimensions.width = offsetParentWidth;
+        }
+
         if (!videoWidth || !videoHeight || !playerDimensions.width || videoWidth === playerDimensions.width) {
             return;
         }

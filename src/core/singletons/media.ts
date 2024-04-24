@@ -54,7 +54,7 @@ export class CoreMedia {
      * @returns Whether needs conversion.
      */
     static sourceNeedsConversion(source: CoreMediaSource): boolean {
-        if (!CorePlatform.isIOS()) {
+        if (!CorePlatform.isMobile()) {
             return false;
         }
 
@@ -84,7 +84,7 @@ export class CoreMedia {
      * @returns Whether JS player should be used.
      */
     static mediaUsesJavascriptPlayer(mediaElement: HTMLVideoElement | HTMLAudioElement): boolean {
-        if (!CorePlatform.isIOS()) {
+        if (!CorePlatform.isMobile()) {
             return false;
         }
 
