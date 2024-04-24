@@ -118,7 +118,11 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
             this.data = this.data || {};
             this.forceCompile = true;
 
-            this.jsData = Object.assign(this.data, CoreSitePlugins.createDataForJS(this.initResult, result));
+            this.jsData = {
+                ...this.args,
+                ...this.data,
+                ...CoreSitePlugins.createDataForJS(this.initResult, result),
+            };
 
             // Pass some methods as jsData so they can be called from the template too.
             this.jsData.fetchContent = (refresh?: boolean) => this.fetchContent(refresh);
