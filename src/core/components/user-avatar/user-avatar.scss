@@ -79,6 +79,8 @@
         font-weight: normal;
         width: calc(var(--core-avatar-size) - var(--userpicture-padding) - var(--userpicture-padding));
         height: calc(var(--core-avatar-size) - var(--userpicture-padding) - var(--userpicture-padding));
+        min-height: 0px;
+        min-width: 0px;
         font-size: calc(var(--core-avatar-size)*0.3);
         margin: var(--userpicture-padding);
 
