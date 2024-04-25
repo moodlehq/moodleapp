@@ -23,16 +23,16 @@
         color: var(--addon-messages-discussion-badge-text);
         background-color: var(--addon-messages-discussion-badge);
         display: block;
-        @include position(0, 0, null, null);
+        @include position(0px, 0px, null, null);
     }
 
     ion-header ion-toolbar ion-title {
-        padding: 0;
+        padding: 0px;
 
         h1 {
             display: flex;
             align-items: center;
-            padding: 0;
+            padding: 0px;
 
             .core-bar-button-image {
                 @include margin-horizontal(null, 6px);

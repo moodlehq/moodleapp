@@ -1,7 +1,7 @@
 :host-context(.ios) {
     ion-footer .toolbar:last-child {
         padding-bottom: 4px;
-        min-height: 0;
+        min-height: 0px;
     }
 }
 
@@ -10,7 +10,11 @@ ion-content {
     --background: var(--content-background);
 
     &::part(scroll) {
-        padding-bottom: 0 !important;
+        padding-bottom: 0px !important;
+    }
+
+    core-empty-box {
+        --core-empty-box-icon-color: var(--dark);
     }
 }
 

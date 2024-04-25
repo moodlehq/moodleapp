@@ -1387,7 +1387,6 @@ export class CoreUtilsProvider {
      * @param data Object.
      * @param prefix Prefix to add.
      * @returns Prefixed object.
-     * @deprecated since 4.4. Not used anymore.
      */
     prefixKeys(data: Record<string, unknown>, prefix: string): Record<string, unknown> {
         const newObj = {};
