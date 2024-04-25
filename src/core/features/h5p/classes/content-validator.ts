@@ -17,6 +17,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { Translate } from '@singletons';
 import { CoreH5PCore, CoreH5PLibraryData, CoreH5PLibraryAddonData, CoreH5PContentDepsTreeDependency } from './core';
+import { CoreArray } from '@singletons/array';
 
 const ALLOWED_STYLEABLE_TAGS = ['span', 'p', 'div', 'h1', 'h2', 'h3', 'td'];
 
@@ -131,7 +132,7 @@ export class CoreH5PContentValidator {
                 tags.push('s');
             }
 
-            tags = CoreUtils.uniqueArray(tags);
+            tags = CoreArray.unique(tags);
 
             // Determine allowed style tags
             const stylePatterns: RegExp[] = [];
@@ -372,7 +373,7 @@ export class CoreH5PContentValidator {
         if (semantics.extraAttributes) {
             validKeys = validKeys.concat(semantics.extraAttributes);
         }
-        validKeys = CoreUtils.uniqueArray(validKeys);
+        validKeys = CoreArray.unique(validKeys);
 
         this.filterParams(file, validKeys);
 
@@ -556,7 +557,7 @@ export class CoreH5PContentValidator {
 
         let validKeys = ['library', 'params', 'subContentId', 'metadata'];
         if (semantics.extraAttributes) {
-            validKeys = CoreUtils.uniqueArray(validKeys.concat(semantics.extraAttributes));
+            validKeys = CoreArray.unique(validKeys.concat(semantics.extraAttributes));
         }
 
         this.filterParams(value, validKeys);

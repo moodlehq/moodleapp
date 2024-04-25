@@ -537,10 +537,12 @@ export class CoreDom {
      *
      * @param element Element to listen to events.
      * @param callback Callback to call when clicked or the key is pressed.
+     * @param setTabIndex Whether to set tabindex and role.
      */
     static initializeClickableElementA11y(
         element: HTMLElement & {disabled?: boolean},
         callback: (event: MouseEvent | KeyboardEvent) => void,
+        setTabIndex = true,
     ): void {
         const enabled = () => !CoreUtils.isTrueOrOne(element.dataset.disabledA11yClicks ?? 'false');
 
@@ -563,14 +565,14 @@ export class CoreDom {
             }
 
             if (event.key === ' ' || event.key === 'Enter') {
+                callback(event);
+
                 event.preventDefault();
                 event.stopPropagation();
-
-                callback(event);
             }
         });
 
-        if (element.tagName !== 'BUTTON' && element.tagName !== 'A') {
+        if (setTabIndex && element.tagName !== 'BUTTON' && element.tagName !== 'A') {
             // Set tabindex if not previously set.
             if (element.getAttribute('tabindex') === null) {
                 element.setAttribute('tabindex', element.disabled ? '-1' : '0');

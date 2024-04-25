@@ -66,4 +66,46 @@ export class CoreArray {
         return newArray;
     }
 
+    /**
+     * Return an array without duplicate values.
+     *
+     * @param array The array to treat.
+     * @param [key] Key of the property that must be unique. If not specified, the whole entry.
+     * @returns Array without duplicate values.
+     */
+    static unique<T>(array: T[], key?: string): T[] {
+        const unique = {}; // Use an object to make it faster to check if it's duplicate.
+
+        return array.filter(entry => {
+            const value = key ? entry[key] : entry;
+
+            if (value in unique) {
+                return false;
+            }
+
+            unique[value] = true;
+
+            return true;
+        });
+    }
+
+    /**
+     * Given an array of strings, return only the ones that match a regular expression.
+     *
+     * @param array Array to filter.
+     * @param regex RegExp to apply to each string.
+     * @returns Filtered array.
+     */
+    static filterByRegexp(array: string[], regex: RegExp): string[] {
+        if (!array || !array.length) {
+            return [];
+        }
+
+        return array.filter((entry) => {
+            const matches = entry.match(regex);
+
+            return matches && matches.length;
+        });
+    }
+
 }

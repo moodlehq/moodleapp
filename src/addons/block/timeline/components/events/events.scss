@@ -27,24 +27,20 @@ h4.core-bold {
         --margin-end: 0.5rem;
         --margin-vertical: 0;
     }
+
+    ion-label {
+        display: flex;
+        flex-direction: column;
+
+        .addon-block-timeline-activity-action {
+            display: flex;
+            justify-content: flex-end;
+        }
+    }
 }
 
 .addon-block-timeline-activity-time {
     flex-grow: 0;
-}
-
-.addon-block-timeline-activity-action {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.addon-block-timeline-activity-main,
-.addon-block-timeline-activity-name {
-    flex-grow: 1;
-    p {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
 }
 
 .addon-block-timeline-activity-name {

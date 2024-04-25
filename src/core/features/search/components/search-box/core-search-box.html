@@ -2,8 +2,7 @@
     <ion-input [attr.aria-label]="placeholder" type="search" name="search" [(ngModel)]="searchText" [placeholder]="placeholder"
         [autocorrect]="autocorrect" [spellcheck]="spellcheck" [core-auto-focus]="autoFocus" [disabled]="disabled" role="searchbox"
         (ionFocus)="focus($event)">
-        <ion-button slot="end" fill="clear" type="submit" [attr.aria-label]="searchLabel"
-            [disabled]="disabled || !searchText || (searchText.length < lengthCheck)">
+        <ion-button slot="end" fill="clear" type="submit" [attr.aria-label]="searchLabel" [disabled]="disabled || !searchText">
             <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
         </ion-button>
         <ion-button *ngIf="showClear" slot="end" fill="clear" [attr.aria-label]="'core.clearsearch' | translate"
@@ -11,6 +10,11 @@
             <ion-icon name="fas-delete-left" slot="icon-only" aria-hidden="true" flip-rtl />
         </ion-button>
     </ion-input>
+    <ion-item *ngIf="showLengthAlert" class="core-search-alert text-danger ion-text-wrap" role="alert">
+        <ion-label>
+            {{ 'core.search.err_minlength' | translate : {'$a': {'format': lengthCheck} } }}
+        </ion-label>
+    </ion-item>
     <ion-list class="core-search-history" [hidden]="!historyShown">
         <ion-item button class="ion-text-wrap" *ngFor="let item of history" (click)="historyClicked($event, item.searchedtext)" tabindex="0"
             [detail]="true">

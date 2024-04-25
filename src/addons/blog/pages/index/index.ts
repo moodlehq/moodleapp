@@ -28,6 +28,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
 
@@ -218,7 +219,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
             if (refresh) {
                 this.entries = result.entries;
             } else {
-                this.entries = CoreUtils.uniqueArray(this.entries
+                this.entries = CoreArray.unique(this.entries
                     .concat(result.entries), 'id')
                     .sort((a, b) => b.created - a.created);
             }

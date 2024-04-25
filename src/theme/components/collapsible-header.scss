@@ -25,6 +25,12 @@ body:not(.core-iframe-fullscreen) .collapsible-header-page {
         opacity: 0;
     }
 
+    &.collapsible-header-page-is-collapsed .collapsible-header-floating-title {
+        pointer-events: none;
+        user-select: none;
+        visibility: hidden;
+    }
+
     &:not(.collapsible-header-page-is-collapsed) .collapsible-header-collapsed {
         --core-header-toolbar-border-width: 0;
         --core-header-buttons-background: var(--ion-background-color);
@@ -35,6 +41,9 @@ body:not(.core-iframe-fullscreen) .collapsible-header-page {
 
         h1 {
             opacity: 0;
+            pointer-events: none;
+            user-select: none;
+            visibility: hidden;
         }
 
     }
@@ -64,7 +73,9 @@ body:not(.core-iframe-fullscreen) .collapsible-header-page {
 
             .collapsible-header-original-title {
                 pointer-events: none;
+                user-select: none;
                 opacity: 0;
+                visibility: hidden;
             }
 
             & > *:not(.collapsible-header-floating-title-wrapper),

@@ -23,6 +23,18 @@
     display: flex;
     flex-direction: column;
     background: var(--background);
+    border: 1px solid var(--stroke);
+    border-radius: var(--mdl-shape-borderRadius-md);
+
+    &:focus-within {
+        border-color: var(--a11y-focus-color);
+        border-width: 2px;
+        outline: none !important;
+    }
+
+    .core-rte-editor, .core-textarea, textarea {
+        outline: none !important;
+    }
 
     .core-rte-editor-container {
         max-height: calc(100% - 46px);
@@ -39,7 +51,6 @@
             border-top: 1px solid var(--info);
             background: var(--background);
             flex-shrink: 1;
-            font-size: 1.1rem;
 
             .icon {
                 color: var(--info);
@@ -105,7 +116,6 @@
         flex-grow: 0;
         flex-shrink: 0;
         background-color: var(--toobar-background);
-        padding-top: 5px;
         border-top: 1px solid var(--stroke);
 
         swiper-container {
@@ -122,7 +132,7 @@
             height: 36px;
             padding-right: 6px;
             padding-left: 6px;
-            margin: 0 auto;
+            margin: 2px auto;
             font-size: 18px;
             background-color: var(--toobar-background);
             border-radius: var(--mdl-shape-borderRadius-xs);

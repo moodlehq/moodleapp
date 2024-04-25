@@ -115,6 +115,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     protected keyboardObserver?: CoreEventObserver;
     protected resetObserver?: CoreEventObserver;
     protected labelObserver?: MutationObserver;
+    protected contentObserver?: MutationObserver;
     protected initHeightInterval?: number;
     protected isCurrentView = true;
     protected toolbarButtonWidth = 44;
@@ -126,7 +127,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     protected draftWasRestored = false;
     protected originalContent?: string;
     protected resizeFunction?: () => Promise<number>;
-    protected selectionChangeFunction?: () => void;
+    protected selectionChangeFunction = (): void => this.updateToolbarStyles();
     protected languageChangedSubscription?: Subscription;
     protected resizeListener?: CoreEventObserver;
     protected domPromise?: CoreCancellablePromise<void>;
@@ -226,6 +227,15 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         }
         ionItem.classList.add('item-rte');
 
+        if (this.editorElement) {
+            const debounceMutation = CoreUtils.debounce(() => {
+                this.onChange();
+            }, 20);
+
+            this.contentObserver = new MutationObserver(debounceMutation);
+            this.contentObserver.observe(this.editorElement, { childList: true, subtree: true, characterData: true });
+        }
+
         const label = ionItem.querySelector('ion-label');
 
         if (!label) {
@@ -253,7 +263,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     protected setListeners(): void {
         // Listen for changes on the control to update the editor (if it is updated from outside of this component).
         this.valueChangeSubscription = this.control?.valueChanges.subscribe((newValue) => {
-            if (this.draftWasRestored && this.originalContent == newValue) {
+            if (this.draftWasRestored && this.originalContent === newValue) {
                 // A draft was restored and the content hasn't changed in the site. Use the draft value instead of this one.
                 this.control?.setValue(this.lastDraft, { emitEvent: false });
 
@@ -282,7 +292,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             this.windowResized();
         }, 50);
 
-        document.addEventListener('selectionchange', this.selectionChangeFunction = () => this.updateToolbarStyles());
+        document.addEventListener('selectionchange', this.selectionChangeFunction);
 
         this.keyboardObserver = CoreEvents.on(CoreEvents.KEYBOARD_CHANGE, () => {
             // Opening or closing the keyboard also calls the resize function, but sometimes the resize is called too soon.
@@ -304,8 +314,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @param event Event
      */
     onKeyDown(event: KeyboardEvent): void {
-        this.onChange();
-
         const shortcutId = this.getShortcutId(event);
         const commands = this.getShortcutCommands();
         const command = commands[shortcutId];
@@ -364,7 +372,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
         // Get first children with content, not fixed.
         let scrollContentHeight = 0;
-        while (scrollContentHeight == 0 && content?.children) {
+        while (scrollContentHeight === 0 && content?.children) {
             const children = Array.from(content.children)
                 .filter((element) => element.slot !== 'fixed' && !element.classList.contains('core-loading-container'));
 
@@ -489,7 +497,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @param event The event.
      */
     async toggleEditor(event: Event): Promise<void> {
-        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+        if (event.type === 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
             return;
         }
 
@@ -581,7 +589,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @returns If value is null only a white space.
      */
     protected isNullOrWhiteSpace(value: string | null | undefined): boolean {
-        if (value == null || value === undefined) {
+        if (value === null || value === undefined) {
             return true;
         }
 
@@ -602,10 +610,17 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         }
 
         if (this.isNullOrWhiteSpace(value)) {
-            this.editorElement.innerHTML = '<p></p>';
+            // Avoid loops.
+            if (this.editorElement.innerHTML !== '<p></p>') {
+                this.editorElement.innerHTML = '<p></p>';
+            }
             this.textarea.value = '';
         } else {
-            this.editorElement.innerHTML = value || '';
+            value = value || '';
+            // Avoid loops.
+            if (this.editorElement.innerHTML !== value) {
+                this.editorElement.innerHTML = value;
+            }
             this.textarea.value = value;
             this.treatExternalContent();
         }
@@ -637,7 +652,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      *                      toolbar styles button when set.
      */
     buttonAction(event: Event, command: string, parameters?: string): void {
-        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+        if (event.type === 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
             return;
         }
 
@@ -659,7 +674,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @param command.parameters Command parameters.
      */
     protected executeCommand({ name: command, parameters }: EditorCommand): void {
-        if (parameters == 'block') {
+        if (parameters === 'block') {
             // eslint-disable-next-line deprecation/deprecation
             document.execCommand('formatBlock', false, '<' + command + '>');
 
@@ -676,7 +691,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         // Modern browsers are using non a11y tags, so replace them.
         if (command === 'bold') {
             this.replaceTags(['b'], ['strong']);
-        } else if (command == 'italic') {
+        } else if (command === 'italic') {
             this.replaceTags(['i'], ['em']);
         }
     }
@@ -715,14 +730,14 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @param event Event.
      * @param force If true it will not check the target of the event.
      */
-    hideToolbar(event: Event, force = false): void {
+    hideToolbar(event: FocusEvent | KeyboardEvent | MouseEvent, force = false): void {
         if (!force && event.target && this.element.contains(event.target as HTMLElement)) {
             // Do not hide if clicked inside the editor area, except forced.
 
             return;
         }
 
-        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+        if (event.type === 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
             return;
         }
 
@@ -748,7 +763,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     /**
      * Show the toolbar.
      */
-    showToolbar(event: Event): void {
+    showToolbar(event: FocusEvent): void {
         this.updateToolbarButtons();
 
         this.element.classList.add('ion-touched');
@@ -779,14 +794,14 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @param event Event.
      */
     downAction(event: Event): void {
-        if (event.type == 'keydown' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+        if (event.type === 'keydown' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
             return;
         }
 
         const selection = window.getSelection()?.toString();
 
         // When RTE is focused with a whole paragraph in desktop the stopBubble will not fire click.
-        if (CorePlatform.isMobile() || !this.rteEnabled || document.activeElement != this.editorElement || selection == '') {
+        if (CorePlatform.isMobile() || !this.rteEnabled || document.activeElement != this.editorElement || selection === '') {
             this.stopBubble(event);
         }
     }
@@ -795,7 +810,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * Method that shows the next toolbar buttons.
      */
     async toolbarNext(event: Event): Promise<void> {
-        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+        if (event.type === 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
             return;
         }
 
@@ -813,7 +828,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * Method that shows the previous toolbar buttons.
      */
     async toolbarPrev(event: Event): Promise<void> {
-        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+        if (event.type === 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
             return;
         }
 
@@ -831,7 +846,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * Update the number of toolbar buttons displayed.
      */
     async updateToolbarButtons(): Promise<void> {
-        if (!this.isCurrentView || !this.toolbar || !this.toolbarSlides || this.element.offsetParent == null) {
+        if (!this.isCurrentView || !this.toolbar || !this.toolbarSlides || this.element.offsetParent === null) {
             // Don't calculate if component isn't in current view, the calculations are wrong.
             return;
         }
@@ -879,15 +894,18 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      */
     updateToolbarStyles(): void {
         const node = window.getSelection()?.focusNode;
-        if (!node) {
+
+        if (!node || !this.element.contains(node)) {
             return;
         }
 
-        let element = node.nodeType == 1 ? node as HTMLElement : node.parentElement;
+        let element = node.nodeType === 1 ? node as HTMLElement : node.parentElement;
+
         const styles = {};
 
-        while (element != null && element !== this.editorElement) {
+        while (element !== null && element !== this.editorElement) {
             const tagName = element.tagName.toLowerCase();
+
             if (this.toolbarStyles[tagName]) {
                 styles[tagName] = 'true';
             }
@@ -906,7 +924,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     /**
      * Check if should auto save drafts.
      *
-     * @returns {boolean} Whether it should auto save drafts.
+     * @returns Whether it should auto save drafts.
      */
     protected shouldAutoSaveDrafts(): boolean {
         return !!CoreSites.getCurrentSite() &&
@@ -943,8 +961,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             let draftText = entry.drafttext || '';
 
             // Revert untouched editor contents to an empty string.
-            if (draftText == '<p></p>' || draftText == '<p><br></p>' || draftText == '<br>' ||
-                    draftText == '<p>&nbsp;</p>' || draftText == '<p><br>&nbsp;</p>') {
+            if (draftText === '<p></p>' || draftText === '<p><br></p>' || draftText === '<br>' ||
+                    draftText === '<p>&nbsp;</p>' || draftText === '<p><br>&nbsp;</p>') {
                 draftText = '';
             }
 
@@ -977,7 +995,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
             const newText = this.control.value ?? '';
 
-            if (this.lastDraft == newText) {
+            if (this.lastDraft === newText) {
                 // Text hasn't changed, nothing to save.
                 return;
             }
@@ -996,7 +1014,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
                 // Draft saved, notify the user.
                 this.lastDraft = newText;
                 this.showMessage('core.editor.autosavesucceeded', this.SAVE_MESSAGE_CLEAR_TIME);
-            } catch (error) {
+            } catch {
                 // Error saving draft.
             }
         }, this.DRAFT_AUTOSAVE_FREQUENCY);
@@ -1009,7 +1027,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         this.resetObserver = CoreEvents.on(CoreEvents.FORM_ACTION, async (data: CoreEventFormActionData) => {
             const form = this.element.closest('form');
 
-            if (data.form && form && data.form == form) {
+            if (data.form && form && data.form === form) {
                 try {
                     await CoreEditorOffline.deleteDraft(
                         this.contextLevel || ContextLevel.SYSTEM,
@@ -1048,7 +1066,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @returns Promise resolved when done.
      */
     async scanQR(event: Event): Promise<void> {
-        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+        if (event.type === 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
             return;
         }
 
@@ -1097,14 +1115,20 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     ngOnDestroy(): void {
         this.valueChangeSubscription?.unsubscribe();
         this.languageChangedSubscription?.unsubscribe();
-        this.selectionChangeFunction && document.removeEventListener('selectionchange', this.selectionChangeFunction);
+
+        document.removeEventListener('selectionchange', this.selectionChangeFunction);
+
         clearInterval(this.initHeightInterval);
         clearInterval(this.autoSaveInterval);
         clearTimeout(this.hideMessageTimeout);
+
         this.resetObserver?.off();
         this.keyboardObserver?.off();
-        this.labelObserver?.disconnect();
         this.resizeListener?.off();
+
+        this.labelObserver?.disconnect();
+        this.contentObserver?.disconnect();
+
         this.domPromise?.cancel();
         this.buttonsDomPromise?.cancel();
     }

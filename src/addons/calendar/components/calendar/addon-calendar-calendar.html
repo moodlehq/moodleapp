@@ -12,7 +12,7 @@
         <ion-grid class="ion-no-padding addon-calendar-navigation">
             <ion-row class="ion-align-items-center">
                 <ion-col class="ion-text-start" *ngIf="canNavigate">
-                    <ion-button fill="clear" (click)="loadPrevious()" [attr.aria-label]="'core.previous' | translate">
+                    <ion-button fill="clear" (click)="loadPrevious()" [attr.aria-label]="'addon.calendar.monthprev' | translate">
                         <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
                     </ion-button>
                 </ion-col>
@@ -23,7 +23,7 @@
                     </h2>
                 </ion-col>
                 <ion-col class="ion-text-end" *ngIf="canNavigate">
-                    <ion-button fill="clear" (click)="loadNext()" [attr.aria-label]="'core.next' | translate">
+                    <ion-button fill="clear" (click)="loadNext()" [attr.aria-label]="'addon.calendar.monthnext' | translate">
                         <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />
                     </ion-button>
                 </ion-col>
@@ -55,7 +55,8 @@
                                     "weekend": day.isweekend,
                                     "duration_finish": day.haslastdayofevent
                                 }' [class.addon-calendar-event-past-day]="month.isPastMonth || day.ispast" role="cell"
-                                (ariaButtonClick)="dayClicked(day.mday)" [tabindex]="activeView ? 0 : -1">
+                                (ariaButtonClick)="dayClicked(day.mday)" [tabindex]="activeView ? 0 : -1"
+                                [attr.aria-current]="month.isCurrentMonth && day.istoday ? 'date' : null">
                                 <p class="addon-calendar-day-number">
                                     <span aria-hidden="true">{{ day.mday }}</span>
                                     <span class="sr-only">{{ day.periodName | translate }}</span>

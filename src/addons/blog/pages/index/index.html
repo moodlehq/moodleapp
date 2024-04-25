@@ -20,7 +20,7 @@
 
     <core-loading [hideUntil]="loaded">
         @if (showMyEntriesToggle) {
-        <ion-item>
+        <ion-item class="ion-no-validation">
             <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)">
                 {{ 'addon.blog.showonlyyourentries' | translate }}
             </ion-toggle>
@@ -65,34 +65,32 @@
             </div>
 
 
-            <ion-label>
-                <div class="entry-summary" [ngClass]="{ 'border-bottom': entry.lastmodified <= entry.created }" [collapsible-item]="64">
-                    <div class="ion-margin-bottom">
-                        <core-format-text [text]="entry.summary" [component]="component" [componentId]="entry.id"
-                            [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="entry.courseid" />
-                    </div>
-
-                    @if (tagsEnabled && entry.tags && entry.tags!.length > 0) {
-                    <ion-item class="ion-text-wrap">
-                        <ion-label>
-                            <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
-                            <core-tag-list [tags]="entry.tags" />
-                        </ion-label>
-                    </ion-item>
-                    }
-
-                    @for (file of entry.attachmentfiles; track $index) {
-                    <core-file [file]="file" [component]="this.component" [componentId]="entry.id" />
-                    }
-
-                    @if (entry.uniquehash) {
-                    <ion-item [href]="entry.uniquehash" core-link [detail]="true">
-                        <ion-label>{{ 'addon.blog.linktooriginalentry' | translate }}</ion-label>
-                    </ion-item>
-                    }
-
+            <div class="entry-summary" [ngClass]="{ 'border-bottom': entry.lastmodified <= entry.created }" [collapsible-item]="64">
+                <div class="ion-margin-bottom">
+                    <core-format-text [text]="entry.summary" [component]="component" [componentId]="entry.id" [contextLevel]="contextLevel"
+                        [contextInstanceId]="contextInstanceId" [courseId]="entry.courseid" />
                 </div>
-            </ion-label>
+
+                @if (tagsEnabled && entry.tags && entry.tags!.length > 0) {
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
+                        <core-tag-list [tags]="entry.tags" />
+                    </ion-label>
+                </ion-item>
+                }
+
+                @for (file of entry.attachmentfiles; track $index) {
+                <core-file [file]="file" [component]="this.component" [componentId]="entry.id" />
+                }
+
+                @if (entry.uniquehash) {
+                <ion-item [href]="entry.uniquehash" core-link [detail]="true">
+                    <ion-label>{{ 'addon.blog.linktooriginalentry' | translate }}</ion-label>
+                </ion-item>
+                }
+
+            </div>
 
             @if (entry.lastmodified > entry.created || (entry.userid === currentUserId && entry.publishstate !== 'draft')) {
             <ion-item class="entry-last-modification">

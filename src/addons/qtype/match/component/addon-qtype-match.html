@@ -1,18 +1,20 @@
 <section class="addon-qtype-match-container" *ngIf="question && question.loaded">
-    <ion-item class="ion-text-wrap">
+    <ion-item class="ion-text-wrap question-text">
         <ion-label>
             <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
                 [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
         </ion-label>
     </ion-item>
-    <ion-item class="ion-text-wrap" *ngFor="let row of question.rows">
+    <ion-item class="ion-text-wrap question-rows" *ngFor="let row of question.rows">
 
         <ion-select id="{{row.id}}" [name]="row.name" [(ngModel)]="row.selected" interface="action-sheet" [disabled]="row.disabled"
             [cancelText]="'core.cancel' | translate"
             [ngClass]="{'addon-qtype-match-correct': row.isCorrect === 1,'addon-qtype-match-incorrect': row.isCorrect === 0}">
-            <div slot="label" class="flew-row">
-                <core-format-text [component]="component" [componentId]="componentId" [text]="row.text" [contextLevel]="contextLevel"
-                    [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+            <div slot="label" class="flex-row ion-text-wrap">
+                <div>
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="row.text" [contextLevel]="contextLevel"
+                        [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+                </div>
                 <label class="accesshide" for="{{row.id}}" *ngIf="row.accessibilityLabel">
                     {{ row.accessibilityLabel }}
                 </label>

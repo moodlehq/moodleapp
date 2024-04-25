@@ -23,4 +23,18 @@ describe('CoreArray singleton', () => {
         expect(CoreArray.withoutItem(originalArray, 'not found')).toEqual(['foo', 'bar', 'baz']);
     });
 
+    it('gets unique array', () => {
+        const originalArray = ['foo', 'bar', 'foo', 'baz'];
+
+        expect(CoreArray.unique(originalArray)).toEqual(['foo', 'bar', 'baz']);
+    });
+
+    it('filters array by regexp', () => {
+        const originalArray = ['foo', 'bar', 'baz', 'qux'];
+
+        expect(CoreArray.filterByRegexp(originalArray, /ba/)).toEqual(['bar', 'baz']);
+        expect(CoreArray.filterByRegexp(originalArray, /foo/)).toEqual(['foo']);
+        expect(CoreArray.filterByRegexp([], /foo/)).toEqual([]);
+    });
+
 });

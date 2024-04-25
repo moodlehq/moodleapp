@@ -21,7 +21,8 @@
             </ion-item-divider>
             <ion-card>
                 <ion-list>
-                    <ion-item class="ion-text-wrap" *ngFor="let device of platform.devices" [class.item-current]="device.current">
+                    <ion-item class="ion-text-wrap ion-no-validation" *ngFor="let device of platform.devices"
+                        [class.item-current]="device.current">
                         <ion-label>
                             <p class="item-heading" id="device-{{device.id}}">
                                 <strong>{{ device.name }} {{ device.model }}</strong> ({{platform.platform}} {{ device.version }})

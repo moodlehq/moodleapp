@@ -19,7 +19,7 @@
         <ion-row class="ion-no-padding ion-wrap">
             <ion-col class="ion-no-padding" size="12" size-sm="6" [attr.col-sm-6]="collections && collections.length > 1 ? '' : null">
                 <core-search-box (onSubmit)="searchTags($event)" (onClear)="searchTags('')" [initialSearch]="query" [disabled]="searching"
-                    autocorrect="off" [spellcheck]="false" [autoFocus]="false" [lengthCheck]="0" searchArea="CoreTag" />
+                    autocorrect="off" [spellcheck]="false" [autoFocus]="false" [lengthCheck]="1" searchArea="CoreTag" />
             </ion-col>
             <ion-col class="ion-no-padding" size="12" size-sm="6" *ngIf="collections && collections.length > 1">
                 <core-combobox [selection]="collectionId" (onChange)="searchTags(query, $event)" [disabled]="searching">
@@ -34,7 +34,7 @@
     </ion-grid>
     <core-loading [hideUntil]="loaded && !searching">
         <core-empty-box *ngIf="!cloud || !cloud!.tags || !cloud!.tags.length" icon="fas-tags"
-            [message]="'core.tag.notagsfound' | translate: {$a: query}" />
+            [message]="'core.tag.notagsfound' | translate: {$a: query}" role="alert" />
 
         <ng-container *ngIf="cloud && cloud!.tags && cloud!.tags.length > 0">
             <div class="ion-text-center core-tag-cloud">

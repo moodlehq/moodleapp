@@ -299,24 +299,38 @@ export class CoreDomUtilsProvider {
     ): Promise<void> {
         let retries = 10;
 
-        let focusElement = element;
+        let elementToFocus = element;
 
-        if ('getInputElement' in focusElement) {
-            // If it's an Ionic element get the right input to use.
-            focusElement.componentOnReady && await focusElement.componentOnReady();
-            focusElement = await focusElement.getInputElement();
+        /**
+         * See focusElement function on Ionic Framework utils/helpers.ts.
+         */
+        if (elementToFocus.classList.contains('ion-focusable')) {
+            const app = elementToFocus.closest('ion-app');
+            if (app) {
+                app.setFocus([elementToFocus]);
+            }
+
+            if (document.activeElement === elementToFocus) {
+                return;
+            }
         }
 
-        if (!focusElement || !focusElement.focus) {
+        if ('getInputElement' in elementToFocus) {
+            // If it's an Ionic element get the right input to use.
+            elementToFocus.componentOnReady && await elementToFocus.componentOnReady();
+            elementToFocus = await elementToFocus.getInputElement();
+        }
+
+        if (!elementToFocus || !elementToFocus.focus) {
             throw new CoreError('Element to focus cannot be focused');
         }
 
-        while (retries > 0 && focusElement !== document.activeElement) {
-            focusElement.focus();
+        while (retries > 0 && elementToFocus !== document.activeElement) {
+            elementToFocus.focus();
 
-            if (focusElement === document.activeElement) {
+            if (elementToFocus === document.activeElement) {
                 await CoreUtils.nextTick();
-                if (CorePlatform.isAndroid() && this.supportsInputKeyboard(focusElement)) {
+                if (CorePlatform.isAndroid() && this.supportsInputKeyboard(elementToFocus)) {
                     // On some Android versions the keyboard doesn't open automatically.
                     CoreApp.openKeyboard();
                 }

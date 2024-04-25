@@ -55,7 +55,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
     @HostBinding('attr.role')
     get getRole(): string | null {
-        return !this.showAlt ? 'presentation' : null;
+        return this.showAlt ? 'img' : 'presentation';
     }
 
     @HostBinding('attr.aria-label')

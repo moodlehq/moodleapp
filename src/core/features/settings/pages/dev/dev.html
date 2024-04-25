@@ -17,13 +17,13 @@
 </ion-header>
 <ion-content>
     <ion-list class="list-item-limited-width">
-        <ion-item class="ion-text-wrap">
+        <ion-item class="ion-text-wrap ion-no-validation">
             <ion-toggle [(ngModel)]="rtl" (ionChange)="RTLChanged()">
                 <p class="item-heading">Change text direction</p>
                 <p>{{ direction }}</p>
             </ion-toggle>
         </ion-item>
-        <ion-item class="ion-text-wrap">
+        <ion-item class="ion-text-wrap ion-no-validation">
             <ion-toggle [(ngModel)]="forceSafeAreaMargins" (ionChange)="safeAreaChanged()">
                 <p class="item-heading">Force safe area margins</p>
             </ion-toggle>
@@ -34,13 +34,13 @@
             </ion-toggle>
         </ion-item>
         <ng-container *ngIf="siteId">
-            <ion-item class="ion-text-wrap">
+            <ion-item class="ion-text-wrap ion-no-validation">
                 <ion-toggle [(ngModel)]="remoteStyles" (ionChange)="remoteStylesChanged()">
                     <p class="item-heading">Enable remote styles <ion-badge>{{remoteStylesCount}}</ion-badge>
                     </p>
                 </ion-toggle>
             </ion-item>
-            <ion-item class="ion-text-wrap">
+            <ion-item class="ion-text-wrap ion-no-validation">
                 <ion-toggle [(ngModel)]="pluginStyles" (ionChange)="pluginStylesChanged()">
                     <p class="item-heading">Enable site plugin styles <ion-badge>{{pluginStylesCount}}</ion-badge>
                     </p>

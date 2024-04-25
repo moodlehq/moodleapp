@@ -41,48 +41,53 @@
 }
 
 ion-tab-bar {
-    height: var(--menutabbar-size);
+    --background: var(--core-bottom-tabs-background);
+    --color: var(--core-bottom-tabs-color);
+    --color-selected: var(--core-bottom-tabs-color-selected);
+    --background-selected: var(--core-bottom-tabs-background-selected);
 
-    core-user-menu-button {
-        align-items: center;
-        display: flex;
-        justify-content: center;
+    height: var(--menutabbar-size);
+}
+
+core-user-menu-button {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+ion-tab-button {
+    &.tab-selected {
+        background: var(--background-selected);
     }
 
-    ion-tab-button {
-        &.tab-selected {
-            background: var(--background-selected);
-        }
+    ion-icon.core-tab-icon {
+        text-overflow: unset;
+        overflow: visible;
+        text-align: center;
+        font-size: var(--mdl-typography-icon-fontSize-lg);
+    }
 
-        ion-icon.core-tab-icon {
-            text-overflow: unset;
-            overflow: visible;
-            text-align: center;
-            font-size: var(--mdl-typography-icon-fontSize-lg);
-        }
+    ion-badge.core-tab-badge {
+        font-size: 12px;
+        font-weight: bold;
+        border-radius: 10px;
+        padding-left: 6px;
+        padding-right: 6px;
+        line-height: 14px;
+        --background: var(--core-bottom-tabs-badge-color);
+        --color: var(--core-bottom-tabs-badge-text-color);
+    }
 
-        ion-badge.core-tab-badge {
-            font-size: 12px;
-            font-weight: bold;
-            border-radius: 10px;
-            padding-left: 6px;
-            padding-right: 6px;
-            line-height: 14px;
-            --background: var(--core-bottom-tabs-badge-color);
-            --color: var(--core-bottom-tabs-badge-text-color);
-        }
-
-        ion-icon.core-tab-badge {
-            color: var(--core-bottom-tabs-badge-color);
-            padding: 3px 6px 2px;
-            @include position(8px, null, null, calc(50% + 6px));
-            min-width: 12px;
-            font-size: 8px;
-            font-weight: normal;
-            box-sizing: border-box;
-            position: absolute;
-            z-index: 1;
-        }
+    ion-icon.core-tab-badge {
+        color: var(--core-bottom-tabs-badge-color);
+        padding: 3px 6px 2px;
+        @include position(8px, null, null, calc(50% + 6px));
+        min-width: 12px;
+        font-size: 8px;
+        font-weight: normal;
+        box-sizing: border-box;
+        position: absolute;
+        z-index: 1;
     }
 }
 

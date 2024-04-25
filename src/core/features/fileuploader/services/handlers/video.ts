@@ -16,10 +16,11 @@ import { Injectable } from '@angular/core';
 
 import { CoreApp } from '@services/app';
 import { CorePlatform } from '@services/platform';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { makeSingleton } from '@singletons';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderHandlerResult } from '../fileuploader-delegate';
 import { CoreFileUploaderHelper } from '../fileuploader-helper';
+
 /**
  * Handler to record a video to upload it.
  */
@@ -42,10 +43,10 @@ export class CoreFileUploaderVideoHandlerService implements CoreFileUploaderHand
     getSupportedMimetypes(mimetypes: string[]): string[] {
         if (CorePlatform.isIOS()) {
             // In iOS it's recorded as MOV.
-            return CoreUtils.filterByRegexp(mimetypes, /^video\/quicktime$/);
+            return CoreArray.filterByRegexp(mimetypes, /^video\/quicktime$/);
         } else if (CorePlatform.isAndroid()) {
             // In Android we don't know the format the video will be recorded, so accept any video mimetype.
-            return CoreUtils.filterByRegexp(mimetypes, /^video\//);
+            return CoreArray.filterByRegexp(mimetypes, /^video\//);
         } else {
             // In browser, support video formats that are supported by MediaRecorder.
             if (MediaRecorder) {

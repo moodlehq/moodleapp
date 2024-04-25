@@ -24,6 +24,7 @@ import { CoreEvents } from '@singletons/events';
 import { AddonNotesDBRecord, AddonNotesDeletedDBRecord } from './database/notes';
 import { AddonNotes, AddonNotesCreateNoteData } from './notes';
 import { AddonNotesOffline } from './notes-offline';
+import { CoreArray } from '@singletons/array';
 
 /**
  * Service to sync notes.
@@ -67,7 +68,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
             courseIds = courseIds.concat(notes.map((note) => note.courseid));
         });
 
-        CoreUtils.uniqueArray(courseIds);
+        CoreArray.unique(courseIds);
 
         // Sync all courses.
         const promises = courseIds.map(async (courseId) => {

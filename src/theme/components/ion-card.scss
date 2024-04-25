@@ -14,6 +14,8 @@ ion-card {
 
     &::part(native) {
         --border-width: 0;
+
+        @include core-focus-over();
     }
 
     ion-item:only-child {

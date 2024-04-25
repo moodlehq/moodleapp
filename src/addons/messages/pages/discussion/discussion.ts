@@ -25,6 +25,7 @@ import {
     AddonMessages,
     AddonMessagesConversationMessageFormatted,
     AddonMessagesSendMessageResults,
+    AddonMessagesUpdateConversationAction,
 } from '../../services/messages';
 import { AddonMessagesOffline, AddonMessagesOfflineMessagesDBRecordFormatted } from '../../services/messages-offline';
 import { AddonMessagesSync, AddonMessagesSyncProvider } from '../../services/messages-sync';
@@ -97,7 +98,6 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     blockIcon = 'fas-user-lock';
     addRemoveIcon = 'fas-user-plus';
     muteIcon = 'fas-bell-slash';
-    favouriteIconSlash = false;
     muteEnabled = false;
     otherMember?: AddonMessagesConversationMember; // Other member information (individual conversations only).
     footerType: 'message' | 'blocked' | 'requiresContact' | 'requestSent' | 'requestReceived' | 'unable' = 'unable';
@@ -594,7 +594,6 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             this.conversationImage = this.conversation.imageurl;
             this.isGroup = this.conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP;
             this.favouriteIcon = 'fas-star';
-            this.favouriteIconSlash = this.conversation.isfavourite;
             this.muteIcon = this.conversation.ismuted ? 'fas-bell' : 'fas-bell-slash';
             if (!this.isGroup) {
                 this.userId = this.conversation.userid;
@@ -1300,14 +1299,13 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
             CoreEvents.trigger(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, {
                 conversationId: this.conversation.id,
-                action: 'favourite',
+                action: AddonMessagesUpdateConversationAction.FAVOURITE,
                 value: this.conversation.isfavourite,
             }, this.siteId);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error changing favourite state.');
         } finally {
             this.favouriteIcon = 'fas-star';
-            this.favouriteIconSlash = this.conversation.isfavourite;
             done && done();
         }
     }
@@ -1333,7 +1331,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
             CoreEvents.trigger(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, {
                 conversationId: this.conversation.id,
-                action: 'mute',
+                action: AddonMessagesUpdateConversationAction.MUTE,
                 value: this.conversation.ismuted,
             }, this.siteId);
 
@@ -1449,7 +1447,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                         AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT,
                         {
                             conversationId: this.conversation.id,
-                            action: 'delete',
+                            action: AddonMessagesUpdateConversationAction.DELETE,
                         },
                         this.siteId,
                     );

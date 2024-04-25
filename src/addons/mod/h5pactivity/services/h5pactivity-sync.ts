@@ -36,6 +36,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreXAPIIRI } from '@features/xapi/classes/iri';
 import { CoreXAPIItemAgent } from '@features/xapi/classes/item-agent';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreArray } from '@singletons/array';
 
 /**
  * Service to sync H5P activities.
@@ -76,7 +77,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
         ]);
 
         const entries = (<(CoreXAPIStatementDBRecord|CoreXAPIStateDBRecord)[]> statements).concat(states);
-        const contextIds = CoreUtils.uniqueArray(entries.map(entry => 'contextid' in entry ? entry.contextid : entry.itemid));
+        const contextIds = CoreArray.unique(entries.map(entry => 'contextid' in entry ? entry.contextid : entry.itemid));
 
         // Sync all activities.
         const promises = contextIds.map(async (contextId) => {

@@ -4,7 +4,8 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1>{{ (showCalendar ? 'addon.calendar.calendarevents' : 'addon.calendar.upcomingevents') | translate }}</h1>
+            <h1>{{ 'addon.calendar.calendar' | translate }}</h1>
+            <p *ngIf="!showCalendar" class="subheading">{{ 'addon.calendar.upcomingevents' | translate }}</p>
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="openFilter()" [attr.aria-label]="'core.filter' | translate">

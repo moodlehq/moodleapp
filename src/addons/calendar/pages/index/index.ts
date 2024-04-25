@@ -159,7 +159,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.loadUpcoming = !!CoreNavigator.getRouteBooleanParam('upcoming');

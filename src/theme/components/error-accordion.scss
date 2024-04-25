@@ -8,7 +8,6 @@
 
     --state-color-hover: rgb(40 40 40, 4%); // --gray-900 4%
     --state-color-pressed: rgb(40 40 40, 12%); // --gray-900 12%
-    --state-color-focused: rgb(40 40 40, 12%); // --gray-900 12%
 
     background: var(--background-color);
     border-radius: var(--mdl-shape-borderRadius-xs);
@@ -78,17 +77,10 @@
             transform: rotate(0);
         }
 
+        @include core-focus-background();
+
         &:hover {
             background: var(--state-color-hover);
-        }
-
-        &:focus {
-            box-shadow: none;
-            background: var(--state-color-focused);
-        }
-
-        &:focus-visible {
-            @include core-focus-style();
         }
 
         &:active {

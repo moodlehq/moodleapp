@@ -31,7 +31,7 @@
         <core-infinite-loading [enabled]="resultsSource.isLoaded() && !resultsSource.isCompleted()" (action)="loadMoreResults($event)"
             [error]="loadMoreError" />
 
-        <core-empty-box *ngIf="resultsSource.isEmpty()" icon="fas-magnifying-glass" [dimmed]="!resultsSource.isLoaded()">
+        <core-empty-box *ngIf="resultsSource.isEmpty()" icon="fas-magnifying-glass" [dimmed]="!resultsSource.isLoaded()" role="alert">
             <p *ngIf="!resultsSource.isLoaded()">{{ 'core.search.empty' | translate }}</p>
             <ng-container *ngIf="resultsSource.isLoaded()">
                 <p><strong>{{ 'core.search.noresults' | translate: { $a: resultsSource.getQuery() } }}</strong></p>

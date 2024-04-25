@@ -43,7 +43,7 @@ Feature: Test creation of calendar events in app
     And I set the field "Description" to "This is User Event 01 description." in the app
     And I set the field "Location" to "Barcelona" in the app
     And I press "Save" in the app
-    Then I should find "Calendar events" in the app
+    Then I should find "Calendar" in the app
 
     # Verify that event was created right.
     When I open the calendar for "4" "2025" in the app

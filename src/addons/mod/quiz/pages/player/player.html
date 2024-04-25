@@ -47,7 +47,7 @@
                             </h2>
                         </ion-label>
                         <div *ngIf="question.status || question.readableMark" slot="end"
-                            class="ion-text-wrap ion-margin-horizontal addon-mod_quiz-question-note">
+                            class="ion-text-wrap ion-margin-start addon-mod_quiz-question-note">
                             <p *ngIf="question.status" class="block">{{question.status}}</p>
                             <p *ngIf="question.readableMark" [innerHTML]="question.readableMark"></p>
                         </div>

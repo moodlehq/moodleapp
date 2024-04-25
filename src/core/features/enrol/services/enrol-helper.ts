@@ -17,6 +17,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEnrolAction, CoreEnrolDelegate, CoreEnrolInfoIcon } from './enrol-delegate';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEnrol, CoreEnrolEnrolmentMethod } from './enrol';
+import { CoreArray } from '@singletons/array';
 
 /**
  * Service that provides helper functions for enrolment plugins.
@@ -32,7 +33,7 @@ export class CoreEnrolHelperService {
      * @returns Enrolment icons to show.
      */
     async getEnrolmentIcons(methodTypes: string[], courseId: number): Promise<CoreEnrolInfoIcon[]> {
-        methodTypes = CoreUtils.uniqueArray(methodTypes);
+        methodTypes = CoreArray.unique(methodTypes);
 
         let enrolmentIcons: CoreEnrolInfoIcon[] = [];
         let addBrowserOption = false;

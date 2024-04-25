@@ -66,7 +66,42 @@
     }
 }
 
-@mixin core-focus() {
+@mixin core-focus-over() {
+    &:focus-visible {
+        @include core-focus-over-internal();
+    }
+
+    @supports not selector(:focus-visible) {
+        @at-root:focus {
+            @include core-focus-over-internal();
+        }
+    }
+}
+
+@mixin core-focus-outline() {
+    &:focus-visible {
+        @include core-focus-outline-internal();
+    }
+    @supports not selector(:focus-visible) {
+        @at-root:focus {
+            @include core-focus-outline-internal();
+        }
+    }
+}
+
+@mixin core-focus-background() {
+    &:focus-visible {
+        @include core-focus-background-internal();
+    }
+    @supports not selector(:focus-visible) {
+        @at-root:focus {
+            @include core-focus-background-internal();
+        }
+    }
+}
+
+
+@mixin core-focus-over-internal() {
     outline: none;
     position: relative;
 
@@ -74,17 +109,26 @@
         @include position(0px, 0px, 0px, 0px);
         position: absolute;
         content: "";
-        opacity: 1;
         z-index: 1;
-        @include core-focus-style();
+        pointer-events: none;
+        user-select: none;
+        @include core-focus-background-internal();
     }
 }
 
-@mixin core-focus-style() {
-    box-shadow: var(--a11y-shadow-focus-boxShadow);
-    border-radius: var(--border-radius);
-    // Thicker option:
-    // outline: var(--a11y-shadow-focus-outline);
+@mixin core-focus-outline-internal() {
+    // box-shadow: var(--a11y-shadow-focus-boxShadow);
+    // border-radius: var(--border-radius);
+    outline: var(--a11y-shadow-focus-outline);
+}
+
+
+@mixin core-focus-background-internal() {
+    --background-focused: var(--background-focused, var(--a11y-background-focus-background));
+    --background-focused-opacity: var(--a11y-background-focus-opacity);
+    --background: var(--a11y-background-focus-background-rgb);
+    background: var(--background);
+    outline: none;
 }
 
 @mixin core-transition($properties: all, $duration: 500ms, $timing-function: ease-in-out) {

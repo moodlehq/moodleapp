@@ -11,11 +11,9 @@ ion-item.item.divider {
 
     ion-label h2,
     ion-label p.item-heading {
-        font-size: var(--item-divider-font-size);
-        font-weight: 500;
-        line-height: 1.5;
+        font: var(--mdl-typography-subtitle-font-md);
     }
     ion-label h2.big {
-        font-size: var(--item-divider-font-size-big);
+        font: var(--mdl-typography-subtitle-font-lg);
     }
 }

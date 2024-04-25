@@ -57,7 +57,9 @@
                 overflow: hidden;
 
                 ion-tab-button {
+                    width: 100%;
                     max-width: 100%;
+
                     ion-label {
                         text-overflow: ellipsis;
                         white-space: nowrap;
