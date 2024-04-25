@@ -1,5 +1,5 @@
 <div class="core-rte-editor-container" (click)="focusRTE()" [class.toolbar-hidden]="toolbarHidden">
-    <div [hidden]="!rteEnabled" #editor class="core-rte-editor" role="textbox" contenteditable="true"
+    <div [hidden]="!rteEnabled" #editor class="core-rte-editor" role="textbox" contenteditable="true" [class.empty]="isEmpty"
         [attr.aria-labelledby]="ariaLabelledBy" [attr.data-placeholder-text]="placeholder" (focus)="showToolbar($event)"
         (blur)="hideToolbar($event)" (keydown)="onKeyDown($event)">
     </div>
