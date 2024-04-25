@@ -57,7 +57,7 @@
         --padding-bottom: var(--module-legacy-icon-padding, 8px);
     }
 
-    &.version_current:not(.branded) {
+    &.colorize.version_current:not(.branded) {
         ::ng-deep svg,
         ::ng-deep svg * {
             fill: var(--color) !important;
