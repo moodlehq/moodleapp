@@ -38,6 +38,7 @@ import {
 } from './services/handlers/my-courses-mainmenu';
 import { CoreCoursesRequestPushClickHandler } from './services/handlers/request-push-click';
 import { CoreCoursesMyCoursesLinkHandler } from './services/handlers/my-courses-link';
+import { CoreCoursesSectionLinkHandler } from '@features/courses/services/handlers/section-link';
 
 /**
  * Get courses services.
@@ -89,6 +90,7 @@ const routes: Routes = [
                 CoreContentLinksDelegate.registerHandler(CoreCoursesIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(CoreCoursesMyCoursesLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(CoreCoursesDashboardLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreCoursesSectionLinkHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(CoreCoursesEnrolPushClickHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(CoreCoursesRequestPushClickHandler.instance);
 
