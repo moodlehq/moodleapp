@@ -56,6 +56,10 @@ export class TestingBehatDomUtilsService {
             }
         }
 
+        if (element.slot === 'content' && element.parentElement?.tagName === 'ION-ACCORDION') {
+            return element.parentElement.classList.contains('accordion-expanded');
+        }
+
         if (!container) {
             return true;
         }
