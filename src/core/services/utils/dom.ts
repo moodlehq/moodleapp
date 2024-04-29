@@ -295,10 +295,11 @@ export class CoreDomUtilsProvider {
      * @param element HTML element to focus.
      */
     async focusElement(
-        element: HTMLIonInputElement | HTMLIonTextareaElement | HTMLIonSearchbarElement | HTMLElement,
+        element: HTMLIonInputElement | HTMLIonTextareaElement | HTMLIonSearchbarElement | HTMLIonButtonElement | HTMLElement,
     ): Promise<void> {
         let retries = 10;
 
+        const isIonButton = element.tagName === 'ION-BUTTON';
         let elementToFocus = element;
 
         /**
@@ -319,6 +320,10 @@ export class CoreDomUtilsProvider {
             // If it's an Ionic element get the right input to use.
             elementToFocus.componentOnReady && await elementToFocus.componentOnReady();
             elementToFocus = await elementToFocus.getInputElement();
+        } else if (isIonButton) {
+            // For ion-button, we need to call focus on the inner button. But the activeElement will be the ion-button.
+            ('componentOnReady' in elementToFocus) && await elementToFocus.componentOnReady();
+            elementToFocus = elementToFocus.shadowRoot?.querySelector('.button-native') ?? elementToFocus;
         }
 
         if (!elementToFocus || !elementToFocus.focus) {
@@ -328,7 +333,7 @@ export class CoreDomUtilsProvider {
         while (retries > 0 && elementToFocus !== document.activeElement) {
             elementToFocus.focus();
 
-            if (elementToFocus === document.activeElement) {
+            if (elementToFocus === document.activeElement || (isIonButton && element === document.activeElement)) {
                 await CoreUtils.nextTick();
                 if (CorePlatform.isAndroid() && this.supportsInputKeyboard(elementToFocus)) {
                     // On some Android versions the keyboard doesn't open automatically.
