@@ -127,10 +127,10 @@ Feature: Attempt a quiz in app
     When I press "Submit all and finish" in the app
     And I press "Submit" near "Once you submit" in the app
     Then I should find "Review" in the app
-    And I should find "Started on" in the app
-    And I should find "State" in the app
-    And I should find "Completed on" in the app
-    And I should find "Time taken" in the app
+    And I should find "Started" in the app
+    And I should find "Status" in the app
+    And I should find "Completed" in the app
+    And I should find "Duration" in the app
     And I should find "Marks" in the app
     And I should find "Grade" in the app
     And I should find "Question 1" in the app
@@ -202,9 +202,6 @@ Feature: Attempt a quiz in app
     And I press "Submit all and finish" in the app
     And I press "Submit" in the app
     Then I should find "Review" in the app
-
-    When I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(1) p:nth-child(2)" with "[Started on date]"
-    And I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(3) p:nth-child(2)" with "[Completed on date]"
 
     Given I open a browser tab with url "$WWWROOT"
     When I am on the "quiz1" Activity page logged in as teacher1

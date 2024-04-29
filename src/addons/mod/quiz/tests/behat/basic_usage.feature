@@ -129,10 +129,10 @@ Feature: Attempt a quiz in app
     When I press "Submit all and finish" in the app
     And I press "Submit" near "Once you submit" in the app
     Then I should find "Review" in the app
-    And I should find "Started on" in the app
-    And I should find "Completed on" in the app
-    And I should find "Time taken" in the app
-    And I should find "Finished" within "State" "ion-item" in the app
+    And I should find "Started" in the app
+    And I should find "Completed" in the app
+    And I should find "Duration" in the app
+    And I should find "Finished" within "Status" "ion-item" in the app
     And I should find "0 out of 1" within "Logic" "ion-item" in the app
     And I should find "0 out of 1" within "Cognition" "ion-item" in the app
     And I should find "0/2" within "Marks" "ion-item" in the app
@@ -151,14 +151,14 @@ Feature: Attempt a quiz in app
       | \mod_quiz\event\attempt_summary_viewed | quiz     | Quiz 1       | Course 1 |              |
 
     When I press the back button in the app
-    And I press "Finished" in the app
+    And I press "Attempt 1" in the app
     Then I should find "1" within "Attempt" "ion-item" in the app
-    And I should find "Finished" within "State" "ion-item" in the app
-    And I should find "0" within "Logic / 1" "ion-item" in the app
-    And I should find "0" within "Cognition / 1" "ion-item" in the app
-    And I should find "0" within "Marks / 2" "ion-item" in the app
-    And I should find "0" within "Grade / 100" "ion-item" in the app
-    And I should find "Review" in the app
+    And I should find "Finished" within "Status" "ion-item" in the app
+    And I should find "0 out of 1" within "Logic" "ion-item" in the app
+    And I should find "0 out of 1" within "Cognition" "ion-item" in the app
+    And I should find "0/2" within "Marks" "ion-item" in the app
+    And I should find "0 out of 100" within "Grade" "ion-item" in the app
+    And I should be able to press "Review" in the app
 
   Scenario: Attempt a quiz (all question types)
     Given I entered the quiz activity "Quiz 2" on course "Course 1" as "student1" in the app
@@ -233,8 +233,9 @@ Feature: Attempt a quiz in app
     When I press "Submit" in the app
     Then I should find "Review" in the app
 
-    When I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(1) p:nth-child(2)" with "[Started on date]"
-    And I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(3) p:nth-child(2)" with "[Completed on date]"
+    When I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(2) p:nth-child(2)" with "[Started date]"
+    And I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(3) p:nth-child(2)" with "[Completed date]"
+    And I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(4) p:nth-child(2)" with "[Duration]"
     Then the UI should match the snapshot
 
     Given I open a browser tab with url "$WWWROOT"
