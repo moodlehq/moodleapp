@@ -114,7 +114,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Set fields from user.
      */
-    protected setFields(): void {
+    protected async setFields(): Promise<void> {
         const profileUrl = this.profileUrl || (this.user && (this.user.profileimageurl || this.user.userprofileimageurl ||
             this.user.userpictureurl || this.user.profileimageurlsmall || (this.user.urls && this.user.urls.profileimage)));
 
@@ -124,16 +124,20 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
 
         this.fullname = this.fullname || (this.user && (this.user.fullname || this.user.userfullname));
 
-        if (this.user) {
-            this.initials = CoreUserHelper.getUserInitials(this.user);
-        }
-
-        if (this.initials && this.avatarUrl && CoreUrlUtils.isThemeImageUrl(this.avatarUrl)) {
+        if (this.avatarUrl && CoreUrlUtils.isThemeImageUrl(this.avatarUrl)) {
             this.avatarUrl = undefined;
         }
 
         this.userId = this.userId || (this.user && (this.user.userid || this.user.id));
         this.courseId = this.courseId || (this.user && this.user.courseid);
+
+        this.initials =
+            await CoreUserHelper.getUserInitialsFromParts({
+                firstname: this.user?.firstname,
+                lastname: this.user?.lastname,
+                fullname: this.fullname,
+                userId: this.userId,
+        });
     }
 
     /**

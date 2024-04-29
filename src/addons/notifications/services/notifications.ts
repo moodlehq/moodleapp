@@ -119,7 +119,7 @@ export class AddonNotificationsProvider {
             notification.notif = 1;
             notification.read = notification.timeread > 0;
 
-            if (typeof notification.customdata == 'string') {
+            if (typeof notification.customdata === 'string') {
                 notification.customdata = CoreTextUtils.parseJSON<Record<string, string|number>>(notification.customdata, {});
             }
 
@@ -142,9 +142,6 @@ export class AddonNotificationsProvider {
                 }
             }
 
-            const imgUrl = notification.customdata?.notificationpictureurl || notification.customdata?.notificationiconurl;
-            notification.imgUrl = imgUrl ? String(imgUrl) : undefined;
-
             if (notification.useridfrom > 0) {
                 // Try to get the profile picture of the user.
                 try {
@@ -154,6 +151,12 @@ export class AddonNotificationsProvider {
                     notification.userfromfullname = user.fullname;
                 } catch {
                     // Error getting user. This can happen if device is offline or the user is deleted.
+                }
+            } else {
+                // Do not assign avatar for newlogin notifications.
+                if (notification.eventtype !== 'newlogin') {
+                    const imgUrl = notification.customdata?.notificationpictureurl || notification.customdata?.notificationiconurl;
+                    notification.imgUrl = imgUrl ? String(imgUrl) : undefined;
                 }
             }
 

@@ -51,12 +51,8 @@
         height: var(--core-header-toolbar-button-image-size);
         max-width: var(--core-header-toolbar-button-image-size);
         max-height: var(--core-header-toolbar-button-image-size);
-        border-radius: 50%;
+        border-radius: var(--core-avatar-radius);
         display: block;
-
-        img {
-            border-radius: 50%;
-        }
     }
 
     .contact-status {
@@ -83,8 +79,14 @@
         font-weight: normal;
         width: calc(var(--core-avatar-size) - var(--userpicture-padding) - var(--userpicture-padding));
         height: calc(var(--core-avatar-size) - var(--userpicture-padding) - var(--userpicture-padding));
+        min-height: 0px;
+        min-width: 0px;
         font-size: calc(var(--core-avatar-size)*0.3);
         margin: var(--userpicture-padding);
+
+        &::after {
+            content: attr(data-initials);
+        }
     }
 
     &.large-avatar .userinitials {

@@ -25,9 +25,9 @@ describe('CoreUserAvatarComponent', () => {
         // Assert.
         expect(nativeElement.innerHTML.trim()).not.toHaveLength(0);
 
-        const image = nativeElement.querySelector('img');
-        expect(image).not.toBeNull();
-        expect(image?.src).toEqual(document.location.href + 'assets/img/user-avatar.png');
+        const initials = nativeElement.querySelector('.userinitials');
+        expect(initials).not.toBeNull();
+        expect(initials?.getAttribute('data-initials')?.trim()).toEqual('UNK');
     });
 
 });

@@ -7,20 +7,15 @@
 </ng-container>
 <ng-container *ngIf="!avatarUrl && initials">
     <div class="userinitials" *ngIf="linkProfile" [attr.aria-label]="'core.pictureof' | translate:{$a: fullname}"
-        (ariaButtonClick)="gotoProfile($event)">
-        {{ initials }}
+        [title]="'core.pictureof' | translate:{$a: fullname}" (ariaButtonClick)="gotoProfile($event)" [attr.data-initials]="initials">
     </div>
 
-    <div class="userinitials" *ngIf="!linkProfile" [attr.aria-label]="'core.pictureof' | translate:{$a: fullname}" aria-hidden="true">
-        {{ initials }}
+    <div class="userinitials" *ngIf="!linkProfile" [attr.aria-label]="'core.pictureof' | translate:{$a: fullname}"
+        [title]="'core.pictureof' | translate:{$a: fullname}" role="img" [attr.data-initials]="initials" aria-hidden="true">
     </div>
 </ng-container>
-<ng-container *ngIf="!avatarUrl && !initials">
-    <img class="userpicture" *ngIf="linkProfile" src="assets/img/user-avatar.png" [alt]="'core.pictureof' | translate:{$a: fullname}"
-        (ariaButtonClick)="gotoProfile($event)">
-
-    <img class="userpicture" *ngIf="!linkProfile" src="assets/img/user-avatar.png" [alt]="'core.pictureof' | translate:{$a: fullname}"
-        aria-hidden="true">
+<ng-container *ngIf="!avatarUrl && !initials"><!-- During loading -->
+    <img class="userpicture_loading" src="assets/img/user-avatar.png" role="presentation" aria-hidden="true" alt="">
 </ng-container>
 
 <span *ngIf="checkOnline && isOnline()" class="contact-status online" role="status" [attr.aria-label]="'core.online' | translate">
