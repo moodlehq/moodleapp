@@ -20,6 +20,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCoursesLinksHandlerBase } from '@features/courses/services/handlers/base-link-handler';
 import { CoreLogger } from '@singletons/logger';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Handler to treat links to course section.
@@ -80,10 +81,12 @@ export class CoreCoursesSectionLinkHandlerService extends CoreCoursesLinksHandle
         // Given that getting all the courses from a user could be very network intensive, all the requests
         // in this method will only use cache.
 
-        const courses = await CoreCourses.getUserCourses(true, siteId, CoreSitesReadingStrategy.ONLY_CACHE);
+        const courses = await CoreUtils.ignoreErrors(
+            CoreCourses.getUserCourses(true, siteId, CoreSitesReadingStrategy.ONLY_CACHE),
+        ) ?? [];
 
         for (const course of courses) {
-            const courseSections = await CoreCourse.getSections(
+            const courseSections = await CoreUtils.ignoreErrors(CoreCourse.getSections(
                 course.id,
                 true,
                 true,
@@ -91,9 +94,9 @@ export class CoreCoursesSectionLinkHandlerService extends CoreCoursesLinksHandle
                     ...CoreSites.getReadingStrategyPreSets(CoreSitesReadingStrategy.ONLY_CACHE),
                     getCacheUsingCacheKey: true,
                 },
-            );
+            ));
 
-            const courseSection = courseSections.find(section => section.id === sectionId);
+            const courseSection = courseSections?.find(section => section.id === sectionId);
 
             if (!courseSection) {
                 continue;
