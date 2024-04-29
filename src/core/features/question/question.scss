@@ -5,8 +5,29 @@
         color: var(--core-question-correct-color);
     }
 
+    .core-question-answer-partiallycorrect {
+        color: var(--core-question-partial-color);
+    }
+
     .core-question-answer-incorrect {
         color: var(--core-question-incorrect-color);
+    }
+
+    input, select {
+        &.core-question-answer-correct {
+            --background: var(--core-question-correct-color-bg);
+            --contrast-background: var(--background);
+        }
+
+        &.core-question-answer-partiallycorrect {
+            --background: var(--core-question-partial-color-bg);
+            --contrast-background: var(--background);
+        }
+
+        &.core-question-answer-incorrect {
+            --background: var(--core-question-incorrect-color-bg);
+            --contrast-background: var(--background);
+        }
     }
 
     .core-question-feedback-container ::ng-deep {
@@ -45,6 +66,7 @@
 
     .core-question-feedback-inline {
         display: inline-block;
+        @include margin-horizontal(4px, 0px);
     }
 
     .core-question-feedback-padding {
@@ -60,11 +82,15 @@
         color: var(--core-question-correct-color);
     }
     .core-question-partiallycorrect {
-        background-color: var(--core-question-state-partial-color);
+        --background: var(--core-question-partial-color-bg);
+        background-color: var(--core-question-partial-color-bg);
+        color: var(--core-question-partial-color);
     }
     .core-question-notanswered,
     .core-question-incorrect {
-        background-color: var(--core-question-state-incorrect-color);
+        --background: var(--core-question-incorrect-color-bg);
+        background-color: var(--core-question-incorrect-color-bg);
+        color: var(--core-question-incorrect-color);
     }
     .core-question-answersaved,
     .core-question-requiresgrading {

@@ -171,6 +171,8 @@ html {
     --core-question-correct-color-bg: var(--success-tint);
     --core-question-incorrect-color: var(--danger);
     --core-question-incorrect-color-bg: var(--danger-tint);
+    --core-question-partial-color: var(--warning-shade);
+    --core-question-partial-color-bg: var(--warning-tint);
     --core-question-feedback-color: var(--warning-shade);
     --core-question-feedback-color-bg: var(--warning-tint);
     --core-question-warning-color: var(--danger);

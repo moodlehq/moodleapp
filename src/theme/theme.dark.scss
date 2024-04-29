@@ -135,6 +135,8 @@ html.dark {
     --core-question-correct-color-bg: var(--success-shade);
     --core-question-incorrect-color: var(--danger);
     --core-question-incorrect-color-bg: var(--danger-shade);
+    --core-question-partial-color: var(--warning-tint);
+    --core-question-partial-color-bg: var(--warning-shade);
     --core-question-feedback-color: var(--warning-tint);
     --core-question-feedback-color-bg: var(--warning-shade);
     --core-question-warning-color: var(--danger);
