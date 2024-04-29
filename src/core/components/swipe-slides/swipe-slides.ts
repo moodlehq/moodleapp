@@ -42,6 +42,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     @Output() onDidChange = new EventEmitter<CoreSwipeCurrentItemData<Item>>();
 
     protected swiper?: Swiper;
+
     @ViewChild('swiperRef')
     set swiperRef(swiperRef: ElementRef) {
         /**
@@ -49,21 +50,22 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
          * Otherwise, an outdated swiper reference will be used.
          */
         setTimeout(async () => {
-            if (swiperRef?.nativeElement?.swiper) {
-                this.swiper = swiperRef.nativeElement.swiper as Swiper;
-
-                await this.initialize();
-
-                if (this.options.initialSlide) {
-                    this.swiper.slideTo(this.options.initialSlide, 0, this.options.runCallbacksOnInit);
-                }
-
-                this.updateOptions();
-
-                this.swiper.on('slideChangeTransitionStart', () => this.slideWillChange());
-                this.swiper.on('slideChangeTransitionEnd', () => this.slideDidChange());
-
+            if (!swiperRef?.nativeElement?.swiper) {
+                return;
             }
+
+            this.swiper = swiperRef.nativeElement.swiper as Swiper;
+
+            await this.initialize();
+
+            if (this.options.initialSlide) {
+                this.swiper.slideTo(this.options.initialSlide, 0, this.options.runCallbacksOnInit);
+            }
+
+            this.updateOptions();
+
+            this.swiper.on('slideChangeTransitionStart', () => this.slideWillChange());
+            this.swiper.on('slideChangeTransitionEnd', () => this.slideDidChange());
         }, 0);
     }
 
@@ -160,6 +162,11 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         this.onDidChange.emit(initialItemData);
 
         this.onReadyPromise.resolve();
+
+        // First time the slides are loaded, fix the swiper height.
+        // @todo This is a workarround.
+        await CoreUtils.nextTicks(10);
+        this.fixSwiperHeight();
     }
 
     /**
@@ -195,9 +202,21 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      */
     async slideToItem(item: Item, speed?: number, runCallbacks?: boolean): Promise<void> {
         const index = this.manager?.getSource().getItemIndex(item) ?? -1;
-        if (index != -1) {
+        if (index !== -1) {
             await this.slideToIndex(index, speed, runCallbacks);
         }
+    }
+
+    /**
+     * Fix the swiper height.
+     */
+    async fixSwiperHeight(): Promise<void> {
+        if (!this.swiper || this.swiper.params.autoHeight !== true) {
+            return;
+        }
+
+        // Emptying the height of the wrapper element to allow the swiper to calculate the height of the new slide.
+        this.swiper.wrapperEl.style.height = '';
     }
 
     /**
@@ -293,6 +312,8 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         this.onDidChange.emit(currentItemData);
 
         await this.applyScrollOnChange();
+
+        this.fixSwiperHeight();
     }
 
     /**
