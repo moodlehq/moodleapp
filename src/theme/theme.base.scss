@@ -7,14 +7,13 @@ html.force-safe-area-margins {
     --ion-safe-area-bottom: 40px;
 }
 
-// @todo MOBILE-3790 non-standard property, doesn't work everywhere.
 html {
     --zoom-level: 100%;
     zoom: var(--zoom-level);
-}
 
-body {
-    -webkit-text-size-adjust: var(--zoom-level);
+    &.ios {
+        font-size: var(--zoom-level);
+    }
 }
 
 a {
