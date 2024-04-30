@@ -10,6 +10,7 @@ $quiz-timer-iterations: 15 !default;
         font-size: var(--mdl-typography-fontSize-md);
         margin-top: 2px;
         margin-bottom: 2px;
+        text-align: end;
     }
 
     core-timer {

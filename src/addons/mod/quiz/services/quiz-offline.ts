@@ -23,7 +23,8 @@ import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizAttemptDBRecord, ATTEMPTS_TABLE_NAME } from './database/quiz';
-import { AddonModQuizAttemptWSData, AddonModQuizProvider, AddonModQuizQuizWSData } from './quiz';
+import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from './quiz';
+import { ADDON_MOD_QUIZ_COMPONENT } from '../constants';
 
 /**
  * Service to handle offline quiz.
@@ -103,7 +104,7 @@ export class AddonModQuizOfflineProvider {
      * @returns Promise resolved with the answers.
      */
     getAttemptAnswers(attemptId: number, siteId?: string): Promise<CoreQuestionAnswerDBRecord[]> {
-        return CoreQuestion.getAttemptAnswers(AddonModQuizProvider.COMPONENT, attemptId, siteId);
+        return CoreQuestion.getAttemptAnswers(ADDON_MOD_QUIZ_COMPONENT, attemptId, siteId);
     }
 
     /**
@@ -149,7 +150,7 @@ export class AddonModQuizOfflineProvider {
 
         await Promise.all(questions.map(async (question) => {
             const dbQuestion = await CoreUtils.ignoreErrors(
-                CoreQuestion.getQuestion(AddonModQuizProvider.COMPONENT, attemptId, question.slot, siteId),
+                CoreQuestion.getQuestion(ADDON_MOD_QUIZ_COMPONENT, attemptId, question.slot, siteId),
             );
 
             if (!dbQuestion) {
@@ -230,8 +231,8 @@ export class AddonModQuizOfflineProvider {
         const db = await CoreSites.getSiteDb(siteId);
 
         await Promise.all([
-            CoreQuestion.removeAttemptAnswers(AddonModQuizProvider.COMPONENT, attemptId, siteId),
-            CoreQuestion.removeAttemptQuestions(AddonModQuizProvider.COMPONENT, attemptId, siteId),
+            CoreQuestion.removeAttemptAnswers(ADDON_MOD_QUIZ_COMPONENT, attemptId, siteId),
+            CoreQuestion.removeAttemptQuestions(ADDON_MOD_QUIZ_COMPONENT, attemptId, siteId),
             db.deleteRecords(ATTEMPTS_TABLE_NAME, { id: attemptId }),
         ]);
     }
@@ -248,8 +249,8 @@ export class AddonModQuizOfflineProvider {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         await Promise.all([
-            CoreQuestion.removeQuestion(AddonModQuizProvider.COMPONENT, attemptId, slot, siteId),
-            CoreQuestion.removeQuestionAnswers(AddonModQuizProvider.COMPONENT, attemptId, slot, siteId),
+            CoreQuestion.removeQuestion(ADDON_MOD_QUIZ_COMPONENT, attemptId, slot, siteId),
+            CoreQuestion.removeQuestionAnswers(ADDON_MOD_QUIZ_COMPONENT, attemptId, slot, siteId),
         ]);
     }
 
@@ -299,7 +300,7 @@ export class AddonModQuizOfflineProvider {
 
             const state = await CoreQuestionBehaviourDelegate.determineNewState(
                 quiz.preferredbehaviour ?? '',
-                AddonModQuizProvider.COMPONENT,
+                ADDON_MOD_QUIZ_COMPONENT,
                 attempt.id,
                 question,
                 quiz.coursemodule,
@@ -312,12 +313,12 @@ export class AddonModQuizOfflineProvider {
             }
 
             // Delete previously stored answers for this question.
-            await CoreQuestion.removeQuestionAnswers(AddonModQuizProvider.COMPONENT, attempt.id, question.slot, siteId);
+            await CoreQuestion.removeQuestionAnswers(ADDON_MOD_QUIZ_COMPONENT, attempt.id, question.slot, siteId);
         }));
 
         // Now save the answers.
         await CoreQuestion.saveAnswers(
-            AddonModQuizProvider.COMPONENT,
+            ADDON_MOD_QUIZ_COMPONENT,
             quiz.id,
             attempt.id,
             attempt.userid ?? CoreSites.getCurrentSiteUserId(),
@@ -332,7 +333,7 @@ export class AddonModQuizOfflineProvider {
                 const question = questionsWithAnswers[Number(slot)];
 
                 await CoreQuestion.saveQuestion(
-                    AddonModQuizProvider.COMPONENT,
+                    ADDON_MOD_QUIZ_COMPONENT,
                     quiz.id,
                     attempt.id,
                     attempt.userid ?? CoreSites.getCurrentSiteUserId(),

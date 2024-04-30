@@ -29,8 +29,9 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModQuizAttemptDBRecord } from './database/quiz';
 import { AddonModQuizPrefetchHandler } from './handlers/prefetch';
-import { AddonModQuiz, AddonModQuizAttemptWSData, AddonModQuizProvider, AddonModQuizQuizWSData } from './quiz';
+import { AddonModQuiz, AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from './quiz';
 import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-offline';
+import { ADDON_MOD_QUIZ_COMPONENT } from '../constants';
 
 /**
  * Service to sync quizzes.
@@ -79,7 +80,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
                 for (const slot in options.onlineQuestions) {
                     promises.push(CoreQuestionDelegate.deleteOfflineData(
                         options.onlineQuestions[slot],
-                        AddonModQuizProvider.COMPONENT,
+                        ADDON_MOD_QUIZ_COMPONENT,
                         quiz.coursemodule,
                         siteId,
                     ));
@@ -104,13 +105,13 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         // Check if online attempt was finished because of the sync.
         let attemptFinished = false;
-        if (options.onlineAttempt && !AddonModQuiz.isAttemptFinished(options.onlineAttempt.state)) {
+        if (options.onlineAttempt && !AddonModQuiz.isAttemptCompleted(options.onlineAttempt.state)) {
             // Attempt wasn't finished at start. Check if it's finished now.
             const attempts = await AddonModQuiz.getUserAttempts(quiz.id, { cmId: quiz.coursemodule, siteId });
 
             const attempt = attempts.find(attempt => attempt.id == options?.onlineAttempt?.id);
 
-            attemptFinished = attempt ? AddonModQuiz.isAttemptFinished(attempt.state) : false;
+            attemptFinished = attempt ? AddonModQuiz.isAttemptCompleted(attempt.state) : false;
         }
 
         return { warnings, attemptFinished, updated: !!options.updated || !!options.removeAttempt };
@@ -204,7 +205,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             }
             quizIds[attempt.quizid] = true;
 
-            if (CoreSync.isBlocked(AddonModQuizProvider.COMPONENT, attempt.quizid, siteId)) {
+            if (CoreSync.isBlocked(ADDON_MOD_QUIZ_COMPONENT, attempt.quizid, siteId)) {
                 return;
             }
 
@@ -268,7 +269,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         }
 
         // Verify that quiz isn't blocked.
-        if (CoreSync.isBlocked(AddonModQuizProvider.COMPONENT, quiz.id, siteId)) {
+        if (CoreSync.isBlocked(ADDON_MOD_QUIZ_COMPONENT, quiz.id, siteId)) {
             this.logger.debug('Cannot sync quiz ' + quiz.id + ' because it is blocked.');
 
             throw new CoreError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
@@ -300,7 +301,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         // Sync offline logs.
         await CoreUtils.ignoreErrors(
-            CoreCourseLogHelper.syncActivity(AddonModQuizProvider.COMPONENT, quiz.id, siteId),
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_QUIZ_COMPONENT, quiz.id, siteId),
         );
 
         // Get all the offline attempts for the quiz. It should always be 0 or 1 attempt
@@ -323,7 +324,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         const lastAttemptId = onlineAttempts.length ? onlineAttempts[onlineAttempts.length - 1].id : undefined;
         const onlineAttempt = onlineAttempts.find((attempt) => attempt.id == offlineAttempt.id);
 
-        if (!onlineAttempt || AddonModQuiz.isAttemptFinished(onlineAttempt.state)) {
+        if (!onlineAttempt || AddonModQuiz.isAttemptCompleted(onlineAttempt.state)) {
             // Attempt not found or it's finished in online. Discard it.
             warnings.push(Translate.instant('addon.mod_quiz.warningattemptfinished'));
 
@@ -381,7 +382,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             await CoreQuestionDelegate.prepareSyncData(
                 onlineQuestion,
                 offlineQuestions[slot].answers,
-                AddonModQuizProvider.COMPONENT,
+                ADDON_MOD_QUIZ_COMPONENT,
                 quiz.coursemodule,
                 siteId,
             );

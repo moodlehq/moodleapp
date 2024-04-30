@@ -30,10 +30,17 @@ import {
     AddonModQuizAttemptWSData,
     AddonModQuizCombinedReviewOptions,
     AddonModQuizGetQuizAccessInformationWSResponse,
-    AddonModQuizProvider,
     AddonModQuizQuizWSData,
 } from './quiz';
 import { AddonModQuizOffline } from './quiz-offline';
+import {
+    ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD,
+    AddonModQuizAttemptStates,
+    AddonModQuizDisplayOptionsAttemptStates,
+} from '../constants';
+import { QuestionDisplayOptionsMarks } from '@features/question/constants';
+import { CoreGroups } from '@services/groups';
+import { CoreTimeUtils } from '@services/utils/time';
 
 /**
  * Helper service that provides some features for quiz.
@@ -42,30 +49,139 @@ import { AddonModQuizOffline } from './quiz-offline';
 export class AddonModQuizHelperProvider {
 
     /**
+     * Check if current user can review an attempt.
+     *
+     * @param quiz Quiz.
+     * @param accessInfo Access info.
+     * @param attempt Attempt.
+     * @returns Whether user can review the attempt.
+     */
+    async canReviewAttempt(
+        quiz: AddonModQuizQuizWSData,
+        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
+        attempt: AddonModQuizAttemptWSData,
+    ): Promise<boolean> {
+        if (!this.hasReviewCapabilityForAttempt(quiz, accessInfo, attempt)) {
+            return false;
+        }
+
+        if (attempt.userid !== CoreSites.getCurrentSiteUserId()) {
+            return this.canReviewOtherUserAttempt(quiz, accessInfo, attempt);
+        }
+
+        if (!AddonModQuiz.isAttemptCompleted(attempt.state)) {
+            // Cannot review own uncompleted attempts.
+            return false;
+        }
+
+        if (attempt.preview && accessInfo.canpreview) {
+            // A teacher can always review their own preview no matter the review options settings.
+            return true;
+        }
+
+        if (!attempt.preview && accessInfo.canviewreports) {
+            // Users who can see reports should be shown everything, except during preview.
+            // In LMS, the capability 'moodle/grade:viewhidden' is also checked but the app doesn't have this info.
+            return true;
+        }
+
+        const options = AddonModQuiz.getDisplayOptionsForQuiz(quiz, AddonModQuiz.getAttemptStateDisplayOption(quiz, attempt));
+
+        return options.attempt;
+    }
+
+    /**
+     * Check if current user can review another user attempt.
+     *
+     * @param quiz Quiz.
+     * @param accessInfo Access info.
+     * @param attempt Attempt.
+     * @returns Whether user can review the attempt.
+     */
+    protected async canReviewOtherUserAttempt(
+        quiz: AddonModQuizQuizWSData,
+        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
+        attempt: AddonModQuizAttemptWSData,
+    ): Promise<boolean> {
+        if (!accessInfo.canviewreports) {
+            return false;
+        }
+
+        try {
+            const groupInfo = await CoreGroups.getActivityGroupInfo(quiz.coursemodule);
+            if (groupInfo.canAccessAllGroups || !groupInfo.separateGroups) {
+                return true;
+            }
+
+            // Check if the current user and the attempt's user share any group.
+            if (!groupInfo.groups.length) {
+                return false;
+            }
+
+            const attemptUserGroups = await CoreGroups.getUserGroupsInCourse(quiz.course, undefined, attempt.userid);
+
+            return attemptUserGroups.some(attemptUserGroup => groupInfo.groups.find(group => attemptUserGroup.id === group.id));
+        } catch {
+            return false;
+        }
+    }
+
+    /**
+     * Get cannot review message.
+     *
+     * @param quiz Quiz.
+     * @param attempt Attempt.
+     * @param short Whether to use a short message or not.
+     * @returns Cannot review message, or empty string if no message to display.
+     */
+    getCannotReviewMessage(quiz: AddonModQuizQuizWSData, attempt: AddonModQuizAttemptWSData, short = false): string {
+        const displayOption = AddonModQuiz.getAttemptStateDisplayOption(quiz, attempt);
+
+        let reviewFrom = 0;
+        switch (displayOption) {
+            case AddonModQuizDisplayOptionsAttemptStates.DURING:
+                return '';
+
+            case AddonModQuizDisplayOptionsAttemptStates.IMMEDIATELY_AFTER:
+                // eslint-disable-next-line no-bitwise
+                if ((quiz.reviewattempt ?? 0) & AddonModQuizDisplayOptionsAttemptStates.LATER_WHILE_OPEN) {
+                    reviewFrom = (attempt.timefinish ?? Date.now()) + ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD;
+                    break;
+                }
+                // Fall through.
+
+            case AddonModQuizDisplayOptionsAttemptStates.LATER_WHILE_OPEN:
+                // eslint-disable-next-line no-bitwise
+                if (quiz.timeclose && ((quiz.reviewattempt ?? 0) & AddonModQuizDisplayOptionsAttemptStates.AFTER_CLOSE)) {
+                    reviewFrom = quiz.timeclose;
+                    break;
+                }
+        }
+
+        if (reviewFrom) {
+            return Translate.instant('addon.mod_quiz.noreviewuntil' + (short ? 'short' : ''), {
+                $a: CoreTimeUtils.userDate(reviewFrom * 1000, short ? 'core.strftimedatetimeshort': undefined),
+            });
+        } else {
+            return Translate.instant('addon.mod_quiz.noreviewattempt');
+        }
+    }
+
+    /**
      * Validate a preflight data or show a modal to input the preflight data if required.
      * It calls AddonModQuizProvider.startAttempt if a new attempt is needed.
      *
      * @param quiz Quiz.
      * @param accessInfo Quiz access info.
      * @param preflightData Object where to store the preflight data.
-     * @param attempt Attempt to continue. Don't pass any value if the user needs to start a new attempt.
-     * @param offline Whether the attempt is offline.
-     * @param prefetch Whether user is prefetching.
-     * @param title The title to display in the modal and in the submit button.
-     * @param siteId Site ID. If not defined, current site.
-     * @param retrying Whether we're retrying after a failure.
+     * @param options Options.
      * @returns Promise resolved when the preflight data is validated. The resolve param is the attempt.
      */
     async getAndCheckPreflightData(
         quiz: AddonModQuizQuizWSData,
         accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
         preflightData: Record<string, string>,
-        attempt?: AddonModQuizAttemptWSData,
-        offline?: boolean,
-        prefetch?: boolean,
-        title?: string,
-        siteId?: string,
-        retrying?: boolean,
+        options: GetAndCheckPreflightOptions = {},
     ): Promise<AddonModQuizAttemptWSData> {
 
         const rules = accessInfo?.activerulenames;
@@ -74,30 +190,37 @@ export class AddonModQuizHelperProvider {
         const preflightCheckRequired = await AddonModQuizAccessRuleDelegate.isPreflightCheckRequired(
             rules,
             quiz,
-            attempt,
-            prefetch,
-            siteId,
+            options.attempt,
+            options.prefetch,
+            options.siteId,
         );
 
         if (preflightCheckRequired) {
             // Preflight check is required. Show a modal with the preflight form.
-            const data = await this.getPreflightData(quiz, accessInfo, attempt, prefetch, title, siteId);
+            const data = await this.getPreflightData(quiz, accessInfo, options);
 
             // Data entered by the user, add it to preflight data and check it again.
             Object.assign(preflightData, data);
         }
 
         // Get some fixed preflight data from access rules (data that doesn't require user interaction).
-        await AddonModQuizAccessRuleDelegate.getFixedPreflightData(rules, quiz, preflightData, attempt, prefetch, siteId);
+        await AddonModQuizAccessRuleDelegate.getFixedPreflightData(
+            rules,
+            quiz,
+            preflightData,
+            options.attempt,
+            options.prefetch,
+            options.siteId,
+        );
 
         try {
             // All the preflight data is gathered, now validate it.
-            return await this.validatePreflightData(quiz, accessInfo, preflightData, attempt, offline, prefetch, siteId);
+            return await this.validatePreflightData(quiz, accessInfo, preflightData, options);
         } catch (error) {
 
-            if (prefetch) {
+            if (options.prefetch) {
                 throw error;
-            } else if (retrying && !preflightCheckRequired) {
+            } else if (options.retrying && !preflightCheckRequired) {
                 // We're retrying after a failure, but the preflight check wasn't required.
                 // This means there's something wrong with some access rule or user is offline and data isn't cached.
                 // Don't retry again because it would lead to an infinite loop.
@@ -110,17 +233,10 @@ export class AddonModQuizHelperProvider {
                 CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
             }, 100);
 
-            return this.getAndCheckPreflightData(
-                quiz,
-                accessInfo,
-                preflightData,
-                attempt,
-                offline,
-                prefetch,
-                title,
-                siteId,
-                true,
-            );
+            return this.getAndCheckPreflightData(quiz, accessInfo, preflightData, {
+                ...options,
+                retrying: true,
+            });
         }
     }
 
@@ -129,19 +245,13 @@ export class AddonModQuizHelperProvider {
      *
      * @param quiz Quiz.
      * @param accessInfo Quiz access info.
-     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param prefetch Whether the user is prefetching the quiz.
-     * @param title The title to display in the modal and in the submit button.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Options.
      * @returns Promise resolved with the preflight data. Rejected if user cancels.
      */
     async getPreflightData(
         quiz: AddonModQuizQuizWSData,
         accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
-        attempt?: AddonModQuizAttemptWSData,
-        prefetch?: boolean,
-        title?: string,
-        siteId?: string,
+        options: GetPreflightOptions = {},
     ): Promise<Record<string, string>> {
         const notSupported: string[] = [];
         const rules = accessInfo?.activerulenames;
@@ -163,11 +273,11 @@ export class AddonModQuizHelperProvider {
         const modalData = await CoreDomUtils.openModal<Record<string, string>>({
             component: AddonModQuizPreflightModalComponent,
             componentProps: {
-                title: title,
+                title: options.title,
                 quiz,
-                attempt,
-                prefetch: !!prefetch,
-                siteId: siteId,
+                attempt: options.attempt,
+                prefetch: !!options.prefetch,
+                siteId: options.siteId,
                 rules: rules,
             },
         });
@@ -253,52 +363,54 @@ export class AddonModQuizHelperProvider {
     }
 
     /**
+     * Check if current user has the necessary capabilities to review an attempt.
+     *
+     * @param quiz Quiz.
+     * @param accessInfo Access info.
+     * @param attempt Attempt.
+     * @returns Whether user has the capability.
+     */
+    hasReviewCapabilityForAttempt(
+        quiz: AddonModQuizQuizWSData,
+        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
+        attempt: AddonModQuizAttemptWSData,
+    ): boolean {
+        if (accessInfo.canviewreports || accessInfo.canpreview) {
+            return true;
+        }
+
+        const displayOption = AddonModQuiz.getAttemptStateDisplayOption(quiz, attempt);
+
+        return displayOption === AddonModQuizDisplayOptionsAttemptStates.IMMEDIATELY_AFTER ?
+            accessInfo.canattempt : accessInfo.canreviewmyattempts;
+    }
+
+    /**
      * Add some calculated data to the attempt.
      *
      * @param quiz Quiz.
      * @param attempt Attempt.
-     * @param highlight Whether we should check if attempt should be highlighted.
-     * @param bestGrade Quiz's best grade (formatted). Required if highlight=true.
-     * @param isLastAttempt Whether the attempt is the last one.
      * @param siteId Site ID.
-     * @returns Quiz attemptw with calculated data.
+     * @returns Quiz attempt with calculated data.
      */
     async setAttemptCalculatedData(
         quiz: AddonModQuizQuizData,
         attempt: AddonModQuizAttemptWSData,
-        highlight?: boolean,
-        bestGrade?: string,
-        isLastAttempt?: boolean,
         siteId?: string,
     ): Promise<AddonModQuizAttempt> {
         const formattedAttempt = <AddonModQuizAttempt> attempt;
 
-        formattedAttempt.rescaledGrade = AddonModQuiz.rescaleGrade(attempt.sumgrades, quiz, false);
-        formattedAttempt.finished = AddonModQuiz.isAttemptFinished(attempt.state);
-        formattedAttempt.readableState = AddonModQuiz.getAttemptReadableState(quiz, attempt);
+        formattedAttempt.finished = attempt.state === AddonModQuizAttemptStates.FINISHED;
+        formattedAttempt.completed = AddonModQuiz.isAttemptCompleted(attempt.state);
+        formattedAttempt.rescaledGrade = Number(AddonModQuiz.rescaleGrade(attempt.sumgrades, quiz, false));
 
-        if (quiz.showMarkColumn && formattedAttempt.finished) {
-            formattedAttempt.readableMark = AddonModQuiz.formatGrade(attempt.sumgrades, quiz.decimalpoints);
+        if (quiz.showAttemptsGrades && formattedAttempt.finished) {
+            formattedAttempt.formattedGrade = AddonModQuiz.formatGrade(formattedAttempt.rescaledGrade, quiz.decimalpoints);
         } else {
-            formattedAttempt.readableMark = '';
+            formattedAttempt.formattedGrade = '';
         }
 
-        if (quiz.showGradeColumn && formattedAttempt.finished) {
-            formattedAttempt.readableGrade = AddonModQuiz.formatGrade(
-                Number(formattedAttempt.rescaledGrade),
-                quiz.decimalpoints,
-            );
-
-            // Highlight the highest grade if appropriate.
-            formattedAttempt.highlightGrade = !!(highlight && !attempt.preview &&
-                attempt.state == AddonModQuizProvider.ATTEMPT_FINISHED && formattedAttempt.readableGrade == bestGrade);
-        } else {
-            formattedAttempt.readableGrade = '';
-        }
-
-        if (isLastAttempt || isLastAttempt === undefined) {
-            formattedAttempt.finishedOffline = await AddonModQuiz.isAttemptFinishedOffline(attempt.id, siteId);
-        }
+        formattedAttempt.finishedOffline = await AddonModQuiz.isAttemptFinishedOffline(attempt.id, siteId);
 
         return formattedAttempt;
     }
@@ -316,11 +428,10 @@ export class AddonModQuizHelperProvider {
         formattedQuiz.sumGradesFormatted = AddonModQuiz.formatGrade(quiz.sumgrades, quiz.decimalpoints);
         formattedQuiz.gradeFormatted = AddonModQuiz.formatGrade(quiz.grade, quiz.decimalpoints);
 
-        formattedQuiz.showAttemptColumn = quiz.attempts != 1;
-        formattedQuiz.showGradeColumn = options.someoptions.marks >= AddonModQuizProvider.QUESTION_OPTIONS_MARK_AND_MAX &&
+        formattedQuiz.showAttemptsGrades = options.someoptions.marks >= QuestionDisplayOptionsMarks.MARK_AND_MAX &&
             AddonModQuiz.quizHasGrades(quiz);
-        formattedQuiz.showMarkColumn = formattedQuiz.showGradeColumn && quiz.grade != quiz.sumgrades;
-        formattedQuiz.showFeedbackColumn = !!quiz.hasfeedback && !!options.alloptions.overallfeedback;
+        formattedQuiz.showAttemptsMarks = formattedQuiz.showAttemptsGrades && quiz.grade !== quiz.sumgrades;
+        formattedQuiz.showFeedback = !!quiz.hasfeedback && !!options.alloptions.overallfeedback;
 
         return formattedQuiz;
     }
@@ -331,36 +442,32 @@ export class AddonModQuizHelperProvider {
      * @param quiz Quiz.
      * @param accessInfo Quiz access info.
      * @param preflightData Object where to store the preflight data.
-     * @param attempt Attempt to continue. Don't pass any value if the user needs to start a new attempt.
-     * @param offline Whether the attempt is offline.
-     * @param prefetch Whether user is prefetching.
-     * @param siteId Site ID. If not defined, current site.
+     * @param options Options
      * @returns Promise resolved when the preflight data is validated.
      */
     async validatePreflightData(
         quiz: AddonModQuizQuizWSData,
         accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
         preflightData: Record<string, string>,
-        attempt?: AddonModQuizAttempt,
-        offline?: boolean,
-        prefetch?: boolean,
-        siteId?: string,
+        options: ValidatePreflightOptions = {},
     ): Promise<AddonModQuizAttempt> {
 
         const rules = accessInfo.activerulenames;
         const modOptions = {
             cmId: quiz.coursemodule,
-            readingStrategy: offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
-            siteId,
+            readingStrategy: options.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
+            siteId: options.siteId,
         };
+        let attempt = options.attempt;
 
         try {
+
             if (attempt) {
-                if (attempt.state != AddonModQuizProvider.ATTEMPT_OVERDUE && !attempt.finishedOffline) {
+                if (attempt.state !== AddonModQuizAttemptStates.OVERDUE && !options.finishedOffline) {
                     // We're continuing an attempt. Call getAttemptData to validate the preflight data.
                     await AddonModQuiz.getAttemptData(attempt.id, attempt.currentpage ?? 0, preflightData, modOptions);
 
-                    if (offline) {
+                    if (options.offline) {
                         // Get current page stored in local.
                         const storedAttempt = await CoreUtils.ignoreErrors(
                             AddonModQuizOffline.getAttemptById(attempt.id),
@@ -375,7 +482,7 @@ export class AddonModQuizHelperProvider {
                 }
             } else {
                 // We're starting a new attempt, call startAttempt.
-                attempt = await AddonModQuiz.startAttempt(quiz.id, preflightData, false, siteId);
+                attempt = await AddonModQuiz.startAttempt(quiz.id, preflightData, false, options.siteId);
             }
 
             // Preflight data validated.
@@ -384,8 +491,8 @@ export class AddonModQuizHelperProvider {
                 quiz,
                 attempt,
                 preflightData,
-                prefetch,
-                siteId,
+                options.prefetch,
+                options.siteId,
             );
 
             return attempt;
@@ -397,8 +504,8 @@ export class AddonModQuizHelperProvider {
                     quiz,
                     attempt,
                     preflightData,
-                    prefetch,
-                    siteId,
+                    options.prefetch,
+                    options.siteId,
                 );
             }
 
@@ -416,10 +523,9 @@ export const AddonModQuizHelper = makeSingleton(AddonModQuizHelperProvider);
 export type AddonModQuizQuizData = AddonModQuizQuizWSData & {
     sumGradesFormatted?: string;
     gradeFormatted?: string;
-    showAttemptColumn?: boolean;
-    showGradeColumn?: boolean;
-    showMarkColumn?: boolean;
-    showFeedbackColumn?: boolean;
+    showAttemptsGrades?: boolean;
+    showAttemptsMarks?: boolean;
+    showFeedback?: boolean;
 };
 
 /**
@@ -427,10 +533,32 @@ export type AddonModQuizQuizData = AddonModQuizQuizWSData & {
  */
 export type AddonModQuizAttempt = AddonModQuizAttemptWSData & {
     finishedOffline?: boolean;
-    rescaledGrade?: string;
+    rescaledGrade?: number;
     finished?: boolean;
-    readableState?: string[];
-    readableMark?: string;
-    readableGrade?: string;
-    highlightGrade?: boolean;
+    completed?: boolean;
+    formattedGrade?: string;
 };
+
+/**
+ * Options to validate preflight data.
+ */
+type ValidatePreflightOptions = {
+    attempt?: AddonModQuizAttemptWSData; // Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+    offline?: boolean; // Whether the attempt is offline.
+    finishedOffline?: boolean; // Whether the attempt is finished offline.
+    prefetch?: boolean; // Whether user is prefetching.
+    siteId?: string; // Site ID. If not defined, current site.
+};
+
+/**
+ * Options to check preflight data.
+ */
+type GetAndCheckPreflightOptions = ValidatePreflightOptions & {
+    title?: string; // The title to display in the modal and in the submit button.
+    retrying?: boolean; // Whether we're retrying after a failure.
+};
+
+/**
+ * Options to get preflight data.
+ */
+type GetPreflightOptions = Omit<GetAndCheckPreflightOptions, 'offline'|'finishedOffline'|'retrying'>;

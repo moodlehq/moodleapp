@@ -1,33 +1,75 @@
+@use "theme/globals" as *;
+
 :host {
 
-    .addon-mod_quiz-table {
-        ion-card-content {
-            padding-left: 0;
-            padding-right: 0;
+    .addon-mod_quiz-attempts-summary {
+        ion-card-header {
+            border-bottom: 1px solid var(--stroke);
         }
 
-        .item:nth-child(even) {
-            --background: var(--light);
+        .addon-mod_quiz-grade-result {
+            margin-top: var(--mdl-spacing-2);
+
+
+            .addon-mod_quiz-grade-overridden-notice {
+                margin-top: var(--mdl-spacing-2);
+                margin-bottom: 0px;
+            }
+
+            .addon-mod_quiz-grade-result-grade {
+                display: flex;
+
+                span:first-child {
+                    flex-grow: 1;
+                }
+            }
         }
 
-        .addon-mod_quiz-highlighted,
-        .item.addon-mod_quiz-highlighted,
-        .addon-mod_quiz-highlighted p,
-        .item.addon-mod_quiz-highlighted p {
-            --background: var(--primary-tint);
-            color: var(--primary-shade);
+        .addon-mod_quiz-attempt-title-info {
+            display: flex;
+            flex-direction: column;
+            align-items: end;
+            justify-content: center;
+            min-height: 60px;
+            padding-top: var(--mdl-spacing-2);
+            padding-bottom: var(--mdl-spacing-2);
+
+            p {
+                margin: 0px;
+                margin-top: var(--mdl-spacing-2);
+            }
+        }
+
+        ion-accordion-group {
+            border-top: 1px solid var(--stroke);
+
+            .accordion-expanded	.addon-mod_quiz-attempt-title-info,
+            .accordion-expanding .addon-mod_quiz-attempt-title-info {
+                visibility: hidden;
+            }
+
+            hr {
+                background-color: var(--stroke);
+                height: 1px;
+                margin: 0px var(-mdl-spacing-4);
+            }
+
+            ion-accordion:nth-child(odd) {
+                background-color: var(--core-table-odd-cell-background);
+
+                ::ng-deep ion-item {
+                    --background: var(--core-table-odd-cell-background);
+                }
+            }
+
+            ion-accordion:nth-child(even) {
+                background-color: var(--core-table-even-cell-background);
+
+                ::ng-deep ion-item {
+                    --background: var(--core-table-even-cell-background);
+                }
+            }
         }
     }
-}
 
-:host-context(html.dark) {
-    .addon-mod_quiz-table {
-        .addon-mod_quiz-highlighted,
-        .item.addon-mod_quiz-highlighted,
-        .addon-mod_quiz-highlighted p,
-        .item.addon-mod_quiz-highlighted p {
-            --background: var(--primary-shade);
-            color: var(--primary-tint);
-        }
-    }
 }

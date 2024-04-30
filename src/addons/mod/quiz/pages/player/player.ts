@@ -38,10 +38,9 @@ import {
     AddonModQuizAttemptWSData,
     AddonModQuizGetAttemptAccessInformationWSResponse,
     AddonModQuizGetQuizAccessInformationWSResponse,
-    AddonModQuizProvider,
     AddonModQuizQuizWSData,
 } from '../../services/quiz';
-import { AddonModQuizAttempt, AddonModQuizHelper } from '../../services/quiz-helper';
+import { AddonModQuizHelper } from '../../services/quiz-helper';
 import { AddonModQuizSync } from '../../services/quiz-sync';
 import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
@@ -50,6 +49,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT, AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
 
 /**
  * Page that allows attempting a quiz.
@@ -66,9 +66,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     @ViewChild('quizForm') formElement?: ElementRef;
 
     quiz?: AddonModQuizQuizWSData; // The quiz the attempt belongs to.
-    attempt?: AddonModQuizAttempt; // The attempt being attempted.
+    attempt?: QuizAttempt; // The attempt being attempted.
     moduleUrl?: string; // URL to the module in the site.
-    component = AddonModQuizProvider.COMPONENT; // Component to link the files to.
+    component = ADDON_MOD_QUIZ_COMPONENT; // Component to link the files to.
     loaded = false; // Whether data has been loaded.
     quizAborted = false; // Whether the quiz was aborted due to an error.
     offline = false; // Whether the quiz is being attempted in offline mode.
@@ -91,7 +91,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     protected preflightData: Record<string, string> = {}; // Preflight data to attempt the quiz.
     protected quizAccessInfo?: AddonModQuizGetQuizAccessInformationWSResponse; // Quiz access information.
     protected attemptAccessInfo?: AddonModQuizGetAttemptAccessInformationWSResponse; // Attempt access info.
-    protected lastAttempt?: AddonModQuizAttemptWSData; // Last user attempt before a new one is created (if needed).
+    protected lastAttempt?: QuizAttempt; // Last user attempt before a new one is created (if needed).
     protected newAttempt = false; // Whether the user is starting a new attempt.
     protected quizDataLoaded = false; // Whether the quiz data has been loaded.
     protected timeUpCalled = false; // Whether the time up function has been called.
@@ -146,7 +146,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         if (this.quiz) {
             // Unblock the quiz so it can be synced.
-            CoreSync.unblockOperation(AddonModQuizProvider.COMPONENT, this.quiz.id);
+            CoreSync.unblockOperation(ADDON_MOD_QUIZ_COMPONENT, this.quiz.id);
         }
     }
 
@@ -263,7 +263,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
-        if (page != -1 && (this.attempt.state == AddonModQuizProvider.ATTEMPT_OVERDUE || this.attempt.finishedOffline)) {
+        if (page != -1 && (this.attempt.state === AddonModQuizAttemptStates.OVERDUE || this.attempt.finishedOffline)) {
             // We can't load a page if overdue or the local attempt is finished.
             return;
         } else if (page == this.attempt.currentpage && !this.showSummary && slot !== undefined) {
@@ -341,7 +341,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         this.quiz = await AddonModQuiz.getQuiz(this.courseId, this.cmId);
 
         // Block the quiz so it cannot be synced.
-        CoreSync.blockOperation(AddonModQuizProvider.COMPONENT, this.quiz.id);
+        CoreSync.blockOperation(ADDON_MOD_QUIZ_COMPONENT, this.quiz.id);
 
         // Wait for any ongoing sync to finish. We won't sync a quiz while it's being played.
         await AddonModQuizSync.waitForSync(this.quiz.id);
@@ -381,15 +381,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         }
 
         // Get the last attempt. If it's finished, start a new one.
-        this.lastAttempt = await AddonModQuizHelper.setAttemptCalculatedData(
-            this.quiz,
-            attempts[attempts.length - 1],
-            false,
-            undefined,
-            true,
-        );
+        this.lastAttempt = attempts[attempts.length - 1];
 
-        this.newAttempt = AddonModQuiz.isAttemptFinished(this.lastAttempt.state);
+        this.lastAttempt.finishedOffline = await AddonModQuiz.isAttemptFinishedOffline(this.lastAttempt.id);
+
+        this.newAttempt = AddonModQuiz.isAttemptCompleted(this.lastAttempt.state);
     }
 
     /**
@@ -408,7 +404,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         try {
             // Show confirm if the user clicked the finish button and the quiz is in progress.
-            if (!timeUp && this.attempt.state == AddonModQuizProvider.ATTEMPT_IN_PROGRESS) {
+            if (!timeUp && this.attempt.state === AddonModQuizAttemptStates.IN_PROGRESS) {
                 let message = Translate.instant('addon.mod_quiz.confirmclose');
 
                 const unansweredCount = this.summaryQuestions
@@ -444,7 +440,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             await this.processAttempt(userFinish, timeUp);
 
             // Trigger an event to notify the attempt was finished.
-            CoreEvents.trigger(AddonModQuizProvider.ATTEMPT_FINISHED_EVENT, {
+            CoreEvents.trigger(ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT, {
                 quizId: this.quiz.id,
                 attemptId: this.attempt.id,
                 synced: !this.offline,
@@ -679,7 +675,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         });
 
         this.showSummary = true;
-        this.canReturn = this.attempt.state == AddonModQuizProvider.ATTEMPT_IN_PROGRESS && !this.attempt.finishedOffline;
+        this.canReturn = this.attempt.state === AddonModQuizAttemptStates.IN_PROGRESS && !this.attempt.finishedOffline;
         this.preventSubmitMessages = AddonModQuiz.getPreventSubmitMessages(this.summaryQuestions);
 
         this.dueDateWarning = AddonModQuiz.getAttemptDueDateWarning(this.quiz, this.attempt);
@@ -888,10 +884,12 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             this.quiz,
             this.quizAccessInfo,
             this.preflightData,
-            attempt,
-            this.offline,
-            false,
-            'addon.mod_quiz.startattempt',
+            {
+                attempt,
+                offline: this.offline,
+                finishedOffline: attempt?.finishedOffline,
+                title: 'addon.mod_quiz.startattempt',
+            },
         );
 
         // Re-fetch attempt access information with the right attempt (might have changed because a new attempt was created).
@@ -904,7 +902,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         await this.loadNavigation();
 
-        if (this.attempt.state != AddonModQuizProvider.ATTEMPT_OVERDUE && !this.attempt.finishedOffline) {
+        if (this.attempt.state !== AddonModQuizAttemptStates.OVERDUE && !this.attempt.finishedOffline) {
             // Attempt not overdue and not finished in offline, load page.
             await this.loadPage(this.attempt.currentpage ?? 0);
 
@@ -943,4 +941,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
  */
 type QuizQuestion = CoreQuestionQuestionParsed & {
     readableMark?: string;
+};
+
+/**
+ * Attempt with some calculated data for the view.
+ */
+type QuizAttempt = AddonModQuizAttemptWSData & {
+    finishedOffline?: boolean;
 };

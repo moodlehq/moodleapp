@@ -327,6 +327,7 @@
     "strftimetime12": "%I:%M %p",
     "strftimetime24": "%H:%M",
     "submit": "Submit",
+    "submittedoffline": "Submitted (Offline)",
     "success": "Success",
     "summary": "Summary",
     "swipenavigationtourdescription": "Swipe left and right to navigate around.",

@@ -33,7 +33,7 @@ import { AddonModQuizPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModQuizPushClickHandler } from './services/handlers/push-click';
 import { AddonModQuizReviewLinkHandler } from './services/handlers/review-link';
 import { AddonModQuizSyncCronHandler } from './services/handlers/sync-cron';
-import { AddonModQuizProvider } from './services/quiz';
+import { ADDON_MOD_QUIZ_COMPONENT } from './constants';
 
 /**
  * Get mod Quiz services.
@@ -98,7 +98,7 @@ const routes: Routes = [
                 CorePushNotificationsDelegate.registerClickHandler(AddonModQuizPushClickHandler.instance);
                 CoreCronDelegate.register(AddonModQuizSyncCronHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(AddonModQuizProvider.COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_QUIZ_COMPONENT);
             },
         },
     ],
