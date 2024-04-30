@@ -135,15 +135,12 @@ html.dark {
     --core-question-correct-color-bg: var(--success-shade);
     --core-question-incorrect-color: var(--danger);
     --core-question-incorrect-color-bg: var(--danger-shade);
+    --core-question-partial-color: var(--warning-tint);
+    --core-question-partial-color-bg: var(--warning-shade);
     --core-question-feedback-color: var(--warning-tint);
     --core-question-feedback-color-bg: var(--warning-shade);
     --core-question-warning-color: var(--danger);
     --core-question-saved-color-bg: var(--gray-500);
-
-    --core-question-state-correct-color: var(--success-shade);
-    --core-question-state-partial-color: var(--warning-shade);
-    --core-question-state-partial-text: var(--warning);
-    --core-question-state-incorrect-color: var(--danger-shade);
 
     --core-question-feedback-color: var(--warning-tint);
     --core-question-feedback-background-color: var(--warning-shade);

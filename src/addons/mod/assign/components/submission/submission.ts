@@ -60,6 +60,7 @@ import { AddonModAssignModuleHandlerService } from '../../services/handlers/modu
 import { CanLeave } from '@guards/can-leave';
 import { CoreTime } from '@singletons/time';
 import { isSafeNumber, SafeNumber } from '@/core/utils/types';
+import { CoreIonicColorNames } from '@singletons/colors';
 
 /**
  * Component that displays an assignment submission.
@@ -815,7 +816,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         if (this.hasOffline || this.submittedOffline) {
             // Offline data.
             this.statusTranslated = Translate.instant('core.notsent');
-            this.statusColor = 'warning';
+            this.statusColor = CoreIonicColorNames.WARNING;
         } else if (!this.assign.teamsubmission) {
 
             // Single submission.

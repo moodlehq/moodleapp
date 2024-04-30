@@ -29,6 +29,7 @@ import { CoreQuestionDelegate } from './question-delegate';
 import { CoreIcons } from '@singletons/icons';
 import { CoreUrlUtils } from '@services/utils/url';
 import { ContextLevel } from '@/core/constants';
+import { CoreIonicColorNames } from '@singletons/colors';
 
 /**
  * Service with some common functions to handle questions.
@@ -731,6 +732,7 @@ export class CoreQuestionHelperProvider {
         CoreDomUtils.replaceClassesInElement(element, {
             correct: 'core-question-answer-correct',
             incorrect: 'core-question-answer-incorrect',
+            partiallycorrect: 'core-question-answer-partiallycorrect',
         });
     }
 
@@ -799,38 +801,40 @@ export class CoreQuestionHelperProvider {
     treatCorrectnessIcons(element: HTMLElement): void {
         const icons = <HTMLElement[]> Array.from(element.querySelectorAll('img.icon, img.questioncorrectnessicon, i.icon'));
         icons.forEach((icon) => {
-            let correct = false;
+            let iconName: string | undefined;
+            let color: string | undefined;
 
             if ('src' in icon) {
                 if ((icon as HTMLImageElement).src.indexOf('correct') >= 0) {
-                    correct = true;
-                } else if ((icon as HTMLImageElement).src.indexOf('incorrect') < 0 ) {
-                    return;
+                    iconName = 'check';
+                    color = CoreIonicColorNames.SUCCESS;
+                } else if ((icon as HTMLImageElement).src.indexOf('incorrect') >= 0 ) {
+                    iconName = 'xmark';
+                    color = CoreIonicColorNames.DANGER;
                 }
             } else {
-                const classList = icon.classList.toString();
-                if (classList.indexOf('fa-check') >= 0) {
-                    correct = true;
-                } else if (classList.indexOf('fa-xmark') < 0 && classList.indexOf('fa-remove') < 0) {
-                    return;
+                if (icon.classList.contains('fa-check-square')) {
+                    iconName = 'square-check';
+                    color = CoreIonicColorNames.WARNING;
+                } else if (icon.classList.contains('fa-check')) {
+                    iconName = 'check';
+                    color = CoreIonicColorNames.SUCCESS;
+                } else if (icon.classList.contains('fa-xmark') || icon.classList.contains('fa-remove')) {
+                    iconName = 'xmark';
+                    color = CoreIonicColorNames.DANGER;
                 }
+            }
+
+            if (!iconName) {
+                return;
             }
 
             // Replace the icon with the font version.
             const newIcon: HTMLIonIconElement = document.createElement('ion-icon');
 
-            if (correct) {
-                const iconName = 'check';
-                newIcon.setAttribute('name', `fas-${iconName}`);
-                newIcon.setAttribute('src', CoreIcons.getIconSrc('font-awesome', 'solid', iconName));
-                newIcon.className = 'core-correct-icon ion-color ion-color-success questioncorrectnessicon';
-            } else {
-                const iconName = 'xmark';
-                newIcon.setAttribute('name', `fas-${iconName}`);
-                newIcon.setAttribute('src', CoreIcons.getIconSrc('font-awesome', 'solid', iconName));
-                newIcon.className = 'core-correct-icon ion-color ion-color-danger questioncorrectnessicon';
-            }
-
+            newIcon.setAttribute('name', `fas-${iconName}`);
+            newIcon.setAttribute('src', CoreIcons.getIconSrc('font-awesome', 'solid', iconName));
+            newIcon.className = `core-correct-icon ion-color ion-color-${color} questioncorrectnessicon`;
             newIcon.title = icon.title;
             newIcon.setAttribute('aria-label', icon.title);
             icon.parentNode?.replaceChild(newIcon, icon);
