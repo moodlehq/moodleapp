@@ -29,6 +29,7 @@ import { CoreQuestionDelegate } from './question-delegate';
 import { CoreIcons } from '@singletons/icons';
 import { CoreUrlUtils } from '@services/utils/url';
 import { ContextLevel } from '@/core/constants';
+import { CoreIonicColorNames } from '@singletons/colors';
 
 /**
  * Service with some common functions to handle questions.
@@ -806,21 +807,21 @@ export class CoreQuestionHelperProvider {
             if ('src' in icon) {
                 if ((icon as HTMLImageElement).src.indexOf('correct') >= 0) {
                     iconName = 'check';
-                    color = 'success';
+                    color = CoreIonicColorNames.SUCCESS;
                 } else if ((icon as HTMLImageElement).src.indexOf('incorrect') >= 0 ) {
                     iconName = 'xmark';
-                    color = 'danger';
+                    color = CoreIonicColorNames.DANGER;
                 }
             } else {
                 if (icon.classList.contains('fa-check-square')) {
                     iconName = 'square-check';
-                    color = 'warning';
+                    color = CoreIonicColorNames.WARNING;
                 } else if (icon.classList.contains('fa-check')) {
                     iconName = 'check';
-                    color = 'success';
+                    color = CoreIonicColorNames.SUCCESS;
                 } else if (icon.classList.contains('fa-xmark') || icon.classList.contains('fa-remove')) {
                     iconName = 'xmark';
-                    color = 'danger';
+                    color = CoreIonicColorNames.DANGER;
                 }
             }
 
