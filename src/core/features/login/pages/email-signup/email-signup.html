@@ -90,11 +90,6 @@
                     </ion-item>
 
                     <!-- Username and password. -->
-                    <ion-item-divider class="ion-text-wrap">
-                        <ion-label>
-                            <h2>{{ 'core.login.createuserandpass' | translate }}</h2>
-                        </ion-label>
-                    </ion-item-divider>
                     <ion-item class="ion-text-wrap">
                         <ion-input labelPlacement="stacked" type="text" name="username"
                             placeholder="{{ 'core.login.username' | translate }}" formControlName="username" autocapitalize="none"
@@ -116,12 +111,6 @@
                         <core-input-errors [control]="signupForm.controls.password" [errorMessages]="passwordErrors" />
                     </ion-item>
 
-                    <!-- More details. -->
-                    <ion-item-divider class="ion-text-wrap">
-                        <ion-label>
-                            <h2>{{ 'core.login.supplyinfo' | translate }}</h2>
-                        </ion-label>
-                    </ion-item-divider>
                     <ion-item class="ion-text-wrap">
                         <ion-input labelPlacement="stacked" type="email" name="email" placeholder="{{ 'core.user.email' | translate }}"
                             formControlName="email" autocapitalize="none" autocorrect="off">
