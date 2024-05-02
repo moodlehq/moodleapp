@@ -25,19 +25,13 @@
             </ion-item>
         </ion-item-group>
 
-        <ion-item-group *ngIf="user">
-            <ion-item-divider>
-                <ion-label>
-                    <h2>{{ 'addon.badges.recipientdetails' | translate}}</h2>
-                </ion-label>
-            </ion-item-divider>
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading">{{ 'core.name' | translate}}</p>
-                    <p>{{ user.fullname }}</p>
-                </ion-label>
-            </ion-item>
-        </ion-item-group>
+        <ion-item *ngIf="user">
+            <ion-label>
+                <p class="item-heading">
+                    {{ 'addon.badges.awardedto' | translate: {$a: user.fullname } }}
+                </p>
+            </ion-label>
+        </ion-item>
 
         <ng-container *ngIf="badge">
             <ion-item-group>

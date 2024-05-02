@@ -1,5 +1,6 @@
 {
     "alignment": "Alignment",
+    "awardedto": "Awarded to {{$a}}",
     "badgedetails": "Badge details",
     "badges": "Badges",
     "bendorsement": "Endorsement",
@@ -22,7 +23,6 @@
     "noalignment": "This badge does not have any external skills or standards specified.",
     "nobadges": "There are currently no badges available for users to earn.",
     "norelated": "This badge does not have any related badges.",
-    "recipientdetails": "Recipient details",
     "relatedbages": "Related badges",
     "version": "Version",
     "warnexpired": "(This badge has expired!)"
