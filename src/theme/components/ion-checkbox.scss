@@ -1,0 +1,5 @@
+ion-checkbox {
+    &.checkbox-disabled::part(label) {
+        opacity: 0.8;
+    }
+}
