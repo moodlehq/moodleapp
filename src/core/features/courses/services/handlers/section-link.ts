@@ -47,22 +47,16 @@ export class CoreCoursesSectionLinkHandlerService extends CoreCoursesLinksHandle
         url: string,
         params: Record<string, string>,
     ): Promise<CoreContentLinksAction[]> {
-        try {
-            const siteId = siteIds[0] ?? false;
-            const sectionId = params.id ? Number(params.id) : false;
-            const siteHomeId = await CoreSites.getSiteHomeId(siteId);
-            const course = await this.getSectionCourse(sectionId, siteId);
+        const siteId = siteIds[0] ?? false;
+        const sectionId = params.id ? Number(params.id) : false;
+        const siteHomeId = await CoreSites.getSiteHomeId(siteId);
+        const course = await this.getSectionCourse(sectionId, siteId);
 
-            if (!sectionId || !course || course.id === siteHomeId) {
-                return [];
-            }
-
-            return this.getCourseActions(url, course.id, { sectionId });
-        } catch (error) {
-            this.logger.error(`Failed getting actions for url: '${url}'`, error);
-
+        if (!sectionId || !course || course.id === siteHomeId) {
             return [];
         }
+
+        return this.getCourseActions(url, course.id, { sectionId });
     }
 
     /**

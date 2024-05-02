@@ -6,6 +6,9 @@ ion-select {
     &::part(icon) {
         opacity: 1;
     }
+    &.select-disabled {
+        opacity: 0.8;
+    }
 }
 
 ion-select-popover {

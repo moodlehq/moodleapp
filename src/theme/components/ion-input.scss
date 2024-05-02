@@ -1,0 +1,5 @@
+ion-input {
+    &.input-disabled.md, &.input-disabled.ios {
+        opacity: 0.8;
+    }
+}
