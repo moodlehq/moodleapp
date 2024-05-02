@@ -1,6 +1,5 @@
 @use "theme/globals" as *;
 :host {
-    --placeholder-color: var(--ion-placeholder-color);
     --toobar-background: var(--white);
     --button-color: var(--ion-text-color);
     --button-active-color: var(--gray-300);
@@ -80,11 +79,14 @@
             max-width: 95%;
             width: auto;
         }
+        &.empty:before,
         &:empty:before {
             content: attr(data-placeholder-text);
             display: block;
             color: var(--placeholder-color);
-            font-weight: bold;
+            position: absolute;
+            opacity: var(--placeholder-opacity);
+            user-select: none;
         }
 
         // Make empty elements selectable (to move the cursor).

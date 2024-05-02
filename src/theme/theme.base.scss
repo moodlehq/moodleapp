@@ -890,7 +890,8 @@ td {
 
 ion-input,
 ion-input input,
-ion-textarea {
+ion-textarea,
+core-rich-text-editor {
     --placeholder-color: var(--ion-placeholder-color);
     --placeholder-opacity: .65;
 }

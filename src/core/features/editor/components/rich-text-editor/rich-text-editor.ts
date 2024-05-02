@@ -156,6 +156,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         ol: 'false',
     };
 
+    isEmpty = true;
+
     swiperOpts: SwiperOptions = {
         modules: [IonicSlides],
         slidesPerView: 6,
@@ -590,13 +592,17 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      */
     protected isNullOrWhiteSpace(value: string | null | undefined): boolean {
         if (value === null || value === undefined) {
+            this.isEmpty = true;
+
             return true;
         }
 
         value = value.replace(/[\n\r]/g, '');
         value = value.split(' ').join('');
 
-        return value.length === 0;
+        this.isEmpty = value.length === 0;
+
+        return this.isEmpty;
     }
 
     /**
