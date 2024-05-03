@@ -382,18 +382,18 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         sections: CoreCourseSection[],
         viewedModule: CoreCourseViewedModulesDBRecord,
     ): CoreCourseSection | undefined {
-        if (viewedModule.sectionId) {
-            const lastModuleSection = sections.find(section => section.id === viewedModule.sectionId);
+        let lastModuleSection: CoreCourseSection | undefined;
 
-            if (lastModuleSection) {
-                return lastModuleSection;
-            }
+        if (viewedModule.sectionId) {
+            lastModuleSection = sections.find(section => section.id === viewedModule.sectionId);
         }
 
-        // No sectionId or section not found. Search the module.
-        return sections.find(
-            section => section.modules.some(module => module.id === viewedModule.cmId),
-        );
+        if (!lastModuleSection) {
+            // No sectionId or section not found. Search the module.
+            lastModuleSection = sections.find(section => section.modules.some(module => module.id === viewedModule.cmId));
+        }
+
+        return lastModuleSection && lastModuleSection.id !== this.stealthModulesSectionId ? lastModuleSection : undefined;
     }
 
     /**
