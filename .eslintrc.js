@@ -84,16 +84,7 @@ const appConfig = {
                 },
             },
         ],
-        '@typescript-eslint/member-ordering': [
-            'error',
-            {
-                default:
-                {
-                    order: 'as-written',
-                },
-
-            }
-        ],
+        '@typescript-eslint/member-ordering': 'off',
         '@typescript-eslint/naming-convention': [
             'error',
             {
