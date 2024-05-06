@@ -13,15 +13,18 @@ ion-item.item {
     }
 
     &.item-lines-default {
+        /** Remove lines by default */
         --inner-border-width: 0px;
         --border-width: 0px;
     }
 
     &.ion-valid,
     &.ion-invalid {
-        --inner-border-width: 0 0 1px 0;
+        &.item-lines-default {
+            --border-width: 0 0 1px 0;
+        }
 
-        &.ion-touched:not(.ion-no-validation) {
+        &.ion-touched {
             &.ion-invalid {
                 --ion-item-border-color: var(--highlight-color-invalid);
                 --highlight-background: var(--ion-item-border-color);
@@ -33,10 +36,6 @@ ion-item.item {
                 --border-color: var(--ion-item-border-color);
             }
         }
-    }
-
-    &.ion-no-validation {
-        --inner-border-width: 0 0 1px 0;
     }
 
     // Hide details on items to align badges.
@@ -185,7 +184,9 @@ ion-item .in-item {
 .item > ion-label,
 .fake-ion-item,
 .item.ion-text-wrap > ion-checkbox::part(label),
-ion-checkbox.ion-text-wrap::part(label) {
+ion-checkbox.ion-text-wrap::part(label)
+.item.ion-text-wrap ion-toggle::part(label),
+ion-toggle.ion-text-wrap::part(label) {
     core-format-text,
     core-format-text > *:not(pre) {
         white-space: nowrap;
@@ -198,7 +199,8 @@ ion-checkbox.ion-text-wrap::part(label) {
 ion-item > .in-item,
 .fake-ion-item.ion-text-wrap,
 .item.ion-text-wrap > ion-checkbox::part(label),
-ion-checkbox.ion-text-wrap::part(label) {
+ion-checkbox.ion-text-wrap::part(label),
+ion-toggle.ion-text-wrap::part(label) {
     core-format-text,
     core-format-text > *:not(pre) {
         white-space: normal;
@@ -210,7 +212,9 @@ ion-checkbox.ion-text-wrap::part(label) {
 .item.ion-text-wrap ion-checkbox::part(label),
 ion-checkbox.ion-text-wrap::part(label),
 .item.ion-text-wrap ion-radio::part(label),
-ion-radio.ion-text-wrap::part(label) {
+ion-radio.ion-text-wrap::part(label),
+.item.ion-text-wrap ion-toggle::part(label),
+ion-toggle.ion-text-wrap::part(label) {
     white-space: normal !important;
 }
 

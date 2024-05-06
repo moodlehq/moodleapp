@@ -62,21 +62,21 @@
         </ion-list>
 
         <ion-list *ngIf="ownAssessment && !assessment">
-            <ion-item class="ion-text-wrap">
+            <ion-item-divider class="ion-text-wrap">
                 <ion-label>
                     <h2>{{ 'addon.mod_workshop.yourassessment' | translate }}</h2>
                 </ion-label>
-            </ion-item>
+            </ion-item-divider>
             <addon-mod-workshop-assessment [submission]="submission" [assessment]="ownAssessment" [courseId]="courseId" [access]="access"
                 [module]="module" [workshop]="workshop" />
         </ion-list>
 
         <ion-list *ngIf="submissionInfo && submissionInfo.reviewedby && submissionInfo.reviewedby.length && !assessment">
-            <ion-item class="ion-text-wrap">
+            <ion-item-divider class="ion-text-wrap">
                 <ion-label>
-                    <h3 class="item-heading">{{ 'addon.mod_workshop.receivedgrades' | translate }}</h3>
+                    <h2>{{ 'addon.mod_workshop.receivedgrades' | translate }}</h2>
                 </ion-label>
-            </ion-item>
+            </ion-item-divider>
             <ng-container *ngFor="let reviewer of submissionInfo.reviewedby">
                 <addon-mod-workshop-assessment *ngIf="!reviewer.ownAssessment" [submission]="submission" [assessment]="reviewer"
                     [courseId]="courseId" [access]="access" [module]="module" [workshop]="workshop" />
@@ -84,34 +84,34 @@
         </ion-list>
 
         <ion-list *ngIf="submissionInfo && submissionInfo.reviewerof && submissionInfo.reviewerof.length && !assessment">
-            <ion-item class="ion-text-wrap">
+            <ion-item-divider class="ion-text-wrap">
                 <ion-label>
-                    <h3 class="item-heading">{{ 'addon.mod_workshop.givengrades' | translate }}</h3>
+                    <h2>{{ 'addon.mod_workshop.givengrades' | translate }}</h2>
                 </ion-label>
-            </ion-item>
+            </ion-item-divider>
             <addon-mod-workshop-assessment *ngFor="let reviewer of submissionInfo.reviewerof" [assessment]="reviewer" [courseId]="courseId"
                 [module]="module" [workshop]="workshop" [access]="access" />
         </ion-list>
 
         <form [formGroup]="feedbackForm" *ngIf="canAddFeedback && submission" #feedbackFormEl>
-            <ion-item class="ion-text-wrap">
+            <ion-item-divider class="ion-text-wrap">
                 <ion-label>
-                    <h3 class="item-heading">{{ 'addon.mod_workshop.feedbackauthor' | translate }}</h3>
+                    <h2>{{ 'addon.mod_workshop.feedbackauthor' | translate }}</h2>
                 </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap ion-no-validation" *ngIf="access.canpublishsubmissions">
+            </ion-item-divider>
+            <ion-item class="ion-text-wrap" lines="none" *ngIf="access.canpublishsubmissions">
                 <ion-toggle formControlName="published">
                     <p class="item-heading">{{ 'addon.mod_workshop.publishsubmission' | translate }}</p>
                     <p>{{ 'addon.mod_workshop.publishsubmission_help' | translate }}</p>
                 </ion-toggle>
             </ion-item>
 
-            <ion-item class="ion-text-wrap">
+            <ion-item-divider class="ion-text-wrap">
                 <ion-label>
-                    <h3 class="item-heading">{{ 'addon.mod_workshop.gradecalculated' | translate }}</h3>
+                    <h3>{{ 'addon.mod_workshop.gradecalculated' | translate }}</h3>
                     <p>{{ submission.grade }}</p>
                 </ion-label>
-            </ion-item>
+            </ion-item-divider>
             <ion-item class="ion-text-wrap">
                 <ion-select labelPlacement="stacked" formControlName="grade" interface="action-sheet"
                     [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'addon.mod_workshop.gradeover' | translate}"

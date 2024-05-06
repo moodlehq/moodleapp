@@ -2,7 +2,7 @@
 
 :host .addon-mod_forum-post {
     background-color: var(--ion-item-background);
-    border-bottom: 1px solid var(--addon-forum-border-color);
+    border-bottom: var(--addon-forum-border-color, 1px) solid var(--addon-forum-border-color);
 
     .addon-forum-star {
         color: var(--core-star-color);

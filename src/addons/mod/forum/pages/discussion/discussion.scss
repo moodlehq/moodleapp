@@ -1,7 +1,10 @@
 :host {
 
-    .addon-forum-reply-button .label {
-        margin: 0;
+    .addon-forum-reply-button ion-label {
+        margin: 0px;
     }
 
+    ion-card addon-mod-forum-post {
+        --addon-forum-border-color: 0px;
+    }
 }

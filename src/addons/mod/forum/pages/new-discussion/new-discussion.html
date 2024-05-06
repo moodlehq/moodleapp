@@ -17,9 +17,7 @@
         <form *ngIf="showForm" #newDiscFormEl>
             <ion-item>
                 <ion-input labelPlacement="stacked" [(ngModel)]="newDiscussion.subject" type="text"
-                    [placeholder]="'addon.mod_forum.subject' | translate" name="subject">
-                    <p>{{ 'addon.mod_forum.subject' | translate }}</p>
-                </ion-input>
+                    [placeholder]="'addon.mod_forum.subject' | translate" name="subject" [label]="'addon.mod_forum.subject' | translate" />
             </ion-item>
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_forum.message' | translate }}</ion-label>
@@ -38,7 +36,7 @@
                 </ion-label>
             </ion-item>
             <div *ngIf="advanced" id="addon-mod-forum-new-discussion-advanced">
-                <ion-item *ngIf="showGroups && groupIds.length > 1 && accessInfo.cancanposttomygroups" class="ion-no-validation">
+                <ion-item *ngIf="showGroups && groupIds.length > 1 && accessInfo.cancanposttomygroups" class="ion-text-wrap" lines="none">
                     <ion-toggle [(ngModel)]="newDiscussion.postToAllGroups" name="postallgroups">
                         {{ 'addon.mod_forum.posttomygroups' | translate }}
                     </ion-toggle>
@@ -54,12 +52,12 @@
                         </ion-select-option>
                     </ion-select>
                 </ion-item>
-                <ion-item class="ion-text-wrap ion-no-validation">
+                <ion-item class="ion-text-wrap" lines="none">
                     <ion-toggle [(ngModel)]="newDiscussion.subscribe" name="subscribe">
                         {{ 'addon.mod_forum.discussionsubscription' | translate }}
                     </ion-toggle>
                 </ion-item>
-                <ion-item *ngIf="canPin" class="ion-text-wrap ion-no-validation">
+                <ion-item *ngIf="canPin" class="ion-text-wrap" lines="none">
                     <ion-toggle [(ngModel)]="newDiscussion.pin" name="pin">
                         {{ 'addon.mod_forum.discussionpinned' | translate }}
                     </ion-toggle>
@@ -68,7 +66,8 @@
                     [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [component]="component" [componentId]="forum.cmid"
                     [allowOffline]="true" [courseId]="courseId" />
             </div>
-            <ion-item *ngIf="showGroups && postInGroupMessage && !newDiscussion.postToAllGroups" class="addon-forum-group-info">
+            <ion-item *ngIf="showGroups && postInGroupMessage && !newDiscussion.postToAllGroups"
+                class="addon-forum-group-info ion-text-wrap">
                 <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
                 <ion-label>
                     <core-format-text [text]="postInGroupMessage" contextLevel="course" [contextInstanceId]="courseId"

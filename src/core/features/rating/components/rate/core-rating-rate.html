@@ -1,4 +1,4 @@
-<ion-item class="ion-text-wrap" *ngIf="item && (item!.canrate || item!.rating !== null) && !disabled">
+<ion-item class="ion-text-wrap" *ngIf="item && (item!.canrate || item!.rating !== null) && !disabled" lines="none">
     <ion-select class="ion-text-start" [(ngModel)]="rating" (ngModelChange)="userRatingChanged()" interface="action-sheet"
         [cancelText]="'core.cancel' | translate" [disabled]="!item!.canrate" [interfaceOptions]="{header: 'core.rating.rating' | translate}"
         [label]="'core.rating.rating' | translate">

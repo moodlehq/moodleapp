@@ -11,9 +11,9 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-item class="ion-no-validation">
+    <ion-item lines="full" class="ion-text-wrap">
         <ion-toggle [(ngModel)]="search.searchingAdvanced">
-            {{ 'addon.mod_data.advancedsearch' | translate }}
+            <p class="item-heading">{{ 'addon.mod_data.advancedsearch' | translate }}</p>
         </ion-toggle>
     </ion-item>
     <form (ngSubmit)="searchEntries($event)" [formGroup]="searchForm" #searchFormEl>
