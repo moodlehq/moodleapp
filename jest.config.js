@@ -9,6 +9,6 @@ module.exports = {
         'src/**/*.{ts,html}',
         '!src/testing/**/*',
     ],
-    transformIgnorePatterns: ['node_modules/(?!@stencil|@angular|@ionic|@moodlehq|@ngx-translate|swiper)'],
+    transformIgnorePatterns: ['node_modules/(?!@stencil|@angular|@ionic|@moodlehq|@ngx-translate|@awesome-cordova-plugins|swiper)'],
     moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src/' }),
 };

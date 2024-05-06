@@ -1,5 +1,7 @@
 {
     "addnewentry": "Add a new entry",
+    "associatewithcourse": "Blog about course {{$a.coursename}}",
+    "associatewithmodule": "Blog about {{$a.modtype}}: {{$a.modname}}",
     "associations": "Associations",
     "blog": "Blog",
     "blogentries": "Blog entries",
@@ -14,7 +16,5 @@
     "publishtoworld": "Anyone in the world",
     "showonlyyourentries": "Show only your entries",
     "siteblogheading": "Site blog",
-    "tags": "Tags",
-    "associatewithcourse": "Blog about course {{$a.coursename}}",
-    "associatewithmodule": "Blog about {{$a.modtype}}: {{$a.modname}}"
+    "tags": "Tags"
 }
