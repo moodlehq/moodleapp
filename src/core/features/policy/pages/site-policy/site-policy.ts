@@ -342,7 +342,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
         const scrollElement = await this.content?.getScrollElement();
 
-        this.hasScroll = !!scrollElement && scrollElement.scrollHeight > scrollElement.clientHeight;
+        this.hasScroll = !!scrollElement && scrollElement.scrollHeight > scrollElement.clientHeight + 2; // Add 2px of error margin.
     }
 
     /**
