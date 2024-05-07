@@ -23,7 +23,8 @@
                         onError="this.src='assets/img/group-avatar.svg'">
                 </div>
                 <h2>
-                    <core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="0" />
+                    <!-- WS didn't filter the name, see MDL-81815. -->
+                    <core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true" />
                 </h2>
                 <p>
                     <core-format-text *ngIf="conversation.subname" [text]="conversation.subname" contextLevel="system"
