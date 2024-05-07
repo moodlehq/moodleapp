@@ -25,7 +25,7 @@ import {
     AfterViewInit,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { IonTextarea, IonContent, IonicSlides } from '@ionic/angular';
+import { IonTextarea, IonContent } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
@@ -33,7 +33,6 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
-import { Translate } from '@singletons';
 import { CoreEventFormActionData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreEditorOffline } from '../../services/editor-offline';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
@@ -45,6 +44,7 @@ import { CorePlatform } from '@services/platform';
 import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
 import { ContextLevel } from '@/core/constants';
+import { CoreSwiper } from '@singletons/swiper';
 
 /**
  * Component to display a rich text editor if enabled.
@@ -81,26 +81,21 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     @ViewChild('editor') editor?: ElementRef; // WYSIWYG editor.
     @ViewChild('textarea') textarea?: IonTextarea; // Textarea editor.
     @ViewChild('toolbar') toolbar?: ElementRef;
+
     protected toolbarSlides?: Swiper;
-    @ViewChild('swiperRef')
-    set swiperRef(swiperRef: ElementRef) {
+    @ViewChild('swiperRef') set swiperRef(swiperRef: ElementRef) {
         /**
          * This setTimeout waits for Ionic's async initialization to complete.
          * Otherwise, an outdated swiper reference will be used.
          */
         setTimeout(() => {
-            if (swiperRef.nativeElement?.swiper) {
-                this.toolbarSlides = swiperRef.nativeElement.swiper as Swiper;
-
-                this.toolbarSlides.changeLanguageDirection(CorePlatform.isRTL ? 'rtl' : 'ltr');
-
-                Object.keys(this.swiperOpts).forEach((key) => {
-                    if (this.toolbarSlides) {
-                        this.toolbarSlides.params[key] = this.swiperOpts[key];
-                    }
-                });
+            const swiper = CoreSwiper.initSwiperIfAvailable(this.toolbarSlides, swiperRef, this.swiperOpts);
+            if (!swiper) {
+                return;
             }
-        }, 0);
+
+            this.toolbarSlides = swiper;
+        });
     }
 
     protected readonly DRAFT_AUTOSAVE_FREQUENCY = 30000;
@@ -128,7 +123,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     protected originalContent?: string;
     protected resizeFunction?: () => Promise<number>;
     protected selectionChangeFunction = (): void => this.updateToolbarStyles();
-    protected languageChangedSubscription?: Subscription;
     protected resizeListener?: CoreEventObserver;
     protected domPromise?: CoreCancellablePromise<void>;
     protected buttonsDomPromise?: CoreCancellablePromise<void>;
@@ -159,7 +153,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     isEmpty = true;
 
     swiperOpts: SwiperOptions = {
-        modules: [IonicSlides],
         slidesPerView: 6,
         centerInsufficientSlides: true,
         watchSlidesProgress: true,
@@ -300,13 +293,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             // Opening or closing the keyboard also calls the resize function, but sometimes the resize is called too soon.
             // Check the height again, now the window height should have been updated.
             this.maximizeEditorSize();
-        });
-
-        // Change the side when the language changes.
-        this.languageChangedSubscription = Translate.onLangChange.subscribe(() => {
-            setTimeout(() => {
-                this.toolbarSlides?.changeLanguageDirection(CorePlatform.isRTL ? 'rtl' : 'ltr');
-            });
         });
     }
 
@@ -1120,7 +1106,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      */
     ngOnDestroy(): void {
         this.valueChangeSubscription?.unsubscribe();
-        this.languageChangedSubscription?.unsubscribe();
 
         document.removeEventListener('selectionchange', this.selectionChangeFunction);
 

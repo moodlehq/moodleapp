@@ -15,7 +15,6 @@
 import {
     Component,
     Input,
-    OnInit,
     OnChanges,
     OnDestroy,
     AfterViewInit,
@@ -52,7 +51,7 @@ import { CoreDirectivesRegistry } from '@singletons/directives-registry';
     styleUrls: ['../tabs/tabs.scss'],
 })
 export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutletTab>
-    implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+    implements AfterViewInit, OnChanges, OnDestroy {
 
     /**
      * Determine tabs layout.

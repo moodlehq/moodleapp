@@ -17,7 +17,7 @@ import { ModalController, Translate } from '@singletons';
 import { CoreMath } from '@singletons/math';
 import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
-import { IonicSlides } from '@ionic/angular';
+import { CoreSwiper } from '@singletons/swiper';
 
 /**
  * Modal component to view an image.
@@ -30,23 +30,21 @@ import { IonicSlides } from '@ionic/angular';
 export class CoreViewerImageComponent implements OnInit {
 
     protected swiper?: Swiper;
-    @ViewChild('swiperRef')
-    set swiperRef(swiperRef: ElementRef) {
+    @ViewChild('swiperRef') set swiperRef(swiperRef: ElementRef) {
         /**
          * This setTimeout waits for Ionic's async initialization to complete.
          * Otherwise, an outdated swiper reference will be used.
          */
         setTimeout(() => {
-            if (swiperRef.nativeElement?.swiper) {
-                this.swiper = swiperRef.nativeElement.swiper as Swiper;
-
-                Object.keys(this.swiperOpts).forEach((key) => {
-                    if (this.swiper) {
-                        this.swiper.params[key] = this.swiperOpts[key];
-                    }
-                });
+            const swiper = CoreSwiper.initSwiperIfAvailable(this.swiper, swiperRef, this.swiperOpts);
+            if (!swiper) {
+                return;
             }
-        }, 0);
+
+            this.swiper = swiper;
+
+            this.swiper.zoom.enable();
+        });
     }
 
     @Input() title = ''; // Modal title.
@@ -55,23 +53,19 @@ export class CoreViewerImageComponent implements OnInit {
     @Input() componentId?: string | number; // Component ID to use in external-content.
 
     private static readonly MAX_RATIO = 8;
+    private static readonly MIN_RATIO = 0.5;
 
     protected swiperOpts: SwiperOptions = {
-        modules: [IonicSlides],
         freeMode: true,
         slidesPerView: 1,
         centerInsufficientSlides: true,
         centeredSlides: true,
         zoom: {
             maxRatio: CoreViewerImageComponent.MAX_RATIO,
-            minRatio: 0.5, // User can zoom out to 0.5 only using pinch gesture.
+            minRatio: CoreViewerImageComponent.MIN_RATIO,
+            toggle: true,
         },
     };
-
-    protected zoomRatio = 1;
-
-    constructor(protected element: ElementRef<HTMLElement>) {
-    }
 
     /**
      * @inheritdoc
@@ -93,27 +87,18 @@ export class CoreViewerImageComponent implements OnInit {
      * @param zoomIn True to zoom in, false to zoom out.
      */
     zoom(zoomIn = true): void {
-        const imageElement = this.element.nativeElement.querySelector('img');
-
-        if (!this.swiper || !imageElement) {
+        if (!this.swiper) {
             return;
         }
 
+        let zoomRatio = this.swiper.zoom.scale;
         zoomIn
-            ? this.zoomRatio *= 2
-            : this.zoomRatio /= 2;
+            ? zoomRatio *= 2
+            : zoomRatio /= 2;
 
-        // Using 1 as minimum for manual zoom.
-        this.zoomRatio = CoreMath.clamp(this.zoomRatio, 1, CoreViewerImageComponent.MAX_RATIO);
+        zoomRatio = CoreMath.clamp(zoomRatio, CoreViewerImageComponent.MIN_RATIO, CoreViewerImageComponent.MAX_RATIO);
 
-        if (this.zoomRatio > 1) {
-            this.swiper.zoom.in();
-
-            imageElement.style.transform =
-                'translate3d(0px, 0px, 0px) scale(' + this.zoomRatio + ')';
-        } else {
-            this.swiper.zoom.out();
-        }
+        this.swiper.zoom.in(zoomRatio);
     }
 
 }

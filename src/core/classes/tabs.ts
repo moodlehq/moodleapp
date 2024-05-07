@@ -17,7 +17,6 @@ import {
     Input,
     Output,
     EventEmitter,
-    OnInit,
     OnChanges,
     OnDestroy,
     AfterViewInit,
@@ -28,7 +27,6 @@ import {
 import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
 
-import { Translate } from '@singletons';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from './aria-role-tab';
 import { CoreEventObserver } from '@singletons/events';
@@ -38,10 +36,9 @@ import { CoreError } from './errors/error';
 import { CorePromisedValue } from './promised-value';
 import { AsyncDirective } from './async-directive';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
-import { CorePlatform } from '@services/platform';
 import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
-import { IonicSlides } from '@ionic/angular';
+import { CoreSwiper } from '@singletons/swiper';
 
 /**
  * Class to abstract some common code for tabs.
@@ -49,7 +46,7 @@ import { IonicSlides } from '@ionic/angular';
 @Component({
     template: '',
 })
-export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, AfterViewInit, OnChanges, OnDestroy, AsyncDirective {
+export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewInit, OnChanges, OnDestroy, AsyncDirective {
 
     // Minimum tab's width.
     protected static readonly MIN_TAB_WIDTH = 107;
@@ -59,32 +56,26 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     @Output() protected ionChange = new EventEmitter<T>(); // Emitted when the tab changes.
 
     protected swiper?: Swiper;
-    @ViewChild('swiperRef')
-    set swiperRef(swiperRef: ElementRef) {
+    @ViewChild('swiperRef') set swiperRef(swiperRef: ElementRef) {
         /**
          * This setTimeout waits for Ionic's async initialization to complete.
          * Otherwise, an outdated swiper reference will be used.
          */
         setTimeout(() => {
-            if (swiperRef?.nativeElement?.swiper && !this.swiper) {
-                this.swiper = swiperRef.nativeElement.swiper as Swiper;
-
-                this.swiper.changeLanguageDirection(CorePlatform.isRTL ? 'rtl' : 'ltr');
-
-                Object.keys(this.swiperOpts).forEach((key) => {
-                    if (this.swiper) {
-                        this.swiper.params[key] = this.swiperOpts[key];
-                    }
-                });
-
-                // Subscribe to changes.
-                this.swiper.on('slideChangeTransitionEnd', () => {
-                    this.slideChanged();
-                });
-
-                this.init();
+            const swiper = CoreSwiper.initSwiperIfAvailable(this.swiper, swiperRef, this.swiperOpts);
+            if (!swiper) {
+                return;
             }
-        }, 0);
+
+            this.swiper = swiper;
+
+            // Subscribe to changes.
+            this.swiper.on('slideChangeTransitionEnd', () => {
+                this.slideChanged();
+            });
+
+            this.init();
+        });
     }
 
     tabs: T[] = []; // List of tabs.
@@ -97,7 +88,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     numTabsShown = 0;
     description = '';
     swiperOpts: SwiperOptions = {
-        modules: [IonicSlides],
         slidesPerView: 3,
         centerInsufficientSlides: true,
         threshold: 10,
@@ -125,18 +115,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         this.tabAction = new CoreTabsRoleTab(this);
 
         CoreDirectivesRegistry.register(element.nativeElement, this);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async ngOnInit(): Promise<void> {
-        // Change the side when the language changes.
-        this.subscriptions.push(Translate.onLangChange.subscribe(() => {
-            setTimeout(() => {
-                this.swiper?.changeLanguageDirection(CorePlatform.isRTL ? 'rtl' : 'ltr');
-            });
-        }));
     }
 
     /**

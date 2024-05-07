@@ -168,6 +168,9 @@ export class CoreSettingsGeneralPage {
 
     /**
      * Apply language changes and restart the app.
+     *
+     * IMPORTANT NOTE: If for any reason we decide to remove this method,
+     * we'll need to listen to lang change on Slides to change direction.
      */
     protected async applyLanguageAndRestart(): Promise<void> {
         // Invalidate cache for all sites to get the content in the right language.

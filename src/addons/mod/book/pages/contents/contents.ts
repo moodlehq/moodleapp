@@ -41,7 +41,6 @@ import {
 } from '../../services/book';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrlUtils } from '@services/utils/url';
-import { IonicSlides } from '@ionic/angular';
 
 /**
  * Page that displays a book contents.
@@ -65,7 +64,6 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
     displayNavBar = true;
     navigationItems: CoreNavigationBarItem<AddonModBookTocChapter>[] = [];
     swiperOpts: CoreSwipeSlidesOptions = {
-        modules: [IonicSlides],
         autoHeight: true,
         observer: true,
         observeParents: true,
