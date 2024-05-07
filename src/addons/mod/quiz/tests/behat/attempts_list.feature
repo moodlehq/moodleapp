@@ -2,7 +2,8 @@
 Feature: View list of attempts in the app
 
   Background:
-    Given the following "courses" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "courses" exist:
       | fullname | shortname |
       | Course 1 | C1        |
     And the following "users" exist:
@@ -45,6 +46,7 @@ Feature: View list of attempts in the app
     And I should find "1/1" within "Marks" "ion-item" in the app
     And I should be able to press "Review" in the app
 
+  @lms_from4.2
   Scenario: View abandoned attempts
     Given the attempt at "Quiz 1" by "student1" was never submitted
     And I entered the quiz activity "Quiz 1" on course "Course 1" as "student1" in the app
