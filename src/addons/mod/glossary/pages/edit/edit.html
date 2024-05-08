@@ -17,6 +17,7 @@
                 <ion-input labelPlacement="stacked" type="text" [placeholder]="'addon.mod_glossary.concept' | translate"
                     [(ngModel)]="data.concept" name="concept" [label]="'addon.mod_glossary.concept' | translate" />
             </ion-item>
+
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_glossary.definition' | translate }}</ion-label>
                 <core-rich-text-editor [control]="definitionControl" (contentChanged)="onDefinitionChange($event)"
@@ -24,8 +25,8 @@
                     [componentId]="cmId" [autoSave]="true" contextLevel="module" [contextInstanceId]="cmId" elementId="definition_editor"
                     [draftExtraParams]="editorExtraParams" />
             </ion-item>
-            <ion-item *ngIf="categories.length > 0">
 
+            <ion-item *ngIf="categories.length > 0">
                 <ion-select labelPlacement="stacked" [(ngModel)]="data.categories" multiple="true" interface="action-sheet"
                     [placeholder]="'addon.mod_glossary.categories' | translate" name="categories" [cancelText]="'core.cancel' | translate"
                     [interfaceOptions]="{header: 'addon.mod_glossary.categories' | translate}"
@@ -35,18 +36,15 @@
                     </ion-select-option>
                 </ion-select>
             </ion-item>
-            <ion-item *ngIf="showAliases">
 
+            <ion-item *ngIf="showAliases">
                 <ion-textarea labelPlacement="stacked" [(ngModel)]="data.aliases" rows="1" [core-auto-rows]="data.aliases" name="aliases"
                     [label]="'addon.mod_glossary.aliases' | translate" />
             </ion-item>
-            <ion-item-divider>
-                <ion-label>
-                    <h2>{{ 'addon.mod_glossary.attachment' | translate }}</h2>
-                </ion-label>
-            </ion-item-divider>
+
             <core-attachments [files]="data.attachments" [component]="component" [componentId]="glossary.coursemodule" [allowOffline]="true"
-                [courseId]="courseId" />
+                [courseId]="courseId" [title]="'addon.mod_glossary.attachment' | translate" />
+
             <ng-container *ngIf="glossary.usedynalink">
                 <ion-item-divider>
                     <ion-label>
@@ -69,6 +67,7 @@
                     </ion-toggle>
                 </ion-item>
             </ng-container>
+
             <ion-button class="ion-margin" expand="block" [disabled]="!data.concept || !data.definition" (click)="save()">
                 {{ 'core.save' | translate }}
             </ion-button>
