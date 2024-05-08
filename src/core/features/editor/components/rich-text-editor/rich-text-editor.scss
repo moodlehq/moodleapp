@@ -98,16 +98,18 @@
     .core-textarea {
         position: relative;
 
+        --highlight-color: transparent !important;
+
         ::ng-deep textarea {
-            margin: 0 !important;
-            padding: 0;
+            margin: 0px !important;
+            padding: 0px;
             resize: none;
             overflow-x: hidden;
             overflow-y: auto;
             position: absolute;
             height: auto;
-            top: 0;
-            bottom: 0;
+            top: 0px;
+            bottom: 0px;
         }
     }
 
@@ -180,6 +182,10 @@
     min-height: 200px;
 }
 
+:host-context(.item) {
+    margin-bottom: 12px;
+}
+
 :host-context(.item-label-stacked) {
-    margin-top: 10px;
+    margin-top: 12px;
 }

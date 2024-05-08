@@ -1,13 +1,12 @@
-<span *ngIf="editMode && form">
-    <span [core-mark-required]="field.required" class="core-mark-required"></span>
+<ng-container *ngIf="editMode && form">
     <core-attachments [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component" [componentId]="componentId"
-        [allowOffline]="true" [courseId]="database?.course" />
+        [allowOffline]="true" [courseId]="database?.course" [required]="field.required" />
     <core-input-errors *ngIf="error" [errorText]="error" />
-</span>
+</ng-container>
 
-<span *ngIf="searchMode && form" [formGroup]="form">
+<ng-container *ngIf="searchMode && form" [formGroup]="form">
     <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name" />
-</span>
+</ng-container>
 
 <ng-container *ngIf="displayMode">
     <div>
