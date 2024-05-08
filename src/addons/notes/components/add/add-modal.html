@@ -14,7 +14,7 @@
     <form name="itemEdit" (ngSubmit)="addNote($event)" #itemEdit>
         <ion-item>
             <ion-select [(ngModel)]="type" name="publishState" interface="popover" [label]="'addon.notes.publishstate' | translate">
-                <ion-select-option value=" personal">{{ 'addon.notes.personalnotes' | translate }}</ion-select-option>
+                <ion-select-option value="personal">{{ 'addon.notes.personalnotes' | translate }}</ion-select-option>
                 <ion-select-option value="course">{{ 'addon.notes.coursenotes' | translate }}</ion-select-option>
                 <ion-select-option value="site">{{ 'addon.notes.sitenotes' | translate }}</ion-select-option>
             </ion-select>
