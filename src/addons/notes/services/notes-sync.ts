@@ -25,6 +25,8 @@ import { AddonNotesDBRecord, AddonNotesDeletedDBRecord } from './database/notes'
 import { AddonNotes, AddonNotesCreateNoteData } from './notes';
 import { AddonNotesOffline } from './notes-offline';
 import { CoreArray } from '@singletons/array';
+import { CoreAnyError } from '@classes/errors/error';
+import { CoreTextUtils } from '@services/utils/text';
 
 /**
  * Service to sync notes.
@@ -154,7 +156,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
             throw new CoreNetworkError();
         }
 
-        const errors: string[] = [];
+        const errors: CoreAnyError[] = [];
         const promises: Promise<void>[] = [];
 
         // Format the notes to be sent.
@@ -233,7 +235,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
             result.warnings = errors.map((error) =>
                 Translate.instant('addon.notes.warningnotenotsent', {
                     course: 'fullname' in course ? course.fullname : courseId, // @deprecated since 4.3.
-                    error: error,
+                    error: CoreTextUtils.getErrorMessageFromError(error),
                 }));
         }
 

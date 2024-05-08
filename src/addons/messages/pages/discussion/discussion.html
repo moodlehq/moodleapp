@@ -9,7 +9,8 @@
                     onError="this.src='assets/img/group-avatar.svg'" core-external-content role="presentation" [siteId]="siteId">
                 <core-user-avatar *ngIf="loaded && otherMember" class="core-bar-button-image" [user]="otherMember" [linkProfile]="false"
                     [checkOnline]="otherMember.showonlinestatus" />
-                <core-format-text [text]="title" contextLevel="system" [contextInstanceId]="0" />
+                <!-- WS didn't filter the conversation name, see MDL-81815. -->
+                <core-format-text [text]="title" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true" />
                 <ion-icon *ngIf="conversation && conversation.isfavourite" name="fas-star"
                     [attr.aria-label]="'core.favourites' | translate" />
                 <ion-icon *ngIf="conversation && conversation.ismuted" name="fas-bell-slash"
