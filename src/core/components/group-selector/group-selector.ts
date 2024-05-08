@@ -27,6 +27,7 @@ import { CoreGroupInfo } from '@services/groups';
 @Component({
     selector: 'core-group-selector',
     templateUrl: 'group-selector.html',
+    styleUrl: 'group-selector.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoreGroupSelectorComponent {
