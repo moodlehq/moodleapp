@@ -51,6 +51,12 @@ ion-item.item {
     &.item-has-interactive-control:focus-within {
         @include core-focus-outline();
     }
+
+    &.icon-margin-reduced {
+        [slot=start] {
+            @include margin-horizontal(null, var(--mdl-spacing-4));
+        }
+    }
 }
 
 // Fake item.
@@ -71,7 +77,7 @@ div.fake-ion-item {
     font-size: var(--text-size);
     font-weight: normal;
     text-transform: none;
-    @include padding(null, 16px, null, 16px);
+    @include padding(null, var(--mdl-spacing-4), null, var(--mdl-spacing-4));
     @include margin(11px, null, 10px, null);
 
     h1 {
@@ -247,11 +253,11 @@ ion-item.item.item-file {
     }
 
     &.item-directory ion-icon {
-        @include margin-horizontal(0px, 16px);
+        @include margin-horizontal(0px, var(--mdl-spacing-4));
     }
 
     [slot=end] {
-        @include margin-horizontal(16px, null);
+        @include margin-horizontal(var(--mdl-spacing-4), null);
     }
 }
 
