@@ -1,14 +1,16 @@
 @use "theme/globals" as *;
 
 :host {
-    ion-item {
-        ion-icon, ion-radio {
+    .item {
+        ion-radio {
             @include margin-horizontal(null, 8px);
         }
 
-        > ion-icon {
-            padding: 4px;
-            font-size: var(--mdl-typography-icon-fontSize-md);
+        &.addon-calendar-event > ion-icon {
+            --margin-vertical: 8px;
+            --margin-end: 8px;
+            padding: 8px;
+            font-size: var(--mdl-typography-icon-fontSize-sm);
         }
     }
 }

@@ -14,9 +14,7 @@
         <form [formGroup]="form">
             <ion-item>
                 <ion-input labelPlacement="stacked" formControlName="subject" type="text"
-                    [placeholder]="'addon.blog.entrytitle' | translate" name="title">
-                    <p>{{ 'addon.blog.entrytitle' | translate }}</p>
-                </ion-input>
+                    [placeholder]="'addon.blog.entrytitle' | translate" name="title" [label]="'addon.blog.entrytitle' | translate" />
             </ion-item>
 
             <ion-item>
@@ -27,7 +25,7 @@
                     [elementId]="entry?.id ?? 'new_entry'" />
             </ion-item>
 
-            <ion-item>
+            <ion-item lines="none">
                 <core-combobox name="addon_blog_publish_to" formControlName="publishState" [label]="'addon.blog.publishto' | translate">
                     <ion-select-option class="core-select-option-title" [value]="publishState.draft">
                         {{ 'addon.blog.publishtonoone' | translate }}
@@ -54,7 +52,7 @@
             </ion-item>
             <div id="addon-blog-associations">
                 @if (associationsExpanded) {
-                <ion-item class="ion-no-validation">
+                <ion-item lines="none">
                     @if (associatedModule) {
                     <ion-toggle formControlName="associateWithModule">
                         <core-format-text [text]="'addon.blog.associatewithmodule' | translate: {

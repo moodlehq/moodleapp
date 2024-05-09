@@ -55,6 +55,7 @@ export class CoreAttachmentsComponent implements OnInit {
     @Input() acceptedTypes?: string; // List of supported filetypes. If undefined, all types supported.
     @Input() required?: boolean; // Whether to display the required mark.
     @Input() courseId?: number; // Course ID.
+    @Input() title = Translate.instant('core.fileuploader.attachedfiles'); // Title to display.
 
     maxSizeReadable?: string;
     maxSubmissionsReadable?: string;

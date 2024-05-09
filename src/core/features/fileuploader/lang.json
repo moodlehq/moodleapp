@@ -1,5 +1,6 @@
 {
     "addfiletext": "Add file",
+    "attachedfiles": "Attached files",
     "audio": "Audio",
     "audiotitle": "Record audio",
     "camera": "Camera",
@@ -22,6 +23,7 @@
     "microphonepermissiondenied": "Permission to access the microphone has been denied.",
     "microphonepermissionrestricted": "Microphone access is restricted.",
     "more": "More",
+    "nofilesattached": "No files attached",
     "pauserecording": "Pause recording",
     "photoalbums": "Photo albums",
     "readingfile": "Reading file",

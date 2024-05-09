@@ -1,5 +1,6 @@
-<ng-container *ngIf="loaded">
+<ng-container *ngIf="loaded && !svgLoaded">
     <img *ngIf="!isLocalUrl" [src]="iconUrl" core-external-content alt="" [component]="linkIconWithComponent ? modname : null"
         [componentId]="linkIconWithComponent ? componentId : null" (error)="loadFallbackIcon()">
     <img *ngIf="isLocalUrl" [src]="iconUrl" (error)="loadFallbackIcon()" alt="">
 </ng-container>
+<div [hidden]="!svgLoaded" #svg></div>

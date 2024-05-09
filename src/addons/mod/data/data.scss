@@ -55,7 +55,7 @@ $grid-column-paddings: (
         }
 
         // Do not let block elements to define widths or heights.
-        address, article, aside, blockquote, canvas, dd, div, dl, dt, fieldset, figcaption, figure, footer, form,
+        address, article, aside, blockquote, canvas, dd, dl, dt, fieldset, figcaption, figure, footer, form,
         h1, h2, h3, h4, h5, h6,
         header, li, main, nav, noscript, ol, p, pre, section, table, tfoot, ul, video {
             width: auto !important;

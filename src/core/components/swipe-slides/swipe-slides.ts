@@ -24,6 +24,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreMath } from '@singletons/math';
+import { CoreSwiper } from '@singletons/swiper';
 import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
 /**
@@ -42,29 +43,28 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     @Output() onDidChange = new EventEmitter<CoreSwipeCurrentItemData<Item>>();
 
     protected swiper?: Swiper;
-    @ViewChild('swiperRef')
-    set swiperRef(swiperRef: ElementRef) {
+    @ViewChild('swiperRef') set swiperRef(swiperRef: ElementRef) {
         /**
          * This setTimeout waits for Ionic's async initialization to complete.
          * Otherwise, an outdated swiper reference will be used.
          */
         setTimeout(async () => {
-            if (swiperRef?.nativeElement?.swiper) {
-                this.swiper = swiperRef.nativeElement.swiper as Swiper;
-
-                await this.initialize();
-
-                if (this.options.initialSlide) {
-                    this.swiper.slideTo(this.options.initialSlide, 0, this.options.runCallbacksOnInit);
-                }
-
-                this.updateOptions();
-
-                this.swiper.on('slideChangeTransitionStart', () => this.slideWillChange());
-                this.swiper.on('slideChangeTransitionEnd', () => this.slideDidChange());
-
+            const swiper = CoreSwiper.initSwiperIfAvailable(this.swiper, swiperRef, this.options);
+            if (!swiper) {
+                return;
             }
-        }, 0);
+
+            this.swiper = swiper;
+
+            await this.initialize();
+
+            if (this.options.initialSlide) {
+                this.swiper.slideTo(this.options.initialSlide, 0, this.options.runCallbacksOnInit);
+            }
+
+            this.swiper.on('slideChangeTransitionStart', () => this.slideWillChange());
+            this.swiper.on('slideChangeTransitionEnd', () => this.slideDidChange());
+        });
     }
 
     @ContentChild(TemplateRef) template?: TemplateRef<{item: Item; active: boolean}>; // Template defined by the content.
@@ -173,17 +173,21 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         // If slides are being updated, wait for the update to finish.
         await this.ready();
 
+        if (!this.swiper) {
+            return;
+        }
+
         // Verify that the number of slides matches the number of items.
-        const slidesLength = this.swiper?.slides?.length || 0;
+        const slidesLength = this.swiper.slides?.length || 0;
         if (slidesLength !== this.items.length) {
             // Number doesn't match, do a new update to try to match them.
             await this.updateSlidesComponent();
         }
 
-        if (!this.swiper?.slides) {
+        if (!this.swiper.slides) {
             return;
         }
-        this.swiper?.slideTo(index, speed, runCallbacks);
+        this.swiper.slideTo(index, speed, runCallbacks);
     }
 
     /**
@@ -195,7 +199,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      */
     async slideToItem(item: Item, speed?: number, runCallbacks?: boolean): Promise<void> {
         const index = this.manager?.getSource().getItemIndex(item) ?? -1;
-        if (index != -1) {
+        if (index !== -1) {
             await this.slideToIndex(index, speed, runCallbacks);
         }
     }
@@ -248,15 +252,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
             return;
         }
 
-        if (this.swiper.params === undefined) {
-            this.swiper.params = {};
-        }
-
-        Object.keys(this.options).forEach((key) => {
-            if (this.swiper) {
-                this.swiper.params[key] = this.options[key];
-            }
-        });
+        CoreSwiper.updateOptions(this.swiper, this.options);
     }
 
     /**

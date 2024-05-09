@@ -1,16 +1,16 @@
-<span *ngIf="editMode && form" [formGroup]="form">
-    <span [core-mark-required]="field.required" class="core-mark-required"></span>
+<ng-container *ngIf="editMode && form" [formGroup]="form">
     <core-attachments [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component" [componentId]="componentId"
-        [allowOffline]="true" acceptedTypes="image" [courseId]="database?.course" />
+        [allowOffline]="true" acceptedTypes="image" [courseId]="database?.course" [required]="field.required"
+        [title]="'addon.mod_data_fields_picture.fieldtypelabel' | translate" />
     <core-input-errors *ngIf="error" [errorText]="error" />
 
     <ion-input [label]="'addon.mod_data.alttext' | translate" labelPlacement="stacked" type="text"
         [formControlName]="'f_'+field.id+'_alttext'" [placeholder]=" 'addon.mod_data.alttext' | translate" />
-</span>
+</ng-container>
 
-<span *ngIf="searchMode && form" [formGroup]="form">
+<ng-container *ngIf="searchMode && form" [formGroup]="form">
     <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name" />
-</span>
+</ng-container>
 
 <button class="as-link" *ngIf="listMode && imageUrl" (click)="navigateEntry()">
     <img [src]="imageUrl" [alt]="title" class="core-media-adapt-width listMode_picture" core-external-content />

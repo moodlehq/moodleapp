@@ -15,7 +15,9 @@
             <ion-item *ngFor="let section of sections.items" [attr.aria-current]="sections.getItemAriaCurrent(section)" button
                 [detail]="true" (click)="sections.select(section)">
                 <ion-icon [name]="section.icon" slot="start" aria-hidden="true" />
-                <ion-label>{{ section.name | translate }}</ion-label>
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ section.name | translate }}</p>
+                </ion-label>
             </ion-item>
         </ion-list>
     </core-split-view>

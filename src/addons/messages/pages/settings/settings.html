@@ -21,7 +21,7 @@
                         <h2>{{ 'core.settings.general' | translate }}</h2>
                     </ion-label>
                 </ion-item-divider>
-                <ion-item class="ion-text-wrap ion-no-validation">
+                <ion-item class="ion-text-wrap" lines="none">
                     <ion-toggle [(ngModel)]="sendOnEnter" (ngModelChange)="sendOnEnterChanged()">
                         {{ 'addon.messages.useentertosend' | translate }}
                     </ion-toggle>
@@ -31,7 +31,7 @@
 
         <!-- Contactable privacy. -->
         <ion-card>
-            <ion-item *ngIf="!advancedContactable" class="ion-text-wrap ion-no-validation">
+            <ion-item *ngIf="!advancedContactable" class="ion-text-wrap" lines="none">
                 <ion-toggle [(ngModel)]="contactablePrivacy" (ngModelChange)="saveContactablePrivacy(contactablePrivacy)">
                     {{ 'addon.messages.blocknoncontacts' | translate }}
                 </ion-toggle>
@@ -95,7 +95,7 @@
                     </ion-item-divider>
                     <!-- If notifications not disabled, show toggles.
                         If notifications are disabled, show "Disabled" instead of toggle. -->
-                    <ion-item *ngFor="let state of ['loggedin', 'loggedoff']" class="ion-text-wrap ion-no-validation">
+                    <ion-item *ngFor="let state of ['loggedin', 'loggedoff']" class="ion-text-wrap" lines="none">
                         <ion-label>
                             <p>{{ 'core.settings.' + state | translate }}</p>
                         </ion-label>
@@ -131,7 +131,7 @@
             </ion-item-divider>
             <ng-container *ngFor="let processor of notification.processors">
                 <!-- If group messaging is enabled, display a simplified view. -->
-                <ion-item class="ion-text-wrap ion-no-validation">
+                <ion-item class="ion-text-wrap" lines="none">
                     <ion-label>
                         <p>{{ processor.displayname }}</p>
                     </ion-label>

@@ -35,6 +35,7 @@ export class AddonModDataFieldRadiobuttonComponent extends AddonModDataFieldPlug
         }
 
         this.options = this.field.param1.split('\n');
+        this.options = this.options.filter((option) => option !== '');
 
         let val: string | undefined;
         if (this.editMode && this.value) {

@@ -21,12 +21,12 @@
     </ion-refresher>
     <core-loading [hideUntil]="preferencesLoaded">
         <ion-card>
-            <ion-item class="ion-text-wrap ion-no-validation" *ngIf="preferences">
+            <ion-item class="ion-text-wrap" *ngIf="preferences" lines="none">
                 <ion-toggle [(ngModel)]="preferences.enableall" (ngModelChange)="enableAll(preferences.enableall)">
                     <p class="item-heading">{{ 'addon.notifications.allownotifications' | translate }}</p>
                 </ion-toggle>
             </ion-item>
-            <ion-item class="ion-text-wrap ion-no-validation" *ngIf="canChangeSound">
+            <ion-item class="ion-text-wrap" *ngIf="canChangeSound" lines="none">
                 <ion-toggle [(ngModel)]="notificationSound" (ngModelChange)="changeNotificationSound(notificationSound)">
                     <p class="item-heading">{{ 'addon.notifications.playsound' | translate }}</p>
                 </ion-toggle>
@@ -79,7 +79,7 @@
         </ion-card-header>
         <ng-container *ngFor="let notification of component.notifications">
             <!-- Tablet view -->
-            <ion-item class="ion-text-wrap ion-hide-md-down addon-notifications-table-content only-links ion-no-validation">
+            <ion-item class="ion-text-wrap ion-hide-md-down addon-notifications-table-content only-links" lines="none">
                 <ion-label>
                     <ion-row class="ion-no-padding ion-align-items-center">
                         <ion-col class="ion-margin-horizontal ion-no-padding">
@@ -116,7 +116,7 @@
                 </ion-label>
             </ion-item>
             <!-- If notifications enabled, show toggles. If disabled, show "Disabled" instead of toggle. -->
-            <ion-item *ngFor="let state of ['loggedin', 'loggedoff']" class="ion-text-wrap ion-hide-md-up">
+            <ion-item *ngFor="let state of ['loggedin', 'loggedoff']" class="ion-text-wrap ion-hide-md-up" lines="none">
                 <ion-label class="ion-margin-horizontal">
                     <p>{{ 'core.settings.' + state | translate }}</p>
                 </ion-label>
@@ -152,7 +152,7 @@
         </ion-item-divider>
         <ng-container *ngFor="let notification of component.notifications">
             <!-- If notifications enabled, show toggles. If disabled, show "Disabled" instead of toggle. -->
-            <ion-item class="ion-text-wrap">
+            <ion-item class="ion-text-wrap" lines="none">
                 <ion-label>
                     <p>{{ notification.displayname }}</p>
                 </ion-label>

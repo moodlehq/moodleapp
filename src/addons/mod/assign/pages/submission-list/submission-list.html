@@ -50,12 +50,12 @@
                                 </span>
                             </p>
                             <p *ngIf="submission.statusTranslated">
-                                <ion-badge class="ion-text-center ion-text-wrap" [color]="submission.statusColor">
+                                <ion-badge class="ion-text-start ion-text-wrap" [color]="submission.statusColor">
                                     {{ submission.statusTranslated }}
                                 </ion-badge>
                             </p>
                             <p *ngIf="submission.gradingStatusTranslationId">
-                                <ion-badge class="ion-text-center ion-text-wrap" [color]="submission.gradingColor">
+                                <ion-badge class="ion-text-start ion-text-wrap" [color]="submission.gradingColor">
                                     {{ submission.gradingStatusTranslationId | translate }}
                                 </ion-badge>
                             </p>

@@ -3,7 +3,7 @@
         <ion-list-header *ngIf="title">
             <ion-label>{{title}}</ion-label>
         </ion-list-header>
-        <ion-item class="ion-text-wrap ion-no-validation" *ngFor="let item of items" core-link [capture]="item.captureLink"
+        <ion-item class="ion-text-wrap" lines="none" *ngFor="let item of items" core-link [capture]="item.captureLink"
             [autoLogin]="item.autoLogin" [href]="item.href" (click)="itemClicked($event, item)" [attr.aria-label]="item.ariaAction"
             [hidden]="item.hidden" [detail]="!!(item.href && !item.iconAction)" role="menuitem" [button]="!!(item.href && !item.iconAction)"
             [showBrowserWarning]="item.showBrowserWarning">

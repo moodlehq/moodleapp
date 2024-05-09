@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants, ModPurpose } from '@/core/constants';
-import { Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange, ViewChild } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreFile } from '@services/file';
@@ -63,10 +63,13 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         return this.showAlt ? this.modNameTranslated : '';
     }
 
+    @ViewChild('svg') svgElement!: ElementRef<HTMLElement>;
+
     iconUrl = '';
 
     modNameTranslated = '';
     isLocalUrl = false;
+    svgLoaded = false;
     linkIconWithComponent = false;
     loaded = false;
 
@@ -140,6 +143,10 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         }
 
         this.iconUrl = CoreTextUtils.decodeHTMLEntities(this.iconUrl);
+
+        if (this.isBranded !== undefined) {
+            return;
+        }
 
         // If it's an Moodle Theme icon, check if filtericon is set and use it.
         if (this.iconUrl && CoreUrlUtils.isThemeImageUrl(this.iconUrl)) {
@@ -296,6 +303,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     protected async setSVGIcon(): Promise<void> {
         if (this.iconVersion === IconVersion.LEGACY_VERSION) {
             this.loaded = true;
+            this.svgLoaded = false;
 
             return;
         }
@@ -338,6 +346,8 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             }
 
             if (mimetype !== 'image/svg+xml' || !fileContents) {
+                this.svgLoaded = false;
+
                 return;
             }
 
@@ -347,6 +357,8 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
             // Safety check.
             if (doc.documentElement.nodeName !== 'svg') {
+                this.svgLoaded = false;
+
                 return;
             }
 
@@ -384,9 +396,10 @@ export class CoreModIconComponent implements OnInit, OnChanges {
                 }
             }
 
-            this.element.replaceChildren(doc.documentElement);
+            this.svgElement.nativeElement.replaceChildren(doc.documentElement);
+            this.svgLoaded = true;
         } catch {
-            // Ignore errors.
+            this.svgLoaded = false;
         } finally {
             this.loaded = true;
         }
