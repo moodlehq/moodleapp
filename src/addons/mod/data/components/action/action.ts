@@ -200,7 +200,7 @@ export class AddonModDataActionComponent implements OnInit {
             });
         }
 
-        await CoreDomUtils.openPopover({
+        await CoreDomUtils.openPopoverWithoutResult({
             component: AddonModDataActionsMenuComponent,
             componentProps: { items },
             id: 'actionsmenu-popover',
