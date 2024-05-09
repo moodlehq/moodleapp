@@ -548,7 +548,7 @@ export class CoreDomUtilsProvider {
             el.addEventListener('click', async (ev: Event) => {
                 const html = el.getAttribute('data-html');
 
-                await CoreDomUtils.openPopover({
+                await CoreDomUtils.openPopoverWithoutResult({
                     component: CoreBSTooltipComponent,
                     componentProps: {
                         content,
@@ -1534,7 +1534,7 @@ export class CoreDomUtilsProvider {
     }
 
     /**
-     * Opens a popover.
+     * Opens a popover and waits for it to be dismissed to return the result.
      *
      * @param options Options.
      * @returns Promise resolved when the popover is dismissed or will be dismissed.
@@ -1542,7 +1542,22 @@ export class CoreDomUtilsProvider {
     async openPopover<T = void>(options: OpenPopoverOptions): Promise<T | undefined> {
 
         const { waitForDismissCompleted, ...popoverOptions } = options;
-        const popover = await PopoverController.create(popoverOptions);
+        const popover = await this.openPopoverWithoutResult(popoverOptions);
+
+        const result = waitForDismissCompleted ? await popover.onDidDismiss<T>() : await popover.onWillDismiss<T>();
+        if (result?.data) {
+            return result?.data;
+        }
+    }
+
+    /**
+     * Opens a popover.
+     *
+     * @param options Options.
+     * @returns Promise resolved when the popover is displayed.
+     */
+    async openPopoverWithoutResult(options: Omit<PopoverOptions, 'showBackdrop'>): Promise<HTMLIonPopoverElement> {
+        const popover = await PopoverController.create(options);
         const zoomLevel = await CoreConfig.get(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreConstants.CONFIG.defaultZoomLevel);
 
         await popover.present();
@@ -1559,10 +1574,7 @@ export class CoreDomUtilsProvider {
             }
         }
 
-        const result = waitForDismissCompleted ? await popover.onDidDismiss<T>() : await popover.onWillDismiss<T>();
-        if (result?.data) {
-            return result?.data;
-        }
+        return popover;
     }
 
     /**

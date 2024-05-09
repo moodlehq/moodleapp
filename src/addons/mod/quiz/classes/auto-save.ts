@@ -197,7 +197,7 @@ export class AddonModQuizAutoSave {
         };
         this.popoverShown = true;
 
-        this.popover = await CoreDomUtils.openPopover({
+        this.popover = await CoreDomUtils.openPopoverWithoutResult({
             component: AddonModQuizConnectionErrorComponent,
             event: <Event> event,
         });

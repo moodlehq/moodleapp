@@ -109,13 +109,11 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
     /**
      * Complete loading.
      */
-    complete(): void {
-        if (this.position == 'top') {
-            // Wait a bit before allowing loading more, otherwise it could be re-triggered automatically when it shouldn't.
-            setTimeout(() => this.completeLoadMore(), 400);
-        } else {
-            this.completeLoadMore();
-        }
+    async complete(): Promise<void> {
+        // Wait a bit before allowing loading more, otherwise it could be re-triggered automatically when it shouldn't.
+        await CoreUtils.wait(400);
+
+        await this.completeLoadMore();
     }
 
     /**

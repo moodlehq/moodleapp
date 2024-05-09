@@ -9,7 +9,8 @@
     </div>
 </ng-container>
 
-<ion-infinite-scroll [disabled]="!enabled || error || loadingMore" (ionInfinite)="loadMore()" [position]="position">
+<!-- Don't allow disabling infinite-scroll while loading more items, otherwise infinite scroll stops working. -->
+<ion-infinite-scroll [disabled]="!loadingMore && (!enabled || error)" (ionInfinite)="loadMore()" [position]="position">
     <ion-infinite-scroll-content />
 </ion-infinite-scroll>
 

@@ -131,7 +131,7 @@ export class CoreCourseModuleCompletionComponent
                 target = target.parentElement;
             }
 
-            CoreDomUtils.openPopover({
+            CoreDomUtils.openPopoverWithoutResult({
                 component: CoreCourseModuleCompletionDetailsComponent,
                 componentProps: {
                     completion: this.completion,
