@@ -133,6 +133,7 @@ export class PageLoadsManager {
             component: CoreRefreshButtonModalComponent,
             cssClass: 'core-modal-no-background core-modal-fullscreen',
             closeOnNavigate: true,
+            showBackdrop: false,
         });
 
         this.onRefreshPage.next();

@@ -4,4 +4,9 @@ ion-alert {
         padding-top: 0px;
         padding-bottom: 0px;
     }
+
+    &.core-alert-force-on-top {
+        z-index: 100000 !important;
+    }
+
 }
