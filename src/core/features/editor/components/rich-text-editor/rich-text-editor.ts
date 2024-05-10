@@ -218,11 +218,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             this.deleteDraftOnSubmitOrCancel();
         }
 
-        const ionItem = this.element.closest<HTMLIonItemElement>('ion-item');
-        if (!ionItem) {
-            return;
-        }
-        ionItem.classList.add('item-rte');
+        this.setupIonItem();
 
         if (this.editorElement) {
             const debounceMutation = CoreUtils.debounce(() => {
@@ -232,9 +228,19 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             this.contentObserver = new MutationObserver(debounceMutation);
             this.contentObserver.observe(this.editorElement, { childList: true, subtree: true, characterData: true });
         }
+    }
+
+    /**
+     * Setup Ion Item adding classes and managing aria-labelledby.
+     */
+    protected setupIonItem(): void {
+        const ionItem = this.element.closest<HTMLIonItemElement>('ion-item');
+        if (!ionItem) {
+            return;
+        }
+        ionItem.classList.add('item-rte');
 
         const label = ionItem.querySelector('ion-label');
-
         if (!label) {
             return;
         }
