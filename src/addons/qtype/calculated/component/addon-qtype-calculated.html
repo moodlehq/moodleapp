@@ -55,7 +55,7 @@
 <!-- Template for units entered using radio buttons. -->
 <ng-template #radioUnits>
     <ion-radio-group [(ngModel)]="question!.unit" [name]="question!.optionsName">
-        <ion-item class="ion-text-wrap" *ngFor="let option of question!.options">
+        <ion-item class="ion-text-wrap" *ngFor="let option of question!.options" lines="none">
             <ion-radio [value]="option.value" [disabled]="option.disabled || question!.input?.readOnly"
                 [color]="question!.input?.correctIconColor">
                 {{ option.text }}

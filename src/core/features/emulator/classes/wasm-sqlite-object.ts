@@ -17,6 +17,7 @@
 
 import { SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CoreLogger } from '@singletons/logger';
 import { Sqlite3Worker1Promiser, sqlite3Worker1Promiser } from '@sqlite.org/sqlite-wasm';
 
 /**
@@ -36,10 +37,13 @@ export class WasmSQLiteObject implements SQLiteObject {
     private name: string;
     private promisedPromiser: CorePromisedValue<Sqlite3Worker1Promiser>;
     private promiser: Sqlite3Worker1Promiser;
+    protected logger: CoreLogger;
 
     constructor(name: string) {
         this.name = name;
         this.promisedPromiser = new CorePromisedValue();
+        this.logger = CoreLogger.getInstance('WasmSQLiteObject');
+
         this.promiser = async (...args) => {
             const promiser = await this.promisedPromiser;
 
@@ -50,7 +54,7 @@ export class WasmSQLiteObject implements SQLiteObject {
     /**
      * Delete the database.
      */
-    async delete(): Promise<any> {
+    async delete(): Promise<void> {
         if (!this.promisedPromiser.isResolved()) {
             await this.open();
         }
@@ -61,20 +65,35 @@ export class WasmSQLiteObject implements SQLiteObject {
     /**
      * @inheritdoc
      */
-    async open(): Promise<any> {
+    async open(): Promise<void> {
         const promiser = await new Promise<Sqlite3Worker1Promiser>((resolve) => {
             const _promiser = sqlite3Worker1Promiser(() => resolve(_promiser));
         });
 
-        await promiser('open', { filename: `file:${this.name}.sqlite3`, vfs: 'opfs' });
+        const response = await promiser('config-get', {});
+        const isEnabled = (response as any).result.opfsEnabled;
+        if (!isEnabled) {
+            this.logger.error('opfsEnabled flag is disabled. Reloading the page.');
 
+            // @TODO Fix Workaround for the issue with the opfsEnabled flag.
+            // The flag gets disabled when opening a database, so we need to reload the page to make it work.
+            window.location.reload();
+        }
+
+        try {
+            await promiser('open', { filename: `file:${this.name}.sqlite3`, vfs: 'opfs' });
+        } catch (error) {
+            this.logger.error(`Error opening database: ${this.name}. Details: ${error.result.message}`);
+
+            throw error;
+        }
         this.promisedPromiser.resolve(promiser);
     }
 
     /**
      * @inheritdoc
      */
-    async close(): Promise<any> {
+    async close(): Promise<void> {
         await this.promiser('close', {});
     }
 

@@ -449,7 +449,7 @@ export class CoreFileHelperProvider {
                 Translate.instant('core.dontshowagain'),
                 'checkbox',
                 { okText: okButton },
-                { cssClass: 'core-modal-force-on-top' },
+                { cssClass: 'core-alert-force-on-top' },
             );
 
             if (dontShowAgain) {

@@ -17,6 +17,10 @@ ion-button {
         color: inherit;
     }
 
+    &.button-disabled {
+        opacity: var(--mdl-button-disabled-opacity) !important;
+    }
+
     &.button-outline {
         --border-width: var(--core-input-border-width);
         --border-color: var(--core-input-stroke);

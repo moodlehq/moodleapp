@@ -1,12 +1,12 @@
-<div class="core-rte-editor-container" (click)="focusRTE()" [class.toolbar-hidden]="toolbarHidden">
+<div class="core-rte-editor-container" (click)="focusRTE($event)" [class.toolbar-hidden]="toolbarHidden">
     <div [hidden]="!rteEnabled" #editor class="core-rte-editor" role="textbox" contenteditable="true" [class.empty]="isEmpty"
-        [attr.aria-labelledby]="ariaLabelledBy" [attr.data-placeholder-text]="placeholder" (focus)="showToolbar($event)"
-        (blur)="hideToolbar($event)" (keydown)="onKeyDown($event)">
+        [attr.aria-labelledby]="ariaLabelledBy" [attr.data-placeholder-text]="placeholder" (focus)="focusRTE($event)"
+        (blur)="blurRTE($event)" (keydown)="onKeyDown($event)">
     </div>
 
     <ion-textarea [hidden]="rteEnabled" #textarea class="core-textarea" role="textbox" [attr.name]="name" ngControl="control"
-        [placeholder]="placeholder" [attr.aria-labelledby]="ariaLabelledBy" (ionChange)="onChange()" (ionFocus)="showToolbar($event)"
-        (ionBlur)="hideToolbar($event)" />
+        [placeholder]="placeholder" [attr.aria-labelledby]="ariaLabelledBy" (ionChange)="onChange()" (ionFocus)="focusRTE($event)"
+        (ionBlur)="blurRTE($event)" />
 
     <div class="core-rte-info-message" *ngIf="infoMessage">
         <ion-icon name="fas-circle-info" aria-hidden="true" />
@@ -23,16 +23,16 @@
     <swiper-container #swiperRef [slidesPerView]="swiperOpts.slidesPerView" (slidechangetransitionend)="updateToolbarArrows()">
         <!-- https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand -->
         <swiper-slide>
-            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.strong" [title]="'core.editor.bold' | translate"
-                (click)="buttonAction($event, 'bold', 'strong')" (keyup)="buttonAction($event, 'bold', 'strong')"
-                (mousedown)="downAction($event)" (keydown)="downAction($event)" tabindex="0">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.strong || toolbarStyles.b"
+                [title]="'core.editor.bold' | translate" (click)="buttonAction($event, 'bold', 'b')"
+                (keyup)="buttonAction($event, 'bold', 'b')" (mousedown)="downAction($event)" (keydown)="downAction($event)" tabindex="0">
                 <ion-icon name="fas-bold" aria-hidden="true" />
             </button>
         </swiper-slide>
         <swiper-slide>
-            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.em" [title]="'core.editor.italic' | translate"
-                (click)="buttonAction($event, 'italic', 'em')" (keyup)="buttonAction($event, 'italic', 'em')"
-                (mousedown)="downAction($event)" (keydown)="downAction($event)" tabindex="0">
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.em || toolbarStyles.i"
+                [title]="'core.editor.italic' | translate" (click)="buttonAction($event, 'italic', 'i')"
+                (keyup)="buttonAction($event, 'italic', 'i')" (mousedown)="downAction($event)" (keydown)="downAction($event)" tabindex="0">
                 <ion-icon name="fas-italic" aria-hidden="true" />
             </button>
         </swiper-slide>
@@ -94,13 +94,13 @@
         </swiper-slide>
         <swiper-slide>
             <button [disabled]="!rteEnabled" (click)="buttonAction($event, 'removeFormat')" (keyup)="buttonAction($event, 'removeFormat')"
-                (mousedown)="downAction($event)" (keydown)="downAction($event)" [title]="'core.editor.clear' | translate">
+                (mousedown)="downAction($event)" (keydown)="downAction($event)" [title]="'core.editor.clear' | translate" tabindex="0">
                 <ion-icon name="fas-eraser" aria-hidden="true" />
             </button>
         </swiper-slide>
         <swiper-slide *ngIf="canScanQR">
             <button [disabled]="!rteEnabled" (click)="scanQR($event)" (keyup)="scanQR($event)" (mousedown)="stopBubble($event)"
-                (keydown)="stopBubble($event)" [title]="'core.scanqr' | translate">
+                (keydown)="stopBubble($event)" [title]="'core.scanqr' | translate" tabindex="0">
                 <ion-icon name="fas-qrcode" aria-hidden="true" />
             </button>
         </swiper-slide>
@@ -108,12 +108,6 @@
             <button [attr.aria-pressed]="!rteEnabled" [title]="'core.editor.toggle' | translate" (click)="toggleEditor($event)"
                 (keyup)="toggleEditor($event)" (mousedown)="downAction($event)" (keydown)="downAction($event)" tabindex="0">
                 <ion-icon name="fas-code" aria-hidden="true" />
-            </button>
-        </swiper-slide>
-        <swiper-slide *ngIf="isPhone">
-            <button [title]="'core.editor.hidetoolbar' | translate" (click)="hideToolbar($event, true)" (keyup)="hideToolbar($event, true)"
-                (mousedown)="downAction($event)" (keydown)="downAction($event)" tabindex="0">
-                <ion-icon name="fas-xmark" aria-hidden="true" />
             </button>
         </swiper-slide>
     </swiper-container>

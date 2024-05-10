@@ -111,10 +111,6 @@ button,
     }
 }
 
-ion-fab-button {
-    --box-shadow: 0 3px 5px -1px rgb(0 0 0 / 20%), 0 6px 10px 0 rgb(0 0 0 / 14%), 0 1px 18px 0 rgb(0 0 0 / 12%);
-}
-
 [role="button"],
 .clickable {
     cursor: pointer;
@@ -123,14 +119,14 @@ ion-fab-button {
     [disabled],
     [aria-disabled="true"] {
         cursor: default;
-        opacity: .4;
+        opacity: var(--mdl-button-disabled-opacity);
         pointer-events: none;
     }
 }
 
 button[disabled] {
     cursor: default;
-    opacity: .4;
+    opacity: var(--mdl-button-disabled-opacity);
     pointer-events: none;
 }
 
@@ -186,72 +182,6 @@ div.core-iframe-network-error {
 [dir=rtl] div.core-iframe-network-error::after {
     right: unset;
     left: -15%;
-}
-
-ion-alert.core-nohead .alert-head,
-ion-alert .alert-head:empty {
-    padding-bottom: 0;
-}
-
-@keyframes scaleFrom0 {
-    from {
-        /* More performant than animating `width` */
-        transform: scaleX(0);
-    }
-}
-
-ion-alert .alert-button.timed-button{
-    position: relative;
-
-    &::before {
-        content: '';
-        position: absolute;
-        width: 100%;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        top: 0;
-        background-color: var(--primary-tint);
-        animation: scaleFrom0 10s forwards linear;
-        transform-origin: left;
-        @include rtl() {
-            transform-origin: right;
-        }
-        z-index: -1;
-    }
-}
-
-ion-alert {
-    --border-radius: var(--modal-radius);
-
-    &.md, &.ios {
-        --max-width: 80%;
-
-        @include media-breakpoint-up(md) {
-            --max-width: 384px;
-        }
-    }
-
-    .alert-wrapper {
-        overflow: auto;
-        border-radius: var(--border-radius) !important;
-
-        button.alert-button.alert-button-role-destructive {
-            color: var(--danger);
-        }
-
-    }
-
-    .alert-message {
-        user-select: text;
-        flex-shrink: 0;
-
-        ion-card {
-            margin: 0;
-            margin-top: 10px;
-        }
-
-    }
 }
 
 // Ionic list.
@@ -372,96 +302,6 @@ body.core-iframe-fullscreen ion-router-outlet {
         core-tabs-outlet {
             width: 100%;
         }
-    }
-}
-
-// Modals.
-.core-modal-fullscreen::part(content) {
-    position: absolute;
-    @include position(0 !important, null, null, 0 !important);
-    display: block;
-    width: 100% !important;
-    height: 100% !important;
-}
-
-.core-modal-transparent {
-
-    &::part(backdrop) {
-        backdrop-filter: blur(8px);
-    }
-
-    &::part(content) {
-        backdrop-filter: blur(12px);
-        --background: rgb(10 10 10 / 20%);
-
-        ion-content {
-            --background: transparent !important;
-        }
-        position: absolute;
-        @include position(0 !important, null, null, 0 !important);
-        display: block;
-        width: 100% !important;
-        height: 100% !important;
-    }
-}
-
-.core-modal-force-on-top {
-    z-index: 100000 !important;
-}
-
-.core-modal-lateral {
-    --ion-safe-area-left: 0px;
-    --ion-safe-area-right: 0px;
-
-    &::part(content) {
-        @include margin-horizontal(var(--modal-lateral-margin), null);
-
-        position: absolute;
-        @include position(0 !important, 0 !important, 0 !important, unset !important);
-        display: block;
-        height: 100% !important;
-        width: calc(100% - var(--modal-lateral-margin));
-        max-width: calc(var(--modal-lateral-max-width));
-        box-shadow: 0 28px 48px rgb(0 0 0 / 40%);
-    }
-
-    &::part(backdrop) {
-        visibility: visible;
-    }
-
-    .modal-shadow {
-        display: none;
-    }
-}
-
-.core-modal-transparent-no-filter {
-    @extend .core-modal-transparent;
-    &::part(backdrop) {
-        backdrop-filter: none;
-    }
-    &::part(content) {
-        backdrop-filter: none;
-    }
-}
-
-@each $breakpoint, $width in $screen-breakpoints {
-    .core-modal-lateral-#{$breakpoint} {
-        --modal-lateral-max-width: #{$width};
-    }
-}
-
-.core-password-modal {
-    --border-radius: var(--mdl-shape-borderRadius-sm);
-    --min-width: auto;
-    --min-height: 300px;
-    --width: 384px;
-    --height: auto;
-
-    form {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        justify-content: space-between;
     }
 }
 
@@ -635,101 +475,10 @@ ion-content.limited-width > :not([slot]) {
     min-height: 100%;
 }
 
-// Radio.
-ion-radio,
-input[type=radio],
-.select-alert .alert-radio-icon {
-    --border-radius: 50%;
-    --border-width: 2px;
-    --outer-border-width: 2px;
-    --border-style: solid;
-    --size: 20px;
-
-    &:not(.ion-color) {
-        --color: var(--text-color);
-        --color-checked: var(--color);
-    }
-}
-
-.ios ion-radio,
-.ios input[type=radio],
-.select-alert.ios .alert-radio-icon {
-    --border-width: 1px;
-    --outer-border-width: 1px;
-}
-
-.ios ion-radio {
-    &::part(container) {
-        width: var(--size);
-        height: var(--size);
-
-        margin: 0px;
-        border-radius: var(--border-radius);
-        border-width: var(--outer-border-width);
-        border-style: var(--border-style);
-        border-color: var(--color);
-    }
-
-    &::part(mark) {
-        border-radius: var(--inner-border-radius);
-        width: calc(50% + var(--outer-border-width));
-        height: calc(50% + var(--outer-border-width));
-        transform: scale3d(0, 0, 0);
-        transition: transform 280ms cubic-bezier(.4, 0, .2, 1);
-        background: var(--contrast-background);
-        border: 0 !important;
-    }
-
-    &.radio-checked {
-        &::part(container) {
-            border-color: var(--color);
-            background: var(--color);
-        }
-
-        &::part(mark) {
-            transform: scale3d(1, 1, 1);
-        }
-    }
-}
-
-
-// Checkbox.
-ion-checkbox,
-input[type=checkbox] {
-    --border-radius: 2px;
-    --border-width: 2px;
-    --outer-border-width: 2px;
-    --border-style: solid;
-    --size: 20px;
-
-    &:not(.ion-color) {
-        --border-color-checked: var(--text-color);
-        --checkbox-background-checked: var(--text-color);
-        --checkmark-color: var(--contrast-background);
-    }
-}
-
-.ios input[type=checkbox] {
-    --outer-border-width: 1px;
-}
-
 ion-badge {
     line-height: 1.1;
     padding: 2px 8px;
     border-radius: var(--mdl-shape-borderRadius-lg);
-}
-
-// File uploader.
-.action-sheet-button input.core-fileuploader-file-handler-input {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    min-width: 100%;
-    opacity: 0;
-    z-index: 100;
-    cursor: pointer;
 }
 
 .core-anchor, core-format-text a {
@@ -811,37 +560,6 @@ textarea:not([core-auto-rows]) {
     height: 200px;
 }
 
-// Hide close button because when present is read on voice over.
-ion-fab[core-fab] {
-    ion-fab-button::part(close-icon) {
-        display: none;
-    }
-}
-
-// The following 4 selectors can probably be removed after Ionic migration to 7+
-ion-fab.fab-horizontal-start {
-    left: calc(10px + var(--ion-safe-area-right, 0px));
-}
-
-[dir=rtl] ion-fab.fab-horizontal-start {
-    right: calc(10px + var(--ion-safe-area-right, 0px));
-    left: unset
-}
-
-ion-fab.fab-horizontal-end {
-    right: calc(10px + var(--ion-safe-area-right, 0px));
-}
-
-[dir=rtl] ion-fab.fab-horizontal-end {
-    left: calc(10px + var(--ion-safe-area-right, 0px));
-    right: unset
-}
-
-ion-content.has-collapsible-footer ion-fab {
-    bottom: calc(var(--core-collapsible-footer-height, 0px) + 10px);
-    @include core-transition(all, 200ms);
-}
-
 .core-media-adapt-width {
     max-width: 100%;
 }
@@ -856,10 +574,8 @@ audio.core-media-adapt-width {
 
 // Disabled items.
 ion-item.item-disabled,
-ion-button.button-disabled,
-ion-item.item-interactive-disabled:not(.item-multiple-inputs) ion-label,
-ion-datetime.datetime-disabled {
-    opacity: .65 !important;
+ion-item.item-interactive-disabled:not(.item-multiple-inputs) ion-label {
+    opacity: var(--mdl-item-disabled-opacity) !important;
 }
 
 ion-item-divider.item,
@@ -893,7 +609,7 @@ ion-input input,
 ion-textarea,
 core-rich-text-editor {
     --placeholder-color: var(--ion-placeholder-color);
-    --placeholder-opacity: .65;
+    --placeholder-opacity: var(--mdl-placeholder-opacity);
 }
 
 // Disable scroll on parent ion contents to enabled PTR on the ones inside the splitview. See split-view component for more info.
@@ -1057,37 +773,6 @@ video::-webkit-media-text-track-display {
     white-space: normal !important;
 }
 
-ion-modal {
-    &.show-modal {
-        @media only screen and (min-width: 768px) and (min-height: 600px) {
-            --border-radius: var(--modal-radius);
-        }
-    }
-    &.ion-datetime-button-overlay {
-        --border-radius: var(--modal-radius);
-    }
-
-    &.core-modal-lateral,
-    &.core-modal-fullscreen {
-        --border-radius: 0px;
-    }
-
-    &.core-modal-no-background {
-        --background: transparent;
-        --box-shadow: none !important;
-        pointer-events: none;
-
-        &::part(backdrop) {
-            display: none;
-        }
-    }
-
-    &.modal-sheet::part(handle) {
-        background: var(--core-header-buttons-color);
-    }
-}
-
-
 /*
 * This is to solve popver issue in chrome 114
 * For more info see: https://github.com/ionic-team/ionic-framework/issues/27599
@@ -1111,18 +796,6 @@ ion-modal {
  */
 [hidden] {
     display: none !important;
-}
-
-// Ion Datetime
-ion-item.item-label-stacked ion-datetime-button {
-    margin-top: 8px;
-    margin-bottom: 8px;
-    align-self: self-end;
-}
-
-ion-datetime-button p {
-    margin-top: 4px;
-    margin-bottom: 4px;
 }
 
 .x-scrollable {

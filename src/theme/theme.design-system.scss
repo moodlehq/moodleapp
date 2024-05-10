@@ -140,6 +140,12 @@ html {
     --mdl-shadow-boxShadow-16: 0px 7px 8px 0px rgb(var(--mdl-shadow-boxShadowColor) / 20%),0px 5px 22px 0px rgb(var(--mdl-shadow-boxShadowColor) / 12%),0px 12px 17px 0px rgb(var(--mdl-shadow-boxShadowColor) / 14%);
     --mdl-shadow-boxShadow-24: 0px 11px 15px 0px rgb(var(--mdl-shadow-boxShadowColor) / 20%), 0px 9px 46px 0px rgb(var(--mdl-shadow-boxShadowColor) / 12%), 0px 24px 38px 0px rgb(var(--mdl-shadow-boxShadowColor) / 14%);
 
+    // ***** OPACITY category ***** //
+    --mdl-button-disabled-opacity: 0.6;
+    --mdl-input-disabled-opacity: 0.6;
+    --mdl-item-disabled-opacity: 0.4;
+    --mdl-placeholder-opacity: 0.6;
+
     // ***** ACCESSIBILITY ***** //
     --a11y-sizing-minTargetSize: 44px;
     --a11y-shadow-focus-borderWidth: 2px;

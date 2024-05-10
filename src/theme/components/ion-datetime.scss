@@ -1,0 +1,14 @@
+ion-item.item-label-stacked ion-datetime-button {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    align-self: self-end;
+}
+
+ion-datetime-button p {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+ion-datetime.datetime-disabled {
+    opacity: var(--mdl-input-disabled-opacity) !important;
+}

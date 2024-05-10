@@ -25,7 +25,7 @@
     border: 1px solid var(--stroke);
     border-radius: var(--mdl-shape-borderRadius-md);
 
-    &:focus-within {
+    &.has-focus {
         border-color: var(--a11y-focus-color);
         border-width: 2px;
         outline: none !important;
@@ -98,18 +98,28 @@
     .core-textarea {
         position: relative;
 
-        --highlight-color: transparent !important;
+        --full-highlight-height: 0px !important;
 
-        ::ng-deep textarea {
-            margin: 0px !important;
-            padding: 0px;
-            resize: none;
-            overflow-x: hidden;
-            overflow-y: auto;
-            position: absolute;
-            height: auto;
-            top: 0px;
-            bottom: 0px;
+        ::ng-deep .textarea-wrapper,
+        ::ng-deep .textarea-legacy-wrapper {
+            height: 100%;
+
+            .textarea-wrapper-inner {
+                height: 100%;
+            }
+
+            ::ng-deep textarea {
+                caret-color: black;
+                margin: 0px !important;
+                padding: 0px;
+                resize: none;
+                overflow-x: hidden;
+                overflow-y: auto;
+                position: absolute;
+                height: auto;
+                top: 0px;
+                bottom: 0px;
+            }
         }
     }
 
