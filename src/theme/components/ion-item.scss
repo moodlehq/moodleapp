@@ -190,10 +190,12 @@ ion-item .in-item {
 // Correctly inherit ion-text-wrap onto labels.
 .item > ion-label,
 .fake-ion-item,
-.item.ion-text-wrap > ion-checkbox::part(label),
-ion-checkbox.ion-text-wrap::part(label)
-.item.ion-text-wrap ion-toggle::part(label),
-ion-toggle.ion-text-wrap::part(label) {
+.item > ion-checkbox::part(label),
+ion-checkbox::part(label),
+.item ion-toggle::part(label),
+ion-toggle::part(label),
+.item > ion-input > label,
+ion-input > label {
     core-format-text,
     core-format-text > *:not(pre) {
         white-space: nowrap;
@@ -207,22 +209,17 @@ ion-item > .in-item,
 .fake-ion-item.ion-text-wrap,
 .item.ion-text-wrap > ion-checkbox::part(label),
 ion-checkbox.ion-text-wrap::part(label),
-ion-toggle.ion-text-wrap::part(label) {
+ion-toggle.ion-text-wrap::part(label),
+.item.ion-text-wrap > ion-input > label,
+ion-input.ion-text-wrap > label {
+    white-space: normal;
+    overflow: inherit;
+
     core-format-text,
     core-format-text > *:not(pre) {
         white-space: normal;
         overflow: inherit;
     }
-}
-
-.item.ion-text-wrap > ion-label,
-.item.ion-text-wrap ion-checkbox::part(label),
-ion-checkbox.ion-text-wrap::part(label),
-.item.ion-text-wrap ion-radio::part(label),
-ion-radio.ion-text-wrap::part(label),
-.item.ion-text-wrap ion-toggle::part(label),
-ion-toggle.ion-text-wrap::part(label) {
-    white-space: normal !important;
 }
 
 ion-item .core-input-errors-wrapper {
