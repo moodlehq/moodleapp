@@ -52,4 +52,13 @@ describe('CorePath', () => {
         expect(CorePath.concatenatePaths('foo/bar', 'baz')).toEqual('foo/bar/baz');
     });
 
+    it('checks ancestor paths', () => {
+        expect(CorePath.pathIsAncestor('/foo', '/foo/bar')).toEqual(true);
+        expect(CorePath.pathIsAncestor('/foo/', '/foo/bar')).toEqual(true);
+        expect(CorePath.pathIsAncestor('/foo', '/foo/bar/baz')).toEqual(true);
+        expect(CorePath.pathIsAncestor('/foo/baz', '/foo/bar')).toEqual(false);
+        expect(CorePath.pathIsAncestor('/foo/bar', '/foo/bar')).toEqual(false);
+        expect(CorePath.pathIsAncestor('/foo/b', '/foo/bar')).toEqual(false);
+    });
+
 });
