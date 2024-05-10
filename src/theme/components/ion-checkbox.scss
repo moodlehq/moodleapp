@@ -1,5 +1,26 @@
+
+// Checkbox.
+ion-checkbox,
+input[type=checkbox] {
+    --border-radius: 2px;
+    --border-width: 2px;
+    --outer-border-width: 2px;
+    --border-style: solid;
+    --size: 20px;
+
+    &:not(.ion-color) {
+        --border-color-checked: var(--text-color);
+        --checkbox-background-checked: var(--text-color);
+        --checkmark-color: var(--contrast-background);
+    }
+}
+
 ion-checkbox {
     &.checkbox-disabled::part(label) {
-        opacity: 0.8;
+        opacity: var(--mdl-input-disabled-opacity);
     }
+}
+
+.ios input[type=checkbox] {
+    --outer-border-width: 1px;
 }

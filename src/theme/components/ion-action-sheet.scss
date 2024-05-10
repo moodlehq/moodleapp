@@ -35,3 +35,16 @@ ion-action-sheet {
         }
     }
 }
+
+// File uploader.
+.action-sheet-button input.core-fileuploader-file-handler-input {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    min-width: 100%;
+    opacity: 0;
+    z-index: 100;
+    cursor: pointer;
+}

@@ -1,5 +1,63 @@
+
+// Radio.
+ion-radio,
+input[type=radio],
+.select-alert .alert-radio-icon {
+    --border-radius: 50%;
+    --border-width: 2px;
+    --outer-border-width: 2px;
+    --border-style: solid;
+    --size: 20px;
+
+    &:not(.ion-color) {
+        --color: var(--text-color);
+        --color-checked: var(--color);
+    }
+}
+
+.ios ion-radio,
+.ios input[type=radio],
+.select-alert.ios .alert-radio-icon {
+    --border-width: 1px;
+    --outer-border-width: 1px;
+}
+
+.ios ion-radio {
+    &::part(container) {
+        width: var(--size);
+        height: var(--size);
+
+        margin: 0px;
+        border-radius: var(--border-radius);
+        border-width: var(--outer-border-width);
+        border-style: var(--border-style);
+        border-color: var(--color);
+    }
+
+    &::part(mark) {
+        border-radius: var(--inner-border-radius);
+        width: calc(50% + var(--outer-border-width));
+        height: calc(50% + var(--outer-border-width));
+        transform: scale3d(0, 0, 0);
+        transition: transform 280ms cubic-bezier(.4, 0, .2, 1);
+        background: var(--contrast-background);
+        border: 0 !important;
+    }
+
+    &.radio-checked {
+        &::part(container) {
+            border-color: var(--color);
+            background: var(--color);
+        }
+
+        &::part(mark) {
+            transform: scale3d(1, 1, 1);
+        }
+    }
+}
+
 ion-radio {
     &.radio-disabled::part(label) {
-        opacity: 0.8;
+        opacity: var(--mdl-input-disabled-opacity);
     }
 }

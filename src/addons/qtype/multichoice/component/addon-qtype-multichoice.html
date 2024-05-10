@@ -41,7 +41,7 @@
 
     <!-- Radio buttons for single choice. -->
     <ion-radio-group *ngIf="!question.multi" [(ngModel)]="question.singleChoiceModel" [name]="question.optionsName">
-        <ion-item class="ion-text-wrap answer" *ngFor="let option of question.options">
+        <ion-item class="ion-text-wrap answer" *ngFor="let option of question.options" lines="none">
             <ion-radio [value]="option.value" [disabled]="option.disabled"
                 [color]='(option.isCorrect === 1 ? "success": "") + (option.isCorrect === 0 ? "danger": "")'>
                 <div>

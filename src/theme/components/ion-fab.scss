@@ -1,0 +1,35 @@
+
+// Hide close button because when present is read on voice over.
+ion-fab[core-fab] {
+    ion-fab-button::part(close-icon) {
+        display: none;
+    }
+}
+
+// The following 4 selectors can probably be removed after Ionic migration to 7+
+ion-fab.fab-horizontal-start {
+    left: calc(10px + var(--ion-safe-area-right, 0px));
+}
+
+&[dir=rtl] ion-fab.fab-horizontal-start {
+    right: calc(10px + var(--ion-safe-area-right, 0px));
+    left: unset
+}
+
+ion-fab.fab-horizontal-end {
+    right: calc(10px + var(--ion-safe-area-right, 0px));
+}
+
+&[dir=rtl] ion-fab.fab-horizontal-end {
+    left: calc(10px + var(--ion-safe-area-right, 0px));
+    right: unset
+}
+
+ion-content.has-collapsible-footer ion-fab {
+    bottom: calc(var(--core-collapsible-footer-height, 0px) + 10px);
+    @include core-transition(all, 200ms);
+}
+
+ion-fab-button {
+    --box-shadow: 0 3px 5px -1px rgb(0 0 0 / 20%), 0 6px 10px 0 rgb(0 0 0 / 14%), 0 1px 18px 0 rgb(0 0 0 / 12%);
+}

@@ -1,12 +1,75 @@
+@keyframes scaleFrom0 {
+    from {
+        /* More performant than animating `width` */
+        transform: scaleX(0);
+    }
+}
+
 ion-alert {
+    --border-radius: var(--modal-radius);
+
+    &.md, &.ios {
+        --max-width: 80%;
+
+        @include media-breakpoint-up(md) {
+            --max-width: 384px;
+        }
+    }
+
+    .alert-wrapper {
+        overflow: auto;
+        border-radius: var(--border-radius) !important;
+
+        button.alert-button.alert-button-role-destructive {
+            color: var(--danger);
+        }
+
+    }
+
+    .alert-message {
+        user-select: text;
+        flex-shrink: 0;
+
+        ion-card {
+            margin: 0;
+            margin-top: 10px;
+        }
+
+    }
+
     &.md .alert-button {
         // Remove padding from alert buttons, they already have min accessibility height.
         padding-top: 0px;
         padding-bottom: 0px;
     }
 
+    .alert-button.timed-button{
+        position: relative;
+
+        &::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            background-color: var(--primary-tint);
+            animation: scaleFrom0 10s forwards linear;
+            transform-origin: left;
+            @include rtl() {
+                transform-origin: right;
+            }
+            z-index: -1;
+        }
+    }
+
     &.core-alert-force-on-top {
         z-index: 100000 !important;
     }
 
+    &.core-nohead .alert-head,
+    .alert-head:empty {
+        padding-bottom: 0;
+    }
 }

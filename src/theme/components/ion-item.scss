@@ -19,7 +19,8 @@ ion-item.item {
     }
 
     &.ion-valid,
-    &.ion-invalid {
+    &.ion-invalid,
+    &.item-has-interactive-control {
         &.item-lines-default {
             --border-width: 0 0 1px 0;
         }

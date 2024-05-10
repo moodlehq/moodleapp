@@ -7,7 +7,7 @@ ion-select {
         opacity: 1;
     }
     &.select-disabled {
-        opacity: 0.8;
+        opacity: var(--mdl-input-disabled-opacity);
     }
 }
 
