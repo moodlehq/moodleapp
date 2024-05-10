@@ -433,65 +433,21 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * Set the caret position on the character number.
      *
      * @param parent Parent where to set the position.
-     * @param chars Number of chars where to place the caret. If not defined it will go to the end.
      */
-    protected setCurrentCursorPosition(parent: Node, chars?: number): void {
-        /**
-         * Loops round all the child text nodes within the supplied node and sets a range from the start of the initial node to
-         * the characters.
-         *
-         * @param node Node where to start.
-         * @param range Previous calculated range.
-         * @param chars Object with counting of characters (input-output param).
-         * @param chars.count Count of characters.
-         * @returns Selection range.
-         */
-        const setRange = (node: Node, range: Range, chars: { count: number }): Range => {
-            if (chars.count === 0) {
-                range.setEnd(node, 0);
-            } else if (node && chars.count > 0) {
-                if (node.hasChildNodes()) {
-                    // Navigate through children.
-                    for (let lp = 0; lp < node.childNodes.length; lp++) {
-                        range = setRange(node.childNodes[lp], range, chars);
+    protected setCurrentCursorPosition(parent: Node): void {
+        const range = document.createRange();
 
-                        if (chars.count === 0) {
-                            break;
-                        }
-                    }
-                } else if ((node.textContent || '').length < chars.count) {
-                    // Jump this node.
-                    // @todo empty nodes will be omitted.
-                    chars.count -= (node.textContent || '').length;
-                } else {
-                    // The cursor will be placed in this element.
-                    range.setEnd(node, chars.count);
-                    chars.count = 0;
-                }
-            }
+        // Select all so it will go to the end.
+        range.selectNode(parent);
+        range.selectNodeContents(parent);
+        range.collapse(false);
 
-            return range;
-        };
-
-        let range = document.createRange();
-        if (chars === undefined) {
-            // Select all so it will go to the end.
-            range.selectNode(parent);
-            range.selectNodeContents(parent);
-        } else if (chars < 0 || chars > (parent.textContent || '').length) {
+        const selection = window.getSelection();
+        if (!selection) {
             return;
-        } else {
-            range.selectNode(parent);
-            range.setStart(parent, 0);
-            range = setRange(parent, range, { count: chars });
         }
-
-        if (range) {
-            const selection = window.getSelection();
-            range.collapse(false);
-            selection?.removeAllRanges();
-            selection?.addRange(range);
-        }
+        selection.removeAllRanges();
+        selection.addRange(range);
     }
 
     /**
@@ -736,6 +692,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             }
         };
 
+        // There are many cases when focus is fired after blur, so we need to delay the blur action.
         this.blurTimeout = window.setTimeout(() => doBlur(event),300);
     }
 

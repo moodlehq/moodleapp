@@ -269,6 +269,11 @@ ion-item.item.item-file {
     }
 }
 
+// No highlight on RTE.
+ion-item.item-rte {
+    --full-highlight-height: 0px !important;
+}
+
 // Make links clickable when inside radio or checkbox items. Style part.
 @media (hover: hover) {
     ion-item.item-multiple-inputs:not(.item-rte):hover::part(native) {
