@@ -37,6 +37,8 @@ import {
     PopoverController,
     ModalController,
     Router,
+    ActionSheetController,
+    LoadingController,
 } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
@@ -868,6 +870,8 @@ export class CoreDomUtilsProvider {
                 alertMessageEl && this.treatAnchors(alertMessageEl);
             }
 
+            this.fixAriaHidden(alert);
+
             return;
         });
 
@@ -1408,6 +1412,8 @@ export class CoreDomUtilsProvider {
 
         await loader.present();
 
+        this.fixAriaHidden(loader);
+
         return loader;
     }
 
@@ -1476,8 +1482,9 @@ export class CoreDomUtilsProvider {
 
         // TODO: Improve this if we need two modals with same component open at the same time.
         const modalId = Md5.hashAsciiStr(options.component?.toString() || '');
+        const alreadyDisplayed = !!this.displayedModals[modalId];
 
-        const modal = this.displayedModals[modalId]
+        const modal = alreadyDisplayed
             ? this.displayedModals[modalId]
             : await ModalController.create(modalOptions);
 
@@ -1502,6 +1509,10 @@ export class CoreDomUtilsProvider {
             await modal.present();
         }
 
+        if (!alreadyDisplayed) {
+            this.fixAriaHidden(modal);
+        }
+
         const result = await resultPromise;
 
         navSubscription?.unsubscribe();
@@ -1509,6 +1520,32 @@ export class CoreDomUtilsProvider {
 
         if (result?.data) {
             return result?.data;
+        }
+    }
+
+    /**
+     * Temporary fix to remove aria-hidden from ion-router-outlet if needed. It can be removed once the Ionic bug is fixed.
+     * https://github.com/ionic-team/ionic-framework/issues/29396
+     *
+     * @param overlay Overlay dismissed.
+     */
+    protected async fixAriaHidden(
+        overlay: HTMLIonModalElement | HTMLIonPopoverElement | HTMLIonAlertElement | HTMLIonToastElement,
+    ): Promise<void> {
+
+        await overlay.onDidDismiss();
+
+        const overlays = await Promise.all([
+            ModalController.getTop(),
+            PopoverController.getTop(),
+            ActionSheetController.getTop(),
+            AlertController.getTop(),
+            LoadingController.getTop(),
+            ToastController.getTop(),
+        ]);
+
+        if (!overlays.find(overlay => overlay !== undefined)) {
+            document.querySelector('ion-router-outlet')?.removeAttribute('aria-hidden');
         }
     }
 
@@ -1573,6 +1610,8 @@ export class CoreDomUtilsProvider {
                     break;
             }
         }
+
+        this.fixAriaHidden(popover);
 
         return popover;
     }
