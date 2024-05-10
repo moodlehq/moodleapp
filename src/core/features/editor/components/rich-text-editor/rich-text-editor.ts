@@ -78,9 +78,13 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     @Input() draftExtraParams?: Record<string, unknown>; // Extra params to identify the draft.
     @Output() contentChanged: EventEmitter<string | undefined | null>;
 
-    @ViewChild('editor') editor?: ElementRef; // WYSIWYG editor.
+    protected editorElement?: HTMLDivElement; // WYSIWYG editor.
+    @ViewChild('editor') editor?: ElementRef<HTMLDivElement>;
+
+    @ViewChild('toolbar') toolbar?: ElementRef<HTMLDivElement>;
+
+    protected textareaElement?: HTMLTextAreaElement;
     @ViewChild('textarea') textarea?: IonTextarea; // Textarea editor.
-    @ViewChild('toolbar') toolbar?: ElementRef;
 
     protected toolbarSlides?: Swiper;
     @ViewChild('swiperRef') set swiperRef(swiperRef: ElementRef) {
@@ -88,7 +92,9 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
          * This setTimeout waits for Ionic's async initialization to complete.
          * Otherwise, an outdated swiper reference will be used.
          */
-        setTimeout(() => {
+        setTimeout(async () => {
+            await this.waitLoadingsDone();
+
             const swiper = CoreSwiper.initSwiperIfAvailable(this.toolbarSlides, swiperRef, this.swiperOpts);
             if (!swiper) {
                 return;
@@ -102,8 +108,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     protected readonly RESTORE_MESSAGE_CLEAR_TIME = 6000;
     protected readonly SAVE_MESSAGE_CLEAR_TIME = 2000;
 
-    protected element: HTMLDivElement;
-    protected editorElement?: HTMLDivElement;
+    protected element: HTMLElement;
     protected minHeight = 200; // Minimum height of the editor.
 
     protected valueChangeSubscription?: Subscription;
@@ -127,6 +132,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     protected domPromise?: CoreCancellablePromise<void>;
     protected buttonsDomPromise?: CoreCancellablePromise<void>;
     protected shortcutCommands?: Record<string, EditorCommand>;
+    protected blurTimeout?: number;
 
     rteEnabled = false;
     isPhone = false;
@@ -165,7 +171,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         elementRef: ElementRef,
     ) {
         this.contentChanged = new EventEmitter<string>();
-        this.element = elementRef.nativeElement as HTMLDivElement;
+        this.element = elementRef.nativeElement;
         this.pageInstance = 'app_' + Date.now(); // Generate a "unique" ID based on timestamp.
     }
 
@@ -188,6 +194,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
         // Setup the editor.
         this.editorElement = this.editor?.nativeElement as HTMLDivElement;
+        this.textareaElement = await this.textarea?.getInputElement();
         this.setContent(this.control?.value);
         this.originalContent = this.control?.value ?? undefined;
         this.lastDraft = this.control?.value ?? '';
@@ -508,17 +515,18 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
         // Set focus and cursor at the end.
         // Modify the DOM directly so the keyboard stays open.
+
         if (this.rteEnabled) {
             this.editorElement?.removeAttribute('hidden');
-            const textareaInputElement = await this.textarea?.getInputElement();
-            textareaInputElement?.setAttribute('hidden', '');
-            this.editorElement?.focus();
+            this.textareaElement?.setAttribute('hidden', '');
         } else {
             this.editorElement?.setAttribute('hidden', '');
-            const textareaInputElement = await this.textarea?.getInputElement();
-            textareaInputElement?.removeAttribute('hidden');
-            this.textarea?.setFocus();
+            this.textareaElement?.removeAttribute('hidden');
         }
+
+        await CoreUtils.nextTick();
+
+        this.focusRTE(event);
     }
 
     /**
@@ -707,40 +715,28 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     }
 
     /**
-     * Focus editor when click the area.
-     */
-    focusRTE(): void {
-        if (this.rteEnabled) {
-            this.editorElement?.focus();
-        } else {
-            this.textarea?.setFocus();
-        }
-    }
-
-    /**
-     * Hide the toolbar in phone mode.
+     * Blur and hide the toolbar in phone mode.
      *
      * @param event Event.
-     * @param force If true it will not check the target of the event.
      */
-    hideToolbar(event: FocusEvent | KeyboardEvent | MouseEvent, force = false): void {
-        if (!force && event.target && this.element.contains(event.target as HTMLElement)) {
-            // Do not hide if clicked inside the editor area, except forced.
+    blurRTE(event: FocusEvent): void {
+        const doBlur = (event: FocusEvent) => {
+            if (this.element.contains(document.activeElement)) {
+                // Do not hide if clicked inside the editor area, except hideButton.
 
-            return;
-        }
+                return;
+            }
 
-        if (event.type === 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
-            return;
-        }
+            this.element.classList.remove('has-focus');
 
-        this.element.classList.remove('has-focus');
+            this.stopBubble(event);
 
-        this.stopBubble(event);
+            if (this.isPhone) {
+                this.toolbarHidden = true;
+            }
+        };
 
-        if (this.isPhone) {
-            this.toolbarHidden = true;
-        }
+        this.blurTimeout = window.setTimeout(() => doBlur(event),300);
     }
 
     /**
@@ -754,19 +750,28 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     }
 
     /**
-     * Show the toolbar.
+     * Focus editor when click the area and show toolbar.
+     *
+     * @param event Event.
      */
-    showToolbar(event: FocusEvent): void {
-        this.updateToolbarButtons();
+    focusRTE(event: Event): void {
+        clearTimeout(this.blurTimeout);
+
+        if (this.rteEnabled) {
+            this.editorElement?.focus();
+        } else {
+            this.textarea?.setFocus();
+        }
 
         this.element.classList.add('ion-touched');
         this.element.classList.remove('ion-untouched');
         this.element.classList.add('has-focus');
 
-        this.stopBubble(event);
+        event && this.stopBubble(event);
 
-        this.editorElement?.focus();
         this.toolbarHidden = false;
+        this.updateToolbarButtons();
+
     }
 
     /**
@@ -839,7 +844,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * Update the number of toolbar buttons displayed.
      */
     async updateToolbarButtons(): Promise<void> {
-        if (!this.isCurrentView || !this.toolbar || !this.toolbarSlides || this.element.offsetParent === null) {
+        if (!this.isCurrentView || !this.toolbar || !this.toolbarSlides ||
+            this.toolbarHidden || this.element.offsetParent === null) {
             // Don't calculate if component isn't in current view, the calculations are wrong.
             return;
         }
@@ -848,10 +854,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
         // Cancel previous one, if any.
         this.buttonsDomPromise?.cancel();
-        this.buttonsDomPromise = CoreDom.waitToBeInDOM(this.toolbar.nativeElement);
+        this.buttonsDomPromise = CoreDom.waitToBeInDOM(this.toolbar?.nativeElement);
         await this.buttonsDomPromise;
 
-        const width = this.toolbar.nativeElement.getBoundingClientRect().width;
+        const width = this.toolbar?.nativeElement.getBoundingClientRect().width;
 
         if (length > 0 && width > length * this.toolbarButtonWidth) {
             this.swiperOpts.slidesPerView = length;
@@ -1069,7 +1075,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         const text = await CoreUtils.scanQR();
 
         if (text) {
-            this.editorElement?.focus(); // Make sure the editor is focused.
+            this.focusRTE(event); // Make sure the editor is focused.
             // eslint-disable-next-line deprecation/deprecation
             document.execCommand('insertText', false, text);
         }

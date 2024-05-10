@@ -1,12 +1,12 @@
-<div class="core-rte-editor-container" (click)="focusRTE()" [class.toolbar-hidden]="toolbarHidden">
+<div class="core-rte-editor-container" (click)="focusRTE($event)" [class.toolbar-hidden]="toolbarHidden">
     <div [hidden]="!rteEnabled" #editor class="core-rte-editor" role="textbox" contenteditable="true" [class.empty]="isEmpty"
-        [attr.aria-labelledby]="ariaLabelledBy" [attr.data-placeholder-text]="placeholder" (focus)="showToolbar($event)"
-        (blur)="hideToolbar($event)" (keydown)="onKeyDown($event)">
+        [attr.aria-labelledby]="ariaLabelledBy" [attr.data-placeholder-text]="placeholder" (focus)="focusRTE($event)"
+        (blur)="blurRTE($event)" (keydown)="onKeyDown($event)">
     </div>
 
     <ion-textarea [hidden]="rteEnabled" #textarea class="core-textarea" role="textbox" [attr.name]="name" ngControl="control"
-        [placeholder]="placeholder" [attr.aria-labelledby]="ariaLabelledBy" (ionChange)="onChange()" (ionFocus)="showToolbar($event)"
-        (ionBlur)="hideToolbar($event)" />
+        [placeholder]="placeholder" [attr.aria-labelledby]="ariaLabelledBy" (ionChange)="onChange()" (ionFocus)="focusRTE($event)"
+        (ionBlur)="blurRTE($event)" />
 
     <div class="core-rte-info-message" *ngIf="infoMessage">
         <ion-icon name="fas-circle-info" aria-hidden="true" />
@@ -108,12 +108,6 @@
             <button [attr.aria-pressed]="!rteEnabled" [title]="'core.editor.toggle' | translate" (click)="toggleEditor($event)"
                 (keyup)="toggleEditor($event)" (mousedown)="downAction($event)" (keydown)="downAction($event)" tabindex="0">
                 <ion-icon name="fas-code" aria-hidden="true" />
-            </button>
-        </swiper-slide>
-        <swiper-slide *ngIf="isPhone">
-            <button [title]="'core.editor.hidetoolbar' | translate" (click)="hideToolbar($event, true)" (keyup)="hideToolbar($event, true)"
-                (mousedown)="downAction($event)" (keydown)="downAction($event)" tabindex="0">
-                <ion-icon name="fas-xmark" aria-hidden="true" />
             </button>
         </swiper-slide>
     </swiper-container>

@@ -25,7 +25,7 @@
     border: 1px solid var(--stroke);
     border-radius: var(--mdl-shape-borderRadius-md);
 
-    &:focus-within {
+    &.has-focus {
         border-color: var(--a11y-focus-color);
         border-width: 2px;
         outline: none !important;
