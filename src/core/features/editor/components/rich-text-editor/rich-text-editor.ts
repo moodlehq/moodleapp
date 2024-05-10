@@ -139,7 +139,9 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     infoMessage?: string;
     toolbarStyles = {
         strong: 'false',
+        b: 'false',
         em: 'false',
+        i: 'false',
         u: 'false',
         strike: 'false',
         p: 'false',
@@ -491,6 +493,9 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
         this.stopBubble(event);
 
+        // Update tags for a11y.
+        this.replaceTags(['b', 'i'], ['strong', 'em']);
+
         this.setContent(this.control?.value || '');
 
         this.rteEnabled = !this.rteEnabled;
@@ -498,9 +503,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         // Set focus and cursor at the end.
         // Modify the DOM directly so the keyboard stays open.
         if (this.rteEnabled) {
-            // Update tags for a11y.
-            this.replaceTags(['b', 'i'], ['strong', 'em']);
-
             this.editorElement?.removeAttribute('hidden');
             const textareaInputElement = await this.textarea?.getInputElement();
             textareaInputElement?.setAttribute('hidden', '');
@@ -679,13 +681,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
         // eslint-disable-next-line deprecation/deprecation
         document.execCommand(command, false);
-
-        // Modern browsers are using non a11y tags, so replace them.
-        if (command === 'bold') {
-            this.replaceTags(['b'], ['strong']);
-        } else if (command === 'italic') {
-            this.replaceTags(['i'], ['em']);
-        }
     }
 
     /**
