@@ -18,6 +18,7 @@
 
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
+use Behat\Behat\Hook\Scope\ScenarioScope;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ExpectationException;
 use Moodle\BehatExtension\Exception\SkippedException;
@@ -357,7 +358,7 @@ class behat_app_helper extends behat_base {
      * @return mixed Result.
      */
     protected function runtime_js(string $script) {
-        return $this->evaluate_script("window.behat.$script");
+        return $this->evaluate_script("window.behat?.$script");
     }
 
     /**
@@ -470,6 +471,22 @@ class behat_app_helper extends behat_base {
         $this->wait_for_pending_js();
 
         $this->i_wait_the_app_to_restart();
+    }
+
+    /**
+     * Get scenario slug.
+     *
+     * @param ScenarioScope $scope Scenario scope.
+     * @return string Slug.
+     */
+    protected function get_scenario_slug(ScenarioScope $scope): string {
+        $text = $scope->getFeature()->getTitle() . ' ' . $scope->getScenario()->getTitle();
+        $text = trim($text);
+        $text = strtolower($text);
+        $text = preg_replace('/\s+/', '-', $text);
+        $text = preg_replace('/[^a-z0-9-]/', '', $text);
+
+        return $text;
     }
 
     /**
