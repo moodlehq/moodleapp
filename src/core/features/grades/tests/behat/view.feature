@@ -1,4 +1,4 @@
-@core_grades @app @javascript @lms_from4.0
+@core_grades @app @javascript
 Feature: View grades
 
   Background:

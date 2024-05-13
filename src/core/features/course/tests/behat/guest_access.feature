@@ -20,7 +20,6 @@ Feature: Test basic usage of guest access course in app
       | activity    | name             | intro        | course | idnumber  | groupmode |
       | wiki        | Test wiki name   | Test wiki    | C1     | wiki      | 0         |
 
-  @lms_from4.0
   Scenario: Guest access without password (student)
     Given I am on the "Course 1" "enrolment methods" page logged in as "teacher1"
     And I click on "Edit" "link" in the "Guest access" "table_row"

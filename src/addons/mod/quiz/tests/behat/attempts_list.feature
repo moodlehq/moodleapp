@@ -1,4 +1,4 @@
-@addon_mod_quiz @app @javascript @lms_from3.11
+@addon_mod_quiz @app @javascript
 Feature: View list of attempts in the app
 
   Background:

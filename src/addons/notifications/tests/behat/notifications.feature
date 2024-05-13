@@ -1,4 +1,4 @@
-@addon_notifications @app @javascript @lms_from3.11
+@addon_notifications @app @javascript
 Feature: Notifications
 
   Background:

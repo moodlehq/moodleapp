@@ -1,4 +1,4 @@
-@core_comments @app @javascript @lms_from3.11
+@core_comments @app @javascript
 Feature: Test basic usage of comments in app
   In order to participate in the comments while using the mobile app
   As a student

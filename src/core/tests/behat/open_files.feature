@@ -13,7 +13,6 @@ Feature: It opens files properly.
       | user     | course | role    |
       | student1 | C1     | student |
 
-  @lms_from3.11
   Scenario: Open a file
     Given the following "activities" exist:
       | activity | name     | intro                | display | course | defaultfilename |

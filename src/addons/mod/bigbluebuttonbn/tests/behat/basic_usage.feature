@@ -1,4 +1,4 @@
-@addon_mod_bigbluebuttonbn @mod_bigbluebuttonbn @app @javascript @lms_from4.0
+@addon_mod_bigbluebuttonbn @mod_bigbluebuttonbn @app @javascript
 Feature: Test basic usage of BBB activity in app
   In order to join a BBB meeting while using the mobile app
   As a student
@@ -97,7 +97,6 @@ Feature: Test basic usage of BBB activity in app
     And I press "Join session" in the app
     Then the app should have opened a browser tab with url "blindsidenetworks.com"
 
-  @lms_from4.1
   Scenario: Display right info based on instance type
     Given the following "activities" exist:
       | activity        | name              | course | idnumber | type |

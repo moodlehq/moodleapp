@@ -1,4 +1,4 @@
-@core_reportbuilder @app @javascript @lms_from4.1
+@core_reportbuilder @app @javascript
 Feature: Report builder
 
   Background:

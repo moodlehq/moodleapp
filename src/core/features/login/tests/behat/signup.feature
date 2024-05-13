@@ -80,7 +80,6 @@ Feature: Test signup in app
     Then I should find "Spain" in the app
     And I should find "u1@u1.com" in the app
 
-  @lms_from4.1
   Scenario: Check password policy in signup
     Given the following config values are set as admin:
       | passwordpolicy | 1 |
@@ -115,7 +114,6 @@ Feature: Test signup in app
     And I press "Create my new account" in the app
     Then I should find "An email should have been sent to your address" in the app
 
-  @lms_from3.11
   Scenario: Signup with custom profile fields
     # Use default options Yes/No for menu field because it's not possible to add new lines. See MDL-75788.
     Given the following "custom profile fields" exist:

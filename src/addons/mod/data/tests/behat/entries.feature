@@ -1,4 +1,4 @@
-@addon_mod_data @app @javascript @lms_from3.11
+@addon_mod_data @app @javascript
 Feature: Users can manage entries in database activities
   In order to populate databases
   As a user

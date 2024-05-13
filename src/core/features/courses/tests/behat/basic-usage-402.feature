@@ -38,7 +38,6 @@ Feature: Test basic usage of courses in app
       | activity | course | idnumber | name                | intro                       | assignsubmission_onlinetext_enabled | duedate      | gradingduedate |
       | assign   | C1     | assign1  | assignment          | Test assignment description | 1                                   | ##tomorrow## | ##tomorrow##   |
 
-  @lms_from4.0
   Scenario: See my courses
     Given I entered the app as "student1"
     When the header should be "Acceptance test site" in the app

@@ -1,4 +1,4 @@
-@addon_mod_data @app @javascript @lms_from3.11
+@addon_mod_data @app @javascript
 Feature: Users can store entries in database activities when offline and sync when online
   In order to populate databases while offline
   As a user

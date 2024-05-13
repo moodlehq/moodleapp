@@ -1,4 +1,4 @@
-@addon_coursecompletion @app @javascript @lms_from4.0
+@addon_coursecompletion @app @javascript
 Feature: Course completion navigation
 
   Background:

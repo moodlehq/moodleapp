@@ -1,4 +1,4 @@
-@addon_mod_survey @app @javascript @lms_from4.0
+@addon_mod_survey @app @javascript
 Feature: Test basic usage of survey activity in app
   In order to participate in surveys while using the mobile app
   As a student

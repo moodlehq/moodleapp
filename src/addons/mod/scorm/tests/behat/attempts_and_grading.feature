@@ -609,7 +609,6 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I press the back button in the app
 #     Then I should find "74%" within "Grade reported" "ion-item" in the app
 
-#   @lms_from4.1
 #   Scenario: SCORM grade is calculated right based on 'Attempts grading' setting
 #     Given the following "activities" exist:
 #       | activity | name          | course | idnumber | packagefilepath                             | maxattempt | whatgrade | grademethod | forcenewattempt |

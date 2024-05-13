@@ -1,4 +1,4 @@
-@core_grades @app @javascript @lms_from3.11
+@core_grades @app @javascript
 Feature: Grades navigation
 
   Background:
