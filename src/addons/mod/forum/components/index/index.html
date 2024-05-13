@@ -60,9 +60,11 @@
 
         <ng-container *ngIf="forum">
             <div *ngIf="discussions && sortingAvailable && selectedSortOrder" class="ion-text-wrap">
-                <core-combobox [modalOptions]="sortOrderSelectorModalOptions" listboxId="addon-mod-forum-sort-selector"
-                    [label]="('core.sort' | translate)" (onChange)="setSortOrder($event)" [selection]="selectedSortOrder.label | translate"
-                    interface="modal" />
+                <core-combobox [label]="('core.sort' | translate)" (onChange)="setSortOrder($event)" [selection]="selectedSortOrder.value">
+                    <ion-select-option *ngFor="let order of sortOrders" class="ion-text-wrap" [value]="order.value">
+                        {{ order.label | translate }}
+                    </ion-select-option>
+                </core-combobox>
             </div>
 
             <core-empty-box *ngIf="!discussions || (!discussions.hasDiscussions && !errorLoadingDiscussions)" icon="far-comments"

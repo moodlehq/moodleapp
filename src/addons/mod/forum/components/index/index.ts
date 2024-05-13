@@ -15,7 +15,6 @@
 import { Component, Optional, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IonContent } from '@ionic/angular';
-import { ModalOptions } from '@ionic/core';
 
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import {
@@ -45,7 +44,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonModForumDiscussionOptionsMenuComponent } from '../discussion-options-menu/discussion-options-menu';
-import { AddonModForumSortOrderSelectorComponent } from '../sort-order-selector/sort-order-selector';
 import { CoreScreen } from '@services/screen';
 import { AddonModForumPrefetchHandler } from '../../services/handlers/prefetch';
 import { AddonModForumModuleHandlerService } from '../../services/handlers/module';
@@ -87,9 +85,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     showQAMessage = false;
     isSetPinAvailable = false;
     showSearch = false;
-    sortOrderSelectorModalOptions: ModalOptions = {
-        component: AddonModForumSortOrderSelectorComponent,
-    };
 
     protected fetchContentDefaultError = 'addon.mod_forum.errorgetforum';
     protected syncEventName = AddonModForumSyncProvider.AUTO_SYNCED;
@@ -187,10 +182,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.sortingAvailable = AddonModForum.isDiscussionListSortingAvailable();
         this.sortOrders = AddonModForum.getAvailableSortOrders();
         this.isSetPinAvailable = AddonModForum.isSetPinStateAvailableForSite();
-
-        this.sortOrderSelectorModalOptions.componentProps = {
-            sortOrders: this.sortOrders,
-        };
 
         await super.ngOnInit();
 
@@ -492,10 +483,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         const selectedOrder = await AddonModForum.getSelectedSortOrder();
 
         discussions.getSource().selectedSortOrder = selectedOrder;
-
-        if (this.sortOrderSelectorModalOptions.componentProps) {
-            this.sortOrderSelectorModalOptions.componentProps.selected = selectedOrder.value;
-        }
     }
 
     /**
@@ -605,16 +592,14 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Changes the sort order.
      *
-     * @param sortOrder Sort order new data.
+     * @param sortOrderValue Sort order new data.
      */
-    async setSortOrder(sortOrder: AddonModForumSortOrder): Promise<void> {
-        if (this.discussions && sortOrder.value != this.discussions.getSource().selectedSortOrder?.value) {
+    async setSortOrder(sortOrderValue: number): Promise<void> {
+        const sortOrder = this.sortOrders.find(sortOrder => sortOrder.value === sortOrderValue);
+
+        if (this.discussions && sortOrder && sortOrder.value != this.discussions.getSource().selectedSortOrder?.value) {
             this.discussions.getSource().selectedSortOrder = sortOrder;
             this.discussions.getSource().setDirty(true);
-
-            if (this.sortOrderSelectorModalOptions.componentProps) {
-                this.sortOrderSelectorModalOptions.componentProps.selected = sortOrder.value;
-            }
 
             try {
                 await CoreUser.setUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER, sortOrder.value.toFixed(0));
@@ -622,17 +607,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             } catch (error) {
                 CoreDomUtils.showErrorModalDefault(error, 'Error updating preference.');
             }
-        }
-    }
-
-    /**
-     * Display the sort order selector modal.
-     */
-    async showSortOrderSelector(): Promise<void> {
-        const modalData = await CoreDomUtils.openModal<AddonModForumSortOrder>(this.sortOrderSelectorModalOptions);
-
-        if (modalData) {
-            this.setSortOrder(modalData);
         }
     }
 

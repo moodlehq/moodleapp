@@ -24,7 +24,6 @@ import { AddonModForumDiscussionOptionsMenuComponent } from './discussion-option
 import { AddonModForumIndexComponent } from './index/index';
 import { AddonModForumPostComponent } from './post/post';
 import { AddonModForumPostOptionsMenuComponent } from './post-options-menu/post-options-menu';
-import { AddonModForumSortOrderSelectorComponent } from './sort-order-selector/sort-order-selector';
 
 @NgModule({
     declarations: [
@@ -32,7 +31,6 @@ import { AddonModForumSortOrderSelectorComponent } from './sort-order-selector/s
         AddonModForumIndexComponent,
         AddonModForumPostComponent,
         AddonModForumPostOptionsMenuComponent,
-        AddonModForumSortOrderSelectorComponent,
     ],
     imports: [
         CoreSharedModule,
