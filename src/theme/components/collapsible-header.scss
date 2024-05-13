@@ -108,8 +108,9 @@ body:not(.core-iframe-fullscreen) .collapsible-header-page {
             display: none;
         }
 
-        .collapsible-header-expanded h1 {
+        .collapsible-header-expanded .collapsible-header-original-title {
             opacity: 1;
+            visibility: visible;
         }
 
     }
