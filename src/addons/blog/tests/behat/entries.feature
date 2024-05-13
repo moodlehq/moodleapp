@@ -4,7 +4,8 @@ Feature: Blog entries
   As a user
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username | firstname | lastname | email              |
       | testuser | Test      | User     | moodle@example.com |
     And the following "core_blog > entries" exist:

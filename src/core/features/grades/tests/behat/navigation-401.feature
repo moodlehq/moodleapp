@@ -1,8 +1,9 @@
-@core_grades @app @javascript @lms_upto4.1
+@core_grades @app @javascript @lms_from3.11 @lms_upto4.1
 Feature: Grades navigation
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username  | firstname | lastname |
       | student1  | Student   | first    |
       | student2  | Student   | second    |

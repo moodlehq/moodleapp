@@ -1,30 +1,31 @@
-@addon_mod_data @app @javascript
+@addon_mod_data @app @javascript @lms_from3.11
 Feature: Users can manage entries in database activities
   In order to populate databases
   As a user
   I need to add and manage entries to databases
 
   Background:
-    Given the following "users" exist:
-    | username | firstname | lastname | email |
-    | student1 | Student | 1 | student1@example.com |
-    | student2 | Student | 2 | student2@example.com |
-    | teacher1 | Teacher | 1 | teacher1@example.com |
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
+      | username | firstname | lastname | email |
+      | student1 | Student | 1 | student1@example.com |
+      | student2 | Student | 2 | student2@example.com |
+      | teacher1 | Teacher | 1 | teacher1@example.com |
     And the following "courses" exist:
-    | fullname | shortname | category |
-    | Course 1 | C1 | 0 |
+      | fullname | shortname | category |
+      | Course 1 | C1 | 0 |
     And the following "course enrolments" exist:
-    | user | course | role |
-    | teacher1 | C1 | editingteacher |
-    | student1 | C1 | student |
-    | student2 | C1 | student |
+      | user | course | role |
+      | teacher1 | C1 | editingteacher |
+      | student1 | C1 | student |
+      | student2 | C1 | student |
     And the following "activities" exist:
-    | activity | name      | intro        | course | idnumber | comments |
-    | data     | Web links | Useful links | C1     | data1    | 0        |
+      | activity | name      | intro        | course | idnumber | comments |
+      | data     | Web links | Useful links | C1     | data1    | 0        |
     And the following "mod_data > fields" exist:
-    | database | type | name        | description      |
-    | data1    | text | URL         | URL link         |
-    | data1    | text | Description | Link description |
+      | database | type | name        | description      |
+      | data1    | text | URL         | URL link         |
+      | data1    | text | Description | Link description |
 
   Scenario: Create entry
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app

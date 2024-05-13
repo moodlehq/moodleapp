@@ -1,4 +1,4 @@
-@addon_mod_chat @app @javascript @lms_from4.0
+@addon_mod_chat @app @javascript @lms_upto3.11
 Feature: Test chat navigation
 
   Background:
@@ -14,7 +14,6 @@ Feature: Test chat navigation
       | user     | course | role     |
       | student1 | C1     | student  |
       | student2 | C1     | student  |
-    And I enable "chat" "mod" plugin
     And the following "activities" exist:
       | activity   | name            | intro       | course | idnumber | groupmode |
       | chat       | Test chat name  | Test chat   | C1     | chat     | 0         |

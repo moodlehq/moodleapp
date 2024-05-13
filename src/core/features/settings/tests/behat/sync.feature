@@ -40,8 +40,9 @@ Feature: It synchronise sites properly
 
     # Check synced
     When I press "Synchronise now" "button" in the app
-    And I wait loading to finish in the app
-    And I switch network connection to offline
+    Then I should find "Site synchronisation completed" in the app
+
+    When I switch network connection to offline
     And I press the back button in the app
     And I entered the course "Course 1" in the app
     And I press "Sync choice" in the app

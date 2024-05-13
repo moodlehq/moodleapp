@@ -1,11 +1,12 @@
-@core_comments @app @javascript
+@core_comments @app @javascript @lms_from3.11
 Feature: Test basic usage of comments in app
   In order to participate in the comments while using the mobile app
   As a student
   I need basic comments functionality to work
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username | firstname | lastname | email |
       | teacher1 | Teacher | teacher | teacher1@example.com |
       | student1 | Student | student | student1@example.com |

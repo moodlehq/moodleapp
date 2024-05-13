@@ -2,7 +2,8 @@
 Feature: Test usage of forum activity with groups in app
 
   Background:
-    Given the following "courses" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "courses" exist:
       | fullname | shortname |
       | Course 1 | C1        |
     And the following "users" exist:
@@ -33,6 +34,7 @@ Feature: Test usage of forum activity with groups in app
       | forum2 | Disc vis G2  | Disc vis G2  | Disc vis G2 content  | G2               |
       | forum2 | Disc vis ALL | Disc vis ALL | Disc vis ALL content | All participants |
 
+  @lms_from4.1
   Scenario: Student can only see the right groups
     Given I entered the forum activity "Separate groups forum" on course "Course 1" as "student1" in the app
     Then I should find "Disc sep G1" in the app
@@ -63,6 +65,7 @@ Feature: Test usage of forum activity with groups in app
     And I should find "Disc vis ALL" in the app
     But I should not find "Disc vis G2" in the app
 
+  @lms_from4.1
   Scenario: Teacher can see all groups
     Given I entered the forum activity "Separate groups forum" on course "Course 1" as "teacher1" in the app
     When I press "Separate groups" in the app

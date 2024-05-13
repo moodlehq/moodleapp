@@ -2,7 +2,8 @@
 Feature: It opens files properly.
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username |
       | student1 |
     And the following "courses" exist:
@@ -29,16 +30,12 @@ Feature: It opens files properly.
     And I press the back button in the app
     And I press "Test RTF" in the app
     And I press "Open" in the app
-    Then the app should have opened a browser tab with url "^blob:"
+    Then the app should have opened url "^blob:" with contents "Test resource A rtf.rtf file" once
 
-    When I switch to the browser tab opened by the app
-    Then I should see "Test resource A rtf.rtf file"
+    When I press "Open" in the app
+    Then the app should have opened url "^blob:" with contents "Test resource A rtf.rtf file" 2 times
 
-    When I close the browser tab opened by the app
-    And I press the back button in the app
+    When I press the back button in the app
     And I press "Test DOC" in the app
     And I press "Open" in the app
-    Then the app should have opened a browser tab with url "^blob:"
-
-    When I switch to the browser tab opened by the app
-    Then I should see "Test resource A doc.doc file"
+    Then the app should have opened url "^blob:" with contents "Test resource A doc.doc file" once

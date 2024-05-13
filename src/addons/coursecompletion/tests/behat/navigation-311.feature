@@ -1,4 +1,4 @@
-@addon_coursecompletion @app @javascript @lms_from4.0
+@addon_coursecompletion @app @javascript @lms_upto3.11
 Feature: Course completion navigation
 
   Background:
@@ -32,7 +32,6 @@ Feature: Course completion navigation
       | activity | page |
       | course   | C2   |
       | name     | P1   |
-    And I enable "selfcompletion" "block" plugin
     And the following "blocks" exist:
       | blockname        | contextlevel | reference |
       | completionstatus | Course       | C1        |

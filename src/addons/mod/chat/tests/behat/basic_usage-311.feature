@@ -1,4 +1,4 @@
-@addon_mod_chat @app @javascript @lms_from4.0
+@addon_mod_chat @app @javascript @lms_upto3.11
 Feature: Test basic usage of chat in app
   As a student
   I need basic chat functionality to work
@@ -16,7 +16,6 @@ Feature: Test basic usage of chat in app
       | user     | course | role           |
       | student1 | C1     | student        |
       | student2 | C1     | student        |
-    And I enable "chat" "mod" plugin
     And the following "activities" exist:
       | activity   | name            | intro       | course | idnumber | groupmode |
       | chat       | Test chat name  | Test chat   | C1     | chat     | 0         |
