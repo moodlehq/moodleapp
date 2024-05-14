@@ -85,9 +85,7 @@ export class CoreSwipeNavigationItemsManager<
         const segments: UrlSegment[] = [];
 
         while (route) {
-            const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
-
-            segments.push(...snapshot.url);
+            segments.push(...CoreNavigator.getRouteUrl(route));
 
             if (!route.firstChild) {
                 break;

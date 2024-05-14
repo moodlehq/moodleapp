@@ -111,7 +111,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         // Increase route depth.
-        const path = CoreNavigator.getRouteFullPath(this.route.snapshot);
+        const path = CoreNavigator.getRouteFullPath(this.route);
 
         CoreNavigator.increaseRouteDepth(path.replace(/(\/deep)+/, ''));
 
@@ -247,7 +247,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        const path = CoreNavigator.getRouteFullPath(this.route.snapshot);
+        const path = CoreNavigator.getRouteFullPath(this.route);
 
         CoreNavigator.decreaseRouteDepth(path.replace(/(\/deep)+/, ''));
         this.selectTabObserver?.off();

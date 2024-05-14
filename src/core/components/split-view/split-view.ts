@@ -95,7 +95,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
 
         this.updateClasses();
 
-        this.outletRouteSubject.next(outletRoute);
+        this.outletRouteSubject.next(outletRoute ?? null);
     }
 
     /**

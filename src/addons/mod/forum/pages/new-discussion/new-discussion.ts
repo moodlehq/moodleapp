@@ -125,7 +125,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
      */
     async ngOnInit(): Promise<void> {
         try {
-            const routeData = this.route.snapshot.data;
+            const routeData = CoreNavigator.getRouteData(this.route);
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
             this.forumId = CoreNavigator.getRequiredRouteNumberParam('forumId');
@@ -700,9 +700,9 @@ class AddonModForumNewDiscussionDiscussionsSwipeManager extends AddonModForumDis
      * @inheritdoc
      */
     protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
-        const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
+        const params = CoreNavigator.getRouteParams(route);
 
-        return `${this.getSource().DISCUSSIONS_PATH_PREFIX}new/${snapshot.params.timeCreated}`;
+        return `${this.getSource().DISCUSSIONS_PATH_PREFIX}new/${params.timeCreated}`;
     }
 
 }

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Params } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, Data, NavigationEnd, Params, UrlSegment } from '@angular/router';
 
 import { NavigationOptions } from '@ionic/angular/common/providers/nav-controller';
 
@@ -32,6 +32,7 @@ import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-deleg
 import { CorePlatform } from '@services/platform';
 import { filter } from 'rxjs/operators';
 import { CorePromisedValue } from '@classes/promised-value';
+import { BehaviorSubject } from 'rxjs';
 
 /**
  * Redirect payload.
@@ -459,7 +460,7 @@ export class CoreNavigatorService {
             return route;
         }
 
-        if (routeData && CoreUtils.basicLeftCompare(routeData, route.snapshot.data, 3)) {
+        if (routeData && CoreUtils.basicLeftCompare(routeData, this.getRouteData(route), 3)) {
             return route;
         }
 
@@ -477,11 +478,11 @@ export class CoreNavigatorService {
      * @returns Whether the route is active or not.
      */
     isRouteActive(route: ActivatedRoute): boolean {
-        const routePath = this.getRouteFullPath(route.snapshot);
+        const routePath = this.getRouteFullPath(route);
         let activeRoute: ActivatedRoute | null = Router.routerState.root;
 
         while (activeRoute) {
-            if (this.getRouteFullPath(activeRoute.snapshot) === routePath) {
+            if (this.getRouteFullPath(activeRoute) === routePath) {
                 return true;
             }
 
@@ -650,13 +651,13 @@ export class CoreNavigatorService {
      * @param route Route snapshot.
      * @returns Path.
      */
-    getRouteFullPath(route: ActivatedRouteSnapshot | null): string {
+    getRouteFullPath(route: ActivatedRouteSnapshot | ActivatedRoute | null): string {
         if (!route) {
             return '';
         }
 
-        const parentPath = this.getRouteFullPath(route.parent);
-        const routePath = route.url.join('/');
+        const parentPath = this.getRouteFullPath(this.getRouteParent(route));
+        const routePath = this.getRouteUrl(route).join('/');
 
         if (!parentPath && !routePath) {
             return '';
@@ -670,12 +671,62 @@ export class CoreNavigatorService {
     }
 
     /**
+     * Given a route, get url segments.
+     *
+     * @param route Route.
+     * @returns Url segments.
+     */
+    getRouteUrl(route: ActivatedRouteSnapshot | ActivatedRoute): UrlSegment[] {
+        return this.getRouteProperty(route, 'url', []);
+    }
+
+    /**
+     * Given a route, get its parent.
+     *
+     * @param route Route.
+     * @returns Parent.
+     */
+    getRouteParent(route: ActivatedRouteSnapshot | ActivatedRoute): ActivatedRouteSnapshot | ActivatedRoute | null {
+        return this.getRouteProperty(route, 'parent', null);
+    }
+
+    /**
+     * Given a route, get its data.
+     *
+     * @param route Route.
+     * @returns Data.
+     */
+    getRouteData(route: ActivatedRouteSnapshot | ActivatedRoute): Data {
+        return this.getRouteProperty(route, 'data', {});
+    }
+
+    /**
+     * Given a route, get its params.
+     *
+     * @param route Route.
+     * @returns Params.
+     */
+    getRouteParams(route: ActivatedRouteSnapshot | ActivatedRoute): Params {
+        return this.getRouteProperty(route, 'params', {});
+    }
+
+    /**
+     * Given a route, get its query params.
+     *
+     * @param route Route.
+     * @returns Query params.
+     */
+    getRouteQueryParams(route: ActivatedRouteSnapshot | ActivatedRoute): Params {
+        return this.getRouteProperty(route, 'queryParams', {});
+    }
+
+    /**
      * Check if the current route page can block leaving the route.
      *
      * @returns Whether the current route page can block leaving the route.
      */
     currentRouteCanBlockLeave(): boolean {
-        return !!this.getCurrentRoute().snapshot.routeConfig?.canDeactivate?.length;
+        return !!this.getCurrentRoute().snapshot?.routeConfig?.canDeactivate?.length;
     }
 
     /**
@@ -723,6 +774,36 @@ export class CoreNavigatorService {
         const depth = (path.substring(parentRouteIndex + parentPath.length - 1).match(/\//g) ?? []).length;
 
         return '../'.repeat(depth);
+    }
+
+    /**
+     * Given a route, get one of its properties.
+     *
+     * @param route Route.
+     * @param property Route property.
+     * @param defaultValue Fallback value if the property is not set.
+     * @returns Property value.
+     */
+    private getRouteProperty<T extends keyof ActivatedRouteSnapshot>(
+        route: ActivatedRouteSnapshot | ActivatedRoute,
+        property: T,
+        defaultValue: ActivatedRouteSnapshot[T],
+    ): ActivatedRouteSnapshot[T]  {
+        if (route instanceof ActivatedRouteSnapshot) {
+            return route[property];
+        }
+
+        if (route.snapshot instanceof ActivatedRouteSnapshot) {
+            return route.snapshot[property];
+        }
+
+        const propertyObservable = route[property];
+
+        if (propertyObservable instanceof BehaviorSubject) {
+            return propertyObservable.value;
+        }
+
+        return defaultValue;
     }
 
 }

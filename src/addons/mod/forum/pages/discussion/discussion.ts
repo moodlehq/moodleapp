@@ -134,7 +134,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
     async ngOnInit(): Promise<void> {
         try {
-            const routeData = this.route.snapshot.data;
+            const routeData = CoreNavigator.getRouteData(this.route);
             this.courseId = CoreNavigator.getRouteNumberParam('courseId');
             this.cmId = CoreNavigator.getRouteNumberParam('cmId');
             this.forumId = CoreNavigator.getRouteNumberParam('forumId');
@@ -893,9 +893,9 @@ class AddonModForumDiscussionDiscussionsSwipeManager extends AddonModForumDiscus
      * @inheritdoc
      */
     protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
-        const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
+        const params = CoreNavigator.getRouteParams(route);
 
-        return this.getSource().DISCUSSIONS_PATH_PREFIX + snapshot.params.discussionId;
+        return this.getSource().DISCUSSIONS_PATH_PREFIX + params.discussionId;
     }
 
 }

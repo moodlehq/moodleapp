@@ -103,7 +103,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
             this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
 
             const entrySlug = CoreNavigator.getRequiredRouteParam<string>('entrySlug');
-            const routeData = this.route.snapshot.data;
+            const routeData = CoreNavigator.getRouteData(this.route);
             const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
                 AddonModGlossaryEntriesSource,
                 [this.courseId, this.cmId, routeData.glossaryPathPrefix ?? ''],
@@ -368,9 +368,9 @@ class AddonModGlossaryEntryEntriesSwipeManager
      * @inheritdoc
      */
     protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
-        const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
+        const params = CoreNavigator.getRouteParams(route);
 
-        return `${this.getSource().GLOSSARY_PATH_PREFIX}entry/${snapshot.params.entrySlug}`;
+        return `${this.getSource().GLOSSARY_PATH_PREFIX}entry/${params.entrySlug}`;
     }
 
 }
