@@ -16,4 +16,13 @@ ion-popover {
     &.ios {
         --min-width: 250px;
     }
+
+    &.core-combobox-select {
+        --width: auto;
+        --max-width: 80%;
+
+        ion-radio::part(label) {
+            white-space: normal;
+        }
+    }
 }

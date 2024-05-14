@@ -1,6 +1,22 @@
 
 ion-button {
-    margin: 4px 8px;
+    margin: var(--mdl-spacing-1) var(--mdl-spacing-2);
+    white-space: normal;
+    line-height: 120%;
+
+    core-format-text {
+        white-space: normal;
+        display: contents;
+        line-height: 120%;
+    }
+
+    & > * {
+        white-space: normal;
+    }
+
+    ion-spinner {
+        --color: inherit !important;
+    }
 
     ion-spinner[slot=start],
     img[slot=start] {
@@ -34,36 +50,6 @@ ion-button {
 
     &.button-solid {
         --box-shadow: none;
-    }
-
-    core-format-text {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: block;
-        line-height: 1.2;
-    }
-
-    > * {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    &.ion-text-wrap {
-        white-space: normal;
-        core-format-text {
-            white-space: normal;
-            display: contents;
-        }
-
-        & > * {
-            white-space: normal;
-        }
-    }
-
-    ion-spinner {
-        --color: inherit !important;
     }
 
     &.button-has-icon-only {
