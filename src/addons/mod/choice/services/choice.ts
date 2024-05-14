@@ -27,8 +27,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { AddonModChoiceOffline } from './choice-offline';
 import { AddonModChoiceAutoSyncData, AddonModChoiceSyncProvider } from './choice-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-
-const ROOT_CACHE_KEY = 'mmaModChoice:';
+import { ADDON_MOD_CHOICE_COMPONENT, AddonModChoiceShowResults } from '../constants';
 
 /**
  * Service that provides some features for choices.
@@ -36,15 +35,7 @@ const ROOT_CACHE_KEY = 'mmaModChoice:';
 @Injectable({ providedIn: 'root' })
 export class AddonModChoiceProvider {
 
-    static readonly COMPONENT = 'mmaModChoice';
-
-    static readonly RESULTS_NOT = 0;
-    static readonly RESULTS_AFTER_ANSWER = 1;
-    static readonly RESULTS_AFTER_CLOSE = 2;
-    static readonly RESULTS_ALWAYS = 3;
-
-    static readonly PUBLISH_ANONYMOUS = false;
-    static readonly PUBLISH_NAMES = true;
+    protected static readonly ROOT_CACHE_KEY = 'mmaModChoice:';
 
     /**
      * Check if results can be seen by a student. The student can see the results if:
@@ -54,14 +45,41 @@ export class AddonModChoiceProvider {
      *
      * @param choice Choice to check.
      * @param hasAnswered True if user has answered the choice, false otherwise.
+     * @param timeNow Current time in seconds.
      * @returns True if the students can see the results.
      */
-    canStudentSeeResults(choice: AddonModChoiceChoice, hasAnswered: boolean): boolean {
-        const now = Date.now();
+    canStudentSeeResults(choice: AddonModChoiceChoice, hasAnswered: boolean, timeNow: number): boolean {
+        if (!this.choiceHasBeenOpened(choice, timeNow)) {
+            return false;
+        }
 
-        return choice.showresults === AddonModChoiceProvider.RESULTS_ALWAYS ||
-            choice.showresults === AddonModChoiceProvider.RESULTS_AFTER_CLOSE && choice.timeclose && choice.timeclose <= now ||
-            choice.showresults === AddonModChoiceProvider.RESULTS_AFTER_ANSWER && hasAnswered;
+        const choiceClosed = this.choiceHasBeenClosed(choice, timeNow);
+
+        return choice.showresults === AddonModChoiceShowResults.SHOWRESULTS_ALWAYS ||
+            choice.showresults === AddonModChoiceShowResults.SHOWRESULTS_AFTER_ANSWER && hasAnswered ||
+            choice.showresults === AddonModChoiceShowResults.SHOWRESULTS_AFTER_CLOSE && choiceClosed;
+    }
+
+    /**
+     * Check if a choice has been opened.
+     *
+     * @param choice Choice to check.
+     * @param timeNow Current time in seconds.
+     * @returns True if the choice open dated has passed, false otherwise.
+     */
+    choiceHasBeenOpened(choice: AddonModChoiceChoice, timeNow: number): boolean {
+        return !choice.timeopen || timeNow > choice.timeopen;
+    }
+
+    /**
+     * Check if a choice has been closed.
+     *
+     * @param choice Choice to check.
+     * @param timeNow Current time in seconds.
+     * @returns True if the choice close dated has passed, false otherwise.
+     */
+    choiceHasBeenClosed(choice: AddonModChoiceChoice, timeNow: number): boolean {
+        return !!choice.timeclose && timeNow > choice.timeclose;
     }
 
     /**
@@ -154,7 +172,7 @@ export class AddonModChoiceProvider {
      * @returns Cache key.
      */
     protected getChoiceDataCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'choice:' + courseId;
+        return AddonModChoiceProvider.ROOT_CACHE_KEY + 'choice:' + courseId;
     }
 
     /**
@@ -164,7 +182,7 @@ export class AddonModChoiceProvider {
      * @returns Cache key.
      */
     protected getChoiceOptionsCacheKey(choiceId: number): string {
-        return ROOT_CACHE_KEY + 'options:' + choiceId;
+        return AddonModChoiceProvider.ROOT_CACHE_KEY + 'options:' + choiceId;
     }
 
     /**
@@ -174,7 +192,7 @@ export class AddonModChoiceProvider {
      * @returns Cache key.
      */
     protected getChoiceResultsCacheKey(choiceId: number): string {
-        return ROOT_CACHE_KEY + 'results:' + choiceId;
+        return AddonModChoiceProvider.ROOT_CACHE_KEY + 'results:' + choiceId;
     }
 
     /**
@@ -200,7 +218,7 @@ export class AddonModChoiceProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getChoiceDataCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModChoiceProvider.COMPONENT,
+            component: ADDON_MOD_CHOICE_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -259,7 +277,7 @@ export class AddonModChoiceProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getChoiceOptionsCacheKey(choiceId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModChoiceProvider.COMPONENT,
+            component: ADDON_MOD_CHOICE_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -288,7 +306,7 @@ export class AddonModChoiceProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getChoiceOptionsCacheKey(choiceId),
-            component: AddonModChoiceProvider.COMPONENT,
+            component: ADDON_MOD_CHOICE_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -332,7 +350,7 @@ export class AddonModChoiceProvider {
             this.invalidateChoiceData(courseId),
             this.invalidateOptions(choice.id),
             this.invalidateResults(choice.id),
-            CoreFilepool.invalidateFilesByComponent(siteId, AddonModChoiceProvider.COMPONENT, moduleId),
+            CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_CHOICE_COMPONENT, moduleId),
         ]);
     }
 
@@ -377,7 +395,7 @@ export class AddonModChoiceProvider {
         return CoreCourseLogHelper.log(
             'mod_choice_view_choice',
             params,
-            AddonModChoiceProvider.COMPONENT,
+            ADDON_MOD_CHOICE_COMPONENT,
             id,
             siteId,
         );
@@ -482,7 +500,7 @@ export type AddonModChoiceChoice = {
     introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     publish?: boolean; // If choice is published.
-    showresults?: number; // 0 never, 1 after answer, 2 after close, 3 always.
+    showresults?: AddonModChoiceShowResults; // 0 never, 1 after answer, 2 after close, 3 always.
     display?: number; // Display mode (vertical, horizontal).
     allowupdate?: boolean; // Allow update.
     allowmultiple?: boolean; // Allow multiple choices.
@@ -531,7 +549,7 @@ export type AddonModChoiceOption = {
     id: number; // Option id.
     text: string; // Text of the choice.
     maxanswers: number; // Maximum number of answers.
-    displaylayout: boolean; // True for orizontal, otherwise vertical.
+    displaylayout: boolean; // True for horizontal, otherwise vertical.
     countanswers: number; // Number of answers.
     checked: boolean; // We already answered.
     disabled: boolean; // Option disabled.
