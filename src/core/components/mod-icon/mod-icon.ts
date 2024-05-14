@@ -51,7 +51,9 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     @Input() showAlt = true; // Show alt otherwise it's only presentation icon.
     @Input() purpose: ModPurpose = ModPurpose.MOD_PURPOSE_OTHER; // Purpose of the module.
     @Input() @HostBinding('class.colorize') colorize = true; // Colorize the icon. Only applies on 4.0 onwards.
-    @Input() @HostBinding('class.branded') isBranded?: boolean; // If icon is branded and no colorize will be applied.
+    @Input() isBranded?: boolean; // If icon is branded and no colorize will be applied.
+
+    @HostBinding('class.branded') brandedClass?: boolean;
 
     @HostBinding('attr.role')
     get getRole(): string | null {
@@ -112,9 +114,9 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     /**
      * Sets the isBranded property when undefined.
      */
-    protected async setIsBranded(): Promise<void> {
+    protected async setBrandedClass(): Promise<void> {
         if (!this.colorize) {
-            this.isBranded = false;
+            this.brandedClass = false;
 
             // It doesn't matter.
             return;
@@ -122,37 +124,36 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
         // Earlier 4.0, icons were never colorized.
         if (this.iconVersion === IconVersion.LEGACY_VERSION) {
-            this.isBranded = false;
+            this.brandedClass = false;
             this.colorize = false;
 
             return;
         }
 
+        // Reset the branded class to the original value.
+        this.brandedClass = this.isBranded;
+
         // No icon or local icon (not legacy), colorize it.
         if (!this.iconUrl || this.isLocalUrl) {
             // Exception for bigbluebuttonbn, it's the only one that has a branded icon.
             if (this.iconVersion === IconVersion.VERSION_4_0 && this.modname === 'bigbluebuttonbn') {
-                this.isBranded = true;
+                this.brandedClass = true;
 
                 return;
             }
 
-            this.isBranded ??= false;
+            this.brandedClass ??= false;
 
             return;
         }
 
         this.iconUrl = CoreTextUtils.decodeHTMLEntities(this.iconUrl);
 
-        if (this.isBranded !== undefined) {
-            return;
-        }
-
         // If it's an Moodle Theme icon, check if filtericon is set and use it.
         if (this.iconUrl && CoreUrlUtils.isThemeImageUrl(this.iconUrl)) {
             const filter = CoreUrlUtils.getThemeImageUrlParam(this.iconUrl, 'filtericon');
             if (filter === '1') {
-                this.isBranded =  false;
+                this.brandedClass =  false;
 
                 return;
             }
@@ -161,7 +162,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             if (this.modname && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan(['4.0.8', '4.1.3', '4.2'])) {
                 // If version is prior to that, check if the url is a module icon and filter it.
                 if (this.getComponentNameFromIconUrl(this.iconUrl) === this.modname) {
-                    this.isBranded =  false;
+                    this.brandedClass =  false;
 
                     return;
                 }
@@ -169,7 +170,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         }
 
         // External icons, or non monologo, do not filter.
-        this.isBranded =  true;
+        this.brandedClass =  true;
     }
 
     /**
@@ -180,7 +181,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
         if (!this.iconUrl) {
             this.loadFallbackIcon();
-            this.setIsBranded();
+            this.setBrandedClass();
 
             return;
         }
@@ -196,7 +197,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             !this.isLocalUrl &&
             this.getComponentNameFromIconUrl(this.iconUrl) != this.modname;
 
-        this.setIsBranded();
+        this.setBrandedClass();
 
         await this.setSVGIcon();
     }
@@ -212,7 +213,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         this.isLocalUrl = true;
         this.linkIconWithComponent = false;
 
-        const moduleName = !this.modname || CoreCourse.CORE_MODULES.indexOf(this.modname) < 0
+        const moduleName = !this.modname || !CoreCourse.isCoreModule(this.modname)
             ? fallbackModName
             : this.modname;
 
@@ -370,7 +371,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
             // Has own styles, do not apply colors.
             if (doc.documentElement.getElementsByTagName('style').length > 0) {
-                this.isBranded = true;
+                this.brandedClass = true;
             }
 
             // Recursively remove attributes starting with on.

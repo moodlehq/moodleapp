@@ -87,9 +87,7 @@ ion-card {
 .core-course-shortname {
     font-size: var(--shortname-size);
     color: var(--dark);
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+    @include ellipsis();
 }
 
 ion-chip {
@@ -226,18 +224,13 @@ ion-card.core-course-list-card {
 
             // Clamp one line with ellipsis on tablet view, and 2 in mobile.
             .item-heading {
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                overflow: hidden;
+                @include ellipsis();
             }
 
             @include media-breakpoint-down(md) {
                 .item-heading {
                     // Addition lines for 2 line or multiline ellipsis
-                    display: -webkit-box !important;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    white-space: normal;
+                    @include ellipsis(2);
                 }
             }
 

@@ -61,9 +61,7 @@ ion-header.header-md {
         @include padding(0, 16px);
 
         h1, h2, .subheading {
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
+            @include ellipsis();
             margin: 0;
         }
 

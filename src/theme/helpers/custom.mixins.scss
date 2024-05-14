@@ -153,6 +153,24 @@
     border: 0;
 }
 
+@mixin ellipsis($lines: 1) {
+    @if ($lines == 1) {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    } @else {
+        // Only supported on Android 124+, iOs 11+. https://caniuse.com/css-line-clamp
+        @supports (-webkit-line-clamp: 2) {
+            -webkit-line-clamp: $lines;
+            -webkit-box-orient: vertical;
+            display: -webkit-box;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+        }
+    }
+}
+
 /**
  * Same as item-push-svg-url but admits flip-rtl
  */

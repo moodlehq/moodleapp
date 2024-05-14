@@ -9,9 +9,7 @@
 
         .ion-text-wrap ion-label {
             .item-heading, h2, p {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                @include ellipsis();
             }
         }
     }

@@ -7,11 +7,7 @@ ion-item.addon-notification-item {
         margin-bottom: 8px;
         p.item-heading {
             font-size: var(--text-size);
-            -webkit-line-clamp: 3;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            -webkit-box-orient: vertical;
-            display: -webkit-box;
+            @include ellipsis(3);
         }
         p {
             font-size: 12px;

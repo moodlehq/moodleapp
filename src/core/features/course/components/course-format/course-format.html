@@ -31,12 +31,12 @@
         <div collapsible-footer appearOnBottom *ngIf="displayCourseIndex && (previousSection || nextSection)" slot="fixed">
             <div class="core-course-section-nav-buttons safe-area-padding-horizontal list-item-limited-width">
                 <ion-button *ngIf="previousSection" (click)="sectionChanged(previousSection)" expand="block"
-                    [attr.aria-label]="('core.previous' | translate) + ': ' + previousSection.name">
+                    [attr.aria-label]="('core.previous' | translate) + ': ' + previousSection.name" class="ion-text-nowrap">
                     <ion-icon name="fas-arrow-left" slot="start" aria-hidden="true" />
                     <core-format-text [text]="previousSection.name" contextLevel="course" [contextInstanceId]="course.id" />
                 </ion-button>
                 <ion-button *ngIf="nextSection" (click)="sectionChanged(nextSection)" expand="block"
-                    [attr.aria-label]="('core.next' | translate) + ': ' + nextSection.name">
+                    [attr.aria-label]="('core.next' | translate) + ': ' + nextSection.name" class="ion-text-nowrap">
                     <core-format-text [text]="nextSection.name" contextLevel="course" [contextInstanceId]="course.id" />
                     <ion-icon name="fas-arrow-right" slot="end" aria-hidden="true" />
                 </ion-button>

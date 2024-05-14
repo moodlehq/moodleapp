@@ -23,9 +23,10 @@ import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { AddonModChoice, AddonModChoiceProvider } from './choice';
+import { AddonModChoice } from './choice';
 import { AddonModChoiceOffline } from './choice-offline';
 import { AddonModChoicePrefetchHandler } from './handlers/prefetch';
+import { ADDON_MOD_CHOICE_COMPONENT } from '../constants';
 
 /**
  * Service to sync choices.
@@ -150,7 +151,7 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
         };
 
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(AddonModChoiceProvider.COMPONENT, choiceId, siteId));
+        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_CHOICE_COMPONENT, choiceId, siteId));
 
         const data = await CoreUtils.ignoreErrors(AddonModChoiceOffline.getResponse(choiceId, siteId, userId));
 

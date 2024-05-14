@@ -61,9 +61,7 @@
                     max-width: 100%;
 
                     ion-label {
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
-                        overflow: hidden;
+                        @include ellipsis();
                         word-wrap: break-word;
                         max-width: 100%;
                         line-height: 1.2em;

@@ -5,13 +5,21 @@ ion-button {
     line-height: 120%;
 
     core-format-text {
-        white-space: normal;
         display: contents;
         line-height: 120%;
     }
 
-    & > * {
-        white-space: normal;
+    &.ion-text-nowrap {
+        @include ellipsis();
+
+        & > * {
+            @include ellipsis();
+
+        }
+
+        core-format-text {
+            display: block;
+        }
     }
 
     ion-spinner {

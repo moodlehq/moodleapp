@@ -67,9 +67,7 @@
                     flex-grow: 1;
                     padding-left: .5rem;
                     padding-right: .5rem;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
+                    @include ellipsis();
                     font-size: 16px;
                 }
             }

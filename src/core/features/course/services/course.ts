@@ -137,7 +137,7 @@ export class CoreCourseProvider {
 
     static readonly COMPONENT = 'CoreCourse';
 
-    readonly CORE_MODULES = [
+    static readonly CORE_MODULES = [
         'assign', 'bigbluebuttonbn', 'book', 'chat', 'choice', 'data', 'feedback', 'folder', 'forum', 'glossary', 'h5pactivity',
         'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop',
     ];
@@ -848,7 +848,7 @@ export class CoreCourseProvider {
             return mimetypeIcon;
         }
 
-        if (this.CORE_MODULES.indexOf(moduleName) < 0) {
+        if (!CoreCourse.isCoreModule(moduleName)) {
             if (modicon) {
                 return modicon;
             }
@@ -1322,6 +1322,17 @@ export class CoreCourseProvider {
         }
 
         return !!module.url;
+    }
+
+    /**
+     * Check if the module is a core module.
+     *
+     * @param moduleName The module name.
+     * @returns Whether it's a core module.
+     */
+    isCoreModule(moduleName: string): boolean {
+        // If core modules are removed for a certain version we should check the version of the site.
+        return CoreCourseProvider.CORE_MODULES.includes(moduleName);
     }
 
     /**
