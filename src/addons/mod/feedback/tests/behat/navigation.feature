@@ -2,7 +2,8 @@
 Feature: Test feedback navigation
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username  | firstname | lastname |
       | teacher1  | Teacher   | teacher  |
       | student01 | Student   | 01       |

@@ -2,7 +2,8 @@
 Feature: Test Forum Search
 
   Background:
-    Given solr is installed
+    Given the Moodle site is compatible with this feature
+    And solr is installed
     And the following config values are set as admin:
       | enableglobalsearch | 1 |
       | searchengine       | solr |

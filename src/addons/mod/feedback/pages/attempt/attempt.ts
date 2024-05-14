@@ -188,9 +188,7 @@ class AddonModFeedbackAttemptsSwipeManager extends CoreSwipeNavigationItemsManag
      * @inheritdoc
      */
     protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
-        const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
-
-        return snapshot.params.attemptId;
+        return CoreNavigator.getRouteParams(route).attemptId;
     }
 
 }

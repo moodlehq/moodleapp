@@ -78,7 +78,6 @@ Feature: Test decimal separators in lesson
     Then I should find "Congratulations - end of lesson reached" in the app
     And I should find "Your score is 1 (out of 1)." in the app
 
-  @lms_from4.0
   Scenario: Attempt an online lesson successfully as a student (custom separator) and review as teacher
     Given the following "language customisations" exist:
       | component       | stringid | value |

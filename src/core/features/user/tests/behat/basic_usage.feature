@@ -2,7 +2,8 @@
 Feature: Test basic usage of user features
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username | firstname | lastname | timezone |
       | student1 | Student   | Student  | 99       |
 

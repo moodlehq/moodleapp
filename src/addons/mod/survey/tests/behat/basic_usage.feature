@@ -5,7 +5,8 @@ Feature: Test basic usage of survey activity in app
   I need basic survey functionality to work
 
   Background:
-    Given the following "courses" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "courses" exist:
       | fullname | shortname |
       | Course 1 | C1        |
     And the following "users" exist:

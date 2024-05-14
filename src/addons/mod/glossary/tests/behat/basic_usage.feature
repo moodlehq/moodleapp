@@ -158,7 +158,6 @@ Feature: Test basic usage of glossary in app
     Then I should find "Garlic" in the app
     And I should find "Allium sativum" in the app
 
-  @lms_from3.10
   Scenario: Edit entries
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
 
@@ -275,7 +274,6 @@ Feature: Test basic usage of glossary in app
     But I should not find "stub2.txt" in the app
     And I should not find "Brassica oleracea var. italica" in the app
 
-  @lms_from3.10
   Scenario: Delete entries
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
 

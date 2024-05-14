@@ -2,7 +2,8 @@
 Feature: It opens files properly.
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username |
       | student1 |
     And the following "courses" exist:
@@ -12,7 +13,6 @@ Feature: It opens files properly.
       | user     | course | role    |
       | student1 | C1     | student |
 
-  @lms_from3.10
   Scenario: Open a file
     Given the following "activities" exist:
       | activity | name     | intro                | display | course | defaultfilename |

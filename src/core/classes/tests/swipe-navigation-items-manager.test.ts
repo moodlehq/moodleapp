@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import { mock, mockSingleton } from '@/testing/utils';
-import { ActivatedRoute, ActivatedRouteSnapshot, UrlSegment } from '@angular/router';
+import { ActivatedRoute, UrlSegment } from '@angular/router';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreNavigator } from '@services/navigator';
+import { BehaviorSubject } from 'rxjs';
 
 interface Item {
     path: string;
@@ -61,9 +62,7 @@ describe('CoreSwipeNavigationItemsManager', () => {
         mockSingleton(CoreNavigator, {
             navigate: jest.fn(),
             getCurrentRoute: () => mock<ActivatedRoute>({
-                snapshot: mock<ActivatedRouteSnapshot>({
-                    url: [mock<UrlSegment>({ path: currentPath })],
-                }),
+                url: new BehaviorSubject([mock<UrlSegment>({ path: currentPath })]),
             }),
         });
 

@@ -97,7 +97,6 @@ export class CoreEnrolService {
 
         await Promise.all([
             site.invalidateWsCacheForKey(this.getCourseEnrolmentMethodsCacheKey(courseId)),
-            site.invalidateWsCacheForKey(`mmCourses:enrolmentmethods:${courseId}`), // @todo 4.4 Remove after 4.3 release.
         ]);
     }
 

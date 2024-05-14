@@ -2,7 +2,8 @@
 Feature: Test competency navigation
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username  | firstname | lastname |
       | student1  | Student   | first    |
       | student2  | Student   | second   |
@@ -475,8 +476,7 @@ Feature: Test competency navigation
 
   @lms_from4.4
   Scenario: Disable features
-    Given the Moodle site is compatible with this feature
-    And the following config values are set as admin:
+    Given the following config values are set as admin:
       | enabled | 0 | core_competency |
 
     When I entered the course "Course 1" as "student1" in the app

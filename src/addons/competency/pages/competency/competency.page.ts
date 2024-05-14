@@ -351,9 +351,7 @@ class AddonCompetencyCompetenciesSwipeManager
      * @inheritdoc
      */
     protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
-        const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
-
-        return snapshot.params.competencyId;
+        return CoreNavigator.getRouteParams(route).competencyId;
     }
 
 }

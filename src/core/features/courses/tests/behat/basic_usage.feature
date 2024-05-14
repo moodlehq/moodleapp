@@ -37,7 +37,6 @@ Feature: Test basic usage of courses in app
       | activity | course | idnumber | name                | intro                       | assignsubmission_onlinetext_enabled | duedate      | gradingduedate |
       | assign   | C1     | assign1  | assignment          | Test assignment description | 1                                   | ##tomorrow## | ##tomorrow##   |
 
-  @lms_from4.0
   Scenario: "Dashboard" tab displayed
     Given I entered the app as "student1"
     When I should see "Dashboard"
@@ -52,7 +51,6 @@ Feature: Test basic usage of courses in app
     And I should find "Course 2" in the app
     And I should find "Course 3" in the app
 
-  @lms_from4.0
   Scenario: Hidden course is only accessible for teachers
     Given I entered the app as "teacher1"
     And I press "My courses" in the app
@@ -118,7 +116,6 @@ Feature: Test basic usage of courses in app
     And I should find "Course 3" in the app
     And I should find "Course 4" in the app
 
-  @lms_from4.0
   Scenario: Links to actions in Timeline work for teachers/students
     # Submit assignment as student
     Given I entered the app as "student1"

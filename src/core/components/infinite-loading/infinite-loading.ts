@@ -38,6 +38,7 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
     @ViewChild(IonInfiniteScroll) infiniteScroll?: IonInfiniteScroll;
 
     loadingMore = false; // Hide button and avoid loading more.
+    loadingForced = false; // Whether loading is forced or happened on scroll.
     hostElement: HTMLElement;
 
     constructor(element: ElementRef<HTMLElement>) {
@@ -96,13 +97,17 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
 
     /**
      * Load More items calling the action provided.
+     *
+     * @param forced Whether loading happened on scroll or was forced.
      */
-    loadMore(): void {
+    loadMore(forced: boolean = false): void {
         if (this.loadingMore) {
             return;
         }
 
         this.loadingMore = true;
+        this.loadingForced = forced;
+
         this.action.emit(() => this.complete());
     }
 
@@ -121,6 +126,8 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
      */
     protected async completeLoadMore(): Promise<void> {
         this.loadingMore = false;
+        this.loadingForced = false;
+
         await this.infiniteScroll?.complete();
 
         // More items loaded. If the list doesn't fill the full height, infinite scroll isn't triggered automatically.

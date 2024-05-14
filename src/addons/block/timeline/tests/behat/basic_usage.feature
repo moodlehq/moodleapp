@@ -46,7 +46,6 @@ Feature: Timeline block.
       | assign   | C3                   | assign24  | Assignment 24 | ##+1 year##    |
       | assign   | C3                   | assign25  | Assignment 25 | ##+1 year##    |
 
-  @lms_from4.0
   Scenario: See courses inside block
     Given I entered the app as "student1"
     Then I should find "Assignment 00" within "Timeline" "ion-card" in the app
@@ -92,7 +91,6 @@ Feature: Timeline block.
     And I pull to refresh in the app
     Then I should find "New Assignment" in the app
 
-  @lms_from4.0
   Scenario: Search
     Given I entered the app as "student1"
     Then I should find "Assignment 00" within "Timeline" "ion-card" in the app

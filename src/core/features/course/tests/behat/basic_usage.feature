@@ -459,7 +459,6 @@ Feature: Test basic usage of one course in app
       | \core\event\course_viewed | Course 1 | {"coursesectionnumber":4} |
       | \core\event\course_viewed | Course 1 | {"coursesectionnumber":5} |
 
-  @lms_from4.0
   Scenario: Self enrol
     Given I log in as "teacher1"
     And I add "Self enrolment" enrolment method in "Course 1" with:

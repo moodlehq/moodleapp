@@ -3,7 +3,8 @@ Feature: Edit blog entries
   In order to add or edit blog entries as User
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username | firstname | lastname | email              |
       | testuser  | Test      | User     | moodle@example.com |
       | testuser2 | Test      | User2    | moodle@example.com |

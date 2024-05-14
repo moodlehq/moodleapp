@@ -246,9 +246,7 @@ class AddonModAssignSubmissionSwipeItemsManager extends CoreSwipeNavigationItems
      * @inheritdoc
      */
     protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
-        const snapshot = route instanceof ActivatedRouteSnapshot ? route : route.snapshot;
-
-        return snapshot.params.submitId;
+        return CoreNavigator.getRouteParams(route).submitId;
     }
 
 }

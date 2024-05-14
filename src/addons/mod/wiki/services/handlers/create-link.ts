@@ -49,8 +49,8 @@ export class AddonModWikiCreateLinkHandlerService extends CoreContentLinksHandle
             return false;
         }
 
-        const params = route.snapshot.params;
-        const queryParams = route.snapshot.queryParams;
+        const params = CoreNavigator.getRouteParams(route);
+        const queryParams = CoreNavigator.getRouteQueryParams(route);
 
         if (queryParams.subwikiId == subwikiId) {
             // Same subwiki, so it's same wiki.
@@ -116,7 +116,9 @@ export class AddonModWikiCreateLinkHandlerService extends CoreContentLinksHandle
 
                     if (isSameWiki) {
                         // User is seeing the wiki, we can get the module from the wiki params.
-                        path = path + `/${route.snapshot.params.courseId}/${route.snapshot.params.cmId}/edit`;
+                        const routeParams = CoreNavigator.getRouteParams(route);
+
+                        path = path + `/${routeParams.courseId}/${routeParams.cmId}/edit`;
                     } else if (wikiId) {
                         // The URL specifies which wiki it belongs to. Get the module.
                         const module = await CoreCourse.getModuleBasicInfoByInstance(

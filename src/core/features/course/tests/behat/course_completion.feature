@@ -15,7 +15,6 @@ Feature: Check course completion feature.
       | user     | course | role    |
       | student1 | C1     | student |
 
-  @lms_from3.11
   Scenario: Activity completion, marking the checkbox manually
     Given the following "activities" exist:
       | activity | name         | course | idnumber | completion | completionview |

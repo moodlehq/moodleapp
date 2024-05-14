@@ -1,8 +1,9 @@
-@core_grades @app @javascript @lms_from4.0
+@core_grades @app @javascript
 Feature: View grades
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username  | firstname | lastname |
       | student1  | Student   | first    |
     And the following "scales" exist:

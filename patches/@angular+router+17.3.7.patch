@@ -1,0 +1,13 @@
+diff --git a/node_modules/@angular/router/index.d.ts b/node_modules/@angular/router/index.d.ts
+index b8d7cc8..6511edf 100755
+--- a/node_modules/@angular/router/index.d.ts
++++ b/node_modules/@angular/router/index.d.ts
+@@ -58,7 +58,7 @@ export declare class ActivatedRoute {
+     /** The component of the route, a constant. */
+     component: Type<any> | null;
+     /** The current snapshot of this route */
+-    snapshot: ActivatedRouteSnapshot;
++    snapshot?: ActivatedRouteSnapshot;
+     /** An Observable of the resolved route title */
+     readonly title: Observable<string | undefined>;
+     /** An observable of the URL segments matched by this route. */

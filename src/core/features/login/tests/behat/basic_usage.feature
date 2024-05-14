@@ -146,7 +146,6 @@ Feature: Test basic usage of login in app
     When I press "Reconnect" in the app
     Then I should find "Acceptance test site" in the app
 
-  @lms_from4.1
   Scenario: Forgot password
     Given the following config values are set as admin:
       | supportavailability | 2 |

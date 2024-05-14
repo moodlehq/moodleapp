@@ -2,7 +2,8 @@
 Feature: Grades navigation
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username  | firstname | lastname |
       | student1  | Student   | first    |
       | student2  | Student   | second    |
