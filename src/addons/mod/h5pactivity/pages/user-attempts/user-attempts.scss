@@ -1,10 +1,11 @@
+@use "theme/globals" as *;
+
 :host {
     .addon-mod_h5pactivity-table-header {
         font-weight: bold;
 
         ion-col {
-            overflow: hidden;
-            text-overflow: ellipsis;
+            @include ellipsis();
         }
     }
 

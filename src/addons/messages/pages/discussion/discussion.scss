@@ -51,9 +51,7 @@
             }
 
             core-format-text {
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+                @include ellipsis();
                 flex-shrink: 1;
                 display: block;
             }

@@ -63,11 +63,11 @@
         --padding-bottom: 8px;
 
         background: var(--background);
+
+        --color: var(--core-combobox-color);
         color: var(--color);
-        text-overflow: ellipsis;
-        white-space: nowrap;
+
         min-height: var(--a11y-sizing-minTargetSize);
-        overflow: hidden;
         box-shadow: var(--box-shadow);
 
         --highlight-color: transparent !important;
@@ -121,7 +121,6 @@
     }
 
     ion-button {
-        --color: var(--core-combobox-color);
         --color-activated: var(--core-combobox-color);
         --color-focused: currentcolor;
         --color-hover: currentcolor;
@@ -130,9 +129,7 @@
 
         .select-text {
             @include margin-horizontal(null, auto);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            @include ellipsis();
             font: var(--mdl-typography-label-font-lg);
         }
 

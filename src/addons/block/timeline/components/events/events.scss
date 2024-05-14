@@ -52,8 +52,7 @@ h4.core-bold {
         flex-wrap: wrap;
 
         & > span {
-            overflow: hidden;
-            text-overflow: ellipsis;
+            @include ellipsis();
         }
 
     }

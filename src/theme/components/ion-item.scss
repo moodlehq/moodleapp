@@ -193,9 +193,7 @@ ion-toggle::part(label),
 ion-input > label {
     core-format-text,
     core-format-text > *:not(pre) {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        @include ellipsis();
     }
 }
 

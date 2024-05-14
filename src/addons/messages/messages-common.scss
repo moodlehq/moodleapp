@@ -46,9 +46,7 @@
         }
 
         .addon-message-last-message-text {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            @include ellipsis();
             flex-shrink: 1;
         }
     }

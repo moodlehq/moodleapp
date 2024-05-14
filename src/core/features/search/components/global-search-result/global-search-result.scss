@@ -1,3 +1,5 @@
+@use "theme/globals" as *;
+
 :host ion-item {
     --core-global-search-result-image-size: 40px;
     --core-global-search-result-title-color: var(--text);
@@ -52,14 +54,7 @@
         core-format-text {
             color: var(--core-global-search-result-content-color);
 
-            @supports (-webkit-line-clamp: 2) {
-                white-space: normal;
-                overflow: hidden;
-                display: -webkit-box;
-                -webkit-box-orient: vertical;
-                -webkit-line-clamp: 2;
-            }
-
+            @include ellipsis(2);
         }
 
         .result-context-wrapper {

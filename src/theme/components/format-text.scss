@@ -620,9 +620,7 @@ core-rich-text-editor .core-rte-editor {
     .text-wrap     { white-space: normal !important; }
     .text-nowrap   { white-space: nowrap !important; }
     .text-truncate {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        @include ellipsis();
      }
     .text-left   { text-align: left !important; }
     .text-right  { text-align: right !important; }
