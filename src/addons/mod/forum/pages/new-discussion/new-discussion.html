@@ -36,7 +36,7 @@
                 </ion-label>
             </ion-item>
             <div *ngIf="advanced" id="addon-mod-forum-new-discussion-advanced">
-                <ion-item *ngIf="showGroups && groupIds.length > 1 && accessInfo.cancanposttomygroups" class="ion-text-wrap" lines="none">
+                <ion-item *ngIf="showGroups && groupIds.length > 1 && accessInfo.cancanposttomygroups" class="ion-text-wrap">
                     <ion-toggle [(ngModel)]="newDiscussion.postToAllGroups" name="postallgroups">
                         {{ 'addon.mod_forum.posttomygroups' | translate }}
                     </ion-toggle>
@@ -52,12 +52,12 @@
                         </ion-select-option>
                     </ion-select>
                 </ion-item>
-                <ion-item class="ion-text-wrap" lines="none">
+                <ion-item class="ion-text-wrap">
                     <ion-toggle [(ngModel)]="newDiscussion.subscribe" name="subscribe">
                         {{ 'addon.mod_forum.discussionsubscription' | translate }}
                     </ion-toggle>
                 </ion-item>
-                <ion-item *ngIf="canPin" class="ion-text-wrap" lines="none">
+                <ion-item *ngIf="canPin" class="ion-text-wrap">
                     <ion-toggle [(ngModel)]="newDiscussion.pin" name="pin">
                         {{ 'addon.mod_forum.discussionpinned' | translate }}
                     </ion-toggle>

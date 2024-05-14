@@ -69,7 +69,7 @@
 
                         <ion-radio-group *ngIf="item.templateName === 'multichoice-r'" [(ngModel)]="item.value" [required]="item.required"
                             name="{{item.typ}}_{{item.id}}">
-                            <ion-item *ngFor="let option of item.choices" class="ion-text-wrap" lines="none">
+                            <ion-item *ngFor="let option of item.choices" class="ion-text-wrap">
                                 <ion-radio [value]="option.value">
                                     <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
                                         contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId" />
@@ -80,7 +80,7 @@
                         <ng-container *ngIf="item.templateName === 'multichoice-c'">
                             <ion-item *ngFor="let option of item.choices">
                                 <ion-checkbox [required]="item.required" name="{{item.typ}}_{{item.id}}" [(ngModel)]="option.checked"
-                                    value="option.value" lines="none">
+                                    value="option.value">
                                     <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
                                         contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId" />
                                 </ion-checkbox>

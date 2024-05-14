@@ -12,17 +12,17 @@ ion-item.item {
         color: var(--ion-item-icon-color);
     }
 
-    &.item-lines-default {
-        /** Remove lines by default */
+    &.item-lines-default,
+    &.item-has-interactive-control {
+        /** Remove lines by default and interactive control (toggles, radios, checkbox and selects) */
         --inner-border-width: 0px;
         --border-width: 0px;
     }
 
     &.ion-valid,
-    &.ion-invalid,
-    &.item-has-interactive-control {
-        &.item-lines-default {
-            --border-width: 0 0 1px 0;
+    &.ion-invalid {
+        &.item-lines-default:not(.item-has-interactive-control) {
+            --inner-border-width: 0 0 1px 0;
         }
 
         &.ion-touched {
@@ -42,11 +42,6 @@ ion-item.item {
     // Hide details on items to align badges.
     &.hide-detail {
         --detail-icon-opacity: 0;
-    }
-
-    &:not(.item-input) {
-        --show-full-highlight: 0;
-        --show-inset-highlight: 0;
     }
 
     &.item-has-interactive-control:focus-within {
