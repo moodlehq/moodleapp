@@ -213,7 +213,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         this.isLocalUrl = true;
         this.linkIconWithComponent = false;
 
-        const moduleName = !this.modname || CoreCourse.CORE_MODULES.indexOf(this.modname) < 0
+        const moduleName = !this.modname || !CoreCourse.isCoreModule(this.modname)
             ? fallbackModName
             : this.modname;
 
