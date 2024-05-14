@@ -314,13 +314,3 @@ ion-item.item-multiple-inputs.only-links {
         cursor: pointer;
     }
 }
-
-// Case with ion-input + ion-select inside.
-ion-item.item-input.item-multiple-inputs {
-    .flex-row {
-        width: 100%;
-        ion-select {
-            position: relative;
-        }
-    }
-}
