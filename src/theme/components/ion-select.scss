@@ -31,16 +31,6 @@ ion-select-popover {
     }
 }
 
-// Case with ion-input + ion-select inside.
-ion-item.item-input.item-multiple-inputs {
-    .flex-row {
-        width: 100%;
-        ion-select {
-            position: relative;
-        }
-    }
-}
-
 .select-alert.ios {
     .alert-checkbox-icon {
         border-radius: 2px;
@@ -63,7 +53,7 @@ ion-item.item-input.item-multiple-inputs {
             top: auto;
             left: auto;
             position: static;
-            border-radius: var(--inner-border-radius);
+            border-radius: 50%;
             width: calc(50% + var(--outer-border-width));
             height: calc(50% + var(--outer-border-width));
             transform: scale3d(0, 0, 0);

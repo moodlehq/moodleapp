@@ -21,7 +21,7 @@
                         <h2>{{ 'core.settings.general' | translate }}</h2>
                     </ion-label>
                 </ion-item-divider>
-                <ion-item class="ion-text-wrap" lines="none">
+                <ion-item class="ion-text-wrap">
                     <ion-toggle [(ngModel)]="sendOnEnter" (ngModelChange)="sendOnEnterChanged()">
                         {{ 'addon.messages.useentertosend' | translate }}
                     </ion-toggle>
@@ -31,7 +31,7 @@
 
         <!-- Contactable privacy. -->
         <ion-card>
-            <ion-item *ngIf="!advancedContactable" class="ion-text-wrap" lines="none">
+            <ion-item *ngIf="!advancedContactable" class="ion-text-wrap">
                 <ion-toggle [(ngModel)]="contactablePrivacy" (ngModelChange)="saveContactablePrivacy(contactablePrivacy)">
                     {{ 'addon.messages.blocknoncontacts' | translate }}
                 </ion-toggle>

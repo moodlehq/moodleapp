@@ -99,7 +99,7 @@
                     <h2>{{ 'addon.mod_workshop.feedbackauthor' | translate }}</h2>
                 </ion-label>
             </ion-item-divider>
-            <ion-item class="ion-text-wrap" lines="none" *ngIf="access.canpublishsubmissions">
+            <ion-item class="ion-text-wrap" *ngIf="access.canpublishsubmissions">
                 <ion-toggle formControlName="published">
                     <p class="item-heading">{{ 'addon.mod_workshop.publishsubmission' | translate }}</p>
                     <p>{{ 'addon.mod_workshop.publishsubmission_help' | translate }}</p>

@@ -20,7 +20,7 @@
 
     <core-loading [hideUntil]="loaded">
         @if (showMyEntriesToggle) {
-        <ion-item lines="none" class="ion-text-wrap">
+        <ion-item class="ion-text-wrap">
             <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)">
                 {{ 'addon.blog.showonlyyourentries' | translate }}
             </ion-toggle>
