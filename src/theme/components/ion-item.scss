@@ -47,12 +47,6 @@ ion-item.item {
     &.item-has-interactive-control:focus-within {
         @include core-focus-outline();
     }
-
-    &.icon-margin-reduced {
-        [slot=start] {
-            @include margin-horizontal(null, var(--mdl-spacing-4));
-        }
-    }
 }
 
 // Fake item.
@@ -167,6 +161,7 @@ ion-item .in-item {
 
         text-overflow: inherit;
         overflow: inherit;
+        white-space: inherit;
         --color: initial;
         color: var(--color);
 
@@ -203,6 +198,7 @@ ion-item > .in-item,
 .item.ion-text-wrap > ion-checkbox::part(label),
 ion-checkbox.ion-text-wrap::part(label),
 ion-toggle.ion-text-wrap::part(label),
+.item.ion-text-wrap > ion-toggle::part(label),
 .item.ion-text-wrap > ion-input > label,
 ion-input.ion-text-wrap > label {
     white-space: normal;
