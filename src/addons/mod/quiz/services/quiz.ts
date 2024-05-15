@@ -30,7 +30,6 @@ import {
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
@@ -96,7 +95,7 @@ export class AddonModQuizProvider {
             return Translate.instant('addon.mod_quiz.notyetgraded');
         }
 
-        return CoreUtils.formatFloat(CoreTextUtils.roundToDecimals(grade, decimals));
+        return CoreUtils.formatFloat(grade.toFixed(decimals ?? 2));
     }
 
     /**
