@@ -41,19 +41,17 @@
                 </h3>
 
                 @if (entry.userid === currentUserId && optionsAvailable) {
-                <div class="core-button-spinner">
-                    <ion-button fill="clear" [attr.aria-label]="'core.displayoptions' | translate"
-                        (click)="showEntryActionsPopover($event, entry)">
-                        <ion-icon slot="icon-only" aria-hidden="true" name="ellipsis-vertical" />
-                    </ion-button>
-                </div>
+                <ion-button fill="clear" [attr.aria-label]="'core.displayoptions' | translate"
+                    (click)="showEntryActionsPopover($event, entry)" class="entry-options">
+                    <ion-icon slot="icon-only" aria-hidden="true" name="ellipsis-vertical" />
+                </ion-button>
                 }
             </div>
 
             <div class="entry-creation-info flex ion-align-items-center">
-                <span>
+                <div class="entry-avatar">
                     <core-user-avatar [user]="entry.user" [courseId]="entry.courseid" />
-                </span>
+                </div>
 
                 @if (entry.user?.fullname && entry.created) {
                 <span [innerHTML]="'core.bynameondate' | translate: {
@@ -64,15 +62,14 @@
                 }
             </div>
 
-
-            <div class="entry-summary" [ngClass]="{ 'border-bottom': entry.lastmodified <= entry.created }" [collapsible-item]="64">
+            <div class="entry-summary" [collapsible-item]="64">
                 <div class="ion-margin-bottom">
                     <core-format-text [text]="entry.summary" [component]="component" [componentId]="entry.id" [contextLevel]="contextLevel"
                         [contextInstanceId]="contextInstanceId" [courseId]="entry.courseid" />
                 </div>
 
                 @if (tagsEnabled && entry.tags && entry.tags!.length > 0) {
-                <ion-item class="ion-text-wrap">
+                <ion-item class="ion-text-wrap" lines="none">
                     <ion-label>
                         <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
                         <core-tag-list [tags]="entry.tags" />
@@ -85,15 +82,14 @@
                 }
 
                 @if (entry.uniquehash) {
-                <ion-item [href]="entry.uniquehash" core-link [detail]="true">
+                <ion-item [href]="entry.uniquehash" core-link [detail]="true" lines="none">
                     <ion-label>{{ 'addon.blog.linktooriginalentry' | translate }}</ion-label>
                 </ion-item>
                 }
-
             </div>
 
             @if (entry.lastmodified > entry.created || (entry.userid === currentUserId && entry.publishstate !== 'draft')) {
-            <ion-item class="entry-last-modification">
+            <ion-item class="entry-last-modification" lines="none">
                 @if (entry.lastmodified > entry.created) {
                 <ion-note class="flex ion-align-items-center" slot="start">
                     <ion-icon name="fas-clock" [attr.aria-label]="'core.lastmodified' | translate" />
