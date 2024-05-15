@@ -1,22 +1,15 @@
 <ion-content>
     <ion-list [id]="uniqueId" role="menu">
-        <ion-list-header *ngIf="title">
-            <ion-label>{{title}}</ion-label>
-        </ion-list-header>
         <ion-item class="ion-text-wrap" lines="none" *ngFor="let item of items" core-link [capture]="item.captureLink"
             [autoLogin]="item.autoLogin" [href]="item.href" (click)="itemClicked($event, item)" [attr.aria-label]="item.ariaAction"
             [hidden]="item.hidden" [detail]="!!(item.href && !item.iconAction)" role="menuitem" [button]="!!(item.href && !item.iconAction)"
             [showBrowserWarning]="item.showBrowserWarning">
             <ion-toggle *ngIf="item.iconAction === 'toggle'" [(ngModel)]="item.toggle" (ionChange)="item.toggleChanged($event)">
-                <p class="item-heading">
-                    <core-format-text [clean]="true" [text]="item.content" [filter]="false" />
-                </p>
+                <p class="item-heading">{{ item.content }}</p>
             </ion-toggle>
             <ng-container *ngIf="item.iconAction !== 'toggle'">
                 <ion-label>
-                    <p class="item-heading">
-                        <core-format-text [clean]="true" [text]="item.content" [filter]="false" />
-                    </p>
+                    <p class="item-heading">{{ item.content }}</p>
                 </ion-label>
                 <ng-container *ngIf="(item.href || item.action) && item.iconAction">
                     <ion-icon *ngIf="item.iconAction !== 'spinner'" [name]="item.iconAction" [class.icon-slash]="item.iconSlash" slot="end"

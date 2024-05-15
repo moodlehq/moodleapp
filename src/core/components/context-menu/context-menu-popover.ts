@@ -28,14 +28,12 @@ import { CoreContextMenuItemComponent } from './context-menu-item';
 })
 export class CoreContextMenuPopoverComponent {
 
-    title: string;
     uniqueId: string;
     items: CoreContextMenuItemComponent[];
 
     constructor(
         navParams: NavParams,
     ) {
-        this.title = navParams.get('title');
         this.items = navParams.get('items') || [];
         this.uniqueId = navParams.get('id');
     }

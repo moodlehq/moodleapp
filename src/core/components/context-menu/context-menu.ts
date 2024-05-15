@@ -32,8 +32,14 @@ import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 export class CoreContextMenuComponent implements OnInit, OnDestroy {
 
     @Input() icon = 'ellipsis-vertical'; // Icon to be shown on the navigation bar. Default: Kebab menu icon.
-    @Input() title?: string; // Text to be shown on the top of the popover.
     @Input('aria-label') ariaLabel?: string; // Aria label to be shown on the top of the popover.
+
+    /**
+     * Title to be shown on the top of the popover.
+     *
+     * @deprecated since 4.4. Use aria-label instead.
+     */
+    @Input() title?: string; // Text to be shown on the top of the popover.
 
     hideMenu = true; // It will be unhidden when items are added.
     uniqueId: string;
@@ -68,7 +74,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.ariaLabel = this.ariaLabel || this.title || Translate.instant('core.displayoptions');
+        this.ariaLabel = this.ariaLabel || Translate.instant('core.displayoptions');
     }
 
     /**
@@ -81,7 +87,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
             // All items were moved to the "parent" menu. Add the item in there.
             this.parentContextMenu.addItem(item);
 
-            if (this.itemsMovedToParent.indexOf(item) == -1) {
+            if (this.itemsMovedToParent.indexOf(item) === -1) {
                 this.itemsMovedToParent.push(item);
             }
         } else if (this.items.indexOf(item) == -1) {
@@ -181,7 +187,6 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
                 event,
                 component: CoreContextMenuPopoverComponent,
                 componentProps: {
-                    title: this.title,
                     items: this.items,
                 },
                 id: this.uniqueId,
