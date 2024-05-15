@@ -33,8 +33,8 @@ Feature: View list of attempts in the app
     Given I entered the quiz activity "Quiz 1" on course "Course 1" as "student1" in the app
     Then I should find "In progress" within "Attempt 2" "ion-item" in the app
     And I should find "Finished" within "Attempt 1" "ion-item" in the app
-    And I should find "100 / 100" within "Attempt 1" "ion-item" in the app
-    But I should not find "100" within "Attempt 2" "ion-item" in the app
+    And I should find "100.00 / 100.00" within "Attempt 1" "ion-item" in the app
+    But I should not find "100.00" within "Attempt 2" "ion-item" in the app
     And I should not find "Started" within "Your attempts" "ion-card" in the app
     And I should not find "Completed" within "Your attempts" "ion-card" in the app
     And I should not find "Marks" within "Your attempts" "ion-card" in the app
@@ -43,7 +43,7 @@ Feature: View list of attempts in the app
     When I press "Attempt 1" in the app
     Then I should find "Started" within "Your attempts" "ion-card" in the app
     And I should find "Completed" in the app
-    And I should find "1/1" within "Marks" "ion-item" in the app
+    And I should find "1.00/1.00" within "Marks" "ion-item" in the app
     And I should be able to press "Review" in the app
 
   @lms_from4.2
@@ -51,7 +51,7 @@ Feature: View list of attempts in the app
     Given the attempt at "Quiz 1" by "student1" was never submitted
     And I entered the quiz activity "Quiz 1" on course "Course 1" as "student1" in the app
     Then I should find "Never submitted" within "Attempt 2" "ion-item" in the app
-    But I should not find "100" within "Attempt 2" "ion-item" in the app
+    But I should not find "100.00" within "Attempt 2" "ion-item" in the app
 
     When I press "Attempt 2" in the app
     Then I should find "Started" within "Your attempts" "ion-card" in the app

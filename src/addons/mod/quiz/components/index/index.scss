@@ -10,6 +10,9 @@
         .addon-mod_quiz-grade-result {
             margin-top: var(--mdl-spacing-2);
 
+            ion-label {
+                @include margin-horizontal(0px, 0px);
+            }
 
             .addon-mod_quiz-grade-overridden-notice {
                 margin-top: var(--mdl-spacing-2);
