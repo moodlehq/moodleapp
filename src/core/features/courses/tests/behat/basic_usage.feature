@@ -119,14 +119,21 @@ Feature: Test basic usage of courses in app
   Scenario: Links to actions in Timeline work for teachers/students
     # Submit assignment as student
     Given I entered the app as "student1"
-    When I press "Add submission" in the app
+    When I press "assignment" in the app
     Then the header should be "assignment" in the app
     And I should find "Test assignment description" in the app
     And I should find "No attempt" in the app
     And I should find "Due:" in the app
 
     When I press "Add submission" in the app
-    And I set the field "Online text submissions" to "test" in the app
+    Then I should find "Online text submissions" in the app
+
+    When I press the back button in the app
+    And I press the back button in the app
+    And I press "Add submission" in the app
+    Then I should find "Online text submissions" in the app
+
+    When I set the field "Online text submissions" to "test" in the app
     And I press "Save" in the app
     And I press "Submit assignment" in the app
     And I press "OK" in the app
