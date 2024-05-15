@@ -21,6 +21,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { IonContent } from '@ionic/angular';
 import { CoreDomUtils, VerticalPoint } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
+import { NgZone } from '@singletons';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreMath } from '@singletons/math';
@@ -62,8 +63,8 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
                 this.swiper.slideTo(this.options.initialSlide, 0, this.options.runCallbacksOnInit);
             }
 
-            this.swiper.on('slideChangeTransitionStart', () => this.slideWillChange());
-            this.swiper.on('slideChangeTransitionEnd', () => this.slideDidChange());
+            this.swiper.on('slideChangeTransitionStart', () => NgZone.run(() => this.slideWillChange()));
+            this.swiper.on('slideChangeTransitionEnd', () => NgZone.run(() => this.slideDidChange()));
         });
     }
 
