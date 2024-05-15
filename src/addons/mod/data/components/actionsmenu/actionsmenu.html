@@ -1,6 +1,6 @@
 <ion-content>
     <ion-list>
-        <ion-item button class="ion-text-wrap icon-margin-reduced" (click)="onItemClick(item)" *ngFor="let item of items" [detail]="false"
+        <ion-item button class="ion-text-wrap" (click)="onItemClick(item)" *ngFor="let item of items" [detail]="false"
             [attr.aria-label]="item.text | translate">
             <ion-icon [name]="item.icon" slot="start" aria-hidden="true" />
             <ion-label>

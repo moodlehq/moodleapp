@@ -25,4 +25,11 @@ ion-popover {
             white-space: normal;
         }
     }
+
+
+    ion-item {
+        [slot=start] {
+            @include margin-horizontal(null, var(--mdl-spacing-4));
+        }
+    }
 }

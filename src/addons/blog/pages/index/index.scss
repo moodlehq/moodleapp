@@ -1,87 +1,68 @@
 @use "theme/globals" as *;
 
 :host {
-
-    ion-card {
-        padding: .5rem 1rem;
-    }
-
     .entry {
         border-bottom: 1px solid var(--stroke);
 
         &-visibility-permission {
             display: flex;
             align-items: center;
-            font-size: 0.875rem;
-            font-weight: 500;
+            font: var(-mdl-typography-label-font-lg);
 
             ion-icon {
-                margin-right: .3rem;
+                @include margin-horizontal(null, .3rem);
             }
         }
 
         &-draft {
-            margin-left: .3rem;
+            @include margin-horizontal(.3rem, null);
+
             position: relative;
             top: 4px;
         }
 
         &-subject {
             core-format-text {
-                font-size: 1.25rem;
-                font-weight: 500;
-            }
-
-            &::part(native) {
-                padding-left: 0;
+                font: var(--mdl-typography-heading4-font);
             }
         }
 
         &-creation-info {
+            .entry-avatar {
+                @include margin(.6rem, .6rem, .6rem, 0px);
+            }
+
             core-user-avatar {
-                --userpicture-padding: .6rem;
-                margin-left: -.5rem;
+                --core-avatar-size: 24px;
             }
         }
 
         &-last-modification {
-            --border-width: 0 0 1px 0;
-
-            &::part(native) {
-                padding: 0;
-            }
+            --padding-end: 0px;
+            --padding-start: 0px;
+            --padding-top: 0px;
+            --padding-bottom: 0px;
 
             ion-note {
                 padding-top: 0.9rem;
-                font-size: 0.875rem;
-                font-weight: 500;
+                font: var(-mdl-typography-label-font-lg);
             }
 
             ion-icon {
-                margin-right: .3rem;
+                @include margin-horizontal(null, .3rem);
             }
         }
     }
 
-    .core-button-spinner {
-        margin-right: -.5rem;
-        align-self: start;
-
-        ion-button::part(native) {
-            --padding-end: 0;
-            --padding-start: 0;
-            --padding-left: 0;
-            --padding-right: 0;
-        }
+    ion-button.entry-options {
+        --padding-end: 0px;
+        --padding-start: 0px;
+        --padding-top: 0px;
+        --padding-bottom: 0px;
     }
 
-    core-comments ::ng-deep {
-        &::part(native) {
-            --padding-start: 0;
-        }
-    }
-
-    .border-bottom {
-        border-bottom: 1px solid var(--stroke);
+    core-comments ::ng-deep ion-item {
+        --inner-border-width: 1px 0px 0px 0px;
+        --padding-start: 0px;
     }
 }
