@@ -29,35 +29,17 @@
         </ion-card>
 
         <!-- Questions -->
-        <div *ngIf="attempt && questions.length">
+        <ng-container *ngIf="attempt && questions.length">
 
             <!-- Questions. -->
-            <div *ngFor="let question of questions">
-                <ion-card id="addon-mod_quiz-question-{{question.slot}}">
-                    <!-- "Header" of the question. -->
-                    <ion-item-divider>
-                        <ion-label class="ion-text-wrap">
-                            <h2 *ngIf="question.type !== 'description' && question.questionnumber">
-                                {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
-                            </h2>
-                            <h2 *ngIf="question.type === 'description' || !question.questionnumber">
-                                {{ 'core.question.information' | translate }}
-                            </h2>
-                        </ion-label>
-                        <div class="ion-text-wrap ion-margin-horizontal addon-mod_quiz-question-note" slot="end"
-                            *ngIf="question.status || question.readableMark">
-                            <p *ngIf="question.status">{{question.status}}</p>
-                            <p *ngIf="question.readableMark" [innerHTML]="question.readableMark"></p>
-                        </div>
-                    </ion-item-divider>
-
-                    <!-- Body of the question. -->
+            <ng-container *ngFor="let question of questions">
+                <addon-mod-quiz-question-card [question]="question">
                     <core-question class="ion-text-wrap" [question]="question" [component]="component" [componentId]="cmId"
                         [attemptId]="attempt.id" [usageId]="attempt.uniqueid" [offlineEnabled]="false" contextLevel="module"
                         [contextInstanceId]="cmId" [courseId]="courseId" [review]="true" [preferredBehaviour]="quiz?.preferredbehaviour" />
-                </ion-card>
-            </div>
-        </div>
+                </addon-mod-quiz-question-card>
+            </ng-container>
+        </ng-container>
 
         <div collapsible-footer appearOnBottom *ngIf="loaded && numPages > 1" slot="fixed">
             <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">

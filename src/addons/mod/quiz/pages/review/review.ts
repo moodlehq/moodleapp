@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { CoreQuestionQuestionParsed } from '@features/question/services/question';
+import { CoreQuestionQuestionForView } from '@features/question/services/question';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
@@ -43,7 +43,6 @@ import { ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
 @Component({
     selector: 'page-addon-mod-quiz-review',
     templateUrl: 'review.html',
-    styleUrls: ['review.scss'],
 })
 export class AddonModQuizReviewPage implements OnInit {
 
@@ -57,11 +56,10 @@ export class AddonModQuizReviewPage implements OnInit {
     additionalData?: AddonModQuizWSAdditionalData[]; // Additional data to display for the attempt.
     loaded = false; // Whether data has been loaded.
     navigation: AddonModQuizNavigationQuestion[] = []; // List of questions to navigate them.
-    questions: QuizQuestion[] = []; // Questions of the current page.
+    questions: CoreQuestionQuestionForView[] = []; // Questions of the current page.
     nextPage = -2; // Next page.
     previousPage = -2; // Previous page.
     readableGrade?: string;
-    readableMark?: string;
     timeTaken?: string;
     gradeItemMarks: { name: string; grade: string }[] = [];
     overTime?: string;
@@ -319,13 +317,6 @@ export class AddonModQuizReviewPage implements OnInit {
     }
 
 }
-
-/**
- * Question with some calculated data for the view.
- */
-type QuizQuestion = CoreQuestionQuestionParsed & {
-    readableMark?: string;
-};
 
 type LogViewOptions = {
     page?: number; // Page being viewed (if viewing pages);

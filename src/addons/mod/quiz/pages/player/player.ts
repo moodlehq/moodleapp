@@ -18,7 +18,11 @@ import { Subscription } from 'rxjs';
 
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreQuestionComponent } from '@features/question/components/question/question';
-import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
+import {
+    CoreQuestionQuestionForView,
+    CoreQuestionQuestionParsed,
+    CoreQuestionsAnswers,
+} from '@features/question/services/question';
 import { CoreQuestionBehaviourButton, CoreQuestionHelper } from '@features/question/services/question-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -73,7 +77,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     quizAborted = false; // Whether the quiz was aborted due to an error.
     offline = false; // Whether the quiz is being attempted in offline mode.
     navigation: AddonModQuizNavigationQuestion[] = []; // List of questions to navigate them.
-    questions: QuizQuestion[] = []; // Questions of the current page.
+    questions: CoreQuestionQuestionForView[] = []; // Questions of the current page.
     nextPage = -2; // Next page.
     previousPage = -1; // Previous page.
     showSummary = false; // Whether the attempt summary should be displayed.
@@ -935,13 +939,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     }
 
 }
-
-/**
- * Question with some calculated data for the view.
- */
-type QuizQuestion = CoreQuestionQuestionParsed & {
-    readableMark?: string;
-};
 
 /**
  * Attempt with some calculated data for the view.

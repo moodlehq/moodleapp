@@ -654,6 +654,13 @@ export type CoreQuestionQuestionParsed = CoreQuestionQuestionWSData & {
 };
 
 /**
+ * Question with some calculated data for the view.
+ */
+export type CoreQuestionQuestionForView = CoreQuestionQuestionParsed & {
+    readableMark?: string;
+};
+
+/**
  * List of answers to a set of questions.
  */
 export type CoreQuestionsAnswers = Record<string, string | boolean>;

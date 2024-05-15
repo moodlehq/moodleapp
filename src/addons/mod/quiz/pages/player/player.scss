@@ -5,14 +5,6 @@ $quiz-timer-warn-color: $red !default;
 $quiz-timer-iterations: 15 !default;
 
 :host {
-    .addon-mod_quiz-question-note p {
-        font-weight: normal;
-        font-size: var(--mdl-typography-fontSize-md);
-        margin-top: 2px;
-        margin-bottom: 2px;
-        text-align: end;
-    }
-
     core-timer {
         // Make the timer go red when it's reaching 0.
         @for $i from 0 through $quiz-timer-iterations {
