@@ -38,10 +38,10 @@
 
         .specificfeedback, .rightanswer, .im-feedback, .feedback, .generalfeedback {
             margin: 0 0 .5em;
-        }
 
-        p {
-            --color: var(--core-question-feedback-color);
+            p {
+                --color: var(--core-question-feedback-color);
+            }
         }
 
         .correctness {
