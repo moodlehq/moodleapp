@@ -69,7 +69,7 @@
                             </ion-badge>
                             <!-- Download progress. -->
                             <p *ngIf="downloadEnabled && section.isDownloading">
-                                <core-progress-bar [progress]="section.total === 0 ? -1 : section.count / section.total" />
+                                <core-progress-bar [progress]="section.total === 0 ? -1 : (section.count / section.total) * 100" />
                             </p>
                         </ion-label>
                         <div class="storage-buttons" slot="end"
@@ -112,7 +112,8 @@
                                         <ion-icon name="fam-cloud-done" *ngIf="module.downloadStatus === statusDownloaded"
                                             [attr.aria-label]="'core.downloaded' | translate" />{{ module.totalSize | coreBytesToSize }}
                                     </ion-badge>
-                                    <ion-badge color="light" *ngIf="module.calculatingSize">
+                                    <ion-badge color="light" *ngIf="module.calculatingSize ||
+                                        (section.isDownloading && module.downloadStatus === statusDownloaded)">
                                         {{ 'core.calculating' | translate }}
                                     </ion-badge>
                                 </ion-label>
