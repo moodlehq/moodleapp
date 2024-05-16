@@ -57,8 +57,16 @@ input[type=radio],
 }
 
 ion-radio {
-    &.md.radio-disabled::part(label),
-    &.ios.radio-disabled {
-        opacity: var(--mdl-input-disabled-opacity);
+    &.radio-disabled {
+        @include pointer-events-on-buttons();
+
+        &.md::part(label),
+        &.ios {
+            opacity: var(--mdl-input-disabled-opacity);
+        }
     }
+}
+
+input[type=radio][disabled] {
+    opacity: var(--mdl-input-disabled-opacity);
 }

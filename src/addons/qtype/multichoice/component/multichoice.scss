@@ -1,9 +1,13 @@
+@use "theme/globals" as *;
+
 :host ::ng-deep {
     .specificfeedback {
         background-color: var(--core-question-feedback-color-bg);
         color: var(--core-question-feedback-color);
-        display: inline;
         padding: 0 .7em;
+        font-size: var(--text-size);
+
+        @include pointer-events-on-buttons();
     }
 
     .d-flex {

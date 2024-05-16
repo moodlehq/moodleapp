@@ -3,3 +3,8 @@ ion-input {
         opacity: var(--mdl-input-disabled-opacity);
     }
 }
+
+input[disabled],
+input[readonly] {
+    opacity: var(--mdl-input-disabled-opacity);
+}

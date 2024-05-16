@@ -63,6 +63,17 @@ html[dir=rtl] {
     flex-direction: row;
 }
 
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
 .margin-bottom-sm { margin-bottom: 8px; }
 .margin-bottom-md { margin-bottom: 12px; }
 
@@ -570,12 +581,6 @@ img.core-media-adapt-width {
 
 audio.core-media-adapt-width {
     width: 100%;
-}
-
-// Disabled items.
-ion-item.item-disabled,
-ion-item.item-interactive-disabled:not(.item-multiple-inputs) ion-label {
-    opacity: var(--mdl-item-disabled-opacity) !important;
 }
 
 ion-item-divider.item,

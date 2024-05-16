@@ -72,3 +72,7 @@ ion-select-popover {
         }
     }
 }
+
+select[disabled] {
+    opacity: var(--mdl-input-disabled-opacity);
+}

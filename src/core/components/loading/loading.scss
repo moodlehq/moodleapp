@@ -31,12 +31,10 @@
     --contents-display: block;
 
     @include core-transition(all, 200ms);
-    pointer-events: none;
     display: var(--contents-display);
 
     &.core-loading-loaded {
         position: static;
-        pointer-events: auto;
         --contents-display: contents;
         --internal-loading-inline-min-height: 0px;
 

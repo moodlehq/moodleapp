@@ -1,4 +1,13 @@
 // Style ddmarker content a bit. Almost all these styles are copied from Moodle.
+:host {
+    --cursor: pointer;
+
+    .readonly,
+    core-format-text ::ng-deep .readonly {
+        --cursor: auto;
+    }
+}
+
 .addon-qtype-ddmarker-container {
     min-height: 80px; // To display the loading.
 }
@@ -33,18 +42,11 @@ core-format-text ::ng-deep {
 
     .dragitems, // Previous to 3.9.
     .draghomes {
-        &.readonly {
-            .dragitem,
-            .marker {
-                cursor: auto;
-            }
-        }
-
         .dragitem, // Previous to 3.9.
         .draghome,
         .marker {
             vertical-align: top;
-            cursor: pointer;
+            cursor: var(--cursor);
             position: relative;
             margin: 10px;
             display: inline-block;
@@ -70,7 +72,7 @@ core-format-text ::ng-deep {
     .droparea {
         .dragitem,
         .marker {
-            cursor: pointer;
+            cursor: var(--cursor);
             position: absolute;
             vertical-align: top;
             z-index: 2;

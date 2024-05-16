@@ -1,6 +1,16 @@
 @use "theme/globals" as *;
 
 // Style ddwtos content a bit. Almost all these styles are copied from Moodle.
+
+:host {
+    --cursor: pointer;
+
+    .readonly,
+    core-format-text ::ng-deep .readonly {
+        --cursor: default;
+    }
+}
+
 .addon-qtype-ddwtos-container {
     min-height: 80px; // To display the loading.
     position: relative;
@@ -27,7 +37,7 @@ core-format-text ::ng-deep, .drags ::ng-deep {
         border: 1px solid var(--core-dd-question-border);
         margin-bottom: 2px;
         border-radius: 5px;
-        cursor: pointer;
+        cursor: var(--cursor);
     }
     .draghome, .drag {
         display: inline-block;
@@ -48,7 +58,7 @@ core-format-text ::ng-deep, .drags ::ng-deep {
         z-index: 2;
         border-radius: 5px;
         line-height: 25px;
-        cursor: pointer;
+        cursor: var(--cursor);
     }
     .drag.selected,
     .drop.selected {
@@ -60,15 +70,8 @@ core-format-text ::ng-deep, .drags ::ng-deep {
     &.notreadonly .draghome,
     &.notreadonly .drop,
     &.notreadonly .answercontainer {
-        cursor: pointer;
+        cursor: var(--cursor);
         border-radius: 5px;
-    }
-
-    &.readonly .drag,
-    &.readonly .draghome,
-    &.readonly .drop,
-    &.readonly .answercontainer {
-        cursor: default;
     }
 
     span.incorrect {

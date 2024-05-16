@@ -16,12 +16,20 @@ input[type=checkbox] {
 }
 
 ion-checkbox {
-    &.md.checkbox-disabled::part(label),
-    &.ios.checkbox-disabled {
-        opacity: var(--mdl-input-disabled-opacity);
+    &.checkbox-disabled {
+        @include pointer-events-on-buttons();
+
+        &.md::part(label),
+        &.ios {
+            opacity: var(--mdl-input-disabled-opacity);
+        }
     }
 }
 
 .ios input[type=checkbox] {
     --outer-border-width: 1px;
+}
+
+input[type=checkbox][disabled] {
+    opacity: var(--mdl-input-disabled-opacity);
 }
