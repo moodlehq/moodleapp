@@ -149,7 +149,7 @@
                         <p class="item-heading">{{ reminder.label }}</p>
                         <p *ngIf="reminder.sublabel">{{ reminder.sublabel }}</p>
                     </ion-label>
-                    <ion-button fill="clear" (click)="deleteReminder(reminder.id, $event)" [attr.aria-label]="'core.delete' | translate"
+                    <ion-button fill="clear" (click)="deleteReminder(reminder.id, $event)" [ariaLabel]="'core.delete' | translate"
                         slot="end">
                         <ion-icon name="fas-trash" color="danger" slot="icon-only" aria-hidden="true" />
                     </ion-button>

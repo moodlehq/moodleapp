@@ -9,7 +9,7 @@
             </h1>
         </ion-title>
         <ion-buttons slot="end">
-            <ion-button fill="clear" *ngIf="displayMenu || mediaFile" [attr.aria-label]="'addon.mod_lesson.lessonmenu' | translate"
+            <ion-button fill="clear" *ngIf="displayMenu || mediaFile" [ariaLabel]="'addon.mod_lesson.lessonmenu' | translate"
                 (click)="showMenu()">
                 <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true" />
             </ion-button>
@@ -72,7 +72,7 @@
                         <!-- Short answer. -->
                         <ion-item class="ion-text-wrap" *ngSwitchCase="'shortanswer'">
                             <ion-input [type]="question.input!.type" placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}"
-                                [attr.aria-label]="'addon.mod_lesson.youranswer' | translate" [id]="question.input!.id"
+                                [ariaLabel]="'addon.mod_lesson.youranswer' | translate" [id]="question.input!.id"
                                 [formControlName]="question.input!.name" autocorrect="off" [maxlength]="question.input!.maxlength" />
                         </ion-item>
 

@@ -8,7 +8,7 @@
                 </span>
                 <span *ngIf="!maxSubmissionsReadable">{{ 'core.maxfilesize' | translate:{$a: maxSizeReadable} }}</span>
             </ion-label>
-            <ion-button slot="end" (click)="add()" [attr.aria-label]="'core.fileuploader.addfiletext' | translate"
+            <ion-button slot="end" (click)="add()" [ariaLabel]="'core.fileuploader.addfiletext' | translate"
                 *ngIf="unlimitedFiles || (maxSubmissions !== undefined && maxSubmissions >= 0 && files && files.length < maxSubmissions)">
                 <ion-icon name="fas-plus" slot="icon-only" aria-hidden="true" />
             </ion-button>

@@ -30,11 +30,11 @@
         </div>
 
         <ion-button *ngIf="showDelete && !message.deleted && message.delete !== false" fill="clear" [@coreSlideInOut]="'fromRight'"
-            color="danger" (click)="delete($event)" [attr.aria-label]="'addon.messages.deletemessage' | translate" class="delete-button">
+            color="danger" (click)="delete($event)" [ariaLabel]="'addon.messages.deletemessage' | translate" class="delete-button">
             <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
         </ion-button>
         <ion-button *ngIf="showDelete && message.deleted" fill="clear" [@coreSlideInOut]="'fromRight'" color="danger"
-            (click)="undoDelete($event)" [attr.aria-label]="'core.restore' | translate" class="delete-button">
+            (click)="undoDelete($event)" [ariaLabel]="'core.restore' | translate" class="delete-button">
             <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
         </ion-button>
     </div>

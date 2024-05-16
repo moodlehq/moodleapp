@@ -48,15 +48,14 @@
     <div collapsible-footer *ngIf="entryLoaded && hasPrevious || hasNext" slot="fixed" appearOnBottom>
         <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
             <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto">
-                <ion-button [disabled]="!hasPrevious" fill="clear" [attr.aria-label]="'core.previous' | translate"
+                <ion-button [disabled]="!hasPrevious" fill="clear" [ariaLabel]="'core.previous' | translate"
                     (click)="gotoEntry(offset! -1)">
                     <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
                 </ion-button>
             </ion-col>
             <ion-col class="ion-text-center" />
             <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto">
-                <ion-button [disabled]="!hasNext" fill="clear" [attr.aria-label]=" 'core.next' | translate"
-                    (click)="gotoEntry(offset! + 1)">
+                <ion-button [disabled]="!hasNext" fill="clear" [ariaLabel]=" 'core.next' | translate" (click)="gotoEntry(offset! + 1)">
                     <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />
                 </ion-button>
             </ion-col>

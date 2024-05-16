@@ -8,7 +8,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <core-navbar-buttons>
-                <ion-button (click)="showInfo()" [attr.aria-label]="'core.info' | translate">
+                <ion-button (click)="showInfo()" [ariaLabel]="'core.info' | translate">
                     <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
                 </ion-button>
             </core-navbar-buttons>
@@ -55,11 +55,11 @@
                     <ng-template #siteItem let-site="site">
                         <core-button-with-spinner [loading]="isSynchronizing(site.id)" slot="end" *ngIf="!site.loggedOut">
                             <ion-button fill="clear" (click)="synchronize(site.id)"
-                                [attr.aria-label]="'core.settings.synchronizenow' | translate">
+                                [ariaLabel]="'core.settings.synchronizenow' | translate">
                                 <ion-icon name="fas-rotate" slot="icon-only" aria-hidden="true" />
                             </ion-button>
                         </core-button-with-spinner>
-                        <ion-button fill="clear" (click)="login(site.id)" [attr.aria-label]="'core.login.login' | translate"
+                        <ion-button fill="clear" (click)="login(site.id)" [ariaLabel]="'core.login.login' | translate"
                             *ngIf="site.loggedOut" slot="end">
                             <ion-icon name="fas-right-to-bracket" slot="icon-only" aria-hidden="true" />
                         </ion-button>

@@ -33,12 +33,12 @@
     <ion-row>
         <ion-col />
         <ion-col class="ion-text-center">
-            <ion-button fill="clear" *ngIf="!hasCaptured" (click)="actionClicked()" [attr.aria-label]="title">
+            <ion-button fill="clear" *ngIf="!hasCaptured" (click)="actionClicked()" [ariaLabel]="title">
                 <ion-icon *ngIf="!isCapturing && isVideo" name="fas-video" slot="icon-only" aria-hidden="true" />
                 <ion-icon *ngIf="isImage" name="fas-camera" slot="icon-only" aria-hidden="true" />
                 <ion-icon *ngIf="isCapturing" name="fas-square" slot="icon-only" aria-hidden="true" />
             </ion-button>
-            <ion-button fill="clear" *ngIf="hasCaptured" (click)="discard()" [attr.aria-label]="'core.discard' | translate">
+            <ion-button fill="clear" *ngIf="hasCaptured" (click)="discard()" [ariaLabel]="'core.discard' | translate">
                 <ion-icon color="danger" name="fas-trash" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-col>

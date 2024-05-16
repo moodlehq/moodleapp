@@ -1,7 +1,7 @@
 <header>
     <h1>{{ 'core.fileuploader.audiotitle' | translate }}</h1>
 
-    <ion-button shape="round" fill="clear" [attr.aria-label]="'core.close' | translate" (click)="cancel()">
+    <ion-button shape="round" fill="clear" [ariaLabel]="'core.close' | translate" (click)="cancel()">
         <ion-icon slot="icon-only" name="close" />
     </ion-button>
 </header>
@@ -12,8 +12,7 @@
     <div *ngIf="status === 'empty'" class="core-audio-recorder--wrapper">
         <p>{{ 'core.fileuploader.startrecordinginstructions' | translate }}</p>
 
-        <ion-button shape="round" color="danger" [attr.aria-label]="'core.fileuploader.startrecording' | translate"
-            (click)="startRecording()">
+        <ion-button shape="round" color="danger" [ariaLabel]="'core.fileuploader.startrecording' | translate" (click)="startRecording()">
             <ion-icon slot="icon-only" name="fas-microphone" />
         </ion-button>
     </div>
@@ -31,18 +30,18 @@
 
             <div class="core-audio-recorder--control">
                 <ion-button *ngIf="status === 'recording-ongoing'" shape="round" fill="clear"
-                    [attr.aria-label]="'core.fileuploader.pauserecording' | translate" (click)="pauseRecording()">
+                    [ariaLabel]="'core.fileuploader.pauserecording' | translate" (click)="pauseRecording()">
                     <ion-icon slot="icon-only" name="fas-circle-pause" />
                 </ion-button>
 
-                <ion-button *ngIf="status === 'recording-paused'" [attr.aria-label]="'core.fileuploader.resumerecording' | translate"
+                <ion-button *ngIf="status === 'recording-paused'" [ariaLabel]="'core.fileuploader.resumerecording' | translate"
                     shape="round" fill="clear" color="danger" (click)="resumeRecording()">
                     <ion-icon slot="icon-only" name="fas-microphone" />
                 </ion-button>
             </div>
 
             <div class="core-audio-recorder--control">
-                <ion-button shape="round" fill="clear" [attr.aria-label]="'core.fileuploader.stoprecording' | translate"
+                <ion-button shape="round" fill="clear" [ariaLabel]="'core.fileuploader.stoprecording' | translate"
                     (click)="stopRecording()">
                     <ion-icon slot="icon-only" name="fa-check" />
                 </ion-button>
@@ -57,7 +56,7 @@
 
         <div class="core-audio-recorder--controls">
             <div class="core-audio-recorder--control">
-                <ion-button shape="round" fill="clear" color="danger" [attr.aria-label]="'core.fileuploader.discardrecording' | translate"
+                <ion-button shape="round" fill="clear" color="danger" [ariaLabel]="'core.fileuploader.discardrecording' | translate"
                     (click)="discardRecording()">
                     <ion-icon slot="icon-only" name="fas-trash" />
                 </ion-button>

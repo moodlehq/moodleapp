@@ -16,7 +16,7 @@
                             [attr.aria-label]="'addon.mod_forum.unread' | translate">
                             <ion-icon name="fas-circle" color="primary" aria-hidden="true" />
                         </ion-note>
-                        <ion-button *ngIf="optionsMenuEnabled" fill="clear" [attr.aria-label]="('core.displayoptions' | translate)"
+                        <ion-button *ngIf="optionsMenuEnabled" fill="clear" [ariaLabel]="('core.displayoptions' | translate)"
                             (click)="showOptionsMenu($event)">
                             <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
                         </ion-button>
@@ -45,7 +45,7 @@
                                 [attr.aria-label]="'addon.mod_forum.unread' | translate">
                                 <ion-icon name="fas-circle" color="primary" aria-hidden="true" />
                             </ion-note>
-                            <ion-button *ngIf="optionsMenuEnabled" fill="clear" [attr.aria-label]="('core.displayoptions' | translate)"
+                            <ion-button *ngIf="optionsMenuEnabled" fill="clear" [ariaLabel]="('core.displayoptions' | translate)"
                                 (click)="showOptionsMenu($event)">
                                 <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
                             </ion-button>

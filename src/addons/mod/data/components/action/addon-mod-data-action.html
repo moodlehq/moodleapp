@@ -1,34 +1,33 @@
 <ion-button size="small" *ngIf="action === 'actionsmenu'" fill="clear" (click)="actionsMenu($event)"
-    [attr.aria-label]="'addon.mod_data.actionsmenu' | translate">
+    [ariaLabel]="'addon.mod_data.actionsmenu' | translate">
     <ion-icon name="fas-ellipsis-vertical" slot="icon-only" aria-hidden="true" />
 </ion-button>
 
-<ion-button size="small" *ngIf="action === 'more'" fill="clear" (click)="viewEntry()"
-    [attr.aria-label]="'addon.mod_data.showmore' | translate">
+<ion-button size="small" *ngIf="action === 'more'" fill="clear" (click)="viewEntry()" [ariaLabel]="'addon.mod_data.showmore' | translate">
     <ion-icon name="fas-magnifying-glass-plus" slot="icon-only" aria-hidden="true" />
 </ion-button>
 
-<ion-button size="small" *ngIf="action === 'edit'" fill="clear" (click)="editEntry()" [attr.aria-label]="'core.edit' | translate">
+<ion-button size="small" *ngIf="action === 'edit'" fill="clear" (click)="editEntry()" [ariaLabel]="'core.edit' | translate">
     <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true" />
 </ion-button>
 
 <ion-button size="small" *ngIf="action === 'delete' && !entry.deleted" fill="clear" color="danger" (click)="deleteEntry()"
-    [attr.aria-label]="'core.delete' | translate">
+    [ariaLabel]="'core.delete' | translate">
     <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
 </ion-button>
 
 <ion-button size="small" *ngIf="action === 'delete' && entry.deleted" fill="clear" color="danger" (click)="undoDelete()"
-    [attr.aria-label]="'core.restore' | translate">
+    [ariaLabel]="'core.restore' | translate">
     <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
 </ion-button>
 
 <ion-button size="small" *ngIf="action === 'approve'" fill="clear" (click)="approveEntry()"
-    [attr.aria-label]="'addon.mod_data.approve' | translate">
+    [ariaLabel]="'addon.mod_data.approve' | translate">
     <ion-icon name="fas-thumbs-up" slot="icon-only" aria-hidden="true" />
 </ion-button>
 
 <ion-button size="small" *ngIf="action === 'disapprove'" fill="clear" (click)="disapproveEntry()"
-    [attr.aria-label]="'addon.mod_data.disapprove' | translate">
+    [ariaLabel]="'addon.mod_data.disapprove' | translate">
     <ion-icon name="far-thumbs-down" slot="icon-only" aria-hidden="true" />
 </ion-button>
 

@@ -8,8 +8,8 @@
         </ion-title>
 
         <ion-buttons slot="end">
-            <ion-button fill="clear" *ngIf="navigation.length" [attr.aria-label]="'addon.mod_quiz.opentoc' | translate"
-                (click)="openNavigation()" aria-haspopup="true">
+            <ion-button fill="clear" *ngIf="navigation.length" [ariaLabel]="'addon.mod_quiz.opentoc' | translate" (click)="openNavigation()"
+                aria-haspopup="true">
                 <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
@@ -44,7 +44,7 @@
         <div collapsible-footer appearOnBottom *ngIf="loaded && numPages > 1" slot="fixed">
             <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
                 <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto" *ngIf="!showAll">
-                    <ion-button [disabled]="previousPage < 0" fill="clear" [attr.aria-label]="'core.previous' | translate"
+                    <ion-button [disabled]="previousPage < 0" fill="clear" [ariaLabel]="'core.previous' | translate"
                         (click)="changePage(previousPage)">
                         <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
                     </ion-button>
@@ -57,7 +57,7 @@
                     </ion-button>
                 </ion-col>
                 <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto" *ngIf="!showAll">
-                    <ion-button [disabled]="nextPage >= numPages" fill="clear" [attr.aria-label]="'core.next' | translate"
+                    <ion-button [disabled]="nextPage >= numPages" fill="clear" [ariaLabel]="'core.next' | translate"
                         (click)="changePage(nextPage)">
                         <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />
                     </ion-button>

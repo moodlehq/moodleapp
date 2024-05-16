@@ -11,7 +11,7 @@
         </ion-title>
         <ion-buttons slot="end" [hidden]="!loaded">
             <ion-button *ngIf="assessmentId && access.assessingallowed" fill="clear" (click)="saveAssessment()"
-                [attr.aria-label]="'core.save' | translate">
+                [ariaLabel]="'core.save' | translate">
                 {{ 'core.save' | translate }}
             </ion-button>
             <ion-button *ngIf="canAddFeedback" fill="clear" (click)="saveEvaluation()">

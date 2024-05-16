@@ -56,7 +56,7 @@
                     </ion-badge>
                 </ion-label>
                 <ion-button slot="end" (click)="deleteCourse($event, course)" [disabled]="course.isDownloading" color="danger" fill="clear"
-                    [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate:
+                    [ariaLabel]="'addon.storagemanager.deletedatafrom' | translate:
                 { name: course.title }">
                     <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
                 </ion-button>

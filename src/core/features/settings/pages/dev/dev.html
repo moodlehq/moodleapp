@@ -9,7 +9,7 @@
         </ion-title>
 
         <ion-buttons slot="end" *ngIf="siteId">
-            <ion-button fill="clear" (click)="copyInfo()" [attr.aria-label]="'core.settings.copyinfo' | translate">
+            <ion-button fill="clear" (click)="copyInfo()" [ariaLabel]="'core.settings.copyinfo' | translate">
                 <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true" />
             </ion-button>
         </ion-buttons>

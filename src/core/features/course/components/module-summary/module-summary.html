@@ -1,7 +1,7 @@
 <ion-header class="no-title">
     <ion-toolbar>
         <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+            <ion-button fill="clear" (click)="closeModal()" [ariaLabel]="'core.close' | translate">
                 <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
@@ -24,7 +24,7 @@
                 </h1>
             </ion-label>
             <ion-button fill="clear" *ngIf="displayOptions.displayOpenInBrowser && externalUrl" [href]="externalUrl" core-link
-                [showBrowserWarning]="false" [attr.aria-label]="'core.openinbrowser' | translate" slot="end" [class.hidden]="!isTeacher"
+                [showBrowserWarning]="false" [ariaLabel]="'core.openinbrowser' | translate" slot="end" [class.hidden]="!isTeacher"
                 class="core-module-oib-button">
                 <ion-icon name="fas-up-right-from-square" slot="icon-only" aria-hidden="true" />
             </ion-button>
@@ -164,7 +164,7 @@
                     <ion-badge color="light">{{ size | coreBytesToSize }}</ion-badge>
                 </ion-label>
                 <ion-button *ngIf="!removeFilesLoading" [disabled]="prefetchLoading" (click)="removeFiles()" color="danger" fill="clear"
-                    [attr.aria-label]="'core.clearstoreddata' | translate:{$a: size | coreBytesToSize}" slot="end">
+                    [ariaLabel]="'core.clearstoreddata' | translate:{$a: size | coreBytesToSize}" slot="end">
                     <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
                 </ion-button>
                 <ion-spinner *ngIf="removeFilesLoading" slot="end" aria-hidden="true" />

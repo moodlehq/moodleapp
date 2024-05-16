@@ -67,11 +67,10 @@
             <ion-item *ngIf="canDelete || canEdit">
                 <div slot="end">
                     <ion-button *ngIf="canDelete" fill="clear" color="danger" (click)="deleteEntry()"
-                        [attr.aria-label]="'addon.mod_glossary.deleteentry' | translate">
+                        [ariaLabel]="'addon.mod_glossary.deleteentry' | translate">
                         <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true" />
                     </ion-button>
-                    <ion-button *ngIf="canEdit" fill="clear" (click)="editEntry()"
-                        [attr.aria-label]="'addon.mod_glossary.editentry' | translate">
+                    <ion-button *ngIf="canEdit" fill="clear" (click)="editEntry()" [ariaLabel]="'addon.mod_glossary.editentry' | translate">
                         <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true" />
                     </ion-button>
                 </div>
