@@ -690,24 +690,6 @@ video::-webkit-media-text-track-display {
     white-space: normal !important;
 }
 
-/*
-* This is to solve popver issue in chrome 114
-* For more info see: https://github.com/ionic-team/ionic-framework/issues/27599
-*/
-[popover].popover-viewport {
-    display: initial;
-    position: initial;
-    margin: initial;
-    border: initial;
-    background: initial;
-    padding: initial;
-    width: initial;
-    height: initial;
-    overflow: initial;
-    inset: initial;
-    color: initial;
-}
-
 /**
  * https://github.com/ionic-team/ionic-framework/blob/6ffbdbb3b2b69290cf25753d535bc7483bd7c6e8/BREAKING.md#css-utilities
  */
