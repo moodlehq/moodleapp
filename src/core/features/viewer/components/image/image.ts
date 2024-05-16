@@ -13,11 +13,12 @@
 // limitations under the License.
 
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { ModalController, Translate } from '@singletons';
+import { DomSanitizer, ModalController, Translate } from '@singletons';
 import { CoreMath } from '@singletons/math';
 import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
 import { CoreSwiper } from '@singletons/swiper';
+import { SafeResourceUrl } from '@angular/platform-browser';
 
 /**
  * Modal component to view an image.
@@ -52,6 +53,8 @@ export class CoreViewerImageComponent implements OnInit {
     @Input() component?: string; // Component to use in external-content.
     @Input() componentId?: string | number; // Component ID to use in external-content.
 
+    dataUrl?: SafeResourceUrl;
+
     private static readonly MAX_RATIO = 8;
     private static readonly MIN_RATIO = 0.5;
 
@@ -72,6 +75,12 @@ export class CoreViewerImageComponent implements OnInit {
      */
     ngOnInit(): void {
         this.title = this.title || Translate.instant('core.imageviewer');
+
+        if (this.image.startsWith('data:')) {
+            // It's a data image, sanitize it so it can be rendered.
+            // Don't sanitize other images because they load fine and they need to be treated by core-external-content.
+            this.dataUrl = DomSanitizer.bypassSecurityTrustResourceUrl(this.image);
+        }
     }
 
     /**
