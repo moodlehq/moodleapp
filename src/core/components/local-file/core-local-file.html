@@ -28,7 +28,8 @@
                 </ion-button>
 
                 <ng-container *ngIf="manage">
-                    <ion-button *ngIf="editMode" fill="clear" [ariaLabel]="'core.save' | translate" color="success" type="submit">
+                    <ion-button *ngIf="editMode" fill="clear" [ariaLabel]="'core.save' | translate" color="success"
+                        (click)="changeName(newFileName, $event)">
                         <ion-icon name="fas-check" slot="icon-only" aria-hidden="true" />
                     </ion-button>
 
