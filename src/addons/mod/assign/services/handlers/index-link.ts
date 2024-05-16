@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
+import { CoreNavigationOptions } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -26,6 +27,17 @@ export class AddonModAssignIndexLinkHandlerService extends CoreContentLinksModul
 
     constructor() {
         super('AddonModAssign', 'assign');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getModNavOptions(url: string, params: Record<string, string>): CoreNavigationOptions {
+        if (!params.action) {
+            return {};
+        }
+
+        return { params: { action: params.action } };
     }
 
 }

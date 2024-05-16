@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModAssignIndexComponent } from '../../components/index/index';
+import { CoreNavigator } from '@services/navigator';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Page that displays an assign.
@@ -23,8 +25,30 @@ import { AddonModAssignIndexComponent } from '../../components/index/index';
     selector: 'page-addon-mod-assign-index',
     templateUrl: 'index.html',
 })
-export class AddonModAssignIndexPage extends CoreCourseModuleMainActivityPage<AddonModAssignIndexComponent> {
+export class AddonModAssignIndexPage extends CoreCourseModuleMainActivityPage<AddonModAssignIndexComponent>
+    implements AfterViewInit {
+
+    private action?: string;
 
     @ViewChild(AddonModAssignIndexComponent) activityComponent?: AddonModAssignIndexComponent;
+
+    constructor() {
+        super();
+
+        this.action = CoreNavigator.getRouteParam('action');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async ngAfterViewInit(): Promise<void> {
+        switch (this.action) {
+            case 'editsubmission':
+                await CoreUtils.waitFor(() => !!this.activityComponent?.submissionComponent, { timeout: 5000 });
+                await this.activityComponent?.submissionComponent?.goToEdit();
+
+                break;
+        }
+    }
 
 }
