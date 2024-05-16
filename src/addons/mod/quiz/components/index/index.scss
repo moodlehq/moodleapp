@@ -36,6 +36,9 @@
             min-height: 60px;
             padding-top: var(--mdl-spacing-2);
             padding-bottom: var(--mdl-spacing-2);
+            @include margin-horizontal(var(--mdl-spacing-2), null);
+
+            font: var(--mdl-typography-body-font-md);
 
             p {
                 margin: 0px;
@@ -44,11 +47,13 @@
         }
 
         ion-accordion-group {
-            border-top: 1px solid var(--stroke);
-
             .accordion-expanded	.addon-mod_quiz-attempt-title-info,
             .accordion-expanding .addon-mod_quiz-attempt-title-info {
                 visibility: hidden;
+            }
+
+            h3 {
+                font: var(--mdl-typography-subtitle-font-md);
             }
 
             hr {
@@ -58,19 +63,11 @@
             }
 
             ion-accordion:nth-child(odd) {
-                background-color: var(--core-table-odd-cell-background);
-
-                ::ng-deep ion-item {
-                    --background: var(--core-table-odd-cell-background);
-                }
+                --ion-item-background: var(--core-table-odd-cell-background);
             }
 
             ion-accordion:nth-child(even) {
-                background-color: var(--core-table-even-cell-background);
-
-                ::ng-deep ion-item {
-                    --background: var(--core-table-even-cell-background);
-                }
+                --ion-item-background: var(--core-table-even-cell-background);
             }
         }
     }

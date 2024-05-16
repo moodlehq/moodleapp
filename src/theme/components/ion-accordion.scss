@@ -1,0 +1,5 @@
+ion-accordion {
+    .ion-accordion-toggle-icon[slot="start"] {
+        @include margin-horizontal(null, var(--mdl-spacing-4));
+    }
+}
