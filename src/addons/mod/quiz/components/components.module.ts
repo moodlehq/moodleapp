@@ -22,6 +22,7 @@ import { AddonModQuizNavigationModalComponent } from './navigation-modal/navigat
 import { AddonModQuizPreflightModalComponent } from './preflight-modal/preflight-modal';
 import { AddonModQuizAttemptInfoComponent } from './attempt-info/attempt-info';
 import { AddonModQuizAttemptStateComponent } from './attempt-state/attempt-state';
+import { AddonModQuizQuestionCardComponent } from './question-card/question-card';
 
 @NgModule({
     declarations: [
@@ -31,12 +32,11 @@ import { AddonModQuizAttemptStateComponent } from './attempt-state/attempt-state
         AddonModQuizConnectionErrorComponent,
         AddonModQuizNavigationModalComponent,
         AddonModQuizPreflightModalComponent,
+        AddonModQuizQuestionCardComponent,
     ],
     imports: [
         CoreSharedModule,
         CoreCourseComponentsModule,
-    ],
-    providers: [
     ],
     exports: [
         AddonModQuizAttemptInfoComponent,
@@ -45,6 +45,8 @@ import { AddonModQuizAttemptStateComponent } from './attempt-state/attempt-state
         AddonModQuizConnectionErrorComponent,
         AddonModQuizNavigationModalComponent,
         AddonModQuizPreflightModalComponent,
+        AddonModQuizQuestionCardComponent,
+
     ],
 })
 export class AddonModQuizComponentsModule {}

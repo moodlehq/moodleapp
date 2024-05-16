@@ -16,7 +16,8 @@ input[type=checkbox] {
 }
 
 ion-checkbox {
-    &.checkbox-disabled::part(label) {
+    &.md.checkbox-disabled::part(label),
+    &.ios.checkbox-disabled {
         opacity: var(--mdl-input-disabled-opacity);
     }
 }

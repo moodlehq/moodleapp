@@ -10,12 +10,16 @@
     ion-card.section {
         ion-card-header {
             padding: 0;
+
+            .item-heading {
+                font: var(--mdl-typography-heading4-font);
+            }
         }
         ion-card-content {
             padding: 0;
 
             .core-course-storage-activity ion-label {
-                h3 {
+                p.item-heading {
                     position: relative;
                     max-height: var(--course-storage-max-activity-height);
                     overflow: hidden;
@@ -35,15 +39,10 @@
                 }
             }
         }
-        .item-heading {
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
     }
 }
 
 ion-badge {
-    margin-top: 8px;
     ion-icon {
         @include margin-horizontal(null, 8px);
     }
