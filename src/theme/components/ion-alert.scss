@@ -73,3 +73,33 @@ ion-alert {
         padding-bottom: 0;
     }
 }
+
+ion-alert.core-alert-network-error .alert-head,
+div.core-iframe-network-error {
+    position: relative;
+    content: " ";
+    background: url("/assets/fonts/font-awesome/solid/wifi.svg") no-repeat 50% 50%;
+    margin: 25px auto;
+
+    h2 {
+        @include sr-only();
+    }
+
+    &::after {
+        content: " ";
+        position: absolute;
+        top: -20%;
+        right: -15%;
+        width: 50%;
+        height: 50%;
+        background-color: var(--danger);
+        -webkit-mask: url("/assets/fonts/font-awesome/solid/triangle-exclamation.svg") no-repeat 50% 50%;
+        mask: url("/assets/fonts/font-awesome/solid/triangle-exclamation.svg") no-repeat 50% 50%;
+    }
+}
+
+[dir=rtl] ion-alert.core-alert-network-error .alert-head::after,
+[dir=rtl] div.core-iframe-network-error::after {
+    right: unset;
+    left: -15%;
+}
