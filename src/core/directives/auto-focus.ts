@@ -22,7 +22,7 @@ import { CoreDom } from '@singletons/dom';
  * Directive to auto focus an element when a view is loaded.
  *
  * The value of the input will decide if show keyboard when focusing the element (only on Android).
- * In case value is nofocus, the directive is disabled.
+ * In case value is false, the directive is disabled.
  *
  * <ion-input [core-auto-focus]="showKeyboard">
  */

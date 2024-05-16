@@ -435,6 +435,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @param parent Parent where to set the position.
      */
     protected setCurrentCursorPosition(parent: Node): void {
+        if (!this.rteEnabled || !this.element.classList.contains('has-focus')) {
+            return;
+        }
+
         const range = document.createRange();
 
         // Select all so it will go to the end.
@@ -600,7 +604,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         this.control?.setValue(null, { emitEvent: false });
 
         setTimeout(() => {
-            if (this.rteEnabled && this.editorElement) {
+            if (this.editorElement) {
                 this.setCurrentCursorPosition(this.editorElement);
             }
         }, 1);
