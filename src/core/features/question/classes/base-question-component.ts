@@ -589,7 +589,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 
                 const option: AddonModQuizQuestionSelectOption = {
                     value: optionEl.value,
-                    label: optionEl.innerHTML,
+                    label: CoreTextUtils.decodeHTML(optionEl.innerHTML),
                     selected: optionEl.selected,
                 };
 
