@@ -6,7 +6,7 @@
             <ion-icon *ngIf="renderedIcon" [name]="renderedIcon" aria-hidden="true" />
             <core-mod-icon *ngIf="!renderedIcon && result.module" [modicon]="result.module.iconurl" [modname]="result.module.name"
                 [colorize]="false" />
-            <img *ngIf="!renderedIcon && !result.module && result.component" [src]="result.component.iconurl" alt="" class="result-icon"
+            <img *ngIf="!renderedIcon && !result.module && result.component" [url]="result.component.iconurl" alt="" class="result-icon"
                 core-external-content [component]="result.component.name">
             <core-format-text [text]="result.title" />
         </h3>

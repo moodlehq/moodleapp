@@ -19,7 +19,7 @@
         <ion-item class="ion-text-center" *ngIf="conversation">
             <ion-label>
                 <div class="large-avatar">
-                    <img class="avatar" [src]="conversation.imageurl" core-external-content [alt]="conversation.name"
+                    <img class="avatar" [url]="conversation.imageurl" core-external-content [alt]="conversation.name"
                         onError="this.src='assets/img/group-avatar.svg'">
                 </div>
                 <h2>
