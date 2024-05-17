@@ -6,7 +6,7 @@
 <ng-container *ngIf="safeUrl && !launchExternalLabel">
     <core-navbar-buttons slot="end" prepend *ngIf="initialized && showFullscreenOnToolbar && !loading">
         <ion-button fill="clear" (click)="toggleFullscreen()"
-            [attr.aria-label]="(fullscreen ? 'core.disablefullscreen' : 'core.fullscreen') | translate">
+            [ariaLabel]="(fullscreen ? 'core.disablefullscreen' : 'core.fullscreen') | translate">
             <ion-icon [name]="fullscreen ? 'fas-compress' : 'fas-expand'" slot="icon-only" aria-hidden="true" />
         </ion-button>
     </core-navbar-buttons>

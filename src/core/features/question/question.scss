@@ -106,10 +106,4 @@
     .fa.icon.questioncorrectnessicon {
         font-size: var(--mdl-typography-icon-fontSize-md);
     }
-
-    .item.item-interactive.item-interactive-disabled ::ng-deep {
-        ion-label, ion-select, ion-checkbox {
-            opacity: 0.7;
-        }
-    }
 }

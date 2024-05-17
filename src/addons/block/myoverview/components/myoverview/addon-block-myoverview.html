@@ -6,7 +6,7 @@
         <!-- Download all courses. -->
         <div *ngIf="downloadCoursesEnabled && filteredCourses.length > 0" class="core-button-spinner">
             <ion-button *ngIf="!prefetchCoursesData.loading" fill="clear" (click)="prefetchCourses()"
-                [attr.aria-label]="prefetchCoursesData.statusTranslatable | translate">
+                [ariaLabel]="prefetchCoursesData.statusTranslatable | translate">
                 <ion-icon [name]="prefetchCoursesData.icon" slot="icon-only" aria-hidden="true" />
             </ion-button>
             <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData.badge" role="progressbar"
@@ -85,11 +85,11 @@
         </ion-col>
         <ion-col size="auto" *ngIf="isLayoutSwitcherAvailable">
             <ion-button *ngIf="layout === 'card'" fill="outline" (click)="toggleLayout('list')"
-                [attr.aria-label]="'addon.block_myoverview.aria:list' | translate">
+                [ariaLabel]="'addon.block_myoverview.aria:list' | translate">
                 <ion-icon slot="icon-only" name="fas-list" aria-hidden="true" />
             </ion-button>
             <ion-button *ngIf="layout === 'list'" fill="outline" (click)="toggleLayout('card')"
-                [attr.aria-label]="'addon.block_myoverview.aria:card' | translate">
+                [ariaLabel]="'addon.block_myoverview.aria:card' | translate">
                 <ion-icon slot="icon-only" name="fas-table-cells-large" aria-hidden="true" />
             </ion-button>
         </ion-col>

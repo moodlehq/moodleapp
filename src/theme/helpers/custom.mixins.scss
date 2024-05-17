@@ -171,6 +171,20 @@
     }
 }
 
+@mixin pointer-events-on-buttons() {
+    a,
+    ion-button,
+    button,
+    audio,
+    video,
+    select,
+    input,
+    iframe,
+    [role="button"] {
+        pointer-events: visible;
+    }
+}
+
 /**
  * Same as item-push-svg-url but admits flip-rtl
  */

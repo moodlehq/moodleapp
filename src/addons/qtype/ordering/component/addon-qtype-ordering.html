@@ -35,11 +35,11 @@
                 @if (!dragDisabled) {
                 <div slot="end" class="flex-row">
                     <ion-button fill="clear" (click)="moveItemByClick($event, false, item.id)" data-action="move-backward"
-                        [attr.aria-label]="'core.moveup' | translate" [attr.aria-description]="item.contentText">
+                        [ariaLabel]="'core.moveup' | translate" [attr.aria-description]="item.contentText">
                         <ion-icon slot="icon-only" name="fas-chevron-up" aria-hidden="true" />
                     </ion-button>
                     <ion-button fill="clear" (click)="moveItemByClick($event, true, item.id)" data-action="move-forward"
-                        [attr.aria-label]="'core.movedown' | translate" [attr.aria-description]="item.contentText">
+                        [ariaLabel]="'core.movedown' | translate" [attr.aria-description]="item.contentText">
                         <ion-icon slot="icon-only" name="fas-chevron-down" aria-hidden="true" />
                     </ion-button>
                 </div>

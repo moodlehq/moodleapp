@@ -9,7 +9,7 @@
         </ion-title>
 
         <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="cancel()" [attr.aria-label]="'core.cancel' | translate">
+            <ion-button fill="clear" (click)="cancel()" [ariaLabel]="'core.cancel' | translate">
                 <ion-icon name="fas-xmark" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
@@ -110,7 +110,7 @@
                         <p *ngIf="stepData">{{ 'core.policy.steppolicies' | translate:{ $a:stepData } }}</p>
                     </ion-label>
                     <ion-button *ngIf="hasScroll" class="core-site-policy-go-top-button" color="secondary" slot="end"
-                        (click)="scrollTop($event)" [attr.aria-label]="'core.policy.backtotop' | translate">
+                        (click)="scrollTop($event)" [ariaLabel]="'core.policy.backtotop' | translate">
                         <ion-icon name="fas-chevron-up" slot="icon-only" aria-hidden="true" />
                     </ion-button>
                 </ion-item>

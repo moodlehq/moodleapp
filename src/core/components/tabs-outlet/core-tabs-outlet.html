@@ -3,7 +3,7 @@
         <ion-spinner *ngIf="!hideUntil" [attr.aria-label]="'core.loading' | translate" />
         <ng-container *ngIf="hideUntil">
             <ion-button fill="clear" class="arrow-button" (click)="slidePrev()" [disabled]="!showPrevButton"
-                [attr.aria-label]="'core.previous' | translate">
+                [ariaLabel]="'core.previous' | translate">
                 <ion-icon *ngIf="showPrevButton" name="fas-chevron-left" aria-hidden="true" slot="icon-only" />
             </ion-button>
             <swiper-container #swiperRef [slidesPerView]="swiperOpts.slidesPerView" role="tablist" [attr.aria-label]="description">
@@ -29,7 +29,7 @@
                 </ng-container>
             </swiper-container>
             <ion-button fill="clear" class="arrow-button" (click)="slideNext()" [disabled]="!showNextButton"
-                [attr.aria-label]="'core.next' | translate">
+                [ariaLabel]="'core.next' | translate">
                 <ion-icon *ngIf="showNextButton" name="fas-chevron-right" aria-hidden="true" slot="icon-only" />
             </ion-button>
         </ng-container>

@@ -18,7 +18,7 @@
                 <ion-label>
                     <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="!canChangeProfilePicture">
                         <ion-button class="edit-avatar" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"
-                            [attr.aria-label]="'core.user.newpicture' | translate" fill="clear">
+                            [ariaLabel]="'core.user.newpicture' | translate" fill="clear">
                             <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true" />
                         </ion-button>
                     </core-user-avatar>

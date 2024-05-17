@@ -16,7 +16,7 @@
             <input *ngIf="question.answerDraftIdInput" type="hidden" [name]="question.answerDraftIdInput.name"
                 [value]="question.answerDraftIdInput.value">
             <!-- Plain text textarea. -->
-            <ion-textarea *ngIf="question.isPlainText" [attr.aria-label]="'core.question.answer' | translate" class="core-question-textarea"
+            <ion-textarea *ngIf="question.isPlainText" [ariaLabel]="'core.question.answer' | translate" class="core-question-textarea"
                 [ngClass]='{"core-monospaced": question.isMonospaced}' placeholder="{{ 'core.question.answer' | translate }}"
                 [attr.name]="question.textarea.name" [ngModel]="question.textarea.text" />
             <!-- Rich text editor. -->

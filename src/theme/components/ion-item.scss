@@ -47,6 +47,10 @@ ion-item.item {
     &.item-has-interactive-control:focus-within {
         @include core-focus-outline();
     }
+
+    &.item-has-interactive-control.item-interactive-disabled {
+        pointer-events: none;
+    }
 }
 
 // Fake item.
@@ -246,6 +250,22 @@ ion-item.item.item-file {
     [slot=end] {
         @include margin-horizontal(var(--mdl-spacing-4), null);
     }
+
+    // Disabled items.
+    &.item-disabled,
+    &.item-interactive-disabled:not(.item-multiple-inputs) ion-label {
+        opacity: var(--mdl-item-disabled-opacity) !important;
+    }
+
+    // No highlight on RTE.
+    &.item-rte {
+        --full-highlight-height: 0px !important;
+    }
+
+    &.item-multiple-inputs.only-links  a {
+        cursor: pointer;
+    }
+
 }
 
 .item-dimmed {
@@ -253,58 +273,5 @@ ion-item.item.item-file {
     --background: var(--light);
     ion-item {
         --background: var(--light);
-    }
-}
-
-// No highlight on RTE.
-ion-item.item-rte {
-    --full-highlight-height: 0px !important;
-}
-
-// Make links clickable when inside radio or checkbox items. Style part.
-@media (hover: hover) {
-    ion-item.item-multiple-inputs:not(.item-rte):hover::part(native) {
-        color: var(--color-hover);
-
-        &::after {
-            background: var(--background-hover);
-            opacity: var(--background-hover-opacity);
-        }
-    }
-
-    ion-item.ion-color.item-multiple-inputs:hover::part(native) {
-        color: #{current-color(contrast)};
-
-        &::after {
-            background: #{current-color(contrast)};
-        }
-    }
-}
-
-// It fixes the click on links where ion-ripple-effect is present.
-// Make links clickable when inside radio or checkbox items. Pointer and cursor part.
-ion-item.item-multiple-inputs:not(.only-links):not(.item-rte),
-ion-item.ion-activatable:not(.only-links) {
-    cursor: pointer;
-    ion-label {
-        z-index: 3;
-        pointer-events: none;
-
-        ion-anchor, a,
-        ion-button, button,
-        ion-item.ion-focusable,
-        audio, video, select, input, iframe {
-            pointer-events: visible;
-        }
-    }
-
-    ion-checkbox, ion-datetime, ion-radio, ion-select{
-        position: static;
-    }
-}
-
-ion-item.item-multiple-inputs.only-links {
-    a {
-        cursor: pointer;
     }
 }

@@ -73,7 +73,7 @@
             </div>
             }
 
-            <ion-button class="ion-margin" expand="block" [attr.aria-label]="'core.save' | translate"
+            <ion-button class="ion-margin" expand="block" [ariaLabel]="'core.save' | translate"
                 [disabled]="form.invalid || (entry && !hasDataChangedForEdit)" (click)="save()">
                 {{ 'core.save' | translate }}
             </ion-button>

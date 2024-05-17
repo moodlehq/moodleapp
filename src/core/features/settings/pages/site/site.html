@@ -37,7 +37,7 @@
                         </p>
                     </ion-label>
                     <core-button-with-spinner [loading]="isSynchronizing()" slot="end">
-                        <ion-button fill="clear" (click)="synchronize()" [attr.aria-label]="'core.settings.synchronizenow' | translate"
+                        <ion-button fill="clear" (click)="synchronize()" [ariaLabel]="'core.settings.synchronizenow' | translate"
                             [disabled]="!isOnline || (dataSaver && limitedConnection)">
                             <ion-icon name="fas-rotate" slot="icon-only" aria-hidden="true" />
                         </ion-button>

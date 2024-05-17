@@ -117,8 +117,7 @@
                     <ion-label>
                         <p class="item-heading">{{ 'addon.calendar.reminders' | translate }}</p>
                     </ion-label>
-                    <ion-button fill="clear" (click)="addReminder()" slot="end"
-                        [attr.aria-label]="'addon.calendar.setnewreminder' | translate">
+                    <ion-button fill="clear" (click)="addReminder()" slot="end" [ariaLabel]="'addon.calendar.setnewreminder' | translate">
                         <ion-icon name="fas-plus" slot="icon-only" aria-hidden="true" />
                     </ion-button>
                 </ion-item-divider>
@@ -126,7 +125,7 @@
                     <ion-label>
                         <p>{{ reminder.label }}</p>
                     </ion-label>
-                    <ion-button fill="clear" (click)="removeReminder(reminder)" [attr.aria-label]="'core.delete' | translate" slot="end">
+                    <ion-button fill="clear" (click)="removeReminder(reminder)" [ariaLabel]="'core.delete' | translate" slot="end">
                         <ion-icon name="fas-trash" color="danger" slot="icon-only" aria-hidden="true" />
                     </ion-button>
                 </ion-item>

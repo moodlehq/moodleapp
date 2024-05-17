@@ -41,8 +41,8 @@
                 </h3>
 
                 @if (entry.userid === currentUserId && optionsAvailable) {
-                <ion-button fill="clear" [attr.aria-label]="'core.displayoptions' | translate"
-                    (click)="showEntryActionsPopover($event, entry)" class="entry-options">
+                <ion-button fill="clear" [ariaLabel]="'core.displayoptions' | translate" (click)="showEntryActionsPopover($event, entry)"
+                    class="entry-options">
                     <ion-icon slot="icon-only" aria-hidden="true" name="ellipsis-vertical" />
                 </ion-button>
                 }

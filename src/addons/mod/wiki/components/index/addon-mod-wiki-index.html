@@ -1,13 +1,13 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <!-- Select subwiki. -->
-    <ion-button *ngIf="subwikiData.count > 1" (click)="showSubwikiPicker($event)" [attr.aria-label]="'addon.mod_wiki.subwiki' | translate"
+    <ion-button *ngIf="subwikiData.count > 1" (click)="showSubwikiPicker($event)" [ariaLabel]="'addon.mod_wiki.subwiki' | translate"
         aria-haspopup="true">
         <ion-icon *ngIf="!groupWiki" name="fas-user" aria-hidden="true" />
         <ion-icon *ngIf="groupWiki" name="fas-users" aria-hidden="true" />
     </ion-button>
 
-    <ion-button *ngIf="!showLoading && currentPageObj" (click)="openMap()" [attr.aria-label]="'addon.mod_wiki.map' | translate"
+    <ion-button *ngIf="!showLoading && currentPageObj" (click)="openMap()" [ariaLabel]="'addon.mod_wiki.map' | translate"
         aria-haspopup="true">
         <ion-icon name="fas-map" aria-hidden="true" />
     </ion-button>
@@ -19,7 +19,7 @@
             (action)="goToNewPage()" />
     </core-context-menu>
 
-    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
+    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
         <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
     </ion-button>
 </core-navbar-buttons>

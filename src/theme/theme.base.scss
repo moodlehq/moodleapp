@@ -63,6 +63,17 @@ html[dir=rtl] {
     flex-direction: row;
 }
 
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
 .margin-bottom-sm { margin-bottom: 8px; }
 .margin-bottom-md { margin-bottom: 12px; }
 
@@ -94,94 +105,6 @@ ion-footer {
     > ion-toolbar:only-child {
         top: 1px;
     }
-}
-
-// Buttons.
-ion-button,
-ion-fab-button,
-button,
-[role="button"] {
-    text-transform: none;
-    min-height: var(--a11y-sizing-minTargetSize);
-    min-width: var(--a11y-sizing-minTargetSize);
-
-    &.button-large {
-        min-height: 2.8em;
-        min-width: 2.8em
-    }
-}
-
-[role="button"],
-.clickable {
-    cursor: pointer;
-
-
-    [disabled],
-    [aria-disabled="true"] {
-        cursor: default;
-        opacity: var(--mdl-button-disabled-opacity);
-        pointer-events: none;
-    }
-}
-
-button[disabled] {
-    cursor: default;
-    opacity: var(--mdl-button-disabled-opacity);
-    pointer-events: none;
-}
-
-ion-button.core-button-as-link {
-    text-decoration: underline;
-    font-size: inherit;
-    font-weight: normal;
-    letter-spacing: normal;
-    white-space: break-spaces;
-}
-
-button.as-link {
-    display: inline;
-    min-height: auto;
-    min-width: auto;
-    color: var(--core-link-color);
-    background: none;
-    border: 0;
-    line-height: inherit;
-    margin: 0;
-    padding: 0;
-    text-align: start;
-    font-size: inherit;
-}
-
-
-// Ionic alert.
-ion-alert.core-alert-network-error .alert-head,
-div.core-iframe-network-error {
-    position: relative;
-    content: " ";
-    background: url("/assets/fonts/font-awesome/solid/wifi.svg") no-repeat 50% 50%;
-    margin: 25px auto;
-
-    h2 {
-        @include sr-only();
-    }
-
-    &::after {
-        content: " ";
-        position: absolute;
-        top: -20%;
-        right: -15%;
-        width: 50%;
-        height: 50%;
-        background-color: var(--danger);
-        -webkit-mask: url("/assets/fonts/font-awesome/solid/triangle-exclamation.svg") no-repeat 50% 50%;
-        mask: url("/assets/fonts/font-awesome/solid/triangle-exclamation.svg") no-repeat 50% 50%;
-    }
-}
-
-[dir=rtl] ion-alert.core-alert-network-error .alert-head::after,
-[dir=rtl] div.core-iframe-network-error::after {
-    right: unset;
-    left: -15%;
 }
 
 // Ionic list.
@@ -572,12 +495,6 @@ audio.core-media-adapt-width {
     width: 100%;
 }
 
-// Disabled items.
-ion-item.item-disabled,
-ion-item.item-interactive-disabled:not(.item-multiple-inputs) ion-label {
-    opacity: var(--mdl-item-disabled-opacity) !important;
-}
-
 ion-item-divider.item,
 ion-item.item,
 td {
@@ -771,24 +688,6 @@ ion-grid.core-no-grid > ion-row {
 // Fix subtitles wider than video.
 video::-webkit-media-text-track-display {
     white-space: normal !important;
-}
-
-/*
-* This is to solve popver issue in chrome 114
-* For more info see: https://github.com/ionic-team/ionic-framework/issues/27599
-*/
-[popover].popover-viewport {
-    display: initial;
-    position: initial;
-    margin: initial;
-    border: initial;
-    background: initial;
-    padding: initial;
-    width: initial;
-    height: initial;
-    overflow: initial;
-    inset: initial;
-    color: initial;
 }
 
 /**

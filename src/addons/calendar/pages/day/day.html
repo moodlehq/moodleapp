@@ -7,7 +7,7 @@
             <h1>{{ 'addon.calendar.calendarevents' | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="openFilter()" [attr.aria-label]="'core.filter' | translate">
+            <ion-button fill="clear" (click)="openFilter()" [ariaLabel]="'core.filter' | translate">
                 <ion-icon slot="icon-only" name="fas-filter" aria-hidden="true" />
             </ion-button>
             <core-context-menu>
@@ -31,7 +31,7 @@
             <ion-grid class="ion-no-padding safe-area-padding">
                 <ion-row class="ion-align-items-center">
                     <ion-col class="ion-text-start">
-                        <ion-button fill="clear" (click)="loadPrevious()" [attr.aria-label]="'addon.calendar.dayprev' | translate">
+                        <ion-button fill="clear" (click)="loadPrevious()" [ariaLabel]="'addon.calendar.dayprev' | translate">
                             <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
                         </ion-button>
                     </ion-col>
@@ -39,7 +39,7 @@
                         <h2>{{ periodName }}</h2>
                     </ion-col>
                     <ion-col class="ion-text-end">
-                        <ion-button fill="clear" (click)="loadNext()" [attr.aria-label]="'addon.calendar.daynext' | translate">
+                        <ion-button fill="clear" (click)="loadNext()" [ariaLabel]="'addon.calendar.daynext' | translate">
                             <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />
                         </ion-button>
                     </ion-col>

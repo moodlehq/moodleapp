@@ -1,9 +1,9 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
-    <ion-button fill="clear" *ngIf="showSearch" (click)="openSearch()" [attr.aria-label]="'core.search' | translate">
+    <ion-button fill="clear" *ngIf="showSearch" (click)="openSearch()" [ariaLabel]="'core.search' | translate">
         <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
     </ion-button>
-    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
+    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
         <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
     </ion-button>
     <!-- Add an empty context menu so split view pages can add items, otherwise the menu disappears in some cases. -->
@@ -135,7 +135,7 @@
                     </ion-row>
                 </ion-label>
                 <ion-button *ngIf="canPin || discussion.canlock || discussion.canfavourite" fill="clear"
-                    [attr.aria-label]="('core.displayoptions' | translate)" (click)="showOptionsMenu($event, discussion)" slot="end">
+                    [ariaLabel]="('core.displayoptions' | translate)" (click)="showOptionsMenu($event, discussion)" slot="end">
                     <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
                 </ion-button>
             </ion-item>

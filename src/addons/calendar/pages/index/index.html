@@ -8,7 +8,7 @@
             <p *ngIf="!showCalendar" class="subheading">{{ 'addon.calendar.upcomingevents' | translate }}</p>
         </ion-title>
         <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="openFilter()" [attr.aria-label]="'core.filter' | translate">
+            <ion-button fill="clear" (click)="openFilter()" [ariaLabel]="'core.filter' | translate">
                 <ion-icon slot="icon-only" name="fas-filter" aria-hidden="true" />
             </ion-button>
             <core-context-menu>

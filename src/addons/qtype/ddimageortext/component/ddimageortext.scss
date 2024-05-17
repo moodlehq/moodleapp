@@ -4,11 +4,19 @@
 :host {
     --ddimageortext-border-drop: var(--medium);
     --ddimageortext-draghome-background: var(--core-dd-question-color-2);
+    --cursor: pointer;
+
+    .readonly,
+    core-format-text ::ng-deep .readonly {
+        --cursor: auto;
+    }
+
 }
 
 .addon-qtype-ddimageortext-container {
     min-height: 80px; // To display the loading.
 }
+
 
 core-format-text ::ng-deep {
 
@@ -39,7 +47,7 @@ core-format-text ::ng-deep {
 
         div.draghome {
             border: 1px solid var(--core-dd-question-border);
-            cursor: pointer;
+            cursor: var(--cursor);
             background-color: var(--ddimageortext-draghome-background);
             display: inline-block;
             height: auto;
@@ -78,23 +86,17 @@ core-format-text ::ng-deep {
 
         .drag {
             border: 1px solid var(--core-dd-question-border);
-            cursor: pointer;
+            cursor: var(--cursor);
             z-index: 2;
         }
         .drag.placed {
             border: 1px solid var(--ddimageortext-border-drop);
         }
-        .dragitems.readonly .drag {
-            cursor: auto;
-        }
-        .dragitems>div {
+        .dragitems > div {
             clear: both;
         }
         .dragitems {
-            cursor: pointer;
-        }
-        .dragitems.readonly {
-            cursor: auto;
+            cursor: var(--cursor);
         }
         .drag img {
             display: block;
@@ -106,10 +108,7 @@ core-format-text ::ng-deep {
             border: 1px solid var(--ddimageortext-border-drop);
             position: absolute;
             z-index: 1;
-            cursor: pointer;
-        }
-        .readonly .dropzone {
-            cursor: auto;
+            cursor: var(--cursor);
         }
 
         div.dragitems div.draghome, div.dragitems div.drag {

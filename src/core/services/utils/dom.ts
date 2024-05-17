@@ -299,9 +299,6 @@ export class CoreDomUtilsProvider {
     async focusElement(
         element: HTMLIonInputElement | HTMLIonTextareaElement | HTMLIonSearchbarElement | HTMLIonButtonElement | HTMLElement,
     ): Promise<void> {
-        let retries = 10;
-
-        const isIonButton = element.tagName === 'ION-BUTTON';
         let elementToFocus = element;
 
         /**
@@ -318,6 +315,7 @@ export class CoreDomUtilsProvider {
             }
         }
 
+        const isIonButton = element.tagName === 'ION-BUTTON';
         if ('getInputElement' in elementToFocus) {
             // If it's an Ionic element get the right input to use.
             elementToFocus.componentOnReady && await elementToFocus.componentOnReady();
@@ -332,6 +330,7 @@ export class CoreDomUtilsProvider {
             throw new CoreError('Element to focus cannot be focused');
         }
 
+        let retries = 10;
         while (retries > 0 && elementToFocus !== document.activeElement) {
             elementToFocus.focus();
 

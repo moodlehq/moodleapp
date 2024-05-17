@@ -4,7 +4,7 @@
             <h1>{{ 'addon.mod_data.search' | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+            <ion-button fill="clear" (click)="closeModal()" [ariaLabel]="'core.close' | translate">
                 <ion-icon name="fas-xmark" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
@@ -19,7 +19,7 @@
     <form (ngSubmit)="searchEntries($event)" [formGroup]="searchForm" #searchFormEl>
         <ion-list class="ion-no-margin">
             <ion-item [hidden]="search.searchingAdvanced">
-                <ion-input type="text" [attr.aria-label]="'addon.mod_data.search' | translate"
+                <ion-input type="text" [ariaLabel]="'addon.mod_data.search' | translate"
                     placeholder="{{ 'addon.mod_data.search' | translate}}" name="text" formControlName="text" />
             </ion-item>
             <ion-item class="ion-text-wrap">

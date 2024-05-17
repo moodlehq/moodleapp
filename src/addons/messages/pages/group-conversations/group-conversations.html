@@ -7,10 +7,10 @@
             <h1>{{ 'addon.messages.messages' | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="gotoSearch()" [attr.aria-label]="'addon.messages.searchcombined' | translate">
+            <ion-button fill="clear" (click)="gotoSearch()" [ariaLabel]="'addon.messages.searchcombined' | translate">
                 <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
             </ion-button>
-            <ion-button (click)="gotoSettings()" [attr.aria-label]="'addon.messages.messagepreferences' | translate">
+            <ion-button (click)="gotoSettings()" [ariaLabel]="'addon.messages.messagepreferences' | translate">
                 <ion-icon name="fas-gear" slot="icon-only" aria-hidden="true" />
             </ion-button>
             <!-- Add an empty context menu so split view pages can add items, otherwise the menu disappears in some cases. -->

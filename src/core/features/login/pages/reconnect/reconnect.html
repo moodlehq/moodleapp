@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-button fill="clear" (click)="cancel($event)" [attr.aria-label]="'core.back' | translate" class="ion-back-button">
+            <ion-button fill="clear" (click)="cancel($event)" [ariaLabel]="'core.back' | translate" class="ion-back-button">
                 <ion-icon ios="chevron-back" md="arrow-back-sharp" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
@@ -11,7 +11,7 @@
         </ion-title>
 
         <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="showHelp()" [attr.aria-label]="'core.help' | translate">
+            <ion-button fill="clear" (click)="showHelp()" [ariaLabel]="'core.help' | translate">
                 <ion-icon slot="icon-only" name="far-circle-question" aria-hidden="true" />
             </ion-button>
         </ion-buttons>

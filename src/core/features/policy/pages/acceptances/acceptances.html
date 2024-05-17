@@ -104,7 +104,7 @@
 
                     <span class="core-policy-user-agreement-actions" *ngIf="policy.canrevoke">
                         <ion-button fill="none" (click)="setAcceptance($event, policy, false)"
-                            [attr.aria-label]="'core.policy.useracceptanceactionrevokeone' | translate:{$a: policy.name}">
+                            [ariaLabel]="'core.policy.useracceptanceactionrevokeone' | translate:{$a: policy.name}">
                             {{ 'core.policy.useracceptanceactionrevoke' | translate }}
                         </ion-button>
                     </span>
@@ -121,7 +121,7 @@
 
                     <span class="core-policy-user-agreement-actions" *ngIf="policy.canaccept">
                         <ion-button fill="none" (click)="setAcceptance($event, policy, true)"
-                            [attr.aria-label]="'core.policy.useracceptanceactionacceptone' | translate:{$a: policy.name}">
+                            [ariaLabel]="'core.policy.useracceptanceactionacceptone' | translate:{$a: policy.name}">
                             {{ 'core.policy.useracceptanceactionaccept' | translate }}
                         </ion-button>
                     </span>
@@ -133,11 +133,11 @@
 
                     <span class="core-policy-user-agreement-actions" *ngIf="policy.canaccept">
                         <ion-button fill="none" (click)="setAcceptance($event, policy, true)"
-                            [attr.aria-label]="'core.policy.useracceptanceactionacceptone' | translate:{$a: policy.name}">
+                            [ariaLabel]="'core.policy.useracceptanceactionacceptone' | translate:{$a: policy.name}">
                             {{ 'core.policy.useracceptanceactionaccept' | translate }}
                         </ion-button>
                         <ion-button fill="none" (click)="setAcceptance($event, policy, false)"
-                            [attr.aria-label]="'core.policy.useracceptanceactiondeclineone' | translate:{$a: policy.name}">
+                            [ariaLabel]="'core.policy.useracceptanceactiondeclineone' | translate:{$a: policy.name}">
                             {{ 'core.policy.useracceptanceactiondecline' | translate }}
                         </ion-button>
                     </span>
@@ -191,7 +191,7 @@
             <p *ngIf="!isPreviousVersion">{{ policy.name }}</p>
         </ion-label>
         <ion-button fill="clear" (click)="viewFullPolicy($event, policy)"
-            [attr.aria-label]="'core.policy.viewpolicy' | translate:{policyname: policy.name}">
+            [ariaLabel]="'core.policy.viewpolicy' | translate:{policyname: policy.name}">
             <ion-icon slot="icon-only" name="fas-eye" aria-hidden="true" />
         </ion-button>
     </ion-item>
@@ -236,7 +236,7 @@
 
                         <span class="core-policy-user-agreement-actions" *ngIf="policy.canrevoke">
                             <ion-button fill="none" (click)="setAcceptance($event, policy, false)"
-                                [attr.aria-label]="'core.policy.useracceptanceactionrevokeone' | translate:{$a: policy.name}">
+                                [ariaLabel]="'core.policy.useracceptanceactionrevokeone' | translate:{$a: policy.name}">
                                 {{ 'core.policy.useracceptanceactionrevoke' | translate }}
                             </ion-button>
                         </span>
@@ -253,7 +253,7 @@
 
                         <span class="core-policy-user-agreement-actions" *ngIf="policy.canaccept">
                             <ion-button fill="none" (click)="setAcceptance($event, policy, true)"
-                                [attr.aria-label]="'core.policy.useracceptanceactionacceptone' | translate:{$a: policy.name}">
+                                [ariaLabel]="'core.policy.useracceptanceactionacceptone' | translate:{$a: policy.name}">
                                 {{ 'core.policy.useracceptanceactionaccept' | translate }}
                             </ion-button>
                         </span>
@@ -265,11 +265,11 @@
 
                         <span class="core-policy-user-agreement-actions" *ngIf="policy.canaccept">
                             <ion-button fill="none" (click)="setAcceptance($event, policy, true)"
-                                [attr.aria-label]="'core.policy.useracceptanceactionacceptone' | translate:{$a: policy.name}">
+                                [ariaLabel]="'core.policy.useracceptanceactionacceptone' | translate:{$a: policy.name}">
                                 {{ 'core.policy.useracceptanceactionaccept' | translate }}
                             </ion-button>
                             <ion-button fill="none" (click)="setAcceptance($event, policy, false)"
-                                [attr.aria-label]="'core.policy.useracceptanceactiondeclineone' | translate:{$a: policy.name}">
+                                [ariaLabel]="'core.policy.useracceptanceactiondeclineone' | translate:{$a: policy.name}">
                                 {{ 'core.policy.useracceptanceactiondecline' | translate }}
                             </ion-button>
                         </span>
