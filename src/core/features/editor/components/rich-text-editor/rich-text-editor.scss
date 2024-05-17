@@ -147,7 +147,7 @@
             padding-right: 6px;
             padding-left: 6px;
             margin: 2px auto;
-            font-size: 18px;
+            font-size: #{dynamic-font(18px)};
             background-color: var(--toobar-background);
             border-radius: var(--mdl-shape-borderRadius-xs);
             @include core-transition(background-color, 200ms);

@@ -147,7 +147,7 @@
     }
 
     p.core-login-inbrowser {
-        font-size: 12px;
+        font: var(--mdl-typography-body-font-sm);
         margin-top: 8px;
         margin-bottom: 8px;
     }
@@ -161,7 +161,7 @@
     .core-login-sign-up h2 {
         margin-top: 16px;
         margin-bottom: 8px;
-        font-size: 16px;
+        font: var(--mdl-typography-heading6-font);
     }
 
 }

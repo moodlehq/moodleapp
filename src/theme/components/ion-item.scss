@@ -54,6 +54,7 @@ ion-item.item {
 }
 
 // Fake item.
+// The usage of this fake item is discouraged, use ion-item instead. It will be removed soon.
 div.fake-ion-item {
     position: relative;
     align-items: center;
@@ -63,91 +64,49 @@ div.fake-ion-item {
     background: var(--ion-item-background);
     text-align: initial;
     text-decoration: none;
-    overflow: hidden;
     box-sizing: border-box;
-}
+    white-space: normal;
+    overflow: inherit;
 
-.md div.fake-ion-item {
-    font-size: var(--text-size);
-    font-weight: normal;
-    text-transform: none;
     @include padding(null, var(--mdl-spacing-4), null, var(--mdl-spacing-4));
-    @include margin(11px, null, 10px, null);
+    margin-top: var(--mdl-spacing-2);
+    margin-bottom: var(--mdl-spacing-2);
 
     h1 {
-        @include margin(0, 0, 2px);
-        font-size: 24px;
-        font-weight: normal;
+        @include margin(0px, 0px, 2px);
+        font: var(--mdl-typography-heading4-font);
     }
 
     h2 {
-        @include margin(2px, 0);
-        font-size: 16px;
-        font-weight: normal;
+        @include margin(2px, 0px);
+        font: var(--mdl-typography-heading5-font);
     }
 
     h3,
     h4,
     h5,
     h6 {
-        @include margin(2px, 0);
-
-        font-size: var(--text-size);
-        font-weight: normal;
-
-        line-height: normal;
+        @include margin(2px, 0px);
+        font: var(--mdl-typography-heading6-font);
     }
 
     p {
-        @include margin(0, 0, 2px);
-        font-size: var(--text-size);
+        @include margin(0px, 0px, 2px);
+        font: var(--mdl-typography-body-font-md);
         line-height: 20px;
-        text-overflow: inherit;
+    }
+
+    core-format-text,
+    core-format-text > *:not(pre) {
+        white-space: normal;
         overflow: inherit;
     }
-}
-
-.ios div.fake-ion-item {
-    font-size: var(--text-size);
-    @include padding(null, 10px, null, 20px);
-    @include margin(10px, 8px, 10px, null);
-
-    h1 {
-        @include margin(3px, 0, 2px);
-        font-size: 22px;
-        font-weight: normal;
-    }
-
-    h2 {
-        @include margin(0, 0, 2px);
-        font-size: 17px;
-        font-weight: normal;
-    }
-
-    h3,
-    h4,
-    h5,
-    h6 {
-        @include margin(0, 0, 3px);
-        font-size: var(--text-size);
-        font-weight: normal;
-        line-height: normal;
-    }
-
-    p {
-        @include margin(0, 0, 2px 0);
-        font-size: var(--text-size);
-        line-height: normal;
-        text-overflow: inherit;
-        overflow: inherit;
-    }
-
 }
 
 // Item Headings.
 // Some styles taken from ion-label
-ion-item.item.item-label > ion-label,
-.fake-ion-item > ion-label,
+ion-item.item > ion-label,
+ion-item-divider.item > ion-label,
 ion-item .in-item {
     font-size: var(--text-size);
 
@@ -183,7 +142,6 @@ ion-item .in-item {
 
 // Correctly inherit ion-text-wrap onto labels.
 .item > ion-label,
-.fake-ion-item,
 .item > ion-checkbox::part(label),
 ion-checkbox::part(label),
 .item ion-toggle::part(label),
@@ -198,7 +156,6 @@ ion-input > label {
 
 .item.ion-text-wrap > ion-label,
 ion-item > .in-item,
-.fake-ion-item.ion-text-wrap,
 .item.ion-text-wrap > ion-checkbox::part(label),
 ion-checkbox.ion-text-wrap::part(label),
 ion-toggle.ion-text-wrap::part(label),

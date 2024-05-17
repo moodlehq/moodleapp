@@ -93,8 +93,7 @@
 
             ion-badge {
                 @include margin-horizontal(null, 4px);
-                font-size: 12px;
-                font-weight: normal;
+                font: var(--mdl-typography-body-font-sm);
             }
         }
     }
@@ -135,7 +134,7 @@
             border-radius: var(--mdl-shape-borderRadius-sm);
             margin-top: 8px;
             padding: 8px;
-            font-size: 14px;
+            font-size: var(--mdl-typography-body-fontSize-md);
             line-height: 120%;
 
             ::ng-deep ul {

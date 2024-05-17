@@ -30,7 +30,7 @@
             }
             .addon-message-last-message-date {
                 white-space: nowrap;
-                font-size: 11px;
+                font-size: #{dynamic-font(11px)};
             }
         }
 

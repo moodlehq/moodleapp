@@ -17,7 +17,7 @@
     <ion-list>
         <ng-container *ngIf="searchAreaCategories.length > 0">
             <core-spacer />
-            <ion-item class="ion-text-wrap help">
+            <ion-item class="ion-text-wrap heading">
                 <ion-label>
                     <p class="item-heading">{{ 'core.search.filtercategories' | translate }}</p>
                 </ion-label>
@@ -35,7 +35,7 @@
         </ng-container>
         <ng-container *ngIf="!hideCourses && courses.length > 0">
             <core-spacer />
-            <ion-item class="ion-text-wrap help">
+            <ion-item class="ion-text-wrap heading">
                 <ion-label>
                     <p class="item-heading">{{ 'core.search.filtercourses' | translate }}</p>
                 </ion-label>

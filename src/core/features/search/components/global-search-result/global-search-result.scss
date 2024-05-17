@@ -7,8 +7,7 @@
     --core-global-search-result-context-color: var(--gray-600);
     --core-global-search-result-icon-size: 16px;
 
-    h3 {
-        font-size: 16px;
+    p.item-heading {
         display: flex;
         align-items: center;
         color: var(--core-global-search-result-title-color);
@@ -69,7 +68,7 @@
                 color: var(--core-global-search-result-context-color);
                 margin-top: var(--mdl-spacing-2);
                 margin-inline-end: var(--mdl-spacing-4);
-                font-size: 12px;
+                font: var(--mdl-typography-body-font-sm);
 
                 ion-icon {
                     margin-inline-end: var(--mdl-spacing-1);

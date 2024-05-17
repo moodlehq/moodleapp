@@ -31,7 +31,7 @@
     }
     ion-icon {
         margin: 0 auto;
-        font-size: 35px;
+        font-size: #{dynamic-font(35px)};
         height: 50px;
     }
 }

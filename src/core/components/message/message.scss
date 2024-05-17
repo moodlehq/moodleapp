@@ -63,12 +63,11 @@
                 }
 
                 div {
-                    font-weight: 500;
                     flex-grow: 1;
                     padding-left: .5rem;
                     padding-right: .5rem;
                     @include ellipsis();
-                    font-size: 16px;
+                    font: var(--mdl-typography-subtitle-font-md);
                 }
             }
 

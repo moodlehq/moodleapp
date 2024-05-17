@@ -49,7 +49,7 @@ ion-chip {
 ion-chip,
 ion-button.button.chip {
     line-height: 1.1;
-    font-size: 12px;
+    font-size: var(--mdl-typography-body-fontSize-sm);
     min-height: 24px;
     margin: 4px;
     font-weight: normal;
@@ -68,7 +68,7 @@ ion-button.button.chip {
 ion-button.button.chip {
     --border-radius: var(--mdl-shape-borderRadius-md);
     min-height: 32px;
-    font-size: 14px;
+    font-size: var(--mdl-typography-body-fontSize-md);
 
     ion-icon[slot=start] {
         @include margin(0, 8px, 0, 0);

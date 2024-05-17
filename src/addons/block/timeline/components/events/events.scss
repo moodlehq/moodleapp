@@ -1,16 +1,11 @@
 @use "theme/globals" as *;
 
 h3 {
-    font-weight: bold;
-    font-size: 18px;
+    font: var(--mdl-typography-heading5-font);
 }
 
 h4 {
-    font-size: 15px;
-}
-
-h4.core-bold {
-    font-weight: bold;
+    font: var(--mdl-typography-heading6-font);
 }
 
 .addon-block-timeline-activity {

@@ -23,9 +23,7 @@
 }
 
 .core-usermenu-sitename {
-    font-weight: bold;
-    font-size: 20px;
-    line-height: 24px;
+    font: var(--mdl-typography-subtitle-font-lg);
 }
 
 img.core-usermenu-site-logo {

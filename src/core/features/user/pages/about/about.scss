@@ -39,10 +39,10 @@
     }
 
     h2 {
-        font-size: 24px;
+        font: var(--mdl-typography-heading2-font);
     }
     h3 {
-        font-size: 20px;
+        font: var(--mdl-typography-heading4-font);
     }
     .core-user-profile-interests {
         ion-badge {

@@ -25,8 +25,7 @@
             margin: 0;
             --border-radius: 0;
             width: 100%;
-            font-size: 12px;
-            font-weight: normal;
+            font: var(--mdl-typography-body-font-sm);
             --color: var(--button-color);
 
             .button-text {
@@ -34,7 +33,7 @@
             }
 
             ion-icon {
-                font-size: 12px;
+                font-size: var(--mdl-typography-body-fontSize-sm);
             }
         }
         .core-course-previous-module {
