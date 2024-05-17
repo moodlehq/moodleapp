@@ -17,7 +17,7 @@
         <ion-item-group *ngIf="badge">
             <ion-item class="ion-text-wrap ion-text-center">
                 <ion-label>
-                    <img *ngIf="badge.badgeurl" class="large-avatar" [src]="badge.badgeurl" core-external-content [alt]="badge.name" />
+                    <img *ngIf="badge.badgeurl" class="large-avatar" [url]="badge.badgeurl" core-external-content [alt]="badge.name" />
                     <ion-badge color="danger" *ngIf="badge.dateexpire && currentTime >= badge.dateexpire">
                         {{ 'addon.badges.expired' | translate }}
                     </ion-badge>

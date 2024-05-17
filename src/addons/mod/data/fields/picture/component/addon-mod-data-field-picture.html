@@ -13,8 +13,8 @@
 </ng-container>
 
 <button class="as-link" *ngIf="listMode && imageUrl" (click)="navigateEntry()">
-    <img [src]="imageUrl" [alt]="title" class="core-media-adapt-width listMode_picture" core-external-content />
+    <img [url]="imageUrl" [alt]="title" class="core-media-adapt-width listMode_picture" core-external-content />
 </button>
 
-<img *ngIf="showMode && imageUrl" [src]="imageUrl" [alt]="title" class="core-media-adapt-width listMode_picture" [attr.width]="width"
+<img *ngIf="showMode && imageUrl" [url]="imageUrl" [alt]="title" class="core-media-adapt-width listMode_picture" [attr.width]="width"
     [attr.height]="height" core-external-content />

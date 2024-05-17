@@ -60,9 +60,19 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
     @Input() siteId?: string; // Site ID to use.
     @Input() component?: string; // Component to link the file to.
     @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
+    @Input() url?: string | null; // The URL to use in the element, either as src or href.
+    @Input() posterUrl?: string | null; // The poster URL.
+    /**
+     * @deprecated since 4.4. Use url instead.
+     */
     @Input() src?: string;
+    /**
+     * @deprecated since 4.4. Use url instead.
+     */
     @Input() href?: string;
-    @Input('target-src') targetSrc?: string; // eslint-disable-line @angular-eslint/no-input-rename
+    /**
+     * @deprecated since 4.4. Use posterUrl instead.
+     */
     @Input() poster?: string;
     @Output() onLoad = new EventEmitter(); // Emitted when content is loaded. Only for images.
 
@@ -142,23 +152,22 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
 
         if (tagName === 'A' || tagName == 'IMAGE') {
             targetAttr = 'href';
-            url = this.href ?? '';
+            url = this.url ?? this.href ?? ''; // eslint-disable-line deprecation/deprecation
 
         } else if (tagName === 'IMG') {
             targetAttr = 'src';
-            url = this.src ?? '';
+            url = this.url ?? this.src ?? ''; // eslint-disable-line deprecation/deprecation
 
         } else if (tagName === 'AUDIO' || tagName === 'VIDEO' || tagName === 'SOURCE' || tagName === 'TRACK') {
             targetAttr = 'src';
-            url = (this.targetSrc || this.src) ?? '';
+            url = this.url ?? this.src ?? ''; // eslint-disable-line deprecation/deprecation
 
-            if (tagName === 'VIDEO') {
-                if (this.poster) {
-                    // Handle poster.
-                    this.handleExternalContent('poster', this.poster, siteId).catch(() => {
-                        // Ignore errors.
-                    });
-                }
+            if (tagName === 'VIDEO' && (this.posterUrl || this.poster)) { // eslint-disable-line deprecation/deprecation
+                // Handle poster.
+                // eslint-disable-next-line deprecation/deprecation
+                this.handleExternalContent('poster', this.posterUrl ?? this.poster ?? '', siteId).catch(() => {
+                    // Ignore errors.
+                });
             }
 
         } else {
@@ -168,32 +177,11 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             return;
         }
 
-        // Avoid handling data url's.
-        if (url && url.indexOf('data:') === 0) {
-            if (tagName === 'SOURCE') {
-                // Restoring original src.
-                this.addSource(url);
-            }
-
-            this.onLoad.emit();
-            this.loaded = true;
-            this.onReadyPromise.resolve();
-
-            return;
-        }
-
         try {
             await this.handleExternalContent(targetAttr, url, siteId);
         } catch (error) {
-            // Error handling content. Make sure the loaded event is triggered for images.
-            if (tagName === 'IMG') {
-                if (url) {
-                    this.waitForLoad();
-                } else {
-                    this.onLoad.emit();
-                    this.loaded = true;
-                }
-            }
+            // Error handling content. Make sure the original URL is set.
+           this.setElementUrl(targetAttr, url);
         } finally {
             this.onReadyPromise.resolve();
         }
@@ -221,13 +209,6 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
                 (tagName === 'A' && !(isSiteFile || site.isSiteThemeImageUrl(url) || CoreUrlUtils.isGravatarUrl(url)))) {
 
             this.logger.debug('Ignoring non-downloadable URL: ' + url);
-            if (tagName === 'SOURCE') {
-                // Restoring original src.
-                this.addSource(url);
-            } else if (url && !this.element.getAttribute(targetAttr)) {
-                // By default, Angular inputs aren't added as DOM attributes. Add it now.
-                this.element.setAttribute(targetAttr, url);
-            }
 
             throw new CoreError('Non-downloadable URL');
         }
@@ -241,26 +222,54 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         const finalUrl = await this.getUrlToUse(targetAttr, url, site);
 
         this.logger.debug('Using URL ' + finalUrl + ' for ' + url);
-        if (tagName === 'SOURCE') {
-            // The browser does not catch changes in SRC, we need to add a new source.
-            this.addSource(finalUrl);
-        } else {
-            if (tagName === 'IMG') {
-                this.loaded = false;
-                this.waitForLoad();
-            }
 
-            if (targetAttr == 'poster') {
-                // Setting the poster immediately doesn't display it in some cases. Set it to empty and then set the right one.
-                this.element.setAttribute(targetAttr, '');
-                await CoreUtils.nextTick();
-            }
-
-            this.element.setAttribute(targetAttr, finalUrl);
-            this.element.setAttribute('data-original-' + targetAttr, url);
-        }
+        this.setElementUrl(targetAttr, finalUrl);
 
         this.setListeners(targetAttr, url, site);
+    }
+
+    /**
+     * Set the URL to the element.
+     *
+     * @param targetAttr Name of the attribute to set.
+     * @param url URL to set.
+     */
+    protected setElementUrl(targetAttr: string, url: string): void {
+        if (!url) {
+            // Ignore empty URLs.
+            if (this.element.tagName === 'IMG') {
+                this.onLoad.emit();
+                this.loaded = true;
+            }
+
+            return;
+        }
+
+        if (this.element.tagName === 'SOURCE') {
+            // The WebView does not detect changes in SRC, we need to add a new source.
+            this.addSource(url);
+        } else {
+            this.element.setAttribute(targetAttr, url);
+
+            const originalUrl = targetAttr === 'poster' ?
+                (this.posterUrl ?? this.poster) : // eslint-disable-line deprecation/deprecation
+                (this.url ?? this.src ?? this.href); // eslint-disable-line deprecation/deprecation
+            if (originalUrl && originalUrl !== url) {
+                this.element.setAttribute('data-original-' + targetAttr, originalUrl);
+            }
+        }
+
+        if (this.element.tagName !== 'IMG') {
+            return;
+        }
+
+        if (url.startsWith('data:')) {
+            this.onLoad.emit();
+            this.loaded = true;
+        } else {
+            this.loaded = false;
+            this.waitForLoad();
+        }
     }
 
     /**

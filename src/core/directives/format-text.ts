@@ -180,10 +180,14 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         extContent.component = this.component;
         extContent.componentId = this.componentId;
         extContent.siteId = this.siteId;
-        extContent.src = element.getAttribute('src') || undefined;
-        extContent.href = element.getAttribute('href') || element.getAttribute('xlink:href') || undefined;
-        extContent.targetSrc = element.getAttribute('target-src') || undefined;
-        extContent.poster = element.getAttribute('poster') || undefined;
+        extContent.url = element.getAttribute('src') ?? element.getAttribute('href') ?? element.getAttribute('xlink:href');
+        extContent.posterUrl = element.getAttribute('poster');
+
+        // Remove the original attributes to avoid performing requests to untreated URLs.
+        element.removeAttribute('src');
+        element.removeAttribute('href');
+        element.removeAttribute('xlink:href');
+        element.removeAttribute('poster');
 
         extContent.ngAfterViewInit();
 
@@ -721,6 +725,10 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
      * @param isVideo Whether it's a video.
      */
     protected treatMedia(element: HTMLElement, isVideo: boolean = false): void {
+        if (isVideo) {
+            this.fixVideoSrcPlaceholder(element);
+        }
+
         this.addMediaAdaptClass(element);
         this.addExternalContent(element);
 
@@ -738,18 +746,8 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
         const sources = Array.from(element.querySelectorAll('source'));
         const tracks = Array.from(element.querySelectorAll('track'));
-        const hasPoster = isVideo && !!element.getAttribute('poster');
-
-        if (isVideo && !hasPoster) {
-            this.fixVideoSrcPlaceholder(element);
-        }
 
         sources.forEach((source) => {
-            if (isVideo && !hasPoster) {
-                this.fixVideoSrcPlaceholder(source);
-            }
-            source.setAttribute('target-src', source.getAttribute('src') || '');
-            source.removeAttribute('src');
             this.addExternalContent(source);
         });
 
@@ -766,19 +764,23 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     /**
      * Try to fix the placeholder displayed when a video doesn't have a poster.
      *
-     * @param element Element to fix.
+     * @param videoElement Element to fix.
      */
-    protected fixVideoSrcPlaceholder(element: HTMLElement): void {
-        const src = element.getAttribute('src');
-        if (!src) {
+    protected fixVideoSrcPlaceholder(videoElement: HTMLElement): void {
+        if (videoElement.getAttribute('poster')) {
+            // Video has a poster, nothing to fix.
             return;
         }
 
-        if (src.match(/#t=\d/)) {
-            return;
-        }
+        // Fix the video and its sources.
+        [videoElement].concat(Array.from(videoElement.querySelectorAll('source'))).forEach((element) => {
+            const src = element.getAttribute('src');
+            if (!src || src.match(/#t=\d/)) {
+                return;
+            }
 
-        element.setAttribute('src', src + '#t=0.001');
+            element.setAttribute('src', src + '#t=0.001');
+        });
     }
 
     /**

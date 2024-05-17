@@ -1,8 +1,8 @@
 <ng-container *ngIf="avatarUrl">
-    <img class="userpicture" *ngIf="linkProfile" [src]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content
+    <img class="userpicture" *ngIf="linkProfile" [url]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content
         (error)="loadImageError()" (ariaButtonClick)="gotoProfile($event)" [siteId]="siteId">
 
-    <img class="userpicture" *ngIf="!linkProfile" [src]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}"
+    <img class="userpicture" *ngIf="!linkProfile" [url]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}"
         core-external-content (error)="loadImageError()" aria-hidden="true" [siteId]="siteId">
 </ng-container>
 <ng-container *ngIf="!avatarUrl && initials">
