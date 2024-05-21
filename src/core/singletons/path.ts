@@ -99,4 +99,22 @@ export class CorePath {
         }
     }
 
+    /**
+     * Check if a certain path is the ancestor of another path.
+     *
+     * @param ancestorPath Ancestor path.
+     * @param path Path to check.
+     * @returns Whether the path is an ancestor of the other path.
+     */
+    static pathIsAncestor(ancestorPath: string, path: string): boolean {
+        const ancestorSplit = CoreText.removeEndingSlash(ancestorPath).split('/');
+        const pathSplit = CoreText.removeEndingSlash(path).split('/');
+
+        if (ancestorSplit.length >= pathSplit.length) {
+            return false;
+        }
+
+        return !ancestorSplit.some((value, index) => value !== pathSplit[index]);
+    }
+
 }

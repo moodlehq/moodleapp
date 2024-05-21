@@ -48,8 +48,8 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
     @Input() src?: string;
     @Input() id: string | null = null;
-    @Input() iframeWidth?: string;
-    @Input() iframeHeight?: string;
+    @Input() iframeWidth = '100%';
+    @Input() iframeHeight = '100%';
     @Input() allowFullscreen?: boolean | string;
     @Input() showFullscreenOnToolbar?: boolean | string;
     @Input() autoFullscreenOnRotate?: boolean | string;

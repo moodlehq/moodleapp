@@ -30,6 +30,7 @@ import { StackDidChangeEvent } from '@ionic/angular/common/directives/navigation
 import { CoreNavigator } from '@services/navigator';
 import { CoreTabBase, CoreTabsBaseComponent } from '@classes/tabs';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CorePath } from '@singletons/path';
 
 /**
  * This component displays some top scrollable tabs that will autohide on vertical scroll.
@@ -143,6 +144,14 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
         // After the view has entered for the first time, we can assume that it'll always be in the navigation stack
         // until it's destroyed.
         this.existsInNavigationStack = true;
+
+        const selectedTab = this.getSelected();
+        const currentPath = CoreNavigator.getCurrentPath();
+        if (selectedTab && CorePath.pathIsAncestor(currentPath, selectedTab.page)) {
+            // Current path is an ancestor of the selected path, this happens when the user changes main menu tab and comes back.
+            // Load the tab again so the right route is loaded. This only changes the current route, it doesn't reload the page.
+            this.loadTab(selectedTab);
+        }
     }
 
     /**
