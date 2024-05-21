@@ -5,10 +5,12 @@
 
     .addon-qtype-match-correct {
         color: var(--success);
+        --subdued-text-color: var(--success);
     }
 
     .addon-qtype-match-incorrect {
         color: var(--danger);
+        --subdued-text-color: var(--danger);
     }
 
     ion-select::part(label) {
