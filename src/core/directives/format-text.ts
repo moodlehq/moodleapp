@@ -99,6 +99,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     protected emptyText = '';
     protected domPromises: CoreCancellablePromise<void>[] = [];
     protected domElementPromise?: CoreCancellablePromise<void>;
+    protected externalContentInstances: CoreExternalContentDirective[] = [];
 
     constructor(
         element: ElementRef,
@@ -145,6 +146,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         this.domElementPromise?.cancel();
         this.domPromises.forEach((promise) => { promise.cancel();});
         this.elementControllers.forEach(controller => controller.destroy());
+        this.externalContentInstances.forEach(extContent => extContent.ngOnDestroy());
     }
 
     /**
@@ -190,6 +192,8 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         element.removeAttribute('poster');
 
         extContent.ngAfterViewInit();
+
+        this.externalContentInstances.push(extContent);
 
         const changeDetectorRef = this.viewContainerRef.injector.get(ChangeDetectorRef);
         changeDetectorRef.markForCheck();
@@ -342,6 +346,10 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
      * Format contents and render.
      */
     protected async formatAndRenderContents(): Promise<void> {
+        // Destroy previous instances of external-content.
+        this.externalContentInstances.forEach(extContent => extContent.ngOnDestroy());
+        this.externalContentInstances = [];
+
         if (!this.text) {
             this.element.innerHTML = this.emptyText; // Remove current contents.
 

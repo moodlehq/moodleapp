@@ -1912,12 +1912,14 @@ export class CoreCourseHelperProvider {
      * @returns Promise to be resolved once the course files are deleted.
      */
     async deleteCourseFiles(courseId: number): Promise<void> {
+        const siteId = CoreSites.getCurrentSiteId();
         const sections = await CoreCourse.getSections(courseId);
         const modules = sections.map((section) => section.modules).flat();
 
-        await Promise.all(
-            modules.map((module) => this.removeModuleStoredData(module, courseId)),
-        );
+        await Promise.all([
+            ...modules.map((module) => this.removeModuleStoredData(module, courseId)),
+            siteId && CoreFilepool.removeFilesByComponent(siteId, CoreCourseProvider.COMPONENT, courseId),
+        ]);
 
         await CoreCourse.setCourseStatus(courseId, DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED);
     }
