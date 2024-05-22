@@ -52,7 +52,7 @@ export class CoreSettingsLicensesPage implements OnInit {
     protected allLicenses: CoreSettingsLicense[] = [];
 
     constructor() {
-        this.appLicenseVersion = CoreConstants.CONFIG.versionname.indexOf('-') > 0
+        this.appLicenseVersion = CoreConstants.BUILD.isDevelopment
             ? 'main'
             : 'v' + CoreConstants.CONFIG.versionname;
 
