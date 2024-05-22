@@ -12,7 +12,7 @@
 <ion-content class="limited-width">
     <core-loading [hideUntil]="loaded">
         <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterChanged($event.target)" (ionCancel)="filterChanged($event.target)"
-            [placeholder]="'core.filter' | translate" class="ion-margin-top" />
+            [placeholder]="'core.filter' | translate" class="ion-margin-vertical" />
         <ion-list>
             <ion-item button *ngIf="error" class="ion-text-wrap" [href]="licensesUrl" core-link auto-login="no" [detail]="false">
                 <ion-label>
@@ -22,13 +22,13 @@
                     {{ 'core.view' | translate }}</ion-button>
             </ion-item>
             <ng-container *ngIf="!error">
-                <ion-item *ngFor="let license of licenses" class="ion-text-wrap">
+                <ion-item *ngFor="let license of licenses" class="ion-text-wrap" lines="inset">
                     <ion-label>
                         <p class="item-heading">
                             <a *ngIf="license.repository" [href]="license.repository" core-link auto-login="no">{{ license.name }}</a>
                             <ng-container *ngIf="!license.repository">{{ license.name }}</ng-container> - {{ license.version }}
                         </p>
-                        <p class="item-heading" *ngIf="license.publisher">
+                        <p *ngIf="license.publisher">
                             {{ 'core.settings.publisher' | translate }}{{ 'core.labelsep' | translate }} {{ license.publisher }}
                         </p>
                         <p>{{ 'core.settings.license' | translate }}{{ 'core.labelsep' | translate }} {{ license.licenses }}</p>
@@ -37,7 +37,9 @@
                                 [showBrowserWarning]="false">{{ license.email }}</a></p>
                     </ion-label>
                     <ion-button *ngIf="license.licenseUrl" [href]="license.licenseUrl" target="_blank" fill="clear" slot="end" core-link
-                        auto-login="no">{{ 'core.view' | translate }}</ion-button>
+                        auto-login="no" [ariaLabel]="'core.view' | translate">
+                        <ion-icon slot="icon-only" name="fas-up-right-from-square" aria-hidden="true" />
+                    </ion-button>
                 </ion-item>
             </ng-container>
         </ion-list>

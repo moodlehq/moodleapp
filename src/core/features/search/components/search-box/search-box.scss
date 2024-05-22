@@ -31,7 +31,7 @@
             --a11y-sizing-minTargetSize: var(--search-height);
             --padding-start: 0px;
             --padding-end: 0px;
-            font-size: 12px;
+            font-size: var(--mdl-typography-body-fontSize-sm);
         }
     }
 

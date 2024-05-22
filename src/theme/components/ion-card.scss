@@ -23,7 +23,7 @@ ion-card {
     }
 
     ion-card-title {
-        font-size: 20px;
+        font: var(--mdl-typography-heading4-font);
     }
 
     &.core-card-with-buttons .item ion-label {

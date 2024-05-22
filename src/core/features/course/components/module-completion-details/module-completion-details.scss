@@ -1,14 +1,14 @@
+@use "theme/globals" as *;
+
 :host {
-    h2, div {
-        font-size: 16px;
-    }
     h2 {
         margin-top: 0px;
         margin-bottom: 8px;
-        line-height: 27px;
+        font: var(--mdl-typography-heading6-font);
     }
     ion-list {
-        line-height: 32px;
+        font: var(--mdl-typography-body-font-lg);
+        line-height: 200%;
     }
 
     ion-icon {
@@ -17,6 +17,6 @@
     }
 
     ion-icon.completion_dot {
-        font-size: 4px;
+        font-size: #{dynamic-font(4px)};
     }
 }

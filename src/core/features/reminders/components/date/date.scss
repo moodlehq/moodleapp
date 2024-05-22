@@ -9,7 +9,8 @@
 
 div {
     flex-grow: 1;
-    font-size: 14px;
+    font: var(--mdl-typography-body-font-md);
+    line-height: normal;
     margin: 0;
     align-self: center;
 

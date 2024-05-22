@@ -29,6 +29,7 @@ import { ContextLevel } from '@/core/constants';
 @Component({
     selector: 'core-comments',
     templateUrl: 'core-comments.html',
+    styleUrl: 'comments.scss',
 })
 export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -38,7 +39,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
     @Input() itemId!: number;
     @Input() area = '';
     @Input() title?: string;
-    @Output() onLoading: EventEmitter<boolean>; // Event that indicates whether the component is loading data.
+    @Output() onLoading = new EventEmitter<boolean>();  // Event that indicates whether the component is loading data.
     @Input() courseId?: number; // Course ID the comments belong to. It can be used to improve performance with filters.
     @Input() showItem = false; // Show button as an item.
 
@@ -47,14 +48,11 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
     countError = false;
     enabled = false;
 
-    protected updateSiteObserver?: CoreEventObserver;
-    protected refreshCommentsObserver?: CoreEventObserver;
-    protected commentsCountObserver?: CoreEventObserver;
+    protected updateSiteObserver: CoreEventObserver;
+    protected refreshCommentsObserver: CoreEventObserver;
+    protected commentsCountObserver: CoreEventObserver;
 
     constructor() {
-
-        this.onLoading = new EventEmitter<boolean>();
-
         this.enabled = CoreComments.areCommentsEnabledInSite();
 
         // Update visibility if current site info is updated.
@@ -87,7 +85,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
         this.commentsCountObserver = CoreEvents.on(
             CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT,
             (data) => {
-            // Verify these comments need to be updated.
+                // Verify these comments need to be updated.
                 if (!this.commentsCount.endsWith('+') && this.undefinedOrEqual(data, 'contextLevel') &&
                     this.undefinedOrEqual(data, 'instanceId') && this.undefinedOrEqual(data, 'component') &&
                     this.undefinedOrEqual(data, 'itemId') && this.undefinedOrEqual(data, 'area') && !this.countError) {
@@ -103,14 +101,14 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
     }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.fetchData();
     }
 
     /**
-     * Listen to changes.
+     * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         // If something change, update the fields.
@@ -193,7 +191,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.updateSiteObserver?.off();

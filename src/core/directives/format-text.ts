@@ -243,9 +243,9 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     }
 
     /**
-     * Add magnifying glass icons to view adapted images at full size.
+     * Add image viewer button to view adapted images at full size.
      */
-    async addMagnifyingGlasses(): Promise<void> {
+    protected async addImageViewerButton(): Promise<void> {
         const imgs = Array.from(this.element.querySelectorAll('.core-adapted-img-container > img'));
         if (!imgs.length) {
             return;
@@ -270,7 +270,6 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
                 return;
             }
 
-            const imgSrc = CoreTextUtils.escapeHTML(img.getAttribute('data-original-src') || img.getAttribute('src'));
             const label = Translate.instant('core.openfullimage');
             const button = document.createElement('button');
 
@@ -283,6 +282,8 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             button.innerHTML = `<ion-icon name="fas-${iconName}" aria-hidden="true" src="${src}"></ion-icon>`;
 
             button.addEventListener('click', (e: Event) => {
+                const imgSrc = CoreTextUtils.escapeHTML(img.getAttribute('data-original-src') || img.getAttribute('src'));
+
                 e.preventDefault();
                 e.stopPropagation();
                 CoreDomUtils.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId);
@@ -371,7 +372,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         await CoreUtils.nextTick();
 
         // Add magnifying glasses to images.
-        this.addMagnifyingGlasses();
+        this.addImageViewerButton();
 
         if (result.options.filter) {
             // Let filters handle HTML. We do it here because we don't want them to block the render of the text.

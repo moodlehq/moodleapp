@@ -34,7 +34,6 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'page-addon-mod-forum-search',
     templateUrl: 'search.html',
-    styleUrls: ['search.scss'],
 })
 export class AddonModForumSearchPage implements OnInit {
 

@@ -8,9 +8,7 @@
 
         h1 {
             margin: 0;
-            font-size: 16px;
-            font-weight: 400;
-            line-height: 24px;
+            font: var(--mdl-typography-body-font-lg);
             letter-spacing: 0.15px;
         }
 
@@ -36,9 +34,7 @@
         align-items: center;
 
         p {
-            font-size: 14px;
-            font-weight: 400;
-            line-height: 20px;
+            font: var(--mdl-typography-body-font-md);
             letter-spacing: 0.25px;
             text-align: center;
             opacity: 0.6;

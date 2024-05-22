@@ -106,6 +106,7 @@ ion-chip {
 ion-card.core-course-list-item {
     max-width: var(--list-item-max-width);
 
+    /** Deprecated icon */
     ion-icon.course-icon {
         padding: 12px;
         font-size: calc(var(--avatar-size) - 24px);

@@ -713,7 +713,7 @@ table.core-table {
     thead th {
         vertical-align: bottom;
         font-weight: bold;
-        font-size: 14px;
+        font-size: var(--mdl-typography-body-fontSize-md);
         background-color: var(--core-table-header-background);
     }
 
@@ -722,7 +722,7 @@ table.core-table {
             font-weight: normal;
         }
         td {
-            font-size: 16px;
+            font-size: var(--mdl-typography-body-fontSize-lg);
         }
     }
 

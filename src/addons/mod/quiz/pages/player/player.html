@@ -68,38 +68,21 @@
                 <ion-card-title>{{ 'addon.mod_quiz.summaryofattempt' | translate }}</ion-card-title>
             </ion-card-header>
 
-            <!-- "Header" of the summary table. -->
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <ion-row class="ion-align-items-center">
-                        <ion-col size="3" class="ion-text-center ion-hide-md-down">
-                            <strong>{{ 'addon.mod_quiz.question' | translate }}</strong>
-                        </ion-col>
-                        <ion-col size="3" class="ion-text-center ion-hide-md-up"><strong>#</strong></ion-col>
-                        <ion-col size="9" class="ion-text-center">
-                            <strong>{{ 'addon.mod_quiz.status' | translate }}</strong>
-                        </ion-col>
-                    </ion-row>
-                </ion-label>
-            </ion-item>
-
             <!-- List of questions of the summary table. -->
             <ng-container *ngFor="let question of summaryQuestions">
                 <ion-item *ngIf="question.type !== 'description' && question.questionnumber"
                     (click)="!isSequential && canReturn && changePage(question.page, false, question.slot)"
-                    [attr.aria-label]="'core.question.questionno' | translate:{$a: question.questionnumber}"
-                    [detail]="!isSequential && canReturn" [button]="!isSequential && canReturn">
+                    [detail]="!isSequential && canReturn" [button]="!isSequential && canReturn" class="ion-text-wrap">
                     <ion-label>
-                        <ion-row class="ion-align-items-center">
-                            <ion-col size="3" class="ion-text-center ion-text-wrap">{{ question.questionnumber }}</ion-col>
-                            <ion-col size="9" class="ion-text-center ion-text-wrap">{{ question.status }}</ion-col>
-                        </ion-row>
+                        <span [attr.aria-label]="'core.question.questionno' | translate:{$a: question.questionnumber}">
+                            {{ question.questionnumber }}.</span> {{ question.status }}
                     </ion-label>
                 </ion-item>
             </ng-container>
 
             <!-- Due date warning. -->
-            <ion-item class="ion-text-wrap" *ngIf="dueDateWarning">
+            <ion-item class="ion-text-wrap core-warning-item" *ngIf="dueDateWarning">
+                <ion-icon slot="start" name="fas-triangle-exclamation" color="warning" aria-hidden="true" />
                 <ion-label>{{ dueDateWarning }}</ion-label>
             </ion-item>
 

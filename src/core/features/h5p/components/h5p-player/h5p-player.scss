@@ -21,7 +21,7 @@
         }
 
         .core-h5p-placeholder-play-button {
-            font-size: 30px;
+            font-size: #{dynamic-font(30px)};
             min-height: 50px;
         }
 

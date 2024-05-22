@@ -65,9 +65,16 @@
                         word-wrap: break-word;
                         max-width: 100%;
                         line-height: 1.2em;
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+
                         h2 {
-                            font-size: 14px;
-                            font-weight: 400;
+                            font: var(--mdl-typography-label-font-lg);
+                        }
+
+                        ion-badge {
+                            @include margin-horizontal(4px, 0px);
                         }
                     }
                 }
@@ -78,7 +85,7 @@
                     border-bottom-color: var(--border-color-active);
                     ion-tab-button {
                         color: var(--color-active);
-                        ion-label {
+                        ion-label h2 {
                             font-weight: var(--font-weight-active);
                         }
                     }

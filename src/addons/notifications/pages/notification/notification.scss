@@ -10,10 +10,10 @@
             margin-top: 16px;
         }
         p.item-heading {
-            font-size: 16px;
+            font: var(--mdl-typography-body-font-lg);
         }
         p {
-            font-size: 12px;
+            font: var(--mdl-typography-body-font-sm);
         }
     }
 

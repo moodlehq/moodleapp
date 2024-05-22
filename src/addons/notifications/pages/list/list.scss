@@ -5,12 +5,12 @@ ion-item.addon-notification-item {
     ion-label {
         margin-top: 8px;
         margin-bottom: 8px;
-        p.item-heading {
-            font-size: var(--text-size);
-            @include ellipsis(3);
-        }
         p {
-            font-size: 12px;
+            font: var(--mdl-typography-body-font-sm);
+            &.item-heading {
+                font-size: var(--text-size);
+                @include ellipsis(3);
+            }
         }
     }
 
@@ -20,7 +20,7 @@ ion-item.addon-notification-item {
         padding-top: 12px;
 
         ion-icon {
-            font-size: 6px;
+            font-size: #{dynamic-font(6px)};
             vertical-align: middle;
         }
     }

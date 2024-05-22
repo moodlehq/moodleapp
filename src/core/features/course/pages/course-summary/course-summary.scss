@@ -34,6 +34,7 @@
             }
         }
 
+        /** Deprecated icon */
         ion-icon.course-icon {
             padding: 24px;
             font-size: calc(var(--thumb-height) - 48px);
@@ -58,7 +59,7 @@
     }
 
     h1 {
-        font-size: 20px;
+        font-size: var(--mdl-typography-heading4-fontSize);
     }
 
     .core-course-category {

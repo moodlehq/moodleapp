@@ -8,7 +8,7 @@
     .core-input-error {
         padding: 4px;
         color: var(--danger);
-        font-size: 12px;
+        font: var(--mdl-typography-body-font-sm);
         display: none;
 
         &:first-child {
