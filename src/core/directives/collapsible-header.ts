@@ -512,9 +512,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         this.content = content;
 
         const page = this.page;
-        const scrollingHeight = this.scrollingHeight;
         const expandedHeader = this.expandedHeader;
-        const expandedHeaderHeight = this.expandedHeaderHeight;
         const expandedFontStyles = this.expandedFontStyles;
         const collapsedFontStyles = this.collapsedFontStyles;
         const floatingTitle = this.floatingTitle;
@@ -522,9 +520,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
         if (
             !page ||
-            !scrollingHeight ||
             !expandedHeader ||
-            !expandedHeaderHeight ||
             !expandedFontStyles ||
             !collapsedFontStyles ||
             !floatingTitle
@@ -543,7 +539,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
         this.content.scrollEvents = true;
         this.content.addEventListener('ionScroll', this.contentScrollListener = ({ target }: CustomEvent<ScrollDetail>): void => {
-            if (target !== this.content || !this.enabled) {
+            if (target !== this.content || !this.enabled || !this.scrollingHeight) {
                 return;
             }
 
@@ -551,7 +547,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
             const progress = frozen
                 ? 0
-                : CoreMath.clamp(contentScroll.scrollTop / scrollingHeight, 0, 1);
+                : CoreMath.clamp(contentScroll.scrollTop / this.scrollingHeight, 0, 1);
 
             this.setCollapsed(progress === 1);
             page.style.setProperty('--collapsible-header-progress', `${progress}`);
@@ -608,7 +604,6 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         const scrollingHeight = this.scrollingHeight ?? 0;
         const expandedHeaderClientHeight = this.expandedHeader?.clientHeight ?? 0;
         const expandedHeaderHeight = this.expandedHeaderHeight ?? 0;
-
         const scrollableHeight = contentScroll.scrollHeight - contentScroll.clientHeight;
 
         let frozen = false;
