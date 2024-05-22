@@ -41,7 +41,7 @@ export class CoreStyleComponent implements OnChanges {
     ngOnChanges(): void {
         if (this.element && this.element.nativeElement) {
             const style = document.createElement('style');
-            style.innerText = this.prefixCSS(this.css, this.prefix);
+            style.innerHTML = this.prefixCSS(this.css, this.prefix);
 
             this.element.nativeElement.innerHTML = '';
             this.element.nativeElement.appendChild(style);

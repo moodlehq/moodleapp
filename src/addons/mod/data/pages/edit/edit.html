@@ -20,8 +20,8 @@
         <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="setGroup(selectedGroup)"
             [courseId]="database?.course" />
 
-        <div class="addon-data-contents {{cssClass}}" *ngIf="database">
-            <core-style [css]="database.csstemplate" prefix=".{{cssClass}}" />
+        <div class="addon-data-contents addon-data-edit-entry {{cssClass}}" *ngIf="database">
+            <core-style [css]="database.csstemplate" prefix="div.addon-data-edit-entry.{{cssClass}}" />
 
             <form (ngSubmit)="save($event)" [formGroup]="editForm" #editFormEl>
                 <core-compile-html [text]="editFormRender" [jsData]="jsData" [extraImports]="extraImports" />
