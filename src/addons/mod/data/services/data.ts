@@ -61,9 +61,11 @@ export enum AddonModDataAction {
     TIMEMODIFIED = 'timemodified',
     TAGS = 'tags',
     APPROVALSTATUS = 'approvalstatus',
+    APPROVALSTATUSCLASS = 'approvalstatusclass',
     DELCHECK = 'delcheck', // Unused.
     EXPORT = 'export', // Unused.
     ACTIONSMENU = 'actionsmenu',
+    ID = 'id',
 }
 
 export enum AddonModDataTemplateType {

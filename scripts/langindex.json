@@ -2549,6 +2549,7 @@
   "core.storingfiles": "local_moodlemobileapp",
   "core.strftimedate": "langconfig",
   "core.strftimedatefullshort": "langconfig",
+  "core.strftimedatemonthabbr": "langconfig",
   "core.strftimedateshort": "langconfig",
   "core.strftimedatetime": "langconfig",
   "core.strftimedatetimeshort": "langconfig",

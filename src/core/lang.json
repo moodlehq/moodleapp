@@ -312,6 +312,7 @@
     "startingtime": "Starting time: {{$a}}",
     "storingfiles": "Storing files",
     "strftimedate": "%d %B %Y",
+    "strftimedatemonthabbr": "%d %b %Y",
     "strftimedatefullshort": "%d/%m/%y",
     "strftimedateshort": "%d %B",
     "strftimedatetime": "%d %B %Y, %I:%M %p",

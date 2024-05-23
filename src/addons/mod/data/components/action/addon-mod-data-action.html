@@ -34,8 +34,12 @@
 <core-comments *ngIf="action === 'comments' && mode === 'list'" contextLevel="module" [instanceId]="database.coursemodule"
     component="mod_data" [itemId]="entry.id" area="database_entry" [courseId]="database.course" />
 
-<span *ngIf="action === 'timeadded'">{{ entry.timecreated * 1000 | coreFormatDate }}</span>
-<span *ngIf="action === 'timemodified'">{{ entry.timemodified * 1000 | coreFormatDate }}</span>
+<span *ngIf="action === 'timeadded'" [title]="entry.timecreated * 1000 | coreFormatDate">
+    {{ entry.timecreated * 1000 | coreFormatDate: 'strftimedatemonthabbr' }}
+</span>
+<span *ngIf="action === 'timemodified'" [title]="entry.timemodified * 1000 | coreFormatDate">
+    {{ entry.timemodified * 1000 | coreFormatDate: 'strftimedatemonthabbr' }}
+</span>
 
 <core-user-avatar *ngIf="action === 'userpicture'" [user]="entry" slot="start" [courseId]="database.course" [userId]="entry.userid"
     [profileUrl]="userPicture" />

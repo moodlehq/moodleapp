@@ -247,7 +247,7 @@ export class AddonModDataHelperProvider {
                 continue;
             }
 
-            if (action == AddonModDataAction.MOREURL) {
+            if (action === AddonModDataAction.MOREURL) {
                 // Render more url directly because it can be part of an HTML attribute.
                 template = template.replace(
                     replaceRegex,
@@ -255,10 +255,26 @@ export class AddonModDataHelperProvider {
                 );
 
                 continue;
-            } else if (action == 'approvalstatus') {
+            } else if (action === AddonModDataAction.APPROVALSTATUS) {
                 template = template.replace(
                     replaceRegex,
-                    Translate.instant('addon.mod_data.' + (entry.approved ? 'approved' : 'notapproved')),
+                    entry.approved
+                        ? ''
+                        : `<ion-badge color="warning">${Translate.instant('addon.mod_data.notapproved')}</ion-badge>`,
+                );
+
+                continue;
+            } else if (action === AddonModDataAction.APPROVALSTATUSCLASS) {
+                template = template.replace(
+                    replaceRegex,
+                    entry.approved ? 'approved' : 'notapproved',
+                );
+
+                continue;
+            } else if (action === AddonModDataAction.ID) {
+                template = template.replace(
+                    replaceRegex,
+                    entry.id.toString(),
                 );
 
                 continue;
@@ -460,6 +476,7 @@ export class AddonModDataHelperProvider {
             timeadded: true,
             timemodified: true,
             tags: true,
+            id: true,
 
             edit: entry.canmanageentry && !entry.deleted, // This already checks capabilities and readonly period.
             delete: entry.canmanageentry,
@@ -467,6 +484,7 @@ export class AddonModDataHelperProvider {
             disapprove: database.approval && accessInfo.canapprove && entry.approved && !entry.deleted,
 
             approvalstatus: database.approval,
+            approvalstatusclass: database.approval,
             comments: database.comments,
 
             actionsmenu: entry.canmanageentry
