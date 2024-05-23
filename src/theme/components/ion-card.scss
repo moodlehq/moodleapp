@@ -36,8 +36,10 @@ ion-card {
         justify-content: flex-end;
         margin: 0px 8px 8px 8px;
 
-        ion-button {
-            &[fill="outline"] {
+        ion-button.button {
+            --color: var(--gray-900);
+
+            &.button-outline {
                 --background: transparent;
             }
         }
