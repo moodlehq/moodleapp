@@ -37,6 +37,7 @@
         background-color: var(--core-question-feedback-background-color);
 
         .specificfeedback, .rightanswer, .im-feedback, .feedback, .generalfeedback {
+            font: var(--mdl-typography-body-font-md);
             margin: 0 0 .5em;
 
             p {

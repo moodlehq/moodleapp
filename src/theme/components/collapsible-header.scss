@@ -93,6 +93,10 @@ body:not(.core-iframe-fullscreen) .collapsible-header-page {
 
         ion-content {
             --offset-top: var(--collapsible-header-collapsed-height) !important;
+
+            > ion-refresher {
+                z-index: 1;
+            }
         }
 
         .collapsible-header-expanded {

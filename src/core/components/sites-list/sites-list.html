@@ -21,8 +21,8 @@
 
 <!-- Template to render the header of a site card. -->
 <ng-template #siteCardHeader let-site="site" let-isCurrentSite="isCurrentSite">
-    <ion-item-divider sticky="true" *ngIf="site" class="core-sites-list-sitename">
-        <ion-label>
+    <ion-item-divider sticky="true" *ngIf="site" class="core-sites-list-sitename ion-text-nowrap">
+        <ion-label class="ion-text-nowrap">
             <h2>
                 <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id" />
             </h2>
@@ -42,7 +42,7 @@
 
         <core-user-avatar [site]="site" slot="start" [linkProfile]="false" [siteId]="site.id" />
 
-        <ion-label>
+        <ion-label class="ion-text-nowrap">
             <p class="item-heading">{{site.fullname}}</p>
             <ng-container *ngIf="siteLabelTemplate" [ngTemplateOutlet]="siteLabelTemplate"
                 [ngTemplateOutletContext]="{site: site, isCurrentSite: isCurrentSite}" />

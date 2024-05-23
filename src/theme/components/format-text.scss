@@ -69,37 +69,37 @@ core-format-text {
         position: relative;
         display: inline-block;
         max-width: 100%;
-    }
 
-    .core-image-viewer-icon {
-        position: absolute;
-        @include position(null, 10px, 10px, null);
-        color: var(--ion-text-color);
-        border-radius: var(--mdl-shape-borderRadius-xl);
-        background-color: var(--core-format-text-viewer-icon-background);
-        display: flex;
-
-        width: var(--a11y-sizing-minTargetSize);
-        height: var(--a11y-sizing-minTargetSize);
-        max-width: var(--a11y-sizing-minTargetSize);
-        font-size: var(--mdl-typography-icon-fontSize-lg);
-
-        ion-icon {
-            flex: 1;
-            align-self: center;
-            /** Fix iOS icon size */
-            margin: 0 auto;
+        .core-image-viewer-icon {
             position: absolute;
-            left: 0;
-            right: 0;
-        }
+            @include position(null, 10px, 10px, null);
+            color: var(--ion-text-color);
+            border-radius: var(--mdl-shape-borderRadius-xl);
+            background-color: var(--core-format-text-viewer-icon-background);
+            display: flex;
 
-        &:hover {
-            opacity: .7;
-        }
+            width: var(--a11y-sizing-minTargetSize);
+            height: var(--a11y-sizing-minTargetSize);
+            max-width: var(--a11y-sizing-minTargetSize);
+            font-size: var(--mdl-typography-icon-fontSize-lg);
 
-        &.hidden {
-            display: none;
+            ion-icon {
+                flex: 1;
+                align-self: center;
+                /** Fix iOS icon size */
+                margin: 0 auto;
+                position: absolute;
+                left: 0;
+                right: 0;
+            }
+
+            &:hover {
+                opacity: .7;
+            }
+
+            &.hidden {
+                display: none;
+            }
         }
     }
 
