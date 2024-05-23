@@ -1,0 +1,94 @@
+iframe {
+    flex-grow: 1;
+    border: 0;
+    display: block;
+    max-width: 100%;
+    background-color: var(--ion-background-color);
+}
+
+.core-iframe-offline-disabled {
+    display: none !important;
+}
+
+// Iframe fullscreen manage.
+body.core-iframe-fullscreen {
+
+    // Using router outlet to avoid changing styles on modals.
+    ion-router-outlet {
+        .core-course-header,
+        ion-tab-bar {
+            display: none !important;
+        }
+
+        ion-tab-bar.mainmenu-tabs {
+            display: none;
+
+            // Restore original safe area.
+            .tabs-inner {
+                @supports (padding-left: constant(safe-area-inset-left)) {
+                    --ion-safe-area-left: constant(safe-area-inset-left);
+                }
+
+                @supports (padding-left: env(safe-area-inset-left)) {
+                    --ion-safe-area-left: env(safe-area-inset-left);
+                }
+            }
+        }
+
+        .ion-page ion-header {
+            --core-header-toolbar-height: 48px;
+            --core-header-toolbar-color: white;
+            --core-header-toolbar-background: black;
+            --core-header-buttons-color: var(--core-header-toolbar-color);
+            --core-header-toolbar-border-width: 0px;
+
+            ion-toolbar {
+                h1, ion-back-button {
+                    display: none;
+                }
+            }
+        }
+
+        @media screen and (orientation: landscape) {
+            // Place ion-header on the side and hide text
+            .ion-page {
+                flex-direction: row-reverse;
+                ion-header {
+                    width: calc(var(--core-header-toolbar-height) + var(--ion-safe-area-right));
+                    @include safe-area-padding-horizontal(null, 0px);
+                    background: var(--core-header-toolbar-background);
+
+                    ion-toolbar {
+                        padding: 0;
+                        height: 100%;
+                        --padding-start: 0px;
+                        --padding-end: 0px;
+                    }
+
+                    ion-buttons {
+                        flex-direction: column-reverse;
+                    }
+                }
+            }
+
+            core-tabs-outlet {
+                width: 100%;
+            }
+        }
+    }
+
+    // Hide cards and items with colors on fullscreen iframes.
+    @each $color-name, $unused in $colors {
+        ion-card.core-#{$color-name}-card,
+        .item.core-#{$color-name}-item {
+            opacity: 0 !important;
+            height: 0 !important;
+        }
+    }
+
+    // Hide collapsible footer on fullscreen iframes.
+    [collapsible-footer] {
+        opacity: 0 !important;
+        height: 0 !important;
+    }
+}

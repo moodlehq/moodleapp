@@ -1,0 +1,82 @@
+
+// Table App styles
+table.core-table {
+    border-collapse: collapse;
+    line-height: 20px;
+    width: 98%;
+    margin: 1em auto;
+    color: var(--text-color);
+
+    thead th {
+        vertical-align: bottom;
+        font-weight: bold;
+        font-size: var(--mdl-typography-body-fontSize-md);
+        background-color: var(--core-table-header-background);
+    }
+
+    tbody {
+        th {
+            font-weight: normal;
+        }
+        td {
+            font-size: var(--mdl-typography-body-fontSize-lg);
+        }
+    }
+
+    th, td {
+        padding: 8px;
+        white-space: normal;
+        text-align: start;
+    }
+
+    tr {
+        border-bottom: 1px solid var(--core-table-border-color);
+    }
+
+    .odd {
+        --cell-background: var(--core-table-odd-cell-background);
+        --cell-hover: var(--core-table-odd-cell-hover);
+    }
+
+    .even {
+        --cell-background: var(--core-table-even-cell-background);
+        --cell-hover: var(--core-table-even-cell-hover);
+    }
+
+    .odd, .even {
+        td, th, th[aria-current="page"] {
+            background-color: var(--cell-background);
+
+            &:hover {
+                background-color: var(--cell-hover);
+            }
+        }
+    }
+
+    tbody.auto-striped {
+        tr:nth-child(odd) {
+            background-color: var(--core-table-odd-cell-background);
+
+            &:hover {
+                background-color: var(--core-table-even-odd-hover);
+            }
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--core-table-even-cell-background);
+
+            &:hover {
+                background-color: var(--core-table-even-cell-hover);
+            }
+        }
+    }
+
+    .ion-no-border {
+        border: 0 !important;
+    }
+
+    .dimmed_text,
+    .hidden {
+        opacity: .7;
+    }
+}

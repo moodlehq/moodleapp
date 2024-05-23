@@ -118,7 +118,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         this.form.addControl('duration', this.fb.control(0));
         this.form.addControl('timedurationminutes', this.fb.control(''));
         this.form.addControl('repeat', this.fb.control(false));
-        this.form.addControl('repeats', this.fb.control('1'));
+        this.form.addControl('repeats', this.fb.control({ value: '1', disabled: true }));
         this.form.addControl('repeateditall', this.fb.control(1));
 
         this.maxDate = CoreTimeUtils.getDatetimeDefaultMax();

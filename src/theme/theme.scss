@@ -22,8 +22,10 @@
 @import "components/collapsible-item.scss";
 @import "components/error-accordion.scss";
 @import "components/format-text.scss";
+@import "components/iframe.scss";
 @import "components/mod-label.scss";
 @import "components/rubrics.scss";
+@import "components/table.scss";
 @import "components/videojs.scss";
 
 /* Ionic components overrides */
@@ -31,7 +33,9 @@ html {
     @import "components/ion-accordion.scss";
     @import "components/ion-action-sheet.scss";
     @import "components/ion-alert.scss";
+    @import "components/ion-avatar.scss";
     @import "components/ion-back-button.scss";
+    @import "components/ion-badge.scss";
     @import "components/ion-button.scss";
     @import "components/ion-card.scss";
     @import "components/ion-checkbox.scss";

@@ -22,6 +22,10 @@ input[type=radio],
     --outer-border-width: 1px;
 }
 
+ion-radio::part(label) {
+    white-space: normal;
+}
+
 .ios ion-radio {
     &::part(container) {
         width: var(--size);

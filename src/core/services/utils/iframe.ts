@@ -344,7 +344,8 @@ export class CoreIframeUtilsProvider {
 
         element.classList.add('core-loading');
 
-        const treatElement = (sendResizeEvent: boolean = false) => {
+        const treatElement = (sendResizeEvent = false) => {
+
             this.checkOnlineFrameInOffline(element, isSubframe);
 
             const { window, document } = this.getContentWindowAndDocument(element);
@@ -361,10 +362,12 @@ export class CoreIframeUtilsProvider {
 
             // Iframe content has been loaded.
             // Send a resize events to the iframe so it calculates the right size if needed.
-            if (window && sendResizeEvent) {
+            if (sendResizeEvent) {
                 element.classList.remove('core-loading');
 
-                setTimeout(() => window.dispatchEvent && window.dispatchEvent(new Event('resize')), 1000);
+                if (window) {
+                    setTimeout(() => window.dispatchEvent && window.dispatchEvent(new Event('resize')), 1000);
+                }
             }
         };
 

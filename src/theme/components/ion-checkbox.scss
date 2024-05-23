@@ -15,6 +15,10 @@ input[type=checkbox] {
     }
 }
 
+ion-checkbox::part(label) {
+    white-space: normal;
+}
+
 ion-checkbox {
     &.checkbox-disabled {
         @include pointer-events-on-buttons();

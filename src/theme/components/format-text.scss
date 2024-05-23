@@ -70,7 +70,7 @@ core-format-text {
         display: inline-block;
         max-width: 100%;
 
-        .core-image-viewer-icon {
+        button.core-image-viewer-icon {
             position: absolute;
             @include position(null, 10px, 10px, null);
             color: var(--ion-text-color);

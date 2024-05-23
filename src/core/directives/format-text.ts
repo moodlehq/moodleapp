@@ -876,7 +876,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
                         if (iframe.contentDocument) {
                             const css = document.createElement('style');
                             css.setAttribute('type', 'text/css');
-                            css.innerHTML = 'iframe {width: 100%;height: 100%;}';
+                            css.innerHTML = 'iframe {width: 100%;height: 100%;position:absolute;top:0; left:0;}';
                             iframe.contentDocument.head.appendChild(css);
                         }
                     });

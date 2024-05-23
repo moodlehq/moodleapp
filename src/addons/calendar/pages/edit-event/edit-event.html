@@ -141,12 +141,12 @@
                     </ion-item-divider>
                     <ion-item>
                         <ion-radio [value]="0">
-                            <p>{{ 'addon.calendar.durationnone' | translate }}</p>
+                            {{ 'addon.calendar.durationnone' | translate }}
                         </ion-radio>
                     </ion-item>
                     <ion-item>
                         <ion-radio [value]="1">
-                            <p><label for="timedurationuntil-button">{{ 'addon.calendar.durationuntil' | translate }}</label></p>
+                            <label for="timedurationuntil-button">{{ 'addon.calendar.durationuntil' | translate }}</label>
                         </ion-radio>
                     </ion-item>
                     <ion-item *ngIf="form.controls.duration.value === 1">
@@ -163,7 +163,7 @@
                     </ion-item>
                     <ion-item>
                         <ion-radio [value]="2">
-                            <p><label for="timedurationminutes">{{ 'addon.calendar.durationminutes' | translate }}</label></p>
+                            <label for="timedurationminutes">{{ 'addon.calendar.durationminutes' | translate }}</label>
                         </ion-radio>
                     </ion-item>
                     <ion-item *ngIf="form.controls.duration.value === 2">
@@ -194,14 +194,14 @@
                             <p class="item-heading">{{ 'addon.calendar.repeatedevents' | translate }}</p>
                         </ion-label>
                     </ion-item-divider>
-                    <ion-item>
-                        <ion-radio value="1">
-                            <p>{{ 'addon.calendar.repeateditall' | translate:{$a: otherEventsCount} }}</p>
+                    <ion-item class="ion-text-wrap">
+                        <ion-radio [value]="1">
+                            {{ 'addon.calendar.repeateditall' | translate:{$a: otherEventsCount} }}
                         </ion-radio>
                     </ion-item>
-                    <ion-item>
-                        <ion-radio value="0">
-                            <p>{{ 'addon.calendar.repeateditthis' | translate }}</p>
+                    <ion-item class="ion-text-wrap">
+                        <ion-radio [value]="0">
+                            {{ 'addon.calendar.repeateditthis' | translate }}
                         </ion-radio>
                     </ion-item>
                 </ion-radio-group>

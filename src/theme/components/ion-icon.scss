@@ -19,6 +19,14 @@ ion-icon {
         -webkit-transform: scale(-1, 1);
         transform: scale(-1, 1);
     }
+
+    // Coloured icons.
+    @each $color-name, $unused in $colors {
+        &.ion-color-#{$color-name} {
+            --ion-color-base: var(--ion-color-#{$color-name});
+            color: var(--ion-color-base);
+        }
+    }
 }
 
 // The following code is part of the Fontawesome css file that can be found
