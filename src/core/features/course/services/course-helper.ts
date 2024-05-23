@@ -1967,6 +1967,7 @@ export class CoreCourseHelperProvider {
         completion.state = completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE
             ? CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE
             : CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE;
+        completion.isoverallcomplete = completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE;
 
         try {
             const response = await CoreCourse.markCompletedManually(
@@ -1985,6 +1986,7 @@ export class CoreCourseHelperProvider {
             completion.state = completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE
                 ? CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE
                 : CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE;
+            completion.isoverallcomplete = !completion.isoverallcomplete;
 
             CoreDomUtils.showErrorModalDefault(error, 'core.errorchangecompletion', true);
         } finally {
