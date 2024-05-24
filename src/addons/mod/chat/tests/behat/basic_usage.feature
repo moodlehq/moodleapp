@@ -92,4 +92,4 @@ Feature: Test basic usage of chat in app
     Given I entered the course "Course 1" as "student1" in the app
     When I press "Course downloads" in the app
     And I press "Download" within "Test chat name" "ion-item" in the app
-    Then I should not be able to press "Download" within "Test chat name" "ion-item" in the app
+    Then I should find "Downloaded" within "Test chat name" "ion-item" in the app
