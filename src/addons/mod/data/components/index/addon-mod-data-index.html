@@ -80,22 +80,7 @@
         <core-compile-html [text]="entriesRendered" [jsData]="jsData" [extraImports]="extraImports" />
     </div>
 
-    <ion-grid *ngIf="search.page > 0 || hasNextPage">
-        <ion-row class="ion-align-items-center">
-            <ion-col *ngIf="search.page > 0">
-                <ion-button expand="block" fill="outline" (click)="searchEntries(search.page - 1)">
-                    <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true" />
-                    {{ 'core.previous' | translate }}
-                </ion-button>
-            </ion-col>
-            <ion-col *ngIf="hasNextPage">
-                <ion-button expand="block" (click)="searchEntries(search.page + 1)">
-                    {{ 'core.next' | translate }}
-                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
-                </ion-button>
-            </ion-col>
-        </ion-row>
-    </ion-grid>
+
 
     <core-empty-box *ngIf="isEmpty && !search.searching" icon="fas-database" [message]="'addon.mod_data.norecords' | translate" />
 
@@ -104,9 +89,28 @@
         <button class="as-link" (click)="searchReset($event)">{{ 'addon.mod_data.resetsettings' | translate}}</button>
     </core-empty-box>
 
+    <div collapsible-footer appearOnBottom *ngIf="!showLoading" slot="fixed">
+        <ion-grid *ngIf="search.page > 0 || hasNextPage">
+            <ion-row class="ion-align-items-center">
+                <ion-col *ngIf="search.page > 0">
+                    <ion-button expand="block" fill="outline" (click)="searchEntries(search.page - 1)">
+                        <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true" />
+                        {{ 'core.previous' | translate }}
+                    </ion-button>
+                </ion-col>
+                <ion-col *ngIf="hasNextPage">
+                    <ion-button expand="block" (click)="searchEntries(search.page + 1)">
+                        {{ 'core.next' | translate }}
+                        <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
+                    </ion-button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
+    </div>
 </core-loading>
 
-<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModuleId]="module.id" />
 
 <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canAdd">
     <ion-fab-button (click)="gotoAddEntries()" [attr.aria-label]="'addon.mod_data.addentries' | translate">
