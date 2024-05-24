@@ -423,6 +423,11 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
                 return;
             }
 
+            if (this.isPlayedMedia()) {
+                // Don't update the URL if it's a media that already started playing, otherwise the media will be reloaded.
+                return;
+            }
+
             const newState = await CoreFilepool.getFileStateByUrl(site.getId(), url);
             if (newState === state) {
                 return;
@@ -459,6 +464,29 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
                 }
             });
         }
+    }
+
+    /**
+     * Check if the source affects a media element that is already playing and not ended.
+     *
+     * @returns Whether it's a played media element.
+     */
+    protected isPlayedMedia(): boolean {
+        let mediaElement: HTMLVideoElement | HTMLAudioElement | null = null;
+
+        if (this.element.tagName === 'VIDEO') {
+            mediaElement = this.element as HTMLVideoElement;
+        } else if (this.element.tagName === 'AUDIO') {
+            mediaElement = this.element as HTMLAudioElement;
+        } else if (this.element.tagName === 'SOURCE' || this.element.tagName === 'TRACK') {
+            mediaElement = this.element.closest<HTMLVideoElement | HTMLAudioElement>('video,audio');
+        }
+
+        if (!mediaElement) {
+            return false;
+        }
+
+        return !mediaElement.paused || (mediaElement.currentTime > 0.1 && !mediaElement.ended);
     }
 
     /**
