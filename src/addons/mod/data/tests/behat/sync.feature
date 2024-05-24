@@ -61,7 +61,8 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I wait until the page is ready
     And I close the popup in the app
     And I switch network connection to offline
-    When I press "Edit" in the app
+    When I press "Actions menu" in the app
+    And I press "Edit" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodlecloud.com/ |
       | Description | Moodle Cloud |
@@ -83,6 +84,7 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I press "Refresh" in the app
     And I wait until the page is ready
     And I switch network connection to offline
+    And I press "Actions menu" in the app
     And I press "Delete" in the app
     And I should find "Are you sure you want to delete this entry?" in the app
     And I press "Delete" in the app
@@ -111,12 +113,14 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I wait until the page is ready
     And I close the popup in the app
     When I switch network connection to offline
+    And I press "Actions menu" in the app
     And I press "Delete" in the app
     And I should find "Are you sure you want to delete this entry?" in the app
     And I press "Delete" in the app
     And I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app
     And I should find "This Database has offline data to be synchronised" in the app
+    And I press "Actions menu" in the app
     And I press "Restore" in the app
     And I press the back button in the app
     And I switch network connection to wifi

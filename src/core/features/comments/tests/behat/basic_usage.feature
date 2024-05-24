@@ -33,6 +33,7 @@ Feature: Test basic usage of comments in app
     And I press "Add entries" in the app
     And I set the field "Test field name" to "Test" in the app
     And I press "Save" in the app
+    And I press "Actions menu" in the app
     And I press "Show more" in the app
     And I press "Comments (0)" in the app
     And I set the field "Add a comment..." to "comment test teacher" in the app
@@ -45,6 +46,7 @@ Feature: Test basic usage of comments in app
 
     # Create and delete comments as a student
     Given I entered the data activity "Data" on course "Course 1" as "student1" in the app
+    And I press "Actions menu" in the app
     And I press "Show more" in the app
     And I press "Comments (1)" in the app
     And I set the field "Add a comment..." to "comment test student" in the app
@@ -70,6 +72,7 @@ Feature: Test basic usage of comments in app
     And I press "Add entries" in the app
     And I set the field "Test field name" to "Test" in the app
     And I press "Save" in the app
+    And I press "Actions menu" in the app
     And I press "Show more" in the app
     And I press "Comments (0)" in the app
     And I switch network connection to offline

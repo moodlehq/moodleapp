@@ -59,7 +59,8 @@ Feature: Users can manage entries in database activities
       | URL | https://moodlecloud.com/ |
       | Description | Moodle Cloud |
     And I press "Save" near "Web links" in the app
-    And I press "Show more" near "Moodle community site" in the app
+    And I press "Actions menu" near "Moodle community site" in the app
+    And I press "Show more" in the app
     Then I should find "Moodle community site" in the app
     And I should not find "Comments" in the app
     And I should be able to press "Previous" in the app
@@ -83,14 +84,16 @@ Feature: Users can manage entries in database activities
     And I set the following fields to these values in the app:
       | Description | Moodle community site |
     And I press "Save" near "Data with comments" in the app
-    And I press "Show more" near "Moodle community site" in the app
+    And I press "Actions menu" near "Moodle community site" in the app
+    And I press "Show more" in the app
     Then I should find "Moodle community site" in the app
     And I should find "Comments" in the app
 
     Given the following config values are set as admin:
       | usecomments | 0 |
     And I entered the data activity "Data with comments" on course "Course 1" as "student1" in the app
-    When I press "Show more" near "Moodle community site" in the app
+    When I press "Actions menu" near "Moodle community site" in the app
+    And I press "Show more" in the app
     Then I should not find "Comments" in the app
     But the following events should have been logged for "student1" in the app:
       | name                                 | activity | activityname       | course   |
@@ -106,9 +109,11 @@ Feature: Users can manage entries in database activities
     And I press "Save" near "Web links" in the app
     And I entered the course "Course 1" as "student2" in the app
     When I press "Web links" near "General" in the app
+    And I press "Actions menu" in the app
     Then "Edit" "link" should not exist
     And "Delete" "link" should not exist
-    And I press "Show more" in the app
+    When I press "Show more" in the app
+    And "Actions menu" "link" should not exist
     And "Edit" "link" should not exist
     And "Delete" "link" should not exist
 
@@ -121,7 +126,8 @@ Feature: Users can manage entries in database activities
     And I press "Save" near "Web links" in the app
 
     # Edit the entry from list view.
-    When I press "Edit" in the app
+    When I press "Actions menu" in the app
+    And I press "Edit" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodlecloud.com/ |
       | Description | Moodle Cloud |
@@ -132,11 +138,13 @@ Feature: Users can manage entries in database activities
     And I should find "Moodle Cloud" in the app
 
     # Delete the entry from list view.
-    When I press "Delete" in the app
+    When I press "Actions menu" in the app
+    And I press "Delete" in the app
     Then I should find "Are you sure you want to delete this entry?" in the app
     And I press "Cancel" in the app
     And I should find "Moodle Cloud" in the app
-    When I press "Delete" in the app
+    When I press "Actions menu" in the app
+    And I press "Delete" in the app
     Then I should find "Are you sure you want to delete this entry?" in the app
     And I press "Delete" in the app
     And I should not find "Moodle Cloud" in the app
@@ -149,7 +157,9 @@ Feature: Users can manage entries in database activities
     And I press "Save" near "Web links" in the app
 
     # Edit the entry from single view.
-    When I press "Show more" in the app
+    When I press "Actions menu" in the app
+    And I press "Show more" in the app
+    And I press "Actions menu" in the app
     And I press "Edit" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodlecloud.com/ |
@@ -161,11 +171,13 @@ Feature: Users can manage entries in database activities
     And I should find "Moodle Cloud" in the app
 
     # Delete the entry from list view.
-    When I press "Delete" in the app
+    When I press "Actions menu" in the app
+    And I press "Delete" in the app
     Then I should find "Are you sure you want to delete this entry?" in the app
     And I press "Cancel" in the app
     And I should find "Moodle Cloud" in the app
-    When I press "Delete" in the app
+    When I press "Actions menu" in the app
+    And I press "Delete" in the app
     Then I should find "Are you sure you want to delete this entry?" in the app
     And I press "Delete" in the app
     And I should not find "Moodle Cloud" in the app
@@ -190,7 +202,8 @@ Feature: Users can manage entries in database activities
     And I should find "Moodle community site" in the app
 
     # Edit the entry from list view.
-    When I press "Edit" near "Moodle community site" in the app
+    When I press "Actions menu" near "Moodle community site" in the app
+    And I press "Edit" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodlecloud.com/ |
       | Description | Moodle Cloud |
@@ -201,19 +214,23 @@ Feature: Users can manage entries in database activities
     And I should find "Moodle Cloud" in the app
 
     # Delete the entry from list view.
-    When I press "Delete" near "Moodle Cloud" in the app
+    When I press "Actions menu" near "Moodle Cloud" in the app
+    And I press "Delete" in the app
     Then I should find "Are you sure you want to delete this entry?" in the app
     And I press "Cancel" in the app
     And I should find "Moodle Cloud" in the app
-    When I press "Delete" near "Moodle Cloud" in the app
+    When I press "Actions menu" near "Moodle Cloud" in the app
+    And I press "Delete" in the app
     Then I should find "Are you sure you want to delete this entry?" in the app
     And I press "Delete" in the app
     And I should not find "Moodle Cloud" in the app
 
     # Edit the entry from single view.
-    When I press "Show more" in the app
+    When I press "Actions menu" in the app
+    And I press "Show more" in the app
     And I should find "https://telegram.org/" in the app
     And I should find "Telegram" in the app
+    And I press "Actions menu" in the app
     And I press "Edit" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodlecloud.com/ |
@@ -225,11 +242,13 @@ Feature: Users can manage entries in database activities
     And I should find "Moodle Cloud" in the app
 
     # Delete the entry from single view.
-    When I press "Delete" in the app
+    When I press "Actions menu" in the app
+    And I press "Delete" in the app
     Then I should find "Are you sure you want to delete this entry?" in the app
     And I press "Cancel" in the app
     And I should find "Moodle Cloud" in the app
-    When I press "Delete" in the app
+    When I press "Actions menu" in the app
+    And I press "Delete" in the app
     Then I should find "Are you sure you want to delete this entry?" in the app
     And I press "Delete" in the app
     And I should not find "Moodle Cloud" in the app
@@ -250,5 +269,5 @@ Feature: Users can manage entries in database activities
     And I set the following fields to these values in the app:
       | Number | 0 |
     And I press "Save" near "Number DB" in the app
-    Then I should find "0" near "Number:" in the app
+    Then I should find "0" in the app
     But I should not find "Save" in the app
