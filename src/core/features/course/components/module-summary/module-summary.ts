@@ -123,7 +123,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
             this.packageStatusObserver = CoreEvents.on(
                 CoreEvents.PACKAGE_STATUS_CHANGED,
                 (data) => {
-                    if (data.componentId == module.id && data.component == this.component) {
+                    if (data.componentId === this.module?.id && data.component == this.component) {
                         this.getPackageStatus();
                     }
                 },
