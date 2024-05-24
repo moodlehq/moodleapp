@@ -3,25 +3,32 @@
 // Edit and search modal.
 :host {
 
-    ::ng-deep {
-        table {
-            width: 100%;
-        }
-        td {
-            vertical-align: top;
-        }
-    }
-
     .addon-data-advanced-search {
         padding: 16px;
         width: 100%;
     }
 
-    .addon-data-contents form,
+    .addon-data-edit-entry form,
     form .addon-data-advanced-search {
         background-color: var(--ion-item-background);
 
         ::ng-deep {
+            table {
+                width: 100%;
+                tbody {
+                    display: block;
+                }
+
+                td {
+                    vertical-align: top;
+                }
+            }
+
+            .edit-field,
+            .search-field {
+                border-bottom: 1px solid var(--stroke);
+            }
+
             .has-errors {
                 .input-highlight,
                 .select-highlight,

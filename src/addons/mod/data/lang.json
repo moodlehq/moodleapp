@@ -9,6 +9,7 @@
     "authorfirstname": "First name",
     "authorlastname": "Last name",
     "confirmdeleterecord": "Are you sure you want to delete this entry?",
+    "datemodified": "Last edited:",
     "descending": "Descending",
     "disapprove": "Undo approval",
     "edittagsnotsupported": "Sorry, editing tags is not supported by the app.",

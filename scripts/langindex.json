@@ -555,6 +555,7 @@
   "addon.mod_data.authorfirstname": "data",
   "addon.mod_data.authorlastname": "data",
   "addon.mod_data.confirmdeleterecord": "data",
+  "addon.mod_data.datemodified": "data",
   "addon.mod_data.descending": "data",
   "addon.mod_data.disapprove": "data",
   "addon.mod_data.edittagsnotsupported": "local_moodlemobileapp",
