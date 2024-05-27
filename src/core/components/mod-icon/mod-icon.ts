@@ -13,7 +13,8 @@
 // limitations under the License.
 
 import { CoreConstants, ModPurpose } from '@/core/constants';
-import { Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
+import { SafeHtml } from '@angular/platform-browser';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreFile } from '@services/file';
@@ -22,7 +23,7 @@ import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
-import { Http } from '@singletons';
+import { DomSanitizer, Http } from '@singletons';
 import { firstValueFrom } from 'rxjs';
 
 const assetsPath = 'assets/img/';
@@ -65,13 +66,11 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         return this.showAlt ? this.modNameTranslated : '';
     }
 
-    @ViewChild('svg') svgElement!: ElementRef<HTMLElement>;
-
     iconUrl = '';
 
     modNameTranslated = '';
     isLocalUrl = false;
-    svgLoaded = false;
+    svgIcon: SafeHtml = '';
     linkIconWithComponent = false;
     loaded = false;
 
@@ -304,7 +303,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     protected async setSVGIcon(): Promise<void> {
         if (this.iconVersion === IconVersion.LEGACY_VERSION) {
             this.loaded = true;
-            this.svgLoaded = false;
+            this.svgIcon = '';
 
             return;
         }
@@ -347,7 +346,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             }
 
             if (mimetype !== 'image/svg+xml' || !fileContents) {
-                this.svgLoaded = false;
+                this.svgIcon = '';
 
                 return;
             }
@@ -358,7 +357,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
             // Safety check.
             if (doc.documentElement.nodeName !== 'svg') {
-                this.svgLoaded = false;
+                this.svgIcon = '';
 
                 return;
             }
@@ -397,10 +396,37 @@ export class CoreModIconComponent implements OnInit, OnChanges {
                 }
             }
 
-            this.svgElement.nativeElement.replaceChildren(doc.documentElement);
-            this.svgLoaded = true;
+            // Prefix id's on svg DOM to avoid conflicts.
+            const uniqueId = 'modicon' + CoreUtils.getUniqueId('modicon') + '_';
+            const styleTags = Array.from(doc.documentElement.getElementsByTagName('style'));
+            const styleAttrs = Array.from(doc.documentElement.querySelectorAll('[style]'));
+            const idTags = Array.from(doc.documentElement.querySelectorAll('[id]'));
+            idTags.forEach((element) => {
+                if (!element.id) {
+                    return;
+                }
+                const newId = uniqueId + element.id;
+                // Regexp to replace all ocurrences of the id with workd bondaries.
+                const oldIdFinder = new RegExp(`#${element.id}\\b`, 'g');
+
+                element.id = newId;
+
+                // Prefix the elementId on style Tags.
+                styleTags.forEach((style) => {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    style.textContent = style.textContent!.replace(oldIdFinder, `#${newId}`);
+                });
+
+                // Also change ids on style attributes.
+                styleAttrs.forEach((attr) => {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    attr.setAttribute('style', attr.getAttribute('style')!.replace(oldIdFinder, `#${newId}`));
+                });
+            });
+
+            this.svgIcon = DomSanitizer.bypassSecurityTrustHtml(doc.documentElement.outerHTML);
         } catch {
-            this.svgLoaded = false;
+            this.svgIcon = '';
         } finally {
             this.loaded = true;
         }
