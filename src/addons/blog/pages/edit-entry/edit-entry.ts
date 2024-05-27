@@ -140,7 +140,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
             this.entry = await this.getEntry({ filters, lastModified, entryId });
             this.files = this.entry.attachmentfiles ?? [];
             this.initialFiles = [...this.files];
-            this.courseId = this.entry.courseid;
+            this.courseId = CoreNavigator.getRouteNumberParam('courseId') ?? this.entry.courseid;
             this.modId = this.entry.coursemoduleid ? this.entry.coursemoduleid : CoreNavigator.getRouteNumberParam('cmId');
 
             if (this.courseId) {
