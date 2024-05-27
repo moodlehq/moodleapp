@@ -161,6 +161,7 @@ export class CoreCompileProvider {
         getModWorkshopComponentModules,
     ];
 
+    protected componentId = 0;
     protected libraries?: unknown[];
     protected exportedObjects?: Record<string, unknown>;
 
@@ -187,7 +188,7 @@ export class CoreCompileProvider {
         await import('@angular/compiler');
 
         // Create the component using the template and the class.
-        const component = Component({ template })(componentClass);
+        const component = Component({ template, host: { 'compiled-component-id': String(this.componentId++) } })(componentClass);
 
         const lazyImports = await Promise.all(this.LAZY_IMPORTS.map(getModules => getModules()));
         const imports = [
