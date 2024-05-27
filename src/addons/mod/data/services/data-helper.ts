@@ -247,7 +247,7 @@ export class AddonModDataHelperProvider {
                 continue;
             }
 
-            if (action == AddonModDataAction.MOREURL) {
+            if (action === AddonModDataAction.MOREURL) {
                 // Render more url directly because it can be part of an HTML attribute.
                 template = template.replace(
                     replaceRegex,
@@ -255,10 +255,26 @@ export class AddonModDataHelperProvider {
                 );
 
                 continue;
-            } else if (action == 'approvalstatus') {
+            } else if (action === AddonModDataAction.APPROVALSTATUS) {
                 template = template.replace(
                     replaceRegex,
-                    Translate.instant('addon.mod_data.' + (entry.approved ? 'approved' : 'notapproved')),
+                    entry.approved
+                        ? ''
+                        : `<ion-badge color="warning">${Translate.instant('addon.mod_data.notapproved')}</ion-badge>`,
+                );
+
+                continue;
+            } else if (action === AddonModDataAction.APPROVALSTATUSCLASS) {
+                template = template.replace(
+                    replaceRegex,
+                    entry.approved ? 'approved' : 'notapproved',
+                );
+
+                continue;
+            } else if (action === AddonModDataAction.ID) {
+                template = template.replace(
+                    replaceRegex,
+                    entry.id.toString(),
                 );
 
                 continue;
@@ -460,6 +476,7 @@ export class AddonModDataHelperProvider {
             timeadded: true,
             timemodified: true,
             tags: true,
+            id: true,
 
             edit: entry.canmanageentry && !entry.deleted, // This already checks capabilities and readonly period.
             delete: entry.canmanageentry,
@@ -467,6 +484,7 @@ export class AddonModDataHelperProvider {
             disapprove: database.approval && accessInfo.canapprove && entry.approved && !entry.deleted,
 
             approvalstatus: database.approval,
+            approvalstatusclass: database.approval,
             comments: database.comments,
 
             actionsmenu: entry.canmanageentry
@@ -504,82 +522,163 @@ export class AddonModDataHelperProvider {
     /**
      * Returns the default template of a certain type.
      *
-     * Based on Moodle function data_generate_default_template.
-     *
      * @param type Type of template.
      * @param fields List of database fields.
      * @returns Template HTML.
      */
-    getDefaultTemplate(type: AddonModDataTemplateType, fields: AddonModDataField[]): string {
-        if (type == AddonModDataTemplateType.LIST_HEADER || type == AddonModDataTemplateType.LIST_FOOTER) {
-            return '';
+    protected getDefaultTemplate(type: AddonModDataTemplateType, fields: AddonModDataField[]): string {
+        switch (type) {
+            case AddonModDataTemplateType.LIST:
+                return this.getDefaultListTemplate(fields);
+            case AddonModDataTemplateType.SINGLE:
+                return this.getDefaultSingleTemplate(fields);
+            case AddonModDataTemplateType.SEARCH:
+                return this.getDefaultSearchTemplate(fields);
+            case AddonModDataTemplateType.ADD:
+                return this.getDefaultAddTemplate(fields);
         }
 
+        return '';
+    }
+
+    /**
+     * Returns the default template for the list view.
+     *
+     * @param fields List of database fields.
+     * @returns Template HTML.
+     */
+    protected getDefaultListTemplate(fields: AddonModDataField[]): string {
         const html: string[] = [];
 
-        if (type == AddonModDataTemplateType.LIST) {
-            html.push('##delcheck##<br />');
-        }
+        html.push(`<ion-card class="defaulttemplate-listentry">
+            <ion-item class="ion-text-wrap" lines="full">
+                ##userpicture##
+                <ion-label>
+                    <p class="item-heading">##user##</p>
+                    <p class="data-timeinfo">##timeadded##</p>
+                    <p class="data-timeinfo">
+                        <strong>${Translate.instant('addon.mod_data.datemodified')}</strong>&nbsp;##timemodified##
+                    </p>
+                </ion-label>
+                <div slot="end" class="ion-text-end">
+                    ##actionsmenu##
+                    <p class="ion-text-end ##approvalstatusclass##">##approvalstatus##</p>
+                </div>
+            </ion-item>
 
-        html.push(
-            '<div class="defaulttemplate">',
-            '<table class="mod-data-default-template ##approvalstatus##">',
-            '<tbody>',
-        );
+            <ion-item class="ion-text-wrap defaulttemplate-list-body"><ion-label>`);
 
         fields.forEach((field) => {
-            html.push(
-                '<tr class="">',
-                '<td class="template-field cell c0" style="">',
-                field.name,
-                ': </td>',
-                '<td class="template-token cell c1 lastcol" style="">[[',
-                field.name,
-                ']]</td>',
-                '</tr>',
-            );
+            html.push(`
+            <ion-row class="ion-margin-vertical ion-align-items-start ion-justify-content-start">
+                <ion-col size="4" size-lg="3"><strong>${field.name}</strong></ion-col>
+                <ion-col size="8" size-lg="9">[[${field.name}]]</ion-col>
+            </ion-row>`);
         });
 
-        if (type == AddonModDataTemplateType.LIST) {
-            html.push(
-                '<tr class="lastrow">',
-                '<td class="controls template-field cell c0 lastcol" style="" colspan="2">',
-                '##actionsmenu##  ##edit##  ##more##  ##delete##  ##approve##  ##disapprove##  ##export##',
-                '</td>',
-                '</tr>',
-            );
-        } else if (type == AddonModDataTemplateType.SINGLE) {
-            html.push(
-                '<tr class="lastrow">',
-                '<td class="controls template-field cell c0 lastcol" style="" colspan="2">',
-                '##actionsmenu##  ##edit##  ##delete##  ##approve##  ##disapprove##  ##export##',
-                '</td>',
-                '</tr>',
-            );
-        } else if (type == AddonModDataTemplateType.SEARCH) {
-            html.push(
-                '<tr class="searchcontrols">',
-                '<td class="template-field cell c0" style="">Author first name: </td>',
-                '<td class="template-token cell c1 lastcol" style="">##firstname##</td>',
-                '</tr>',
-                '<tr class="searchcontrols lastrow">',
-                '<td class="template-field cell c0" style="">Author surname: </td>',
-                '<td class="template-token cell c1 lastcol" style="">##lastname##</td>',
-                '</tr>',
-            );
-        }
-
-        html.push(
-            '</tbody>',
-            '</table>',
-            '</div>',
-        );
-
-        if (type == AddonModDataTemplateType.LIST) {
-            html.push('<hr />');
-        }
+        html.push('##tags##</ion-label></ion-item></ion-card>');
 
         return html.join('');
+    }
+
+    /**
+     * Returns the default template for the add view.
+     *
+     * @param fields List of database fields.
+     * @returns Template HTML.
+     */
+    protected getDefaultAddTemplate(fields: AddonModDataField[]): string {
+        const html: string[] = [];
+
+        html.push('<div class="defaulttemplate-addentry">');
+
+        fields.forEach((field) => {
+            html.push(`
+            <div class="ion-text-wrap edit-field">
+                <p><strong>${field.name}</strong></p>
+                [[${field.name}]]
+            </div>`);
+        });
+
+        html.push('##otherfields## ##tags##</div>');
+
+        return html.join('');
+    }
+
+    /**
+     * Returns the default template for the single view.
+     *
+     * @param fields List of database fields.
+     * @returns Template HTML.
+     */
+    protected  getDefaultSingleTemplate(fields: AddonModDataField[]): string {
+        const html: string[] = [];
+
+        html.push(`<div class="defaulttemplate-single">
+            <div class="defaulttemplate-single-body">
+            <ion-item class="ion-text-wrap" lines="full">
+                ##userpicture##
+                <ion-label>
+                    <p class="item-heading">##user##</p>
+                    <p class="data-timeinfo">##timeadded##</p>
+                    <p class="data-timeinfo">
+                        <strong>${Translate.instant('addon.mod_data.datemodified')}</strong>&nbsp;##timemodified##
+                    </p>
+                </ion-label>
+                <div slot="end" class="ion-text-end">
+                    ##actionsmenu##
+                    <p class="ion-text-end ##approvalstatusclass##">##approvalstatus##</p>
+                </div>
+            </ion-item>`);
+
+        fields.forEach((field) => {
+            html.push(`
+            <ion-item class="ion-text-wrap" lines="none"><ion-label>
+                <p class="item-heading"><strong>${field.name}</strong></p>
+                <p>[[${field.name}]]</p>
+            </ion-label></ion-item>`);
+        });
+
+        html.push('##otherfields## ##tags##</ion-label></ion-item></div></div>');
+
+        return html.join('');
+    }
+
+    /**
+     * Returns the default template for the search view.
+     *
+     * @param fields List of database fields.
+     * @returns Template HTML.
+     */
+    protected getDefaultSearchTemplate(fields: AddonModDataField[]): string {
+        const html: string[] = [];
+
+        html.push('<div class="defaulttemplate-asearch">');
+
+        html.push(`
+            <div class="ion-text-wrap search-field">
+                <p><strong>${Translate.instant('addon.mod_data.authorfirstname')}</strong></p>
+                ##firstname##
+            </div>`);
+
+        html.push(`
+            <div class="ion-text-wrap search-field">
+                <p><strong>${Translate.instant('addon.mod_data.authorlastname')}</strong></p>
+                ##lastname##
+            </div>`);
+
+        fields.forEach((field) => {
+            html.push(`
+            <div class="ion-text-wrap search-field">
+                <p><strong>${field.name}</strong></p>
+                [[${field.name}]]
+            </div>`);
+        });
+
+        html.push('##tags##</div>');
+
+        return html.join('');
+
     }
 
     /**

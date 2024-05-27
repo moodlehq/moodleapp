@@ -1,4 +1,7 @@
-// Text for accessibility, hidden from the view.
+//
+// Screenreaders
+//
+
 .sr-only, .accesshide {
     @include sr-only();
 

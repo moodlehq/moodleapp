@@ -74,7 +74,7 @@ export abstract class AddonModDataFieldPluginBaseComponent implements OnInit, On
     }
 
     /**
-     * Component being changed.
+     * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if ((this.showMode || this.listMode) && changes.value) {

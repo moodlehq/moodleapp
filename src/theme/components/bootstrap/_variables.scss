@@ -1,0 +1,217 @@
+// Variables
+//
+// Variables should follow the `$component-state-property-size` formula for
+// consistent naming. Ex: $nav-link-disabled-color and $modal-content-box-shadow-xs.
+
+// Color system
+
+$white:    global.$white;
+$gray-100: global.$gray-100;
+$gray-200: global.$gray-200;
+$gray-300: global.$gray-300;
+$gray-400: global.$gray-400;
+$gray-500: global.$gray-500;
+$gray-600: global.$gray-600;
+$gray-700: global.$gray-700;
+$gray-800: global.$gray-800;
+$gray-900: global.$gray-900;
+$black:    global.$black;
+
+$grays: (
+    "100": $gray-100,
+    "200": $gray-200,
+    "300": $gray-300,
+    "400": $gray-400,
+    "500": $gray-500,
+    "600": $gray-600,
+    "700": $gray-700,
+    "800": $gray-800,
+    "900": $gray-900
+);
+
+$primary:       global.$primary;
+$secondary:     global.$secondary;
+$success:       global.$success;
+$info:          global.$info;
+$warning:       global.$warning;
+$danger:        global.$danger;
+$light:         global.$light;
+$dark:          global.$dark;
+
+$theme-colors: (
+    "primary":    $primary,
+    "secondary":  $secondary,
+    "success":    $success,
+    "info":       $info,
+    "warning":    $warning,
+    "danger":     $danger,
+    "light":      $light,
+    "dark":       $dark
+);
+
+// Set a specific jump point for requesting color jumps
+$theme-color-interval:      8%;
+
+// The yiq lightness value that determines when the lightness of color changes from "dark" to "light". Acceptable values are between 0 and 255.
+$yiq-contrasted-threshold:  150;
+
+// Customize the light and dark text colors for use in our YIQ color contrast function.
+$yiq-text-dark:             $gray-900;
+$yiq-text-light:            $white;
+
+// Characters which are escaped by the escape-svg function
+$escaped-characters: (
+  ("<", "%3c"),
+  (">", "%3e"),
+  ("#", "%23"),
+  ("(", "%28"),
+  (")", "%29"),
+);
+
+// Options
+//
+// Quickly modify global styling by enabling or disabling optional features.
+
+$enable-caret:                                true;
+$enable-rounded:                              true;
+$enable-shadows:                              false;
+$enable-gradients:                            false;
+$enable-transitions:                          true;
+$enable-prefers-reduced-motion-media-query:   true;
+$enable-hover-media-query:                    false; // Deprecated, no longer affects any compiled CSS
+$enable-grid-classes:                         true;
+$enable-pointer-cursor-for-buttons:           true;
+$enable-print-styles:                         true;
+$enable-responsive-font-sizes:                false;
+$enable-validation-icons:                     true;
+$enable-deprecation-messages:                 true;
+
+
+// Spacing
+//
+// Control the default styling of most Bootstrap elements by modifying these
+// variables. Mostly focused on spacing.
+// You can add more entries to the $spacers map, should you need more variation.
+
+$spacer: 1rem;
+$spacers: (
+    0: 0,
+    1: ($spacer * .25),
+    2: ($spacer * .5),
+    3: $spacer,
+    4: ($spacer * 1.5),
+    5: ($spacer * 3)
+);
+
+// This variable affects the `.h-*` and `.w-*` classes.
+$sizes: (
+    25: 25%,
+    50: 50%,
+    75: 75%,
+    100: 100%,
+    auto: auto
+);
+
+// Grid breakpoints
+//
+// Define the minimum dimensions at which your layout will change,
+// adapting to different screen sizes, for use in media queries.
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px
+);
+
+@include _assert-ascending($grid-breakpoints, "$grid-breakpoints");
+@include _assert-starts-at-zero($grid-breakpoints, "$grid-breakpoints");
+
+
+// Grid containers
+//
+// Define the maximum width of `.container` for different screen sizes.
+
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px
+);
+
+@include _assert-ascending($container-max-widths, "$container-max-widths");
+
+// Grid columns
+//
+// Set the number of columns and specify the width of the gutters.
+
+$grid-columns:                12;
+$grid-gutter-width:           30px;
+$grid-row-columns:            6;
+
+
+// Typography
+//
+// Font, line-height, and color for body text, headings, and more.
+
+$font-weight-lighter:         lighter !default;
+$font-weight-light:           300 !default;
+$font-weight-normal:          400 !default;
+$font-weight-bold:            700 !default;
+$font-weight-bolder:          bolder !default;
+
+
+// Cards
+
+$card-spacer-y:                     .75rem;
+$card-spacer-x:                     1.25rem;
+$card-border-width:                 var(--ion-card-border-width);
+$card-border-radius:                var(--ion-card-radius);
+$card-border-color:                 var(--ion-card-border-color);
+$card-inner-border-radius:          subtract($card-border-radius, $card-border-width);
+$card-cap-bg:                       rgba($black, .03);
+$card-cap-color:                    null;
+$card-height:                       null;
+$card-color:                        null;
+$card-bg:                           $white;
+
+$card-img-overlay-padding:          1.25rem;
+
+$card-group-margin:                 $grid-gutter-width * .5;
+$card-deck-margin:                  $card-group-margin;
+
+$card-columns-count:                3;
+$card-columns-gap:                  1.25rem;
+$card-columns-margin:               $card-spacer-y;
+
+
+// Buttons + Forms
+//
+// Shared variables that are reassigned to `$input-` and `$btn-` specific variables.
+
+$input-btn-focus-width:       .2rem !default;
+
+// Buttons
+//
+// For each of Bootstrap's buttons, define text, background, and border color.
+
+$btn-focus-width:             $input-btn-focus-width !default;
+
+$btn-transition:              color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out !default;
+
+// Badges
+
+$badge-font-size:                   75%;
+$badge-font-weight:                 $font-weight-bold;
+$badge-padding-y:                   .25em;
+$badge-padding-x:                   .4em;
+$badge-border-radius:               var(--mdl-shape-borderRadius-lg);
+
+$badge-transition:                  $btn-transition;
+$badge-focus-width:                 $input-btn-focus-width;
+
+$badge-pill-padding-x:              .6em;
+// Use a higher than normal value to ensure completely rounded edges when
+// customizing padding or font-size on labels.
+$badge-pill-border-radius:          10rem;
