@@ -121,8 +121,17 @@ export class CoreQueueRunner {
      * @param options Options.
      * @returns Promise resolved when the function has been executed.
      */
-    run<T>(id: string, fn: CoreQueueRunnerFunction<T>, options?: CoreQueueRunnerAddOptions): Promise<T> {
-        options = options || {};
+    run<T>(fn: CoreQueueRunnerFunction<T>, options?: CoreQueueRunnerAddOptions): Promise<T>;
+    run<T>(id: string, fn: CoreQueueRunnerFunction<T>, options?: CoreQueueRunnerAddOptions): Promise<T>;
+    run<T>(
+        idOrFn: string | CoreQueueRunnerFunction<T>,
+        fnOrOptions?: CoreQueueRunnerFunction<T> | CoreQueueRunnerAddOptions,
+        options: CoreQueueRunnerAddOptions = {},
+    ): Promise<T> {
+        let id = typeof idOrFn === 'string' ? idOrFn : this.getUniqueId('anonymous');
+        const fn = typeof idOrFn === 'function' ? idOrFn : fnOrOptions as CoreQueueRunnerFunction<T>;
+
+        options = typeof fnOrOptions === 'object' ? fnOrOptions : options;
 
         if (id in this.queue) {
             if (!options.allowRepeated) {
