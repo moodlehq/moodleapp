@@ -127,7 +127,8 @@
     </core-loading>
 
     <!-- Create a blog entry. -->
-    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="loaded && optionsAvailable">
+    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end"
+        *ngIf="loaded && optionsAvailable && (!filter.userid || (filter.userid && currentUserId === filter.userid))">
         <ion-fab-button (click)="createNewEntry()" [attr.aria-label]="'addon.blog.addnewentry' | translate">
             <ion-icon name="fas-pen-to-square" aria-hidden="true" />
             <span class="sr-only">{{ 'addon.blog.addnewentry' | translate }}</span>
