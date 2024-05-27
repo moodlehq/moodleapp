@@ -109,6 +109,10 @@ ion-modal {
         --width: 384px;
         --height: auto;
 
+        .ion-page {
+            position: absolute;
+        }
+
         form {
             display: flex;
             flex-direction: column;
