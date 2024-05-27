@@ -24,7 +24,8 @@ $grid-column-paddings: (
 
     ::ng-deep {
 
-        @import "theme/components/bootstrap/bootstrap.scss";
+        @import "theme/components/moodle.scss";
+        @import "theme/components/bootstrap/bootstrap_database.scss";
 
         table {
             display: block;

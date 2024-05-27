@@ -63,7 +63,6 @@ html[dir=rtl] {
     flex-direction: row;
 }
 
-
 .flex-column {
     display: flex;
     flex-direction: column;
@@ -81,7 +80,6 @@ html[dir=rtl] {
 .font-italic { font-style: italic; }
 .font-lg { font-size: 1.7rem; }
 .font-sm { font-size: 1.2rem; }
-
 
 @each $color-name, $unused in $colors {
     .text-#{$color-name},
