@@ -256,9 +256,8 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
             .filter(
                 course =>
                     !course.hidden &&
-                !CoreCoursesHelper.isPastCourse(course, gracePeriod.after) &&
-                !CoreCoursesHelper.isFutureCourse(course, gracePeriod.after, gracePeriod.before) &&
-                courseEvents[course.id].events.length > 0,
+                    !CoreCoursesHelper.isFutureCourse(course, gracePeriod.after, gracePeriod.before) &&
+                    courseEvents[course.id].events.length > 0,
             )
             .map(course => {
                 const section = new AddonBlockTimelineSection(
