@@ -75,24 +75,24 @@ ion-modal {
         --ion-safe-area-left: 0px;
         --ion-safe-area-right: 0px;
 
+        --height: 100% !important;
+        --width: calc(100% - var(--modal-lateral-margin));
+        --box-shadow: 0 28px 48px rgb(0 0 0 / 40%);
+
+        // These lines is intended to hide modal-shadow div only in iOS because it cannot be positioned correctly.
+        // Both are set on content part.
+        --max-height: 0px;
+        --max-width: 0px;
+
         &::part(content) {
             @include margin-horizontal(var(--modal-lateral-margin), null);
+
+            --max-width: calc(var(--modal-lateral-max-width));
+            --max-height: 100%;
 
             position: absolute;
             @include position(0 !important, 0 !important, 0 !important, unset !important);
             display: block;
-            height: 100% !important;
-            width: calc(100% - var(--modal-lateral-margin));
-            max-width: calc(var(--modal-lateral-max-width));
-            box-shadow: 0 28px 48px rgb(0 0 0 / 40%);
-        }
-
-        &::part(backdrop) {
-            visibility: visible;
-        }
-
-        .modal-shadow {
-            display: none;
         }
     }
 
