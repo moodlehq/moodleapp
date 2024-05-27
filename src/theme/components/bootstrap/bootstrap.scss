@@ -1,0 +1,39 @@
+@use "theme/globals" as global;
+
+// Bootstrap 4 Styles
+// -------------------------
+
+@import "reboot";
+@import "forms";
+
+@import "buttons";
+@import "alert";
+@import "media";
+@import "utilities";
+
+// Deprecated styles.
+.label {
+    display: inline-block;
+    padding: .25em .4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1.1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    color: var(--white);
+    background-color: var(--medium);
+}
+
+.label-important {
+    color: var(--danger-contrast);
+    background-color: var(--danger);
+}
+
+@each $color-name, $unused in global.$colors {
+    .label-#{$color-name} {
+        color: var(--#{$color-name}-contrast);
+        background-color: var(--#{$color-name});
+    }
+}

@@ -1,0 +1,34 @@
+.alert {
+    position: relative;
+    padding: .75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 0 solid transparent;
+    border-radius: .5rem;
+}
+
+// Headings for larger alerts
+.alert-heading {
+    // Specified to prevent conflicts of changing headings-color
+    color: inherit;
+}
+
+// Provide class for links that match alerts
+.alert-link {
+    font-weight: 400;
+}
+
+@each $color-name, $unused in global.$colors {
+    .alert-#{$color-name} {
+        --color-base: var(--#{$color-name});
+        color: var(--#{$color-name}-shade);
+        border-color: var(--color-base);
+        background-color: var(--#{$color-name}-tint);
+
+        .alert-link, a {
+            color: var(--#{$color-name}-shade);
+        }
+    }
+    .alert-#{$color-name} p {
+        color: var(--color-base);
+    }
+}
