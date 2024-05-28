@@ -40,7 +40,8 @@
             @each $type, $value in $activity-icon-background-colors {
                 &.#{$type}:not(.branded) {
                     background-color: var(--activity-40-#{$type});
-                    ::ng-deep svg, img {
+                    img,
+                    ::ng-deep ::part(svg) {
                         filter: brightness(0) invert(1);
                     }
                 }
@@ -58,14 +59,14 @@
     }
 
     &.colorize.version_current:not(.branded) {
-        ::ng-deep svg,
-        ::ng-deep svg * {
+        ::ng-deep ::part(svg),
+        ::ng-deep ::part(svg-child) {
             fill: var(--color) !important;
         }
     }
 
     img,
-    ::ng-deep svg {
+    ::ng-deep ::part(svg) {
         width: var(--size);
         height: var(--size);
         max-width: var(--size);

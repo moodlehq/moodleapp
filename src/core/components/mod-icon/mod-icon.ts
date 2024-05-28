@@ -22,9 +22,9 @@ import {
     OnChanges,
     OnInit,
     SimpleChange,
+    ViewChild,
     signal,
 } from '@angular/core';
-import { SafeHtml } from '@angular/platform-browser';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreFile } from '@services/file';
@@ -33,7 +33,7 @@ import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
-import { DomSanitizer, Http } from '@singletons';
+import { Http } from '@singletons';
 import { firstValueFrom } from 'rxjs';
 
 const assetsPath = 'assets/img/';
@@ -77,10 +77,12 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         return this.showAlt ? this.modNameTranslated() : '';
     }
 
+    @ViewChild('svg') svgElement!: ElementRef<HTMLElement>;
+
     iconUrl = signal('');
     modNameTranslated = signal('');
     isLocalUrl = signal(false);
-    svgIcon = signal<SafeHtml>('');
+    svgLoaded = signal(false);
     linkIconWithComponent = signal(false);
     loaded = signal(false);
 
@@ -314,7 +316,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     protected async setSVGIcon(): Promise<void> {
         if (this.iconVersion === IconVersion.LEGACY_VERSION) {
             this.loaded.set(true);
-            this.svgIcon.set('');
+            this.svgLoaded.set(false);
 
             return;
         }
@@ -357,7 +359,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             }
 
             if (mimetype !== 'image/svg+xml' || !fileContents) {
-                this.svgIcon.set('');
+                this.svgLoaded.set(false);
 
                 return;
             }
@@ -368,7 +370,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
             // Safety check.
             if (doc.documentElement.nodeName !== 'svg') {
-                this.svgIcon.set('');
+                this.svgLoaded.set(false);
 
                 return;
             }
@@ -407,39 +409,47 @@ export class CoreModIconComponent implements OnInit, OnChanges {
                 }
             }
 
-            // Prefix id's on svg DOM to avoid conflicts.
-            const uniqueId = 'modicon' + CoreUtils.getUniqueId('modicon') + '_';
-            const styleTags = Array.from(doc.documentElement.getElementsByTagName('style'));
-            const styleAttrs = Array.from(doc.documentElement.querySelectorAll('[style]'));
-            const idTags = Array.from(doc.documentElement.querySelectorAll('[id]'));
-            idTags.forEach((element) => {
-                if (!element.id) {
-                    return;
-                }
-                const newId = uniqueId + element.id;
-                // Regexp to replace all ocurrences of the id with workd bondaries.
-                const oldIdFinder = new RegExp(`#${element.id}\\b`, 'g');
+            // Inject svg into shadowDOM to isolate the styles.
+            this.addSVGShadowDOMParts(doc.documentElement);
+            this.getSVGShadowRoot().replaceChildren(doc.documentElement);
 
-                element.id = newId;
-
-                // Prefix the elementId on style Tags.
-                styleTags.forEach((style) => {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    style.textContent = style.textContent!.replace(oldIdFinder, `#${newId}`);
-                });
-
-                // Also change ids on style attributes.
-                styleAttrs.forEach((attr) => {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    attr.setAttribute('style', attr.getAttribute('style')!.replace(oldIdFinder, `#${newId}`));
-                });
-            });
-
-            this.svgIcon.set(DomSanitizer.bypassSecurityTrustHtml(doc.documentElement.outerHTML));
+            this.svgLoaded.set(true);
         } catch {
-            this.svgIcon.set('');
+            this.svgLoaded.set(false);
         } finally {
             this.loaded.set(true);
+        }
+    }
+
+    /**
+     * Get Shadow DOM root for the SVG wrapper.
+     *
+     * @returns SVG's shadow root.
+     */
+    protected getSVGShadowRoot(): ShadowRoot {
+        if (!this.svgElement.nativeElement.shadowRoot) {
+            this.svgElement.nativeElement.attachShadow({ mode: 'open' });
+        }
+
+        return this.svgElement.nativeElement.shadowRoot as ShadowRoot;
+    }
+
+    /**
+     * Add parts to an element injected in the Shadow DOM of the SVG wrapper so that it can be styled with CSS.
+     *
+     * @param element Element.
+     */
+    protected addSVGShadowDOMParts(element: Element, isParent: boolean = true): void {
+        if (isParent) {
+            element.setAttribute('part', 'svg');
+        }
+
+        for (let index = 0; index < element.children.length; index++) {
+            const child = element.children[index];
+
+            child.setAttribute('part', 'svg-child');
+
+            this.addSVGShadowDOMParts(child, false);
         }
     }
 
