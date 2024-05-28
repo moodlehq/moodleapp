@@ -77,6 +77,8 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
     associatedCourse?: CoreCourseBasicData;
     associatedModule?: CoreCourseModuleData;
     associationsExpanded = false;
+    moduleContext: ContextLevel = ContextLevel.MODULE;
+    courseContext: ContextLevel = ContextLevel.COURSE;
     contextLevel: ContextLevel = ContextLevel.SYSTEM;
     contextInstanceId = 0;
     component = AddonBlogProvider.COMPONENT;
@@ -127,8 +129,16 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
         const entryId = CoreNavigator.getRouteNumberParam('id');
         const lastModified = CoreNavigator.getRouteNumberParam('lastModified');
         const filters: AddonBlogFilter | undefined = CoreNavigator.getRouteParam('filters');
+        const courseId = CoreNavigator.getRouteNumberParam('courseId');
         this.userId = CoreNavigator.getRouteNumberParam('userId');
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
+
+        if (courseId) {
+            this.courseId = courseId;
+            this.form.controls.associateWithCourse.setValue(true);
+            const { course } = await CoreCourseHelper.getCourse(this.courseId);
+            this.associatedCourse = course;
+        }
 
         if (!entryId) {
             this.loaded = true;
@@ -140,7 +150,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
             this.entry = await this.getEntry({ filters, lastModified, entryId });
             this.files = this.entry.attachmentfiles ?? [];
             this.initialFiles = [...this.files];
-            this.courseId = CoreNavigator.getRouteNumberParam('courseId') ?? this.entry.courseid;
+            this.courseId = this.courseId || this.entry.courseid;
             this.modId = this.entry.coursemoduleid ? this.entry.coursemoduleid : CoreNavigator.getRouteNumberParam('cmId');
 
             if (this.courseId) {
