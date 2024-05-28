@@ -13,7 +13,17 @@
 // limitations under the License.
 
 import { CoreConstants, ModPurpose } from '@/core/constants';
-import { Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    HostBinding,
+    Input,
+    OnChanges,
+    OnInit,
+    SimpleChange,
+    signal,
+} from '@angular/core';
 import { SafeHtml } from '@angular/platform-browser';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -42,6 +52,7 @@ const enum IconVersion {
     selector: 'core-mod-icon',
     templateUrl: 'mod-icon.html',
     styleUrls: ['mod-icon.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoreModIconComponent implements OnInit, OnChanges {
 
@@ -63,16 +74,15 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
     @HostBinding('attr.aria-label')
     get getAriaLabel(): string {
-        return this.showAlt ? this.modNameTranslated : '';
+        return this.showAlt ? this.modNameTranslated() : '';
     }
 
-    iconUrl = '';
-
-    modNameTranslated = '';
-    isLocalUrl = false;
-    svgIcon: SafeHtml = '';
-    linkIconWithComponent = false;
-    loaded = false;
+    iconUrl = signal('');
+    modNameTranslated = signal('');
+    isLocalUrl = signal(false);
+    svgIcon = signal<SafeHtml>('');
+    linkIconWithComponent = signal(false);
+    loaded = signal(false);
 
     protected iconVersion: IconVersion = IconVersion.LEGACY_VERSION;
     protected purposeClass = '';
@@ -94,7 +104,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             this.modname = this.getComponentNameFromIconUrl(this.modicon);
         }
 
-        this.modNameTranslated = CoreCourse.translateModuleName(this.modname, this.fallbackTranslation);
+        this.modNameTranslated.set(CoreCourse.translateModuleName(this.modname, this.fallbackTranslation));
 
         this.setPurposeClass();
 
@@ -133,7 +143,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         this.brandedClass = this.isBranded;
 
         // No icon or local icon (not legacy), colorize it.
-        if (!this.iconUrl || this.isLocalUrl) {
+        if (!this.iconUrl() || this.isLocalUrl()) {
             // Exception for bigbluebuttonbn, it's the only one that has a branded icon.
             if (this.iconVersion === IconVersion.VERSION_4_0 && this.modname === 'bigbluebuttonbn') {
                 this.brandedClass = true;
@@ -146,11 +156,11 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             return;
         }
 
-        this.iconUrl = CoreTextUtils.decodeHTMLEntities(this.iconUrl);
+        this.iconUrl.update(value => CoreTextUtils.decodeHTMLEntities(value));
 
         // If it's an Moodle Theme icon, check if filtericon is set and use it.
-        if (this.iconUrl && CoreUrlUtils.isThemeImageUrl(this.iconUrl)) {
-            const filter = CoreUrlUtils.getThemeImageUrlParam(this.iconUrl, 'filtericon');
+        if (CoreUrlUtils.isThemeImageUrl(this.iconUrl())) {
+            const filter = CoreUrlUtils.getThemeImageUrlParam(this.iconUrl(), 'filtericon');
             if (filter === '1') {
                 this.brandedClass =  false;
 
@@ -160,7 +170,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             // filtericon was introduced in 4.2 and backported to 4.1.3 and 4.0.8.
             if (this.modname && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan(['4.0.8', '4.1.3', '4.2'])) {
                 // If version is prior to that, check if the url is a module icon and filter it.
-                if (this.getComponentNameFromIconUrl(this.iconUrl) === this.modname) {
+                if (this.getComponentNameFromIconUrl(this.iconUrl()) === this.modname) {
                     this.brandedClass =  false;
 
                     return;
@@ -169,32 +179,33 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         }
 
         // External icons, or non monologo, do not filter.
-        this.brandedClass =  true;
+        this.brandedClass = true;
     }
 
     /**
      * Set icon.
      */
     async setIcon(): Promise<void> {
-        this.iconUrl = this.modicon || this.iconUrl;
+        this.iconUrl.update(value => this.modicon || value);
 
-        if (!this.iconUrl) {
+        if (!this.iconUrl()) {
             this.loadFallbackIcon();
             this.setBrandedClass();
 
             return;
         }
 
-        this.isLocalUrl = this.iconUrl.startsWith(assetsPath);
+        this.isLocalUrl.set(this.iconUrl().startsWith(assetsPath));
 
         // Cache icon if the url is not the theme generic one.
         // If modname is not set icon won't be cached.
         // Also if the url matches the regexp (the theme will manage the image so it's not cached).
-        this.linkIconWithComponent =
+        this.linkIconWithComponent.set(
             !!this.modname &&
             !!this.componentId &&
-            !this.isLocalUrl &&
-            this.getComponentNameFromIconUrl(this.iconUrl) != this.modname;
+            !this.isLocalUrl() &&
+            this.getComponentNameFromIconUrl(this.iconUrl()) != this.modname,
+        );
 
         this.setBrandedClass();
 
@@ -205,12 +216,12 @@ export class CoreModIconComponent implements OnInit, OnChanges {
      * Icon to load on error.
      */
     async loadFallbackIcon(): Promise<void> {
-        if (this.isLocalUrl) {
+        if (this.isLocalUrl()) {
             return;
         }
 
-        this.isLocalUrl = true;
-        this.linkIconWithComponent = false;
+        this.isLocalUrl.set(true);
+        this.linkIconWithComponent.set(false);
 
         const moduleName = !this.modname || !CoreCourse.isCoreModule(this.modname)
             ? fallbackModName
@@ -218,7 +229,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
         const path = CoreCourse.getModuleIconsPath();
 
-        this.iconUrl = path + moduleName + '.svg';
+        this.iconUrl.set(path + moduleName + '.svg');
 
         await this.setSVGIcon();
     }
@@ -302,24 +313,24 @@ export class CoreModIconComponent implements OnInit, OnChanges {
      */
     protected async setSVGIcon(): Promise<void> {
         if (this.iconVersion === IconVersion.LEGACY_VERSION) {
-            this.loaded = true;
-            this.svgIcon = '';
+            this.loaded.set(true);
+            this.svgIcon.set('');
 
             return;
         }
 
-        this.loaded = false;
+        this.loaded.set(false);
 
         let mimetype = '';
         let fileContents = '';
 
         // Download the icon if it's not local to cache it.
-        if (!this.isLocalUrl) {
+        if (!this.isLocalUrl()) {
             try {
                 const iconUrl = await CoreFileHelper.downloadFile(
-                    this.iconUrl,
-                    this.linkIconWithComponent ? this.modname : undefined,
-                    this.linkIconWithComponent ? this.componentId : undefined,
+                    this.iconUrl(),
+                    this.linkIconWithComponent() ? this.modname : undefined,
+                    this.linkIconWithComponent() ? this.componentId : undefined,
                 );
                 if (iconUrl) {
                     mimetype = await CoreUtils.getMimeTypeFromUrl(iconUrl);
@@ -335,7 +346,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             if (!fileContents) {
                 // Try to download the icon directly (also for local files).
                 const response = await firstValueFrom(Http.get(
-                    this.iconUrl,
+                    this.iconUrl(),
                     {
                         observe: 'response',
                         responseType: 'text',
@@ -346,7 +357,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             }
 
             if (mimetype !== 'image/svg+xml' || !fileContents) {
-                this.svgIcon = '';
+                this.svgIcon.set('');
 
                 return;
             }
@@ -357,7 +368,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
             // Safety check.
             if (doc.documentElement.nodeName !== 'svg') {
-                this.svgIcon = '';
+                this.svgIcon.set('');
 
                 return;
             }
@@ -424,11 +435,11 @@ export class CoreModIconComponent implements OnInit, OnChanges {
                 });
             });
 
-            this.svgIcon = DomSanitizer.bypassSecurityTrustHtml(doc.documentElement.outerHTML);
+            this.svgIcon.set(DomSanitizer.bypassSecurityTrustHtml(doc.documentElement.outerHTML));
         } catch {
-            this.svgIcon = '';
+            this.svgIcon.set('');
         } finally {
-            this.loaded = true;
+            this.loaded.set(true);
         }
     }
 
