@@ -14,6 +14,7 @@
 
 import { DownloadStatus } from '@/core/constants';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
@@ -49,6 +50,8 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
 
     courseStatusObserver?: CoreEventObserver;
     siteId: string;
+
+    private downloadedCoursesQueue = new CoreQueueRunner();
 
     constructor() {
         this.siteId = CoreSites.getCurrentSiteId();
@@ -87,7 +90,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
             }
         }
 
-        await this.setDownloadedCourses(downloadedCourses);
+        await this.downloadedCoursesQueue.run(() => this.setDownloadedCourses(downloadedCourses));
 
         this.loaded = true;
     }
@@ -124,7 +127,9 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
         try {
             await Promise.all(deletedCourseIds.map((courseId) => CoreCourseHelper.deleteCourseFiles(courseId)));
 
-            await this.setDownloadedCourses(this.downloadedCourses.filter((course) => !deletedCourseIds.includes(course.id)));
+            await this.downloadedCoursesQueue.run(async () => {
+                await this.setDownloadedCourses(this.downloadedCourses.filter((course) => !deletedCourseIds.includes(course.id)));
+            });
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, Translate.instant('core.errordeletefile'));
         } finally {
@@ -160,7 +165,9 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
         try {
             await CoreCourseHelper.deleteCourseFiles(course.id);
 
-            await this.setDownloadedCourses(CoreArray.withoutItem(this.downloadedCourses, course));
+            await this.downloadedCoursesQueue.run(async () => {
+                await this.setDownloadedCourses(CoreArray.withoutItem(this.downloadedCourses, course));
+            });
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, Translate.instant('core.errordeletefile'));
         } finally {
@@ -175,7 +182,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
      */
     private async onCourseUpdated(courseId: number, status: DownloadStatus): Promise<void> {
         if (courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
-            await this.setDownloadedCourses([]);
+            await this.downloadedCoursesQueue.run(() => this.setDownloadedCourses([]));
 
             return;
         }
@@ -189,7 +196,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
         course.isDownloading = status === DownloadStatus.DOWNLOADING;
         course.totalSize = await this.calculateDownloadedCourseSize(course.id);
 
-        await this.setDownloadedCourses(this.downloadedCourses);
+        await this.downloadedCoursesQueue.run(() => this.setDownloadedCourses(this.downloadedCourses));
     }
 
     /**
