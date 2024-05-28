@@ -33,7 +33,6 @@ import {
     ToastController,
 } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { TranslatePipeForCompile } from '../pipes/translate';
 
 import { CoreLogger } from '@singletons/logger';
 import { CoreEvents } from '@singletons/events';
@@ -195,7 +194,6 @@ export class CoreCompileProvider {
             ...lazyImports.flat(),
             ...this.IMPORTS,
             ...extraImports,
-            TranslatePipeForCompile,
         ];
 
         try {
