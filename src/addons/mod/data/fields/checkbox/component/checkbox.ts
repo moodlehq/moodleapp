@@ -25,6 +25,7 @@ import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-fiel
 })
 export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginBaseComponent {
 
+    content?: string;
     options: {
         key: string;
         value: string;
@@ -40,31 +41,32 @@ export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginB
             return;
         }
 
-        this.options = this.field.param1.split(/\r?\n/).map((option) => ({ key: option, value: option }));
-
-        const values: string[] = [];
-        if (this.editMode && this.value && this.value.content) {
-            this.value.content.split('##').forEach((value) => {
-                const x = this.options.findIndex((option) => value == option.key);
-                if (x >= 0) {
-                    values.push(value);
-                }
-            });
-        }
-
         if (this.searchMode) {
             this.addControl('f_' + this.field.id + '_allreq');
         }
 
-        this.addControl('f_' + this.field.id, values);
+        this.addControl('f_' + this.field.id, this.getValidValues(this.value));
     }
 
     /**
      * @inheritdoc
      */
     protected updateValue(value?: Partial<AddonModDataEntryField>): void {
-        this.value = value || {};
-        this.value.content = value?.content?.split('##').join('<br>');
+        super.updateValue(value);
+
+        this.content = this.getValidValues(value).join('<br>');
+    }
+
+    /**
+     * Get the list of valid values from current field value.
+     *
+     * @param value Field value.
+     * @returns List of valid values.
+     */
+    protected getValidValues(value?: Partial<AddonModDataEntryField>): string[] {
+        this.options = this.field.param1.split(/\r?\n/).map((option) => ({ key: option, value: option }));
+
+        return value?.content?.split('##').filter((value) => this.options.some(option => value === option.key)) ?? [];
     }
 
 }
