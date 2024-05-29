@@ -83,7 +83,8 @@ html[dir=rtl] {
 
 @each $color-name, $unused in $colors {
     .text-#{$color-name},
-    p.text-#{$color-name} {
+    p.text-#{$color-name},
+    .text-#{$color-name} p {
         color: var(--ion-color-#{$color-name}) !important;
     }
 }

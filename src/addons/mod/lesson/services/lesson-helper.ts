@@ -469,7 +469,7 @@ export class AddonModLessonHelperProvider {
         let input = element.querySelector<HTMLInputElement>('input[type="checkbox"][name*="answer"]');
         if (input) {
             // Truefalse or multichoice.
-            const successBadge = element.querySelector<HTMLElement>('.badge.badge-success');
+            const successBadge = element.querySelector<HTMLElement>('.badge.bg-success, .badge.badge-success');
             const data: AddonModLessonCheckboxAnswerData = {
                 isCheckbox: true,
                 checked: !!input.checked,
