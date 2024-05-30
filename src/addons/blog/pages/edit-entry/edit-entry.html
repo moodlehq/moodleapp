@@ -11,7 +11,7 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <form [formGroup]="form">
+        <form [formGroup]="form" #editEntryForm>
             <ion-item>
                 <ion-input labelPlacement="stacked" formControlName="subject" type="text"
                     [placeholder]="'addon.blog.entrytitle' | translate" name="title" [label]="'addon.blog.entrytitle' | translate" />

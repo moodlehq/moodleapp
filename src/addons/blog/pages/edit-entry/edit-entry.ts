@@ -22,7 +22,7 @@ import {
     AddonBlogProvider,
     AddonBlogPublishState,
 } from '@addons/blog/services/blog';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
@@ -40,6 +40,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
+import { CoreForms } from '@singletons/form';
 
 @Component({
     selector: 'addon-blog-edit-entry',
@@ -53,6 +54,8 @@ import { CoreEvents } from '@singletons/events';
     ],
 })
 export class AddonBlogEditEntryPage implements CanLeave, OnInit {
+
+    @ViewChild('editEntryForm') formElement!: ElementRef;
 
     publishState = AddonBlogPublishState;
     form = new FormGroup({
@@ -316,6 +319,8 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
             await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
         }
 
+        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+
         return true;
     }
 
@@ -360,6 +365,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
 
         CoreEvents.trigger(ADDON_BLOG_ENTRY_UPDATED);
         this.forceLeave = true;
+        CoreForms.triggerFormSubmittedEvent(this.formElement, true, CoreSites.getCurrentSiteId());
 
         return CoreNavigator.back();
     }
