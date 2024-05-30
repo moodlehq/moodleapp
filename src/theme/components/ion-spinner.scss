@@ -1,4 +1,7 @@
-ion-spinner,
-ion-refresher {
+ion-spinner {
     --color: var(--core-loading-spinner);
+}
+
+ion-refresher {
+    --ion-color-primary: var(--core-loading-spinner);
 }
