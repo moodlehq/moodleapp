@@ -133,18 +133,29 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
         const lastModified = CoreNavigator.getRouteNumberParam('lastModified');
         const filters: AddonBlogFilter | undefined = CoreNavigator.getRouteParam('filters');
         const courseId = CoreNavigator.getRouteNumberParam('courseId');
+        const cmId = CoreNavigator.getRouteNumberParam('cmId');
         this.userId = CoreNavigator.getRouteNumberParam('userId');
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
 
-        if (courseId) {
-            this.courseId = courseId;
-            this.form.controls.associateWithCourse.setValue(true);
-            const { course } = await CoreCourseHelper.getCourse(this.courseId);
-            this.associatedCourse = course;
-        }
-
         if (!entryId) {
             this.loaded = true;
+
+            try {
+                if (cmId) {
+                    this.modId = cmId;
+                    this.form.controls.associateWithModule.setValue(true);
+                    this.associatedModule = await CoreCourse.getModule(this.modId);
+                }
+
+                if (courseId) {
+                    this.courseId = courseId;
+                    this.form.controls.associateWithCourse.setValue(true);
+                    const { course } = await CoreCourseHelper.getCourse(this.courseId);
+                    this.associatedCourse = course;
+                }
+            } catch (error) {
+                CoreDomUtils.showErrorModalDefault(error, 'Error getting associations, they may not be displayed correctly.');
+            }
 
             return;
         }
@@ -154,7 +165,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
             this.files = this.entry.attachmentfiles ?? [];
             this.initialFiles = [...this.files];
             this.courseId = this.courseId || this.entry.courseid;
-            this.modId = this.entry.coursemoduleid ? this.entry.coursemoduleid : CoreNavigator.getRouteNumberParam('cmId');
+            this.modId = CoreNavigator.getRouteNumberParam('cmId') || this.entry.coursemoduleid;
 
             if (this.courseId) {
                 this.form.controls.associateWithCourse.setValue(true);
