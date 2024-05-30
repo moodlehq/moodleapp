@@ -103,6 +103,13 @@ div.fake-ion-item {
     }
 }
 
+ion-item.item,
+ion-item-divider.item {
+    > ion-label p {
+        --color: var(--subdued-text-color);
+    }
+}
+
 // Item Headings.
 // Some styles taken from ion-label
 ion-item.item > ion-label,
@@ -111,7 +118,6 @@ ion-item .in-item {
     font-size: var(--text-size);
 
     p {
-        --color: var(--subdued-text-color);
         color: var(--color);
         @include margin(2px, 0);
     }

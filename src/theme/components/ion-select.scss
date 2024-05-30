@@ -6,6 +6,9 @@ ion-select {
     &::part(icon) {
         opacity: 1;
     }
+    [slot=label] {
+        white-space: normal;
+    }
     &.select-disabled {
         opacity: var(--mdl-input-disabled-opacity);
     }
