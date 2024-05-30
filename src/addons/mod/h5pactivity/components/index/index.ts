@@ -241,6 +241,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     protected async loadContentState(): Promise<void> {
         if (!this.h5pActivity || !this.accessInfo || !AddonModH5PActivity.isSaveStateEnabled(this.h5pActivity, this.accessInfo)) {
             this.saveStateEnabled = false;
+            this.contentState = undefined;
 
             return;
         }
@@ -260,6 +261,8 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         );
 
         if (contentState === null) {
+            this.contentState = undefined;
+
             return;
         }
 
