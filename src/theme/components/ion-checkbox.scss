@@ -27,6 +27,10 @@ ion-checkbox {
         &.ios {
             opacity: var(--mdl-input-disabled-opacity);
         }
+
+        &::part(container) {
+            opacity: var(--mdl-input-disabled-opacity);
+        }
     }
 }
 
