@@ -45,6 +45,7 @@ import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
 import { ContextLevel } from '@/core/constants';
 import { CoreSwiper } from '@singletons/swiper';
+import { CoreTextUtils } from '@services/utils/text';
 
 /**
  * Component to display a rich text editor if enabled.
@@ -398,7 +399,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
                 return;
             }
 
-            if (this.isNullOrWhiteSpace(this.editorElement.textContent)) {
+            if (this.isNullOrWhiteSpace(this.editorElement)) {
                 this.clearText();
             } else {
                 // The textarea and the form control must receive the original URLs.
@@ -417,7 +418,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
                 return;
             }
 
-            if (this.isNullOrWhiteSpace(this.textarea.value || '')) {
+            if (this.isNullOrWhiteSpace(this.textarea.value)) {
                 this.clearText();
             } else {
                 // Don't emit event so our valueChanges doesn't get notified by this change.
@@ -549,20 +550,17 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     /**
      * Check if text is empty.
      *
-     * @param value text
+     * @param value Text or element containing the text.
      * @returns If value is null only a white space.
      */
-    protected isNullOrWhiteSpace(value: string | null | undefined): boolean {
-        if (value === null || value === undefined) {
+    protected isNullOrWhiteSpace(valueOrEl: string | HTMLElement | null | undefined): boolean {
+        if (valueOrEl === null || valueOrEl === undefined) {
             this.isEmpty = true;
 
             return true;
         }
 
-        value = value.replace(/[\n\r]/g, '');
-        value = value.split(' ').join('');
-
-        this.isEmpty = value.length === 0;
+        this.isEmpty = typeof valueOrEl === 'string' ? CoreTextUtils.htmlIsBlank(valueOrEl) : !CoreDom.elementHasContent(valueOrEl);
 
         return this.isEmpty;
     }

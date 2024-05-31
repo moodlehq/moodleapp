@@ -28,6 +28,7 @@ import { AlertButton } from '@ionic/angular';
 import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
 import { ContextLevel } from '@/core/constants';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Different type of errors the app can treat.
@@ -588,12 +589,9 @@ export class CoreTextUtilsProvider {
             return true;
         }
 
-        this.template.innerHTML = content.trim().replace(/(\r\n|\n|\r)/g, '');
-        const tags = this.template.content.querySelectorAll(
-            'img, audio, video, object, iframe, canvas, svg, input, select, textarea, frame, embed',
-        );
+        this.template.innerHTML = content;
 
-        return this.template.content.textContent === '' && tags.length === 0;
+        return !CoreDom.elementHasContent(this.template.content);
     }
 
     /**
