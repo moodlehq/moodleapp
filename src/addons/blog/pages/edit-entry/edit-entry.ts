@@ -22,7 +22,7 @@ import {
     AddonBlogProvider,
     AddonBlogPublishState,
 } from '@addons/blog/services/blog';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
@@ -40,6 +40,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
+import { CoreForms } from '@singletons/form';
 
 @Component({
     selector: 'addon-blog-edit-entry',
@@ -53,6 +54,8 @@ import { CoreEvents } from '@singletons/events';
     ],
 })
 export class AddonBlogEditEntryPage implements CanLeave, OnInit {
+
+    @ViewChild('editEntryForm') formElement!: ElementRef;
 
     publishState = AddonBlogPublishState;
     form = new FormGroup({
@@ -130,18 +133,29 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
         const lastModified = CoreNavigator.getRouteNumberParam('lastModified');
         const filters: AddonBlogFilter | undefined = CoreNavigator.getRouteParam('filters');
         const courseId = CoreNavigator.getRouteNumberParam('courseId');
+        const cmId = CoreNavigator.getRouteNumberParam('cmId');
         this.userId = CoreNavigator.getRouteNumberParam('userId');
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
 
-        if (courseId) {
-            this.courseId = courseId;
-            this.form.controls.associateWithCourse.setValue(true);
-            const { course } = await CoreCourseHelper.getCourse(this.courseId);
-            this.associatedCourse = course;
-        }
-
         if (!entryId) {
             this.loaded = true;
+
+            try {
+                if (cmId) {
+                    this.modId = cmId;
+                    this.form.controls.associateWithModule.setValue(true);
+                    this.associatedModule = await CoreCourse.getModule(this.modId);
+                }
+
+                if (courseId) {
+                    this.courseId = courseId;
+                    this.form.controls.associateWithCourse.setValue(true);
+                    const { course } = await CoreCourseHelper.getCourse(this.courseId);
+                    this.associatedCourse = course;
+                }
+            } catch (error) {
+                CoreDomUtils.showErrorModalDefault(error, 'Error getting associations, they may not be displayed correctly.');
+            }
 
             return;
         }
@@ -151,7 +165,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
             this.files = this.entry.attachmentfiles ?? [];
             this.initialFiles = [...this.files];
             this.courseId = this.courseId || this.entry.courseid;
-            this.modId = this.entry.coursemoduleid ? this.entry.coursemoduleid : CoreNavigator.getRouteNumberParam('cmId');
+            this.modId = CoreNavigator.getRouteNumberParam('cmId') || this.entry.coursemoduleid;
 
             if (this.courseId) {
                 this.form.controls.associateWithCourse.setValue(true);
@@ -316,6 +330,8 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
             await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
         }
 
+        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+
         return true;
     }
 
@@ -360,6 +376,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
 
         CoreEvents.trigger(ADDON_BLOG_ENTRY_UPDATED);
         this.forceLeave = true;
+        CoreForms.triggerFormSubmittedEvent(this.formElement, true, CoreSites.getCurrentSiteId());
 
         return CoreNavigator.back();
     }
