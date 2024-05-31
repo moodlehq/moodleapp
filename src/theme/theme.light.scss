@@ -201,9 +201,8 @@ html {
         --core-dd-question-color-#{$i + 1}-contrast: #{get_contrast_color(nth($core-dd-question-colors, $i + 1))};
     }
 
-    --activity-base-icon-color: var(--gray-900);
     // Make activtity colours available for custom modules.
-    @each $type, $value in $activity-icon-colors {
+    @each $type, $value in $activity-icon-color-filters {
         --activity#{$type}: #{$value};
     }
 
