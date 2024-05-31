@@ -148,8 +148,15 @@ export class CoreStylesService {
             this.removeSite(site.getId());
         });
 
-        // Load temporary styles when site config is checked in login.
+        // Load temporary styles when site config is checked in login/reconnect.
         CoreEvents.on(CoreEvents.LOGIN_SITE_CHECKED, (data) => {
+            if (data.siteId) {
+                // Reconnecting to a site, enable the site styles.
+                this.enableSiteStyles(data.siteId);
+
+                return;
+            }
+
             this.loadTmpStyles(data.config).catch((error) => {
                 this.logger.error('Error loading tmp styles', error);
             });
@@ -163,8 +170,9 @@ export class CoreStylesService {
                 return;
             }
 
-            // The tmp styles are from a site that wasn't added in the end. Just remove them.
+            // User didn't access the site, unload tmp styles and site styles if any.
             this.unloadTmpStyles();
+            this.clear();
         });
     }
 
