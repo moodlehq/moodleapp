@@ -57,6 +57,23 @@ export class CoreDom {
     }
 
     /**
+     * Check if an element has some text or embedded content inside.
+     *
+     * @param element Element or document to check.
+     * @returns Whether has content.
+     */
+    static elementHasContent(element: Element | DocumentFragment): boolean {
+        const textContent = (element.textContent ?? '').trim().replace(/(\r\n|\n|\r)/g, '');
+        if (textContent.length > 0) {
+            return true;
+        }
+
+        return element.querySelectorAll(
+            'img, audio, video, object, iframe, canvas, svg, input, select, textarea, frame, embed',
+        ).length > 0;
+    }
+
+    /**
      * Retrieve the position of a element relative to another element.
      *
      * @param element Element to get the position.
