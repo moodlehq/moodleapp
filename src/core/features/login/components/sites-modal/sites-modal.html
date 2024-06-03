@@ -23,7 +23,7 @@
         <core-sites-list [accountsList]="accountsList" [sitesClickable]="true" [currentSiteClickable]="false"
             (onSiteClicked)="login($event)">
             <ng-template #siteItem let-site="site" let-isCurrentSite="isCurrentSite">
-                <ion-icon *ngIf="isCurrentSite" color="success" name="fas-check" />
+                <ion-icon *ngIf="isCurrentSite" color="success" name="fas-check" aria-hidden="true" />
 
                 <ng-container *ngIf="!isCurrentSite">
                     <ion-badge slot="end" *ngIf="!showDelete && site.badge" @coreShowHideAnimation>
