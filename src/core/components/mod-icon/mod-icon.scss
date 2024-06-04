@@ -23,13 +23,13 @@
     background-color: transparent;
     line-height: var(--size);
 
-    --color: var(--activity-base-icon-color);
-
     &.colorize {
         &.version_current {
-            @each $type, $value in $activity-icon-colors {
-                &.#{$type} {
-                    --color: var(--activity#{$type});
+            @each $type, $value in $activity-icon-color-filters {
+                &.#{$type}:not(.branded) {
+                    img {
+                        filter: var(--activity#{$type});
+                    }
                 }
             }
         }
@@ -40,7 +40,7 @@
             @each $type, $value in $activity-icon-background-colors {
                 &.#{$type}:not(.branded) {
                     background-color: var(--activity-40-#{$type});
-                    ::ng-deep svg, img {
+                    img {
                         filter: brightness(0) invert(1);
                     }
                 }
@@ -57,15 +57,7 @@
         --padding-bottom: var(--module-legacy-icon-padding, 8px);
     }
 
-    &.colorize.version_current:not(.branded) {
-        ::ng-deep svg,
-        ::ng-deep svg * {
-            fill: var(--color) !important;
-        }
-    }
-
-    img,
-    ::ng-deep svg {
+    img {
         width: var(--size);
         height: var(--size);
         max-width: var(--size);

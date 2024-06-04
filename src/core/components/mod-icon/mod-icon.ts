@@ -24,17 +24,11 @@ import {
     SimpleChange,
     signal,
 } from '@angular/core';
-import { SafeHtml } from '@angular/platform-browser';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
-import { CoreFile } from '@services/file';
-import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
-import { CoreUtils } from '@services/utils/utils';
-import { DomSanitizer, Http } from '@singletons';
-import { firstValueFrom } from 'rxjs';
 
 const assetsPath = 'assets/img/';
 const fallbackModName = 'external-tool';
@@ -80,9 +74,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     iconUrl = signal('');
     modNameTranslated = signal('');
     isLocalUrl = signal(false);
-    svgIcon = signal<SafeHtml>('');
     linkIconWithComponent = signal(false);
-    loaded = signal(false);
 
     protected iconVersion: IconVersion = IconVersion.LEGACY_VERSION;
     protected purposeClass = '';
@@ -208,8 +200,6 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         );
 
         this.setBrandedClass();
-
-        await this.setSVGIcon();
     }
 
     /**
@@ -230,8 +220,6 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         const path = CoreCourse.getModuleIconsPath();
 
         this.iconUrl.set(path + moduleName + '.svg');
-
-        await this.setSVGIcon();
     }
 
     /**
@@ -304,143 +292,6 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         }
 
         return IconVersion.CURRENT_VERSION;
-    }
-
-    /**
-     * Sets SVG markup for the icon (if the URL is an SVG).
-     *
-     * @returns Promise resolved when done.
-     */
-    protected async setSVGIcon(): Promise<void> {
-        if (this.iconVersion === IconVersion.LEGACY_VERSION) {
-            this.loaded.set(true);
-            this.svgIcon.set('');
-
-            return;
-        }
-
-        this.loaded.set(false);
-
-        let mimetype = '';
-        let fileContents = '';
-
-        // Download the icon if it's not local to cache it.
-        if (!this.isLocalUrl()) {
-            try {
-                const iconUrl = await CoreFileHelper.downloadFile(
-                    this.iconUrl(),
-                    this.linkIconWithComponent() ? this.modname : undefined,
-                    this.linkIconWithComponent() ? this.componentId : undefined,
-                );
-                if (iconUrl) {
-                    mimetype = await CoreUtils.getMimeTypeFromUrl(iconUrl);
-                    fileContents = await CoreFile.readFile(iconUrl);
-                }
-            } catch {
-                // Ignore errors.
-            }
-        }
-
-        try {
-
-            if (!fileContents) {
-                // Try to download the icon directly (also for local files).
-                const response = await firstValueFrom(Http.get(
-                    this.iconUrl(),
-                    {
-                        observe: 'response',
-                        responseType: 'text',
-                    },
-                ));
-                mimetype = response.headers.get('content-type') || mimetype;
-                fileContents = response.body || '';
-            }
-
-            if (mimetype !== 'image/svg+xml' || !fileContents) {
-                this.svgIcon.set('');
-
-                return;
-            }
-
-            // Clean the DOM to avoid security issues.
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(fileContents, 'image/svg+xml');
-
-            // Safety check.
-            if (doc.documentElement.nodeName !== 'svg') {
-                this.svgIcon.set('');
-
-                return;
-            }
-
-            // Remove scripts tags.
-            const scripts = doc.documentElement.getElementsByTagName('script');
-            for (let i = scripts.length - 1; i >= 0; i--) {
-                scripts[i].parentNode?.removeChild(scripts[i]);
-            }
-
-            // Has own styles, do not apply colors.
-            if (doc.documentElement.getElementsByTagName('style').length > 0) {
-                this.brandedClass = true;
-            }
-
-            // Recursively remove attributes starting with on.
-            const removeAttributes = (element: Element): void => {
-                Array.from(element.attributes).forEach((attr) => {
-                    if (attr.name.startsWith('on')) {
-                        element.removeAttribute(attr.name);
-                    }
-                });
-
-                Array.from(element.children).forEach((child) => {
-                    removeAttributes(child);
-                });
-            };
-            removeAttributes(doc.documentElement);
-
-            // Add viewBox to avoid scaling issues.
-            if (!doc.documentElement.getAttribute('viewBox')) {
-                const width = doc.documentElement.getAttribute('width');
-                const height = doc.documentElement.getAttribute('height');
-                if (width && height) {
-                    doc.documentElement.setAttribute('viewBox', '0 0 '+ width + ' ' + height);
-                }
-            }
-
-            // Prefix id's on svg DOM to avoid conflicts.
-            const uniqueId = 'modicon' + CoreUtils.getUniqueId('modicon') + '_';
-            const styleTags = Array.from(doc.documentElement.getElementsByTagName('style'));
-            const styleAttrs = Array.from(doc.documentElement.querySelectorAll('[style]'));
-            const idTags = Array.from(doc.documentElement.querySelectorAll('[id]'));
-            idTags.forEach((element) => {
-                if (!element.id) {
-                    return;
-                }
-                const newId = uniqueId + element.id;
-                // Regexp to replace all ocurrences of the id with workd bondaries.
-                const oldIdFinder = new RegExp(`#${element.id}\\b`, 'g');
-
-                element.id = newId;
-
-                // Prefix the elementId on style Tags.
-                styleTags.forEach((style) => {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    style.textContent = style.textContent!.replace(oldIdFinder, `#${newId}`);
-                });
-
-                // Also change ids on style attributes.
-                styleAttrs.forEach((attr) => {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    attr.setAttribute('style', attr.getAttribute('style')!.replace(oldIdFinder, `#${newId}`));
-                });
-            });
-
-            this.svgIcon.set(DomSanitizer.bypassSecurityTrustHtml(doc.documentElement.outerHTML));
-        } catch {
-            this.svgIcon.set('');
-        } finally {
-            this.loaded.set(true);
-        }
     }
 
 }
