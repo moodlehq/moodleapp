@@ -114,13 +114,24 @@
     "disableTokenFile": false,
     "iconsPrefixes": {
         "font-awesome": {
-            "brands": ["fab"],
-            "regular": ["far"],
-            "solid": ["fa", "fas"]
+            "brands": [
+                "fab"
+            ],
+            "regular": [
+                "far"
+            ],
+            "solid": [
+                "fa",
+                "fas"
+            ]
         },
         "moodle": {
-            "font-awesome": ["fam"],
-            "moodle": ["moodle"]
+            "font-awesome": [
+                "fam"
+            ],
+            "moodle": [
+                "moodle"
+            ]
         }
     }
 }
