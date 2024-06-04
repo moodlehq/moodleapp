@@ -33,7 +33,8 @@
                 <div class="core-login-site">
                     <div class="core-login-site-logo" *ngIf="!showUserAvatar">
                         <!-- Show site logo or a default image. -->
-                        <img *ngIf="logoUrl" [src]="logoUrl" role="presentation" onError="this.src='assets/img/login_logo.png'" alt="">
+                        <img *ngIf="logoUrl" [src]="logoUrl" role="presentation" onError="this.src='assets/img/login_logo.png'" alt=""
+                            core-external-content [siteId]="siteId">
                         <img *ngIf="!logoUrl" src="assets/img/login_logo.png" role="presentation" alt="">
                     </div>
 
