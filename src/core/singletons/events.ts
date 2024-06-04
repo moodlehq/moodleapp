@@ -428,7 +428,6 @@ export type CoreEventActivityDataSentData = {
  */
 export type CoreEventLoginSiteCheckedData = {
     config: CoreSitePublicConfigResponse;
-    siteId?: string;
 };
 
 /**
@@ -437,7 +436,6 @@ export type CoreEventLoginSiteCheckedData = {
 export type CoreEventLoginSiteUncheckedData = {
     config?: CoreSitePublicConfigResponse;
     loginSuccessful: boolean;
-    siteId?: string;
 };
 
 /**

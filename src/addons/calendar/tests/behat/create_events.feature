@@ -26,9 +26,8 @@ Feature: Test creation of calendar events in app
     When I press "More" in the app
     And I press "Calendar" in the app
     And I press "New event" in the app
-    Then I should find "## now ##%b %e, %Y##" in the app
     # Flaky step, sometimes it fails due to minute change when checking.
-    And I should find "## now ##%l:%M %p##" in the app
+    Then the field "Date" matches value "## now ##%Y-%m-%dT%H:%M##" in the app
     And I should not be able to press "Save" in the app
 
     # Check that student can only create User events.

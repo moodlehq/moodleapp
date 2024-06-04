@@ -144,7 +144,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             {
                 config: this.siteConfig,
                 loginSuccessful: this.loginSuccessful,
-                siteId: this.siteId,
             },
             this.siteId,
         );
@@ -181,7 +180,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
         if (!this.eventThrown && !this.viewLeft) {
             this.eventThrown = true;
-            CoreEvents.trigger(CoreEvents.LOGIN_SITE_CHECKED, { config: this.siteConfig, siteId: this.siteId });
+            CoreEvents.trigger(CoreEvents.LOGIN_SITE_CHECKED, { config: this.siteConfig });
         }
 
         this.isBrowserSSO = CoreLoginHelper.isSSOLoginNeeded(this.siteConfig.typeoflogin);
