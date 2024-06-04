@@ -134,27 +134,31 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         // Reset the branded class to the original value.
         this.brandedClass = this.isBranded;
 
+        // Exception for bigbluebuttonbn, it's the only one that has a branded icon.
+        if (this.iconVersion === IconVersion.VERSION_4_0 && this.modname === 'bigbluebuttonbn') {
+            // Known issue, if the icon is overriden by theme it won't be colorized.
+            this.brandedClass = true;
+
+            return;
+        }
+
         // No icon or local icon (not legacy), colorize it.
         if (!this.iconUrl() || this.isLocalUrl()) {
-            // Exception for bigbluebuttonbn, it's the only one that has a branded icon.
-            if (this.iconVersion === IconVersion.VERSION_4_0 && this.modname === 'bigbluebuttonbn') {
-                this.brandedClass = true;
-
-                return;
-            }
-
             this.brandedClass ??= false;
 
             return;
         }
 
         this.iconUrl.update(value => CoreTextUtils.decodeHTMLEntities(value));
+        if (this.brandedClass !== undefined) {
+            return;
+        }
 
         // If it's an Moodle Theme icon, check if filtericon is set and use it.
         if (CoreUrlUtils.isThemeImageUrl(this.iconUrl())) {
             const filter = CoreUrlUtils.getThemeImageUrlParam(this.iconUrl(), 'filtericon');
             if (filter === '1') {
-                this.brandedClass =  false;
+                this.brandedClass = false;
 
                 return;
             }
