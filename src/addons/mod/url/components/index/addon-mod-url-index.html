@@ -19,12 +19,12 @@
     <ion-list *ngIf="url && !shouldIframe && (!shouldEmbed || !isOther)">
         <ion-item *ngIf="shouldEmbed">
             <ion-label>
-                <img *ngIf="isImage" [alt]="name" [src]="url">
+                <img *ngIf="isImage" [alt]="name" [src]="embeddedUrl">
                 <video *ngIf="isVideo" [title]="name" controls controlsList="nodownload">
-                    <source [src]="url" [type]="mimetype">
+                    <source [src]="embeddedUrl" [type]="mimetype">
                 </video>
                 <audio *ngIf="isAudio" [title]="name" controls>
-                    <source [src]="url" [type]="mimetype">
+                    <source [src]="embeddedUrl" [type]="mimetype">
                 </audio>
             </ion-label>
         </ion-item>

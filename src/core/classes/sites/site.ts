@@ -54,6 +54,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSiteInfo } from './unauthenticated-site';
 import { CoreAuthenticatedSite, CoreAuthenticatedSiteOptionalData, CoreSiteWSPreSets, WSObservable } from './authenticated-site';
 import { firstValueFrom } from 'rxjs';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Class that represents a site (combination of site + user).
@@ -557,6 +558,17 @@ export class CoreSite extends CoreAuthenticatedSite {
 
         // Open the URL.
         if (inApp) {
+            if (
+                options.clearsessioncache === undefined && autoLoginUrl !== url &&
+                (
+                    CoreConstants.CONFIG.clearIABSessionWhenAutoLogin === 'all' ||
+                    (CoreConstants.CONFIG.clearIABSessionWhenAutoLogin === 'android' && CorePlatform.isAndroid()) ||
+                    (CoreConstants.CONFIG.clearIABSessionWhenAutoLogin === 'ios' && CorePlatform.isIOS())
+                )
+            ) {
+                options.clearsessioncache = 'yes';
+            }
+
             return CoreUtils.openInApp(autoLoginUrl, options);
         } else {
             return CoreUtils.openInBrowser(autoLoginUrl, options);
