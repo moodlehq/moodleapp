@@ -75,6 +75,7 @@ export class CoreFileProvider {
     // Folders.
     static readonly SITESFOLDER = 'sites';
     static readonly TMPFOLDER = 'tmp';
+    static readonly NO_SITE_FOLDER = 'nosite';
 
     static readonly CHUNK_SIZE = 1048576; // 1 MB. Same chunk size as Ionic Native.
 

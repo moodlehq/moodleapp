@@ -23,7 +23,7 @@ import {
     EventEmitter,
     OnDestroy,
 } from '@angular/core';
-import { CoreFile } from '@services/file';
+import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreFilepool, CoreFilepoolFileActions, CoreFilepoolFileEventData } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreUrlUtils } from '@services/utils/url';
@@ -41,6 +41,9 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreArray } from '@singletons/array';
+import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { CoreWS } from '@services/ws';
 
 /**
  * Directive to handle external content.
@@ -142,13 +145,12 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
      * Get the URL that should be handled and, if valid, handle it.
      */
     protected async checkAndHandleExternalContent(): Promise<void> {
-        const siteId = this.siteId || CoreSites.getRequiredCurrentSite().getId();
         const tagName = this.element.tagName.toUpperCase();
         let targetAttr: string;
         let url: string;
 
         // Always handle inline styles (if any).
-        this.handleInlineStyles(siteId);
+        this.handleInlineStyles(this.siteId);
 
         if (tagName === 'A' || tagName == 'IMAGE') {
             targetAttr = 'href';
@@ -165,7 +167,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             if (tagName === 'VIDEO' && (this.posterUrl || this.poster)) { // eslint-disable-line deprecation/deprecation
                 // Handle poster.
                 // eslint-disable-next-line deprecation/deprecation
-                this.handleExternalContent('poster', this.posterUrl ?? this.poster ?? '', siteId).catch(() => {
+                this.handleExternalContent('poster', this.posterUrl ?? this.poster ?? '').catch(() => {
                     // Ignore errors.
                 });
             }
@@ -178,7 +180,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         }
 
         try {
-            await this.handleExternalContent(targetAttr, url, siteId);
+            await this.handleExternalContent(targetAttr, url);
         } catch (error) {
             // Error handling content. Make sure the original URL is set.
            this.setElementUrl(targetAttr, url);
@@ -192,28 +194,27 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
      *
      * @param targetAttr Attribute to modify.
      * @param url Original URL to treat.
-     * @param siteId Site ID.
      * @returns Promise resolved if the element is successfully treated.
      */
-    protected async handleExternalContent(targetAttr: string, url: string, siteId?: string): Promise<void> {
+    protected async handleExternalContent(targetAttr: string, url: string): Promise<void> {
 
         const tagName = this.element.tagName;
         if (tagName == 'VIDEO' && targetAttr != 'poster') {
             this.handleVideoSubtitles(<HTMLVideoElement> this.element);
         }
 
-        const site = await CoreSites.getSite(siteId);
-        const isSiteFile = site.isSitePluginFileUrl(url);
+        const site = await CoreUtils.ignoreErrors(CoreSites.getSite(this.siteId));
+        const isSiteFile = site?.isSitePluginFileUrl(url);
 
         if (!url || !url.match(/^https?:\/\//i) || CoreUrlUtils.isLocalFileUrl(url) ||
-                (tagName === 'A' && !(isSiteFile || site.isSiteThemeImageUrl(url) || CoreUrlUtils.isGravatarUrl(url)))) {
+                (tagName === 'A' && !(isSiteFile || site?.isSiteThemeImageUrl(url) || CoreUrlUtils.isGravatarUrl(url)))) {
 
             this.logger.debug('Ignoring non-downloadable URL: ' + url);
 
             throw new CoreError('Non-downloadable URL');
         }
 
-        if (!site.canDownloadFiles() && isSiteFile) {
+        if (site && !site.canDownloadFiles() && isSiteFile) {
             this.element.parentElement?.removeChild(this.element); // Remove element since it'll be broken.
 
             throw new CoreError(Translate.instant('core.cannotdownloadfiles'));
@@ -225,7 +226,9 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
 
         this.setElementUrl(targetAttr, finalUrl);
 
-        this.setListeners(targetAttr, url, site);
+        if (site) {
+            this.setListeners(targetAttr, url, site);
+        }
     }
 
     /**
@@ -350,7 +353,11 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
      * @param site Site.
      * @returns Promise resolved with the URL.
      */
-    protected async getUrlToUse(targetAttr: string, url: string, site: CoreSite): Promise<string> {
+    protected async getUrlToUse(targetAttr: string, url: string, site?: CoreSite): Promise<string> {
+        if (!site) {
+            return this.getUrlForNoSite(url);
+        }
+
         const tagName = this.element.tagName;
         let finalUrl: string;
 
@@ -395,6 +402,36 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         }
 
         return finalUrl;
+    }
+
+    /**
+     * Get the URL to use when there's no site (the user hasn't authenticated yet).
+     * In Android, the file will always be downloaded and served from the local file system to avoid problems with cookies.
+     * In other platforms the file will never be downloaded, we'll always use the online URL.
+     *
+     * @param url Original URL to treat.
+     * @returns Promise resolved with the URL.
+     */
+    protected async getUrlForNoSite(url: string): Promise<string> {
+        if (!CorePlatform.isAndroid()) {
+            return url;
+        }
+
+        const fileId = CoreFilepool.getFileIdByUrl(url);
+        const extension = CoreMimetypeUtils.guessExtensionFromUrl(url);
+
+        const filePath = CoreFileProvider.NO_SITE_FOLDER + '/' + fileId + (extension ? '.' + extension : '');
+        let fileEntry: FileEntry;
+
+        try {
+            // Check if the file is already downloaded.
+            fileEntry = await CoreFile.getFile(filePath);
+        } catch {
+            // File not downloaded, download it first.
+            fileEntry = await CoreWS.downloadFile(url, filePath, false);
+        }
+
+        return CoreFile.convertFileSrc(CoreFile.getFileEntryURL(fileEntry));
     }
 
     /**

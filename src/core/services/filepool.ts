@@ -1341,7 +1341,7 @@ export class CoreFilepoolProvider {
      * @param fileUrl The absolute URL to the file.
      * @returns The file ID.
      */
-    protected getFileIdByUrl(fileUrl: string): string {
+    getFileIdByUrl(fileUrl: string): string {
         let url = fileUrl;
 
         // If site supports it, since 3.8 we use tokenpluginfile instead of pluginfile.
