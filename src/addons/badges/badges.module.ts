@@ -23,6 +23,8 @@ import { AddonBadgesUserHandler } from './services/handlers/user';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonBadgesPushClickHandler } from './services/handlers/push-click';
+import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
+import { AddonBadgesTagAreaHandler } from './services/handlers/tag-area';
 
 /**
  * Get badges services.
@@ -57,6 +59,7 @@ const mainMenuRoutes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonBadgesBadgeLinkHandler.instance);
                 CoreUserDelegate.registerHandler(AddonBadgesUserHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonBadgesPushClickHandler.instance);
+                CoreTagAreaDelegate.registerHandler(AddonBadgesTagAreaHandler.instance);
             },
         },
     ],
