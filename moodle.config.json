@@ -122,5 +122,6 @@
             "font-awesome": ["fam"],
             "moodle": ["moodle"]
         }
-    }
+    },
+    "clearIABSessionWhenAutoLogin": "android"
 }
