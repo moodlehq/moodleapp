@@ -32,11 +32,11 @@ export class CoreTagHelperProvider {
         const items: CoreTagFeedElement[] = [];
         const element = CoreDomUtils.convertToElement(content);
 
-        Array.from(element.querySelectorAll('ul.tag_feed > li.media')).forEach((itemElement) => {
+        Array.from(element.querySelectorAll('ul.tag_feed > li')).forEach((itemElement) => {
             const item: CoreTagFeedElement = { details: [] };
 
-            Array.from(itemElement.querySelectorAll('div.media-body > div')).forEach((div: HTMLElement) => {
-                if (div.classList.contains('media-heading')) {
+            Array.from(itemElement.querySelectorAll('div.media-body > div, div.flex-grow-1 > div')).forEach((div: HTMLElement) => {
+                if (div.classList.contains('media-heading') || div.classList.contains('item-heading')) {
                     item.heading = div.innerText.trim();
                     const link = div.querySelector('a');
                     if (link) {
@@ -46,11 +46,11 @@ export class CoreTagHelperProvider {
                     // Separate details by lines.
                     const lines = [''];
                     Array.from(div.childNodes).forEach((childNode: Node) => {
-                        if (childNode.nodeType == Node.TEXT_NODE) {
+                        if (childNode.nodeType === Node.TEXT_NODE) {
                             lines[lines.length - 1] += childNode.textContent;
-                        } else if (childNode.nodeType == Node.ELEMENT_NODE) {
+                        } else if (childNode.nodeType === Node.ELEMENT_NODE) {
                             const childElement = childNode as HTMLElement;
-                            if (childElement.tagName == 'BR') {
+                            if (childElement.tagName === 'BR') {
                                 lines.push('');
                             } else {
                                 lines[lines.length - 1] += childElement.innerText;
@@ -61,12 +61,19 @@ export class CoreTagHelperProvider {
                 }
             });
 
-            const image = itemElement.querySelector('div.itemimage img');
+            const image = itemElement.querySelector('div.itemimage img, div.flex-shrink-0 img');
             if (image) {
                 if (image.classList.contains('userpicture')) {
                     item.avatarUrl = image.getAttribute('src');
+                    item.fullname = image.getAttribute('title');
                 } else {
                     item.iconUrl = image.getAttribute('src');
+                }
+            } else {
+                const initials = itemElement.querySelector('div.itemimage .userinitials, div.flex-shrink-0 .userinitials');
+                if (initials) {
+                    item.avatarUrl = 'error'; // Use 'error' to show the default avatar.
+                    item.fullname = initials.getAttribute('title');
                 }
             }
 
@@ -91,4 +98,5 @@ export type CoreTagFeedElement = {
     iconUrl?: string | null;
     avatarUrl?: string | null;
     url?: string | null;
+    fullname?: string | null;
 };

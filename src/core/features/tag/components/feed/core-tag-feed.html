@@ -1,6 +1,7 @@
 <ion-card *ngFor="let item of items">
     <ion-item class="ion-text-wrap" [href]="item.url" core-link [capture]="true">
-        <core-user-avatar *ngIf="item.avatarUrl" [profileUrl]="item.avatarUrl" slot="start" [linkProfile]="false" />
+        <core-user-avatar *ngIf="item.avatarUrl" [profileUrl]="item.avatarUrl" [fullname]="item.fullname" slot="start"
+            [linkProfile]="false" />
 
         <core-mod-icon *ngIf="item.iconUrl" [modicon]="item.iconUrl" slot="start" [showAlt]="false" [isBranded]="item.branded" />
         <ion-label>

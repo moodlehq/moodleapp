@@ -2578,6 +2578,7 @@
   "core.tag.searchtags": "tag",
   "core.tag.showingfirsttags": "tag",
   "core.tag.tag": "moodle",
+  "core.tag.tagarea_badge": "badges",
   "core.tag.tagarea_course": "tag",
   "core.tag.tagarea_course_modules": "tag",
   "core.tag.tagarea_post": "tag",
