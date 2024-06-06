@@ -16,7 +16,7 @@
 
     margin-top: var(--margin-vertical);
     margin-bottom: var(--margin-vertical);
-    @include margin-horizontal(null, var(--margin-end));
+    @include margin-horizontal(0px, var(--margin-end));
 
     border-radius: var(--icon-radius);
     @include padding(var(--padding-top), var(--padding-end), var(--padding-bottom), var(--padding-start));
@@ -76,4 +76,11 @@
 :host-context(ion-card ion-item) {
     --margin-vertical: 12px;
     --margin-end: 12px;
+}
+
+:host-context(html.dark) {
+    &.version_40:not(.colorize),
+    &.version_current {
+        background-color: var(--white);
+    }
 }

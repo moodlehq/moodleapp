@@ -250,7 +250,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
      * @returns True if data has changed.
      */
     hasDataChanged(): boolean {
-        if (!this.assessmentStrategyLoaded || !this.workshop.strategy) {
+        if (!this.assessmentStrategyLoaded || !this.workshop.strategy || !this.edit) {
             return false;
         }
 
