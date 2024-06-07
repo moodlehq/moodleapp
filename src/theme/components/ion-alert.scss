@@ -37,6 +37,10 @@ ion-alert {
 
     }
 
+    &.ios .alert-message {
+        text-align: start;
+    }
+
     &.md .alert-button {
         // Remove padding from alert buttons, they already have min accessibility height.
         padding-top: 0px;
