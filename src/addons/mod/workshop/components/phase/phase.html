@@ -21,7 +21,7 @@
                     </p>
                 </ion-label>
             </ion-item-divider>
-            <ion-item class="ion-text-wrap" *ngIf="phase.switchUrl" [href]="phase.switchUrl" [detail]="false">
+            <ion-item class="ion-text-wrap" *ngIf="phase.switchUrl" [href]="phase.switchUrl" [detail]="false" core-link [capture]="false">
                 <ion-icon slot="start" name="fas-right-left" aria-hidden="true" />
                 <ion-label>
                     <p>{{ 'addon.mod_workshop.switchphase' + phase.code | translate }}</p>
