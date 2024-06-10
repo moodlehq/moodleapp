@@ -311,7 +311,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
             return;
         }
 
-        submissionActions.forEach(async (action) => {
+        await Promise.all(submissionActions.map(async (action) => {
             submissionId = action.submissionid > 0 ? action.submissionid : submissionId;
 
             try {
@@ -397,7 +397,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
                     siteId,
                 );
             }
-        });
+        }));
 
         if (discardError) {
             // Submission was discarded, add a warning.
