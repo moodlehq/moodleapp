@@ -19,6 +19,7 @@ import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonQtypeDdMarkerQuestionData } from '../component/ddmarker';
 import { AddonQtypeDdMarkerGraphicsApi } from './graphics_api';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Class to make a question of ddmarker type work.
@@ -692,17 +693,21 @@ export class AddonQtypeDdMarkerQuestion {
             bgImg.src = this.imgSrc;
         }
 
-        const imgLoaded = (): void => {
+        const imgLoaded = async (): Promise<void> => {
             bgImg.removeEventListener('load', imgLoaded);
 
             this.makeImageDropable();
 
-            setTimeout(() => {
-                this.redrawDragsAndDrops();
-            });
-
             this.afterImageLoadDone = true;
             this.question.loaded = true;
+
+            // Wait for image to be visible, otherwise the calculated positions are wrong.
+            const visiblePromise = CoreDom.waitToBeVisible(bgImg);
+
+            await CoreUtils.ignoreErrors(CoreUtils.timeoutPromise(visiblePromise, 500));
+            visiblePromise.cancel(); // In case of timeout, cancel the promise.
+
+            this.redrawDragsAndDrops();
         };
 
         if (!bgImg.src || (bgImg.complete && bgImg.naturalWidth)) {

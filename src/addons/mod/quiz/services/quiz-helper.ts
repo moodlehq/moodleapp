@@ -22,7 +22,6 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModQuizPreflightModalComponent } from '../components/preflight-modal/preflight-modal';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 import { AddonModQuizModuleHandlerService } from './handlers/module';
 import {
@@ -268,6 +267,9 @@ export class AddonModQuizHelperProvider {
                 Translate.instant('addon.mod_quiz.errorrulesnotsupported') + ' ' + JSON.stringify(notSupported),
             );
         }
+
+        const { AddonModQuizPreflightModalComponent } =
+            await import('@addons/mod/quiz/components/preflight-modal/preflight-modal.module');
 
         // Create and show the modal.
         const modalData = await CoreDomUtils.openModal<Record<string, string>>({
