@@ -112,7 +112,7 @@ export class AddonModChatSessionMessagesPage implements OnInit {
 
                 const message = this.messages[index];
 
-                if (message.beep && message.beep != String(this.currentUserId)) {
+                if (message.beep && message.beep !== this.currentUserId) {
                     this.loadMessageBeepWho(message);
                 }
             }
@@ -135,11 +135,11 @@ export class AddonModChatSessionMessagesPage implements OnInit {
      * @param id User Id before parsing.
      * @returns User fullname.
      */
-    protected async getUserFullname(id: string): Promise<string> {
-        const idNumber = parseInt(id, 10);
+    protected async getUserFullname(id: string | number): Promise<string> {
+        const idNumber = Number(id);
 
         if (isNaN(idNumber)) {
-            return id;
+            return String(id);
         }
 
         try {
@@ -148,7 +148,7 @@ export class AddonModChatSessionMessagesPage implements OnInit {
             return user.fullname;
         } catch {
             // Error getting profile.
-            return id;
+            return String(id);
         }
     }
 
