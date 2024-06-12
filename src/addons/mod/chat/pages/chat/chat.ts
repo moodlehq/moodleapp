@@ -166,7 +166,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
 
             const message = this.messages[index];
 
-            if (message.beep && message.beep != String(this.currentUserId)) {
+            if (message.beep && message.beep !== this.currentUserId) {
                 this.loadMessageBeepWho(message);
             }
         }
@@ -212,11 +212,11 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
      * @param id User Id before parsing.
      * @returns User fullname.
      */
-    protected async getUserFullname(id: string): Promise<string> {
-        const idNumber = parseInt(id, 10);
+    protected async getUserFullname(id: string | number): Promise<string> {
+        const idNumber = Number(id);
 
         if (isNaN(idNumber)) {
-            return id;
+            return String(id);
         }
 
         const user = this.users.find((user) => user.id == idNumber);
@@ -235,10 +235,10 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
                 return user.fullname;
             }
 
-            return id;
+            return String(id);
         } catch {
             // Ignore errors.
-            return id;
+            return String(id);
         }
     }
 

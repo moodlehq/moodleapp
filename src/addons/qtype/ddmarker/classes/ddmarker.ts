@@ -20,6 +20,8 @@ import { CoreLogger } from '@singletons/logger';
 import { AddonQtypeDdMarkerQuestionData } from '../component/ddmarker';
 import { AddonQtypeDdMarkerGraphicsApi } from './graphics_api';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreExternalContentDirective } from '@directives/external-content';
 
 /**
  * Class to make a question of ddmarker type work.
@@ -678,7 +680,7 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Wait for the background image to be loaded.
      */
-    pollForImageLoad(): void {
+    async pollForImageLoad(): Promise<void> {
         if (this.afterImageLoadDone) {
             // Already treated.
             return;
@@ -688,6 +690,9 @@ export class AddonQtypeDdMarkerQuestion {
         if (!bgImg) {
             return;
         }
+
+        // Wait for external-content to finish, otherwise the image doesn't have a src and the calculations are wrong.
+        await CoreDirectivesRegistry.waitDirectivesReady(bgImg, undefined, CoreExternalContentDirective);
 
         if (!bgImg.src && this.imgSrc) {
             bgImg.src = this.imgSrc;
