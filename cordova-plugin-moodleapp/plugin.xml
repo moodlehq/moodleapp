@@ -17,8 +17,16 @@
         </config-file>
 
         <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="Diagnostic" >
+            <feature name="Diagnostic">
                 <param name="android-package" value="com.moodle.moodlemobile.Diagnostic"/>
+                <param name="onload" value="true" />
+            </feature>
+            <feature name="Diagnostic_Microphone">
+                <param name="android-package" value="com.moodle.moodlemobile.Diagnostic"/>
+                <param name="onload" value="true" />
+            </feature>
+            <feature name="Diagnostic_Location">
+                <param name="android-package" value="com.moodle.moodlemobile.Diagnostic_Location"/>
                 <param name="onload" value="true" />
             </feature>
         </config-file>
@@ -45,7 +53,7 @@
         <header-file src="src/ios/SecureStorage.h" />
         <source-file src="src/ios/SecureStorage.m" />
 
-           <config-file target="config.xml" parent="/*">
+        <config-file target="config.xml" parent="/*">
             <feature name="Diagnostic">
                 <param name="ios-package" value="Diagnostic" />
                 <param name="onload" value="true" />
