@@ -76,6 +76,10 @@
 
         <framework src="CoreLocation.framework" />
 
+        <config-file target="*-Info.plist" parent="NSLocationAlwaysAndWhenInUseUsageDescription" comment="Default usage descriptions: override as necessary in .plist">
+            <string>We need your location so you can attach it as part of your submissions.</string>
+        </config-file>
+
         <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription" comment="Default usage descriptions: override as necessary in .plist">
             <string>We need your location so you can attach it as part of your submissions.</string>
         </config-file>
