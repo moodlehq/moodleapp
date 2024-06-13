@@ -62,11 +62,12 @@ export class Diagnostic {
     }
 
     isLocationEnabled(): Promise<boolean> {
-        return new Promise<boolean>((resolve, reject) => cordova.exec(resolve, reject, 'Diagnostic', 'isLocationEnabled'));
+        return new Promise<boolean>((resolve, reject) => cordova.exec(resolve, reject, 'Diagnostic_Location', 'isLocationEnabled'));
     }
 
     switchToLocationSettings(): Promise<void> {
-        return new Promise<void>((resolve, reject) => cordova.exec(resolve, reject, 'Diagnostic', 'switchToLocationSettings'));
+        return new Promise<void>((resolve, reject) =>
+            cordova.exec(resolve, reject, 'Diagnostic_Location', 'switchToLocationSettings'));
     }
 
     switchToSettings(): Promise<void> {
@@ -75,16 +76,17 @@ export class Diagnostic {
 
     getLocationAuthorizationStatus(): Promise<unknown> {
         return new Promise<unknown>((resolve, reject) =>
-            cordova.exec(resolve, reject, 'Diagnostic', 'getLocationAuthorizationStatus'));
+            cordova.exec(resolve, reject, 'Diagnostic_Location', 'getLocationAuthorizationStatus'));
     }
 
     requestLocationAuthorization(): Promise<void> {
-        return new Promise<void>((resolve, reject) => cordova.exec(resolve, reject, 'Diagnostic', 'requestLocationAuthorization'));
+        return new Promise<void>((resolve, reject) =>
+            cordova.exec(resolve, reject, 'Diagnostic_Location', 'requestLocationAuthorization'));
     }
 
     requestMicrophoneAuthorization(): Promise<string> {
         return new Promise<string>((resolve, reject) =>
-            cordova.exec(resolve, reject, 'Diagnostic', 'requestMicrophoneAuthorization'));
+            cordova.exec(resolve, reject, 'Diagnostic_Microphone', 'requestMicrophoneAuthorization'));
     }
 
 }
