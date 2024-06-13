@@ -122,15 +122,15 @@ export class CoreGeolocationProvider {
         this.logger.log(`Authorize location: status ${authorizationStatus}`);
 
         switch (authorizationStatus) {
-            case diagnostic.permissionStatus.deniedOnce:
-                if (failOnDeniedOnce) {
-                    throw new CoreGeolocationError(CoreGeolocationErrorReason.PERMISSION_DENIED);
-                }
-
             case diagnostic.permissionStatus.granted:
             case diagnostic.permissionStatus.grantedWhenInUse:
                 // Location is authorized.
                     return;
+
+            case diagnostic.permissionStatus.deniedOnce:
+                if (failOnDeniedOnce) {
+                    throw new CoreGeolocationError(CoreGeolocationErrorReason.PERMISSION_DENIED);
+                }
 
             // Fall through.
             case diagnostic.permissionStatus.notRequested:

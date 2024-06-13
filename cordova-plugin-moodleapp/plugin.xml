@@ -21,10 +21,6 @@
                 <param name="android-package" value="com.moodle.moodlemobile.Diagnostic"/>
                 <param name="onload" value="true" />
             </feature>
-            <feature name="Diagnostic_Microphone">
-                <param name="android-package" value="com.moodle.moodlemobile.Diagnostic"/>
-                <param name="onload" value="true" />
-            </feature>
             <feature name="Diagnostic_Location">
                 <param name="android-package" value="com.moodle.moodlemobile.Diagnostic_Location"/>
                 <param name="onload" value="true" />
