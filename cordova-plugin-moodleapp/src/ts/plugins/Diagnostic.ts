@@ -116,15 +116,20 @@ export class Diagnostic {
                 permission.accessFineLocation,
                 permission.accessBackgroundLocation,
             ]).then(statuses => {
+                const coarseStatus = statuses[permission.accessCoarseLocation];
+                const fineStatus = statuses[permission.accessFineLocation];
                 const backgroundStatus = typeof statuses[permission.accessBackgroundLocation] !== 'undefined' ?
                     statuses[permission.accessBackgroundLocation] : true;
 
-                let status = this.combinePermissionStatuses({
-                    [permission.accessCoarseLocation]: statuses[permission.accessCoarseLocation],
-                    [permission.accessFineLocation]: statuses[permission.accessFineLocation],
-                });
-                if (status === permissionStatus.granted && backgroundStatus !== permissionStatus.granted) {
-                    status = permissionStatus.grantedWhenInUse;
+                let status: string = permissionStatus.notRequested;
+
+                if (coarseStatus === permissionStatus.granted || fineStatus === permissionStatus.granted) {
+                    status = backgroundStatus === permissionStatus.granted ?
+                        permissionStatus.granted : permissionStatus.grantedWhenInUse;
+                } else if (coarseStatus === permissionStatus.deniedOnce || fineStatus === permissionStatus.deniedOnce) {
+                    status = permissionStatus.deniedOnce;
+                } else if (coarseStatus === permissionStatus.deniedAlways || fineStatus === permissionStatus.deniedAlways) {
+                    status = permissionStatus.deniedAlways;
                 }
 
                 resolve(status);
@@ -202,45 +207,6 @@ export class Diagnostic {
                 [permissions],
             );
         });
-    }
-
-    /**
-     * Given a list of permissions and their statuses, returns the combined status.
-     *
-     * @param statuses Permissions with statuses.
-     * @returns Combined status.
-     */
-    protected combinePermissionStatuses(statuses: Record<string, string>): string {
-        if (this.anyStatusIs(statuses, permissionStatus.deniedAlways)) {
-            return permissionStatus.deniedAlways;
-        }
-
-        if (this.anyStatusIs(statuses, permissionStatus.deniedOnce)) {
-            return permissionStatus.deniedOnce;
-        }
-
-        if (this.anyStatusIs(statuses, permissionStatus.granted)) {
-            return permissionStatus.granted;
-        }
-
-        return permissionStatus.notRequested;
-    }
-
-    /**
-     * Check if any of the permissions in the statuses object has the specified status.
-     *
-     * @param statuses Permissions with status for each permission.
-     * @param status Status to check.
-     * @returns True if any permission has the specified status.
-     */
-    protected anyStatusIs(statuses: Record<string, string>, status: string): boolean {
-        for (const permission in statuses) {
-            if (statuses[permission] === status) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
