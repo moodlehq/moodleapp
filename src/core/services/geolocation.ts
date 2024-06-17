@@ -125,7 +125,7 @@ export class CoreGeolocationProvider {
             case diagnostic.permissionStatus.granted:
             case diagnostic.permissionStatus.grantedWhenInUse:
                 // Location is authorized.
-                    return;
+                return;
 
             case diagnostic.permissionStatus.deniedOnce:
                 if (failOnDeniedOnce) {
