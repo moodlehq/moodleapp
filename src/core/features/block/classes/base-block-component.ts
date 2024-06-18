@@ -32,10 +32,10 @@ import { CorePromisedValue } from '@classes/promised-value';
 })
 export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ICoreBlockComponent, AsyncDirective {
 
-    @Input() title!: string; // The block title.
-    @Input() block!: CoreCourseBlock; // The block to render.
-    @Input() contextLevel!: ContextLevel; // The context where the block will be used.
-    @Input() instanceId!: number; // The instance ID associated with the context level.
+    @Input({ required: true }) title!: string; // The block title.
+    @Input({ required: true }) block!: CoreCourseBlock; // The block to render.
+    @Input({ required: true }) contextLevel!: ContextLevel; // The context where the block will be used.
+    @Input({ required: true }) instanceId!: number; // The instance ID associated with the context level.
     @Input() link?: string; // Link to go when clicked.
     @Input() linkParams?: Params; // Link params to go when clicked.
     @Input() navOptions?: CoreNavigationOptions; // Navigation options.

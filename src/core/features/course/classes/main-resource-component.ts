@@ -52,8 +52,8 @@ export type CoreCourseResourceDownloadResult = {
 })
 export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
 
-    @Input() module!: CoreCourseModuleData; // The module of the component.
-    @Input() courseId!: number; // Course ID the component belongs to.
+    @Input({ required: true }) module!: CoreCourseModuleData; // The module of the component.
+    @Input({ required: true }) courseId!: number; // Course ID the component belongs to.
     @Output() dataRetrieved = new EventEmitter<unknown>(); // Called to notify changes the index page from the main component.
 
     showLoading = true; // Whether to show loading.

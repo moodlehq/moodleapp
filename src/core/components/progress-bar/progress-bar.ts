@@ -30,7 +30,7 @@ import { DomSanitizer, Translate } from '@singletons';
 })
 export class CoreProgressBarComponent implements OnChanges {
 
-    @Input() progress!: number | string; // Percentage from 0 to 100. Negative number will show an indeterminate progress bar.
+    @Input({ required: true }) progress!: number | string; // Percentage (0 to 100). Negative number will show an indeterminate bar.
     @Input() text?: string; // Percentage in text to be shown at the right. If not defined, progress will be used.
     @Input() a11yText?: string; // Accessibility text to read before the percentage.
     @Input() ariaDescribedBy?: string; // ID of the element that described the progress, if any.

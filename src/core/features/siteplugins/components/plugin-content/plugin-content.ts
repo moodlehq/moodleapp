@@ -50,7 +50,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
     @ViewChild('compile') compileComponent?: CoreCompileHtmlComponent;
 
     @HostBinding('class') @Input() component = '';
-    @Input() method!: string;
+    @Input({ required: true }) method!: string;
     @Input() args?: Record<string, unknown>;
     @Input() initResult?: CoreSitePluginsContent | null; // Result of the init WS call of the handler.
     @Input() data: Record<string, unknown> = {}; // Data to pass to the component.

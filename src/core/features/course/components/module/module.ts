@@ -45,7 +45,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
-    @Input() module!: CoreCourseModuleData; // The module to render.
+    @Input({ required: true }) module!: CoreCourseModuleData; // The module to render.
     @Input() section?: CoreCourseSection; // The section the module belongs to.
     @Input() showActivityDates = false; // Whether to show activity dates.
     @Input() showCompletionConditions = false; // Whether to show activity completion conditions.

@@ -32,10 +32,10 @@ export class CoreBlockComponent implements OnChanges, OnDestroy {
 
     @ViewChild(CoreDynamicComponent) dynamicComponent?: CoreDynamicComponent<ICoreBlockComponent>;
 
-    @Input() block!: CoreCourseBlock; // The block to render.
-    @Input() contextLevel!: ContextLevel; // The context where the block will be used.
-    @Input() instanceId!: number; // The instance ID associated with the context level.
-    @Input() extraData!: Record<string, unknown>; // Any extra data to be passed to the block.
+    @Input({ required: true }) block!: CoreCourseBlock; // The block to render.
+    @Input({ required: true }) contextLevel!: ContextLevel; // The context where the block will be used.
+    @Input({ required: true }) instanceId!: number; // The instance ID associated with the context level.
+    @Input() extraData?: Record<string, unknown>; // Any extra data to be passed to the block.
     @Input() labelledBy?: string;
 
     componentClass?: Type<ICoreBlockComponent>; // The class of the component to render.

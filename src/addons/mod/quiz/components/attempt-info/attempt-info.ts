@@ -30,8 +30,8 @@ import { isSafeNumber } from '@/core/utils/types';
 })
 export class AddonModQuizAttemptInfoComponent implements OnChanges {
 
-    @Input() quiz!: AddonModQuizQuizData;
-    @Input() attempt!: AddonModQuizAttempt;
+    @Input({ required: true }) quiz!: AddonModQuizQuizData;
+    @Input({ required: true }) attempt!: AddonModQuizAttempt;
     @Input() additionalData?: AddonModQuizWSAdditionalData[]; // Additional data to display for the attempt.
 
     isFinished = false;

@@ -25,6 +25,6 @@ import { CoreQuestionQuestionForView } from '@features/question/services/questio
 })
 export class AddonModQuizQuestionCardComponent {
 
-    @Input() question!: CoreQuestionQuestionForView;
+    @Input({ required: true }) question!: CoreQuestionQuestionForView;
 
 }

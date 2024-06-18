@@ -36,7 +36,7 @@ export class AddonNotesAddComponent {
 
     @ViewChild('itemEdit') formElement?: ElementRef;
 
-    @Input() courseId!: number;
+    @Input({ required: true }) courseId!: number;
     @Input() userId?: number;
     @Input() type: AddonNotesPublishState = 'personal';
     text = '';

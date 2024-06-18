@@ -31,10 +31,10 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModWorkshopPhaseInfoModalComponent implements OnInit {
 
-    @Input() phases!: AddonModWorkshopPhaseDataWithSwitch[];
-    @Input() workshopPhase!: AddonModWorkshopPhase;
+    @Input({ required: true }) phases!: AddonModWorkshopPhaseDataWithSwitch[];
+    @Input({ required: true }) workshopPhase!: AddonModWorkshopPhase;
     @Input() showSubmit = false;
-    @Input() externalUrl!: string;
+    @Input({ required: true }) externalUrl!: string;
 
     ngOnInit(): void {
 

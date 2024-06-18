@@ -63,7 +63,7 @@ import { CoreDom } from '@singletons/dom';
 })
 export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
-    @Input() text!: string; // The HTML text to display.
+    @Input({ required: true }) text!: string; // The HTML text to display.
     @Input() javascript?: string; // The Javascript to execute in the component.
     @Input() jsData?: Record<string, unknown>; // Data to pass to the fake component.
     @Input() cssCode?: string; // The styles to apply.

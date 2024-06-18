@@ -42,8 +42,8 @@ import { CoreBlockComponentsModule } from '../components.module';
 })
 export class CoreBlockSideBlocksComponent implements OnInit {
 
-    @Input() contextLevel!: ContextLevel;
-    @Input() instanceId!: number;
+    @Input({ required: true }) contextLevel!: ContextLevel;
+    @Input({ required: true }) instanceId!: number;
     @Input() initialBlockInstanceId?: number;
     @Input() myDashboardPage?: string;
 

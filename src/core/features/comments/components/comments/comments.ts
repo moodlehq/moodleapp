@@ -33,10 +33,10 @@ import { ContextLevel } from '@/core/constants';
 })
 export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestroy {
 
-    @Input() contextLevel!: ContextLevel;
-    @Input() instanceId!: number;
-    @Input() component!: string;
-    @Input() itemId!: number;
+    @Input({ required: true }) contextLevel!: ContextLevel;
+    @Input({ required: true }) instanceId!: number;
+    @Input({ required: true }) component!: string;
+    @Input({ required: true }) itemId!: number;
     @Input() area = '';
     @Input() title?: string;
     @Output() onLoading = new EventEmitter<boolean>();  // Event that indicates whether the component is loading data.

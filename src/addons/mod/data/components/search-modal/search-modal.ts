@@ -50,9 +50,9 @@ export class AddonModDataSearchModalComponent implements OnInit {
 
     @ViewChild('searchFormEl') formElement!: ElementRef;
 
-    @Input() search!: AddonModDataSearchDataParams;
-    @Input() fields!: Record<number, AddonModDataField>;
-    @Input() database!: AddonModDataData;
+    @Input({ required: true }) search!: AddonModDataSearchDataParams;
+    @Input({ required: true }) fields!: Record<number, AddonModDataField>;
+    @Input({ required: true }) database!: AddonModDataData;
 
     advancedSearch = '';
     advancedIndexed: CoreFormFields = {};

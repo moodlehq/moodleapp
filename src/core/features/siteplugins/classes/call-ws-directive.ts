@@ -27,7 +27,7 @@ import { CoreFormFields, CoreForms } from '@singletons/form';
 @Directive()
 export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
 
-    @Input() name!: string; // The name of the WS to call.
+    @Input({ required: true }) name!: string; // The name of the WS to call.
     @Input() params?: Record<string, unknown>; // The params for the WS call.
     @Input() preSets?: CoreSiteWSPreSets; // The preSets for the WS call.
     @Input() useOtherDataForWS?: string[] | unknown; // Whether to include other data in the params for the WS.

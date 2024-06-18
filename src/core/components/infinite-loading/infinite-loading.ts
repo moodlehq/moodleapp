@@ -30,7 +30,7 @@ const THRESHOLD = .15; // % of the scroll element height that must be close to t
 })
 export class CoreInfiniteLoadingComponent implements OnChanges {
 
-    @Input() enabled!: boolean;
+    @Input({ required: true }) enabled!: boolean;
     @Input() error = false;
     @Input() position: 'top' | 'bottom' = 'bottom';
     @Output() action: EventEmitter<() => void>; // Will emit an event when triggered.

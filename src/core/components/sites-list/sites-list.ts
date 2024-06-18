@@ -42,7 +42,7 @@ import { CoreSitesFactory } from '@services/sites-factory';
 })
 export class CoreSitesListComponent<T extends CoreSiteBasicInfo> {
 
-    @Input() accountsList!: CoreAccountsList<T>;
+    @Input({ required: true }) accountsList!: CoreAccountsList<T>;
     @Input() sitesClickable = false; // Whether the sites are clickable.
     @Input() currentSiteClickable?: boolean; // If set, specify a different clickable value for current site.
     @Output() onSiteClicked = new EventEmitter<T>();

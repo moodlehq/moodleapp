@@ -31,7 +31,7 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
     private static readonly BARS_MIN_HEIGHT = 4;
     private static readonly BARS_GUTTER = 4;
 
-    @Input() analyser!: AnalyserNode;
+    @Input({ required: true }) analyser!: AnalyserNode;
     @Input() paused?: boolean;
     @ViewChild('canvas') canvasRef?: ElementRef<HTMLCanvasElement>;
 

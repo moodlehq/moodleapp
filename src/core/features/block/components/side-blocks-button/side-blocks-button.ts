@@ -31,8 +31,8 @@ import { ContextLevel } from '@/core/constants';
 })
 export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
 
-    @Input() contextLevel!: ContextLevel;
-    @Input() instanceId!: number;
+    @Input({ required: true }) contextLevel!: ContextLevel;
+    @Input({ required: true }) instanceId!: number;
     @Input() myDashboardPage?: string;
 
     userTour: CoreUserTourDirectiveOptions = {

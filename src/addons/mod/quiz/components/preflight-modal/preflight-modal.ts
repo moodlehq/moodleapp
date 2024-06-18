@@ -39,12 +39,12 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
 
     @ViewChild('preflightFormEl') formElement?: ElementRef;
 
-    @Input() title!: string;
+    @Input({ required: true }) title!: string;
     @Input() quiz?: AddonModQuizQuizWSData;
     @Input() attempt?: AddonModQuizAttemptWSData;
     @Input() prefetch?: boolean;
-    @Input() siteId!: string;
-    @Input() rules!: string[];
+    @Input({ required: true }) siteId!: string;
+    @Input({ required: true }) rules!: string[];
 
     preflightForm: FormGroup;
     accessRulesData: { component: Type<unknown>; data: Record<string, unknown>}[] = []; // Component and data for each access rule.

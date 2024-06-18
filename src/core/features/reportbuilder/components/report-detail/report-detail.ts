@@ -40,7 +40,7 @@ import { map } from 'rxjs/operators';
 })
 export class CoreReportBuilderReportDetailComponent implements OnInit {
 
-    @Input() reportId!: string;
+    @Input({ required: true }) reportId!: string;
     @Input() isBlock = true;
     @Input() perPage?: number;
     @Input() layout: 'card' | 'table' | 'adaptative' = 'adaptative';

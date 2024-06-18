@@ -37,9 +37,9 @@ export class AddonModAssignSubmissionPluginComponent implements OnInit {
 
     @ViewChild(CoreDynamicComponent) dynamicComponent!: CoreDynamicComponent<AddonModAssignSubmissionPluginBaseComponent>;
 
-    @Input() assign!: AddonModAssignAssign; // The assignment.
-    @Input() submission!: AddonModAssignSubmission; // The submission.
-    @Input() plugin!: AddonModAssignPlugin; // The plugin object.
+    @Input({ required: true }) assign!: AddonModAssignAssign; // The assignment.
+    @Input({ required: true }) submission!: AddonModAssignSubmission; // The submission.
+    @Input({ required: true }) plugin!: AddonModAssignPlugin; // The plugin object.
     @Input() edit = false; // Whether the user is editing.
     @Input() allowOffline = false; // Whether to allow offline.
 

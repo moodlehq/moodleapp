@@ -27,8 +27,8 @@ import { PopoverController } from '@singletons';
 })
 export class CoreCoursesCourseOptionsMenuComponent implements OnInit {
 
-    @Input() course!: CoreEnrolledCourseDataWithExtraInfoAndOptions; // The course.
-    @Input() prefetch!: CorePrefetchStatusInfo; // The prefecth info.
+    @Input({ required: true }) course!: CoreEnrolledCourseDataWithExtraInfoAndOptions; // The course.
+    @Input({ required: true }) prefetch!: CorePrefetchStatusInfo; // The prefecth info.
 
     downloadCourseEnabled = false;
 

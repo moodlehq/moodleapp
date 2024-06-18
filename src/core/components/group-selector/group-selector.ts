@@ -34,7 +34,7 @@ export class CoreGroupSelectorComponent {
 
     @Input() groupInfo?: CoreGroupInfo;
     @Input() multipleGroupsMessage?: string;
-    @Input() selected!: number;
+    @Input({ required: true }) selected!: number;
     @Input() courseId?: number;
     @Output() selectedChange = new EventEmitter<number>();
 

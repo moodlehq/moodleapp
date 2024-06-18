@@ -84,7 +84,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     static readonly LOAD_MORE_ACTIVITIES = 10; // How many activities should load each time showMoreActivities is called.
 
-    @Input() course!: CoreCourseAnyCourseData; // The course to render.
+    @Input({ required: true }) course!: CoreCourseAnyCourseData; // The course to render.
     @Input() sections: CoreCourseSectionToDisplay[] = []; // List of course sections.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).

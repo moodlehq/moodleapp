@@ -25,12 +25,12 @@ export class CoreReportBuilderReportColumnComponent {
     @Input() isExpanded = false;
     @Input() isExpandable = false;
     @Input() showFirstTitle = false;
-    @Input() columnIndex!: number;
-    @Input() rowIndex!: number;
-    @Input() column!: string | number;
-    @Input() contextId!: number;
-    @Input() header!: string;
-    @Input() source!: string;
+    @Input({ required: true }) columnIndex!: number;
+    @Input({ required: true }) rowIndex!: number;
+    @Input({ required: true }) column!: string | number;
+    @Input({ required: true }) contextId!: number;
+    @Input({ required: true }) header!: string;
+    @Input({ required: true }) source!: string;
     @Output() onToggleRow: EventEmitter<number> = new EventEmitter();
 
     isString = (value: unknown): boolean => CoreReportBuilder.isString(value);

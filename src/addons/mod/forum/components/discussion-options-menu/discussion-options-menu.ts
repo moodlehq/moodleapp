@@ -30,9 +30,9 @@ import { CoreToasts } from '@services/toasts';
 })
 export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
 
-    @Input() discussion!: AddonModForumDiscussion; // The discussion.
-    @Input() forumId!: number; // The forum Id.
-    @Input() cmId!: number; // The component module Id.
+    @Input({ required: true }) discussion!: AddonModForumDiscussion; // The discussion.
+    @Input({ required: true }) forumId!: number; // The forum Id.
+    @Input({ required: true }) cmId!: number; // The component module Id.
 
     canPin = false;
 

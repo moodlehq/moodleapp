@@ -24,7 +24,7 @@ import { CoreColors } from '@singletons/colors';
 })
 export class CoreCourseImageComponent implements OnInit, OnChanges {
 
-    @Input() course!: CoreCourseListItem;
+    @Input({ required: true }) course!: CoreCourseListItem;
     @Input() fill = false;
 
     protected element: HTMLElement;

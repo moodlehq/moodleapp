@@ -32,7 +32,7 @@ export class AddonModWikiSubwikiPickerComponent {
 
     @Input() courseId?: number;
     @Input() subwikis: AddonModWikiSubwikiListGrouping[] = [];
-    @Input() currentSubwiki!: AddonModWikiSubwiki;
+    @Input({ required: true }) currentSubwiki!: AddonModWikiSubwiki;
 
     /**
      * Checks if the given subwiki is the one currently selected.

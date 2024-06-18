@@ -24,13 +24,13 @@ import { AddonModWorkshopSubmissionAssessmentWithFormData } from '../services/wo
 })
 export class AddonModWorkshopAssessmentStrategyBaseComponent {
 
-    @Input() workshopId!: number;
-    @Input() assessment!: AddonModWorkshopSubmissionAssessmentWithFormData;
-    @Input() edit!: boolean;
-    @Input() selectedValues!: AddonModWorkshopGetAssessmentFormFieldsParsedData[];
-    @Input() fieldErrors!: Record<string, string>;
-    @Input() strategy!: string;
-    @Input() moduleId!: number;
+    @Input({ required: true }) workshopId!: number;
+    @Input({ required: true }) assessment!: AddonModWorkshopSubmissionAssessmentWithFormData;
+    @Input({ required: true }) edit!: boolean;
+    @Input({ required: true }) selectedValues!: AddonModWorkshopGetAssessmentFormFieldsParsedData[];
+    @Input({ required: true }) fieldErrors!: Record<string, string>;
+    @Input({ required: true }) strategy!: string;
+    @Input({ required: true }) moduleId!: number;
     @Input() courseId?: number;
 
 }

@@ -45,7 +45,7 @@ import { CoreTabsComponent } from './tabs';
 })
 export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
 
-    @Input() title!: string; // The tab title.
+    @Input({ required: true }) title!: string; // The tab title.
     @Input() icon?: string; // The tab icon.
     @Input() badge?: string; // A badge to add in the tab.
     @Input() badgeStyle?: string; // The badge color.

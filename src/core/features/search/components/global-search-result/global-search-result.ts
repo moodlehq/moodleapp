@@ -22,7 +22,7 @@ import { CoreSearchGlobalSearchResult, CoreSearchGlobalSearchResultContext } fro
 })
 export class CoreSearchGlobalSearchResultComponent implements OnChanges {
 
-    @Input() result!: CoreSearchGlobalSearchResult;
+    @Input({ required: true }) result!: CoreSearchGlobalSearchResult;
     @Input() showCourse?: boolean;
 
     renderedContext: CoreSearchGlobalSearchResultContext | null = null;

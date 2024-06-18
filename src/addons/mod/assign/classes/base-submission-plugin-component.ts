@@ -23,9 +23,9 @@ import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } 
 })
 export class AddonModAssignSubmissionPluginBaseComponent {
 
-    @Input() assign!: AddonModAssignAssign; // The assignment.
-    @Input() submission!: AddonModAssignSubmission; // The submission.
-    @Input() plugin!: AddonModAssignPlugin; // The plugin object.
+    @Input({ required: true }) assign!: AddonModAssignAssign; // The assignment.
+    @Input({ required: true }) submission!: AddonModAssignSubmission; // The submission.
+    @Input({ required: true }) plugin!: AddonModAssignPlugin; // The plugin object.
     @Input() configs?: Record<string, string>; // The configs for the plugin.
     @Input() edit = false; // Whether the user is editing.
     @Input() allowOffline = false; // Whether to allow offline.

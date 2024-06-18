@@ -43,7 +43,7 @@ import { CoreDownloadStatusTranslatable } from '@components/download-refresh/dow
 })
 export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, OnChanges {
 
-    @Input() course!: CoreCourseListItem; // The course to render.
+    @Input({ required: true }) course!: CoreCourseListItem; // The course to render.
     @Input() showDownload = false; // If true, will show download button.
     @Input() layout: 'listwithenrol'|'summarycard'|'list'|'card' = 'listwithenrol';
 

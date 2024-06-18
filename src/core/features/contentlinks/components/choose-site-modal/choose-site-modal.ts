@@ -36,7 +36,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class CoreContentLinksChooseSiteModalComponent implements OnInit {
 
-    @Input() url!: string;
+    @Input({ required: true }) url!: string;
 
     sites: CoreSiteBasicInfo[] = [];
     loaded = false;

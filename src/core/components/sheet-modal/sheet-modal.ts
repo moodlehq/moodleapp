@@ -28,7 +28,7 @@ import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 })
 export class CoreSheetModalComponent<T extends CoreModalComponent> implements AfterViewInit {
 
-    @Input() component!: Constructor<T>;
+    @Input({ required: true }) component!: Constructor<T>;
     @Input() componentProps?: Record<string, unknown>;
     @ViewChild('wrapper') wrapper?: ElementRef<HTMLElement>;
 

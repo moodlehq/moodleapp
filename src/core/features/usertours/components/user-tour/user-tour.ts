@@ -52,9 +52,9 @@ const BACKDROP_DISMISS_SAFETY_TRESHOLD = 1000;
 })
 export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy {
 
-    @Input() container!: HTMLElement;
-    @Input() id!: string;
-    @Input() component!: unknown;
+    @Input({ required: true }) container!: HTMLElement;
+    @Input({ required: true }) id!: string;
+    @Input({ required: true }) component!: unknown;
     @Input() componentProps?: Record<string, unknown>;
     @Input() focus?: HTMLElement;
     @Input() side?: CoreUserToursSide;

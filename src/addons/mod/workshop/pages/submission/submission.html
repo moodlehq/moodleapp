@@ -88,8 +88,8 @@
                     <h2>{{ 'addon.mod_workshop.givengrades' | translate }}</h2>
                 </ion-label>
             </ion-item-divider>
-            <addon-mod-workshop-assessment *ngFor="let reviewer of submissionInfo.reviewerof" [assessment]="reviewer" [courseId]="courseId"
-                [module]="module" [workshop]="workshop" [access]="access" />
+            <addon-mod-workshop-assessment *ngFor="let reviewer of submissionInfo.reviewerof" [submission]="submission"
+                [assessment]="reviewer" [courseId]="courseId" [module]="module" [workshop]="workshop" [access]="access" />
         </ion-list>
 
         <form [formGroup]="feedbackForm" *ngIf="canAddFeedback && submission" #feedbackFormEl>
