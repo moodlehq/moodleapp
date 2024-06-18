@@ -81,13 +81,10 @@
     <platform name="ios">
         <resource-file src="GoogleService-Info.plist" />
         <edit-config file="*-Info.plist" mode="merge" target="NSCameraUsageDescription">
-            <string>We need camera access to take pictures so you can attach them as part of your submissions.</string>
+            <string>We need camera access to take pictures so you can use them for changing your profile picture, attach them in your tasks submission and share them with the teachers.</string>
         </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="NSPhotoLibraryUsageDescription">
-            <string>We need photo library access to get pictures from there so you can attach them as part of your submissions.</string>
-        </edit-config>
-        <edit-config file="*-Info.plist" mode="merge" target="NSMicrophoneUsageDescription">
-            <string>We need microphone access to record sounds so you can attach them as part of your submissions.</string>
+            <string>We need photo library access to get pictures from there so you can use them for changing your profile picture, attach them in your tasks submission and share them with the teachers.</string>
         </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="UISupportsDocumentBrowser">
             <true />
