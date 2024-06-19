@@ -36,26 +36,25 @@ export default class CoreSitePluginsCourseOptionPage implements OnInit {
 
     @ViewChild(CoreSitePluginsPluginContentComponent) content?: CoreSitePluginsPluginContentComponent;
 
-    courseId?: number;
-    handlerUniqueName?: string;
     component?: string;
     method?: string;
     args?: Record<string, unknown>;
     initResult?: CoreSitePluginsContent | null;
     ptrEnabled = true;
+    stylesPath?: string; // Styles to apply to the component.
 
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
-        this.handlerUniqueName = CoreNavigator.getRouteParam('handlerUniqueName');
+    async ngOnInit(): Promise<void> {
+        const courseId = CoreNavigator.getRouteNumberParam('courseId');
+        const handlerName = CoreNavigator.getRouteParam('handlerUniqueName');
 
-        if (!this.handlerUniqueName) {
+        if (!handlerName) {
             return;
         }
 
-        const handler = CoreSitePlugins.getSitePluginHandler(this.handlerUniqueName);
+        const handler = CoreSitePlugins.getSitePluginHandler(handlerName);
         if (!handler) {
             return;
         }
@@ -63,11 +62,13 @@ export default class CoreSitePluginsCourseOptionPage implements OnInit {
         this.component = handler.plugin.component;
         this.method = handler.handlerSchema.method;
         this.args = {
-            courseid: this.courseId,
+            courseid: courseId,
         };
         this.initResult = handler.initResult;
         this.ptrEnabled = !('ptrenabled' in handler.handlerSchema) ||
             !CoreUtils.isFalseOrZero(handler.handlerSchema.ptrenabled);
+
+        this.stylesPath = await CoreSitePlugins.getHandlerDownloadedStyles(handlerName);
     }
 
     /**
