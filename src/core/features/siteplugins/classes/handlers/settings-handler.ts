@@ -14,6 +14,7 @@
 
 import { CoreSettingsHandler, CoreSettingsHandlerData } from '@features/settings/services/settings-delegate';
 import {
+    CoreSitePlugins,
     CoreSitePluginsContent,
     CoreSitePluginsPlugin,
     CoreSitePluginsSettingsHandlerData,
@@ -45,6 +46,8 @@ export class CoreSitePluginsSettingsHandler extends CoreSitePluginsBaseHandler i
      * @returns Data.
      */
     getDisplayData(): CoreSettingsHandlerData {
+        const handlerName = CoreSitePlugins.getHandlerNameFromUniqueName(this.name, this.plugin.addon);
+
         return {
             title: this.title,
             icon: this.handlerSchema.displaydata?.icon,
@@ -54,6 +57,7 @@ export class CoreSitePluginsSettingsHandler extends CoreSitePluginsBaseHandler i
                 title: this.title,
                 initResult: this.initResult,
                 ptrEnabled: this.handlerSchema.ptrenabled,
+                handlerName,
             },
         };
     }

@@ -71,23 +71,28 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
     /**
      * @inheritdoc
      */
-    getDisplayData(): CoreCourseOptionsHandlerData {
+    async getDisplayData(): Promise<CoreCourseOptionsHandlerData> {
+        const stylesPath = await this.handlerSchema.styles?.downloadedStyles;
+
         return {
             title: this.title,
             class: this.handlerSchema.displaydata?.class,
             page: `siteplugins/${this.name}`,
-            pageParams: {},
+            pageParams: {
+                stylesPath,
+            },
         };
     }
 
     /**
      * @inheritdoc
      */
-    getMenuDisplayData(course: CoreCourseAnyCourseDataWithOptions): CoreCourseOptionsMenuHandlerData {
+    async getMenuDisplayData(course: CoreCourseAnyCourseDataWithOptions): Promise<CoreCourseOptionsMenuHandlerData> {
         const args = {
             courseid: course.id,
         };
         const hash = Md5.hashAsciiStr(JSON.stringify(args));
+        const stylesPath = await this.handlerSchema.styles?.downloadedStyles;
 
         return {
             title: this.title,
@@ -101,6 +106,7 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
                 ptrEnabled: this.handlerSchema.ptrenabled,
                 contextLevel: 'course',
                 contextInstanceId: course.id,
+                stylesPath,
             },
         };
     }

@@ -19,7 +19,7 @@
 <core-site-plugins-plugin-content *ngIf="component && method" [component]="component" [method]="method" [args]="args"
     [initResult]="initResult" [data]="jsData" [pageTitle]="pageTitle" [preSets]="preSets" contextLevel="module"
     [contextInstanceId]="module?.id" [courseId]="courseId" (onContentLoaded)="contentLoaded($event)"
-    (onLoadingContent)="contentLoading()" />
+    (onLoadingContent)="contentLoading()" [stylesPath]="stylesPath" />
 
 <core-course-module-navigation collapsible-footer [appearOnBottom]="collapsibleFooterAppearOnBottom" *ngIf="module" [courseId]="courseId"
     [currentModuleId]="module.id" />

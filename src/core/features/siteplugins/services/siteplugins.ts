@@ -696,6 +696,35 @@ export class CoreSitePluginsProvider {
         this.moduleHandlerInstances[modName] = handler;
     }
 
+    /**
+     * Get the path to the downloaded styles of a handler.
+     *
+     * @param handlerName Handler's name.
+     * @returns Path to the downloaded styles.
+     */
+    async getHandlerDownloadedStyles(handlerName?: string): Promise<string> {
+        if (!handlerName) {
+            return '';
+        }
+        const handler = this.getSitePluginHandler(handlerName);
+        if (!handler?.handlerSchema.styles?.downloadedStyles) {
+            return '';
+        }
+
+        return await handler.handlerSchema.styles.downloadedStyles;
+    }
+
+    /**
+     * Get the name of the handler from a unique name.
+     *
+     * @param uniqueName Unique name of the handler.
+     * @param addon Addon name.
+     * @returns Handler name.
+     */
+    getHandlerNameFromUniqueName(uniqueName: string, addon: string): string {
+        return uniqueName.replace(addon + '_', '');
+    }
+
 }
 
 export const CoreSitePlugins = makeSingleton(CoreSitePluginsProvider);
@@ -835,6 +864,7 @@ export type CoreSitePluginsHandlerCommonData = {
     styles?: {
         url?: string;
         version?: number;
+        downloadedStyles?: CorePromisedValue<string>; // Added in the app. Path resolved when styles are downloaded.
     };
     moodlecomponent?: string;
 };

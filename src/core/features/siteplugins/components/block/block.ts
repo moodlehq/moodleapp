@@ -42,15 +42,16 @@ export class CoreSitePluginsBlockComponent extends CoreBlockBaseComponent implem
     args?: Record<string, unknown>;
     jsData?: Record<string, unknown>; // Data to pass to the component.
     initResult?: CoreSitePluginsContent | null;
+    stylesPath?: string; // Styles to apply to the component.
 
     constructor() {
         super('CoreSitePluginsBlockComponent');
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
-    ngOnChanges(): void {
+    async ngOnChanges(): Promise<void> {
         if (this.component) {
             return;
         }
@@ -73,12 +74,12 @@ export class CoreSitePluginsBlockComponent extends CoreBlockBaseComponent implem
             block: this.block,
         };
         this.initResult = handler.initResult;
+
+        this.stylesPath = await CoreSitePlugins.getHandlerDownloadedStyles(handlerName);
     }
 
     /**
-     * Invalidate block data.
-     *
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     async invalidateContent(): Promise<void> {
         if (!this.component || !this.method) {

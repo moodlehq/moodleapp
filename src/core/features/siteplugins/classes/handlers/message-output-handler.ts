@@ -14,6 +14,7 @@
 
 import { AddonMessageOutputHandler, AddonMessageOutputHandlerData } from '@addons/messageoutput/services/messageoutput-delegate';
 import {
+    CoreSitePlugins,
     CoreSitePluginsContent,
     CoreSitePluginsMessageOutputHandlerData,
     CoreSitePluginsPlugin,
@@ -40,6 +41,8 @@ export class CoreSitePluginsMessageOutputHandler extends CoreSitePluginsBaseHand
      * @inheritdoc
      */
     getDisplayData(): AddonMessageOutputHandlerData {
+        const handlerName = CoreSitePlugins.getHandlerNameFromUniqueName(this.name, this.plugin.addon);
+
         return {
             priority: this.handlerSchema.priority || 0,
             label: this.title,
@@ -49,6 +52,7 @@ export class CoreSitePluginsMessageOutputHandler extends CoreSitePluginsBaseHand
                 title: this.title,
                 initResult: this.initResult,
                 ptrEnabled: this.handlerSchema.ptrenabled,
+                handlerName,
             },
         };
     }
