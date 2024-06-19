@@ -21,10 +21,9 @@
             [courseId]="database?.course" />
 
         <div class="addon-data-contents addon-data-edit-entry {{cssClass}}" *ngIf="database">
-            <core-style [css]="database.csstemplate" prefix="div.addon-data-edit-entry.{{cssClass}}" />
-
             <form (ngSubmit)="save($event)" [formGroup]="editForm" #editFormEl>
-                <core-compile-html [text]="editFormRender" [jsData]="jsData" [extraImports]="extraImports" />
+                <core-compile-html [text]="editFormRender" [jsData]="jsData" [extraImports]="extraImports"
+                    [cssCode]="database.csstemplate" />
             </form>
         </div>
     </core-loading>

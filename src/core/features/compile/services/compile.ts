@@ -175,6 +175,7 @@ export class CoreCompileProvider {
      * @param componentClass The JS class of the component.
      * @param viewContainerRef View container reference to inject the component.
      * @param extraImports Extra imported modules if needed and not imported by this class.
+     * @param styles CSS code to apply to the component.
      * @returns Promise resolved with the component reference.
      */
     async createAndCompileComponent<T = unknown>(
@@ -182,12 +183,17 @@ export class CoreCompileProvider {
         componentClass: Type<T>,
         viewContainerRef: ViewContainerRef,
         extraImports: any[] = [], // eslint-disable-line @typescript-eslint/no-explicit-any
+        styles?: string,
     ): Promise<ComponentRef<T> | undefined> {
         // Import the Angular compiler to be able to compile components in runtime.
         await import('@angular/compiler');
 
         // Create the component using the template and the class.
-        const component = Component({ template, host: { 'compiled-component-id': String(this.componentId++) } })(componentClass);
+        const component = Component({
+            template,
+            host: { 'compiled-component-id': String(this.componentId++) },
+            styles,
+        })(componentClass);
 
         const lazyImports = await Promise.all(this.LAZY_IMPORTS.map(getModules => getModules()));
         const imports = [

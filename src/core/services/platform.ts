@@ -22,6 +22,8 @@ import { Device, makeSingleton } from '@singletons';
 @Injectable({ providedIn: 'root' })
 export class CorePlatformService extends Platform {
 
+    private static cssNesting?: boolean;
+
     /**
      * Get platform major version number.
      *
@@ -115,6 +117,38 @@ export class CorePlatformService extends Platform {
      */
     supportsWebAssembly(): boolean {
         return 'WebAssembly' in window;
+    }
+
+    /**
+     * Check if the browser supports CSS nesting.
+     *
+     * @returns Whether the browser supports CSS nesting.
+     */
+    supportsCSSNesting(): boolean {
+        if (CorePlatformService.cssNesting !== undefined) {
+            return CorePlatformService.cssNesting;
+        }
+
+        // Add nested CSS to DOM and check if it's supported.
+        const style = document.createElement('style');
+        style.innerHTML = 'div.nested { &.css { color: red; } }';
+        document.head.appendChild(style);
+
+        // Add an element to check if the nested CSS is applied.
+        const div = document.createElement('div');
+        div.className = 'nested css';
+        document.body.appendChild(div);
+
+        const color = window.getComputedStyle(div).color;
+
+        // Check if color is red.
+        CorePlatformService.cssNesting = color === 'rgb(255, 0, 0)';
+
+        // Clean the DOM.
+        document.head.removeChild(style);
+        document.body.removeChild(div);
+
+        return CorePlatformService.cssNesting;
     }
 
 }

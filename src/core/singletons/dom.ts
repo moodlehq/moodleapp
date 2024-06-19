@@ -16,6 +16,7 @@ import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver } from '@singletons/events';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Singleton with helper functions for dom.
@@ -682,6 +683,44 @@ export class CoreDom {
         });
 
         return element;
+    }
+
+    /**
+     * Prefix CSS rules.
+     *
+     * @param css CSS code.
+     * @param prefix Prefix to add to CSS rules.
+     * @param prefixIfNested Prefix to add to CSS rules if nested. It may happend we need different prefixes.
+     *          Ie: If nested is supported ::ng-deep is not needed.
+     * @returns Prefixed CSS.
+     */
+    static prefixCSS(css: string, prefix: string, prefixIfNested?: string): string {
+        if (!css) {
+            return '';
+        }
+
+        if (!prefix) {
+            return css;
+        }
+
+        // Check if browser supports CSS nesting.
+        const supportsNesting = CorePlatform.supportsCSSNesting();
+        if (supportsNesting) {
+            prefixIfNested = prefixIfNested ?? prefix;
+
+            // Wrap the CSS with the prefix.
+            return `${prefixIfNested} { ${css} }`;
+        }
+
+        // Fallback.
+        // Remove comments first.
+        let regExp = /\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm;
+        css = css.replace(regExp, '');
+
+        // Add prefix.
+        regExp = /([^]*?)({[^]*?}|,)/g;
+
+        return css.replace(regExp, prefix + ' $1 $2');
     }
 
 }

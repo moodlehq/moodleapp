@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, ElementRef, Input, OnChanges } from '@angular/core';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Component to add a <style> tag.
@@ -23,6 +24,7 @@ import { Component, ElementRef, Input, OnChanges } from '@angular/core';
  * Example:
  *
  * <core-style [css]="'p { color: red; }'" prefix=".custom-rules"></core-style>
+ * @deprecated since 4.5.0. Not needed anymore, core-compile-html accepts now CSS code.
  */
 @Component({
     selector: 'core-style',
@@ -41,37 +43,11 @@ export class CoreStyleComponent implements OnChanges {
     ngOnChanges(): void {
         if (this.element && this.element.nativeElement) {
             const style = document.createElement('style');
-            style.innerHTML = this.prefixCSS(this.css, this.prefix);
+            style.innerHTML = CoreDom.prefixCSS(this.css, this.prefix);
 
             this.element.nativeElement.innerHTML = '';
             this.element.nativeElement.appendChild(style);
         }
-    }
-
-    /**
-     * Add a prefix to all rules in a CSS string.
-     *
-     * @param css CSS code to be prefixed.
-     * @param prefix Prefix css selector.
-     * @returns Prefixed CSS.
-     */
-    protected prefixCSS(css: string, prefix: string): string {
-        if (!css) {
-            return '';
-        }
-
-        if (!prefix) {
-            return css;
-        }
-
-        // Remove comments first.
-        let regExp = /\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm;
-        css = css.replace(regExp, '');
-
-        // Add prefix.
-        regExp = /([^]*?)({[^]*?}|,)/g;
-
-        return css.replace(regExp, prefix + ' $1 $2');
     }
 
 }
