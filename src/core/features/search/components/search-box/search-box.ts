@@ -15,11 +15,11 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreSearchHistory } from '../../services/search-history.service';
 import { Translate } from '@singletons';
 import { CoreSearchHistoryDBRecord } from '../../services/search-history-db';
 import { CoreForms } from '@singletons/form';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component to display a "search box".
@@ -41,11 +41,11 @@ export class CoreSearchBoxComponent implements OnInit {
     @Input() searchLabel?: string; // Label to be used on action button.
     @Input() placeholder?: string; // Placeholder text for search text input.
     @Input() autocorrect = 'on'; // Enables/disable Autocorrection on search text input.
-    @Input() spellcheck: string | boolean = true; // Enables/disable Spellchecker on search text input.
-    @Input() autoFocus: string | boolean = false; // Enables/disable Autofocus when entering view.
+    @Input({ transform: toBoolean }) spellcheck = true; // Enables/disable Spellchecker on search text input.
+    @Input({ transform: toBoolean }) autoFocus = false; // Enables/disable Autofocus when entering view.
     @Input() lengthCheck = 3; // Check value length before submit. If 0, any string will be submitted.
-    @Input() showClear = true; // Show/hide clear button.
-    @Input() disabled = false; // Disables the input text.
+    @Input({ transform: toBoolean }) showClear = true; // Show/hide clear button.
+    @Input({ transform: toBoolean }) disabled = false; // Disables the input text.
     @Input() initialSearch = ''; // Initial search text.
 
     /* If provided. It will save and display a history of searches for this particular Id.
@@ -72,8 +72,6 @@ export class CoreSearchBoxComponent implements OnInit {
     ngOnInit(): void {
         this.searchLabel = this.searchLabel || Translate.instant('core.search');
         this.placeholder = this.placeholder || Translate.instant('core.search');
-        this.spellcheck = CoreUtils.isTrueOrOne(this.spellcheck);
-        this.showClear = CoreUtils.isTrueOrOne(this.showClear);
         this.searchText = this.initialSearch;
 
         if (this.searchArea) {

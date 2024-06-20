@@ -17,6 +17,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '@addons/mod/assign/services/assign';
 import { AddonModAssignSubmissionDelegate } from '@addons/mod/assign/services/submission-delegate';
 import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/classes/compile-init-component';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component that displays an assign submission plugin created using a site plugin.
@@ -32,8 +33,8 @@ export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCom
     @Input({ required: true }) submission!: AddonModAssignSubmission; // The submission.
     @Input({ required: true }) plugin!: AddonModAssignPlugin; // The plugin object.
     @Input() configs?: Record<string, string>; // The configs for the plugin.
-    @Input() edit = false; // Whether the user is editing.
-    @Input() allowOffline = false; // Whether to allow offline.
+    @Input({ transform: toBoolean }) edit = false; // Whether the user is editing.
+    @Input({ transform: toBoolean }) allowOffline = false; // Whether to allow offline.
 
     /**
      * @inheritdoc

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { toBoolean } from '@/core/transforms/boolean';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleCompletionData, CoreCourseModuleData } from '@features/course/services/course-helper';
@@ -42,13 +43,13 @@ export class CoreCourseModuleInfoComponent implements OnInit {
     @Input({ required: true }) componentId!: string | number; // Component ID to use in conjunction with the component.
 
     @Input() description?: string | false; // The description to display. If false, no description will be shown.
-    @Input() expandDescription = false; // If the description should be expanded by default.
+    @Input({ transform: toBoolean }) expandDescription = false; // If the description should be expanded by default.
 
-    @Input() showAvailabilityInfo = false; // If show availability info on the box.
+    @Input({ transform: toBoolean }) showAvailabilityInfo = false; // If show availability info on the box.
 
-    @Input() hasDataToSync = false; // If the activity has any data to be synced.
+    @Input({ transform: toBoolean }) hasDataToSync = false; // If the activity has any data to be synced.
 
-    @Input() showManualCompletion = true; // Whether to show manual completion, true by default.
+    @Input({ transform: toBoolean }) showManualCompletion = true; // Whether to show manual completion, true by default.
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when completion changes.
 
     modicon = '';

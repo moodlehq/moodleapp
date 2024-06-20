@@ -17,10 +17,10 @@ import { Md5 } from 'ts-md5';
 
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreNavigator } from '@services/navigator';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { CoreSitePlugins } from '../services/siteplugins';
 import { CoreForms } from '@singletons/form';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Directive to display a new site plugin content when clicked. This new content can be displayed in a new page or in the
@@ -51,14 +51,14 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
     @Input() method?: string; // The method to get the new content. If not provided, use the same method as current page.
     @Input() args?: Record<string, unknown>; // The params to get the new content.
     @Input() title?: string; // The title to display with the new content. Only if samePage=false.
-    @Input() samePage?: boolean | string; // Whether to display the content in same page or open a new one. Defaults to new page.
+    @Input({ transform: toBoolean }) samePage = false; // Whether to display the content in same page or open a new one.
     @Input() useOtherData?: string[] | unknown; // Whether to include other data in the args.
     @Input() form?: string; // ID or name to identify a form. The form data will be retrieved and sent to the WS.
     // JS variables to pass to the new page so they can be used in the template or JS.
     // If true is supplied instead of an object, all initial variables from current page will be copied.
     @Input() jsData?: Record<string, unknown> | boolean;
     @Input() preSets?: CoreSiteWSPreSets; // The preSets for the WS call of the new content.
-    @Input() ptrEnabled?: boolean | string; // Whether PTR should be enabled in the new page. Defaults to true.
+    @Input({ transform: toBoolean }) ptrEnabled = true; // Whether PTR should be enabled in the new page.
 
     protected element: HTMLElement;
 
@@ -92,7 +92,7 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
                 jsData = this.parentContent?.data || {};
             }
 
-            if (CoreUtils.isTrueOrOne(this.samePage)) {
+            if (this.samePage) {
                 // Update the parent content (if it exists).
                 this.parentContent?.updateContent(args, this.component, this.method, jsData, this.preSets);
             } else {

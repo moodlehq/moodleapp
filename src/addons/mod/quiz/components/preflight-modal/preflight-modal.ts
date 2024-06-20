@@ -23,6 +23,7 @@ import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-dele
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '../../services/quiz';
 import { CoreDom } from '@singletons/dom';
 import { CoreSharedModule } from '@/core/shared.module';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Modal that renders the access rules for a quiz.
@@ -42,7 +43,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
     @Input({ required: true }) title!: string;
     @Input() quiz?: AddonModQuizQuizWSData;
     @Input() attempt?: AddonModQuizAttemptWSData;
-    @Input() prefetch?: boolean;
+    @Input({ transform: toBoolean }) prefetch = false;
     @Input({ required: true }) siteId!: string;
     @Input({ required: true }) rules!: string[];
 

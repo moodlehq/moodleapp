@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange, ViewChild, ElementRef } from '@angular/core';
 import { IonInfiniteScroll } from '@ionic/angular';
 import { CoreWait } from '@singletons/wait';
@@ -30,8 +31,8 @@ const THRESHOLD = .15; // % of the scroll element height that must be close to t
 })
 export class CoreInfiniteLoadingComponent implements OnChanges {
 
-    @Input({ required: true }) enabled!: boolean;
-    @Input() error = false;
+    @Input({ required: true, transform: toBoolean }) enabled = false;
+    @Input({ transform: toBoolean }) error = false;
     @Input() position: 'top' | 'bottom' = 'bottom';
     @Output() action: EventEmitter<() => void>; // Will emit an event when triggered.
 

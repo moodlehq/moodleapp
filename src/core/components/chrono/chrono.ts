@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { toBoolean } from '@/core/transforms/boolean';
 import {
     Component,
     Input,
@@ -42,11 +43,11 @@ import {
 })
 export class CoreChronoComponent implements OnInit, OnChanges, OnDestroy {
 
-    @Input() running?: boolean; // Set it to true to start the chrono. Set it to false to stop it.
+    @Input({ transform: toBoolean }) running = false; // Set it to true to start the chrono. Set it to false to stop it.
     @Input() startTime = 0; // Number of milliseconds to put in the chrono before starting.
     @Input() endTime?: number; // Number of milliseconds to stop the chrono.
-    @Input() reset?: boolean; // Set it to true to reset the chrono.
-    @Input() hours = true;
+    @Input({ transform: toBoolean }) reset = false; // Set it to true to reset the chrono.
+    @Input({ transform: toBoolean }) hours = true;
     @Output() onEnd: EventEmitter<void>; // Will emit an event when the endTime is reached.
 
     time = 0;

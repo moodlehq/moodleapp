@@ -22,6 +22,7 @@ import {
 
 import { CoreTabsBaseComponent } from '@classes/tabs';
 import { CoreTabComponent } from './tab';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * This component displays some top scrollable tabs that will autohide on vertical scroll.
@@ -44,7 +45,7 @@ import { CoreTabComponent } from './tab';
 })
 export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> implements AfterViewInit {
 
-    @Input() parentScrollable = false; // Determine if the scroll should be in the parent content or the tab itself.
+    @Input({ transform: toBoolean }) parentScrollable = false; // Determine if scroll should be in the parent content or the tab.
     @Input() layout: 'icon-top' | 'icon-start' | 'icon-end' | 'icon-bottom' | 'icon-hide' | 'label-hide' = 'icon-hide';
 
     @ViewChild('originalTabs')

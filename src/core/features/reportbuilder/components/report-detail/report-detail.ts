@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { toBoolean } from '@/core/transforms/boolean';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import {
@@ -41,7 +42,7 @@ import { map } from 'rxjs/operators';
 export class CoreReportBuilderReportDetailComponent implements OnInit {
 
     @Input({ required: true }) reportId!: string;
-    @Input() isBlock = true;
+    @Input({ transform: toBoolean }) isBlock = true;
     @Input() perPage?: number;
     @Input() layout: 'card' | 'table' | 'adaptative' = 'adaptative';
     @Output() onReportLoaded = new EventEmitter<CoreReportBuilderReportDetail>();

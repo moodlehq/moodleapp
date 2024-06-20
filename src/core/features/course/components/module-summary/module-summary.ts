@@ -34,6 +34,7 @@ import { ModalController, NgZone } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import { CoreSharedModule } from '@/core/shared.module';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component to display a module summary modal.
@@ -54,7 +55,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
     @Input() moduleId = 0; // Module ID the component belongs to.
     @Input() component = ''; // Component name.
     @Input() description = ''; // Module description.
-    @Input() hasOffline = false; // If it has offline data to be synced.
+    @Input({ transform: toBoolean }) hasOffline = false; // If it has offline data to be synced.
     @Input() displayOptions: CoreCourseModuleSummaryDisplayOptions = {};
 
     loaded = false; // If the component has been loaded.

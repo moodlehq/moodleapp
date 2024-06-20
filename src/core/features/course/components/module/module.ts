@@ -30,6 +30,7 @@ import {
 import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { BehaviorSubject } from 'rxjs';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component to display a module entry in a list of modules.
@@ -47,15 +48,15 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
     @Input({ required: true }) module!: CoreCourseModuleData; // The module to render.
     @Input() section?: CoreCourseSection; // The section the module belongs to.
-    @Input() showActivityDates = false; // Whether to show activity dates.
-    @Input() showCompletionConditions = false; // Whether to show activity completion conditions.
-    @Input() showLegacyCompletion?: boolean; // Whether to show module completion in the old format.
-    @Input() showCompletion = true; // Whether to show module completion.
-    @Input() showAvailability = true; // Whether to show module availability.
-    @Input() showExtra = true; // Whether to show extra badges.
-    @Input() showDownloadStatus = true; // Whether to show download status.
-    @Input() showIndentation = true; // Whether to show indentation
-    @Input() isLastViewed = false; // Whether it's the last module viewed in a course.
+    @Input({ transform: toBoolean }) showActivityDates = false; // Whether to show activity dates.
+    @Input({ transform: toBoolean }) showCompletionConditions = false; // Whether to show activity completion conditions.
+    @Input({ transform: toBoolean }) showLegacyCompletion?: boolean; // Whether to show module completion in the old format.
+    @Input({ transform: toBoolean }) showCompletion = true; // Whether to show module completion.
+    @Input({ transform: toBoolean }) showAvailability = true; // Whether to show module availability.
+    @Input({ transform: toBoolean }) showExtra = true; // Whether to show extra badges.
+    @Input({ transform: toBoolean }) showDownloadStatus = true; // Whether to show download status.
+    @Input({ transform: toBoolean }) showIndentation = true; // Whether to show indentation
+    @Input({ transform: toBoolean }) isLastViewed = false; // Whether it's the last module viewed in a course.
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when module completion changes.
     @HostBinding('class.indented') indented = false;
 

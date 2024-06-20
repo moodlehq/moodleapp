@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input, ElementRef, OnInit, OnChanges, HostBinding } from '@angular/core';
 import { CoreCourseListItem } from '@features/courses/services/courses';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
@@ -25,7 +26,7 @@ import { CoreColors } from '@singletons/colors';
 export class CoreCourseImageComponent implements OnInit, OnChanges {
 
     @Input({ required: true }) course!: CoreCourseListItem;
-    @Input() fill = false;
+    @Input({ transform: toBoolean }) fill = false;
 
     protected element: HTMLElement;
 

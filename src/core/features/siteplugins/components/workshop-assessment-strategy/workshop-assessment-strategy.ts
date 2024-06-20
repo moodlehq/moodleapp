@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { toBoolean } from '@/core/transforms/boolean';
 import { AddonWorkshopAssessmentStrategyDelegate } from '@addons/mod/workshop/services/assessment-strategy-delegate';
 import { AddonModWorkshopGetAssessmentFormFieldsParsedData } from '@addons/mod/workshop/services/workshop';
 import { AddonModWorkshopSubmissionAssessmentWithFormData } from '@addons/mod/workshop/services/workshop-helper';
@@ -30,7 +31,7 @@ export class CoreSitePluginsWorkshopAssessmentStrategyComponent extends CoreSite
 
     @Input({ required: true }) workshopId!: number;
     @Input({ required: true }) assessment!: AddonModWorkshopSubmissionAssessmentWithFormData;
-    @Input({ required: true }) edit!: boolean;
+    @Input({ required: true, transform: toBoolean }) edit = false;
     @Input({ required: true }) selectedValues!: AddonModWorkshopGetAssessmentFormFieldsParsedData[];
     @Input({ required: true }) fieldErrors!: Record<string, string>;
     @Input({ required: true }) strategy!: string;

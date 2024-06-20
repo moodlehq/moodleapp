@@ -18,6 +18,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreModals } from '@services/modals';
 import { AddonModAssignFeedbackCommentsTextData } from '../feedback/comments/services/handler';
 import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '../services/assign';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Base class for component to render a feedback plugin.
@@ -32,8 +33,8 @@ export class AddonModAssignFeedbackPluginBaseComponent implements IAddonModAssig
     @Input({ required: true }) plugin!: AddonModAssignPlugin; // The plugin object.
     @Input({ required: true }) userId!: number; // The user ID of the submission.
     @Input() configs?: Record<string,string>; // The configs for the plugin.
-    @Input() canEdit = false; // Whether the user can edit.
-    @Input() edit = false; // Whether the user is editing.
+    @Input({ transform: toBoolean }) canEdit = false; // Whether the user can edit.
+    @Input({ transform: toBoolean }) edit = false; // Whether the user is editing.
 
     /**
      * Open a modal to edit the feedback plugin.

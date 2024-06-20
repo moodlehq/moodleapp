@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { toBoolean } from '@/core/transforms/boolean';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CoreReportBuilder } from '@features/reportbuilder/services/reportbuilder';
 
@@ -22,9 +23,9 @@ import { CoreReportBuilder } from '@features/reportbuilder/services/reportbuilde
 })
 export class CoreReportBuilderReportColumnComponent {
 
-    @Input() isExpanded = false;
-    @Input() isExpandable = false;
-    @Input() showFirstTitle = false;
+    @Input({ transform: toBoolean }) isExpanded = false;
+    @Input({ transform: toBoolean }) isExpandable = false;
+    @Input({ transform: toBoolean }) showFirstTitle = false;
     @Input({ required: true }) columnIndex!: number;
     @Input({ required: true }) rowIndex!: number;
     @Input({ required: true }) column!: string | number;

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { CoreUser } from '@features/user/services/user';
 
@@ -35,7 +36,7 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
     @Input() timeLeftClass?: string; // Name of the class to apply with each second. By default, 'core-timer-timeleft-'.
     @Input() timeLeftClassThreshold = 100; // Number of seconds to start adding the timeLeftClass. Set it to -1 to not add it.
     @Input() align = 'start'; // Where to align the time and text. Defaults to 'start'. Other values: 'center', 'end'.
-    @Input() hidable = false; // Whether the user can hide the time left.
+    @Input({ transform: toBoolean }) hidable = false; // Whether the user can hide the time left.
     @Input() timeUpText?: string; // Text to show when the timer reaches 0. If not defined, 'core.timesup'.
     @Input() mode: CoreTimerMode = CoreTimerMode.ITEM; // How to display data.
     @Input() underTimeClassThresholds = []; // Number of seconds to add the class 'core-timer-under-'.
@@ -45,7 +46,7 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
     /**
      * @deprecated since 4.4. Use hidable instead.
      */
-    @Input() hiddable?: boolean; // Whether the user can hide the time left.
+    @Input({ transform: toBoolean }) hiddable = false; // Whether the user can hide the time left.
 
     timeLeft?: number; // Seconds left to end.
     modeBasic = CoreTimerMode.BASIC;
@@ -63,9 +64,9 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         // eslint-disable-next-line deprecation/deprecation
-        if (this.hiddable !== undefined && this.hidable === undefined) {
-            // eslint-disable-next-line deprecation/deprecation
-            this.hidable = this.hiddable;
+        if (this.hiddable && !this.hidable) {
+
+            this.hidable = true;
         }
 
         const timeLeftClass = this.timeLeftClass || 'core-timer-timeleft-';

@@ -27,6 +27,7 @@ import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { DomSanitizer } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
 import { CoreDom } from '@singletons/dom';
+import { toBoolean } from '../transforms/boolean';
 
 /**
  * Directive to open a link in external browser or in the app.
@@ -37,10 +38,10 @@ import { CoreDom } from '@singletons/dom';
 export class CoreLinkDirective implements OnInit {
 
     @Input() href?: string | SafeUrl; // Link URL.
-    @Input() capture?: boolean | string; // If the link needs to be captured by the app.
-    @Input() inApp?: boolean | string; // True to open in embedded browser, false to open in system browser.
-    @Input() autoLogin: boolean | string = true; // Whether to try to use auto-login. Values yes/no/check are deprecated.
-    @Input() showBrowserWarning = true; // Whether to show a warning before opening browser. Defaults to true.
+    @Input({ transform: toBoolean }) capture = false; // If the link needs to be captured by the app.
+    @Input({ transform: toBoolean }) inApp = false; // True to open in embedded browser, false to open in system browser.
+    @Input({ transform: toBoolean }) autoLogin = true; // Whether to try to use auto-login.
+    @Input({ transform: toBoolean }) showBrowserWarning = true; // Whether to show a warning before opening browser.
 
     protected element: HTMLElement | HTMLIonFabButtonElement | HTMLIonButtonElement | HTMLIonItemElement;
 
@@ -93,7 +94,7 @@ export class CoreLinkDirective implements OnInit {
 
         const openIn = this.element.getAttribute('data-open-in');
 
-        if (CoreUtils.isTrueOrOne(this.capture)) {
+        if (this.capture) {
             const treated = await CoreContentLinksHelper.handleLink(CoreTextUtils.decodeURI(href), undefined, true, true);
 
             if (!treated) {
@@ -177,8 +178,7 @@ export class CoreLinkDirective implements OnInit {
      */
     protected async openExternalLink(href: string, openIn?: string | null): Promise<void> {
         // Priority order is: core-link inApp attribute > forceOpenLinksIn setting > data-open-in HTML attribute.
-        const openInApp = this.inApp !== undefined ?
-            CoreUtils.isTrueOrOne(this.inApp) :
+        const openInApp = this.inApp ??
             (CoreConstants.CONFIG.forceOpenLinksIn !== 'browser' &&
                 (CoreConstants.CONFIG.forceOpenLinksIn === 'app' || openIn === 'app'));
 
@@ -219,11 +219,7 @@ export class CoreLinkDirective implements OnInit {
             }
         }
 
-        const autoLogin = typeof this.autoLogin === 'boolean' ?
-            this.autoLogin :
-            !CoreUtils.isFalseOrZero(this.autoLogin) && this.autoLogin !== 'no'; // Support deprecated values yes/no/check.
-
-        if (autoLogin) {
+        if (this.autoLogin) {
             if (openInApp) {
                 await currentSite.openInAppWithAutoLogin(href);
             } else {

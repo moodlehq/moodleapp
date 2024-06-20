@@ -58,6 +58,7 @@ import { CoreBlockComponentsModule } from '@features/block/components/components
 import { CoreCourseComponentsModule } from '../components.module';
 import { CoreSites } from '@services/sites';
 import { COURSE_ALL_SECTIONS_PREFERRED_PREFIX } from '@features/course/constants';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -90,7 +91,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() initialBlockInstanceId?: number; // The instance to focus.
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
-    @Input() isGuest?: boolean; // If user is accessing using an ACCESS_GUEST enrolment method.
+    @Input({ transform: toBoolean }) isGuest = false; // If user is accessing using an ACCESS_GUEST enrolment method.
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @ViewChildren(CoreDynamicComponent) dynamicComponents?: QueryList<CoreDynamicComponent<any>>;

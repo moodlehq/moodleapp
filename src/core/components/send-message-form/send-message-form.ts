@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreConstants } from '@/core/constants';
 import { CoreForms } from '@singletons/form';
 import { CorePlatform } from '@services/platform';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component to display a "send message form".
@@ -37,12 +37,12 @@ import { CorePlatform } from '@services/platform';
     templateUrl: 'core-send-message-form.html',
     styleUrls: ['send-message-form.scss'],
 })
-export class CoreSendMessageFormComponent implements OnInit {
+export class CoreSendMessageFormComponent {
 
     @Input() message = ''; // Input text.
     @Input() placeholder = ''; // Placeholder for the input area.
-    @Input() showKeyboard = false; // If keyboard is shown or not.
-    @Input() sendDisabled = false; // If send is disabled.
+    @Input({ transform: toBoolean }) showKeyboard = false; // If keyboard is shown or not.
+    @Input({ transform: toBoolean }) sendDisabled = false; // If send is disabled.
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the message form.
     @Output() onResize: EventEmitter<void>; // Emit when resizing the textarea.
 
@@ -66,10 +66,6 @@ export class CoreSendMessageFormComponent implements OnInit {
         CoreEvents.on(CoreEvents.SEND_ON_ENTER_CHANGED, (data) => {
             this.sendOnEnter = data.sendOnEnter;
         }, CoreSites.getCurrentSiteId());
-    }
-
-    ngOnInit(): void {
-        this.showKeyboard = CoreUtils.isTrueOrOne(this.showKeyboard);
     }
 
     /**

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants, ModPurpose } from '@/core/constants';
+import { toBoolean } from '@/core/transforms/boolean';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -54,10 +55,10 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     @Input() fallbackTranslation = ''; // Fallback translation string if cannot auto translate.
     @Input() componentId?: number; // Component Id for external icons.
     @Input() modicon?: string; // Module icon url or local url.
-    @Input() showAlt = true; // Show alt otherwise it's only presentation icon.
+    @Input({ transform: toBoolean }) showAlt = true; // Show alt otherwise it's only presentation icon.
     @Input() purpose: ModPurpose = ModPurpose.MOD_PURPOSE_OTHER; // Purpose of the module.
-    @Input() @HostBinding('class.colorize') colorize = true; // Colorize the icon. Only applies on 4.0 onwards.
-    @Input() isBranded?: boolean; // If icon is branded and no colorize will be applied.
+    @Input({ transform: toBoolean }) @HostBinding('class.colorize') colorize = true; // Colorize the icon. Only applies on 4.0+.
+    @Input({ transform: toBoolean }) isBranded = false; // If icon is branded and no colorize will be applied.
 
     @HostBinding('class.branded') brandedClass?: boolean;
 

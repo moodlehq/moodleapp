@@ -19,6 +19,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { AddonBlockTimelineDayEvents } from '@addons/block/timeline/classes/section';
 import { CoreSharedModule } from '@/core/shared.module';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Directive to render a list of events in course overview.
@@ -36,9 +37,9 @@ export class AddonBlockTimelineEventsComponent implements OnInit {
 
     @Input() events: AddonBlockTimelineDayEvents[] = []; // The events to render.
     @Input() course?: CoreEnrolledCourseDataWithOptions; // Whether to show the course name.
-    @Input() showInlineCourse = true; // Whether to show the course name within event items.
-    @Input() canLoadMore = false; // Whether more events can be loaded.
-    @Input() loadingMore = false; // Whether loading is ongoing.
+    @Input({ transform: toBoolean }) showInlineCourse = true; // Whether to show the course name within event items.
+    @Input({ transform: toBoolean }) canLoadMore = false; // Whether more events can be loaded.
+    @Input({ transform: toBoolean }) loadingMore = false; // Whether loading is ongoing.
     @Output() loadMore = new EventEmitter(); // Notify that more events should be loaded.
 
     colorizeIcons = false;

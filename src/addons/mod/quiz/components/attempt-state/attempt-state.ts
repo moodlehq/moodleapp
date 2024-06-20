@@ -14,6 +14,7 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
 import { AddonModQuiz } from '../../services/quiz';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component that displays an attempt state.
@@ -26,7 +27,7 @@ import { AddonModQuiz } from '../../services/quiz';
 export class AddonModQuizAttemptStateComponent implements OnChanges {
 
     @Input() state = '';
-    @Input() finishedOffline = false;
+    @Input({ transform: toBoolean }) finishedOffline = false;
 
     readableState = '';
     color = '';

@@ -39,6 +39,7 @@ import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
 import { CoreSwiper } from '@singletons/swiper';
+import { toBoolean } from '../transforms/boolean';
 
 /**
  * Class to abstract some common code for tabs.
@@ -52,7 +53,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
     protected static readonly MIN_TAB_WIDTH = 107;
 
     @Input() selectedIndex = 0; // Index of the tab to select.
-    @Input() hideUntil = false; // Determine when should the contents be shown.
+    @Input({ transform: toBoolean }) hideUntil = false; // Determine when should the contents be shown.
     @Output() protected ionChange = new EventEmitter<T>(); // Emitted when the tab changes.
 
     protected swiper?: Swiper;

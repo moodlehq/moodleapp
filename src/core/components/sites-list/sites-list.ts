@@ -17,6 +17,7 @@ import { Component, ContentChild, Input, Output, TemplateRef, EventEmitter } fro
 import { CoreSiteBasicInfo } from '@services/sites';
 import { CoreAccountsList } from '@features/login/services/login-helper';
 import { CoreSitesFactory } from '@services/sites-factory';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component to display a list of sites (accounts).
@@ -43,8 +44,8 @@ import { CoreSitesFactory } from '@services/sites-factory';
 export class CoreSitesListComponent<T extends CoreSiteBasicInfo> {
 
     @Input({ required: true }) accountsList!: CoreAccountsList<T>;
-    @Input() sitesClickable = false; // Whether the sites are clickable.
-    @Input() currentSiteClickable?: boolean; // If set, specify a different clickable value for current site.
+    @Input({ transform: toBoolean }) sitesClickable = false; // Whether the sites are clickable.
+    @Input({ transform: toBoolean }) currentSiteClickable = false; // If set, specify a different clickable value for current site.
     @Output() onSiteClicked = new EventEmitter<T>();
 
     @ContentChild('siteItem') siteItemTemplate?: TemplateRef<{site: T; isCurrentSite: boolean}>;

@@ -24,6 +24,7 @@ import { CoreEvents } from '@singletons/events';
 import { ModalController } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSharedModule } from '@/core/shared.module';
+import { toBoolean } from '@/core/transforms/boolean';
 
 type Filter<T=unknown> = T & { checked: boolean };
 
@@ -43,7 +44,7 @@ export class CoreSearchGlobalSearchFiltersComponent implements OnInit {
     allCourses: boolean | null = true;
     courses: Filter<CoreEnrolledCourseData>[] = [];
 
-    @Input() hideCourses?: boolean;
+    @Input({ transform: toBoolean }) hideCourses = false;
     @Input() filters?: CoreSearchGlobalSearchFilters;
 
     private newFilters: CoreSearchGlobalSearchFilters = {};

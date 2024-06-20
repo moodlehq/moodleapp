@@ -15,6 +15,7 @@
 import { Component, Input } from '@angular/core';
 import { AddonModWorkshopGetAssessmentFormFieldsParsedData } from '../services/workshop';
 import { AddonModWorkshopSubmissionAssessmentWithFormData } from '../services/workshop-helper';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Base class for component to render an assessment strategy.
@@ -26,7 +27,7 @@ export class AddonModWorkshopAssessmentStrategyBaseComponent {
 
     @Input({ required: true }) workshopId!: number;
     @Input({ required: true }) assessment!: AddonModWorkshopSubmissionAssessmentWithFormData;
-    @Input({ required: true }) edit!: boolean;
+    @Input({ required: true, transform: toBoolean }) edit = false;
     @Input({ required: true }) selectedValues!: AddonModWorkshopGetAssessmentFormFieldsParsedData[];
     @Input({ required: true }) fieldErrors!: Record<string, string>;
     @Input({ required: true }) strategy!: string;

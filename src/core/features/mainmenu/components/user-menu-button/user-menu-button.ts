@@ -22,6 +22,7 @@ import { CoreSites } from '@services/sites';
 import { CoreModals } from '@services/modals';
 import { CoreMainMenuUserMenuTourComponent } from '../user-menu-tour/user-menu-tour';
 import { CoreMainMenuPage } from '@features/mainmenu/pages/menu/menu';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component to display an avatar on the header to open user menu.
@@ -35,7 +36,7 @@ import { CoreMainMenuPage } from '@features/mainmenu/pages/menu/menu';
 })
 export class CoreMainMenuUserButtonComponent implements OnInit {
 
-    @Input() alwaysShow = false;
+    @Input({ transform: toBoolean }) alwaysShow = false;
     siteInfo?: CoreSiteInfo;
     isMainScreen = false;
     userTour: CoreUserTourDirectiveOptions = {

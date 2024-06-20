@@ -42,6 +42,7 @@ import {
     ADDON_MOD_WORKSHOP_COMPONENT,
     AddonModWorkshopOverallFeedbackMode,
 } from '@addons/mod/workshop/constants';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component that displays workshop assessment strategy form.
@@ -57,7 +58,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
     @Input({ required: true }) assessmentId!: number;
     @Input({ required: true }) userId!: number;
     @Input({ required: true }) strategy!: string;
-    @Input() edit = false;
+    @Input({ transform: toBoolean }) edit = false;
 
     @ViewChild('assessmentForm') formElement!: ElementRef;
 

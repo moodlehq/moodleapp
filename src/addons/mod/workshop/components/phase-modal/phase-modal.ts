@@ -18,6 +18,7 @@ import { ModalController } from '@singletons';
 import { AddonModWorkshopPhaseData, AddonModWorkshopPhaseTaskData } from '../../services/workshop';
 import { AddonModWorkshopPhase } from '../../constants';
 import { CoreSharedModule } from '@/core/shared.module';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Page that displays the phase info modal.
@@ -33,7 +34,7 @@ export class AddonModWorkshopPhaseInfoModalComponent implements OnInit {
 
     @Input({ required: true }) phases!: AddonModWorkshopPhaseDataWithSwitch[];
     @Input({ required: true }) workshopPhase!: AddonModWorkshopPhase;
-    @Input() showSubmit = false;
+    @Input({ transform: toBoolean }) showSubmit = false;
     @Input({ required: true }) externalUrl!: string;
 
     ngOnInit(): void {

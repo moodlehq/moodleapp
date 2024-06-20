@@ -30,6 +30,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreH5PCore, CoreH5PDisplayOptions } from '../../classes/core';
 import { CoreH5PHelper } from '../../classes/helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component to render an iframe with an H5P package.
@@ -45,7 +46,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     @Input() onlinePlayerUrl?: string; // The URL of the online player to display the H5P package.
     @Input() trackComponent?: string; // Component to send xAPI events to.
     @Input() contextId?: number; // Context ID. Required for tracking.
-    @Input() enableInAppFullscreen?: boolean; // Whether to enable our custom in-app fullscreen feature.
+    @Input({ transform: toBoolean }) enableInAppFullscreen = false; // Whether to enable our custom in-app fullscreen feature.
     @Input() saveFreq?: number; // Save frequency (in seconds) if enabled.
     @Input() state?: string; // Initial content state.
     @Output() onIframeUrlSet = new EventEmitter<{src: string; online: boolean}>();

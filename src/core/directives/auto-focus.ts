@@ -15,9 +15,9 @@
 import { Directive, Input, ElementRef, AfterViewInit } from '@angular/core';
 
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreDom } from '@singletons/dom';
 import { CoreWait } from '@singletons/wait';
+import { toBoolean } from '../transforms/boolean';
 
 /**
  * Directive to auto focus an element when a view is loaded.
@@ -32,7 +32,7 @@ import { CoreWait } from '@singletons/wait';
 })
 export class CoreAutoFocusDirective implements AfterViewInit {
 
-    @Input('core-auto-focus') autoFocus: boolean | string = true;
+    @Input({ alias: 'core-auto-focus', transform: toBoolean }) autoFocus = true;
 
     protected element: HTMLIonInputElement | HTMLIonTextareaElement | HTMLIonSearchbarElement | HTMLElement;
 
@@ -44,7 +44,7 @@ export class CoreAutoFocusDirective implements AfterViewInit {
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        if (CoreUtils.isFalseOrZero(this.autoFocus)) {
+        if (!this.autoFocus) {
             return;
         }
 

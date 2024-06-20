@@ -16,10 +16,10 @@ import { Directive, Input, ElementRef, Optional } from '@angular/core';
 
 import { Translate } from '@singletons';
 import { CoreToasts } from '@services/toasts';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitePluginsCallWSOnClickBaseDirective } from '../classes/call-ws-click-directive';
 import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Directive to call a WS when the element is clicked. The action to do when the WS call is successful depends on the input data:
@@ -52,8 +52,8 @@ import { CoreSitePluginsPluginContentComponent } from '../components/plugin-cont
 export class CoreSitePluginsCallWSDirective extends CoreSitePluginsCallWSOnClickBaseDirective {
 
     @Input() successMessage?: string; // Message to show on success. If not supplied, no message. If empty, default message.
-    @Input() goBackOnSuccess?: boolean | string; // Whether to go back if the WS call is successful.
-    @Input() refreshOnSuccess?: boolean | string; // Whether to refresh the current view if the WS call is successful.
+    @Input({ transform: toBoolean }) goBackOnSuccess = false; // Whether to go back if the WS call is successful.
+    @Input({ transform: toBoolean }) refreshOnSuccess = false; // Whether to refresh the current view if the WS call is successful.
 
     constructor(
         element: ElementRef,
@@ -66,9 +66,9 @@ export class CoreSitePluginsCallWSDirective extends CoreSitePluginsCallWSOnClick
      * @inheritdoc
      */
     protected async wsCallSuccess(): Promise<void> {
-        if (CoreUtils.isTrueOrOne(this.goBackOnSuccess)) {
+        if (this.goBackOnSuccess) {
             await CoreNavigator.back();
-        } else if (CoreUtils.isTrueOrOne(this.refreshOnSuccess) && this.parentContent) {
+        } else if (this.refreshOnSuccess && this.parentContent) {
             this.parentContent.refreshContent(true);
         }
 

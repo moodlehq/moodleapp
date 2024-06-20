@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
+import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input, OnDestroy, OnInit, ElementRef, OnChanges, ViewChild, SimpleChange } from '@angular/core';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
-import { CoreUtils } from '@services/utils/utils';
 import { ChartLegendLabelItem, ChartLegendOptions } from 'chart.js';
 
 /**
@@ -50,11 +50,12 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
     @Input() type?: string; // Type of chart.
     @Input() legend?: ChartLegendOptions; // Legend options.
     @Input() height = 300; // Height of the chart element.
-    @Input() filter?: boolean | string; // Whether to filter labels. If not defined, true if contextLevel and instanceId are set.
+    @Input({ transform: toBoolean }) filter?: boolean; // Whether to filter labels.
+                                                       // If not defined, true if contextLevel and instanceId are set.
     @Input() contextLevel?: ContextLevel; // The context level of the text.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
-    @Input() wsNotFiltered?: boolean | string; // If true it means the WS didn't filter the labels for some reason.
+    @Input({ transform: toBoolean }) wsNotFiltered = false; // If true it means the WS didn't filter the labels for some reason.
     @ViewChild('canvas') canvas?: ElementRef<HTMLCanvasElement>;
 
     chart?: ChartWithLegend;
@@ -158,7 +159,7 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
             clean: true,
             singleLine: true,
             courseId: this.courseId,
-            wsNotFiltered: CoreUtils.isTrueOrOne(this.wsNotFiltered),
+            wsNotFiltered: this.wsNotFiltered,
         };
 
         const filters = await CoreFilterHelper.getFilters(this.contextLevel, this.contextInstanceId, options);

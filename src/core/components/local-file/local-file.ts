@@ -27,6 +27,7 @@ import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/u
 import { CoreForms } from '@singletons/form';
 import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component to handle a local file. Only files inside the app folder can be managed.
@@ -41,8 +42,8 @@ import { CorePlatform } from '@services/platform';
 export class CoreLocalFileComponent implements OnInit {
 
     @Input() file?: FileEntry; // A fileEntry retrieved using CoreFileProvider.getFile or similar.
-    @Input() manage?: boolean | string; // Whether the user can manage the file (edit and delete).
-    @Input() overrideClick?: boolean | string; // Whether the default item click should be overridden.
+    @Input({ transform: toBoolean }) manage = false; // Whether the user can manage the file (edit and delete).
+    @Input({ transform: toBoolean }) overrideClick = false; // Whether the default item click should be overridden.
     @Output() onDelete = new EventEmitter<void>(); // Will notify when the file is deleted.
     @Output() onRename = new EventEmitter<{ file: FileEntry }>(); // Will notify when the file is renamed.
     @Output() onClick = new EventEmitter<void>(); // Will notify when the file is clicked. Only if overrideClick is true.
@@ -67,8 +68,6 @@ export class CoreLocalFileComponent implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.manage = CoreUtils.isTrueOrOne(this.manage);
-
         if (!this.file) {
             return;
         }
@@ -119,7 +118,7 @@ export class CoreLocalFileComponent implements OnInit {
         e.preventDefault();
         e.stopPropagation();
 
-        if (!isOpenButton && CoreUtils.isTrueOrOne(this.overrideClick) && this.onClick.observed) {
+        if (!isOpenButton && this.overrideClick && this.onClick.observed) {
             this.onClick.emit();
 
             return;

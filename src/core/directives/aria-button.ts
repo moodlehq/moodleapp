@@ -14,6 +14,7 @@
 
 import { Directive, ElementRef, OnInit, Output, EventEmitter, OnChanges, SimpleChanges, Input } from '@angular/core';
 import { CoreDom } from '@singletons/dom';
+import { toBoolean } from '../transforms/boolean';
 
 /**
  * Directive to emulate click and key actions following aria role button.
@@ -25,7 +26,7 @@ export class CoreAriaButtonClickDirective implements OnInit, OnChanges {
 
     protected element: HTMLElement;
 
-    @Input() disabled = false;
+    @Input({ transform: toBoolean }) disabled = false;
     @Output() ariaButtonClick = new EventEmitter();
 
     constructor(

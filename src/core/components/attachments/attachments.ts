@@ -25,6 +25,7 @@ import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuplo
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreUtils } from '@services/utils/utils';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component to render attachments, allow adding more and delete the current ones.
@@ -51,9 +52,9 @@ export class CoreAttachmentsComponent implements OnInit {
     @Input() maxSubmissions?: number; // Max number of attachments. -1 means unlimited, not defined means unknown limit.
     @Input() component?: string; // Component the downloaded files will be linked to.
     @Input() componentId?: string | number; // Component ID.
-    @Input() allowOffline?: boolean | string; // Whether to allow selecting files in offline.
+    @Input({ transform: toBoolean }) allowOffline = false; // Whether to allow selecting files in offline.
     @Input() acceptedTypes?: string; // List of supported filetypes. If undefined, all types supported.
-    @Input() required?: boolean; // Whether to display the required mark.
+    @Input({ transform: toBoolean }) required = false; // Whether to display the required mark.
     @Input() courseId?: number; // Course ID.
     @Input() title = Translate.instant('core.fileuploader.attachedfiles'); // Title to display.
 
@@ -131,9 +132,7 @@ export class CoreAttachmentsComponent implements OnInit {
      * Add a new attachment.
      */
     async add(): Promise<void> {
-        const allowOffline = !!this.allowOffline && this.allowOffline !== 'false';
-
-        if (!allowOffline && !CoreNetwork.isOnline()) {
+        if (!this.allowOffline && !CoreNetwork.isOnline()) {
             CoreDomUtils.showErrorModal('core.fileuploader.errormustbeonlinetoupload', true);
 
             return;
@@ -142,7 +141,7 @@ export class CoreAttachmentsComponent implements OnInit {
         const mimetypes = this.fileTypes && this.fileTypes.mimetypes;
 
         try {
-            const result = await CoreFileUploaderHelper.selectFile(this.maxSize, allowOffline, undefined, mimetypes);
+            const result = await CoreFileUploaderHelper.selectFile(this.maxSize, this.allowOffline, undefined, mimetypes);
 
             this.files?.push(result);
         } catch (error) {

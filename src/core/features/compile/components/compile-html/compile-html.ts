@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { toBoolean } from '@/core/transforms/boolean';
 import {
     Component,
     Input,
@@ -70,7 +71,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     @Input() stylesPath?: string; // The styles URL to apply (only if cssCode is not set).
     @Input() extraImports: unknown[] = []; // Extra import modules.
     @Input() extraProviders: Type<unknown>[] = []; // Extra providers.
-    @Input() forceCompile = false; // Set it to true to force compile even if the text/javascript hasn't changed.
+    @Input({ transform: toBoolean }) forceCompile = false; // True to force compile even if the text/javascript hasn't changed.
     @Output() created = new EventEmitter<unknown>(); // Will emit an event when the component is instantiated.
     @Output() compiling = new EventEmitter<boolean>(); // Event that indicates whether the template is being compiled.
 
@@ -122,7 +123,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
         // Only compile if text/javascript has changed or the forceCompile flag has been set to true.
         if (this.text === undefined ||
             !(changes.text || changes.javascript || changes.cssCode || changes.stylesPath ||
-                (changes.forceCompile && CoreUtils.isTrueOrOne(this.forceCompile)))) {
+                (changes.forceCompile && this.forceCompile))) {
             return;
         }
 

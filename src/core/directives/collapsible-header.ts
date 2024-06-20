@@ -20,7 +20,6 @@ import { CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { ScrollDetail } from '@ionic/core';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -28,6 +27,7 @@ import { CoreMath } from '@singletons/math';
 import { Subscription } from 'rxjs';
 import { CoreFormatTextDirective } from './format-text';
 import { CoreWait } from '@singletons/wait';
+import { toBoolean } from '../transforms/boolean';
 
 declare module '@singletons/events' {
 
@@ -75,7 +75,7 @@ export const COLLAPSIBLE_HEADER_UPDATED = 'collapsible_header_updated';
 })
 export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDestroy {
 
-    @Input() collapsible = true;
+    @Input({ transform: toBoolean }) collapsible = true;
 
     protected page?: HTMLElement;
     protected collapsedHeader: HTMLIonHeaderElement;
@@ -106,8 +106,6 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.collapsible = !CoreUtils.isFalseOrZero(this.collapsible);
-
         if (CoreDom.closest(this.collapsedHeader, 'core-tabs-outlet')) {
             this.collapsible = false;
         }
@@ -142,7 +140,6 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      */
     async ngOnChanges(changes: {[name: string]: SimpleChange}): Promise<void> {
         if (changes.collapsible && !changes.collapsible.firstChange) {
-            this.collapsible = !CoreUtils.isFalseOrZero(changes.collapsible.currentValue);
             this.enabled = this.collapsible;
 
             await this.init();

@@ -14,6 +14,7 @@
 
 import { Component, Input } from '@angular/core';
 import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '../services/assign';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Base class for component to render a submission plugin.
@@ -27,8 +28,8 @@ export class AddonModAssignSubmissionPluginBaseComponent {
     @Input({ required: true }) submission!: AddonModAssignSubmission; // The submission.
     @Input({ required: true }) plugin!: AddonModAssignPlugin; // The plugin object.
     @Input() configs?: Record<string, string>; // The configs for the plugin.
-    @Input() edit = false; // Whether the user is editing.
-    @Input() allowOffline = false; // Whether to allow offline.
+    @Input({ transform: toBoolean }) edit = false; // Whether the user is editing.
+    @Input({ transform: toBoolean }) allowOffline = false; // Whether to allow offline.
 
     /**
      * Invalidate the data.
