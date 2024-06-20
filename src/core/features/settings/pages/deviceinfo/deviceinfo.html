@@ -42,7 +42,7 @@
                 <p class="item-heading">{{ 'core.settings.siteinfo' | translate }}<ng-container *ngIf="deviceInfo.isPrefixedUrl">
                         *</ng-container>
                 </p>
-                <p *ngIf="displaySiteUrl"><a [href]="deviceInfo.siteUrl" core-link auto-login="yes">{{ deviceInfo.siteUrl }}</a></p>
+                <p *ngIf="displaySiteUrl"><a [href]="deviceInfo.siteUrl" core-link>{{ deviceInfo.siteUrl }}</a></p>
                 <p *ngIf="deviceInfo.siteVersion">{{ deviceInfo.siteVersion }}</p>
                 <p *ngIf="deviceInfo.siteId">{{ deviceInfo.siteId }}</p>
             </ion-label>
@@ -51,7 +51,7 @@
             <ion-label class="ion-text-wrap">
                 <p class="item-heading">{{ 'core.settings.filesystemroot' | translate }}</p>
                 <p>
-                    <a *ngIf="fsClickable" [href]="deviceInfo.fileSystemRoot" core-link auto-login="no">
+                    <a *ngIf="fsClickable" [href]="deviceInfo.fileSystemRoot" core-link [autoLogin]="false">
                         {{ deviceInfo.fileSystemRoot }}
                     </a>
                 </p>

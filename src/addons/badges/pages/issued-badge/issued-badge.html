@@ -49,7 +49,7 @@
                 <ion-item class="ion-text-wrap" *ngIf="badge.issuercontact">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.badges.contact' | translate}}</p>
-                        <p><a href="mailto:{{badge.issuercontact}}" core-link auto-login="no" [showBrowserWarning]="false">
+                        <p><a href="mailto:{{badge.issuercontact}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
                                 {{ badge.issuercontact }}
                             </a></p>
                     </ion-label>
@@ -95,7 +95,7 @@
                 <ion-item class="ion-text-wrap" *ngIf="badge.imageauthoremail">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.badges.imageauthoremail' | translate}}</p>
-                        <p><a href="mailto:{{badge.imageauthoremail}}" core-link auto-login="no" [showBrowserWarning]="false">
+                        <p><a href="mailto:{{badge.imageauthoremail}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
                                 {{ badge.imageauthoremail }}
                             </a></p>
                     </ion-label>
@@ -103,7 +103,7 @@
                 <ion-item class="ion-text-wrap" *ngIf="badge.imageauthorurl">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.badges.imageauthorurl' | translate}}</p>
-                        <p><a [href]="badge.imageauthorurl" core-link auto-login="no"> {{ badge.imageauthorurl }} </a></p>
+                        <p><a [href]="badge.imageauthorurl" core-link [autoLogin]="false"> {{ badge.imageauthorurl }} </a></p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="badge.imagecaption">
@@ -166,7 +166,7 @@
                     <ion-label>
                         <p class="item-heading">{{ 'addon.badges.issueremail' | translate}}</p>
                         <p>
-                            <a href="mailto:{{badge.endorsement.issueremail}}" core-link auto-login="no" [showBrowserWarning]="false">
+                            <a href="mailto:{{badge.endorsement.issueremail}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
                                 {{ badge.endorsement.issueremail }}
                             </a>
                         </p>
@@ -175,7 +175,7 @@
                 <ion-item class="ion-text-wrap" *ngIf="badge.endorsement.issuerurl">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.badges.issuerurl' | translate}}</p>
-                        <p><a [href]="badge.endorsement.issuerurl" core-link auto-login="no"> {{ badge.endorsement.issuerurl }} </a></p>
+                        <p><a [href]="badge.endorsement.issuerurl" core-link [autoLogin]="false"> {{ badge.endorsement.issuerurl }} </a></p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="badge.endorsement.dateissued">
@@ -187,7 +187,7 @@
                 <ion-item class="ion-text-wrap" *ngIf="badge.endorsement.claimid">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.badges.claimid' | translate}}</p>
-                        <p><a [href]="badge.endorsement.claimid" core-link auto-login="no"> {{ badge.endorsement.claimid }} </a></p>
+                        <p><a [href]="badge.endorsement.claimid" core-link [autoLogin]="false"> {{ badge.endorsement.claimid }} </a></p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="badge.endorsement.claimcomment">
@@ -225,7 +225,7 @@
                     </ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngFor="let alignment of badge.alignment" [href]="alignment.targeturl" core-link
-                    auto-login="no">
+                    [autoLogin]="false">
                     <ion-label>
                         <p class="item-heading">{{ alignment.targetname }}</p>
                     </ion-label>
