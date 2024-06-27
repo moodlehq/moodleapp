@@ -15,7 +15,7 @@ For more information about upgrading, read the official documentation: https://m
  - Due to a breaking change in cordova-plugin-file, avoid using FileEntry.toURL(). Use CoreFileProvider.getFileEntryURL instead.
  - FileTransfer service is no longer available, now we recommend use window.FileTransfer instead.
  - CSS variable --font-size-normal has been deprecated in favor of --font-size-md.
- - Activity modules services that does not admit plugins are not avaible for site plugins anymore.
+ - Activity modules services that do not admit plugins are not available for site plugins anymore.
  - CoreUserDelegate type available values changed from newpage and communication to listitem and button.
 
 === 4.3.0 ===
