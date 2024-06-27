@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, ElementRef, OnInit, OnChanges, HostBinding } from '@angular/core';
+import { Component, ElementRef, HostBinding, input, effect } from '@angular/core';
 import { CoreCourseListItem } from '@features/courses/services/courses';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { CoreColors } from '@singletons/colors';
@@ -23,41 +23,31 @@ import { CoreColors } from '@singletons/colors';
     templateUrl: 'course-image.html',
     styleUrls: ['./course-image.scss'],
 })
-export class CoreCourseImageComponent implements OnInit, OnChanges {
+export class CoreCourseImageComponent {
 
-    @Input({ required: true }) course!: CoreCourseListItem;
-    @Input({ transform: toBoolean }) fill = false;
+    course = input.required<CoreCourseListItem>();
+    fill = input(false, { transform: toBoolean });
 
     protected element: HTMLElement;
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
+
+        effect(() => {
+            this.setCourseColor();
+        });
     }
 
     @HostBinding('class.fill-container')
     get fillContainer(): boolean {
-        return this.fill;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        this.setCourseColor();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnChanges(): void {
-        this.setCourseColor();
+        return this.fill();
     }
 
     /**
      * Removes the course image set because it cannot be loaded and set the fallback icon color.
      */
     loadFallbackCourseIcon(): void {
-        this.course.courseimage = undefined;
+        this.course().courseimage = undefined;
 
         // Set the color because it won't be set at this point.
         this.setCourseColor();
@@ -67,15 +57,17 @@ export class CoreCourseImageComponent implements OnInit, OnChanges {
      * Set course color.
      */
     protected async setCourseColor(): Promise<void> {
-        await CoreCoursesHelper.loadCourseColorAndImage(this.course);
+        const course = this.course();
 
-        if (this.course.color) {
-            this.element.style.setProperty('--course-color', this.course.color);
+        await CoreCoursesHelper.loadCourseColorAndImage(course);
 
-            const tint = CoreColors.lighter(this.course.color, 50);
+        if (course.color) {
+            this.element.style.setProperty('--course-color', course.color);
+
+            const tint = CoreColors.lighter(course.color, 50);
             this.element.style.setProperty('--course-color-tint', tint);
-        } else if(this.course.colorNumber !== undefined) {
-            this.element.classList.add('course-color-' + this.course.colorNumber);
+        } else if(course.colorNumber !== undefined) {
+            this.element.classList.add('course-color-' + course.colorNumber);
         }
     }
 
