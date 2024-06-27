@@ -73,6 +73,7 @@ const mainMenuRoutes: Routes = [
     ),
 ];
 
+// Single Activity format navigation.
 const courseContentsRoutes: Routes = conditionalRoutes(
     [
         {

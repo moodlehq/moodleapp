@@ -28,6 +28,16 @@ export function resolveIndexRoutes(injector: Injector): ModuleRoutes {
     return resolveModuleRoutes(injector, COURSE_INDEX_ROUTES);
 }
 
+/**
+ * Module used to register routes in the main course page. These are routes that will appear as tabs in the main page of a course,
+ * and they must also be declared in a CoreCourseOptionsHandler or in plugins using the CoreCourseOptionsDelegate.
+ *
+ * Some examples of routes registered in this module are:
+ * - /main/{tab}/course/{courseId}/contents
+ * - /main/{tab}/course/{courseId}/participants
+ * - /main/{tab}/course/{courseId}/grades
+ * - ...
+ */
 @NgModule()
 export class CoreCourseIndexRoutingModule {
 

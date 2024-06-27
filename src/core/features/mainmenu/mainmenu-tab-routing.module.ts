@@ -42,15 +42,19 @@ export function buildTabMainRoutes(injector: Injector, mainRoute: Route): Routes
     return [mainRoute, ...routes.siblings];
 }
 
+/**
+ * Module used to register children routes for all main menu tabs. These are routes that can be navigated within any tab in the
+ * main menu, but will remain within the navigation stack of the tab rather than overriding the main menu or moving to another tab.
+ *
+ * Some examples of routes registered in this module are:
+ * - /main/{tab}/user
+ * - /main/{tab}/badges
+ * - /main/{tab}/mod_forum
+ * - ...
+ */
 @NgModule()
 export class CoreMainMenuTabRoutingModule {
 
-    /**
-     * Use this function to declare routes that will be children of all main menu tabs root routes.
-     *
-     * @param routes Routes to be children of main menu tabs.
-     * @returns Calculated module.
-     */
     static forChild(routes: ModuleRoutesConfig): ModuleWithProviders<CoreMainMenuTabRoutingModule> {
         return {
             ngModule: CoreMainMenuTabRoutingModule,

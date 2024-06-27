@@ -219,6 +219,9 @@ export function resolveModuleRoutes(injector: Injector, token: InjectionToken<Mo
 
 export const APP_ROUTES = new InjectionToken('APP_ROUTES');
 
+/**
+ * Module used to register routes at the root of the application.
+ */
 @NgModule({
     imports: [
         RouterModule.forRoot([]),
