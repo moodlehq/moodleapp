@@ -34,7 +34,7 @@ export class CoreHTMLClasses {
      * Initialize HTML classes.
      */
     static initialize(): void {
-        CoreDomUtils.toggleModeClass('ionic7', true);
+        CoreDomUtils.toggleModeClass('ionic8', true);
         CoreDomUtils.toggleModeClass('development', CoreConstants.BUILD.isDevelopment);
         CoreHTMLClasses.addVersionClass(MOODLEAPP_VERSION_PREFIX, CoreConstants.CONFIG.versionname.replace('-dev', ''));
 

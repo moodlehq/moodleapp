@@ -1,5 +1,5 @@
 diff --git a/node_modules/@ionic/core/components/popover.js b/node_modules/@ionic/core/components/popover.js
-index 21fb3e3..52ea4a6 100644
+index 19b79c4..67289f4 100644
 --- a/node_modules/@ionic/core/components/popover.js
 +++ b/node_modules/@ionic/core/components/popover.js
 @@ -763,8 +763,10 @@ const iosEnterAnimation = (baseEl, opts) => {
@@ -29,10 +29,10 @@ index 21fb3e3..52ea4a6 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js b/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
-index 68a908b..050e544 100644
+index 2dcf484..54aeac9 100644
 --- a/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
 +++ b/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
-@@ -768,8 +768,10 @@ const iosEnterAnimation = (baseEl, opts) => {
+@@ -769,8 +769,10 @@ const iosEnterAnimation = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -45,7 +45,7 @@ index 68a908b..050e544 100644
      const root = helpers.getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const arrowEl = root.querySelector('.popover-arrow');
-@@ -889,8 +891,10 @@ const mdEnterAnimation = (baseEl, opts) => {
+@@ -890,8 +892,10 @@ const mdEnterAnimation = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -93,10 +93,10 @@ index 603923a..ff10a25 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/dist/esm/ion-popover.entry.js b/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
-index 839e91c..abcd28f 100644
+index 8ca76cf..c5b990a 100644
 --- a/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
 +++ b/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
-@@ -764,8 +764,10 @@ const iosEnterAnimation = (baseEl, opts) => {
+@@ -765,8 +765,10 @@ const iosEnterAnimation = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -109,7 +109,7 @@ index 839e91c..abcd28f 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const arrowEl = root.querySelector('.popover-arrow');
-@@ -885,8 +887,10 @@ const mdEnterAnimation = (baseEl, opts) => {
+@@ -886,8 +888,10 @@ const mdEnterAnimation = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -123,10 +123,10 @@ index 839e91c..abcd28f 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/hydrate/index.js b/node_modules/@ionic/core/hydrate/index.js
-index 7f898c7..a3a7669 100644
+index 5a50b98..884e2ce 100644
 --- a/node_modules/@ionic/core/hydrate/index.js
 +++ b/node_modules/@ionic/core/hydrate/index.js
-@@ -29254,8 +29254,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
+@@ -23702,8 +23702,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -139,7 +139,7 @@ index 7f898c7..a3a7669 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const arrowEl = root.querySelector('.popover-arrow');
-@@ -29375,8 +29377,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
+@@ -23823,8 +23825,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
