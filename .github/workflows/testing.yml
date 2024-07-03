@@ -72,5 +72,5 @@ jobs:
         test $lines -eq 204
     - name: JavaScript code compatibility
       run: |
-        npx check-es-compat www/*.js --polyfills="\{Array,String,TypedArray\}.prototype.at,Array.prototype.flatMap,Array.prototype.flat,Array.prototype.includes,globalThis,Object.fromEntries,Object.hasOwn,Promise.prototype.finally,String.prototype.matchAll,String.prototype.trimRight" | grep "No issues found. Files are compatible with the target runtimes."
+        npx check-es-compat www/*.js --polyfills="\{Array,String,TypedArray\}.prototype.at,Object.hasOwn"
         npx check-es-compat cordova-plugin-moodleapp/www/*.js
