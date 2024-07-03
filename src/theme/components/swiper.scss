@@ -1,7 +1,7 @@
 
 swiper-container {
     --swiper-theme-color: var(--ion-color-primary, #3880ff);
-    --swiper-pagination-bullet-inactive-color: var(--ion-color-step-200, #cccccc);
+    --swiper-pagination-bullet-inactive-color: var(--ion-text-color-step-800, #cccccc);
     --swiper-pagination-color: var(--swiper-theme-color);
     --swiper-pagination-progressbar-bg-color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.25);
     --swiper-scrollbar-bg-color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.1);

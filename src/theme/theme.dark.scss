@@ -5,171 +5,198 @@
  * http://ionicframework.com/docs/theming/
  */
 
-:root.dark {
+@mixin dark-palette() {
+    & {
+        // Ionic shades, defined for ionic internal use.
+        --ion-background-color-step-0:    var(--black);
+        --ion-background-color-step-50:   var(--gray-900);
+        --ion-background-color-step-100:  var(--gray-900);
+        --ion-background-color-step-150:  var(--gray-800);
+        --ion-background-color-step-200:  var(--gray-800);
+        --ion-background-color-step-250:  var(--gray-700);
+        --ion-background-color-step-300:  var(--gray-700);
+        --ion-background-color-step-350:  var(--gray-600);
+        --ion-background-color-step-400:  var(--gray-600);
+        --ion-background-color-step-450:  var(--gray-500);
+        --ion-background-color-step-500:  var(--gray-500);
+        --ion-background-color-step-550:  var(--gray-400);
+        --ion-background-color-step-600:  var(--gray-400);
+        --ion-background-color-step-650:  var(--gray-300);
+        --ion-background-color-step-700:  var(--gray-300);
+        --ion-background-color-step-750:  var(--gray-200);
+        --ion-background-color-step-800:  var(--gray-200);
+        --ion-background-color-step-850:  var(--gray-100);
+        --ion-background-color-step-900:  var(--gray-100);
+        --ion-background-color-step-950:  var(--gray-100);
+        --ion-background-color-step-1000: var(--white);
 
-    // Ionic shades, defined for ionic internal use.
-    --ion-color-step-0:    var(--black);
-    --ion-color-step-50:   var(--gray-900);
-    --ion-color-step-100:  var(--gray-900);
-    --ion-color-step-150:  var(--gray-800);
-    --ion-color-step-200:  var(--gray-800);
-    --ion-color-step-250:  var(--gray-700);
-    --ion-color-step-300:  var(--gray-700);
-    --ion-color-step-350:  var(--gray-600);
-    --ion-color-step-400:  var(--gray-600);
-    --ion-color-step-450:  var(--gray-500);
-    --ion-color-step-500:  var(--gray-500);
-    --ion-color-step-550:  var(--gray-400);
-    --ion-color-step-600:  var(--gray-400);
-    --ion-color-step-650:  var(--gray-300);
-    --ion-color-step-700:  var(--gray-300);
-    --ion-color-step-750:  var(--gray-200);
-    --ion-color-step-800:  var(--gray-200);
-    --ion-color-step-850:  var(--gray-100);
-    --ion-color-step-900:  var(--gray-100);
-    --ion-color-step-950:  var(--gray-100);
-    --ion-color-step-1000: var(--white);
+        --ion-text-color-step-0:    var(--white);
+        --ion-text-color-step-50:   var(--gray-100);
+        --ion-text-color-step-100:  var(--gray-100);
+        --ion-text-color-step-150:  var(--gray-200);
+        --ion-text-color-step-200:  var(--gray-200);
+        --ion-text-color-step-250:  var(--gray-300);
+        --ion-text-color-step-300:  var(--gray-300);
+        --ion-text-color-step-350:  var(--gray-400);
+        --ion-text-color-step-400:  var(--gray-400);
+        --ion-text-color-step-450:  var(--gray-500);
+        --ion-text-color-step-500:  var(--gray-500);
+        --ion-text-color-step-550:  var(--gray-600);
+        --ion-text-color-step-600:  var(--gray-600);
+        --ion-text-color-step-650:  var(--gray-700);
+        --ion-text-color-step-700:  var(--gray-700);
+        --ion-text-color-step-750:  var(--gray-800);
+        --ion-text-color-step-800:  var(--gray-800);
+        --ion-text-color-step-850:  var(--gray-900);
+        --ion-text-color-step-900:  var(--gray-900);
+        --ion-text-color-step-950:  var(--gray-900);
+        --ion-text-color-step-1000: var(--black);
 
-    @each $color-name, $unused in $colors {
-        @include generate-color($color-name, $colors, 'dark');
-    }
-
-    --ion-background-color:     #{$background-color-dark};
-    --ion-background-color-rgb: #{$background-color-dark-rgb};
-
-    --text-color:               #{$text-color-dark};
-    --ion-text-color:           var(--text-color);
-    --ion-text-color-rgb:       #{$text-color-dark-rgb};
-    --subdued-text-color:       var(--medium);
-    --stroke:                   var(--gray-700);
-
-    --contrast-background: var(--gray-900);
-
-    --loader-shine: 90 90 90;
-
-    --drop-shadow-top: 0px 2px 5px rgb(var(--mdl-shadow-boxShadowColor) / 1);
-    --drop-shadow-bottom: 0px -2px 5px rgb(var(--mdl-shadow-boxShadowColor) / 1);
-
-    --ion-card-color: var(--text-color);
-    --ion-card-background: var(--ion-item-background);
-    --ion-card-border-color: var(--stroke);
-
-    --ion-border-color: var(--stroke);
-    --ion-item-border-color: var(--stroke);
-
-    --core-input-stroke: var(--gray-600);
-    --core-input-text: var(--dark);
-    --core-input-background: var(--gray-900);
-
-    ion-content {
-        --background: var(--ion-background-color);
-        --background-alternative: var(--gray-900);
-    }
-
-    --core-bottom-tabs-badge-text-color: var(--primary-contrast);
-    --core-bottom-tabs-background: var(--gray-900);
-    --core-bottom-tabs-color: var(--gray-200);
-
-    ion-action-sheet {
-        .action-sheet-cancel {
-            --button-color: var(--danger-tint);
+        @each $color-name, $unused in $colors {
+            @include generate-color($color-name, $colors, 'dark');
         }
+
+        --ion-background-color:     #{$background-color-dark};
+        --ion-background-color-rgb: #{$background-color-dark-rgb};
+
+        --text-color:               #{$text-color-dark};
+        --ion-text-color:           var(--text-color);
+        --ion-text-color-rgb:       #{$text-color-dark-rgb};
+        --subdued-text-color:       var(--medium);
+        --stroke:                   var(--gray-700);
+
+        --contrast-background: var(--gray-900);
+
+        --loader-shine: 90 90 90;
+
+        --drop-shadow-top: 0px 2px 5px rgb(var(--mdl-shadow-boxShadowColor) / 1);
+        --drop-shadow-bottom: 0px -2px 5px rgb(var(--mdl-shadow-boxShadowColor) / 1);
+
+        --ion-card-color: var(--text-color);
+        --ion-card-background: var(--ion-item-background);
+        --ion-card-border-color: var(--stroke);
+
+        --ion-border-color: var(--stroke);
+        --ion-item-border-color: var(--stroke);
+
+        --core-input-stroke: var(--gray-600);
+        --core-input-text: var(--dark);
+        --core-input-background: var(--gray-900);
+
+        ion-content {
+            --background: var(--ion-background-color);
+            --background-alternative: var(--gray-900);
+        }
+
+        --core-bottom-tabs-badge-text-color: var(--primary-contrast);
+        --core-bottom-tabs-background: var(--gray-900);
+        --core-bottom-tabs-color: var(--gray-200);
+
+        ion-action-sheet {
+            .action-sheet-cancel {
+                --button-color: var(--danger-tint);
+            }
+        }
+
+        ion-popover,
+        ion-popover ion-content {
+            --background: var(--gray-800);
+            --ion-item-background: var(--background);
+            --ion-background-color: var(--background);
+        }
+
+        --core-link-color: var(--info-tint);
+
+        --core-header-toolbar-background:   var(--gray-900);
+        --core-header-toolbar-color:        var(--text-color);
+        --core-header-toolbar-border-color: var(--stroke);
+
+        --core-tabs-background: var(--gray-900);
+        --core-tab-background: var(--core-tabs-background);
+        --core-tab-color: var(--subdued-text-color);
+        --core-tab-border-color: var(--gray-200);
+        --core-tab-color-active: var(--dark);
+
+        --core-progressbar-text-color: var(--gray-100);
+
+        --core-empty-box-icon-color: var(--gray-700);
+
+        --ion-item-background: #{$ion-item-background-dark};
+        --ion-item-icon-color: var(--medium);
+        --ion-item-detail-icon-color: var(--dark);
+        --core-more-icon: var(--ion-item-icon-color);
+
+        --item-divider-background: var(--ion-item-background);
+        --item-divider-color: var(--text-color);
+        --spacer-background: var(--gray-700);
+
+
+        --ion-searchbar-background: var(--ion-background-color);
+        --ion-searchbar-border-color: var(--core-input-stroke);
+        --ion-searchbar-color: var(--text-color);
+        --ion-searchbar-icon-color: var(--core-input-stroke);
+
+        --core-search-box-background: var(--ion-background-color);
+        --core-search-box-border-color: var(--core-input-stroke);
+        --core-search-box-color: var(--core-input-text);
+
+        --core-combobox-background: var(--core-input-background);
+        --core-combobox-color: var(--text-color);
+        --core-combobox-border-color: var(--core-input-stroke);
+
+        --collapsible-toggle-text: var(--medium);
+
+        --background-gradient-rgb: #{$ion-item-background-dark-rgb};
+
+        --core-login-background: var(--gray-900);
+        --core-login-text-color: var(--white);
+        --core-login-input-background: var(--core-login-background);
+        --core-login-input-color: var(--core-login-text-color);
+
+        --core-question-correct-color: var(--success-tint);
+        --core-question-correct-color-bg: var(--success-shade);
+        --core-question-incorrect-color: var(--danger);
+        --core-question-incorrect-color-bg: var(--danger-shade);
+        --core-question-partial-color: var(--warning-tint);
+        --core-question-partial-color-bg: var(--warning-shade);
+        --core-question-feedback-color: var(--warning-tint);
+        --core-question-feedback-color-bg: var(--warning-shade);
+        --core-question-warning-color: var(--danger);
+        --core-question-saved-color-bg: var(--gray-500);
+
+        --core-question-feedback-color: var(--warning-tint);
+        --core-question-feedback-background-color: var(--warning-shade);
+
+        --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-200);
+        --core-dd-question-border: var(--gray-200);
+
+        --core-send-message-input-background: var(--gray-900);
+        --core-send-message-input-color: var(--white);
+
+        --core-navigation-background: var(--contrast-background);
+
+        --core-collapsible-footer-background: var(--contrast-background);
+
+        --core-messages-message-bg: var(--gray-800);
+        --core-messages-message-activated-bg: var(--gray-700);
+        --core-messages-message-note-text: var(--subdued-text-color);
+        --core-messages-message-mine-bg: var(--gray-700);
+        --core-messages-message-mine-activated-bg: var(--gray-600);
+        --core-messages-discussion-badge: var(--primary);
+        --core-messages-discussion-badge-text: var(--gray-100);
+
+        --addon-forum-border-color: var(--gray-500);
+        --addon-forum-highlight-color: var(--gray-800);
+
+        --core-table-header-background: var(--gray-900);
+        --core-table-odd-cell-background: var(--gray-800);
+        --core-table-odd-cell-hover: var(--gray-600);
+        --core-table-even-cell-background: var(--gray-900);
+        --core-table-even-cell-hover: var(--gray-700);
+
     }
+}
 
-    ion-popover,
-    ion-popover ion-content {
-        --background: var(--gray-800);
-        --ion-item-background: var(--background);
-        --ion-background-color: var(--background);
-    }
-
-    --core-link-color: var(--info-tint);
-
-    --core-header-toolbar-background:   var(--gray-900);
-    --core-header-toolbar-color:        var(--text-color);
-    --core-header-toolbar-border-color: var(--stroke);
-
-    --core-tabs-background: var(--gray-900);
-    --core-tab-background: var(--core-tabs-background);
-    --core-tab-color: var(--subdued-text-color);
-    --core-tab-border-color: var(--gray-200);
-    --core-tab-color-active: var(--dark);
-
-    --core-progressbar-text-color: var(--gray-100);
-
-    --core-empty-box-icon-color: var(--gray-700);
-
-    --ion-item-background: #{$ion-item-background-dark};
-    --ion-item-icon-color: var(--medium);
-    --ion-item-detail-icon-color: var(--dark);
-    --core-more-icon: var(--ion-item-icon-color);
-
-    --item-divider-background: var(--ion-item-background);
-    --item-divider-color: var(--text-color);
-    --spacer-background: var(--gray-700);
-
-
-    --ion-searchbar-background: var(--ion-background-color);
-    --ion-searchbar-border-color: var(--core-input-stroke);
-    --ion-searchbar-color: var(--text-color);
-    --ion-searchbar-icon-color: var(--core-input-stroke);
-
-    --core-search-box-background: var(--ion-background-color);
-    --core-search-box-border-color: var(--core-input-stroke);
-    --core-search-box-color: var(--core-input-text);
-
-    --core-combobox-background: var(--core-input-background);
-    --core-combobox-color: var(--text-color);
-    --core-combobox-border-color: var(--core-input-stroke);
-
-    --collapsible-toggle-text: var(--medium);
-
-    --background-gradient-rgb: #{$ion-item-background-dark-rgb};
-
-    --core-login-background: var(--gray-900);
-    --core-login-text-color: var(--white);
-    --core-login-input-background: var(--core-login-background);
-    --core-login-input-color: var(--core-login-text-color);
-
-    --core-question-correct-color: var(--success-tint);
-    --core-question-correct-color-bg: var(--success-shade);
-    --core-question-incorrect-color: var(--danger);
-    --core-question-incorrect-color-bg: var(--danger-shade);
-    --core-question-partial-color: var(--warning-tint);
-    --core-question-partial-color-bg: var(--warning-shade);
-    --core-question-feedback-color: var(--warning-tint);
-    --core-question-feedback-color-bg: var(--warning-shade);
-    --core-question-warning-color: var(--danger);
-    --core-question-saved-color-bg: var(--gray-500);
-
-    --core-question-feedback-color: var(--warning-tint);
-    --core-question-feedback-background-color: var(--warning-shade);
-
-    --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-200);
-    --core-dd-question-border: var(--gray-200);
-
-    --core-send-message-input-background: var(--gray-900);
-    --core-send-message-input-color: var(--white);
-
-    --core-navigation-background: var(--contrast-background);
-
-    --core-collapsible-footer-background: var(--contrast-background);
-
-    --core-messages-message-bg: var(--gray-800);
-    --core-messages-message-activated-bg: var(--gray-700);
-    --core-messages-message-note-text: var(--subdued-text-color);
-    --core-messages-message-mine-bg: var(--gray-700);
-    --core-messages-message-mine-activated-bg: var(--gray-600);
-    --core-messages-discussion-badge: var(--primary);
-    --core-messages-discussion-badge-text: var(--gray-100);
-
-    --addon-forum-border-color: var(--gray-500);
-    --addon-forum-highlight-color: var(--gray-800);
-
-    --core-table-header-background: var(--gray-900);
-    --core-table-odd-cell-background: var(--gray-800);
-    --core-table-odd-cell-hover: var(--gray-600);
-    --core-table-even-cell-background: var(--gray-900);
-    --core-table-even-cell-hover: var(--gray-700);
-
+:root.dark {
+    @include dark-palette();
 }
