@@ -62,6 +62,14 @@ jobs:
       run: |
         npm run build:prod
         npm run prod --prefix cordova-plugin-moodleapp
+      env:
+          MOODLE_APP_CIRCULAR_DEPENDENCIES: true
+    - name: Circular dependencies
+      run: |
+        cat circular-dependencies
+        lines=$(cat circular-dependencies | wc -l)
+        echo "Total circular dependencies: $lines"
+        test $lines -eq 204
     - name: JavaScript code compatibility
       run: |
         npx check-es-compat www/*.js --polyfills="\{Array,String,TypedArray\}.prototype.at,Array.prototype.flatMap,Array.prototype.flat,Array.prototype.includes,globalThis,Object.fromEntries,Object.hasOwn,Promise.prototype.finally,String.prototype.matchAll,String.prototype.trimRight" | grep "No issues found. Files are compatible with the target runtimes."

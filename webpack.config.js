@@ -13,6 +13,8 @@
 // limitations under the License.
 
 const TerserPlugin = require('terser-webpack-plugin');
+const CircularDependencyPlugin = require('circular-dependency-plugin');
+const { appendFileSync } = require('fs');
 
 module.exports = config => {
     config.optimization.minimizer.push(
@@ -44,6 +46,21 @@ module.exports = config => {
                 ...tsConfig.use,
             ],
         });
+    }
+
+    if (process.env.MOODLE_APP_CIRCULAR_DEPENDENCIES) {
+        config.plugins.push(
+            new CircularDependencyPlugin({
+                exclude: /node_modules/,
+                cwd: process.cwd(),
+                onDetected({ paths }) {
+                    appendFileSync(
+                        `${process.cwd()}/circular-dependencies`,
+                        paths.join(' -> ') + '\n',
+                    );
+                },
+            }),
+        );
     }
 
     return config;
