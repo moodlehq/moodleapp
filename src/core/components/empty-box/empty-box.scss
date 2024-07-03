@@ -38,7 +38,7 @@
     }
 }
 
-:host-context(html.dark) {
+:host-context(:root.dark) {
     &.dimmed {
         --text-color: var(--gray-300);
     }

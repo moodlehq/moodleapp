@@ -91,7 +91,7 @@
 
 }
 
-:host-context(html.dark) ion-item {
+:host-context(:root.dark) ion-item {
     --core-global-search-result-content-color: var(--gray-400);
     --core-global-search-result-context-color: var(--gray-500);
 }

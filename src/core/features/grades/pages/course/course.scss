@@ -5,7 +5,7 @@
     --core-table-border-color: var(--stroke);
 }
 
-:host-context(html.dark) {
+:host-context(:root.dark) {
     --icon-color: var(--gray-200);
 }
 

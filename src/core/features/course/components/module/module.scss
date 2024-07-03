@@ -198,7 +198,7 @@
 }
 
 
-:host-context(html.dark) {
+:host-context(:root.dark) {
     .activity-description-availabilityinfo {
         .core-module-availabilityinfo {
             background: var(--gray-800);

@@ -11,6 +11,6 @@
     }
 }
 
-:host-context(html.dark) {
+:host-context(:root.dark) {
     --heading-text-color: var(--gray-400);
 }

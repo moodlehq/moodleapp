@@ -1,13 +1,13 @@
 @import "./globals.scss";
 
-html.force-safe-area-margins {
+:root.force-safe-area-margins {
     --ion-safe-area-left: 40px;
     --ion-safe-area-right: 40px;
     --ion-safe-area-top: 40px;
     --ion-safe-area-bottom: 40px;
 }
 
-html {
+:root {
     --zoom-level: 100%;
     zoom: var(--zoom-level);
 
@@ -21,7 +21,7 @@ a {
     cursor: pointer;
 }
 
-html[dir=rtl] {
+:root[dir=rtl] {
     --rotate-expandable: rotate(-90deg);
 }
 

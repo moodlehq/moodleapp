@@ -29,7 +29,7 @@
 @import "components/videojs.scss";
 
 /* Ionic components overrides */
-html {
+:root {
     @import "components/ion-accordion.scss";
     @import "components/ion-action-sheet.scss";
     @import "components/ion-alert.scss";

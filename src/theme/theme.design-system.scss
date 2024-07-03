@@ -2,7 +2,7 @@
 @import "theme.light.scss";
 @import "theme.dark.scss";
 
-html {
+:root {
     // Add serif fallback font for km language in some devices.
     --ion-font-family: var(--ion-default-font), serif;
 
@@ -243,7 +243,7 @@ html {
 }
 
 /** @deprecated since 4.3 **/
-html {
+:root {
     --small-radius: var(--mdl-shape-borderRadius-xs);
     --medium-radius: var(--mdl-shape-borderRadius-sm);
     --big-radius: var(--mdl-shape-borderRadius-lg);
@@ -251,7 +251,7 @@ html {
 }
 
 /** @deprecated since 4.4 **/
-html {
+:root {
     --font-size-normal: var(--mdl-typography-fontSize-md);
     --a11y-min-target-size: var(--a11y-sizing-minTargetSize);
     --a11y-focus-width: var(--a11y-shadow-focus-boxShadowSpread);

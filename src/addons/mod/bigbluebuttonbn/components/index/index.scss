@@ -24,7 +24,7 @@
     }
 }
 
-:host-context(html.dark) {
+:host-context(:root.dark) {
     --recording-details-background: var(--gray-800);
     --recording-details-border: var(--gray-500);
 }

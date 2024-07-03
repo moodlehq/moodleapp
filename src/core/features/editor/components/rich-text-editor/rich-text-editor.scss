@@ -6,7 +6,7 @@
     --background: var(--rte-editor-background);
 }
 
-:host-context(html.dark) {
+:host-context(:root.dark) {
     --color: var(--white);
     --button-color: var(--gray-200);
     --button-active-color: var(--gray-500);
