@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CorePath } from './path';
-
 /**
  * Singleton with helper functions for text manipulation.
  */
@@ -68,18 +66,6 @@ export class CoreText {
         }
 
         return text.substring(1);
-    }
-
-    /**
-     * Concatenate two paths, adding a slash between them if needed.
-     *
-     * @param leftPath Left path.
-     * @param rightPath Right path.
-     * @returns Concatenated path.
-     * @deprecated since 4.1. Use CorePath.concatenatePaths instead.
-     */
-    static concatenatePaths(leftPath: string, rightPath: string): string {
-        return CorePath.concatenatePaths(leftPath, rightPath);
     }
 
 }

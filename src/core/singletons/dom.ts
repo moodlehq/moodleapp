@@ -536,20 +536,6 @@ export class CoreDom {
     }
 
     /**
-     * Listen to click and Enter/Space keys in an element.
-     *
-     * @param element Element to listen to events.
-     * @param callback Callback to call when clicked or the key is pressed.
-     * @deprecated since 4.1.1: Use initializeClickableElementA11y instead.
-     */
-    static onActivate(
-        element: HTMLElement & {disabled?: boolean},
-        callback: (event: MouseEvent | KeyboardEvent) => void,
-    ): void {
-        this.initializeClickableElementA11y(element, callback);
-    }
-
-    /**
      * Initializes a clickable element a11y calling the click action when pressed enter or space
      * and adding tabindex and role if needed.
      *

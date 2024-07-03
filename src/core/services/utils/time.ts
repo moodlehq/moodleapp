@@ -216,19 +216,6 @@ export class CoreTimeUtilsProvider {
     }
 
     /**
-     * Convert a text into user timezone timestamp.
-     *
-     * @param date To convert to timestamp.
-     * @param applyOffset Whether to apply offset to date or not.
-     * @returns Converted timestamp.
-     * @deprecated since 4.1. Use moment(date).unix() instead.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    convertToTimestamp(date: string, applyOffset?: boolean): number {
-        return moment(date).unix();
-    }
-
-    /**
      * Return the localized ISO format (i.e DDMMYY) from the localized moment format. Useful for translations.
      * DO NOT USE this function for ion-datetime format. Moment escapes characters with [], but ion-datetime doesn't support it.
      *

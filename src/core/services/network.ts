@@ -111,22 +111,22 @@ export class CoreNetworkService extends Network {
 
                 const hadOfflineMessage = CoreDomUtils.hasModeClass('core-offline');
 
-                CoreDomUtils.toggleModeClass('core-offline', !isOnline, { includeLegacy: true });
+                CoreDomUtils.toggleModeClass('core-offline', !isOnline);
 
                 if (isOnline && hadOfflineMessage) {
-                    CoreDomUtils.toggleModeClass('core-online', true, { includeLegacy: true });
+                    CoreDomUtils.toggleModeClass('core-online', true);
 
                     setTimeout(() => {
-                        CoreDomUtils.toggleModeClass('core-online', false, { includeLegacy: true });
+                        CoreDomUtils.toggleModeClass('core-online', false);
                     }, 3000);
                 } else if (!isOnline) {
-                    CoreDomUtils.toggleModeClass('core-online', false, { includeLegacy: true });
+                    CoreDomUtils.toggleModeClass('core-online', false);
                 }
             });
         });
 
         const isOnline = this.isOnline();
-        CoreDomUtils.toggleModeClass('core-offline', !isOnline, { includeLegacy: true });
+        CoreDomUtils.toggleModeClass('core-offline', !isOnline);
     }
 
     /**

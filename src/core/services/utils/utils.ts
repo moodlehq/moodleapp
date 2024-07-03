@@ -1410,16 +1410,6 @@ export class CoreUtilsProvider {
     }
 
     /**
-     * Create a deferred promise that can be resolved or rejected explicitly.
-     *
-     * @returns The deferred promise.
-     * @deprecated since 4.1. Use CorePromisedValue instead.
-     */
-    promiseDefer<T>(): CorePromisedValue<T> {
-        return new CorePromisedValue<T>();
-    }
-
-    /**
      * Given a promise, returns true if it's rejected or false if it's resolved.
      *
      * @param promise Promise to check

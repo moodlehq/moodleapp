@@ -77,7 +77,6 @@ import { Md5 } from 'ts-md5/dist/md5';
 // Import core classes that can be useful for site plugins.
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreArray } from '@singletons/array';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreForms } from '@singletons/form';
@@ -295,12 +294,13 @@ export class CoreCompileProvider {
         instance['CoreLoggerProvider'] = CoreLogger;
         instance['moment'] = moment;
         instance['Md5'] = Md5;
-        instance['Network'] = CoreNetwork.instance; // @deprecated since 4.1, plugins should use CoreNetwork instead.
-        instance['Platform'] = CorePlatform.instance; // @deprecated since 4.1, plugins should use CorePlatform instead.
+        /**
+         * @deprecated since 4.1, plugins should use CoreNetwork instead.
+         * Keeping this a bit more to avoid plugins breaking.
+         */
+        instance['Network'] = CoreNetwork.instance;
         instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
         instance['CoreArray'] = CoreArray;
-        // eslint-disable-next-line deprecation/deprecation
-        instance['CoreComponentsRegistry'] = CoreComponentsRegistry;
         instance['CoreDirectivesRegistry'] = CoreDirectivesRegistry;
         instance['CoreNetwork'] = CoreNetwork.instance;
         instance['CorePlatform'] = CorePlatform.instance;
