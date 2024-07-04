@@ -239,7 +239,7 @@ export class CoreDbProvider {
             await CorePlatform.ready();
 
             return SQLite.create({ name, location: 'default' });
-        });
+        }, {});
     }
 
     /**

@@ -40,7 +40,7 @@ import {
 } from '../../services/data';
 import { AddonModDataHelper, AddonModDatDisplayFieldsOptions } from '../../services/data-helper';
 import { AddonModDataAutoSyncData, AddonModDataSyncResult } from '../../services/data-sync';
-import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch';
+import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch-lazy';
 import { AddonModDataComponentsCompileModule } from '../components-compile.module';
 import { AddonModDataSearchComponent } from '../search/search';
 import { CoreUrlUtils } from '@services/utils/url';

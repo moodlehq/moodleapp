@@ -152,14 +152,31 @@ export type AsyncMethod<T> =
         : never;
 
 /**
+ * Get instance methods that don't return a promise.
+ */
+export type GetEagerMethods<TEagerInstance extends AsyncObject> = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [k in keyof TEagerInstance]: TEagerInstance[k] extends (...args: any[]) => infer TReturn
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ? (TReturn extends Promise<any> ? never : k)
+        : never
+}[keyof TEagerInstance];
+
+/**
  * Asynchronous instance.
  *
  * All methods are converted to their asynchronous version, and properties are available asynchronously using
  * the getProperty method.
  */
-export type AsyncInstance<TLazyInstance extends TEagerInstance, TEagerInstance extends AsyncObject = Partial<TLazyInstance>> =
-    AsyncInstanceWrapper<TLazyInstance, TEagerInstance> & {
+export type AsyncInstance<
+    TLazyInstance extends TEagerInstance,
+    TEagerInstance extends AsyncObject = Partial<TLazyInstance>,
+    TEagerMethods extends keyof TEagerInstance = GetEagerMethods<TEagerInstance>
+> =
+    AsyncInstanceWrapper<TLazyInstance, TEagerInstance> & Omit<{
         [k in keyof TLazyInstance]: AsyncMethod<TLazyInstance[k]>;
+    }, TEagerMethods> & {
+        [k in TEagerMethods]: TEagerInstance[k];
     };
 
 /**
@@ -177,8 +194,13 @@ export type LazyMethodsGuard<TMethods extends Array<string | number | symbol>, T
  */
 export function asyncInstance<TLazyInstance extends TEagerInstance, TEagerInstance extends AsyncObject = Partial<TLazyInstance>>(
     lazyConstructor?: () => TLazyInstance | Promise<TLazyInstance>,
+    eagerInstance?: TEagerInstance,
 ): AsyncInstance<TLazyInstance, TEagerInstance> {
     const wrapper = createAsyncInstanceWrapper<TLazyInstance, TEagerInstance>(lazyConstructor);
+
+    if (eagerInstance) {
+        wrapper.setEagerInstance(eagerInstance);
+    }
 
     return new Proxy(wrapper, {
         get: (target, p, receiver) => {

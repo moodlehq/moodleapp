@@ -21,3 +21,8 @@ export const ADDON_MOD_DATA_ENTRIES_PER_PAGE = 25;
 
 export const ADDON_MOD_DATA_ENTRY_CHANGED = 'addon_mod_data_entry_changed';
 export const ADDON_MOD_DATA_AUTO_SYNCED = 'addon_mod_data_autom_synced';
+
+// Handlers.
+export const ADDON_MOD_DATA_PREFETCH_NAME = 'AddonModData';
+export const ADDON_MOD_DATA_PREFETCH_MODNAME = 'data';
+export const ADDON_MOD_DATA_PREFETCH_COMPONENT = ADDON_MOD_DATA_COMPONENT;

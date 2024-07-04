@@ -113,6 +113,20 @@ describe('AsyncInstance', () => {
         expectSameTypes<AsyncInstance<LazyService>['goodbye'], () => Promise<string>>(true);
     });
 
+    it('keeps eager methods synchronous', () => {
+        // Arrange.
+        const asyncService = asyncInstance<LazyService, EagerService>(() => new LazyService());
+
+        asyncService.setEagerInstance(new EagerService());
+
+        // Act.
+        const message = asyncService.eagerHello();
+
+        // Assert.
+        expect(message).toEqual('hello');
+        expectSameTypes<typeof message, string>(true);
+    });
+
 });
 
 class EagerService {
@@ -120,6 +134,10 @@ class EagerService {
     answer = 42;
 
     notImplemented?(): void;
+
+    eagerHello(): string {
+        return 'hello';
+    }
 
     async isEager(): Promise<boolean> {
         return true;

@@ -12,22 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
-import { Params } from '@angular/router';
+import { asyncInstance } from '@/core/utils/async-instance';
+import { ADDON_MOD_DATA_FEATURE_NAME } from '@addons/mod/data/constants';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
-import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreCourse } from '@features/course/services/course';
-import { CoreNavigator } from '@services/navigator';
-import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { makeSingleton } from '@singletons';
-import { ADDON_MOD_DATA_FEATURE_NAME, ADDON_MOD_DATA_PAGE_NAME } from '../../constants';
+import { CoreContentLinksAction, CoreContentLinksHandler } from '@features/contentlinks/services/contentlinks-delegate';
+import type { AddonModDataEditLinkHandlerLazyService } from '@addons/mod/data/services/handlers/edit-link-lazy';
 
-/**
- * Content links handler for database add or edit entry.
- * Match mod/data/edit.php?d=6&rid=6 with a valid data and optional record id.
- */
-@Injectable({ providedIn: 'root' })
 export class AddonModDataEditLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModDataEditLinkHandler';
@@ -39,44 +29,40 @@ export class AddonModDataEditLinkHandlerService extends CoreContentLinksHandlerB
      */
     getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
         return [{
-            action: async (siteId): Promise<void> => {
-                const modal = await CoreDomUtils.showModalLoading();
-                const dataId = parseInt(params.d, 10);
-                const rId = params.rid || '';
-
-                try {
-                    const module = await CoreCourse.getModuleBasicInfoByInstance(
-                        dataId,
-                        'data',
-                        { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
-                    );
-                    const pageParams: Params = {
-                        title: module.name,
-                    };
-
-                    await CoreNavigator.navigateToSitePath(
-                        `${ADDON_MOD_DATA_PAGE_NAME}/${module.course}/${module.id}/edit/${rId}`,
-                        { siteId, params: pageParams },
-                    );
-                } finally {
-                    // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
-                    modal.dismiss();
-                }
-            },
+            action: (siteId) => this.handleAction(siteId, params),
         }];
     }
 
     /**
-     * @inheritdoc
+     * Handle link action.
+     *
+     * @param siteId Site id.
+     * @param params Params.
      */
-    async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        if (params.d === undefined) {
-            // Id not defined. Cannot treat the URL.
-            return false;
-        }
-
-        return true;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async handleAction(siteId: string, params: Record<string, string>): Promise<void> {
+        // Stub to override.
     }
 
 }
-export const AddonModDataEditLinkHandler = makeSingleton(AddonModDataEditLinkHandlerService);
+
+/**
+ * Get edit link handler instance.
+ *
+ * @returns Link handler.
+ */
+export function getEditLinkHandlerInstance(): CoreContentLinksHandler {
+    const lazyHandler = asyncInstance<
+        AddonModDataEditLinkHandlerLazyService,
+        AddonModDataEditLinkHandlerService
+    >(async () => {
+        const { AddonModDataEditLinkHandler } = await import('./edit-link-lazy');
+
+        return AddonModDataEditLinkHandler.instance;
+    });
+
+    lazyHandler.setEagerInstance(new AddonModDataEditLinkHandlerService());
+    lazyHandler.setLazyOverrides(['isEnabled', 'handleAction']);
+
+    return lazyHandler;
+}
