@@ -10,6 +10,6 @@
 #
 # More info: https://github.com/browserslist/browserslist
 
-Android >= 5.1
+Android >= 7
 iOS >= 14
 Chrome >= 79

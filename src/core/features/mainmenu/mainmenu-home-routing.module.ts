@@ -28,6 +28,15 @@ export function resolveHomeRoutes(injector: Injector): ModuleRoutes {
     return resolveModuleRoutes(injector, MAIN_MENU_HOME_ROUTES);
 }
 
+/**
+ * Module used to register routes in the home main menu tab. These are routes that will appear as tabs in the home page,
+ * and they must also be declared in a CoreMainMenuHomeHandler or in plugins using the CoreMainMenuHomeDelegate.
+ *
+ * Some examples of routes registered in this module are:
+ * - /main/home/dashboard
+ * - /main/home/site
+ * - ...
+ */
 @NgModule()
 export class CoreMainMenuHomeRoutingModule {
 

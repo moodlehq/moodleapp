@@ -28,6 +28,16 @@ export function resolveSiteRoutes(injector: Injector): ModuleRoutes {
     return resolveModuleRoutes(injector, SITE_PREFERENCES_ROUTES);
 }
 
+/**
+ * Module used to register routes in the site preferences page. These are routes that must also be declared in a
+ * CoreSettingsHandler or in plugins using the CoreSettingsDelegate.
+ *
+ * Some examples of routes registered in this module are:
+ * - /main/{tab}/preferences/storage
+ * - /main/{tab}/preferences/messages
+ * - /main/{tab}/preferences/notifications
+ * - ...
+ */
 @NgModule()
 export class CoreSitePreferencesRoutingModule {
 

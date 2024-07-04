@@ -62,6 +62,7 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
+circular-dependencies
 
 # System files
 .DS_Store

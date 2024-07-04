@@ -28,6 +28,10 @@ export function resolveContentsRoutes(injector: Injector): ModuleRoutes {
     return resolveModuleRoutes(injector, COURSE_CONTENTS_ROUTES);
 }
 
+/**
+ * Module used to register routes in the course contents page. These are routes that will only be used on
+ * single activity courses where the activity uses split-view navigation in tablets, such as forum or glossary.
+ */
 @NgModule()
 export class CoreCourseContentsRoutingModule {
 

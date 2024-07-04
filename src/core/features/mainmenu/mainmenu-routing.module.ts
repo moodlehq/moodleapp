@@ -28,6 +28,16 @@ export function resolveMainMenuRoutes(injector: Injector): ModuleRoutes {
     return resolveModuleRoutes(injector, MAIN_MENU_ROUTES);
 }
 
+/**
+ * Module used to register routes in the main menu tab. These are routes that will appear as tabs in the main menu (or overflow
+ * into the more page), and they must also be declared in a CoreMainMenuHandler or in plugins using the CoreMainMenuDelegate.
+ *
+ * Some examples of routes registered in this module are:
+ * - /main/calendar
+ * - /main/messages
+ * - /main/notifications
+ * - ...
+ */
 @NgModule()
 export class CoreMainMenuRoutingModule {
 
