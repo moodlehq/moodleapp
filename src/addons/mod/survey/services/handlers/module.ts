@@ -46,7 +46,7 @@ export class AddonModSurveyModuleHandlerService extends CoreModuleHandlerBase im
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
-        const { AddonModSurveyIndexComponent } = await import('@addons/mod/survey/components/index');
+        const { AddonModSurveyIndexComponent } = await import('../../components/index');
 
         return AddonModSurveyIndexComponent;
     }
