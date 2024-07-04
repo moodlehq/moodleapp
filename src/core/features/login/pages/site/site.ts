@@ -79,7 +79,7 @@ export class CoreLoginSitePage implements OnInit {
     constructor(protected formBuilder: FormBuilder) {}
 
     /**
-     * Initialize the component.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         let url = '';

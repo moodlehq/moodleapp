@@ -54,7 +54,7 @@ export class AddonRemoteThemesHandlerService implements CoreStyleHandler {
      * @inheritDoc
      */
     async getStyle(siteId: string, config?: CoreSitePublicConfigResponse): Promise<string> {
-        if (siteId == CoreStylesService.TMP_SITE_ID) {
+        if (siteId === CoreStylesService.TMP_SITE_ID) {
             if (!config) {
                 return '';
             }
