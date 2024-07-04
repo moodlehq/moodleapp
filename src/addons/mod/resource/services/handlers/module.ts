@@ -22,7 +22,6 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModResourceIndexComponent } from '../../components/index';
 import { AddonModResource } from '../resource';
 import { AddonModResourceHelper } from '../resource-helper';
 import { CoreUtils } from '@services/utils/utils';
@@ -167,6 +166,8 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
+        const { AddonModResourceIndexComponent } = await import('../../components/index');
+
         return AddonModResourceIndexComponent;
     }
 

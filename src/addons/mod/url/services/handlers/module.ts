@@ -23,7 +23,6 @@ import { CoreNavigationOptions } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
-import { AddonModUrlIndexComponent } from '../../components/index/index';
 import { AddonModUrl } from '../url';
 import { AddonModUrlHelper } from '../url-helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -190,6 +189,8 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
+        const { AddonModUrlIndexComponent } = await import('../../components/index');
+
         return AddonModUrlIndexComponent;
     }
 

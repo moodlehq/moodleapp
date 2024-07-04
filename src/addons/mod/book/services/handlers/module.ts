@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
-import { AddonModBookIndexComponent } from '../../components/index';
 import { AddonModBook } from '../book';
 import { CoreConstants, ModPurpose } from '@/core/constants';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
@@ -56,6 +55,8 @@ export class AddonModBookModuleHandlerService extends CoreModuleHandlerBase impl
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown> | undefined> {
+        const { AddonModBookIndexComponent } = await import('../../components/index');
+
         return AddonModBookIndexComponent;
     }
 

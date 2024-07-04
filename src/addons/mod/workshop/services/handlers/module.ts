@@ -45,7 +45,7 @@ export class AddonModWorkshopModuleHandlerService extends CoreModuleHandlerBase 
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
-        const { AddonModWorkshopIndexComponent } = await import('@addons/mod/workshop/components/index');
+        const { AddonModWorkshopIndexComponent } = await import('../../components/index');
 
         return AddonModWorkshopIndexComponent;
     }

@@ -20,7 +20,6 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { AddonModFolderIndexComponent } from '../../components/index';
 
 /**
  * Handler to support folder modules.
@@ -86,6 +85,8 @@ export class AddonModFolderModuleHandlerService extends CoreModuleHandlerBase im
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown> | undefined> {
+        const { AddonModFolderIndexComponent } = await import('../../components/index');
+
         return AddonModFolderIndexComponent;
     }
 

@@ -17,7 +17,6 @@ import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
-import { AddonModWikiIndexComponent } from '../../components/index';
 
 /**
  * Handler to support wiki modules.
@@ -49,6 +48,8 @@ export class AddonModWikiModuleHandlerService extends CoreModuleHandlerBase impl
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
+        const { AddonModWikiIndexComponent } = await import('../../components/index');
+
         return AddonModWikiIndexComponent;
     }
 
