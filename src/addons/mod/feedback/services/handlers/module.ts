@@ -16,7 +16,6 @@ import { CoreConstants, ModPurpose } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
-import { AddonModFeedbackIndexComponent } from '../../components/index';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 
 /**
@@ -48,6 +47,8 @@ export class AddonModFeedbackModuleHandlerService extends CoreModuleHandlerBase 
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
+        const { AddonModFeedbackIndexComponent } = await import('../../components/index');
+
         return AddonModFeedbackIndexComponent;
     }
 

@@ -17,7 +17,6 @@ import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
-import { AddonModGlossaryIndexComponent } from '../../components/index/index';
 
 /**
  * Handler to support glossary modules.
@@ -50,6 +49,8 @@ export class AddonModGlossaryModuleHandlerService extends CoreModuleHandlerBase 
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
+        const { AddonModGlossaryIndexComponent } = await import('../../components/index');
+
         return AddonModGlossaryIndexComponent;
     }
 

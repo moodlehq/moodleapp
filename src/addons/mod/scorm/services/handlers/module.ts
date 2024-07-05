@@ -17,7 +17,6 @@ import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
-import { AddonModScormIndexComponent } from '../../components/index';
 
 /**
  * Handler to support SCORM modules.
@@ -48,6 +47,8 @@ export class AddonModScormModuleHandlerService extends CoreModuleHandlerBase imp
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
+        const { AddonModScormIndexComponent } = await import('../../components/index');
+
         return AddonModScormIndexComponent;
     }
 
