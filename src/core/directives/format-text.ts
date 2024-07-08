@@ -169,9 +169,10 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
      * Apply CoreExternalContentDirective to a certain element.
      *
      * @param element Element to add the attributes to.
+     * @param onlyInlineStyles Whether to only handle inline styles.
      * @returns External content instance or undefined if siteId is not provided.
      */
-    protected addExternalContent(element: Element): CoreExternalContentDirective | undefined {
+    protected addExternalContent(element: Element, onlyInlineStyles = false): CoreExternalContentDirective | undefined {
         if (!this.siteId) {
             return;
         }
@@ -185,11 +186,13 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         extContent.url = element.getAttribute('src') ?? element.getAttribute('href') ?? element.getAttribute('xlink:href');
         extContent.posterUrl = element.getAttribute('poster');
 
-        // Remove the original attributes to avoid performing requests to untreated URLs.
-        element.removeAttribute('src');
-        element.removeAttribute('href');
-        element.removeAttribute('xlink:href');
-        element.removeAttribute('poster');
+        if (!onlyInlineStyles) {
+            // Remove the original attributes to avoid performing requests to untreated URLs.
+            element.removeAttribute('src');
+            element.removeAttribute('href');
+            element.removeAttribute('xlink:href');
+            element.removeAttribute('poster');
+        }
 
         extContent.ngAfterViewInit();
 
@@ -569,9 +572,9 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         // Handle inline styles.
         elementsWithInlineStyles.forEach((el: HTMLElement) => {
             // Only add external content for tags that haven't been treated already.
-            if (el.tagName != 'A' && el.tagName != 'IMG' && el.tagName != 'AUDIO' && el.tagName != 'VIDEO'
-                    && el.tagName != 'SOURCE' && el.tagName != 'TRACK') {
-                this.addExternalContent(el);
+            if (el.tagName !== 'A' && el.tagName !== 'IMG' && el.tagName !== 'AUDIO' && el.tagName !== 'VIDEO'
+                    && el.tagName !== 'SOURCE' && el.tagName !== 'TRACK' && el.tagName !== 'IMAGE') {
+                this.addExternalContent(el, true);
             }
         });
 
