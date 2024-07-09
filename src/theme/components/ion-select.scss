@@ -15,10 +15,6 @@ ion-select {
 }
 
 ion-select-popover {
-    ion-list ion-radio-group ion-item.select-interface-option ion-radio.hydrated::part(container) {
-        opacity: 1;
-    }
-
     ion-item {
         font-size: var(--text-size);
     }

@@ -27,7 +27,7 @@
                 <!-- Download all courses. -->
                 <div *ngIf="downloadCoursesEnabled && myOverviewBlock && myOverviewBlock.filteredCourses.length > 0"
                     class="core-button-spinner">
-                    <ion-button *ngIf="!myOverviewBlock.prefetchCoursesData.loading" fill="clear"
+                    <ion-button *ngIf="!myOverviewBlock.prefetchCoursesData.loading" fill="clear" size="default"
                         (click)="myOverviewBlock.prefetchCourses()"
                         [attr.aria-label]="myOverviewBlock.prefetchCoursesData.statusTranslatable | translate">
                         <ion-icon [name]="myOverviewBlock.prefetchCoursesData.icon" slot="icon-only" aria-hidden="true" />
