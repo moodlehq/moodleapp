@@ -488,7 +488,7 @@ video::-webkit-media-text-track-display {
 /**
  * https://github.com/ionic-team/ionic-framework/blob/6ffbdbb3b2b69290cf25753d535bc7483bd7c6e8/BREAKING.md#css-utilities
  */
-[hidden] {
+[hidden], .hidden {
     display: none !important;
 }
 

@@ -10,8 +10,7 @@
             </h1>
         </ion-title>
         <ion-buttons slot="end" [hidden]="!loaded">
-            <ion-button *ngIf="assessmentId && access.assessingallowed" fill="clear" (click)="saveAssessment()"
-                [ariaLabel]="'core.save' | translate">
+            <ion-button *ngIf="assessmentId && access.assessingallowed" fill="clear" (click)="saveAssessment()">
                 {{ 'core.save' | translate }}
             </ion-button>
             <ion-button *ngIf="canAddFeedback" fill="clear" (click)="saveEvaluation()">

@@ -1,4 +1,4 @@
-<ion-button [hidden]="hideMenu" fill="clear" [ariaLabel]="ariaLabel" (click)="showContextMenu($event)" aria-haspopup="true"
+<ion-button [class.hidden]="hideMenu" fill="clear" [ariaLabel]="ariaLabel" (click)="showContextMenu($event)" aria-haspopup="true"
     [attr.aria-controls]="uniqueId">
     <ion-icon [name]="icon" slot="icon-only" aria-hidden="true" />
 </ion-button>

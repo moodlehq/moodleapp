@@ -11,7 +11,7 @@
         </ion-title>
 
         <ion-buttons slot="end">
-            <ion-button fill="clear" id="addon-mod_quiz-connection-error-button" [hidden]="!autoSaveError"
+            <ion-button fill="clear" id="addon-mod_quiz-connection-error-button" [class.hidden]="!autoSaveError"
                 (click)="showConnectionError($event)" [ariaLabel]="'addon.mod_quiz.connectionerror' | translate" aria-haspopup="dialog">
                 <ion-icon name="fas-circle-exclamation" slot="icon-only" aria-hidden="true" />
             </ion-button>
