@@ -167,12 +167,16 @@ Feature: Attempt a quiz in app
     And I press "Three" in the app
     And I set the field "Answer" to "Berlin" in the app
     And I press "Next" in the app
+    And I wait loading to finish in the app
     And I set the field "Answer" to "testing" in the app
     And I press "Next" in the app
+    And I wait loading to finish in the app
     And I set the field "Answer" to "5" in the app
     And I press "Next" in the app
+    And I wait loading to finish in the app
     And I set the field "Answer" to "Testing an essay" in the app
     And I press "Next" "ion-button" in the app
+    And I wait loading to finish in the app
     And I press "quick" ".drag" in the app
     And I click on ".place1.drop" "css"
     And I press "fox" ".drag" in the app
@@ -180,26 +184,33 @@ Feature: Attempt a quiz in app
     And I press "lazy" ".drag" in the app
     And I click on ".place3.drop" "css"
     And I press "Next" in the app
+    And I wait loading to finish in the app
     And I press "True" in the app
     And I press "Next" in the app
+    And I wait loading to finish in the app
     And I set the field "frog" to "amphibian" in the app
     And I set the field "newt" to "insect" in the app
     And I set the field "cat" to "mammal" in the app
     And I press "Next" in the app
+    And I wait loading to finish in the app
     Then I should find "Text of the eighth question" in the app
 
     When I press "Next" in the app
+    And I wait loading to finish in the app
     And I set the field "Blank 1" to "cat" in the app
     And I set the field "Blank 2" to "mat" in the app
     And I press "Next" in the app
+    And I wait loading to finish in the app
     And I press "abyssal" ".drag" in the app
     And I click on ".place6.dropzone" "css"
     And I press "trench" ".drag" in the app
     And I click on ".place3.dropzone" "css"
     And I press "Next" in the app
+    And I wait loading to finish in the app
     And I press "Railway station" ".marker" in the app
     And I click on "img.dropbackground" "css"
     And I press "Submit" in the app
+    And I wait loading to finish in the app
     Then I should find "Answer saved" in the app
     And I should find "Incomplete answer" within "10" "ion-item" in the app
     But I should not find "Not yet answered" in the app
@@ -224,8 +235,10 @@ Feature: Attempt a quiz in app
 
     When I press "True" in the app
     And I press "Next" in the app
+    And I wait loading to finish in the app
     And I press "False" in the app
     And I press "Submit" in the app
+    And I wait loading to finish in the app
     And I press "Submit all and finish" in the app
     Then I should find "Once you submit" in the app
     But I should not find "Questions without a response" in the app

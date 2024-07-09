@@ -49,6 +49,8 @@ Feature: Test basic usage of BBB activity in app
     And I should be able to press "Join session" in the app
 
     When I press "Join session" in the app
+    # TODO: This step will make behat github actions work but we should find a better way to wait for the room to start.
+    And I wait "3" seconds
     And I wait for the BigBlueButton room to start
     And I switch back to the app
     Then I should find "The session is in progress." in the app
@@ -68,6 +70,8 @@ Feature: Test basic usage of BBB activity in app
     And I should be able to press "Join session" in the app
 
     When I press "Join session" in the app
+    # TODO: This step will make behat github actions work but we should find a better way to wait for the room to start.
+    And I wait "3" seconds
     And I wait for the BigBlueButton room to start
     And I switch back to the app
     Then I should find "The session is in progress." in the app

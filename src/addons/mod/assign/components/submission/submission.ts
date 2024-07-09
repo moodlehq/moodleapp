@@ -449,7 +449,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 this.feedback,
                 this.submitId,
             );
-        } catch (error) {
+        } catch {
             // Error ocurred, consider there are no changes.
             return false;
         }

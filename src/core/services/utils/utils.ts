@@ -1185,7 +1185,7 @@ export class CoreUtilsProvider {
         if (options.showBrowserWarning || options.showBrowserWarning === undefined) {
             try {
                 await CoreWindow.confirmOpenBrowserIfNeeded(originaUrl);
-            } catch (error) {
+            } catch {
                 return; // Cancelled, stop.
             }
         }
