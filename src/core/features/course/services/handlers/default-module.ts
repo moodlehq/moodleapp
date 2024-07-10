@@ -18,7 +18,6 @@ import { CoreSites } from '@services/sites';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../module-delegate';
 import { CoreCourse } from '../course';
 import { CoreCourseModuleData } from '../course-helper';
-import { CoreCourseUnsupportedModuleComponent } from '@features/course/components/unsupported-module/unsupported-module';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 
 /**
@@ -79,6 +78,9 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
+        const { CoreCourseUnsupportedModuleComponent } =
+            await import('@features/course/components/unsupported-module/unsupported-module');
+
         return CoreCourseUnsupportedModuleComponent;
     }
 

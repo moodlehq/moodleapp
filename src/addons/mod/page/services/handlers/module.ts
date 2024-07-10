@@ -16,7 +16,6 @@ import { Injectable, Type } from '@angular/core';
 import { AddonModPage } from '../page';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { CoreConstants, ModPurpose } from '@/core/constants';
-import { AddonModPageIndexComponent } from '../../components/index';
 import { makeSingleton } from '@singletons';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 
@@ -56,6 +55,8 @@ export class AddonModPageModuleHandlerService extends CoreModuleHandlerBase impl
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
+        const { AddonModPageIndexComponent } = await import('../../components/index');
+
         return AddonModPageIndexComponent;
     }
 

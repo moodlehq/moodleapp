@@ -19,7 +19,6 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { makeSingleton } from '@singletons';
 import { AddonModLtiHelper } from '../lti-helper';
-import { AddonModLtiIndexComponent } from '../../components/index';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourse } from '@features/course/services/course';
 
@@ -76,6 +75,8 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
+        const { AddonModLtiIndexComponent } = await import('../../components/index');
+
         return AddonModLtiIndexComponent;
     }
 

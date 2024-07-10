@@ -45,7 +45,7 @@ export class AddonModChatModuleHandlerService extends CoreModuleHandlerBase impl
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
-        const { AddonModChatIndexComponent } = await import('@addons/mod/chat/components/index');
+        const { AddonModChatIndexComponent } = await import('../../components/index');
 
         return AddonModChatIndexComponent;
     }
