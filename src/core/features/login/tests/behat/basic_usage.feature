@@ -97,6 +97,7 @@ Feature: Test basic usage of login in app
     When I enter the app
     Then I should find "App update required" in the app
 
+  @lms_from4.3
   Scenario: Force password change
     Given I force a password change for user "student1"
     When I enter the app
