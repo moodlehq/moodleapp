@@ -1,5 +1,5 @@
 diff --git a/node_modules/check-es-compat/bin/cli.mjs b/node_modules/check-es-compat/bin/cli.mjs
-index f4c0b55..381c321 100755
+index 928780f..026eb9a 100755
 --- a/node_modules/check-es-compat/bin/cli.mjs
 +++ b/node_modules/check-es-compat/bin/cli.mjs
 @@ -17,7 +17,8 @@ if (args.length === 0) {
@@ -10,9 +10,9 @@ index f4c0b55..381c321 100755
 +async function execute(args) {
 +  const { files, polyfills } = parseArguments(args);
    const eslint = new ESLint({
-     // Ignore any config files
+     // Ignore any config; it's for target's own linter setup rather than this tool.
      useEslintrc: false,
-@@ -34,7 +35,7 @@ async function execute(files) {
+@@ -35,7 +36,7 @@ async function execute(files) {
          es2023: true,
        },
        rules: {
@@ -21,7 +21,7 @@ index f4c0b55..381c321 100755
        },
      },
    });
-@@ -46,3 +47,42 @@ async function execute(files) {
+@@ -47,3 +48,42 @@ async function execute(files) {
  
    return { hasErrors: results.some((result) => result.errorCount > 0) };
  }
