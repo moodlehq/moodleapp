@@ -36,4 +36,4 @@ const routes: Routes = [{
         AddonModForumDiscussionPage,
     ],
 })
-export class AddonModForumDiscussionLazyModule {}
+export default class AddonModForumDiscussionLazyModule {}

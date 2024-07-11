@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
-import { AddonModForum, AddonModForumProvider, AddonModForumTracking } from '../forum';
+import { AddonModForum, AddonModForumTracking } from '../forum';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -23,6 +23,7 @@ import { CoreModuleHandlerBase } from '@features/course/classes/module-base-hand
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUser } from '@features/user/services/user';
+import { ADDON_MOD_FORUM_MARK_READ_EVENT, ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support forum modules.
@@ -30,11 +31,9 @@ import { CoreUser } from '@features/user/services/user';
 @Injectable({ providedIn: 'root' })
 export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_forum';
-
     name = 'AddonModForum';
     modName = 'forum';
-    protected pageName = AddonModForumModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_FORUM_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,
@@ -88,7 +87,7 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
         }
 
         const event = CoreEvents.on(
-            AddonModForumProvider.MARK_READ_EVENT,
+            ADDON_MOD_FORUM_MARK_READ_EVENT,
             eventData => {
                 if (eventData.courseId !== courseId || eventData.moduleId !== module.id) {
                     return;

@@ -29,10 +29,15 @@ import {
     AddonModForum,
     AddonModForumAddDiscussionPostWSOptionsObject,
     AddonModForumAddDiscussionWSOptionsObject,
-    AddonModForumProvider,
 } from './forum';
 import { AddonModForumHelper } from './forum-helper';
 import { AddonModForumOffline, AddonModForumOfflineDiscussion, AddonModForumOfflineReply } from './forum-offline';
+import {
+    ADDON_MOD_FORUM_ALL_GROUPS,
+    ADDON_MOD_FORUM_AUTO_SYNCED,
+    ADDON_MOD_FORUM_COMPONENT,
+    ADDON_MOD_FORUM_MANUAL_SYNCED,
+} from '../constants';
 
 declare module '@singletons/events' {
 
@@ -42,8 +47,8 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [AddonModForumSyncProvider.AUTO_SYNCED]: AddonModForumAutoSyncData;
-        [AddonModForumSyncProvider.MANUAL_SYNCED]: AddonModForumManualSyncData;
+        [ADDON_MOD_FORUM_AUTO_SYNCED]: AddonModForumAutoSyncData;
+        [ADDON_MOD_FORUM_MANUAL_SYNCED]: AddonModForumManualSyncData;
     }
 
 }
@@ -53,9 +58,6 @@ declare module '@singletons/events' {
  */
 @Injectable({ providedIn: 'root' })
 export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvider<AddonModForumSyncResult> {
-
-    static readonly AUTO_SYNCED = 'addon_mod_forum_autom_synced';
-    static readonly MANUAL_SYNCED = 'addon_mod_forum_manual_synced';
 
     protected componentTranslatableString = 'forum';
 
@@ -100,7 +102,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
 
                 if (result && result.updated) {
                     // Sync successful, send event.
-                    CoreEvents.trigger(AddonModForumSyncProvider.AUTO_SYNCED, {
+                    CoreEvents.trigger(ADDON_MOD_FORUM_AUTO_SYNCED, {
                         forumId: discussion.forumid,
                         userId: discussion.userid,
                         warnings: result.warnings,
@@ -134,7 +136,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
 
                 if (result && result.updated) {
                     // Sync successful, send event.
-                    CoreEvents.trigger(AddonModForumSyncProvider.AUTO_SYNCED, {
+                    CoreEvents.trigger(ADDON_MOD_FORUM_AUTO_SYNCED, {
                         forumId: reply.forumid,
                         discussionId: reply.discussionid,
                         userId: reply.userid,
@@ -207,7 +209,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
         }
 
         // Verify that forum isn't blocked.
-        if (CoreSync.isBlocked(AddonModForumProvider.COMPONENT, syncId, siteId)) {
+        if (CoreSync.isBlocked(ADDON_MOD_FORUM_COMPONENT, syncId, siteId)) {
             this.logger.debug('Cannot sync forum ' + forumId + ' because it is blocked.');
 
             throw new Error(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
@@ -223,7 +225,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
         // Sync offline logs.
         const syncDiscussions = async (): Promise<AddonModForumSyncResult> => {
             await CoreUtils.ignoreErrors(
-                CoreCourseLogHelper.syncActivity(AddonModForumProvider.COMPONENT, forumId, siteId),
+                CoreCourseLogHelper.syncActivity(ADDON_MOD_FORUM_COMPONENT, forumId, siteId),
             );
 
             // Get offline responses to be sent.
@@ -238,7 +240,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
 
             const promises = discussions.map(async discussion => {
                 const errors: Error[] = [];
-                const groupIds = discussion.groupid === AddonModForumProvider.ALL_GROUPS
+                const groupIds = discussion.groupid === ADDON_MOD_FORUM_ALL_GROUPS
                     ? await AddonModForum.instance
                         .getForumById(discussion.courseid, discussion.forumid, { siteId })
                         .then(forum => CoreGroups.getActivityAllowedGroups(forum.cmid))
@@ -439,7 +441,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
         }
 
         // Verify that forum isn't blocked.
-        if (CoreSync.isBlocked(AddonModForumProvider.COMPONENT, syncId, siteId)) {
+        if (CoreSync.isBlocked(ADDON_MOD_FORUM_COMPONENT, syncId, siteId)) {
             this.logger.debug('Cannot sync forum discussion ' + discussionId + ' because it is blocked.');
 
             throw new Error(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
@@ -607,7 +609,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
             }
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT, forumId, siteId);
     }
 
     /**

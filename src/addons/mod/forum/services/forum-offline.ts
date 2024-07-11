@@ -18,7 +18,6 @@ import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton } from '@singletons';
-import { AddonModForumProvider } from './forum';
 import {
     AddonModForumOfflineDiscussionDBRecord,
     AddonModForumOfflineReplyDBRecord,
@@ -26,6 +25,7 @@ import {
     REPLIES_TABLE,
 } from './database/offline';
 import { CorePath } from '@singletons/path';
+import { ADDON_MOD_FORUM_ALL_PARTICIPANTS } from '../constants';
 
 /**
  * Service to handle offline forum.
@@ -168,7 +168,7 @@ export class AddonModForumOfflineProvider {
             subject: subject,
             message: message,
             options: JSON.stringify(options || {}),
-            groupid: groupId || AddonModForumProvider.ALL_PARTICIPANTS,
+            groupid: groupId || ADDON_MOD_FORUM_ALL_PARTICIPANTS,
             userid: userId || site.getUserId(),
             timecreated: timeCreated || Date.now(),
         };
