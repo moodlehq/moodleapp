@@ -42,4 +42,4 @@ const routes: Routes = [
         AddonModImscpViewPage,
     ],
 })
-export class AddonModImscpLazyModule {}
+export default class AddonModImscpLazyModule {}

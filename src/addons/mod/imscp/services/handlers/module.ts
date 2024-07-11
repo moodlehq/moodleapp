@@ -18,6 +18,7 @@ import { CoreModuleHandlerBase } from '@features/course/classes/module-base-hand
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonModImscp } from '../imscp';
+import { ADDON_MOD_IMSCP_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support IMSCP modules.
@@ -25,11 +26,9 @@ import { AddonModImscp } from '../imscp';
 @Injectable( { providedIn: 'root' })
 export class AddonModImscpModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_imscp';
-
     name = 'AddonModImscp';
     modName = 'imscp';
-    protected pageName = AddonModImscpModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_IMSCP_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,
