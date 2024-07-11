@@ -20,7 +20,6 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { AddonModWorkshopSubmissionPage } from '../../pages/submission/submission';
 import {
-    AddonModWorkshopPhase,
     AddonModWorkshopData,
     AddonModWorkshopGetWorkshopAccessInformationWSResponse,
 } from '../../services/workshop';
@@ -30,7 +29,7 @@ import {
     AddonModWorkshopSubmissionDataWithOfflineData,
 } from '../../services/workshop-helper';
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
-import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME } from '@addons/mod/workshop/constants';
+import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME, AddonModWorkshopPhase } from '@addons/mod/workshop/constants';
 
 /**
  * Component that displays workshop submission.

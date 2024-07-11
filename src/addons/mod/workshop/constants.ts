@@ -14,6 +14,8 @@
 
 export const ADDON_MOD_WORKSHOP_COMPONENT = 'mmaModWorkshop';
 
+export const ADDON_MOD_WORKSHOP_PER_PAGE = 10;
+
 // Routing.
 export const ADDON_MOD_WORKSHOP_PAGE_NAME = 'mod_workshop';
 
@@ -41,3 +43,46 @@ export const ADDON_MOD_WORKSHOP_PREFETCH_UPDATE_NAMES = new RegExp(
 export const ADDON_MOD_WORKSHOP_SYNC_CRON_NAME = 'AddonModWorkshopSyncCronHandler';
 
 export const ADDON_MOD_WORKSHOP_FEATURE_NAME = 'CoreCourseModuleDelegate_AddonModWorkshop';
+
+// Events.
+export const ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED = 'addon_mod_workshop_submission_changed';
+export const ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED = 'addon_mod_workshop_assessment_saved';
+export const ADDON_MOD_WORKSHOP_ASSESSMENT_INVALIDATED = 'addon_mod_workshop_assessment_invalidated';
+export const ADDON_MOD_WORKSHOP_AUTO_SYNCED = 'addon_mod_workshop_autom_synced';
+
+export const enum AddonModWorkshopPhase {
+    PHASE_SETUP = 10,
+    PHASE_SUBMISSION = 20,
+    PHASE_ASSESSMENT = 30,
+    PHASE_EVALUATION = 40,
+    PHASE_CLOSED = 50,
+}
+
+export const enum AddonModWorkshopSubmissionType {
+    SUBMISSION_TYPE_DISABLED = 0,
+    SUBMISSION_TYPE_AVAILABLE = 1,
+    SUBMISSION_TYPE_REQUIRED = 2,
+}
+
+export const enum AddonModWorkshopExampleMode {
+    EXAMPLES_VOLUNTARY = 0,
+    EXAMPLES_BEFORE_SUBMISSION = 1,
+    EXAMPLES_BEFORE_ASSESSMENT = 2,
+}
+
+export const enum AddonModWorkshopAction {
+    ADD = 'add',
+    DELETE = 'delete',
+    UPDATE = 'update',
+}
+
+export const enum AddonModWorkshopAssessmentMode {
+    ASSESSMENT = 'assessment',
+    PREVIEW = 'preview',
+}
+
+export const enum AddonModWorkshopOverallFeedbackMode {
+    DISABLED = 0,
+    ENABLED_OPTIONAL = 1,
+    ENABLED_REQUIRED = 2,
+}

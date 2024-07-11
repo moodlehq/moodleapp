@@ -60,4 +60,4 @@ const routes: Routes = [
         AddonModWorkshopEditSubmissionPage,
     ],
 })
-export class AddonModWorkshopLazyModule {}
+export default class AddonModWorkshopLazyModule {}

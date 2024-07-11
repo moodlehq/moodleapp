@@ -26,8 +26,6 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import {
-    AddonModWorkshopProvider,
-    AddonModWorkshopPhase,
     AddonModWorkshop,
     AddonModWorkshopData,
     AddonModWorkshopGetWorkshopAccessInformationWSResponse,
@@ -46,13 +44,20 @@ import {
 } from '../../services/workshop-helper';
 import { AddonModWorkshopOffline, AddonModWorkshopOfflineSubmission } from '../../services/workshop-offline';
 import {
-    AddonModWorkshopSyncProvider,
     AddonModWorkshopSync,
     AddonModWorkshopAutoSyncData,
     AddonModWorkshopSyncResult,
 } from '../../services/workshop-sync';
 import { AddonModWorkshopPhaseInfoComponent } from '../phase/phase';
-import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME } from '@addons/mod/workshop/constants';
+import {
+    ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED,
+    ADDON_MOD_WORKSHOP_AUTO_SYNCED,
+    ADDON_MOD_WORKSHOP_COMPONENT,
+    ADDON_MOD_WORKSHOP_PAGE_NAME,
+    ADDON_MOD_WORKSHOP_PER_PAGE,
+    ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED,
+    AddonModWorkshopPhase,
+} from '@addons/mod/workshop/constants';
 
 /**
  * Component that displays a workshop index page.
@@ -101,7 +106,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     protected obsAssessmentSaved: CoreEventObserver;
     protected appResumeSubscription: Subscription;
     protected syncObserver?: CoreEventObserver;
-    protected syncEventName = AddonModWorkshopSyncProvider.AUTO_SYNCED;
+    protected syncEventName = ADDON_MOD_WORKSHOP_AUTO_SYNCED;
 
     constructor (
     @Optional() content: IonContent,
@@ -110,12 +115,12 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         super('AddonModWorkshopIndexComponent', content, courseContentsPage);
 
         // Listen to submission and assessment changes.
-        this.obsSubmissionChanged = CoreEvents.on(AddonModWorkshopProvider.SUBMISSION_CHANGED, (data) => {
+        this.obsSubmissionChanged = CoreEvents.on(ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED, (data) => {
             this.eventReceived(data);
         }, this.siteId);
 
         // Listen to submission and assessment changes.
-        this.obsAssessmentSaved = CoreEvents.on(AddonModWorkshopProvider.ASSESSMENT_SAVED, (data) => {
+        this.obsAssessmentSaved = CoreEvents.on(ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED, (data) => {
             this.eventReceived(data);
         }, this.siteId);
 
@@ -125,7 +130,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         });
 
         // Refresh workshop on sync.
-        this.syncObserver = CoreEvents.on(AddonModWorkshopSyncProvider.AUTO_SYNCED, (data) => {
+        this.syncObserver = CoreEvents.on(ADDON_MOD_WORKSHOP_AUTO_SYNCED, (data) => {
             // Update just when all database is synced.
             this.eventReceived(data);
         }, this.siteId);
@@ -282,8 +287,8 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
 
         this.page = page;
 
-        this.hasNextPage = numEntries >= AddonModWorkshopProvider.PER_PAGE && ((this.page + 1) *
-            AddonModWorkshopProvider.PER_PAGE) < report.totalcount;
+        this.hasNextPage = numEntries >= ADDON_MOD_WORKSHOP_PER_PAGE && ((this.page + 1) *
+            ADDON_MOD_WORKSHOP_PER_PAGE) < report.totalcount;
 
         const grades: AddonModWorkshopGradesData[] = report.grades || [];
 

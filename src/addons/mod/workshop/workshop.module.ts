@@ -66,7 +66,7 @@ export async function getModWorkshopComponentModules(): Promise<unknown[]> {
 const routes: Routes = [
     {
         path: ADDON_MOD_WORKSHOP_PAGE_NAME,
-        loadChildren: () => import('./workshop-lazy.module').then(m => m.AddonModWorkshopLazyModule),
+        loadChildren: () => import('./workshop-lazy.module'),
     },
 ];
 

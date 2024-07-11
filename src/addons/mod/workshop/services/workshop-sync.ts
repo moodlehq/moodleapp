@@ -26,9 +26,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModWorkshop,
-    AddonModWorkshopAction,
     AddonModWorkshopData,
-    AddonModWorkshopSubmissionType,
 } from './workshop';
 import { AddonModWorkshopHelper } from './workshop-helper';
 import { AddonModWorkshopOffline,
@@ -37,16 +35,18 @@ import { AddonModWorkshopOffline,
     AddonModWorkshopOfflineEvaluateSubmission,
     AddonModWorkshopOfflineSubmission,
 } from './workshop-offline';
-import { ADDON_MOD_WORKSHOP_COMPONENT } from '@addons/mod/workshop/constants';
+import {
+    ADDON_MOD_WORKSHOP_AUTO_SYNCED,
+    ADDON_MOD_WORKSHOP_COMPONENT,
+    AddonModWorkshopAction,
+    AddonModWorkshopSubmissionType,
+} from '@addons/mod/workshop/constants';
 
 /**
  * Service to sync workshops.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModWorkshopSyncResult> {
-
-    static readonly AUTO_SYNCED = 'addon_mod_workshop_autom_synced';
-    static readonly MANUAL_SYNCED = 'addon_mod_workshop_manual_synced';
 
     protected componentTranslatableString = 'workshop';
 
@@ -94,7 +94,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
 
             if (data && data.updated) {
                 // Sync done. Send event.
-                CoreEvents.trigger(AddonModWorkshopSyncProvider.AUTO_SYNCED, {
+                CoreEvents.trigger(ADDON_MOD_WORKSHOP_AUTO_SYNCED, {
                     workshopId: workshopId,
                     warnings: data.warnings,
                 }, siteId);

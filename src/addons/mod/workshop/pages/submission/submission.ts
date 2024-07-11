@@ -31,11 +31,8 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
 import { AddonModWorkshopAssessmentStrategyComponent } from '../../components/assessment-strategy/assessment-strategy';
 import {
-    AddonModWorkshopProvider,
     AddonModWorkshop,
-    AddonModWorkshopPhase,
     AddonModWorkshopSubmissionChangedEventData,
-    AddonModWorkshopAction,
     AddonModWorkshopData,
     AddonModWorkshopGetWorkshopAccessInformationWSResponse,
     AddonModWorkshopAssessmentSavedChangedEventData,
@@ -46,10 +43,18 @@ import {
     AddonModWorkshopSubmissionDataWithOfflineData,
 } from '../../services/workshop-helper';
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
-import { AddonModWorkshopSyncProvider, AddonModWorkshopAutoSyncData } from '../../services/workshop-sync';
+import { AddonModWorkshopAutoSyncData } from '../../services/workshop-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
-import { ADDON_MOD_WORKSHOP_COMPONENT } from '@addons/mod/workshop/constants';
+import {
+    ADDON_MOD_WORKSHOP_ASSESSMENT_INVALIDATED,
+    ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED,
+    ADDON_MOD_WORKSHOP_AUTO_SYNCED,
+    ADDON_MOD_WORKSHOP_COMPONENT,
+    ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED,
+    AddonModWorkshopAction,
+    AddonModWorkshopPhase,
+} from '@addons/mod/workshop/constants';
 
 /**
  * Page that displays a workshop submission.
@@ -119,12 +124,12 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
         this.feedbackForm.addControl('grade', this.fb.control(''));
         this.feedbackForm.addControl('text', this.fb.control(''));
 
-        this.obsAssessmentSaved = CoreEvents.on(AddonModWorkshopProvider.ASSESSMENT_SAVED, (data) => {
+        this.obsAssessmentSaved = CoreEvents.on(ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED, (data) => {
             this.eventReceived(data);
         }, this.siteId);
 
         // Refresh workshop on sync.
-        this.syncObserver = CoreEvents.on(AddonModWorkshopSyncProvider.AUTO_SYNCED, (data) => {
+        this.syncObserver = CoreEvents.on(ADDON_MOD_WORKSHOP_AUTO_SYNCED, (data) => {
             // Update just when all database is synced.
             this.eventReceived(data);
         }, this.siteId);
@@ -447,7 +452,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
         try {
             await Promise.all(promises);
         } finally {
-            CoreEvents.trigger(AddonModWorkshopProvider.ASSESSMENT_INVALIDATED, null, this.siteId);
+            CoreEvents.trigger(ADDON_MOD_WORKSHOP_ASSESSMENT_INVALIDATED, null, this.siteId);
 
             await this.fetchSubmissionData();
 
@@ -535,7 +540,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
                     submissionId: this.submissionId,
                 };
 
-                CoreEvents.trigger(AddonModWorkshopProvider.SUBMISSION_CHANGED, data, this.siteId);
+                CoreEvents.trigger(ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED, data, this.siteId);
             });
         } catch (message) {
             CoreDomUtils.showErrorModalDefault(message, 'Cannot save submission evaluation');
@@ -572,7 +577,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
                     submissionId: this.submissionId,
                 };
 
-                CoreEvents.trigger(AddonModWorkshopProvider.SUBMISSION_CHANGED, data, this.siteId);
+                CoreEvents.trigger(ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED, data, this.siteId);
 
                 this.forceLeavePage();
             }
@@ -595,7 +600,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
                 submissionId: this.submissionId,
             };
 
-            CoreEvents.trigger(AddonModWorkshopProvider.SUBMISSION_CHANGED, data, this.siteId);
+            CoreEvents.trigger(ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED, data, this.siteId);
 
             await this.refreshAllData();
         });
