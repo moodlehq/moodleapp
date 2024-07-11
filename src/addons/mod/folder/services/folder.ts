@@ -22,8 +22,7 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-
-const ROOT_CACHE_KEY = 'mmaModFolder:';
+import { ADDON_MOD_FOLDER_COMPONENT } from '../constants';
 
 /**
  * Service that provides some features for folder.
@@ -31,7 +30,7 @@ const ROOT_CACHE_KEY = 'mmaModFolder:';
 @Injectable({ providedIn: 'root' })
 export class AddonModFolderProvider {
 
-    static readonly COMPONENT = 'mmaModFolder';
+    protected static readonly ROOT_CACHE_KEY = 'mmaModFolder:';
 
     /**
      * Get a folder by course module ID.
@@ -69,7 +68,7 @@ export class AddonModFolderProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFolderCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModFolderProvider.COMPONENT,
+            component: ADDON_MOD_FOLDER_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -91,7 +90,7 @@ export class AddonModFolderProvider {
      * @returns Cache key.
      */
     protected getFolderCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'folder:' + courseId;
+        return AddonModFolderProvider.ROOT_CACHE_KEY + 'folder:' + courseId;
     }
 
     /**
@@ -138,7 +137,7 @@ export class AddonModFolderProvider {
         await CoreCourseLogHelper.log(
             'mod_folder_view_folder',
             params,
-            AddonModFolderProvider.COMPONENT,
+            ADDON_MOD_FOLDER_COMPONENT,
             id,
             siteId,
         );

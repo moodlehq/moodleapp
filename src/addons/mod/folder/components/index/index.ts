@@ -19,10 +19,10 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { Md5 } from 'ts-md5';
-import { AddonModFolder, AddonModFolderFolder, AddonModFolderProvider } from '../../services/folder';
+import { AddonModFolder, AddonModFolderFolder } from '../../services/folder';
 import { AddonModFolderFolderFormattedData, AddonModFolderHelper } from '../../services/folder-helper';
-import { AddonModFolderModuleHandlerService } from '../../services/handlers/module';
 import { CoreUtils } from '@services/utils/utils';
+import { ADDON_MOD_FOLDER_COMPONENT, ADDON_MOD_FOLDER_PAGE_NAME } from '../../constants';
 
 /**
  * Component that displays a folder.
@@ -39,7 +39,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
     @Input() folderInstance?: AddonModFolderFolder; // The mod_folder instance.
     @Input() subfolder?: AddonModFolderFolderFormattedData; // Subfolder to show.
 
-    component = AddonModFolderProvider.COMPONENT;
+    component = ADDON_MOD_FOLDER_COMPONENT;
     pluginName = 'folder';
     contents?: AddonModFolderFolderFormattedData;
 
@@ -141,7 +141,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
         const hash = Md5.hashAsciiStr(folder.filepath);
 
         CoreNavigator.navigateToSitePath(
-            `${AddonModFolderModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/${hash}`,
+            `${ADDON_MOD_FOLDER_PAGE_NAME}/${this.courseId}/${this.module.id}/${hash}`,
             { params },
         );
     }
