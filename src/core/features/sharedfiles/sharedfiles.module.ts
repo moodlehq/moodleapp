@@ -25,6 +25,7 @@ import { CoreSharedFilesSettingsHandler } from './services/handlers/settings';
 import { CoreSharedFilesUploadHandler } from './services/handlers/upload';
 import { CoreSharedFiles } from './services/sharedfiles';
 import { CoreSharedFilesHelper } from './services/sharedfiles-helper';
+import { SHAREDFILES_PAGE_NAME } from './constants';
 
 /**
  * Get shared files services.
@@ -40,8 +41,6 @@ export async function getSharedFilesServices(): Promise<Type<unknown>[]> {
         CoreSharedFilesHelperProvider,
     ];
 }
-
-export const SHAREDFILES_PAGE_NAME = 'sharedfiles';
 
 const routes: Routes = [
     {

@@ -16,7 +16,7 @@ import { conditionalRoutes } from '@/app/app-routing.module';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
-import { COURSE_CONTENTS_PATH } from '@features/course/course.module';
+import { COURSE_CONTENTS_PATH } from '@features/course/constants';
 import { CoreCourseContentsRoutingModule } from '@features/course/course-contents-routing.module';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';

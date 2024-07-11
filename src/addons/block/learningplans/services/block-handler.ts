@@ -17,7 +17,7 @@ import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreBlockOnlyTitleComponent } from '@features/block/components/only-title-block/only-title-block';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
-import { ADDON_COMPETENCY_LEARNING_PLANS_PAGE } from '@addons/competency/competency.module';
+import { ADDON_COMPETENCY_LEARNING_PLANS_PAGE } from '@addons/competency/constants';
 
 /**
  * Block handler.

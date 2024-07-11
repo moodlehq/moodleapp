@@ -37,7 +37,7 @@ import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { AddonModForumTagAreaHandler } from './services/handlers/tag-area';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonModForumPushClickHandler } from './services/handlers/push-click';
-import { COURSE_CONTENTS_PATH } from '@features/course/course.module';
+import { COURSE_CONTENTS_PATH } from '@features/course/constants';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { ADDON_MOD_FORUM_COMPONENT, ADDON_MOD_FORUM_PAGE_NAME, ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from './constants';
 

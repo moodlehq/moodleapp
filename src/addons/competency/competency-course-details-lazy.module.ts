@@ -17,7 +17,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AddonCompetencyCompetencyPage } from './pages/competency/competency.page';
 import { AddonCompetencyCompetencySummaryPage } from './pages/competencysummary/competencysummary.page';
-import { ADDON_COMPETENCY_SUMMARY_PAGE } from './competency.module';
+import { ADDON_COMPETENCY_SUMMARY_PAGE } from './constants';
 import { AddonCompetencyCompetencyPageModule } from './pages/competency/competency.module';
 import { AddonCompetencyCompetencySummaryPageModule } from './pages/competencysummary/competencysummary.module';
 import { AddonCompetencyCourseCompetenciesPage } from './pages/coursecompetencies/coursecompetencies.page';

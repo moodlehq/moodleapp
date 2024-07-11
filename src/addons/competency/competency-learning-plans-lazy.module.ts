@@ -22,7 +22,7 @@ import { AddonCompetencyPlanPage } from './pages/plan/plan';
 import { AddonCompetencyPlanListPage } from './pages/planlist/planlist';
 import { AddonCompetencyCompetencyPage } from './pages/competency/competency.page';
 import { AddonCompetencyCompetencySummaryPage } from './pages/competencysummary/competencysummary.page';
-import { ADDON_COMPETENCY_COMPETENCIES_PAGE, ADDON_COMPETENCY_SUMMARY_PAGE } from './competency.module';
+import { ADDON_COMPETENCY_COMPETENCIES_PAGE, ADDON_COMPETENCY_SUMMARY_PAGE } from './constants';
 import { AddonCompetencyCompetencyPageModule } from './pages/competency/competency.module';
 import { AddonCompetencyCompetencySummaryPageModule } from './pages/competencysummary/competencysummary.module';
 import { AddonCompetencyCompetenciesPage } from './pages/competencies/competencies.page';

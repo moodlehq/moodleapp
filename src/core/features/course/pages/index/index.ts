@@ -24,7 +24,7 @@ import { CoreCourse, CoreCourseProvider, CoreCourseWSSection } from '@features/c
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
-import { CONTENTS_PAGE_NAME } from '@features/course/course.module';
+import { CONTENTS_PAGE_NAME } from '@features/course/constants';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { CoreColors } from '@singletons/colors';

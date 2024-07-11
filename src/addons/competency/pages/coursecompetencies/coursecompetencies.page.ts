@@ -21,7 +21,7 @@ import { CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { ContextLevel } from '@/core/constants';
-import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/competency.module';
+import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/constants';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { AddonCompetencyCourseCompetenciesSource } from '@addons/competency/classes/competency-course-competencies-source';

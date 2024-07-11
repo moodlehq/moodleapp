@@ -27,8 +27,9 @@ import { AddonCompetencyUserHandler } from './services/handlers/user';
 import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
-import { COURSE_PAGE_NAME } from '@features/course/course.module';
-import { PARTICIPANTS_PAGE_NAME } from '@features/user/user.module';
+import { PARTICIPANTS_PAGE_NAME } from '@features/user/constants';
+import { COURSE_PAGE_NAME } from '@features/course/constants';
+import { ADDON_COMPETENCY_LEARNING_PLANS_PAGE, ADDON_COMPETENCY_COMPETENCIES_PAGE } from './constants';
 
 /**
  * Get competency services.
@@ -44,10 +45,6 @@ export async function getCompetencyServices(): Promise<Type<unknown>[]> {
         AddonCompetencyHelperProvider,
     ];
 }
-
-export const ADDON_COMPETENCY_LEARNING_PLANS_PAGE = 'learning-plans';
-export const ADDON_COMPETENCY_COMPETENCIES_PAGE = 'competencies';
-export const ADDON_COMPETENCY_SUMMARY_PAGE = 'summary';
 
 const mainMenuChildrenRoutes: Routes = [
     {

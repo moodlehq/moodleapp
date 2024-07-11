@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSettingsHandler, CoreSettingsHandlerData } from '@features/settings/services/settings-delegate';
-import { SHAREDFILES_PAGE_NAME } from '@features/sharedfiles/sharedfiles.module';
+import { SHAREDFILES_PAGE_NAME } from '@features/sharedfiles/constants';
 import { CorePlatform } from '@services/platform';
 import { makeSingleton } from '@singletons';
 

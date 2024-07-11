@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ADDON_COMPETENCY_COMPETENCIES_PAGE, ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/competency.module';
+import { ADDON_COMPETENCY_COMPETENCIES_PAGE, ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/constants';
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
