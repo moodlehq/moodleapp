@@ -29,17 +29,16 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { AddonModDataProvider, AddonModData, AddonModDataData, AddonModDataAction } from './data';
+import { AddonModData, AddonModDataData, AddonModDataAction } from './data';
 import { AddonModDataHelper } from './data-helper';
 import { AddonModDataOffline, AddonModDataOfflineAction } from './data-offline';
+import { ADDON_MOD_DATA_AUTO_SYNCED, ADDON_MOD_DATA_COMPONENT } from '../constants';
 
 /**
  * Service to sync databases.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider<AddonModDataSyncResult> {
-
-    static readonly AUTO_SYNCED = 'addon_mod_data_autom_synced';
 
     protected componentTranslatableString = 'data';
 
@@ -93,7 +92,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
 
                 if (result && result.updated) {
                     // Sync done. Send event.
-                    CoreEvents.trigger(AddonModDataSyncProvider.AUTO_SYNCED, {
+                    CoreEvents.trigger(ADDON_MOD_DATA_AUTO_SYNCED, {
                         dataId: dataId,
                         warnings: result.warnings,
                     }, siteId);
@@ -142,7 +141,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
         }
 
         // Verify that database isn't blocked.
-        if (CoreSync.isBlocked(AddonModDataProvider.COMPONENT, dataId, siteId)) {
+        if (CoreSync.isBlocked(ADDON_MOD_DATA_COMPONENT, dataId, siteId)) {
             this.logger.debug(`Cannot sync database '${dataId}' because it is blocked.`);
 
             throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
@@ -165,7 +164,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
     protected async performSyncDatabase(dataId: number, siteId: string): Promise<AddonModDataSyncResult> {
         // Sync offline logs.
         await CoreUtils.ignoreErrors(
-            CoreCourseLogHelper.syncActivity(AddonModDataProvider.COMPONENT, dataId, siteId),
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_DATA_COMPONENT, dataId, siteId),
         );
 
         const result: AddonModDataSyncResult = {
@@ -243,7 +242,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
         }
 
         // Sync done. Send event.
-        CoreEvents.trigger(AddonModDataSyncProvider.AUTO_SYNCED, {
+        CoreEvents.trigger(ADDON_MOD_DATA_AUTO_SYNCED, {
             dataId: database.id,
             entryId: syncEntryResult.entryId,
             offlineEntryId: syncEntryResult.offlineId,

@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { AddonModDataEntryField, AddonModDataProvider } from '@addons/mod/data/services/data';
+import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 import { CoreFileSession } from '@services/file-session';
 import { CoreFileEntry } from '@services/file-helper';
+import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
 
 /**
  * Component to render data file field.
@@ -59,7 +60,7 @@ export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginBaseC
             return;
         }
 
-        this.component = AddonModDataProvider.COMPONENT;
+        this.component = ADDON_MOD_DATA_COMPONENT;
         this.componentId = this.database!.coursemodule;
 
         this.updateValue(this.value);

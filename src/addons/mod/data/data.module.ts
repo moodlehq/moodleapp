@@ -21,25 +21,25 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { AddonModDataProvider } from './services/data';
 import { ADDON_MOD_DATA_OFFLINE_SITE_SCHEMA } from './services/database/data';
 import { AddonModDataApproveLinkHandler } from './services/handlers/approve-link';
 import { AddonModDataDeleteLinkHandler } from './services/handlers/delete-link';
 import { AddonModDataEditLinkHandler } from './services/handlers/edit-link';
 import { AddonModDataIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModDataListLinkHandler } from './services/handlers/list-link';
-import { AddonModDataModuleHandler, AddonModDataModuleHandlerService } from './services/handlers/module';
+import { AddonModDataModuleHandler } from './services/handlers/module';
 import { AddonModDataPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModDataShowLinkHandler } from './services/handlers/show-link';
 import { AddonModDataSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModDataTagAreaHandler } from './services/handlers/tag-area';
 import { AddonModDataFieldModule } from './fields/field.module';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonModDataModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./data-lazy.module').then(m => m.AddonModDataLazyModule),
+        path: ADDON_MOD_DATA_PAGE_NAME,
+        loadChildren: () => import('./data-lazy.module'),
     },
 ];
 
@@ -69,7 +69,7 @@ const routes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonModDataEditLinkHandler.instance);
                 CoreTagAreaDelegate.registerHandler(AddonModDataTagAreaHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(AddonModDataProvider.COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_DATA_COMPONENT);
             },
         },
     ],

@@ -25,7 +25,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModDataComponentsCompileModule } from '../../components/components-compile.module';
-import { AddonModDataProvider,
+import {
     AddonModData,
     AddonModDataData,
     AddonModDataGetDataAccessInformationWSResponse,
@@ -35,9 +35,14 @@ import { AddonModDataProvider,
     AddonModDataEntry,
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
-import { AddonModDataSyncProvider } from '../../services/data-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
+import {
+    ADDON_MOD_DATA_AUTO_SYNCED,
+    ADDON_MOD_DATA_COMPONENT,
+    ADDON_MOD_DATA_ENTRIES_PER_PAGE,
+    ADDON_MOD_DATA_ENTRY_CHANGED,
+} from '../../constants';
 
 /**
  * Page that displays the view entry page.
@@ -66,7 +71,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
     offset?: number;
     title = '';
     moduleName = 'data';
-    component = AddonModDataProvider.COMPONENT;
+    component = ADDON_MOD_DATA_COMPONENT;
     entryLoaded = false;
     renderingEntry = false;
     loadingComments = false;
@@ -102,7 +107,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         this.siteId = CoreSites.getCurrentSiteId();
 
         // Refresh data if this discussion is synchronized automatically.
-        this.syncObserver = CoreEvents.on(AddonModDataSyncProvider.AUTO_SYNCED, (data) => {
+        this.syncObserver = CoreEvents.on(ADDON_MOD_DATA_AUTO_SYNCED, (data) => {
             if (data.entryId === undefined) {
                 return;
             }
@@ -120,7 +125,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         }, this.siteId);
 
         // Refresh entry on change.
-        this.entryChangedObserver = CoreEvents.on(AddonModDataProvider.ENTRY_CHANGED, (data) => {
+        this.entryChangedObserver = CoreEvents.on(ADDON_MOD_DATA_ENTRY_CHANGED, (data) => {
             if (data.entryId == this.entryId && this.database?.id == data.dataId) {
                 if (data.deleted) {
                     // If deleted, go back.
@@ -331,7 +336,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
             return;
         }
 
-        const perPage = AddonModDataProvider.PER_PAGE;
+        const perPage = ADDON_MOD_DATA_ENTRIES_PER_PAGE;
         const page = this.offset !== undefined && this.offset >= 0
             ? Math.floor(this.offset / perPage)
             : 0;

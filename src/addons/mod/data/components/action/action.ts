@@ -24,14 +24,13 @@ import {
     AddonModDataData,
     AddonModDataEntry,
     AddonModDataGetDataAccessInformationWSResponse,
-    AddonModDataProvider,
     AddonModDataTemplateMode,
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
 import { AddonModDataOffline } from '../../services/data-offline';
-import { AddonModDataModuleHandlerService } from '../../services/handlers/module';
 import { CoreDomUtils } from '@services/utils/dom';
 import { AddonModDataActionsMenuComponent, AddonModDataActionsMenuItem } from '../actionsmenu/actionsmenu';
+import { ADDON_MOD_DATA_ENTRY_CHANGED, ADDON_MOD_DATA_PAGE_NAME } from '../../constants';
 
 /**
  * Component that displays a database action.
@@ -101,7 +100,7 @@ export class AddonModDataActionComponent implements OnInit {
             title: this.title,
         };
 
-        const basePath = AddonModDataModuleHandlerService.PAGE_NAME;
+        const basePath = ADDON_MOD_DATA_PAGE_NAME;
         CoreNavigator.navigateToSitePath(
             `${basePath}/${this.database.course}/${this.database.coursemodule}/edit/${this.entry.id}`,
             { params },
@@ -120,7 +119,7 @@ export class AddonModDataActionComponent implements OnInit {
             sortDirection: this.sortDirection,
         };
 
-        const basePath = AddonModDataModuleHandlerService.PAGE_NAME;
+        const basePath = ADDON_MOD_DATA_PAGE_NAME;
         CoreNavigator.navigateToSitePath(
             `${basePath}/${this.database.course}/${this.database.coursemodule}/${this.entry.id}`,
             { params },
@@ -140,7 +139,7 @@ export class AddonModDataActionComponent implements OnInit {
 
         // Found. Just delete the action.
         await AddonModDataOffline.deleteEntry(dataId, entryId, AddonModDataAction.DELETE, this.siteId);
-        CoreEvents.trigger(AddonModDataProvider.ENTRY_CHANGED, { dataId: dataId, entryId: entryId }, this.siteId);
+        CoreEvents.trigger(ADDON_MOD_DATA_ENTRY_CHANGED, { dataId: dataId, entryId: entryId }, this.siteId);
     }
 
     /**
