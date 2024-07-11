@@ -29,7 +29,8 @@ import {
 } from '../services/assign';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../services/assign-helper';
 import { AddonModAssignOffline } from '../services/assign-offline';
-import { AddonModAssignSync, AddonModAssignSyncProvider } from '../services/assign-sync';
+import { AddonModAssignSync } from '../services/assign-sync';
+import { ADDON_MOD_ASSIGN_MANUAL_SYNCED } from '../constants';
 
 /**
  * Provides a collection of assignment submissions.
@@ -116,7 +117,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
 
                 if (result && result.updated) {
                     CoreEvents.trigger(
-                        AddonModAssignSyncProvider.MANUAL_SYNCED,
+                        ADDON_MOD_ASSIGN_MANUAL_SYNCED,
                         {
                             assignId: this.assign.id,
                             warnings: result.warnings,

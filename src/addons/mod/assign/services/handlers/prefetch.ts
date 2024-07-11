@@ -18,7 +18,6 @@ import { makeSingleton } from '@singletons';
 import {
     AddonModAssign,
     AddonModAssignAssign,
-    AddonModAssignProvider,
     AddonModAssignSubmission,
     AddonModAssignSubmissionStatusOptions,
 } from '../assign';
@@ -35,6 +34,7 @@ import { AddonModAssignSync, AddonModAssignSyncResult } from '../assign-sync';
 import { CoreUser } from '@features/user/services/user';
 import { CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CoreCourses } from '@features/courses/services/courses';
+import { ADDON_MOD_ASSIGN_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch assigns.
@@ -44,7 +44,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
     name = 'AddonModAssign';
     modName = 'assign';
-    component = AddonModAssignProvider.COMPONENT;
+    component = ADDON_MOD_ASSIGN_COMPONENT;
     updatesNames = /^configuration$|^.*files$|^submissions$|^grades$|^gradeitems$|^outcomes$|^comments$/;
 
     /**

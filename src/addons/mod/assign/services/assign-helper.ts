@@ -17,7 +17,6 @@ import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fi
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { FileEntry, DirectoryEntry } from '@awesome-cordova-plugins/file/ngx';
 import {
-    AddonModAssignProvider,
     AddonModAssignAssign,
     AddonModAssignSubmission,
     AddonModAssignParticipant,
@@ -37,6 +36,7 @@ import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 import { makeSingleton } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
+import { ADDON_MOD_ASSIGN_COMPONENT } from '../constants';
 
 /**
  * Service that provides some helper functions for assign.
@@ -650,7 +650,7 @@ export class AddonModAssignHelperProvider {
      * @returns Promise resolved with the itemId.
      */
     uploadFile(assignId: number, file: CoreFileEntry, itemId?: number, siteId?: string): Promise<number> {
-        return CoreFileUploader.uploadOrReuploadFile(file, itemId, AddonModAssignProvider.COMPONENT, assignId, siteId);
+        return CoreFileUploader.uploadOrReuploadFile(file, itemId, ADDON_MOD_ASSIGN_COMPONENT, assignId, siteId);
     }
 
     /**
@@ -664,7 +664,7 @@ export class AddonModAssignHelperProvider {
      * @returns Promise resolved with the itemId.
      */
     uploadFiles(assignId: number, files: CoreFileEntry[], siteId?: string): Promise<number> {
-        return CoreFileUploader.uploadOrReuploadFiles(files, AddonModAssignProvider.COMPONENT, assignId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_ASSIGN_COMPONENT, assignId, siteId);
     }
 
     /**

@@ -32,18 +32,26 @@ import { AddonModAssignListFilterName } from '../../classes/submissions-source';
 import {
     AddonModAssign,
     AddonModAssignAssign,
-    AddonModAssignProvider,
     AddonModAssignSubmissionGradingSummary,
 } from '../../services/assign';
 import { AddonModAssignOffline } from '../../services/assign-offline';
 import {
     AddonModAssignAutoSyncData,
     AddonModAssignSync,
-    AddonModAssignSyncProvider,
     AddonModAssignSyncResult,
 } from '../../services/assign-sync';
-import { AddonModAssignModuleHandlerService } from '../../services/handlers/module';
 import { AddonModAssignSubmissionComponent } from '../submission/submission';
+import {
+    ADDON_MOD_ASSIGN_AUTO_SYNCED,
+    ADDON_MOD_ASSIGN_COMPONENT,
+    ADDON_MOD_ASSIGN_GRADED_EVENT,
+    ADDON_MOD_ASSIGN_PAGE_NAME,
+    ADDON_MOD_ASSIGN_STARTED_EVENT,
+    ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT,
+    ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
+    ADDON_MOD_ASSIGN_WARN_GROUPS_OPTIONAL,
+    ADDON_MOD_ASSIGN_WARN_GROUPS_REQUIRED,
+} from '../../constants';
 
 /**
  * Component that displays an assignment.
@@ -56,7 +64,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
     @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
 
-    component = AddonModAssignProvider.COMPONENT;
+    component = ADDON_MOD_ASSIGN_COMPONENT;
     pluginName = 'assign';
 
     assign?: AddonModAssignAssign; // The assign object.
@@ -82,7 +90,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
     protected currentUserId!: number; // Current user ID.
     protected currentSite!: CoreSite; // Current site.
-    protected syncEventName = AddonModAssignSyncProvider.AUTO_SYNCED;
+    protected syncEventName = ADDON_MOD_ASSIGN_AUTO_SYNCED;
 
     // Observers.
     protected savedObserver?: CoreEventObserver;
@@ -108,7 +116,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         // Listen to events.
         this.savedObserver = CoreEvents.on(
-            AddonModAssignProvider.SUBMISSION_SAVED_EVENT,
+            ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT,
             (data) => {
                 if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
                     // Assignment submission saved, refresh data.
@@ -119,7 +127,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         );
 
         this.submittedObserver = CoreEvents.on(
-            AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT,
+            ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
             (data) => {
                 if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
                     // Assignment submitted, check completion.
@@ -132,14 +140,14 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             this.siteId,
         );
 
-        this.gradedObserver = CoreEvents.on(AddonModAssignProvider.GRADED_EVENT, (data) => {
+        this.gradedObserver = CoreEvents.on(ADDON_MOD_ASSIGN_GRADED_EVENT, (data) => {
             if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
                 // Assignment graded, refresh data.
                 this.showLoadingAndRefresh(true, false);
             }
         }, this.siteId);
 
-        this.startedObserver = CoreEvents.on(AddonModAssignProvider.STARTED_EVENT, (data) => {
+        this.startedObserver = CoreEvents.on(ADDON_MOD_ASSIGN_STARTED_EVENT, (data) => {
             if (this.assign && data.assignmentId == this.assign.id) {
                 // Assignment submission started, refresh data.
                 this.showLoadingAndRefresh(false, false);
@@ -276,10 +284,10 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             this.summary.warnofungroupedusers = 'ungroupedusers';
         } else {
             switch (this.summary.warnofungroupedusers) {
-                case AddonModAssignProvider.WARN_GROUPS_REQUIRED:
+                case ADDON_MOD_ASSIGN_WARN_GROUPS_REQUIRED:
                     this.summary.warnofungroupedusers = 'ungroupedusers';
                     break;
-                case AddonModAssignProvider.WARN_GROUPS_OPTIONAL:
+                case ADDON_MOD_ASSIGN_WARN_GROUPS_OPTIONAL:
                     this.summary.warnofungroupedusers = 'ungroupedusersoptional';
                     break;
                 default:
@@ -311,7 +319,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         CoreNavigator.navigateToSitePath(
-            AddonModAssignModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.module.id}/submission`,
+            ADDON_MOD_ASSIGN_PAGE_NAME + `/${this.courseId}/${this.module.id}/submission`,
             {
                 params,
             },

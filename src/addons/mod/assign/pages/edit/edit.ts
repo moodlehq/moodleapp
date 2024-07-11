@@ -27,7 +27,6 @@ import { CoreEvents } from '@singletons/events';
 import {
     AddonModAssignAssign,
     AddonModAssignSubmission,
-    AddonModAssignProvider,
     AddonModAssign,
     AddonModAssignSubmissionStatusOptions,
     AddonModAssignGetSubmissionStatusWSResponse,
@@ -40,6 +39,12 @@ import { AddonModAssignSync } from '../../services/assign-sync';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile } from '@services/ws';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import {
+    ADDON_MOD_ASSIGN_COMPONENT,
+    ADDON_MOD_ASSIGN_STARTED_EVENT,
+    ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT,
+    ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
+} from '../../constants';
 
 /**
  * Page that allows adding or editing an assigment submission.
@@ -65,7 +70,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
     timeLimitEndTime = 0; // If time limit is enabled, the end time for the timer.
     activityInstructions?: string; // Activity instructions.
     introAttachments?: CoreWSExternalFile[]; // Intro attachments.
-    component = AddonModAssignProvider.COMPONENT;
+    component = ADDON_MOD_ASSIGN_COMPONENT;
 
     protected userId: number; // User doing the submission.
     protected isBlind = false; // Whether blind is used.
@@ -144,7 +149,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 
             if (!this.isDestroyed) {
                 // Block the assignment.
-                CoreSync.blockOperation(AddonModAssignProvider.COMPONENT, this.assign.id);
+                CoreSync.blockOperation(ADDON_MOD_ASSIGN_COMPONENT, this.assign.id);
             }
 
             // Wait for sync to be over (if any).
@@ -276,7 +281,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 
         await AddonModAssign.startSubmission(this.assign.id);
 
-        CoreEvents.trigger(AddonModAssignProvider.STARTED_EVENT, {
+        CoreEvents.trigger(ADDON_MOD_ASSIGN_STARTED_EVENT, {
             assignmentId: this.assign.id,
         }, CoreSites.getCurrentSiteId());
 
@@ -453,7 +458,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             CoreForms.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
 
             CoreEvents.trigger(
-                AddonModAssignProvider.SUBMISSION_SAVED_EVENT,
+                ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT,
                 {
                     assignmentId: this.assign!.id,
                     submissionId: this.userSubmission!.id,
@@ -465,7 +470,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             if (!this.assign!.submissiondrafts) {
                 // No drafts allowed, so it was submitted. Trigger event.
                 CoreEvents.trigger(
-                    AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT,
+                    ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
                     {
                         assignmentId: this.assign!.id,
                         submissionId: this.userSubmission!.id,
@@ -500,7 +505,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 
         // Unblock the assignment.
         if (this.assign) {
-            CoreSync.unblockOperation(AddonModAssignProvider.COMPONENT, this.assign.id);
+            CoreSync.unblockOperation(ADDON_MOD_ASSIGN_COMPONENT, this.assign.id);
         }
     }
 

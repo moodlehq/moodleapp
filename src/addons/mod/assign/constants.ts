@@ -13,3 +13,20 @@
 // limitations under the License.
 
 export const ADDON_MOD_ASSIGN_FEATURE_NAME = 'CoreCourseModuleDelegate_AddonModAssign';
+
+export const ADDON_MOD_ASSIGN_COMPONENT = 'mmaModAssign';
+export const ADDON_MOD_ASSIGN_PAGE_NAME = 'mod_assign';
+
+export const ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS = -1;
+
+// Group submissions warnings.
+export const ADDON_MOD_ASSIGN_WARN_GROUPS_REQUIRED = 'warnrequired';
+export const ADDON_MOD_ASSIGN_WARN_GROUPS_OPTIONAL = 'warnoptional';
+
+// Events.
+export const ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT = 'addon_mod_assign_submission_saved';
+export const ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT = 'addon_mod_assign_submitted_for_grading';
+export const ADDON_MOD_ASSIGN_GRADED_EVENT = 'addon_mod_assign_graded';
+export const ADDON_MOD_ASSIGN_STARTED_EVENT = 'addon_mod_assign_started';
+export const ADDON_MOD_ASSIGN_AUTO_SYNCED = 'addon_mod_assign_autom_synced';
+export const ADDON_MOD_ASSIGN_MANUAL_SYNCED = 'addon_mod_assign_manual_synced';

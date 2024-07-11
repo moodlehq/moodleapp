@@ -31,14 +31,21 @@ import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { CoreComments } from '@features/comments/services/comments';
 import { AddonModAssignSubmissionFormatted } from './assign-helper';
 import { CoreWSError } from '@classes/errors/wserror';
-import { AddonModAssignAutoSyncData, AddonModAssignManualSyncData, AddonModAssignSyncProvider } from './assign-sync';
+import { AddonModAssignAutoSyncData, AddonModAssignManualSyncData } from './assign-sync';
 import { CoreFormFields } from '@singletons/form';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ContextLevel } from '@/core/constants';
-
-const ROOT_CACHE_KEY = 'mmaModAssign:';
+import {
+    ADDON_MOD_ASSIGN_AUTO_SYNCED,
+    ADDON_MOD_ASSIGN_COMPONENT,
+    ADDON_MOD_ASSIGN_GRADED_EVENT,
+    ADDON_MOD_ASSIGN_MANUAL_SYNCED,
+    ADDON_MOD_ASSIGN_STARTED_EVENT,
+    ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT,
+    ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
+} from '../constants';
 
 declare module '@singletons/events' {
 
@@ -48,12 +55,12 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [AddonModAssignProvider.SUBMISSION_SAVED_EVENT]: AddonModAssignSubmissionSavedEventData;
-        [AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT]: AddonModAssignSubmittedForGradingEventData;
-        [AddonModAssignProvider.GRADED_EVENT]: AddonModAssignGradedEventData;
-        [AddonModAssignProvider.STARTED_EVENT]: AddonModAssignStartedEventData;
-        [AddonModAssignSyncProvider.MANUAL_SYNCED]: AddonModAssignManualSyncData;
-        [AddonModAssignSyncProvider.AUTO_SYNCED]: AddonModAssignAutoSyncData;
+        [ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT]: AddonModAssignSubmissionSavedEventData;
+        [ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT]: AddonModAssignSubmittedForGradingEventData;
+        [ADDON_MOD_ASSIGN_GRADED_EVENT]: AddonModAssignGradedEventData;
+        [ADDON_MOD_ASSIGN_STARTED_EVENT]: AddonModAssignStartedEventData;
+        [ADDON_MOD_ASSIGN_MANUAL_SYNCED]: AddonModAssignManualSyncData;
+        [ADDON_MOD_ASSIGN_AUTO_SYNCED]: AddonModAssignAutoSyncData;
     }
 
 }
@@ -64,19 +71,7 @@ declare module '@singletons/events' {
 @Injectable({ providedIn: 'root' })
 export class AddonModAssignProvider {
 
-    static readonly COMPONENT = 'mmaModAssign';
-    static readonly SUBMISSION_COMPONENT = 'mmaModAssignSubmission';
-    static readonly UNLIMITED_ATTEMPTS = -1;
-
-    // Group submissions warnings.
-    static readonly WARN_GROUPS_REQUIRED = 'warnrequired';
-    static readonly WARN_GROUPS_OPTIONAL = 'warnoptional';
-
-    // Events.
-    static readonly SUBMISSION_SAVED_EVENT = 'addon_mod_assign_submission_saved';
-    static readonly SUBMITTED_FOR_GRADING_EVENT = 'addon_mod_assign_submitted_for_grading';
-    static readonly GRADED_EVENT = 'addon_mod_assign_graded';
-    static readonly STARTED_EVENT = 'addon_mod_assign_started';
+    protected static readonly ROOT_CACHE_KEY = 'mmaModAssign:';
 
     /**
      * Check if the user can submit in offline. This should only be used if submissionStatus.lastattempt.cansubmit cannot
@@ -179,7 +174,7 @@ export class AddonModAssignProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssignmentCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModAssignProvider.COMPONENT,
+            component: ADDON_MOD_ASSIGN_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -226,7 +221,7 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected getAssignmentCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'assignment:' + courseId;
+        return AddonModAssignProvider.ROOT_CACHE_KEY + 'assignment:' + courseId;
     }
 
     /**
@@ -251,7 +246,7 @@ export class AddonModAssignProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssignmentUserMappingsCacheKey(assignId),
             updateFrequency: CoreSite.FREQUENCY_OFTEN,
-            component: AddonModAssignProvider.COMPONENT,
+            component: ADDON_MOD_ASSIGN_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -279,7 +274,7 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected getAssignmentUserMappingsCacheKey(assignId: number): string {
-        return ROOT_CACHE_KEY + 'usermappings:' + assignId;
+        return AddonModAssignProvider.ROOT_CACHE_KEY + 'usermappings:' + assignId;
     }
 
     /**
@@ -297,7 +292,7 @@ export class AddonModAssignProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssignmentGradesCacheKey(assignId),
-            component: AddonModAssignProvider.COMPONENT,
+            component: ADDON_MOD_ASSIGN_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -326,7 +321,7 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected getAssignmentGradesCacheKey(assignId: number): string {
-        return ROOT_CACHE_KEY + 'assigngrades:' + assignId;
+        return AddonModAssignProvider.ROOT_CACHE_KEY + 'assigngrades:' + assignId;
     }
 
     /**
@@ -461,7 +456,7 @@ export class AddonModAssignProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubmissionsCacheKey(assignId),
             updateFrequency: CoreSite.FREQUENCY_OFTEN,
-            component: AddonModAssignProvider.COMPONENT,
+            component: ADDON_MOD_ASSIGN_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -489,7 +484,7 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected getSubmissionsCacheKey(assignId: number): string {
-        return ROOT_CACHE_KEY + 'submissions:' + assignId;
+        return AddonModAssignProvider.ROOT_CACHE_KEY + 'submissions:' + assignId;
     }
 
     /**
@@ -529,7 +524,7 @@ export class AddonModAssignProvider {
             getCacheUsingCacheKey: true,
             filter: options.filter,
             rewriteurls: options.filter,
-            component: AddonModAssignProvider.COMPONENT,
+            component: ADDON_MOD_ASSIGN_COMPONENT,
             componentId: options.cmId,
             // Don't cache when getting text without filters.
             // @todo Change this to support offline editing.
@@ -659,7 +654,7 @@ export class AddonModAssignProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.listParticipantsCacheKey(assignId, groupId),
             updateFrequency: CoreSite.FREQUENCY_OFTEN,
-            component: AddonModAssignProvider.COMPONENT,
+            component: ADDON_MOD_ASSIGN_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -685,7 +680,7 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected listParticipantsPrefixCacheKey(assignId: number): string {
-        return ROOT_CACHE_KEY + 'participants:' + assignId;
+        return AddonModAssignProvider.ROOT_CACHE_KEY + 'participants:' + assignId;
     }
 
     /**
@@ -891,7 +886,7 @@ export class AddonModAssignProvider {
         await CoreCourseLogHelper.log(
             'mod_assign_view_submission_status',
             params,
-            AddonModAssignProvider.COMPONENT,
+            ADDON_MOD_ASSIGN_COMPONENT,
             assignid,
             siteId,
         );
@@ -912,7 +907,7 @@ export class AddonModAssignProvider {
         await CoreCourseLogHelper.log(
             'mod_assign_view_grading_table',
             params,
-            AddonModAssignProvider.COMPONENT,
+            ADDON_MOD_ASSIGN_COMPONENT,
             assignid,
             siteId,
         );
@@ -933,7 +928,7 @@ export class AddonModAssignProvider {
         await CoreCourseLogHelper.log(
             'mod_assign_view_assign',
             params,
-            AddonModAssignProvider.COMPONENT,
+            ADDON_MOD_ASSIGN_COMPONENT,
             assignid,
             siteId,
         );

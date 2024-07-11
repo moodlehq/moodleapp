@@ -23,15 +23,15 @@ import { CorePushNotificationsDelegate } from '@features/pushnotifications/servi
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModAssignFeedbackModule } from './feedback/feedback.module';
-import { AddonModAssignProvider } from './services/assign';
 import { OFFLINE_SITE_SCHEMA } from './services/database/assign';
 import { AddonModAssignIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModAssignListLinkHandler } from './services/handlers/list-link';
-import { AddonModAssignModuleHandler, AddonModAssignModuleHandlerService } from './services/handlers/module';
+import { AddonModAssignModuleHandler } from './services/handlers/module';
 import { AddonModAssignPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModAssignPushClickHandler } from './services/handlers/push-click';
 import { AddonModAssignSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModAssignSubmissionModule } from './submission/submission.module';
+import { ADDON_MOD_ASSIGN_COMPONENT, ADDON_MOD_ASSIGN_PAGE_NAME } from './constants';
 
 /**
  * Get mod assign services.
@@ -69,8 +69,8 @@ export async function getModAssignComponentModules(): Promise<unknown[]> {
 
 const routes: Routes = [
     {
-        path: AddonModAssignModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./assign-lazy.module').then(m => m.AddonModAssignLazyModule),
+        path: ADDON_MOD_ASSIGN_PAGE_NAME,
+        loadChildren: () => import('./assign-lazy.module'),
     },
 ];
 
@@ -97,7 +97,7 @@ const routes: Routes = [
                 CoreCronDelegate.register(AddonModAssignSyncCronHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonModAssignPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(AddonModAssignProvider.COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_ASSIGN_COMPONENT);
             },
         },
     ],
