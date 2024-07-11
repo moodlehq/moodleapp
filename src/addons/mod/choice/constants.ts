@@ -13,6 +13,7 @@
 // limitations under the License.
 
 export const ADDON_MOD_CHOICE_COMPONENT = 'mmaModChoice';
+export const ADDON_MOD_CHOICE_PAGE_NAME = 'mod_choice';
 
 /**
  * Possible show results values.
@@ -27,3 +28,5 @@ export const enum AddonModChoiceShowResults {
 // Possible choice publish values.
 export const ADDON_MOD_CHOICE_PUBLISH_ANONYMOUS = false;
 export const ADDON_MOD_CHOICE_PUBLISH_NAMES = true;
+
+export const ADDON_MOD_CHOICE_AUTO_SYNCED = 'addon_mod_choice_autom_synced';

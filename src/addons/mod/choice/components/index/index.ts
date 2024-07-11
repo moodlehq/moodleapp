@@ -32,11 +32,15 @@ import { AddonModChoiceOffline } from '../../services/choice-offline';
 import {
     AddonModChoiceAutoSyncData,
     AddonModChoiceSync,
-    AddonModChoiceSyncProvider,
     AddonModChoiceSyncResult,
 } from '../../services/choice-sync';
 import { AddonModChoicePrefetchHandler } from '../../services/handlers/prefetch';
-import { ADDON_MOD_CHOICE_COMPONENT, ADDON_MOD_CHOICE_PUBLISH_ANONYMOUS, AddonModChoiceShowResults } from '../../constants';
+import {
+    ADDON_MOD_CHOICE_AUTO_SYNCED,
+    ADDON_MOD_CHOICE_COMPONENT,
+    ADDON_MOD_CHOICE_PUBLISH_ANONYMOUS,
+    AddonModChoiceShowResults,
+} from '../../constants';
 
 /**
  * Component that displays a choice.
@@ -64,7 +68,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     publishInfo?: string; // Message explaining the user what will happen with his choices.
 
     protected userId?: number;
-    protected syncEventName = AddonModChoiceSyncProvider.AUTO_SYNCED;
+    protected syncEventName = ADDON_MOD_CHOICE_AUTO_SYNCED;
     protected hasAnsweredOnline = false;
     protected now = CoreTimeUtils.timestamp();
 
