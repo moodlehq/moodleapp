@@ -28,7 +28,7 @@ import { ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_PAGE_NAME } from './constants'
 const routes: Routes = [
     {
         path: ADDON_MOD_CHAT_PAGE_NAME,
-        loadChildren: () => import('./chat-lazy.module').then(m => m.AddonModChatLazyModule),
+        loadChildren: () => import('./chat-lazy.module'),
     },
 ];
 
