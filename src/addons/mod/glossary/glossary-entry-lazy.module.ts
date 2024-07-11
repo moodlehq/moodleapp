@@ -37,4 +37,4 @@ const routes: Routes = [{
         CoreTagComponentsModule,
     ],
 })
-export class AddonModGlossaryEntryLazyModule {}
+export default class AddonModGlossaryEntryLazyModule {}

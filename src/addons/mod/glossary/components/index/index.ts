@@ -42,10 +42,6 @@ import {
     AddonModGlossaryEntry,
     AddonModGlossaryEntryWithCategory,
     AddonModGlossaryGlossary,
-    AddonModGlossaryProvider,
-    GLOSSARY_ENTRY_ADDED,
-    GLOSSARY_ENTRY_DELETED,
-    GLOSSARY_ENTRY_UPDATED,
 } from '../../services/glossary';
 import { AddonModGlossaryOfflineEntry } from '../../services/glossary-offline';
 import {
@@ -53,10 +49,16 @@ import {
     AddonModGlossarySyncResult,
     GLOSSARY_AUTO_SYNCED,
 } from '../../services/glossary-sync';
-import { AddonModGlossaryModuleHandlerService } from '../../services/handlers/module';
 import { AddonModGlossaryPrefetchHandler } from '../../services/handlers/prefetch';
 import { AddonModGlossaryModePickerPopoverComponent } from '../mode-picker/mode-picker';
 import { CoreTime } from '@singletons/time';
+import {
+    ADDON_MOD_GLOSSARY_COMPONENT,
+    ADDON_MOD_GLOSSARY_ENTRY_ADDED,
+    ADDON_MOD_GLOSSARY_ENTRY_DELETED,
+    ADDON_MOD_GLOSSARY_ENTRY_UPDATED,
+    ADDON_MOD_GLOSSARY_PAGE_NAME,
+} from '../../constants';
 
 /**
  * Component that displays a glossary entry page.
@@ -71,7 +73,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    component = AddonModGlossaryProvider.COMPONENT;
+    component = ADDON_MOD_GLOSSARY_COMPONENT;
     pluginName = 'glossary';
 
     canAdd = false;
@@ -128,7 +130,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         // Initialize entries manager.
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
             AddonModGlossaryEntriesSource,
-            [this.courseId, this.module.id, this.courseContentsPage ? `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/` : ''],
+            [this.courseId, this.module.id, this.courseContentsPage ? `${ADDON_MOD_GLOSSARY_PAGE_NAME}/` : ''],
         );
 
         this.promisedEntries.resolve(new AddonModGlossaryEntriesManager(source, this));
@@ -142,7 +144,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
         // When an entry is added, we reload the data.
         this.observers = [
-            CoreEvents.on(GLOSSARY_ENTRY_ADDED, ({ glossaryId }) => {
+            CoreEvents.on(ADDON_MOD_GLOSSARY_ENTRY_ADDED, ({ glossaryId }) => {
                 if (this.glossary?.id !== glossaryId) {
                     return;
                 }
@@ -152,14 +154,14 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
                 this.showLoadingAndRefresh(false);
             }),
-            CoreEvents.on(GLOSSARY_ENTRY_UPDATED, ({ glossaryId }) => {
+            CoreEvents.on(ADDON_MOD_GLOSSARY_ENTRY_UPDATED, ({ glossaryId }) => {
                 if (this.glossary?.id !== glossaryId) {
                     return;
                 }
 
                 this.showLoadingAndRefresh(false);
             }),
-            CoreEvents.on(GLOSSARY_ENTRY_DELETED, ({ glossaryId }) => {
+            CoreEvents.on(ADDON_MOD_GLOSSARY_ENTRY_DELETED, ({ glossaryId }) => {
                 if (this.glossary?.id !== glossaryId) {
                     return;
                 }

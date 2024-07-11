@@ -20,9 +20,9 @@ import {
     AddonModGlossaryGetEntriesOptions,
     AddonModGlossaryGetEntriesWSResponse,
     AddonModGlossaryGlossary,
-    AddonModGlossaryProvider,
 } from '../services/glossary';
 import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from '../services/glossary-offline';
+import { ADDON_MOD_GLOSSARY_LIMIT_ENTRIES } from '../constants';
 
 /**
  * Provides a collection of glossary entries.
@@ -259,7 +259,7 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
      * @inheritdoc
      */
     protected getPageLength(): number {
-        return AddonModGlossaryProvider.LIMIT_ENTRIES;
+        return ADDON_MOD_GLOSSARY_LIMIT_ENTRIES;
     }
 
     /**

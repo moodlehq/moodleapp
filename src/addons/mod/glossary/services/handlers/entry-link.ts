@@ -21,7 +21,7 @@ import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModGlossary } from '../glossary';
-import { AddonModGlossaryModuleHandlerService } from './module';
+import { ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to treat links to glossary entries.
@@ -56,7 +56,7 @@ export class AddonModGlossaryEntryLinkHandlerService extends CoreContentLinksHan
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/entry/${entryId}`,
+                        `${ADDON_MOD_GLOSSARY_PAGE_NAME}/entry/${entryId}`,
                         {
                             siteId,
                             params: {

@@ -27,45 +27,45 @@ import { CoreCronDelegate } from '@services/cron';
 import { CoreScreen } from '@services/screen';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/glossary';
-import { AddonModGlossaryProvider } from './services/glossary';
 import { AddonModGlossaryEditLinkHandler } from './services/handlers/edit-link';
 import { AddonModGlossaryEntryLinkHandler } from './services/handlers/entry-link';
 import { AddonModGlossaryIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModGlossaryListLinkHandler } from './services/handlers/list-link';
-import { AddonModGlossaryModuleHandler, AddonModGlossaryModuleHandlerService } from './services/handlers/module';
+import { AddonModGlossaryModuleHandler } from './services/handlers/module';
 import { AddonModGlossaryPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModGlossarySyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModGlossaryTagAreaHandler } from './services/handlers/tag-area';
+import { ADDON_MOD_GLOSSARY_COMPONENT, ADDON_MOD_GLOSSARY_PAGE_NAME } from './constants';
 
 const mainMenuRoutes: Routes = [
     // Link handlers navigation.
     {
-        path: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/entry/:entrySlug`,
-        loadChildren: () => import('./glossary-entry-lazy.module').then(m => m.AddonModGlossaryEntryLazyModule),
+        path: `${ADDON_MOD_GLOSSARY_PAGE_NAME}/entry/:entrySlug`,
+        loadChildren: () => import('./glossary-entry-lazy.module'),
     },
 
     // Course activity navigation.
     {
-        path: AddonModGlossaryModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./glossary-lazy.module').then(m => m.AddonModGlossaryLazyModule),
+        path: ADDON_MOD_GLOSSARY_PAGE_NAME,
+        loadChildren: () => import('./glossary-lazy.module'),
     },
 
     // Single Activity format navigation.
     {
-        path: `${COURSE_CONTENTS_PATH}/${AddonModGlossaryModuleHandlerService.PAGE_NAME}/entry/new`,
-        loadChildren: () => import('./glossary-edit-lazy.module').then(m => m.AddonModGlossaryEditLazyModule),
-        data: { glossaryPathPrefix: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/` },
+        path: `${COURSE_CONTENTS_PATH}/${ADDON_MOD_GLOSSARY_PAGE_NAME}/entry/new`,
+        loadChildren: () => import('./glossary-edit-lazy.module'),
+        data: { glossaryPathPrefix: `${ADDON_MOD_GLOSSARY_PAGE_NAME}/` },
     },
     {
-        path: `${COURSE_CONTENTS_PATH}/${AddonModGlossaryModuleHandlerService.PAGE_NAME}/entry/:entrySlug/edit`,
-        loadChildren: () => import('./glossary-edit-lazy.module').then(m => m.AddonModGlossaryEditLazyModule),
-        data: { glossaryPathPrefix: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/` },
+        path: `${COURSE_CONTENTS_PATH}/${ADDON_MOD_GLOSSARY_PAGE_NAME}/entry/:entrySlug/edit`,
+        loadChildren: () => import('./glossary-edit-lazy.module'),
+        data: { glossaryPathPrefix: `${ADDON_MOD_GLOSSARY_PAGE_NAME}/` },
     },
     ...conditionalRoutes(
         [{
-            path: `${COURSE_CONTENTS_PATH}/${AddonModGlossaryModuleHandlerService.PAGE_NAME}/entry/:entrySlug`,
-            loadChildren: () => import('./glossary-entry-lazy.module').then(m => m.AddonModGlossaryEntryLazyModule),
-            data: { glossaryPathPrefix: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/` },
+            path: `${COURSE_CONTENTS_PATH}/${ADDON_MOD_GLOSSARY_PAGE_NAME}/entry/:entrySlug`,
+            loadChildren: () => import('./glossary-entry-lazy.module'),
+            data: { glossaryPathPrefix: `${ADDON_MOD_GLOSSARY_PAGE_NAME}/` },
         }],
         () => CoreScreen.isMobile,
     ),
@@ -74,9 +74,9 @@ const mainMenuRoutes: Routes = [
 // Single Activity format navigation.
 const courseContentsRoutes: Routes = conditionalRoutes(
     [{
-        path: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/entry/:entrySlug`,
-        loadChildren: () => import('./glossary-entry-lazy.module').then(m => m.AddonModGlossaryEntryLazyModule),
-        data: { glossaryPathPrefix: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/` },
+        path: `${ADDON_MOD_GLOSSARY_PAGE_NAME}/entry/:entrySlug`,
+        loadChildren: () => import('./glossary-entry-lazy.module'),
+        data: { glossaryPathPrefix: `${ADDON_MOD_GLOSSARY_PAGE_NAME}/` },
     }],
     () => CoreScreen.isTablet,
 );
@@ -105,7 +105,7 @@ const courseContentsRoutes: Routes = conditionalRoutes(
                 CoreContentLinksDelegate.registerHandler(AddonModGlossaryEntryLinkHandler.instance);
                 CoreTagAreaDelegate.registerHandler(AddonModGlossaryTagAreaHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(AddonModGlossaryProvider.COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_GLOSSARY_COMPONENT);
             },
         },
     ],

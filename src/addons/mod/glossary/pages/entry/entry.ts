@@ -35,11 +35,10 @@ import {
     AddonModGlossary,
     AddonModGlossaryEntry,
     AddonModGlossaryGlossary,
-    AddonModGlossaryProvider,
-    GLOSSARY_ENTRY_UPDATED,
 } from '../../services/glossary';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { ADDON_MOD_GLOSSARY_COMPONENT, ADDON_MOD_GLOSSARY_ENTRY_UPDATED } from '../../constants';
 
 /**
  * Page that displays a glossary entry.
@@ -52,7 +51,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreCommentsCommentsComponent) comments?: CoreCommentsCommentsComponent;
 
-    component = AddonModGlossaryProvider.COMPONENT;
+    component = ADDON_MOD_GLOSSARY_COMPONENT;
     componentId?: number;
     onlineEntry?: AddonModGlossaryEntry;
     offlineEntry?: AddonModGlossaryOfflineEntry;
@@ -125,7 +124,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.entryUpdatedObserver = CoreEvents.on(GLOSSARY_ENTRY_UPDATED, data => {
+        this.entryUpdatedObserver = CoreEvents.on(ADDON_MOD_GLOSSARY_ENTRY_UPDATED, data => {
             if (data.glossaryId !== this.glossary?.id) {
                 return;
             }

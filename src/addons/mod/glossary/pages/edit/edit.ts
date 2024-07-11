@@ -36,11 +36,11 @@ import {
     AddonModGlossaryEntry,
     AddonModGlossaryEntryOption,
     AddonModGlossaryGlossary,
-    AddonModGlossaryProvider,
 } from '../../services/glossary';
 import { AddonModGlossaryHelper } from '../../services/glossary-helper';
 import { AddonModGlossaryOffline } from '../../services/glossary-offline';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { ADDON_MOD_GLOSSARY_COMPONENT } from '../../constants';
 
 /**
  * Page that displays the edit form.
@@ -53,7 +53,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
     @ViewChild('editFormEl') formElement?: ElementRef;
 
-    component = AddonModGlossaryProvider.COMPONENT;
+    component = ADDON_MOD_GLOSSARY_COMPONENT;
     cmId!: number;
     courseId!: number;
     loaded = false;
@@ -305,7 +305,7 @@ abstract class AddonModGlossaryFormHandler {
         const data = this.page.data;
         const itemId = await CoreFileUploader.uploadOrReuploadFiles(
             data.attachments,
-            AddonModGlossaryProvider.COMPONENT,
+            ADDON_MOD_GLOSSARY_COMPONENT,
             glossary.id,
         );
 

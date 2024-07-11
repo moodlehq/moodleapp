@@ -20,7 +20,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { AddonModGlossaryModuleHandlerService } from './module';
+import { ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
 
 /**
  * Content links handler for glossary new entry.
@@ -51,7 +51,7 @@ export class AddonModGlossaryEditLinkHandlerService extends CoreContentLinksHand
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        AddonModGlossaryModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/entry/new`,
+                        `${ADDON_MOD_GLOSSARY_PAGE_NAME}/${module.course}/${module.id}/entry/new`,
                         { siteId },
                     );
                 } catch (error) {
