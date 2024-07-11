@@ -21,14 +21,15 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { AddonModPageIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModPageListLinkHandler } from './services/handlers/list-link';
-import { AddonModPageModuleHandler, AddonModPageModuleHandlerService } from './services/handlers/module';
+import { AddonModPageModuleHandler } from './services/handlers/module';
 import { AddonModPagePluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModPagePrefetchHandler } from './services/handlers/prefetch';
+import { ADDON_MOD_PAGE_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonModPageModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./page-lazy.module').then(m => m.AddonModPageLazyModule),
+        path: ADDON_MOD_PAGE_PAGE_NAME,
+        loadChildren: () => import('./page-lazy.module'),
     },
 ];
 

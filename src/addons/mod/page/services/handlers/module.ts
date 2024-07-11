@@ -18,6 +18,7 @@ import { CoreCourseModuleHandler } from '@features/course/services/module-delega
 import { CoreConstants, ModPurpose } from '@/core/constants';
 import { makeSingleton } from '@singletons';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
+import { ADDON_MOD_PAGE_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support page modules.
@@ -25,11 +26,9 @@ import { CoreModuleHandlerBase } from '@features/course/classes/module-base-hand
 @Injectable({ providedIn: 'root' })
 export class AddonModPageModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_page';
-
     name = 'AddonModPage';
     modName = 'page';
-    protected pageName = AddonModPageModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_PAGE_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,

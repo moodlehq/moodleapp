@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { AddonModPageProvider } from './page';
 import { CoreError } from '@classes/errors/error';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreFile } from '@services/file';
@@ -23,6 +22,7 @@ import { CoreWS } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModuleContentFile } from '@features/course/services/course';
+import { ADDON_MOD_PAGE_COMPONENT } from '../constants';
 
 /**
  * Service that provides some features for page.
@@ -71,7 +71,7 @@ export class AddonModPageHelperProvider {
                 CoreSites.getCurrentSiteId(),
                 indexUrl,
                 false,
-                AddonModPageProvider.COMPONENT,
+                ADDON_MOD_PAGE_COMPONENT,
                 moduleId,
             );
         } else {
