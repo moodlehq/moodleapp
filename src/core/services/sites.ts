@@ -109,7 +109,7 @@ export class CoreSitesProvider {
     }
 
     /**
-     * Initialize.
+     * @inheritdoc
      */
     initialize(): void {
         // Initialize general site events.
@@ -158,6 +158,16 @@ export class CoreSitesProvider {
         // Site config is checked in login.
         CoreEvents.on(CoreEvents.LOGIN_SITE_CHECKED, (data) => {
             CoreHTMLClasses.addSiteUrlClass(data.config.httpswwwroot);
+        });
+
+        // Unload temporary styles when site config is "unchecked" in login.
+        CoreEvents.on(CoreEvents.LOGIN_SITE_UNCHECKED, ({ loginSuccessful }) => {
+            if (loginSuccessful) {
+                // The classes are already added in LOGIN_SITE_CHECKED.
+                return;
+            }
+
+            CoreHTMLClasses.removeSiteClasses();
         });
 
         CoreEvents.on(CoreEvents.SITE_UPDATED, async (data) => {
@@ -647,7 +657,7 @@ export class CoreSitesProvider {
                 this.currentSite = site;
                 // Store session.
                 await this.login(siteId);
-            } else if (this.currentSite && this.currentSite.getId() == siteId) {
+            } else if (this.currentSite && this.currentSite.getId() === siteId) {
                 // Current site has just been updated, trigger the event.
                 CoreEvents.trigger(CoreEvents.SITE_UPDATED, info, siteId);
             }
