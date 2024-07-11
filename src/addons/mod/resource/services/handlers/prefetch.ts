@@ -20,8 +20,9 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
-import { AddonModResource, AddonModResourceProvider } from '../resource';
+import { AddonModResource } from '../resource';
 import { AddonModResourceHelper } from '../resource-helper';
+import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch resources.
@@ -31,7 +32,7 @@ export class AddonModResourcePrefetchHandlerService extends CoreCourseResourcePr
 
     name = 'AddonModResource';
     modName = 'resource';
-    component = AddonModResourceProvider.COMPONENT;
+    component = ADDON_MOD_RESOURCE_COMPONENT;
 
     /**
      * @inheritdoc

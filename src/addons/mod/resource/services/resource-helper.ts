@@ -27,10 +27,11 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUtilsOpenFileOptions } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CorePath } from '@singletons/path';
-import { AddonModResource, AddonModResourceCustomData, AddonModResourceProvider } from './resource';
+import { AddonModResource, AddonModResourceCustomData } from './resource';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
+import { ADDON_MOD_RESOURCE_COMPONENT } from '../constants';
 
 /**
  * Service that provides helper functions for resources.
@@ -50,7 +51,7 @@ export class AddonModResourceHelperProvider {
         const result = await CoreCourseHelper.downloadModuleWithMainFileIfNeeded(
             module,
             module.course,
-            AddonModResourceProvider.COMPONENT,
+            ADDON_MOD_RESOURCE_COMPONENT,
             module.id,
             contents,
         );
@@ -196,7 +197,7 @@ export class AddonModResourceHelperProvider {
             await CoreCourseHelper.downloadModuleAndOpenFile(
                 module,
                 courseId,
-                AddonModResourceProvider.COMPONENT,
+                ADDON_MOD_RESOURCE_COMPONENT,
                 module.id,
                 module.contents,
                 undefined,

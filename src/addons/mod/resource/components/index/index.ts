@@ -31,10 +31,10 @@ import { Subscription } from 'rxjs';
 import {
     AddonModResource,
     AddonModResourceCustomData,
-    AddonModResourceProvider,
 } from '../../services/resource';
 import { AddonModResourceHelper } from '../../services/resource-helper';
 import { CorePlatform } from '@services/platform';
+import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
 
 /**
  * Component that displays a resource.
@@ -46,7 +46,7 @@ import { CorePlatform } from '@services/platform';
 })
 export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 
-    component = AddonModResourceProvider.COMPONENT;
+    component = ADDON_MOD_RESOURCE_COMPONENT;
     pluginName = 'resource';
 
     mode = '';
