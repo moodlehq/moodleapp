@@ -30,8 +30,8 @@ import {
     AddonModBBBData,
     AddonModBBBMeetingInfo,
     AddonModBBBRecordingPlaybackTypes,
-    AddonModBBBService,
 } from '../../services/bigbluebuttonbn';
+import { ADDON_MOD_BBB_COMPONENT } from '../../constants';
 
 /**
  * Component that displays a Big Blue Button activity.
@@ -43,7 +43,7 @@ import {
 })
 export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
-    component = AddonModBBBService.COMPONENT;
+    component = ADDON_MOD_BBB_COMPONENT;
     pluginName = 'bigbluebuttonbn';
     bbb?: AddonModBBBData;
     groupInfo?: CoreGroupInfo;

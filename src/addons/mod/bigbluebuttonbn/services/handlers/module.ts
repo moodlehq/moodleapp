@@ -22,8 +22,7 @@ import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { makeSingleton } from '@singletons';
 import { AddonModBBBIndexComponent } from '../../components/index';
 import { AddonModBBB } from '../bigbluebuttonbn';
-
-export const ADDON_MOD_BBB_MAIN_MENU_PAGE_NAME = 'mod_bigbluebuttonbn';
+import { ADDON_MOD_BBB_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support Big Blue Button activities.
@@ -33,7 +32,7 @@ export class AddonModBBBModuleHandlerService extends CoreModuleHandlerBase imple
 
     name = 'AddonModBBB';
     modName = 'bigbluebuttonbn';
-    protected pageName = ADDON_MOD_BBB_MAIN_MENU_PAGE_NAME;
+    protected pageName = ADDON_MOD_BBB_PAGE_NAME;
     protected sitePluginHandler?: CoreSitePluginsModuleHandler;
 
     supportedFeatures = {

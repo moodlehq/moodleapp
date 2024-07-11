@@ -19,12 +19,13 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { AddonModBBBIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModBBBListLinkHandler } from './services/handlers/list-link';
-import { AddonModBBBModuleHandler, ADDON_MOD_BBB_MAIN_MENU_PAGE_NAME } from './services/handlers/module';
+import { AddonModBBBModuleHandler } from './services/handlers/module';
+import { ADDON_MOD_BBB_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: ADDON_MOD_BBB_MAIN_MENU_PAGE_NAME,
-        loadChildren: () => import('./bigbluebuttonbn-lazy.module').then(m => m.AddonModBBBLazyModule),
+        path: ADDON_MOD_BBB_PAGE_NAME,
+        loadChildren: () => import('./bigbluebuttonbn-lazy.module'),
     },
 ];
 
