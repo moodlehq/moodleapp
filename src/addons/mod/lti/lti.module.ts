@@ -20,14 +20,15 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { AddonModLtiIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModLtiListLinkHandler } from './services/handlers/list-link';
-import { AddonModLtiModuleHandler, AddonModLtiModuleHandlerService } from './services/handlers/module';
+import { AddonModLtiModuleHandler } from './services/handlers/module';
 import { AddonModLtiPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModLtiHelper } from './services/lti-helper';
+import { ADDON_MOD_LTI_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonModLtiModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./lti-lazy.module').then(m => m.AddonModLtiLazyModule),
+        path: ADDON_MOD_LTI_PAGE_NAME,
+        loadChildren: () => import('./lti-lazy.module'),
     },
 ];
 

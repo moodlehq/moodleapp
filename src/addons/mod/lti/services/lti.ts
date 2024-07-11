@@ -26,9 +26,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-
-const ROOT_CACHE_KEY = 'mmaModLti:';
-const LAUNCHER_FILE_NAME = 'lti_launcher.html';
+import { ADDON_MOD_LTI_COMPONENT } from '../constants';
 
 /**
  * Service that provides some features for LTI.
@@ -36,7 +34,8 @@ const LAUNCHER_FILE_NAME = 'lti_launcher.html';
 @Injectable({ providedIn: 'root' })
 export class AddonModLtiProvider {
 
-    static readonly COMPONENT = 'mmaModLti';
+    protected static readonly ROOT_CACHE_KEY = 'mmaModLti:';
+    protected static readonly LAUNCHER_FILE_NAME = 'lti_launcher.html';
 
     /**
      * Delete launcher.
@@ -44,7 +43,7 @@ export class AddonModLtiProvider {
      * @returns Promise resolved when the launcher file is deleted.
      */
     deleteLauncher(): Promise<void> {
-        return CoreFile.removeFile(LAUNCHER_FILE_NAME);
+        return CoreFile.removeFile(AddonModLtiProvider.LAUNCHER_FILE_NAME);
     }
 
     /**
@@ -78,7 +77,7 @@ export class AddonModLtiProvider {
             '    }; \n' +
             '</script> \n';
 
-        const entry = await CoreFile.writeFile(LAUNCHER_FILE_NAME, text);
+        const entry = await CoreFile.writeFile(AddonModLtiProvider.LAUNCHER_FILE_NAME, text);
 
         return CoreFile.getFileEntryURL(entry);
     }
@@ -98,7 +97,7 @@ export class AddonModLtiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getLtiCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModLtiProvider.COMPONENT,
+            component: ADDON_MOD_LTI_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -121,7 +120,7 @@ export class AddonModLtiProvider {
      * @returns Cache key.
      */
     protected getLtiCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'lti:' + courseId;
+        return AddonModLtiProvider.ROOT_CACHE_KEY + 'lti:' + courseId;
     }
 
     /**
@@ -156,7 +155,7 @@ export class AddonModLtiProvider {
      * @returns Cache key.
      */
     protected getLtiLaunchDataCacheKey(id: number): string {
-        return `${ROOT_CACHE_KEY}launch:${id}`;
+        return `${AddonModLtiProvider.ROOT_CACHE_KEY}launch:${id}`;
     }
 
     /**
@@ -276,7 +275,7 @@ export class AddonModLtiProvider {
         return CoreCourseLogHelper.log(
             'mod_lti_view_lti',
             params,
-            AddonModLtiProvider.COMPONENT,
+            ADDON_MOD_LTI_COMPONENT,
             id,
             siteId,
         );
