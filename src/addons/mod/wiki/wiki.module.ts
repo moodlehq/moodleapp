@@ -27,17 +27,17 @@ import { AddonModWikiCreateLinkHandler } from './services/handlers/create-link';
 import { AddonModWikiEditLinkHandler } from './services/handlers/edit-link';
 import { AddonModWikiIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModWikiListLinkHandler } from './services/handlers/list-link';
-import { AddonModWikiModuleHandler, AddonModWikiModuleHandlerService } from './services/handlers/module';
+import { AddonModWikiModuleHandler } from './services/handlers/module';
 import { AddonModWikiPageOrMapLinkHandler } from './services/handlers/page-or-map-link';
 import { AddonModWikiPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModWikiSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModWikiTagAreaHandler } from './services/handlers/tag-area';
-import { AddonModWikiProvider } from './services/wiki';
+import { ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonModWikiModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./wiki-lazy.module').then(m => m.AddonModWikiLazyModule),
+        path: ADDON_MOD_WIKI_PAGE_NAME,
+        loadChildren: () => import('./wiki-lazy.module'),
     },
 ];
 
@@ -65,7 +65,7 @@ const routes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonModWikiPageOrMapLinkHandler.instance);
                 CoreTagAreaDelegate.registerHandler(AddonModWikiTagAreaHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(AddonModWikiProvider.COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_WIKI_COMPONENT);
             },
         },
     ],

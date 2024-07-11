@@ -21,7 +21,7 @@ import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModWiki } from '../wiki';
-import { AddonModWikiModuleHandlerService } from './module';
+import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to treat links to edit a wiki page.
@@ -63,7 +63,7 @@ export class AddonModWikiEditLinkHandlerService extends CoreContentLinksHandlerB
                     }
 
                     await CoreNavigator.navigateToSitePath(
-                        AddonModWikiModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/edit`,
+                        `${ADDON_MOD_WIKI_PAGE_NAME}/${module.course}/${module.id}/edit`,
                         {
                             params: {
                                 section: section,
