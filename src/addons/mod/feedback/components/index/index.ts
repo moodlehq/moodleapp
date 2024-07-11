@@ -27,7 +27,6 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     AddonModFeedback,
     AddonModFeedbackGetFeedbackAccessInformationWSResponse,
-    AddonModFeedbackProvider,
     AddonModFeedbackWSFeedback,
     AddonModFeedbackWSItem,
 } from '../../services/feedback';
@@ -38,8 +37,8 @@ import {
     AddonModFeedbackSyncProvider,
     AddonModFeedbackSyncResult,
 } from '../../services/feedback-sync';
-import { AddonModFeedbackModuleHandlerService } from '../../services/handlers/module';
 import { AddonModFeedbackPrefetchHandler } from '../../services/handlers/prefetch';
+import { ADDON_MOD_FEEDBACK_COMPONENT, ADDON_MOD_FEEDBACK_FORM_SUBMITTED, ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
 
 /**
  * Component that displays a feedback index page.
@@ -55,7 +54,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     @Input() tab = 'overview';
     @Input() group = 0;
 
-    component = AddonModFeedbackProvider.COMPONENT;
+    component = ADDON_MOD_FEEDBACK_COMPONENT;
     pluginName = 'feedback';
     feedback?: AddonModFeedbackWSFeedback;
     goPage?: number;
@@ -92,7 +91,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
         super('AddonModLessonIndexComponent', content, courseContentsPage);
 
         // Listen for form submit events.
-        this.submitObserver = CoreEvents.on(AddonModFeedbackProvider.FORM_SUBMITTED, async (data) => {
+        this.submitObserver = CoreEvents.on(ADDON_MOD_FEEDBACK_FORM_SUBMITTED, async (data) => {
             if (!this.feedback || data.feedbackId != this.feedback.id) {
                 return;
             }
@@ -374,7 +373,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      */
     gotoAnswerQuestions(preview: boolean = false): void {
         CoreNavigator.navigateToSitePath(
-            AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.module.id}/form`,
+            ADDON_MOD_FEEDBACK_PAGE_NAME + `/${this.courseId}/${this.module.id}/form`,
             {
                 params: {
                     preview,
@@ -407,7 +406,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      */
     openNonRespondents(): void {
         CoreNavigator.navigateToSitePath(
-            AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.module.id}/nonrespondents`,
+            ADDON_MOD_FEEDBACK_PAGE_NAME + `/${this.courseId}/${this.module.id}/nonrespondents`,
             {
                 params: {
                     group: this.group,
@@ -425,7 +424,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
         }
 
         CoreNavigator.navigateToSitePath(
-            AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.module.id}/attempts`,
+            ADDON_MOD_FEEDBACK_PAGE_NAME + `/${this.courseId}/${this.module.id}/attempts`,
             {
                 params: {
                     group: this.group,

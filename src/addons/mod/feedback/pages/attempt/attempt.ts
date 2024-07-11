@@ -22,13 +22,13 @@ import { CoreTextUtils } from '@services/utils/text';
 import { AddonModFeedbackAttemptsSource } from '../../classes/feedback-attempts-source';
 import {
     AddonModFeedback,
-    AddonModFeedbackProvider,
     AddonModFeedbackWSAnonAttempt,
     AddonModFeedbackWSFeedback,
 } from '../../services/feedback';
 import { AddonModFeedbackAttempt, AddonModFeedbackFormItem, AddonModFeedbackHelper } from '../../services/feedback-helper';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { ADDON_MOD_FEEDBACK_COMPONENT } from '../../constants';
 
 /**
  * Page that displays a feedback attempt review.
@@ -46,7 +46,7 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
     attempts: AddonModFeedbackAttemptsSwipeManager;
     anonAttempt?: AddonModFeedbackWSAnonAttempt;
     items: AddonModFeedbackAttemptItem[] = [];
-    component = AddonModFeedbackProvider.COMPONENT;
+    component = ADDON_MOD_FEEDBACK_COMPONENT;
     loaded = false;
 
     protected attemptId: number;

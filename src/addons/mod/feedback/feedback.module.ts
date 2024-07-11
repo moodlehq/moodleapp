@@ -23,23 +23,23 @@ import { CorePushNotificationsDelegate } from '@features/pushnotifications/servi
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { OFFLINE_SITE_SCHEMA } from './services/database/feedback';
-import { AddonModFeedbackProvider } from './services/feedback';
 import { AddonModFeedbackAnalysisLinkHandler } from './services/handlers/analysis-link';
 import { AddonModFeedbackCompleteLinkHandler } from './services/handlers/complete-link';
 import { AddonModFeedbackIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModFeedbackListLinkHandler } from './services/handlers/list-link';
-import { AddonModFeedbackModuleHandlerService, AddonModFeedbackModuleHandler } from './services/handlers/module';
+import { AddonModFeedbackModuleHandler } from './services/handlers/module';
 import { AddonModFeedbackPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModFeedbackPrintLinkHandler } from './services/handlers/print-link';
 import { AddonModFeedbackPushClickHandler } from './services/handlers/push-click';
 import { AddonModFeedbackShowEntriesLinkHandler } from './services/handlers/show-entries-link';
 import { AddonModFeedbackShowNonRespondentsLinkHandler } from './services/handlers/show-non-respondents-link';
 import { AddonModFeedbackSyncCronHandler } from './services/handlers/sync-cron';
+import { ADDON_MOD_FEEDBACK_COMPONENT, ADDON_MOD_FEEDBACK_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonModFeedbackModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./feedback-lazy.module').then(m => m.AddonModFeedbackLazyModule),
+        path: ADDON_MOD_FEEDBACK_PAGE_NAME,
+        loadChildren: () => import('./feedback-lazy.module'),
     },
 ];
 
@@ -69,7 +69,7 @@ const routes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonModFeedbackShowNonRespondentsLinkHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonModFeedbackPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(AddonModFeedbackProvider.COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_FEEDBACK_COMPONENT);
             },
         },
     ],

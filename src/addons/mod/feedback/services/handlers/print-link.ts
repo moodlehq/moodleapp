@@ -20,7 +20,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { AddonModFeedbackModuleHandlerService } from './module';
+import { ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
 
 /**
  * Content links handler for feedback print questions.
@@ -50,7 +50,7 @@ export class AddonModFeedbackPrintLinkHandlerService extends CoreContentLinksHan
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/form`,
+                        ADDON_MOD_FEEDBACK_PAGE_NAME + `/${module.course}/${module.id}/form`,
                         {
                             params: {
                                 preview: true,
