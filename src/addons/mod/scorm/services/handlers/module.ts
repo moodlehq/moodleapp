@@ -17,6 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_SCORM_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support SCORM modules.
@@ -24,11 +25,9 @@ import { makeSingleton } from '@singletons';
 @Injectable({ providedIn: 'root' })
 export class AddonModScormModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_scorm';
-
     name = 'AddonModScorm';
     modName = 'scorm';
-    protected pageName = AddonModScormModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_SCORM_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,

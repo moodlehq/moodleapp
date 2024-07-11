@@ -35,7 +35,6 @@ import {
 import {
     AddonModScormDataEntry,
     AddonModScormDataValue,
-    AddonModScormProvider,
     AddonModScormScorm,
     AddonModScormScoUserData,
     AddonModScormUserDataMap,
@@ -45,6 +44,7 @@ import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
 import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
+import { ADDON_MOD_SCORM_COMPONENT } from '../constants';
 
 /**
  * Service to handle offline SCORM.
@@ -120,7 +120,7 @@ export class AddonModScormOfflineProvider {
         this.logger.debug(`Change attempt number from ${attempt} to ${newAttempt} in SCORM ${scormId}`);
 
         // Block the SCORM so it can't be synced.
-        CoreSync.blockOperation(AddonModScormProvider.COMPONENT, scormId, 'changeAttemptNumber', site.id);
+        CoreSync.blockOperation(ADDON_MOD_SCORM_COMPONENT, scormId, 'changeAttemptNumber', site.id);
 
         try {
             const currentAttemptConditions = {
@@ -161,7 +161,7 @@ export class AddonModScormOfflineProvider {
             }
         } finally {
             // Unblock the SCORM.
-            CoreSync.unblockOperation(AddonModScormProvider.COMPONENT, scormId, 'changeAttemptNumber', site.id);
+            CoreSync.unblockOperation(ADDON_MOD_SCORM_COMPONENT, scormId, 'changeAttemptNumber', site.id);
         }
     }
 
@@ -191,7 +191,7 @@ export class AddonModScormOfflineProvider {
         this.logger.debug(`Creating new offline attempt ${attempt} in SCORM ${scorm.id}`);
 
         // Block the SCORM so it can't be synced.
-        CoreSync.blockOperation(AddonModScormProvider.COMPONENT, scorm.id, 'createNewAttempt', site.id);
+        CoreSync.blockOperation(ADDON_MOD_SCORM_COMPONENT, scorm.id, 'createNewAttempt', site.id);
 
         // Create attempt in DB.
         const entry: AddonModScormAttemptDBRecord = {
@@ -230,7 +230,7 @@ export class AddonModScormOfflineProvider {
             await Promise.all(promises);
         } finally {
             // Unblock the SCORM.
-            CoreSync.unblockOperation(AddonModScormProvider.COMPONENT, scorm.id, 'createNewAttempt', site.id);
+            CoreSync.unblockOperation(ADDON_MOD_SCORM_COMPONENT, scorm.id, 'createNewAttempt', site.id);
         }
     }
 
@@ -872,7 +872,7 @@ export class AddonModScormOfflineProvider {
         userId = userId || site.getUserId();
 
         // Block the SCORM so it can't be synced.
-        CoreSync.blockOperation(AddonModScormProvider.COMPONENT, scorm.id, 'saveTracksOffline', siteId);
+        CoreSync.blockOperation(ADDON_MOD_SCORM_COMPONENT, scorm.id, 'saveTracksOffline', siteId);
 
         try {
             // Insert all the tracks.
@@ -889,7 +889,7 @@ export class AddonModScormOfflineProvider {
             )));
         } finally {
             // Unblock the SCORM operation.
-            CoreSync.unblockOperation(AddonModScormProvider.COMPONENT, scorm.id, 'saveTracksOffline', siteId);
+            CoreSync.unblockOperation(ADDON_MOD_SCORM_COMPONENT, scorm.id, 'saveTracksOffline', siteId);
         }
     }
 

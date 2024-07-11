@@ -42,4 +42,4 @@ const routes: Routes = [
         AddonModScormPlayerPage,
     ],
 })
-export class AddonModScormLazyModule {}
+export default class AddonModScormLazyModule {}

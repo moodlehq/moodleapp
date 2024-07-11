@@ -19,10 +19,16 @@ import {
     AddonModScormCommonEventData,
     AddonModScormDataEntry,
     AddonModScormDataValue,
-    AddonModScormProvider,
     AddonModScormScorm,
     AddonModScormUserDataMap,
 } from '../services/scorm';
+import {
+    ADDON_MOD_SCORM_UPDATE_TOC_EVENT,
+    ADDON_MOD_SCORM_LAUNCH_NEXT_SCO_EVENT,
+    ADDON_MOD_SCORM_LAUNCH_PREV_SCO_EVENT,
+    ADDON_MOD_SCORM_GO_OFFLINE_EVENT,
+    AddonModScormMode,
+} from '../constants';
 
 // Standard Data Type Definition.
 let CMI_STRING_256 = '^[\\u0000-\\uFFFF]{0,255}$';
@@ -110,7 +116,7 @@ export class AddonModScormDataModel12 {
         protected scoId: number,
         protected attempt: number,
         protected userData: AddonModScormUserDataMap,
-        protected mode = AddonModScormProvider.MODENORMAL,
+        protected mode = AddonModScormMode.NORMAL,
         protected offline = false,
         protected canSaveTracks = true,
     ) {
@@ -595,7 +601,7 @@ export class AddonModScormDataModel12 {
             }
 
             // Define mode and credit.
-            this.currentUserData[scoId].userdata['cmi.core.credit'] = this.mode == AddonModScormProvider.MODENORMAL ?
+            this.currentUserData[scoId].userdata['cmi.core.credit'] = this.mode === AddonModScormMode.NORMAL ?
                 'credit' :
                 'no-credit';
             this.currentUserData[scoId].userdata['cmi.core.lesson_mode'] = this.mode;
@@ -620,7 +626,7 @@ export class AddonModScormDataModel12 {
                 const result = this.storeData(false);
 
                 // Trigger TOC update.
-                this.triggerEvent(AddonModScormProvider.UPDATE_TOC_EVENT);
+                this.triggerEvent(ADDON_MOD_SCORM_UPDATE_TOC_EVENT);
 
                 this.errorCode = result ? '0' : '101';
 
@@ -652,20 +658,20 @@ export class AddonModScormDataModel12 {
                 const result = this.storeData(true);
                 if (this.getEl('nav.event') != '') {
                     if (this.getEl('nav.event') == 'continue') {
-                        this.triggerEvent(AddonModScormProvider.LAUNCH_NEXT_SCO_EVENT);
+                        this.triggerEvent(ADDON_MOD_SCORM_LAUNCH_NEXT_SCO_EVENT);
                     } else {
-                        this.triggerEvent(AddonModScormProvider.LAUNCH_PREV_SCO_EVENT);
+                        this.triggerEvent(ADDON_MOD_SCORM_LAUNCH_PREV_SCO_EVENT);
                     }
                 } else {
                     if (this.scorm.auto) {
-                        this.triggerEvent(AddonModScormProvider.LAUNCH_NEXT_SCO_EVENT);
+                        this.triggerEvent(ADDON_MOD_SCORM_LAUNCH_NEXT_SCO_EVENT);
                     }
                 }
 
                 this.errorCode = result ? '0' : '101';
 
                 // Trigger TOC update.
-                this.triggerEvent(AddonModScormProvider.UPDATE_TOC_EVENT);
+                this.triggerEvent(ADDON_MOD_SCORM_UPDATE_TOC_EVENT);
 
                 // Conver to string representing a boolean.
                 return result ? 'true' : 'false';
@@ -986,8 +992,8 @@ export class AddonModScormDataModel12 {
                 this.setEl('cmi.core.lesson_status', 'completed');
             }
 
-            if (this.getEl('cmi.core.lesson_mode') == AddonModScormProvider.MODENORMAL) {
-                if (this.getEl('cmi.core.credit') == 'credit') {
+            if (this.getEl('cmi.core.lesson_mode') === AddonModScormMode.NORMAL) {
+                if (this.getEl('cmi.core.credit') === 'credit') {
                     if (this.getEl('cmi.student_data.mastery_score') !== '' && this.getEl('cmi.core.score.raw') !== '') {
                         if (parseFloat(<string> this.getEl('cmi.core.score.raw')) >=
                                 parseFloat(<string> this.getEl('cmi.student_data.mastery_score'))) {
@@ -999,7 +1005,7 @@ export class AddonModScormDataModel12 {
                 }
             }
 
-            if (this.getEl('cmi.core.lesson_mode') == AddonModScormProvider.MODEBROWSE) {
+            if (this.getEl('cmi.core.lesson_mode') === AddonModScormMode.BROWSE) {
                 if (this.dataModel[this.scoId]['cmi.core.lesson_status'].defaultvalue == '' &&
                         this.getEl('cmi.core.lesson_status') == 'not attempted') {
                     this.setEl('cmi.core.lesson_status', 'browsed');
@@ -1020,7 +1026,7 @@ export class AddonModScormDataModel12 {
 
         // Failure storing data in online. Go offline.
         this.offline = true;
-        this.triggerEvent(AddonModScormProvider.GO_OFFLINE_EVENT);
+        this.triggerEvent(ADDON_MOD_SCORM_GO_OFFLINE_EVENT);
 
         return AddonModScorm.saveTracksSync(this.scoId, this.attempt, tracks, this.scorm, this.offline, this.currentUserData);
 

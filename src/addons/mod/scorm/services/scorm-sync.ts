@@ -27,19 +27,17 @@ import {
     AddonModScorm,
     AddonModScormAttemptCountResult,
     AddonModScormDataEntry,
-    AddonModScormProvider,
     AddonModScormScorm,
     AddonModScormUserDataMap,
 } from './scorm';
 import { AddonModScormOffline } from './scorm-offline';
+import { ADDON_MOD_SCORM_COMPONENT, ADDON_MOD_SCORM_DATA_AUTO_SYNCED } from '../constants';
 
 /**
  * Service to sync SCORMs.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvider<AddonModScormSyncResult> {
-
-    static readonly AUTO_SYNCED = 'addon_mod_scorm_autom_synced';
 
     protected componentTranslatableString = 'scorm';
 
@@ -464,7 +462,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
 
         // Sync all SCORMs that haven't been synced for a while and that aren't attempted right now.
         await Promise.all(attempts.map(async (attempt) => {
-            if (treated[attempt.scormid] || CoreSync.isBlocked(AddonModScormProvider.COMPONENT, attempt.scormid, siteId)) {
+            if (treated[attempt.scormid] || CoreSync.isBlocked(ADDON_MOD_SCORM_COMPONENT, attempt.scormid, siteId)) {
                 return;
             }
 
@@ -478,7 +476,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
 
             if (data !== undefined) {
                 // We tried to sync. Send event.
-                CoreEvents.trigger(AddonModScormSyncProvider.AUTO_SYNCED, {
+                CoreEvents.trigger(ADDON_MOD_SCORM_DATA_AUTO_SYNCED, {
                     scormId: scorm.id,
                     attemptFinished: data.attemptFinished,
                     warnings: data.warnings,
@@ -586,7 +584,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         }
 
         // Verify that SCORM isn't blocked.
-        if (CoreSync.isBlocked(AddonModScormProvider.COMPONENT, scorm.id, siteId)) {
+        if (CoreSync.isBlocked(ADDON_MOD_SCORM_COMPONENT, scorm.id, siteId)) {
             this.logger.debug('Cannot sync SCORM ' + scorm.id + ' because it is blocked.');
 
             throw new CoreError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
@@ -612,7 +610,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         let lastOnlineWasFinished = false;
 
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(AddonModScormProvider.COMPONENT, scorm.id, siteId));
+        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_SCORM_COMPONENT, scorm.id, siteId));
 
         // Get attempts data. We ignore cache for online attempts, so this call will fail if offline or server down.
         const attemptsData = await AddonModScorm.getAttemptCount(scorm.id, {
