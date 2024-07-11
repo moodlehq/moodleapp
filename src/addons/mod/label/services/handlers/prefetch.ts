@@ -19,7 +19,8 @@ import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { AddonModLabel, AddonModLabelProvider } from '../label';
+import { AddonModLabel } from '../label';
+import { ADDON_MOD_LABEL_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch labels.
@@ -29,7 +30,7 @@ export class AddonModLabelPrefetchHandlerService extends CoreCourseResourcePrefe
 
     name = 'AddonModLabel';
     modName = 'label';
-    component = AddonModLabelProvider.COMPONENT;
+    component = ADDON_MOD_LABEL_COMPONENT;
     updatesNames = /^.*files$/;
 
     /**
