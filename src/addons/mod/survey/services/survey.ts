@@ -25,9 +25,7 @@ import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWar
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModSurveyOffline } from './survey-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ADDON_MOD_SURVEY_COMPONENT } from '@addons/mod/survey/constants';
-
-const ROOT_CACHE_KEY = 'mmaModSurvey:';
+import { ADDON_MOD_SURVEY_COMPONENT } from '../constants';
 
 /**
  * Service that provides some features for surveys.
@@ -35,7 +33,7 @@ const ROOT_CACHE_KEY = 'mmaModSurvey:';
 @Injectable( { providedIn: 'root' })
 export class AddonModSurveyProvider {
 
-    static readonly COMPONENT = ADDON_MOD_SURVEY_COMPONENT;
+    protected static readonly ROOT_CACHE_KEY = 'mmaModSurvey:';
 
     /**
      * Get a survey's questions.
@@ -54,7 +52,7 @@ export class AddonModSurveyProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuestionsCacheKey(surveyId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModSurveyProvider.COMPONENT,
+            component: ADDON_MOD_SURVEY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -74,7 +72,7 @@ export class AddonModSurveyProvider {
      * @returns Cache key.
      */
     protected getQuestionsCacheKey(surveyId: number): string {
-        return ROOT_CACHE_KEY + 'questions:' + surveyId;
+        return AddonModSurveyProvider.ROOT_CACHE_KEY + 'questions:' + surveyId;
     }
 
     /**
@@ -84,7 +82,7 @@ export class AddonModSurveyProvider {
      * @returns Cache key.
      */
     protected getSurveyCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'survey:' + courseId;
+        return AddonModSurveyProvider.ROOT_CACHE_KEY + 'survey:' + courseId;
     }
 
     /**
@@ -111,7 +109,7 @@ export class AddonModSurveyProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSurveyCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModSurveyProvider.COMPONENT,
+            component: ADDON_MOD_SURVEY_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -175,7 +173,7 @@ export class AddonModSurveyProvider {
             return;
         }));
 
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, AddonModSurveyProvider.COMPONENT, moduleId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_SURVEY_COMPONENT, moduleId));
 
         await CoreUtils.allPromises(promises);
     }
@@ -221,7 +219,7 @@ export class AddonModSurveyProvider {
         await CoreCourseLogHelper.log(
             'mod_survey_view_survey',
             params,
-            AddonModSurveyProvider.COMPONENT,
+            ADDON_MOD_SURVEY_COMPONENT,
             id,
             siteId,
         );

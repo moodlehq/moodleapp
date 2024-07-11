@@ -24,3 +24,5 @@ export const ADDON_MOD_SURVEY_PREFETCH_COMPONENT = ADDON_MOD_SURVEY_COMPONENT;
 export const ADDON_MOD_SURVEY_PREFETCH_UPDATE_NAMES = /^configuration$|^.*files$|^answers$/;
 
 export const ADDON_MOD_SURVEY_SYNC_CRON_NAME = 'AddonModSurveySyncCronHandler';
+
+export const ADDON_MOD_SURVEY_AUTO_SYNCED = 'addon_mod_survey_autom_synced';

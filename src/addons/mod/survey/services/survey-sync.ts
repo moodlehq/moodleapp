@@ -24,16 +24,15 @@ import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { getPrefetchHandlerInstance } from './handlers/prefetch';
-import { AddonModSurvey, AddonModSurveyProvider } from './survey';
+import { AddonModSurvey } from './survey';
 import { AddonModSurveyAnswersDBRecordFormatted, AddonModSurveyOffline } from './survey-offline';
+import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT } from '../constants';
 
 /**
  * Service to sync surveys.
  */
 @Injectable( { providedIn: 'root' })
 export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvider<AddonModSurveySyncResult> {
-
-    static readonly AUTO_SYNCED = 'addon_mod_survey_autom_synced';
 
     protected componentTranslatableString = 'survey';
 
@@ -83,7 +82,7 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
 
             if (result && result.updated) {
                 // Sync successful, send event.
-                CoreEvents.trigger(AddonModSurveySyncProvider.AUTO_SYNCED, {
+                CoreEvents.trigger(ADDON_MOD_SURVEY_AUTO_SYNCED, {
                     surveyId: entry.surveyid,
                     userId: entry.userid,
                     warnings: result.warnings,
@@ -155,7 +154,7 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
         };
 
         // Sync offline logs.
-        CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(AddonModSurveyProvider.COMPONENT, surveyId, siteId));
+        CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_SURVEY_COMPONENT, surveyId, siteId));
 
         let answersNumber = 0;
         let data: AddonModSurveyAnswersDBRecordFormatted | undefined;
@@ -229,7 +228,7 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [AddonModSurveySyncProvider.AUTO_SYNCED]: AddonModSurveyAutoSyncData;
+        [ADDON_MOD_SURVEY_AUTO_SYNCED]: AddonModSurveyAutoSyncData;
     }
 
 }

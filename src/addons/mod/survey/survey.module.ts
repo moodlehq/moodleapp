@@ -31,7 +31,7 @@ import { ADDON_MOD_SURVEY_PAGE_NAME } from '@addons/mod/survey/constants';
 const routes: Routes = [
     {
         path: ADDON_MOD_SURVEY_PAGE_NAME,
-        loadChildren: () => import('./survey-lazy.module').then(m => m.AddonModSurveyLazyModule),
+        loadChildren: () => import('./survey-lazy.module'),
     },
 ];
 

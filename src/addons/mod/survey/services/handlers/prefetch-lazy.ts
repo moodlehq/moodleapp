@@ -19,9 +19,10 @@ import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { AddonModSurvey, AddonModSurveyProvider } from '../survey';
+import { AddonModSurvey } from '../survey';
 import { AddonModSurveySync, AddonModSurveySyncResult } from '../survey-sync';
 import { AddonModSurveyPrefetchHandlerService } from '@addons/mod/survey/services/handlers/prefetch';
+import { ADDON_MOD_SURVEY_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch surveys.
@@ -84,7 +85,7 @@ export class AddonModSurveyPrefetchHandlerLazyService extends AddonModSurveyPref
         const files = this.getIntroFilesFromInstance(module, survey);
 
         // Prefetch files.
-        promises.push(CoreFilepool.addFilesToQueue(siteId, files, AddonModSurveyProvider.COMPONENT, module.id));
+        promises.push(CoreFilepool.addFilesToQueue(siteId, files, ADDON_MOD_SURVEY_COMPONENT, module.id));
 
         // If survey isn't answered, prefetch the questions.
         if (!survey.surveydone) {

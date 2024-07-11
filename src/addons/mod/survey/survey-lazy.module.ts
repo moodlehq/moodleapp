@@ -36,4 +36,4 @@ const routes: Routes = [
         AddonModSurveyIndexPage,
     ],
 })
-export class AddonModSurveyLazyModule {}
+export default class AddonModSurveyLazyModule {}

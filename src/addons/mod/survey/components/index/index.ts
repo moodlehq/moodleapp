@@ -25,7 +25,6 @@ import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { getPrefetchHandlerInstance } from '../../services/handlers/prefetch';
 import {
-    AddonModSurveyProvider,
     AddonModSurveySurvey,
     AddonModSurvey,
     AddonModSurveySubmitAnswerData,
@@ -35,10 +34,10 @@ import { AddonModSurveyOffline } from '../../services/survey-offline';
 import {
     AddonModSurveyAutoSyncData,
     AddonModSurveySync,
-    AddonModSurveySyncProvider,
     AddonModSurveySyncResult,
 } from '../../services/survey-sync';
 import { CoreUtils } from '@services/utils/utils';
+import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT } from '../../constants';
 
 /**
  * Component that displays a survey.
@@ -50,7 +49,7 @@ import { CoreUtils } from '@services/utils/utils';
 })
 export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
-    component = AddonModSurveyProvider.COMPONENT;
+    component = ADDON_MOD_SURVEY_COMPONENT;
     pluginName = 'survey';
 
     survey?: AddonModSurveySurvey;
@@ -58,7 +57,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
     answers: Record<string, string> = {};
 
     protected currentUserId?: number;
-    protected syncEventName = AddonModSurveySyncProvider.AUTO_SYNCED;
+    protected syncEventName = ADDON_MOD_SURVEY_AUTO_SYNCED;
 
     constructor(
         protected content?: IonContent,
