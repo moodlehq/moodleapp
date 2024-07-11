@@ -25,13 +25,15 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { makeSingleton, Translate } from '@singletons/index';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreError } from '@classes/errors/error';
-import { AddonModH5PActivityAutoSyncData, AddonModH5PActivitySyncProvider } from './h5pactivity-sync';
+import { AddonModH5PActivityAutoSyncData } from './h5pactivity-sync';
 import { CoreTime } from '@singletons/time';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-
-export const MOD_H5PACTIVITY_STATE_ID = 'state';
-
-const ROOT_CACHE_KEY = 'mmaModH5PActivity:';
+import {
+    ADDON_MOD_H5PACTIVITY_AUTO_SYNCED,
+    ADDON_MOD_H5PACTIVITY_COMPONENT,
+    ADDON_MOD_H5PACTIVITY_USERS_PER_PAGE,
+    AddonModH5PActivityGradeMethod,
+} from '../constants';
 
 /**
  * Service that provides some features for H5P activity.
@@ -39,16 +41,7 @@ const ROOT_CACHE_KEY = 'mmaModH5PActivity:';
 @Injectable({ providedIn: 'root' })
 export class AddonModH5PActivityProvider {
 
-    static readonly COMPONENT = 'mmaModH5PActivity';
-    static readonly TRACK_COMPONENT = 'mod_h5pactivity'; // Component for tracking.
-    static readonly USERS_PER_PAGE = 20;
-
-    // Grade type constants.
-    static readonly GRADEMANUAL = 0; // No automathic grading using attempt results.
-    static readonly GRADEHIGHESTATTEMPT = 1; // Use highest attempt results for grading.
-    static readonly GRADEAVERAGEATTEMPT = 2; // Use average attempt results for grading.
-    static readonly GRADELASTATTEMPT = 3; // Use last attempt results for grading.
-    static readonly GRADEFIRSTATTEMPT = 4; // Use first attempt results for grading.
+    protected static readonly ROOT_CACHE_KEY = 'mmaModH5PActivity:';
 
     /**
      * Check if a certain site allows viewing list of users and their attempts.
@@ -151,7 +144,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getAccessInformationCacheKey(id: number): string {
-        return ROOT_CACHE_KEY + 'accessInfo:' + id;
+        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'accessInfo:' + id;
     }
 
     /**
@@ -170,7 +163,7 @@ export class AddonModH5PActivityProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAccessInformationCacheKey(id),
             updateFrequency: CoreSite.FREQUENCY_OFTEN,
-            component: AddonModH5PActivityProvider.COMPONENT,
+            component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -259,7 +252,7 @@ export class AddonModH5PActivityProvider {
     ): Promise<{users: AddonModH5PActivityUserAttempts[]; canLoadMore: boolean}> {
         options = options || {};
         options.page = options.page || 0;
-        options.perPage = options.perPage ?? AddonModH5PActivityProvider.USERS_PER_PAGE;
+        options.perPage = options.perPage ?? ADDON_MOD_H5PACTIVITY_USERS_PER_PAGE;
 
         const site = await CoreSites.getSite(options.siteId);
 
@@ -274,7 +267,7 @@ export class AddonModH5PActivityProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUsersAttemptsCacheKey(id, options),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
-            component: AddonModH5PActivityProvider.COMPONENT,
+            component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -320,7 +313,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getUsersAttemptsCommonCacheKey(id: number): string {
-        return ROOT_CACHE_KEY + 'userAttempts:' + id;
+        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'userAttempts:' + id;
     }
 
     /**
@@ -341,7 +334,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getAttemptResultsCommonCacheKey(id: number): string {
-        return ROOT_CACHE_KEY + 'results:' + id;
+        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'results:' + id;
     }
 
     /**
@@ -370,7 +363,7 @@ export class AddonModH5PActivityProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptResultsCacheKey(id, params.attemptids),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
-            component: AddonModH5PActivityProvider.COMPONENT,
+            component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -435,7 +428,7 @@ export class AddonModH5PActivityProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptResultsCommonCacheKey(id),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
-            component: AddonModH5PActivityProvider.COMPONENT,
+            component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -491,7 +484,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getH5PActivityDataCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'h5pactivity:' + courseId;
+        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'h5pactivity:' + courseId;
     }
 
     /**
@@ -518,7 +511,7 @@ export class AddonModH5PActivityProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getH5PActivityDataCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModH5PActivityProvider.COMPONENT,
+            component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -598,7 +591,7 @@ export class AddonModH5PActivityProvider {
      * @returns Cache key.
      */
     protected getUserAttemptsCommonCacheKey(id: number): string {
-        return ROOT_CACHE_KEY + 'attempts:' + id;
+        return AddonModH5PActivityProvider.ROOT_CACHE_KEY + 'attempts:' + id;
     }
 
     /**
@@ -625,7 +618,7 @@ export class AddonModH5PActivityProvider {
             const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getUserAttemptsCacheKey(id, params.userids),
                 updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
-                component: AddonModH5PActivityProvider.COMPONENT,
+                component: ADDON_MOD_H5PACTIVITY_COMPONENT,
                 componentId: options.cmId,
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
@@ -788,7 +781,7 @@ export class AddonModH5PActivityProvider {
         return CoreCourseLogHelper.log(
             'mod_h5pactivity_view_h5pactivity',
             params,
-            AddonModH5PActivityProvider.COMPONENT,
+            ADDON_MOD_H5PACTIVITY_COMPONENT,
             id,
             siteId,
         );
@@ -818,7 +811,7 @@ export class AddonModH5PActivityProvider {
         return CoreCourseLogHelper.log(
             'mod_h5pactivity_log_report_viewed',
             params,
-            AddonModH5PActivityProvider.COMPONENT,
+            ADDON_MOD_H5PACTIVITY_COMPONENT,
             id,
             site.getId(),
         );
@@ -842,7 +835,7 @@ export type AddonModH5PActivityWSData = {
     grade?: number; // The maximum grade for submission.
     displayoptions: number; // H5P Button display options.
     enabletracking: number; // Enable xAPI tracking.
-    grademethod: number; // Which H5P attempt is used for grading.
+    grademethod: AddonModH5PActivityGradeMethod; // Which H5P attempt is used for grading.
     contenthash?: string; // Sha1 hash of file content.
     coursemodule: number; // Coursemodule.
     context: number; // Context ID.
@@ -1151,7 +1144,7 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [AddonModH5PActivitySyncProvider.AUTO_SYNCED]: AddonModH5PActivityAutoSyncData;
+        [ADDON_MOD_H5PACTIVITY_AUTO_SYNCED]: AddonModH5PActivityAutoSyncData;
     }
 
 }

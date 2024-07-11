@@ -56,4 +56,4 @@ const routes: Routes = [
         AddonModH5PActivityUsersAttemptsPage,
     ],
 })
-export class AddonModH5PActivityLazyModule {}
+export default class AddonModH5PActivityLazyModule {}

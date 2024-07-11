@@ -23,7 +23,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonModH5PActivity } from '../h5pactivity';
-import { AddonModH5PActivityModuleHandlerService } from './module';
+import { ADDON_MOD_H5PACTIVITY_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to treat links to H5P activity report.
@@ -88,7 +88,7 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
      * @param siteId Site ID.
      */
     protected async openAttemptResults(cmId: number, attemptId: number, courseId: number, siteId: string): Promise<void> {
-        const path = AddonModH5PActivityModuleHandlerService.PAGE_NAME + `/${courseId}/${cmId}/attemptresults/${attemptId}`;
+        const path = ADDON_MOD_H5PACTIVITY_PAGE_NAME + `/${courseId}/${cmId}/attemptresults/${attemptId}`;
 
         await CoreNavigator.navigateToSitePath(path, {
             siteId,
@@ -125,9 +125,9 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
 
         let path: string;
         if (canViewAllAttempts) {
-            path = `${AddonModH5PActivityModuleHandlerService.PAGE_NAME}/${courseId}/${cmId}/users`;
+            path = `${ADDON_MOD_H5PACTIVITY_PAGE_NAME}/${courseId}/${cmId}/users`;
         } else {
-            path = `${AddonModH5PActivityModuleHandlerService.PAGE_NAME}/${courseId}/${cmId}/userattempts/${userId}`;
+            path = `${ADDON_MOD_H5PACTIVITY_PAGE_NAME}/${courseId}/${cmId}/userattempts/${userId}`;
         }
 
         CoreNavigator.navigateToSitePath(path, {

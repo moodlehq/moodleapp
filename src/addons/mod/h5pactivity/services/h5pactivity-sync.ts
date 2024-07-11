@@ -29,7 +29,6 @@ import {
     AddonModH5PActivity,
     AddonModH5PActivityAttempt,
     AddonModH5PActivityData,
-    AddonModH5PActivityProvider,
 } from './h5pactivity';
 import { CoreXAPIStateDBRecord, CoreXAPIStatementDBRecord } from '@features/xapi/services/database/xapi';
 import { CoreTextUtils } from '@services/utils/text';
@@ -37,14 +36,17 @@ import { CoreXAPIIRI } from '@features/xapi/classes/iri';
 import { CoreXAPIItemAgent } from '@features/xapi/classes/item-agent';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreArray } from '@singletons/array';
+import {
+    ADDON_MOD_H5PACTIVITY_AUTO_SYNCED,
+    ADDON_MOD_H5PACTIVITY_COMPONENT,
+    ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
+} from '../constants';
 
 /**
  * Service to sync H5P activities.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseProvider<AddonModH5PActivitySyncResult> {
-
-    static readonly AUTO_SYNCED = 'addon_mod_h5pactivity_autom_synced';
 
     protected componentTranslatableString = 'h5pactivity';
 
@@ -86,7 +88,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
 
             if (result?.updated) {
                 // Sync successful, send event.
-                CoreEvents.trigger(AddonModH5PActivitySyncProvider.AUTO_SYNCED, {
+                CoreEvents.trigger(ADDON_MOD_H5PACTIVITY_AUTO_SYNCED, {
                     contextId,
                     warnings: result.warnings,
                 }, siteId);
@@ -161,7 +163,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
         const deleteOfflineData = async (): Promise<void> => {
             await Promise.all([
                 statements.length ? CoreXAPIOffline.deleteStatementsForContext(contextId, siteId) : undefined,
-                states.length ? CoreXAPIOffline.deleteStates(AddonModH5PActivityProvider.TRACK_COMPONENT, {
+                states.length ? CoreXAPIOffline.deleteStates(ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT, {
                     itemId: contextId,
                     siteId,
                 }) : undefined,
@@ -207,7 +209,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
 
         // Sync offline logs.
         await CoreUtils.ignoreErrors(
-            CoreCourseLogHelper.syncActivity(AddonModH5PActivityProvider.COMPONENT, h5pActivity.id, siteId),
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_H5PACTIVITY_COMPONENT, h5pActivity.id, siteId),
         );
 
         const results = await Promise.all([
