@@ -14,7 +14,6 @@
 
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 
-import { CoreApp } from '@services/app';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
@@ -25,6 +24,7 @@ import { CoreUserParticipantsSource } from '@features/user/classes/participants-
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
+import { CoreKeyboard } from '@singletons/keyboard';
 
 /**
  * Page that displays the list of course participants.
@@ -114,7 +114,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
      * @param query Text to search for.
      */
     async search(query: string): Promise<void> {
-        CoreApp.closeKeyboard();
+        CoreKeyboard.close();
 
         const newSource = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
             CoreUserParticipantsSource,

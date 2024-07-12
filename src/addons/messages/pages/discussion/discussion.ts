@@ -34,7 +34,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreLogger } from '@singletons/logger';
-import { CoreApp } from '@services/app';
 import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infinite-loading';
 import { Md5 } from 'ts-md5/dist/md5';
 import moment from 'moment-timezone';
@@ -45,6 +44,7 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { ActivatedRoute } from '@angular/router';
 import { CoreConstants } from '@/core/constants';
 import { CoreDom } from '@singletons/dom';
+import { CoreKeyboard } from '@singletons/keyboard';
 
 /**
  * Page that displays a message discussion page.
@@ -1177,7 +1177,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
                 // Only close the keyboard if an error happens.
                 // We want the user to be able to send multiple messages without the keyboard being closed.
-                CoreApp.closeKeyboard();
+                CoreKeyboard.close();
 
                 CoreDomUtils.showErrorModalDefault(error, 'addon.messages.messagenotsent', true);
                 this.removeMessage(message.hash!);

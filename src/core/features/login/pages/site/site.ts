@@ -15,7 +15,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 
-import { CoreApp } from '@services/app';
 import { CoreNetwork } from '@services/network';
 import { CoreConfig } from '@services/config';
 import { CoreSites, CoreSiteCheckResponse, CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
@@ -49,6 +48,7 @@ import { CoreReferrer } from '@services/referrer';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { ONBOARDING_DONE } from '@features/login/constants';
 import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
+import { CoreKeyboard } from '@singletons/keyboard';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -285,7 +285,7 @@ export class CoreLoginSitePage implements OnInit {
         e?.preventDefault();
         e?.stopPropagation();
 
-        CoreApp.closeKeyboard();
+        CoreKeyboard.close();
 
         if (!url) {
             CoreDomUtils.showErrorModal('core.login.siteurlrequired', true);

@@ -14,7 +14,6 @@
 
 import { Component, OnInit } from '@angular/core';
 
-import { CoreApp } from '@services/app';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
@@ -25,6 +24,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreKeyboard } from '@singletons/keyboard';
 
 /**
  * Page that displays most used tags and allows searching.
@@ -153,7 +153,7 @@ export class CoreTagSearchPage implements OnInit {
         }
 
         this.logSearch = CoreTime.once(() => this.performLogSearch());
-        CoreApp.closeKeyboard();
+        CoreKeyboard.close();
 
         return this.fetchTags().catch((error) => {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading tags.');
