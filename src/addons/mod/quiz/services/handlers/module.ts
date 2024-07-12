@@ -18,6 +18,7 @@ import { CoreConstants, ModPurpose } from '@/core/constants';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
+import { ADDON_MOD_QUIZ_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support quiz modules.
@@ -25,11 +26,9 @@ import { CoreModuleHandlerBase } from '@features/course/classes/module-base-hand
 @Injectable({ providedIn: 'root' })
 export class AddonModQuizModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_quiz';
-
     name = 'AddonModQuiz';
     modName = 'quiz';
-    protected pageName = AddonModQuizModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_QUIZ_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,

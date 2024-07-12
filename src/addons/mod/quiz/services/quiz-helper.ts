@@ -23,7 +23,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
-import { AddonModQuizModuleHandlerService } from './handlers/module';
 import {
     AddonModQuiz,
     AddonModQuizAttemptWSData,
@@ -34,6 +33,7 @@ import {
 import { AddonModQuizOffline } from './quiz-offline';
 import {
     ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD,
+    ADDON_MOD_QUIZ_PAGE_NAME,
     AddonModQuizAttemptStates,
     AddonModQuizDisplayOptionsAttemptStates,
 } from '../constants';
@@ -349,7 +349,7 @@ export class AddonModQuizHelperProvider {
 
             // Go to the review page.
             await CoreNavigator.navigateToSitePath(
-                `${AddonModQuizModuleHandlerService.PAGE_NAME}/${module.course}/${module.id}/review/${attemptId}`,
+                `${ADDON_MOD_QUIZ_PAGE_NAME}/${module.course}/${module.id}/review/${attemptId}`,
                 {
                     params: {
                         page: page == undefined || isNaN(page) ? -1 : page,

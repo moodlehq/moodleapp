@@ -53,4 +53,4 @@ const routes: Routes = [
         AddonModQuizReviewPage,
     ],
 })
-export class AddonModQuizLazyModule {}
+export default class AddonModQuizLazyModule {}

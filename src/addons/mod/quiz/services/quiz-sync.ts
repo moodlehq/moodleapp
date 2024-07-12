@@ -31,15 +31,13 @@ import { AddonModQuizAttemptDBRecord } from './database/quiz';
 import { AddonModQuizPrefetchHandler } from './handlers/prefetch';
 import { AddonModQuiz, AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from './quiz';
 import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-offline';
-import { ADDON_MOD_QUIZ_COMPONENT } from '../constants';
+import { ADDON_MOD_QUIZ_AUTO_SYNCED, ADDON_MOD_QUIZ_COMPONENT } from '../constants';
 
 /**
  * Service to sync quizzes.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider<AddonModQuizSyncResult> {
-
-    static readonly AUTO_SYNCED = 'addon_mod_quiz_autom_synced';
 
     protected componentTranslatableString = 'quiz';
 
@@ -221,7 +219,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
             if (data) {
                 // Sync successful. Send event.
-                CoreEvents.trigger(AddonModQuizSyncProvider.AUTO_SYNCED, {
+                CoreEvents.trigger(ADDON_MOD_QUIZ_AUTO_SYNCED, {
                     quizId: quiz.id,
                     attemptFinished: data.attemptFinished,
                     warnings: data.warnings,

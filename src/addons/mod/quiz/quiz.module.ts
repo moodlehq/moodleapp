@@ -28,12 +28,12 @@ import { SITE_SCHEMA } from './services/database/quiz';
 import { AddonModQuizGradeLinkHandler } from './services/handlers/grade-link';
 import { AddonModQuizIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModQuizListLinkHandler } from './services/handlers/list-link';
-import { AddonModQuizModuleHandler, AddonModQuizModuleHandlerService } from './services/handlers/module';
+import { AddonModQuizModuleHandler } from './services/handlers/module';
 import { AddonModQuizPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModQuizPushClickHandler } from './services/handlers/push-click';
 import { AddonModQuizReviewLinkHandler } from './services/handlers/review-link';
 import { AddonModQuizSyncCronHandler } from './services/handlers/sync-cron';
-import { ADDON_MOD_QUIZ_COMPONENT } from './constants';
+import { ADDON_MOD_QUIZ_COMPONENT, ADDON_MOD_QUIZ_PAGE_NAME } from './constants';
 
 /**
  * Get mod Quiz services.
@@ -69,8 +69,8 @@ export async function getModQuizComponentModules(): Promise<unknown[]> {
 
 const routes: Routes = [
     {
-        path: AddonModQuizModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./quiz-lazy.module').then(m => m.AddonModQuizLazyModule),
+        path: ADDON_MOD_QUIZ_PAGE_NAME,
+        loadChildren: () => import('./quiz-lazy.module'),
     },
 ];
 
