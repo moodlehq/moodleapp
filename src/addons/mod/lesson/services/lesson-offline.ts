@@ -26,7 +26,8 @@ import {
     RETAKES_TABLE_NAME,
 } from './database/lesson';
 
-import { AddonModLessonPageWSData, AddonModLessonProvider } from './lesson';
+import { AddonModLessonPageWSData } from './lesson';
+import { AddonModLessonPageType } from '../constants';
 
 /**
  * Service to handle offline lesson.
@@ -256,7 +257,7 @@ export class AddonModLessonOfflineProvider {
     ): Promise<AddonModLessonPageAttemptRecord[]> {
         const attempts = pageId ?
             await this.getRetakeAttemptsForPage(lessonId, retake, pageId, siteId) :
-            await this.getRetakeAttemptsForType(lessonId, retake, AddonModLessonProvider.TYPE_QUESTION, siteId);
+            await this.getRetakeAttemptsForType(lessonId, retake, AddonModLessonPageType.QUESTION, siteId);
 
         if (correct) {
             return attempts.filter((attempt) => !!attempt.correct);
@@ -514,7 +515,7 @@ export class AddonModLessonOfflineProvider {
 
         await site.getDb().insertRecord(PAGE_ATTEMPTS_TABLE_NAME, entry);
 
-        if (page.type == AddonModLessonProvider.TYPE_QUESTION) {
+        if (page.type == AddonModLessonPageType.QUESTION) {
             // It's a question page, set it as last question page attempted.
             await this.setLastQuestionPageAttempted(lessonId, courseId, retake, page.id, siteId);
         }

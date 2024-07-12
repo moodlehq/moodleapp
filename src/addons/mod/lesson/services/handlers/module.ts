@@ -18,6 +18,7 @@ import { CoreConstants, ModPurpose } from '@/core/constants';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
+import { ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support lesson modules.
@@ -25,11 +26,9 @@ import { CoreModuleHandlerBase } from '@features/course/classes/module-base-hand
 @Injectable({ providedIn: 'root' })
 export class AddonModLessonModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_lesson';
-
     name = 'AddonModLesson';
     modName = 'lesson';
-    protected pageName = AddonModLessonModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_LESSON_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,

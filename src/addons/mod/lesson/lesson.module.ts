@@ -27,17 +27,17 @@ import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA, SYNC_SITE_SCHEMA } from './services/d
 import { AddonModLessonGradeLinkHandler } from './services/handlers/grade-link';
 import { AddonModLessonIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModLessonListLinkHandler } from './services/handlers/list-link';
-import { AddonModLessonModuleHandler, AddonModLessonModuleHandlerService } from './services/handlers/module';
+import { AddonModLessonModuleHandler } from './services/handlers/module';
 import { AddonModLessonPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModLessonPushClickHandler } from './services/handlers/push-click';
 import { AddonModLessonReportLinkHandler } from './services/handlers/report-link';
 import { AddonModLessonSyncCronHandler } from './services/handlers/sync-cron';
-import { AddonModLessonProvider } from './services/lesson';
+import { ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonModLessonModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./lesson-lazy.module').then(m => m.AddonModLessonLazyModule),
+        path: ADDON_MOD_LESSON_PAGE_NAME,
+        loadChildren: () => import('./lesson-lazy.module'),
     },
 ];
 
@@ -64,7 +64,7 @@ const routes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonModLessonReportLinkHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonModLessonPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(AddonModLessonProvider.COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_LESSON_COMPONENT);
             },
         },
     ],

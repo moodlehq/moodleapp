@@ -21,7 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { AddonModLessonModuleHandlerService } from './module';
+import { ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to treat links to lesson report.
@@ -106,7 +106,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
             };
 
             CoreNavigator.navigateToSitePath(
-                `${AddonModLessonModuleHandlerService.PAGE_NAME}/${module.course}/${module.id}`,
+                `${ADDON_MOD_LESSON_PAGE_NAME}/${module.course}/${module.id}`,
                 { params, siteId },
             );
         } catch (error) {
@@ -145,7 +145,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
             };
 
             CoreNavigator.navigateToSitePath(
-                AddonModLessonModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/user-retake/${userId}`,
+                ADDON_MOD_LESSON_PAGE_NAME + `/${module.course}/${module.id}/user-retake/${userId}`,
                 { params, siteId },
             );
         } catch (error) {

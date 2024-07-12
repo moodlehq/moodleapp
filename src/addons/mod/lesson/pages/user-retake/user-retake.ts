@@ -28,13 +28,13 @@ import {
     AddonModLessonAttemptsOverviewsStudentWSData,
     AddonModLessonGetUserAttemptWSResponse,
     AddonModLessonLessonWSData,
-    AddonModLessonProvider,
     AddonModLessonUserAttemptAnswerData,
     AddonModLessonUserAttemptAnswerPageWSData,
 } from '../../services/lesson';
 import { AddonModLessonAnswerData, AddonModLessonHelper } from '../../services/lesson-helper';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { ADDON_MOD_LESSON_COMPONENT } from '../../constants';
 
 /**
  * Page that displays a retake made by a certain user.
@@ -46,7 +46,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 })
 export class AddonModLessonUserRetakePage implements OnInit {
 
-    component = AddonModLessonProvider.COMPONENT;
+    component = ADDON_MOD_LESSON_COMPONENT;
     lesson?: AddonModLessonLessonWSData; // The lesson the retake belongs to.
     courseId!: number; // Course ID the lesson belongs to.
     selectedRetake?: number; // The retake to see.

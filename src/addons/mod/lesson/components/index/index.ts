@@ -36,19 +36,22 @@ import {
     AddonModLessonGetAccessInformationWSResponse,
     AddonModLessonLessonWSData,
     AddonModLessonPreventAccessReason,
-    AddonModLessonProvider,
 } from '../../services/lesson';
 import { AddonModLessonOffline } from '../../services/lesson-offline';
 import {
     AddonModLessonAutoSyncData,
     AddonModLessonSync,
-    AddonModLessonSyncProvider,
     AddonModLessonSyncResult,
 } from '../../services/lesson-sync';
-import { AddonModLessonModuleHandlerService } from '../../services/handlers/module';
 import { CoreTime } from '@singletons/time';
 import { CoreError } from '@classes/errors/error';
 import { Translate } from '@singletons';
+import {
+    ADDON_MOD_LESSON_AUTO_SYNCED,
+    ADDON_MOD_LESSON_COMPONENT,
+    ADDON_MOD_LESSON_DATA_SENT_EVENT,
+    ADDON_MOD_LESSON_PAGE_NAME,
+} from '../../constants';
 
 /**
  * Component that displays a lesson entry page.
@@ -65,7 +68,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     @Input() group = 0; // The group to display.
     @Input() action?: string; // The "action" to display first.
 
-    component = AddonModLessonProvider.COMPONENT;
+    component = ADDON_MOD_LESSON_COMPONENT;
     pluginName = 'lesson';
 
     lesson?: AddonModLessonLessonWSData; // The lesson.
@@ -86,7 +89,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     hightimeReadable?: string; // High time in a readable format.
     lowtimeReadable?: string; // Low time in a readable format.
 
-    protected syncEventName = AddonModLessonSyncProvider.AUTO_SYNCED;
+    protected syncEventName = ADDON_MOD_LESSON_AUTO_SYNCED;
     protected accessInfo?: AddonModLessonGetAccessInformationWSResponse; // Lesson access info.
     protected password?: string; // The password for the lesson.
     protected hasPlayed = false; // Whether the user has gone to the lesson player (attempted).
@@ -411,7 +414,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         await CoreNavigator.navigateToSitePath(
-            `${AddonModLessonModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/player`,
+            `${ADDON_MOD_LESSON_PAGE_NAME}/${this.courseId}/${this.module.id}/player`,
             {
                 params: {
                     pageId: pageId,
@@ -424,7 +427,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         this.hasPlayed = true;
         this.dataSentObserver?.off();
 
-        this.dataSentObserver = CoreEvents.on(AddonModLessonProvider.DATA_SENT_EVENT, (data) => {
+        this.dataSentObserver = CoreEvents.on(ADDON_MOD_LESSON_DATA_SENT_EVENT, (data) => {
             if (data.lessonId !== this.lesson?.id || data.type === 'launch') {
                 // Ignore launch sending because it only affects timers.
                 return;
@@ -480,7 +483,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         await CoreNavigator.navigateToSitePath(
-            `${AddonModLessonModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/player`,
+            `${ADDON_MOD_LESSON_PAGE_NAME}/${this.courseId}/${this.module.id}/player`,
             {
                 params: {
                     pageId: this.retakeToReview.pageid,
@@ -705,7 +708,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      */
     async openRetake(userId: number): Promise<void> {
         CoreNavigator.navigateToSitePath(
-            `${AddonModLessonModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/user-retake/${userId}`,
+            `${ADDON_MOD_LESSON_PAGE_NAME}/${this.courseId}/${this.module.id}/user-retake/${userId}`,
         );
     }
 
