@@ -42,7 +42,7 @@
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
     <preference name="AndroidInsecureFileModeEnabled" value="true" />
     <preference name="CustomURLSchemePluginClearsAndroidIntent" value="true" />
-    <preference name="deployment-target" value="13.0" />
+    <preference name="deployment-target" value="14.0" />
     <preference name="iosPersistentFileLocation" value="Compatibility" />
     <preference name="iosScheme" value="moodleappfs" />
     <preference name="WKWebViewOnly" value="true" />
