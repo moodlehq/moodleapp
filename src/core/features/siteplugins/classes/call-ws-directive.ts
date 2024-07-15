@@ -127,7 +127,7 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
     }
 
     /**
-     * Directive destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.invalidateObserver?.unsubscribe();

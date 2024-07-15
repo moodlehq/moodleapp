@@ -75,9 +75,7 @@
     </ng-container>
 
     <div class="addon-data-contents addon-data-entries addon-data-entries-{{database.id}}" *ngIf="!isEmpty && database">
-        <core-style [css]="database.csstemplate" prefix="div.addon-data-entries.addon-data-entries-{{database.id}}" />
-
-        <core-compile-html [text]="entriesRendered" [jsData]="jsData" [extraImports]="extraImports" />
+        <core-compile-html [text]="entriesRendered" [jsData]="jsData" [extraImports]="extraImports" [cssCode]="database.csstemplate" />
     </div>
 
 

@@ -100,6 +100,7 @@ import { CoreSitesListComponent } from './sites-list/sites-list';
         CoreShowPasswordComponent,
         CoreSitePickerComponent,
         CoreSplitViewComponent,
+        // eslint-disable-next-line deprecation/deprecation
         CoreStyleComponent,
         CoreSwipeSlidesComponent,
         CoreTabComponent,
@@ -155,6 +156,7 @@ import { CoreSitesListComponent } from './sites-list/sites-list';
         CoreShowPasswordComponent,
         CoreSitePickerComponent,
         CoreSplitViewComponent,
+        // eslint-disable-next-line deprecation/deprecation
         CoreStyleComponent,
         CoreSwipeSlidesComponent,
         CoreTabComponent,

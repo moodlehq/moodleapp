@@ -38,6 +38,8 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CoreCompile } from '@features/compile/services/compile';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreWS } from '@services/ws';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * This component has a behaviour similar to $compile for AngularJS. Given an HTML code, it will compile it so all its
@@ -64,6 +66,8 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     @Input() text!: string; // The HTML text to display.
     @Input() javascript?: string; // The Javascript to execute in the component.
     @Input() jsData?: Record<string, unknown>; // Data to pass to the fake component.
+    @Input() cssCode?: string; // The styles to apply.
+    @Input() stylesPath?: string; // The styles URL to apply (only if cssCode is not set).
     @Input() extraImports: unknown[] = []; // Extra import modules.
     @Input() extraProviders: Type<unknown>[] = []; // Extra providers.
     @Input() forceCompile = false; // Set it to true to force compile even if the text/javascript hasn't changed.
@@ -101,12 +105,13 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
         // Check if there's any change in the jsData object.
         const changes = this.differ.diff(this.jsData || {});
-        if (changes) {
-            this.setInputData();
+        if (!changes) {
+            return;
+        }
+        this.setInputData();
 
-            if (this.componentInstance.ngOnChanges) {
-                this.componentInstance.ngOnChanges(CoreDomUtils.createChangesFromKeyValueDiff(changes));
-            }
+        if (this.componentInstance.ngOnChanges) {
+            this.componentInstance.ngOnChanges(CoreDomUtils.createChangesFromKeyValueDiff(changes));
         }
     }
 
@@ -116,7 +121,8 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     async ngOnChanges(changes: Record<string, SimpleChange>): Promise<void> {
         // Only compile if text/javascript has changed or the forceCompile flag has been set to true.
         if (this.text === undefined ||
-            !(changes.text || changes.javascript || (changes.forceCompile && CoreUtils.isTrueOrOne(this.forceCompile)))) {
+            !(changes.text || changes.javascript || changes.cssCode || changes.stylesPath ||
+                (changes.forceCompile && CoreUtils.isTrueOrOne(this.forceCompile)))) {
             return;
         }
 
@@ -132,11 +138,14 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
             // Create the component.
             if (this.container) {
+                await this.loadCSSCode();
+
                 this.componentRef = await CoreCompile.createAndCompileComponent(
                     this.text,
                     componentClass,
                     this.container,
                     this.extraImports,
+                    this.cssCode,
                 );
 
                 this.element.addEventListener('submit', (event) => {
@@ -161,6 +170,29 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
      */
     ngOnDestroy(): void {
         this.componentRef?.destroy();
+    }
+
+    /**
+     * Retrieve the CSS code from the stylesPath if not loaded yet.
+     */
+    protected async loadCSSCode(): Promise<void> {
+        // Do not allow (yet) to load CSS code to a component that doesn't have text.
+        if (!this.text) {
+            this.cssCode = '';
+
+            return;
+        }
+
+        if (this.stylesPath && !this.cssCode) {
+            this.cssCode = await CoreUtils.ignoreErrors(CoreWS.getText(this.stylesPath));
+        }
+
+        // Prepend all CSS rules with :host to avoid conflicts.
+        if (!this.cssCode || this.cssCode.includes(':host')) {
+            return;
+        }
+
+        this.cssCode =  CoreDom.prefixCSS(this.cssCode, ':host ::ng-deep', ':host');
     }
 
     /**

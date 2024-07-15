@@ -62,7 +62,6 @@ import {
     CoreSitePluginsContent,
     CoreSitePluginsPlugin,
     CoreSitePluginsHandlerData,
-    CoreSitePluginsProvider,
     CoreSitePluginsCourseOptionHandlerData,
     CoreSitePluginsMainMenuHandlerData,
     CoreSitePluginsCourseModuleHandlerData,
@@ -89,8 +88,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CorePath } from '@singletons/path';
 import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 import { CoreSitePluginsEnrolHandler } from '../classes/handlers/enrol-handler';
-
-const HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
+import { CORE_SITE_PLUGINS_COMPONENT } from '../constants';
 
 /**
  * Helper service to provide functionalities regarding site plugins. It basically has the features to load and register site
@@ -102,7 +100,7 @@ const HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
  * inside the host DOM element?
  */
 @Injectable({ providedIn: 'root' })
-export class CoreSitePluginsHelperProvider {
+export class CoreSitePluginsInitService {
 
     protected logger: CoreLogger;
     protected courseRestrictHandlers: Record<string, {
@@ -112,21 +110,23 @@ export class CoreSitePluginsHelperProvider {
         handler: CoreSitePluginsCourseOptionHandler | CoreSitePluginsUserProfileHandler;
     }> = {};
 
+    protected static readonly HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
+
     constructor() {
-        this.logger = CoreLogger.getInstance('CoreSitePluginsHelperProvider');
+        this.logger = CoreLogger.getInstance('CoreSitePluginsInit');
     }
 
     /**
      * Initialize.
      */
-    initialize(): void {
+    init(): void {
         // Fetch the plugins on login.
         CoreEvents.on(CoreEvents.LOGIN, async (data) => {
             try {
                 const plugins = await CoreUtils.ignoreErrors(CoreSitePlugins.getPlugins(data.siteId));
 
                 // Plugins fetched, check that site hasn't changed.
-                if (data.siteId != CoreSites.getCurrentSiteId() || !plugins?.length) {
+                if (data.siteId !== CoreSites.getCurrentSiteId() || !plugins?.length) {
                     return;
                 }
 
@@ -145,7 +145,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Re-load plugins restricted for courses when the list of user courses changes.
         CoreEvents.on(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, (data) => {
-            if (data && data.siteId && data.siteId == CoreSites.getCurrentSiteId() && data.added && data.added.length) {
+            if (data.siteId && data.siteId === CoreSites.getCurrentSiteId() && data.added.length) {
                 this.reloadCourseRestrictHandlers();
             }
         });
@@ -160,7 +160,7 @@ export class CoreSitePluginsHelperProvider {
      * @param siteId Site ID. If not provided, current site.
      * @returns Promise resolved with the CSS code.
      */
-    async downloadStyles(
+    protected async downloadStyles(
         plugin: CoreSitePluginsPlugin,
         handlerName: string,
         handlerSchema: CoreSitePluginsHandlerData,
@@ -184,7 +184,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Remove the CSS files for this handler that aren't used anymore. Don't block the call for this.
         const files = await CoreUtils.ignoreErrors(
-            CoreFilepool.getFilesByComponent(site.getId(), CoreSitePluginsProvider.COMPONENT, componentId),
+            CoreFilepool.getFilesByComponent(site.getId(), CORE_SITE_PLUGINS_COMPONENT, componentId),
         );
 
         files?.forEach((file) => {
@@ -209,7 +209,7 @@ export class CoreSitePluginsHelperProvider {
             site.getId(),
             url,
             false,
-            CoreSitePluginsProvider.COMPONENT,
+            CORE_SITE_PLUGINS_COMPONENT,
             componentId,
             0,
             undefined,
@@ -270,7 +270,7 @@ export class CoreSitePluginsHelperProvider {
         // Create a "fake" instance to hold all the libraries.
         const instance = {
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            HANDLER_DISABLED: HANDLER_DISABLED,
+            HANDLER_DISABLED: CoreSitePluginsInitService.HANDLER_DISABLED,
         };
 
         await CoreCompile.loadLibraries();
@@ -285,7 +285,7 @@ export class CoreSitePluginsHelperProvider {
         // Now execute the javascript using this instance.
         result.jsResult = CoreCompile.executeJavascript(instance, result.javascript);
 
-        if (result.jsResult == HANDLER_DISABLED) {
+        if (result.jsResult === CoreSitePluginsInitService.HANDLER_DISABLED) {
             // The "disabled" field was added in 3.8, this is a workaround for previous versions.
             result.disabled = true;
         }
@@ -311,10 +311,10 @@ export class CoreSitePluginsHelperProvider {
      * Given an addon name and the key of a string, return the full string key (prefixed).
      *
      * @param addon Name of the addon (plugin.addon).
-     * @param key The key of the string.
+     * @param key The key of the string. Defaults to pluginname.
      * @returns Full string key.
      */
-    protected getPrefixedString(addon: string, key: string): string {
+    protected getPrefixedString(addon: string, key = 'pluginname'): string {
         return this.getPrefixForStrings(addon) + key;
     }
 
@@ -323,7 +323,7 @@ export class CoreSitePluginsHelperProvider {
      *
      * @param plugin Data of the plugin.
      */
-    loadLangStrings(plugin: CoreSitePluginsPlugin): void {
+    protected loadLangStrings(plugin: CoreSitePluginsPlugin): void {
         if (!plugin.parsedLang) {
             return;
         }
@@ -339,9 +339,8 @@ export class CoreSitePluginsHelperProvider {
      * Load a site plugin.
      *
      * @param plugin Data of the plugin.
-     * @returns Promise resolved when loaded.
      */
-    async loadSitePlugin(plugin: CoreSitePluginsPlugin): Promise<void> {
+    protected async loadSitePlugin(plugin: CoreSitePluginsPlugin): Promise<void> {
         this.logger.debug('Load site plugin:', plugin);
 
         if (!plugin.parsedHandlers && plugin.handlers) {
@@ -378,9 +377,8 @@ export class CoreSitePluginsHelperProvider {
      * Load site plugins.
      *
      * @param plugins The plugins to load.
-     * @returns Promise resolved when loaded.
      */
-    async loadSitePlugins(plugins: CoreSitePluginsPlugin[]): Promise<void> {
+    protected async loadSitePlugins(plugins: CoreSitePluginsPlugin[]): Promise<void> {
         this.courseRestrictHandlers = {};
 
         await CoreUtils.allPromises(plugins.map(async (plugin) => {
@@ -401,7 +399,7 @@ export class CoreSitePluginsHelperProvider {
      * @param version Styles version.
      * @param siteId Site ID. If not provided, current site.
      */
-    loadStyles(
+    protected loadStyles(
         plugin: CoreSitePluginsPlugin,
         handlerName: string,
         fileUrl: string,
@@ -436,7 +434,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Styles have been loaded, now treat the CSS.
         CoreUtils.ignoreErrors(
-            CoreFilepool.treatCSSCode(siteId, fileUrl, cssCode, CoreSitePluginsProvider.COMPONENT, uniqueName, version),
+            CoreFilepool.treatCSSCode(siteId, fileUrl, cssCode, CORE_SITE_PLUGINS_COMPONENT, uniqueName, version),
         );
     }
 
@@ -446,9 +444,8 @@ export class CoreSitePluginsHelperProvider {
      * @param plugin Data of the plugin.
      * @param handlerName Name of the handler in the plugin.
      * @param handlerSchema Data about the handler.
-     * @returns Promise resolved when done.
      */
-    async registerHandler(
+    protected async registerHandler(
         plugin: CoreSitePluginsPlugin,
         handlerName: string,
         handlerSchema: CoreSitePluginsHandlerData,
@@ -700,7 +697,7 @@ export class CoreSitePluginsHelperProvider {
 
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
         const blockName = (handlerSchema.moodlecomponent || plugin.component).replace('block_', '');
-        const titleString = handlerSchema.displaydata?.title ?? 'pluginname';
+        const titleString = handlerSchema.displaydata?.title;
         const prefixedTitle = this.getPrefixedString(plugin.addon, titleString);
 
         CoreBlockDelegate.registerHandler(
@@ -761,7 +758,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
-        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title || 'pluginname');
+        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
         const handler = new CoreSitePluginsCourseOptionHandler(
             uniqueName,
             prefixedTitle,
@@ -873,7 +870,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
-        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title || 'pluginname');
+        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
 
         CoreMainMenuDelegate.registerHandler(
             new CoreSitePluginsMainMenuHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult),
@@ -908,7 +905,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
-        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title || 'pluginname');
+        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
         const processorName = (handlerSchema.moodlecomponent || plugin.component).replace('message_', '');
 
         AddonMessageOutputDelegate.registerHandler(
@@ -1074,7 +1071,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
-        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title || 'pluginname');
+        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
 
         CoreSettingsDelegate.registerHandler(
             new CoreSitePluginsSettingsHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult),
@@ -1109,7 +1106,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
-        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title || 'pluginname');
+        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
         const handler = new CoreSitePluginsUserProfileHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult);
 
         CoreUserDelegate.registerHandler(handler);
@@ -1182,8 +1179,6 @@ export class CoreSitePluginsHelperProvider {
 
     /**
      * Reload the handlers that are restricted to certain courses.
-     *
-     * @returns Promise resolved when done.
      */
     protected async reloadCourseRestrictHandlers(): Promise<void> {
         if (!Object.keys(this.courseRestrictHandlers).length) {
@@ -1240,7 +1235,7 @@ export class CoreSitePluginsHelperProvider {
 
         // Create and register the handler.
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
-        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title || 'pluginname');
+        const prefixedTitle = this.getPrefixedString(plugin.addon, handlerSchema.displaydata.title);
 
         CoreMainMenuHomeDelegate.registerHandler(
             new CoreSitePluginsMainMenuHomeHandler(uniqueName, prefixedTitle, plugin, handlerSchema, initResult),
@@ -1251,4 +1246,4 @@ export class CoreSitePluginsHelperProvider {
 
 }
 
-export const CoreSitePluginsHelper = makeSingleton(CoreSitePluginsHelperProvider);
+export const CoreSitePluginsInit = makeSingleton(CoreSitePluginsInitService);
