@@ -31,7 +31,7 @@ import {
     EVALUATE_SUBMISSIONS_TABLE,
     SUBMISSIONS_TABLE,
 } from './database/workshop';
-import { AddonModWorkshopAction } from './workshop';
+import { AddonModWorkshopAction } from '../constants';
 
 /**
  * Service to handle offline workshop.

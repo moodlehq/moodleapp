@@ -23,8 +23,8 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 
-import { AddonModForumModuleHandlerService } from './module';
 import { isSafeNumber } from '@/core/utils/types';
+import { ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
 
 /**
  * Handler for forum push notifications clicks.
@@ -80,7 +80,7 @@ export class AddonModForumPushClickHandlerService implements CorePushNotificatio
         );
 
         await CoreNavigator.navigateToSitePath(
-            `${AddonModForumModuleHandlerService.PAGE_NAME}/discussion/${discussionId}`,
+            `${ADDON_MOD_FORUM_PAGE_NAME}/discussion/${discussionId}`,
             { siteId: notification.site, params: pageParams },
         );
     }

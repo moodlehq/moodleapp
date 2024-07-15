@@ -25,7 +25,6 @@ import { CoreWSExternalFile, CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import {
     AddonModWorkshop,
-    AddonModWorkshopPhase,
     AddonModWorkshopGradesData,
     AddonModWorkshopData,
     AddonModWorkshopGetWorkshopAccessInformationWSResponse,
@@ -33,6 +32,7 @@ import {
 import { AddonModWorkshopHelper } from '../workshop-helper';
 import { AddonModWorkshopSync } from '../workshop-sync';
 import { AddonModWorkshopPrefetchHandlerService } from '@addons/mod/workshop/services/handlers/prefetch';
+import { AddonModWorkshopPhase } from '../../constants';
 
 /**
  * Handler to prefetch workshops.

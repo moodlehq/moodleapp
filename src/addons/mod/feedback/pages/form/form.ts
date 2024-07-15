@@ -30,14 +30,13 @@ import {
     AddonModFeedback,
     AddonModFeedbackGetFeedbackAccessInformationWSResponse,
     AddonModFeedbackPageItems,
-    AddonModFeedbackProvider,
     AddonModFeedbackResponseValue,
     AddonModFeedbackWSFeedback,
 } from '../../services/feedback';
 import { AddonModFeedbackFormItem, AddonModFeedbackHelper } from '../../services/feedback-helper';
 import { AddonModFeedbackSync } from '../../services/feedback-sync';
-import { AddonModFeedbackModuleHandlerService } from '../../services/handlers/module';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { ADDON_MOD_FEEDBACK_COMPONENT, ADDON_MOD_FEEDBACK_FORM_SUBMITTED, ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
 
 /**
  * Page that displays feedback form.
@@ -65,7 +64,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
     courseId!: number;
     feedback?: AddonModFeedbackWSFeedback;
     completionPageContents?: string;
-    component = AddonModFeedbackProvider.COMPONENT;
+    component = ADDON_MOD_FEEDBACK_COMPONENT;
     offline = false;
     feedbackLoaded = false;
     access?: AddonModFeedbackGetFeedbackAccessInformationWSResponse;
@@ -356,7 +355,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
                 ]);
 
                 // If form has been submitted, the info has been already invalidated but we should update index view.
-                CoreEvents.trigger(AddonModFeedbackProvider.FORM_SUBMITTED, {
+                CoreEvents.trigger(ADDON_MOD_FEEDBACK_FORM_SUBMITTED, {
                     feedbackId: this.feedback!.id,
                     tab: 'overview',
                     offline: this.completedOffline,
@@ -373,7 +372,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
                 // Invalidate access information so user will see home page updated (continue form).
                 await AddonModFeedback.invalidateResumePageData(this.feedback!.id);
 
-                CoreEvents.trigger(AddonModFeedbackProvider.FORM_SUBMITTED, {
+                CoreEvents.trigger(ADDON_MOD_FEEDBACK_FORM_SUBMITTED, {
                     feedbackId: this.feedback!.id,
                     tab: 'overview',
                     offline: this.completedOffline,
@@ -395,7 +394,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
     showAnalysis(): void {
         if (this.fromIndex) {
             // Previous page is the index page, go back.
-            CoreEvents.trigger(AddonModFeedbackProvider.FORM_SUBMITTED, {
+            CoreEvents.trigger(ADDON_MOD_FEEDBACK_FORM_SUBMITTED, {
                 feedbackId: this.feedback!.id,
                 tab: 'analysis',
                 offline: this.completedOffline,
@@ -406,7 +405,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
-        CoreNavigator.navigateToSitePath(AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.cmId}`, {
+        CoreNavigator.navigateToSitePath(ADDON_MOD_FEEDBACK_PAGE_NAME + `/${this.courseId}/${this.cmId}`, {
             params: {
                 module: this.module,
                 tab: 'analysis',

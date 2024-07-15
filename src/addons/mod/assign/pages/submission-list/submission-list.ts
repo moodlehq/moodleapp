@@ -27,13 +27,13 @@ import {
     AddonModAssignSubmissionForList,
     AddonModAssignSubmissionsSource,
 } from '../../classes/submissions-source';
-import { AddonModAssignAssign, AddonModAssignProvider } from '../../services/assign';
+import { AddonModAssignAssign } from '../../services/assign';
 import {
-    AddonModAssignSyncProvider,
     AddonModAssignManualSyncData,
     AddonModAssignAutoSyncData,
 } from '../../services/assign-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { ADDON_MOD_ASSIGN_AUTO_SYNCED, ADDON_MOD_ASSIGN_GRADED_EVENT, ADDON_MOD_ASSIGN_MANUAL_SYNCED } from '../../constants';
 
 /**
  * Page that displays a list of submissions of an assignment.
@@ -56,7 +56,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
     constructor() {
         // Update data if some grade changes.
         this.gradedObserver = CoreEvents.on(
-            AddonModAssignProvider.GRADED_EVENT,
+            ADDON_MOD_ASSIGN_GRADED_EVENT,
             (data) => {
                 if (
                     this.submissions.loaded &&
@@ -72,7 +72,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
         );
 
         // Refresh data if this assign is synchronized.
-        const events = [AddonModAssignSyncProvider.AUTO_SYNCED, AddonModAssignSyncProvider.MANUAL_SYNCED];
+        const events = [ADDON_MOD_ASSIGN_AUTO_SYNCED, ADDON_MOD_ASSIGN_MANUAL_SYNCED];
         this.syncObserver = CoreEvents.onMultiple<AddonModAssignAutoSyncData | AddonModAssignManualSyncData>(
             events,
             (data) => {

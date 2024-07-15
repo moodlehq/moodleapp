@@ -21,14 +21,15 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { AddonModResourceIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModResourceListLinkHandler } from './services/handlers/list-link';
-import { AddonModResourceModuleHandlerService, AddonModResourceModuleHandler } from './services/handlers/module';
+import { AddonModResourceModuleHandler } from './services/handlers/module';
 import { AddonModResourcePluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModResourcePrefetchHandler } from './services/handlers/prefetch';
+import { ADDON_MOD_RESOURCE_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonModResourceModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./resource-lazy.module').then(m => m.AddonModResourceLazyModule),
+        path: ADDON_MOD_RESOURCE_PAGE_NAME,
+        loadChildren: () => import('./resource-lazy.module'),
     },
 ];
 

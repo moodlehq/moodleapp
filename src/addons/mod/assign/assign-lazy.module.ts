@@ -82,4 +82,4 @@ const routes: Routes = [
         AddonModAssignEditPage,
     ],
 })
-export class AddonModAssignLazyModule {}
+export default class AddonModAssignLazyModule {}

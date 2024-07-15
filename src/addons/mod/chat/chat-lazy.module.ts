@@ -80,4 +80,4 @@ const routes: Routes = [
         AddonModChatSessionMessagesPage,
     ],
 })
-export class AddonModChatLazyModule {}
+export default class AddonModChatLazyModule {}

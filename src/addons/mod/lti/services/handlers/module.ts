@@ -21,6 +21,7 @@ import { makeSingleton } from '@singletons';
 import { AddonModLtiHelper } from '../lti-helper';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourse } from '@features/course/services/course';
+import { ADDON_MOD_LTI_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support LTI modules.
@@ -28,11 +29,9 @@ import { CoreCourse } from '@features/course/services/course';
 @Injectable({ providedIn: 'root' })
 export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_lti';
-
     name = 'AddonModLti';
     modName = 'lti';
-    protected pageName = AddonModLtiModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_LTI_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: false,

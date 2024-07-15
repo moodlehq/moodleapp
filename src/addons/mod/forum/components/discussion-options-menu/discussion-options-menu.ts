@@ -17,7 +17,8 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { PopoverController } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { AddonModForum, AddonModForumDiscussion, AddonModForumProvider } from '../../services/forum';
+import { AddonModForum, AddonModForumDiscussion } from '../../services/forum';
+import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT } from '../../constants';
 
 /**
  * This component is meant to display a popover with the discussion options.
@@ -71,7 +72,7 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
                 locked: response.locked,
             };
 
-            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
+            CoreEvents.trigger(ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
             PopoverController.dismiss({ action: 'lock', value: locked });
             CoreDomUtils.showToast('addon.mod_forum.lockupdated', true);
         } catch (error) {
@@ -100,7 +101,7 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
                 pinned: pinned,
             };
 
-            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
+            CoreEvents.trigger(ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
             PopoverController.dismiss({ action: 'pin', value: pinned });
             CoreDomUtils.showToast('addon.mod_forum.pinupdated', true);
         } catch (error) {
@@ -129,7 +130,7 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
                 starred: starred,
             };
 
-            CoreEvents.trigger(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
+            CoreEvents.trigger(ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
             PopoverController.dismiss({ action: 'star', value: starred });
             CoreDomUtils.showToast('addon.mod_forum.favouriteupdated', true);
         } catch (error) {

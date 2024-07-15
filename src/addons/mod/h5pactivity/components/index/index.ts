@@ -35,21 +35,24 @@ import {
     AddonModH5PActivity,
     AddonModH5PActivityAccessInfo,
     AddonModH5PActivityData,
-    AddonModH5PActivityProvider,
     AddonModH5PActivityXAPIPostStateData,
     AddonModH5PActivityXAPIStateData,
     AddonModH5PActivityXAPIStatementsData,
-    MOD_H5PACTIVITY_STATE_ID,
 } from '../../services/h5pactivity';
 import {
     AddonModH5PActivitySync,
-    AddonModH5PActivitySyncProvider,
     AddonModH5PActivitySyncResult,
 } from '../../services/h5pactivity-sync';
 import { CoreFileHelper } from '@services/file-helper';
-import { AddonModH5PActivityModuleHandlerService } from '../../services/handlers/module';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
+import {
+    ADDON_MOD_H5PACTIVITY_AUTO_SYNCED,
+    ADDON_MOD_H5PACTIVITY_COMPONENT,
+    ADDON_MOD_H5PACTIVITY_PAGE_NAME,
+    ADDON_MOD_H5PACTIVITY_STATE_ID,
+    ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
+} from '../../constants';
 
 /**
  * Component that displays an H5P activity entry page.
@@ -62,7 +65,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
     @Output() onActivityFinish = new EventEmitter<boolean>();
 
-    component = AddonModH5PActivityProvider.COMPONENT;
+    component = ADDON_MOD_H5PACTIVITY_COMPONENT;
     pluginName = 'h5pactivity';
 
     h5pActivity?: AddonModH5PActivityData; // The H5P activity object.
@@ -90,7 +93,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     contentState?: string;
 
     protected fetchContentDefaultError = 'addon.mod_h5pactivity.errorgetactivity';
-    protected syncEventName = AddonModH5PActivitySyncProvider.AUTO_SYNCED;
+    protected syncEventName = ADDON_MOD_H5PACTIVITY_AUTO_SYNCED;
     protected site: CoreSite;
     protected observer?: CoreEventObserver;
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
@@ -147,7 +150,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
         await this.loadContentState(); // Loading the state requires the access info.
 
-        this.trackComponent = this.accessInfo?.cansubmit ? AddonModH5PActivityProvider.TRACK_COMPONENT : '';
+        this.trackComponent = this.accessInfo?.cansubmit ? ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT : '';
         this.canViewAllAttempts = !!this.h5pActivity.enabletracking && !!this.accessInfo?.canreviewattempts &&
                 AddonModH5PActivity.canGetUsersAttemptsInSite();
 
@@ -250,11 +253,11 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         this.saveFreq = this.h5pActivity.savestatefreq;
 
         const contentState = await CoreXAPI.getState(
-            AddonModH5PActivityProvider.TRACK_COMPONENT,
+            ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
             this.h5pActivity.context,
-            MOD_H5PACTIVITY_STATE_ID,
+            ADDON_MOD_H5PACTIVITY_STATE_ID,
             {
-                appComponent: AddonModH5PActivityProvider.COMPONENT,
+                appComponent: ADDON_MOD_H5PACTIVITY_COMPONENT,
                 appComponentId: this.h5pActivity.coursemodule,
                 readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
             },
@@ -464,7 +467,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
         try {
             await CoreNavigator.navigateToSitePath(
-                `${AddonModH5PActivityModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/userattempts/${userId}`,
+                `${ADDON_MOD_H5PACTIVITY_PAGE_NAME}/${this.courseId}/${this.module.id}/userattempts/${userId}`,
             );
         } finally {
             this.isOpeningPage = false;
@@ -479,7 +482,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
         try {
             await CoreNavigator.navigateToSitePath(
-                `${AddonModH5PActivityModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/users`,
+                `${ADDON_MOD_H5PACTIVITY_PAGE_NAME}/${this.courseId}/${this.module.id}/users`,
             );
         } finally {
             this.isOpeningPage = false;
@@ -696,7 +699,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             return;
         }
 
-        await CoreUtils.ignoreErrors(CoreXAPIOffline.deleteStates(AddonModH5PActivityProvider.TRACK_COMPONENT, {
+        await CoreUtils.ignoreErrors(CoreXAPIOffline.deleteStates(ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT, {
             itemId: this.h5pActivity.context,
         }));
     }

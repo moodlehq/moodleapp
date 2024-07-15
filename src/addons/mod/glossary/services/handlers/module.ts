@@ -17,6 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support glossary modules.
@@ -24,11 +25,9 @@ import { makeSingleton } from '@singletons';
 @Injectable({ providedIn: 'root' })
 export class AddonModGlossaryModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_glossary';
-
     name = 'AddonModGlossary';
     modName = 'glossary';
-    protected pageName = AddonModGlossaryModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_GLOSSARY_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: false,

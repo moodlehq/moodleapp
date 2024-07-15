@@ -26,8 +26,6 @@ import { CoreFormFields } from '@singletons/form';
 import { AddonModWorkshopAssessmentStrategyFieldErrors } from '../components/assessment-strategy/assessment-strategy';
 import { AddonWorkshopAssessmentStrategyDelegate } from './assessment-strategy-delegate';
 import {
-    AddonModWorkshopExampleMode,
-    AddonModWorkshopPhase,
     AddonModWorkshopUserOptions,
     AddonModWorkshopData,
     AddonModWorkshop,
@@ -36,12 +34,16 @@ import {
     AddonModWorkshopPhaseTaskData,
     AddonModWorkshopSubmissionAssessmentData,
     AddonModWorkshopGetAssessmentFormDefinitionData,
-    AddonModWorkshopAction,
-    AddonModWorkshopOverallFeedbackMode,
     AddonModWorkshopGetAssessmentFormFieldsParsedData,
 } from './workshop';
 import { AddonModWorkshopOffline, AddonModWorkshopOfflineSubmission } from './workshop-offline';
-import { ADDON_MOD_WORKSHOP_COMPONENT } from '@addons/mod/workshop/constants';
+import {
+    ADDON_MOD_WORKSHOP_COMPONENT,
+    AddonModWorkshopAction,
+    AddonModWorkshopExampleMode,
+    AddonModWorkshopOverallFeedbackMode,
+    AddonModWorkshopPhase,
+} from '@addons/mod/workshop/constants';
 
 /**
  * Helper to gather some common functions for workshop.

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
-import { AddonModForum, AddonModForumData, AddonModForumPost, AddonModForumProvider } from '../forum';
+import { AddonModForum, AddonModForumData, AddonModForumPost } from '../forum';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreFilepool } from '@services/filepool';
 import { CoreWSFile } from '@services/ws';
@@ -25,6 +25,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { AddonModForumSync, AddonModForumSyncResult } from '../forum-sync';
 import { makeSingleton } from '@singletons';
 import { CoreCourses } from '@features/courses/services/courses';
+import { ADDON_MOD_FORUM_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch forums.
@@ -34,7 +35,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
 
     name = 'AddonModForum';
     modName = 'forum';
-    component = AddonModForumProvider.COMPONENT;
+    component = ADDON_MOD_FORUM_COMPONENT;
     updatesNames = /^configuration$|^.*files$|^discussions$/;
 
     /**

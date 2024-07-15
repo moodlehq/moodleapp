@@ -18,6 +18,7 @@ import { CoreConstants, ModPurpose } from '@/core/constants';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
+import { ADDON_MOD_BOOK_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support book modules.
@@ -25,11 +26,9 @@ import { CoreModuleHandlerBase } from '@features/course/classes/module-base-hand
 @Injectable({ providedIn: 'root' })
 export class AddonModBookModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_book';
-
     name = 'AddonModBook';
     modName = 'book';
-    protected pageName = AddonModBookModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_BOOK_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,

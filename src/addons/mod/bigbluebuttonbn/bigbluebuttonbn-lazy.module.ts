@@ -35,4 +35,4 @@ const routes: Routes = [
         AddonModBBBIndexPage,
     ],
 })
-export class AddonModBBBLazyModule {}
+export default class AddonModBBBLazyModule {}

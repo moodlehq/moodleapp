@@ -26,7 +26,6 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { AddonModQuizModuleHandlerService } from '../../services/handlers/module';
 import { AddonModQuizPrefetchHandler } from '../../services/handlers/prefetch';
 import {
     AddonModQuiz,
@@ -42,10 +41,15 @@ import { AddonModQuizAttempt, AddonModQuizHelper, AddonModQuizQuizData } from '.
 import {
     AddonModQuizAutoSyncData,
     AddonModQuizSync,
-    AddonModQuizSyncProvider,
     AddonModQuizSyncResult,
 } from '../../services/quiz-sync';
-import { ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT, ADDON_MOD_QUIZ_COMPONENT, AddonModQuizAttemptStates } from '../../constants';
+import {
+    ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT,
+    ADDON_MOD_QUIZ_AUTO_SYNCED,
+    ADDON_MOD_QUIZ_COMPONENT,
+    ADDON_MOD_QUIZ_PAGE_NAME,
+    AddonModQuizAttemptStates,
+} from '../../constants';
 import { QuestionDisplayOptionsMarks } from '@features/question/constants';
 
 /**
@@ -83,7 +87,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     bestGrade?: AddonModQuizGetUserBestGradeWSResponse; // Best grade data.
 
     protected fetchContentDefaultError = 'addon.mod_quiz.errorgetquiz'; // Default error to show when loading contents.
-    protected syncEventName = AddonModQuizSyncProvider.AUTO_SYNCED;
+    protected syncEventName = ADDON_MOD_QUIZ_AUTO_SYNCED;
 
     protected autoReview?: AddonModQuizAttemptFinishedData; // Data to auto-review an attempt after finishing.
     protected quizAccessInfo?: AddonModQuizGetQuizAccessInformationWSResponse; // Quiz access info.
@@ -505,7 +509,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         this.hasPlayed = true;
 
         CoreNavigator.navigateToSitePath(
-            `${AddonModQuizModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/player`,
+            `${ADDON_MOD_QUIZ_PAGE_NAME}/${this.courseId}/${this.module.id}/player`,
             {
                 params: {
                     moduleUrl: this.module.url,
@@ -657,7 +661,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      */
     async reviewAttempt(attemptId: number): Promise<void> {
         await CoreNavigator.navigateToSitePath(
-            `${AddonModQuizModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/review/${attemptId}`,
+            `${ADDON_MOD_QUIZ_PAGE_NAME}/${this.courseId}/${this.module.id}/review/${attemptId}`,
         );
     }
 

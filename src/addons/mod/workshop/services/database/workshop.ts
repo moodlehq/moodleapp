@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSiteSchema } from '@services/sites';
-import { AddonModWorkshopAction } from '../workshop';
+import { AddonModWorkshopAction } from '../../constants';
 
 /**
  * Database variables for AddonModWorkshopOfflineProvider.

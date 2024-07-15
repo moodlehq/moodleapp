@@ -21,8 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { AddonModDataModuleHandlerService } from './module';
-import { ADDON_MOD_DATA_FEATURE_NAME } from '../../constants';
+import { ADDON_MOD_DATA_FEATURE_NAME, ADDON_MOD_DATA_PAGE_NAME } from '../../constants';
 
 /**
  * Content links handler for database show entry.
@@ -67,7 +66,7 @@ export class AddonModDataShowLinkHandlerService extends CoreContentLinksHandlerB
                     }
 
                     await CoreNavigator.navigateToSitePath(
-                        `${AddonModDataModuleHandlerService.PAGE_NAME}/${module.course}/${module.id}/${rId}`,
+                        `${ADDON_MOD_DATA_PAGE_NAME}/${module.course}/${module.id}/${rId}`,
                         { siteId, params: pageParams },
                     );
                 } finally {

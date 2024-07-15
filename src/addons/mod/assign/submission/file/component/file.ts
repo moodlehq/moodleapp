@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonModAssign, AddonModAssignProvider } from '@addons/mod/assign/services/assign';
+import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { AddonModAssignHelper } from '@addons/mod/assign/services/assign-helper';
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
 import { Component, OnInit } from '@angular/core';
@@ -23,6 +23,7 @@ import { AddonModAssignSubmissionFileHandlerService } from '../services/handler'
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { CoreFileEntry } from '@services/file-helper';
+import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
 
 /**
  * Component to render a file submission plugin.
@@ -33,7 +34,7 @@ import { CoreFileEntry } from '@services/file-helper';
 })
 export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmissionPluginBaseComponent implements OnInit {
 
-    component = AddonModAssignProvider.COMPONENT;
+    component = ADDON_MOD_ASSIGN_COMPONENT;
     files: CoreFileEntry[] = [];
 
     maxSize?: number;

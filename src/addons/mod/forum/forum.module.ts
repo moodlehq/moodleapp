@@ -22,7 +22,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreScreen } from '@services/screen';
 
-import { AddonModForumModuleHandler, AddonModForumModuleHandlerService } from './services/handlers/module';
+import { AddonModForumModuleHandler } from './services/handlers/module';
 import { SITE_SCHEMA } from './services/database/offline';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { AddonModForumPrefetchHandler } from './services/handlers/prefetch';
@@ -37,36 +37,35 @@ import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { AddonModForumTagAreaHandler } from './services/handlers/tag-area';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonModForumPushClickHandler } from './services/handlers/push-click';
-import { AddonModForumProvider } from './services/forum';
-import { COURSE_CONTENTS_PATH } from '@features/course/course.module';
+import { COURSE_CONTENTS_PATH } from '@features/course/constants';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from './constants';
+import { ADDON_MOD_FORUM_COMPONENT, ADDON_MOD_FORUM_PAGE_NAME, ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from './constants';
 
 const mainMenuRoutes: Routes = [
     {
         path: ADDON_MOD_FORUM_SEARCH_PAGE_NAME,
-        loadChildren: () => import('./forum-search-lazy.module').then(m => m.AddonModForumSearchLazyModule),
+        loadChildren: () => import('./forum-search-lazy.module'),
     },
     {
-        path: `${AddonModForumModuleHandlerService.PAGE_NAME}/discussion/:discussionId`,
-        loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonModForumDiscussionLazyModule),
+        path: `${ADDON_MOD_FORUM_PAGE_NAME}/discussion/:discussionId`,
+        loadChildren: () => import('./forum-discussion-lazy.module'),
         data: { swipeEnabled: false },
     },
     {
-        path: AddonModForumModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./forum-lazy.module').then(m => m.AddonModForumLazyModule),
+        path: ADDON_MOD_FORUM_PAGE_NAME,
+        loadChildren: () => import('./forum-lazy.module'),
     },
     ...conditionalRoutes(
         [
             {
-                path: `${COURSE_CONTENTS_PATH}/${AddonModForumModuleHandlerService.PAGE_NAME}/new/:timeCreated`,
-                loadChildren: () => import('./forum-new-discussion-lazy.module').then(m => m.AddonModForumNewDiscussionLazyModule),
-                data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
+                path: `${COURSE_CONTENTS_PATH}/${ADDON_MOD_FORUM_PAGE_NAME}/new/:timeCreated`,
+                loadChildren: () => import('./forum-new-discussion-lazy.module'),
+                data: { discussionsPathPrefix: `${ADDON_MOD_FORUM_PAGE_NAME}/` },
             },
             {
-                path: `${COURSE_CONTENTS_PATH}/${AddonModForumModuleHandlerService.PAGE_NAME}/:discussionId`,
-                loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonModForumDiscussionLazyModule),
-                data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
+                path: `${COURSE_CONTENTS_PATH}/${ADDON_MOD_FORUM_PAGE_NAME}/:discussionId`,
+                loadChildren: () => import('./forum-discussion-lazy.module'),
+                data: { discussionsPathPrefix: `${ADDON_MOD_FORUM_PAGE_NAME}/` },
             },
         ],
         () => CoreScreen.isMobile,
@@ -77,14 +76,14 @@ const mainMenuRoutes: Routes = [
 const courseContentsRoutes: Routes = conditionalRoutes(
     [
         {
-            path: `${AddonModForumModuleHandlerService.PAGE_NAME}/new/:timeCreated`,
-            loadChildren: () => import('./forum-new-discussion-lazy.module').then(m => m.AddonModForumNewDiscussionLazyModule),
-            data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
+            path: `${ADDON_MOD_FORUM_PAGE_NAME}/new/:timeCreated`,
+            loadChildren: () => import('./forum-new-discussion-lazy.module'),
+            data: { discussionsPathPrefix: `${ADDON_MOD_FORUM_PAGE_NAME}/` },
         },
         {
-            path: `${AddonModForumModuleHandlerService.PAGE_NAME}/:discussionId`,
-            loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonModForumDiscussionLazyModule),
-            data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
+            path: `${ADDON_MOD_FORUM_PAGE_NAME}/:discussionId`,
+            loadChildren: () => import('./forum-discussion-lazy.module'),
+            data: { discussionsPathPrefix: `${ADDON_MOD_FORUM_PAGE_NAME}/` },
         },
     ],
     () => CoreScreen.isTablet,
@@ -115,7 +114,7 @@ const courseContentsRoutes: Routes = conditionalRoutes(
                 CoreTagAreaDelegate.registerHandler(AddonModForumTagAreaHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonModForumPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(AddonModForumProvider.COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_FORUM_COMPONENT);
             },
         },
     ],

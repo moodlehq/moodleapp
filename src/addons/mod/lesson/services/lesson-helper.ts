@@ -24,10 +24,10 @@ import {
     AddonModLesson,
     AddonModLessonAttemptsOverviewsAttemptWSData,
     AddonModLessonGetPageDataWSResponse,
-    AddonModLessonProvider,
 } from './lesson';
 import { CoreTime } from '@singletons/time';
 import { CoreUtils } from '@services/utils/utils';
+import { AddonModLessonPageSubtype } from '../constants';
 
 /**
  * Helper service that provides some features for quiz.
@@ -161,7 +161,7 @@ export class AddonModLessonHelperProvider {
 
         // Cannot find contents element.
         if (AddonModLesson.isQuestionPage(data.page?.type || -1) ||
-                data.page?.qtype == AddonModLessonProvider.LESSON_PAGE_BRANCHTABLE) {
+                data.page?.qtype == AddonModLessonPageSubtype.BRANCHTABLE) {
             // Return page.contents to prevent having duplicated elements (some elements like videos might not work).
             return data.page?.contents || '';
         } else {
@@ -202,19 +202,19 @@ export class AddonModLessonHelperProvider {
         }
 
         switch (pageData.page?.qtype) {
-            case AddonModLessonProvider.LESSON_PAGE_TRUEFALSE:
-            case AddonModLessonProvider.LESSON_PAGE_MULTICHOICE:
+            case AddonModLessonPageSubtype.TRUEFALSE:
+            case AddonModLessonPageSubtype.MULTICHOICE:
                 return this.getMultiChoiceQuestionData(questionForm, question, fieldContainer);
 
-            case AddonModLessonProvider.LESSON_PAGE_NUMERICAL:
-            case AddonModLessonProvider.LESSON_PAGE_SHORTANSWER:
+            case AddonModLessonPageSubtype.NUMERICAL:
+            case AddonModLessonPageSubtype.SHORTANSWER:
                 return this.getInputQuestionData(questionForm, question, fieldContainer, pageData.page.qtype);
 
-            case AddonModLessonProvider.LESSON_PAGE_ESSAY: {
+            case AddonModLessonPageSubtype.ESSAY: {
                 return this.getEssayQuestionData(questionForm, question, fieldContainer);
             }
 
-            case AddonModLessonProvider.LESSON_PAGE_MATCHING: {
+            case AddonModLessonPageSubtype.MATCHING: {
                 return this.getMatchingQuestionData(questionForm, question, fieldContainer);
             }
         }
@@ -332,7 +332,7 @@ export class AddonModLessonHelperProvider {
 
         // Init the control.
         questionForm.addControl(input.name, this.formBuilder.control({
-            value: questionType === AddonModLessonProvider.LESSON_PAGE_NUMERICAL ? CoreUtils.formatFloat(input.value) : input.value,
+            value: questionType === AddonModLessonPageSubtype.NUMERICAL ? CoreUtils.formatFloat(input.value) : input.value,
             disabled: input.readOnly,
         }));
 
@@ -597,7 +597,6 @@ export class AddonModLessonHelperProvider {
     }
 
 }
-
 export const AddonModLessonHelper = makeSingleton(AddonModLessonHelperProvider);
 
 /**

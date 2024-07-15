@@ -20,15 +20,16 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCronDelegate } from '@services/cron';
 import { AddonModH5PActivityIndexLinkHandler } from './services/handlers/index-link';
-import { AddonModH5PActivityModuleHandler, AddonModH5PActivityModuleHandlerService } from './services/handlers/module';
+import { AddonModH5PActivityModuleHandler } from './services/handlers/module';
 import { AddonModH5PActivityPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModH5PActivityReportLinkHandler } from './services/handlers/report-link';
 import { AddonModH5PActivitySyncCronHandler } from './services/handlers/sync-cron';
+import { ADDON_MOD_H5PACTIVITY_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonModH5PActivityModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./h5pactivity-lazy.module').then(m => m.AddonModH5PActivityLazyModule),
+        path: ADDON_MOD_H5PACTIVITY_PAGE_NAME,
+        loadChildren: () => import('./h5pactivity-lazy.module'),
     },
 ];
 

@@ -25,15 +25,15 @@ import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { OFFLINE_SITE_SCHEMA } from './services/database/choice';
 import { AddonModChoiceIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModChoiceListLinkHandler } from './services/handlers/list-link';
-import { AddonModChoiceModuleHandler, AddonModChoiceModuleHandlerService } from './services/handlers/module';
+import { AddonModChoiceModuleHandler } from './services/handlers/module';
 import { AddonModChoicePrefetchHandler } from './services/handlers/prefetch';
 import { AddonModChoiceSyncCronHandler } from './services/handlers/sync-cron';
-import { ADDON_MOD_CHOICE_COMPONENT } from './constants';
+import { ADDON_MOD_CHOICE_COMPONENT, ADDON_MOD_CHOICE_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonModChoiceModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./choice-lazy.module').then(m => m.AddonModChoiceLazyModule),
+        path: ADDON_MOD_CHOICE_PAGE_NAME,
+        loadChildren: () => import('./choice-lazy.module'),
     },
 ];
 

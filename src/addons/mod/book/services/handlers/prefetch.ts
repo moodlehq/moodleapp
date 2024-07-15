@@ -19,7 +19,8 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { AddonModBook, AddonModBookProvider } from '../book';
+import { AddonModBook } from '../book';
+import { ADDON_MOD_BOOK_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch books.
@@ -29,7 +30,7 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
 
     name = 'AddonModBook';
     modName = 'book';
-    component = AddonModBookProvider.COMPONENT;
+    component = ADDON_MOD_BOOK_COMPONENT;
     updatesNames = /^configuration$|^.*files$|^entries$/;
 
     /**

@@ -23,7 +23,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModWikiIndexPage } from '../../pages/index';
 import { AddonModWiki } from '../wiki';
-import { AddonModWikiModuleHandlerService } from './module';
+import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to treat links to create a wiki page.
@@ -109,7 +109,7 @@ export class AddonModWikiCreateLinkHandlerService extends CoreContentLinksHandle
                     }
                     const subwikiId = parseInt(params.swid, 10);
                     const wikiId = parseInt(params.wid, 10);
-                    let path = AddonModWikiModuleHandlerService.PAGE_NAME;
+                    let path = ADDON_MOD_WIKI_PAGE_NAME;
 
                     // Check if the link is inside the same wiki.
                     const isSameWiki = await this.currentStateIsSameWiki(route, subwikiId, siteId);

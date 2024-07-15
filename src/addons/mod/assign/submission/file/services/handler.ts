@@ -16,7 +16,6 @@ import {
     AddonModAssignAssign,
     AddonModAssignSubmission,
     AddonModAssignPlugin,
-    AddonModAssignProvider,
     AddonModAssign,
 } from '@addons/mod/assign/services/assign';
 import { AddonModAssignHelper } from '@addons/mod/assign/services/assign-helper';
@@ -32,6 +31,7 @@ import { makeSingleton } from '@singletons';
 import { AddonModAssignSubmissionFileComponent } from '../component/file';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import type { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
+import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
 
 /**
  * Handler for file submission plugin.
@@ -65,10 +65,10 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      * @inheritdoc
      */
     clearTmpData(assign: AddonModAssignAssign): void {
-        const files = CoreFileSession.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
+        const files = CoreFileSession.getFiles(ADDON_MOD_ASSIGN_COMPONENT, assign.id);
 
         // Clear the files in session for this assign.
-        CoreFileSession.clearFiles(AddonModAssignProvider.COMPONENT, assign.id);
+        CoreFileSession.clearFiles(ADDON_MOD_ASSIGN_COMPONENT, assign.id);
 
         // Now delete the local files from the tmp folder.
         CoreFileUploader.clearTmpFiles(files);
@@ -148,7 +148,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         // Check if there's any change.
         const hasChanged = await this.hasDataChanged(assign, submission, plugin);
         if (hasChanged) {
-            const files = CoreFileSession.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
+            const files = CoreFileSession.getFiles(ADDON_MOD_ASSIGN_COMPONENT, assign.id);
 
             return CoreFileHelper.getTotalFilesSize(files);
         } else {
@@ -183,7 +183,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
             numFiles = pluginFiles && pluginFiles.length;
         }
 
-        const currentFiles = CoreFileSession.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
+        const currentFiles = CoreFileSession.getFiles(ADDON_MOD_ASSIGN_COMPONENT, assign.id);
 
         if (currentFiles.length != numFiles) {
             // Number of files has changed.
@@ -230,7 +230,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         }
 
         // Data has changed, we need to upload new files and re-upload all the existing files.
-        const currentFiles = CoreFileSession.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
+        const currentFiles = CoreFileSession.getFiles(ADDON_MOD_ASSIGN_COMPONENT, assign.id);
         const error = CoreUtils.hasRepeatedFilenames(currentFiles);
 
         if (error) {

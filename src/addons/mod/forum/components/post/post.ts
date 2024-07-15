@@ -34,7 +34,6 @@ import {
     AddonModForumData,
     AddonModForumDiscussion,
     AddonModForumPost,
-    AddonModForumProvider,
     AddonModForumPostFormData,
 } from '../../services/forum';
 import { CoreTag } from '@features/tag/services/tag';
@@ -53,6 +52,7 @@ import { CoreFileEntry } from '@services/file-helper';
 import { AddonModForumSharedPostFormData } from '../../pages/discussion/discussion';
 import { CoreDom } from '@singletons/dom';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, ADDON_MOD_FORUM_COMPONENT } from '../../constants';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -162,7 +162,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                 };
 
                 CoreEvents.trigger(
-                    AddonModForumProvider.CHANGE_DISCUSSION_EVENT,
+                    ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT,
                     data,
                     CoreSites.getCurrentSiteId(),
                 );
@@ -307,7 +307,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             await this.confirmDiscard();
 
             this.formData.syncId = AddonModForumSync.getDiscussionSyncId(this.discussionId);
-            CoreSync.blockOperation(AddonModForumProvider.COMPONENT, this.formData.syncId);
+            CoreSync.blockOperation(ADDON_MOD_FORUM_COMPONENT, this.formData.syncId);
 
             this.setFormData(
                 this.post.parentid,
@@ -546,7 +546,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             return;
         }
 
-        CoreSync.unblockOperation(AddonModForumProvider.COMPONENT, this.formData.syncId);
+        CoreSync.unblockOperation(ADDON_MOD_FORUM_COMPONENT, this.formData.syncId);
         delete this.formData.syncId;
     }
 

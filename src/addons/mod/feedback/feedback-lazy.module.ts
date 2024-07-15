@@ -86,4 +86,4 @@ const routes: Routes = [
         AddonModFeedbackAttemptPage,
     ],
 })
-export class AddonModFeedbackLazyModule {}
+export default class AddonModFeedbackLazyModule {}

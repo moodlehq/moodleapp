@@ -32,9 +32,12 @@ import {
     AddonModH5PActivity,
     AddonModH5PActivityAccessInfo,
     AddonModH5PActivityData,
-    AddonModH5PActivityProvider,
-    MOD_H5PACTIVITY_STATE_ID,
 } from '../h5pactivity';
+import {
+    ADDON_MOD_H5PACTIVITY_COMPONENT,
+    ADDON_MOD_H5PACTIVITY_STATE_ID,
+    ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
+} from '../../constants';
 
 /**
  * Handler to prefetch h5p activity.
@@ -44,7 +47,7 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
 
     name = 'AddonModH5PActivity';
     modName = 'h5pactivity';
-    component = AddonModH5PActivityProvider.COMPONENT;
+    component = ADDON_MOD_H5PACTIVITY_COMPONENT;
     updatesNames = /^configuration$|^.*files$|^tracks$|^usertracks$/;
 
     /**
@@ -113,7 +116,7 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
 
         await Promise.all([
             this.prefetchWSData(h5pActivity, siteId),
-            CoreFilepool.addFilesToQueue(siteId, introFiles, AddonModH5PActivityProvider.COMPONENT, module.id),
+            CoreFilepool.addFilesToQueue(siteId, introFiles, ADDON_MOD_H5PACTIVITY_COMPONENT, module.id),
             this.prefetchMainFile(module, h5pActivity, siteId),
             CoreH5P.getCustomCssSrc(siteId),
         ]);
@@ -146,14 +149,14 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
             const fileState = await CoreFilepool.getFileStateByUrl(siteId, CoreFileHelper.getFileUrl(deployedFile));
 
             if (fileState !== DownloadStatus.DOWNLOADED) {
-                await CoreUtils.ignoreErrors(CoreXAPIOffline.deleteStates(AddonModH5PActivityProvider.TRACK_COMPONENT, {
+                await CoreUtils.ignoreErrors(CoreXAPIOffline.deleteStates(ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT, {
                     itemId: h5pActivity.context,
                     siteId,
                 }));
             }
         }
 
-        await CoreFilepool.addFilesToQueue(siteId, [deployedFile], AddonModH5PActivityProvider.COMPONENT, module.id);
+        await CoreFilepool.addFilesToQueue(siteId, [deployedFile], ADDON_MOD_H5PACTIVITY_COMPONENT, module.id);
     }
 
     /**
@@ -239,11 +242,11 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
         }
 
         await CoreXAPI.getStateFromServer(
-            AddonModH5PActivityProvider.TRACK_COMPONENT,
+            ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
             h5pActivity.context,
-            MOD_H5PACTIVITY_STATE_ID,
+            ADDON_MOD_H5PACTIVITY_STATE_ID,
             {
-                appComponent: AddonModH5PActivityProvider.COMPONENT,
+                appComponent: ADDON_MOD_H5PACTIVITY_COMPONENT,
                 appComponentId: h5pActivity.coursemodule,
                 readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                 siteId,

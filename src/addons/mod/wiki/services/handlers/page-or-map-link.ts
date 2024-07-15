@@ -22,7 +22,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { Md5 } from 'ts-md5';
 import { AddonModWiki } from '../wiki';
-import { AddonModWikiModuleHandlerService } from './module';
+import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to treat links to a wiki page or the wiki map.
@@ -68,7 +68,7 @@ export class AddonModWikiPageOrMapLinkHandlerService extends CoreContentLinksHan
                     }));
 
                     await CoreNavigator.navigateToSitePath(
-                        AddonModWikiModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/page/${hash}`,
+                        `${ADDON_MOD_WIKI_PAGE_NAME}/${module.course}/${module.id}/page/${hash}`,
                         {
                             params: {
                                 module,

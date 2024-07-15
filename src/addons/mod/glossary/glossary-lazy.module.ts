@@ -28,7 +28,7 @@ const mobileRoutes: Routes = [
     },
     {
         path: ':courseId/:cmId/entry/:entrySlug',
-        loadChildren: () => import('./glossary-entry-lazy.module').then(m => m.AddonModGlossaryEntryLazyModule),
+        loadChildren: () => import('./glossary-entry-lazy.module'),
     },
 ];
 
@@ -39,7 +39,7 @@ const tabletRoutes: Routes = [
         children: [
             {
                 path: 'entry/:entrySlug',
-                loadChildren: () => import('./glossary-entry-lazy.module').then(m => m.AddonModGlossaryEntryLazyModule),
+                loadChildren: () => import('./glossary-entry-lazy.module'),
             },
         ],
     },
@@ -48,11 +48,11 @@ const tabletRoutes: Routes = [
 const routes: Routes = [
     {
         path: ':courseId/:cmId/entry/new',
-        loadChildren: () => import('./glossary-edit-lazy.module').then(m => m.AddonModGlossaryEditLazyModule),
+        loadChildren: () => import('./glossary-edit-lazy.module'),
     },
     {
         path: ':courseId/:cmId/entry/:entrySlug/edit',
-        loadChildren: () => import('./glossary-edit-lazy.module').then(m => m.AddonModGlossaryEditLazyModule),
+        loadChildren: () => import('./glossary-edit-lazy.module'),
     },
     ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
     ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
@@ -68,4 +68,4 @@ const routes: Routes = [
         AddonModGlossaryIndexPage,
     ],
 })
-export class AddonModGlossaryLazyModule {}
+export default class AddonModGlossaryLazyModule {}

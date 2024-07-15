@@ -18,8 +18,9 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { CoreCourse } from '@features/course/services/course';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { AddonModPageProvider, AddonModPagePage, AddonModPage } from '../../services/page';
+import { AddonModPagePage, AddonModPage } from '../../services/page';
 import { AddonModPageHelper } from '../../services/page-helper';
+import { ADDON_MOD_PAGE_COMPONENT } from '../../constants';
 
 /**
  * Component that displays a page.
@@ -30,7 +31,7 @@ import { AddonModPageHelper } from '../../services/page-helper';
 })
 export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
-    component = AddonModPageProvider.COMPONENT;
+    component = ADDON_MOD_PAGE_COMPONENT;
     pluginName = 'page';
     contents?: string;
     displayDescription = false;

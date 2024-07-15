@@ -36,6 +36,7 @@ import { CoreSitesFactory } from '@services/sites-factory';
 import { EMAIL_SIGNUP_FEATURE_NAME, FORGOTTEN_PASSWORD_FEATURE_NAME } from '@features/login/constants';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreSiteError } from '@classes/errors/siteerror';
+import { CoreKeyboard } from '@singletons/keyboard';
 
 /**
  * Page to enter the user credentials.
@@ -253,7 +254,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         e?.preventDefault();
         e?.stopPropagation();
 
-        CoreApp.closeKeyboard();
+        CoreKeyboard.close();
 
         // Get input data.
         const siteUrl = this.site.getURL();

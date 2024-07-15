@@ -25,10 +25,10 @@ import { makeSingleton } from '@singletons';
 import {
     AddonModFeedback,
     AddonModFeedbackGetFeedbackAccessInformationWSResponse,
-    AddonModFeedbackProvider,
     AddonModFeedbackWSFeedback,
 } from '../feedback';
 import { AddonModFeedbackSync, AddonModFeedbackSyncResult } from '../feedback-sync';
+import { ADDON_MOD_FEEDBACK_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch feedbacks.
@@ -38,7 +38,7 @@ export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPr
 
     name = 'AddonModFeedback';
     modName = 'feedback';
-    component = AddonModFeedbackProvider.COMPONENT;
+    component = ADDON_MOD_FEEDBACK_COMPONENT;
     updatesNames = /^configuration$|^.*files$|^attemptsfinished|^attemptsunfinished$/;
 
     /**

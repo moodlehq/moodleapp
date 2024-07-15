@@ -20,7 +20,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { AddonModForumModuleHandlerService } from './module';
+import { ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
 
 /**
  * Content links handler for forum new discussion.
@@ -54,7 +54,7 @@ export class AddonModForumPostLinkHandlerService extends CoreContentLinksHandler
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        `${AddonModForumModuleHandlerService.PAGE_NAME}/${module.course}/${module.id}/new/0`,
+                        `${ADDON_MOD_FORUM_PAGE_NAME}/${module.course}/${module.id}/new/0`,
                         { siteId, params: { forumId: module.instance } },
                     );
                 } finally {

@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonModDataEntryField, AddonModDataProvider } from '@addons/mod/data/services/data';
+import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { Component } from '@angular/core';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
 import { CoreDomUtils } from '@services/utils/dom';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 import { CoreFile } from '@services/file';
+import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
 
 /**
  * Component to render data picture field.
@@ -82,7 +83,7 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginBa
             return;
         }
 
-        this.component = AddonModDataProvider.COMPONENT;
+        this.component = ADDON_MOD_DATA_COMPONENT;
         this.componentId = this.database!.coursemodule;
 
         this.updateValue(this.value);

@@ -28,7 +28,6 @@ import { CoreEvents } from '@singletons/events';
 import {
     AddonModDataEntry,
     AddonModData,
-    AddonModDataProvider,
     AddonModDataSearchEntriesOptions,
     AddonModDataEntries,
     AddonModDataEntryFields,
@@ -44,6 +43,7 @@ import {
 import { AddonModDataFieldsDelegate } from './data-fields-delegate';
 import { AddonModDataOffline, AddonModDataOfflineAction } from './data-offline';
 import { CoreFileEntry } from '@services/file-helper';
+import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_ENTRY_CHANGED } from '../constants';
 
 /**
  * Service that provides helper functions for datas.
@@ -171,7 +171,7 @@ export class AddonModDataHelperProvider {
 
             await CoreUtils.ignoreErrors(Promise.all(promises));
 
-            CoreEvents.trigger(AddonModDataProvider.ENTRY_CHANGED, { dataId: dataId, entryId: entryId }, siteId);
+            CoreEvents.trigger(ADDON_MOD_DATA_ENTRY_CHANGED, { dataId: dataId, entryId: entryId }, siteId);
 
             CoreDomUtils.showToast(
                 approve ? 'addon.mod_data.recordapproved' : 'addon.mod_data.recorddisapproved',
@@ -878,7 +878,7 @@ export class AddonModDataHelperProvider {
                 // Ignore errors.
             }
 
-            CoreEvents.trigger(AddonModDataProvider.ENTRY_CHANGED, { dataId, entryId, deleted: true }, siteId);
+            CoreEvents.trigger(ADDON_MOD_DATA_ENTRY_CHANGED, { dataId, entryId, deleted: true }, siteId);
 
             CoreDomUtils.showToast('addon.mod_data.recorddeleted', true, ToastDuration.LONG);
 
@@ -969,7 +969,7 @@ export class AddonModDataHelperProvider {
             return 0;
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, AddonModDataProvider.COMPONENT, itemId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_DATA_COMPONENT, itemId, siteId);
     }
 
 }

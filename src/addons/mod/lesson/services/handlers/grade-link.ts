@@ -22,7 +22,7 @@ import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModLesson } from '../lesson';
-import { AddonModLessonModuleHandlerService } from './module';
+import { ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to treat links to lesson grade.
@@ -69,7 +69,7 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
             if (accessInfo.canviewreports) {
                 // User can view reports, go to view the report.
                 CoreNavigator.navigateToSitePath(
-                    AddonModLessonModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/user-retake/${userId}`,
+                    ADDON_MOD_LESSON_PAGE_NAME + `/${module.course}/${module.id}/user-retake/${userId}`,
                     {
                         siteId,
                     },

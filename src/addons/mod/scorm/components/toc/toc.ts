@@ -14,8 +14,9 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@singletons';
-import { AddonModScormGetScormAccessInformationWSResponse, AddonModScormProvider } from '../../services/scorm';
+import { AddonModScormGetScormAccessInformationWSResponse } from '../../services/scorm';
 import { AddonModScormTOCScoWithIcon } from '../../services/scorm-helper';
+import { AddonModScormMode } from '../../constants';
 
 /**
  * Modal to display the TOC of a SCORM.
@@ -41,8 +42,8 @@ export class AddonModScormTocComponent implements OnInit {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.isBrowse = this.mode === AddonModScormProvider.MODEBROWSE;
-        this.isReview = this.mode === AddonModScormProvider.MODEREVIEW;
+        this.isBrowse = this.mode === AddonModScormMode.BROWSE;
+        this.isReview = this.mode === AddonModScormMode.REVIEW;
     }
 
     /**

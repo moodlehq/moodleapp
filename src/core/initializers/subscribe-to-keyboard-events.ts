@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreApp } from '@services/app';
+import { CoreKeyboard } from '@singletons/keyboard';
 import { NgZone, Keyboard } from '@singletons';
 
 /**
@@ -20,12 +20,11 @@ import { NgZone, Keyboard } from '@singletons';
  */
 export default function(): void {
     const zone = NgZone.instance;
-    const app = CoreApp.instance;
     const keyboard = Keyboard.instance;
 
     // Execute callbacks in the Angular zone, so change detection doesn't stop working.
-    keyboard.onKeyboardShow().subscribe(data => zone.run(() => app.onKeyboardShow(data.keyboardHeight)));
-    keyboard.onKeyboardHide().subscribe(() => zone.run(() => app.onKeyboardHide()));
-    keyboard.onKeyboardWillShow().subscribe(() => zone.run(() => app.onKeyboardWillShow()));
-    keyboard.onKeyboardWillHide().subscribe(() => zone.run(() => app.onKeyboardWillHide()));
+    keyboard.onKeyboardShow().subscribe(data => zone.run(() => CoreKeyboard.onKeyboardShow(data.keyboardHeight)));
+    keyboard.onKeyboardHide().subscribe(() => zone.run(() => CoreKeyboard.onKeyboardHide()));
+    keyboard.onKeyboardWillShow().subscribe(() => zone.run(() => CoreKeyboard.onKeyboardWillShow()));
+    keyboard.onKeyboardWillHide().subscribe(() => zone.run(() => CoreKeyboard.onKeyboardWillHide()));
 }

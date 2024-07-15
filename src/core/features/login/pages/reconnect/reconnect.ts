@@ -15,7 +15,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { CoreApp } from '@services/app';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteBasicInfo, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -33,6 +32,7 @@ import { Translate } from '@singletons';
 import { SafeHtml } from '@angular/platform-browser';
 import { CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { FORGOTTEN_PASSWORD_FEATURE_NAME } from '@features/login/constants';
+import { CoreKeyboard } from '@singletons/keyboard';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -217,7 +217,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
         e.preventDefault();
         e.stopPropagation();
 
-        CoreApp.closeKeyboard();
+        CoreKeyboard.close();
 
         // Get input data.
         const password = this.credForm.value.password;

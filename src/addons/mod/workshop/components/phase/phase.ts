@@ -15,7 +15,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreUtils } from '@services/utils/utils';
 import { ModalController } from '@singletons';
-import { AddonModWorkshopPhaseData, AddonModWorkshopPhase, AddonModWorkshopPhaseTaskData } from '../../services/workshop';
+import { AddonModWorkshopPhaseData, AddonModWorkshopPhaseTaskData } from '../../services/workshop';
+import { AddonModWorkshopPhase } from '../../constants';
 
 /**
  * Page that displays the phase info modal.

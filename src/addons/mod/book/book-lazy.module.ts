@@ -43,4 +43,4 @@ const routes: Routes = [
         AddonModBookContentsPage,
     ],
 })
-export class AddonModBookLazyModule {}
+export default class AddonModBookLazyModule {}

@@ -15,7 +15,6 @@
 import {
     AddonModDataEntryField,
     AddonModDataField,
-    AddonModDataProvider,
     AddonModDataSearchEntriesAdvancedFieldFormatted,
     AddonModDataSubfieldData,
 } from '@addons/mod/data/services/data';
@@ -29,6 +28,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { AddonModDataFieldPictureComponent } from '../component/picture';
 import { CoreFileEntry } from '@services/file-helper';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
+import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
 
 /**
  * Handler for picture data field plugin.
@@ -90,7 +90,7 @@ export class AddonModDataFieldPictureHandlerService implements AddonModDataField
      * @inheritdoc
      */
     getFieldEditFiles(field: AddonModDataField): CoreFileEntry[] {
-        return CoreFileSession.getFiles(AddonModDataProvider.COMPONENT, field.dataid + '_' + field.id);
+        return CoreFileSession.getFiles(ADDON_MOD_DATA_COMPONENT, field.dataid + '_' + field.id);
     }
 
     /**

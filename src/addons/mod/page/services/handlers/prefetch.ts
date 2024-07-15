@@ -18,7 +18,8 @@ import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/c
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
-import { AddonModPage, AddonModPageProvider } from '../page';
+import { AddonModPage } from '../page';
+import { ADDON_MOD_PAGE_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch pages.
@@ -28,7 +29,7 @@ export class AddonModPagePrefetchHandlerService extends CoreCourseResourcePrefet
 
     name = 'AddonModPage';
     modName = 'page';
-    component = AddonModPageProvider.COMPONENT;
+    component = ADDON_MOD_PAGE_COMPONENT;
     updatesNames = /^configuration$|^.*files$/;
 
     /**

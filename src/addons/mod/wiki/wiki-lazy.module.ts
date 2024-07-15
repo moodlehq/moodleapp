@@ -49,4 +49,4 @@ const routes: Routes = [
         AddonModWikiEditPage,
     ],
 })
-export class AddonModWikiLazyModule {}
+export default class AddonModWikiLazyModule {}

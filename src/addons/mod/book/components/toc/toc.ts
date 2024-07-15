@@ -14,7 +14,8 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@singletons';
-import { AddonModBookTocChapter, AddonModBookBookWSData, AddonModBookNumbering } from '../../services/book';
+import { AddonModBookTocChapter, AddonModBookBookWSData } from '../../services/book';
+import { AddonModBookNumbering } from '../../constants';
 
 /**
  * Modal to display the TOC of a book.

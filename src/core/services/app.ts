@@ -18,7 +18,7 @@ import { CoreDB } from '@services/db';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 
-import { makeSingleton, Keyboard, StatusBar } from '@singletons';
+import { makeSingleton, StatusBar } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreColors } from '@singletons/colors';
 import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/database/app';
@@ -32,6 +32,7 @@ import { Subscription } from 'rxjs';
 import { CorePlatform } from '@services/platform';
 import { CoreNetwork, CoreNetworkConnection } from '@services/network';
 import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
+import { CoreKeyboard } from '@singletons/keyboard';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -52,9 +53,6 @@ export class CoreAppProvider {
     protected db?: SQLiteDB;
     protected logger: CoreLogger;
     protected ssoAuthenticationDeferred?: CorePromisedValue<void>;
-    protected isKeyboardShown = false;
-    protected keyboardOpening = false;
-    protected keyboardClosing = false;
     protected redirect?: CoreRedirectData;
     protected schemaVersionsTable = asyncInstance<CoreDatabaseTable<SchemaVersionsDBEntry, 'name'>>();
     protected mainMenuListener?: CoreEventObserver;
@@ -129,11 +127,11 @@ export class CoreAppProvider {
 
     /**
      * Closes the keyboard.
+     *
+     * @deprecated sinde 4.5.0. Use CoreKeyboard.closeKeyboard instead.
      */
     closeKeyboard(): void {
-        if (CorePlatform.isMobile()) {
-            Keyboard.hide();
-        }
+        CoreKeyboard.close();
     }
 
     /**
@@ -246,27 +244,30 @@ export class CoreAppProvider {
      * Check if the keyboard is closing.
      *
      * @returns Whether keyboard is closing (animating).
+     * @deprecated since 4.5.0. Use CoreKeyboard.isKeyboardClosing instead.
      */
     isKeyboardClosing(): boolean {
-        return this.keyboardClosing;
+        return CoreKeyboard.isKeyboardClosing();
     }
 
     /**
      * Check if the keyboard is being opened.
      *
      * @returns Whether keyboard is opening (animating).
+     * @deprecated since 4.5.0. Use CoreKeyboard.isKeyboardOpening instead.
      */
     isKeyboardOpening(): boolean {
-        return this.keyboardOpening;
+        return CoreKeyboard.isKeyboardOpening();
     }
 
     /**
      * Check if the keyboard is visible.
      *
      * @returns Whether keyboard is visible.
+     * @deprecated since 4.5.0. Use CoreKeyboard.isKeyboardVisible instead.
      */
     isKeyboardVisible(): boolean {
-        return this.isKeyboardShown;
+        return CoreKeyboard.isKeyboardVisible();
     }
 
     /**
@@ -320,61 +321,48 @@ export class CoreAppProvider {
 
     /**
      * Open the keyboard.
+     *
+     * @deprecated since 4.5.0. Use CoreKeyboard.openKeyboard instead.
      */
     openKeyboard(): void {
-        // Open keyboard is not supported in desktop and in iOS.
-        if (CorePlatform.isAndroid()) {
-            Keyboard.show();
-        }
+        CoreKeyboard.open();
     }
 
     /**
      * Notify that Keyboard has been shown.
      *
      * @param keyboardHeight Keyboard height.
+     * @deprecated since 4.5.0. Use CoreKeyboard.onKeyboardShow instead.
      */
     onKeyboardShow(keyboardHeight: number): void {
-        document.body.classList.add('keyboard-is-open');
-        this.setKeyboardShown(true);
-        // Error on iOS calculating size.
-        // More info: https://github.com/ionic-team/ionic-plugin-keyboard/issues/276 .
-        CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, keyboardHeight);
+        CoreKeyboard.onKeyboardShow(keyboardHeight);
     }
 
     /**
      * Notify that Keyboard has been hidden.
+     *
+     * @deprecated since 4.5.0. Use CoreKeyboard.onKeyboardHide instead.
      */
     onKeyboardHide(): void {
-        document.body.classList.remove('keyboard-is-open');
-        this.setKeyboardShown(false);
-        CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, 0);
+        CoreKeyboard.onKeyboardHide();
     }
 
     /**
      * Notify that Keyboard is about to be shown.
+     *
+     * @deprecated since 4.5.0. Use CoreKeyboard.onKeyboardWillShow instead.
      */
     onKeyboardWillShow(): void {
-        this.keyboardOpening = true;
-        this.keyboardClosing = false;
+        CoreKeyboard.onKeyboardWillShow();
     }
 
     /**
      * Notify that Keyboard is about to be hidden.
+     *
+     * @deprecated since 4.5.0. Use CoreKeyboard.onKeyboardWillHide instead.
      */
     onKeyboardWillHide(): void {
-        this.keyboardOpening = false;
-        this.keyboardClosing = true;
-    }
-
-    /**
-     * Set keyboard shown or hidden.
-     *
-     * @param shown Whether the keyboard is shown or hidden.
-     */
-    protected setKeyboardShown(shown: boolean): void {
-        this.isKeyboardShown = shown;
-        this.keyboardOpening = false;
-        this.keyboardClosing = false;
+        CoreKeyboard.onKeyboardWillHide();
     }
 
     /**

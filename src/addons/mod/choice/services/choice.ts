@@ -25,9 +25,9 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModChoiceOffline } from './choice-offline';
-import { AddonModChoiceAutoSyncData, AddonModChoiceSyncProvider } from './choice-sync';
+import { AddonModChoiceAutoSyncData } from './choice-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ADDON_MOD_CHOICE_COMPONENT, AddonModChoiceShowResults } from '../constants';
+import { ADDON_MOD_CHOICE_AUTO_SYNCED, ADDON_MOD_CHOICE_COMPONENT, AddonModChoiceShowResults } from '../constants';
 
 /**
  * Service that provides some features for choices.
@@ -611,7 +611,7 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [AddonModChoiceSyncProvider.AUTO_SYNCED]: AddonModChoiceAutoSyncData;
+        [ADDON_MOD_CHOICE_AUTO_SYNCED]: AddonModChoiceAutoSyncData;
     }
 
 }

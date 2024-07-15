@@ -25,7 +25,8 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { AddonModImscp, AddonModImscpProvider } from '../imscp';
+import { AddonModImscp } from '../imscp';
+import { ADDON_MOD_IMSCP_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch IMSCPs.
@@ -35,7 +36,7 @@ export class AddonModImscpPrefetchHandlerService extends CoreCourseResourcePrefe
 
     name = 'AddonModImscp';
     modName = 'imscp';
-    component = AddonModImscpProvider.COMPONENT;
+    component = ADDON_MOD_IMSCP_COMPONENT;
 
     /**
      * @inheritdoc

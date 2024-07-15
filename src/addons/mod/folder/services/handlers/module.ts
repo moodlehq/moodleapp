@@ -20,6 +20,7 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_FOLDER_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support folder modules.
@@ -27,11 +28,9 @@ import { makeSingleton } from '@singletons';
 @Injectable({ providedIn: 'root' })
 export class AddonModFolderModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_folder';
-
     name = 'AddonModFolder';
     modName = 'folder';
-    protected pageName = AddonModFolderModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_FOLDER_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,

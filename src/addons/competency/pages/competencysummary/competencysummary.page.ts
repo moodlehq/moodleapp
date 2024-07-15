@@ -18,7 +18,7 @@ import { AddonCompetencySummary, AddonCompetency } from '@addons/competency/serv
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/competency.module';
+import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/constants';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 

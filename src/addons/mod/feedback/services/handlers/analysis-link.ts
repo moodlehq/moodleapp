@@ -19,7 +19,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { AddonModFeedbackModuleHandlerService } from './module';
+import { ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
 
 /**
  * Content links handler for a feedback analysis.
@@ -54,7 +54,7 @@ export class AddonModFeedbackAnalysisLinkHandlerService extends CoreContentLinks
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}`,
+                        ADDON_MOD_FEEDBACK_PAGE_NAME + `/${module.course}/${module.id}`,
                         {
                             params: {
                                 module,

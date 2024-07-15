@@ -14,7 +14,7 @@
 
 import { Params } from '@angular/router';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
-import { ADDON_COMPETENCY_COMPETENCIES_PAGE } from '../competency.module';
+import { ADDON_COMPETENCY_COMPETENCIES_PAGE } from '../constants';
 import { AddonCompetency, AddonCompetencyPlan, AddonCompetencyProvider } from '../services/competency';
 import { AddonCompetencyHelper } from '../services/competency-helper';
 import { CoreIonicColorNames } from '@singletons/colors';

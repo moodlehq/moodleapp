@@ -38,11 +38,11 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCommentsOffline } from '@features/comments/services/comments-offline';
 import { CoreCommentsDBRecord } from '@features/comments/services/database/comments';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreApp } from '@services/app';
 import { CoreNetwork } from '@services/network';
 import moment from 'moment-timezone';
 import { Subscription } from 'rxjs';
 import { CoreAnimations } from '@components/animations';
+import { CoreKeyboard } from '@singletons/keyboard';
 
 /**
  * Page that displays comments.
@@ -309,7 +309,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * @param text Comment text to add.
      */
     async addComment(text: string): Promise<void> {
-        CoreApp.closeKeyboard();
+        CoreKeyboard.close();
         const loadingModal = await CoreDomUtils.showModalLoading('core.sending', true);
         // Freeze the add comment button.
         this.sending = true;

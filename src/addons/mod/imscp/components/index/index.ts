@@ -17,8 +17,9 @@ import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
-import { AddonModImscpProvider, AddonModImscp, AddonModImscpTocItem } from '../../services/imscp';
+import { AddonModImscp, AddonModImscpTocItem } from '../../services/imscp';
 import { CoreUtils } from '@services/utils/utils';
+import { ADDON_MOD_IMSCP_COMPONENT } from '../../constants';
 
 /**
  * Component that displays a IMSCP.
@@ -30,7 +31,7 @@ import { CoreUtils } from '@services/utils/utils';
 })
 export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
-    component = AddonModImscpProvider.COMPONENT;
+    component = ADDON_MOD_IMSCP_COMPONENT;
     pluginName = 'imscp';
 
     items: AddonModImscpTocItem[] = [];

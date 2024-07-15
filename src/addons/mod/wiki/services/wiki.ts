@@ -27,10 +27,14 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModWikiPageDBRecord } from './database/wiki';
 import { AddonModWikiOffline } from './wiki-offline';
-import { AddonModWikiAutoSyncData, AddonModWikiManualSyncData, AddonModWikiSyncProvider } from './wiki-sync';
+import { AddonModWikiAutoSyncData, AddonModWikiManualSyncData } from './wiki-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-
-const ROOT_CACHE_KEY = 'mmaModWiki:';
+import {
+    ADDON_MOD_WIKI_AUTO_SYNCED,
+    ADDON_MOD_WIKI_COMPONENT,
+    ADDON_MOD_WIKI_MANUAL_SYNCED,
+    ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
+} from '../constants';
 
 /**
  * Service that provides some features for wikis.
@@ -38,9 +42,7 @@ const ROOT_CACHE_KEY = 'mmaModWiki:';
 @Injectable({ providedIn: 'root' })
 export class AddonModWikiProvider {
 
-    static readonly COMPONENT = 'mmaModWiki';
-    static readonly PAGE_CREATED_EVENT = 'addon_mod_wiki_page_created';
-    static readonly RENEW_LOCK_TIME = 30000; // Milliseconds.
+    protected static readonly ROOT_CACHE_KEY = 'mmaModWiki:';
 
     protected subwikiListsCache: {[wikiId: number]: AddonModWikiSubwikiListData} = {};
     protected wikiFirstViewedPage: Record<string, Record<number, string>> = {};
@@ -137,7 +139,7 @@ export class AddonModWikiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getPageContentsCacheKey(pageId),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
-            component: AddonModWikiProvider.COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -154,7 +156,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getPageContentsCacheKey(pageId: number): string {
-        return ROOT_CACHE_KEY + 'page:' + pageId;
+        return AddonModWikiProvider.ROOT_CACHE_KEY + 'page:' + pageId;
     }
 
     /**
@@ -210,7 +212,7 @@ export class AddonModWikiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubwikiFilesCacheKey(wikiId, groupId, userId),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
-            component: AddonModWikiProvider.COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -239,7 +241,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getSubwikiFilesCacheKeyPrefix(wikiId: number): string {
-        return ROOT_CACHE_KEY + 'subwikifiles:' + wikiId;
+        return AddonModWikiProvider.ROOT_CACHE_KEY + 'subwikifiles:' + wikiId;
     }
 
     /**
@@ -280,7 +282,7 @@ export class AddonModWikiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubwikiPagesCacheKey(wikiId, groupId, userId),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
-            component: AddonModWikiProvider.COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -309,7 +311,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getSubwikiPagesCacheKeyPrefix(wikiId: number): string {
-        return ROOT_CACHE_KEY + 'subwikipages:' + wikiId;
+        return AddonModWikiProvider.ROOT_CACHE_KEY + 'subwikipages:' + wikiId;
     }
 
     /**
@@ -328,7 +330,7 @@ export class AddonModWikiProvider {
         const preSets = {
             cacheKey: this.getSubwikisCacheKey(wikiId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModWikiProvider.COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -348,7 +350,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getSubwikisCacheKey(wikiId: number): string {
-        return ROOT_CACHE_KEY + 'subwikis:' + wikiId;
+        return AddonModWikiProvider.ROOT_CACHE_KEY + 'subwikis:' + wikiId;
     }
 
     /**
@@ -386,7 +388,7 @@ export class AddonModWikiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getWikiDataCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModWikiProvider.COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -419,7 +421,7 @@ export class AddonModWikiProvider {
      * @returns Cache key.
      */
     protected getWikiDataCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'wiki:' + courseId;
+        return AddonModWikiProvider.ROOT_CACHE_KEY + 'wiki:' + courseId;
     }
 
     /**
@@ -633,7 +635,7 @@ export class AddonModWikiProvider {
         return CoreCourseLogHelper.log(
             'mod_wiki_view_page',
             params,
-            AddonModWikiProvider.COMPONENT,
+            ADDON_MOD_WIKI_COMPONENT,
             wikiId,
             siteId,
         );
@@ -654,7 +656,7 @@ export class AddonModWikiProvider {
         return CoreCourseLogHelper.log(
             'mod_wiki_view_wiki',
             params,
-            AddonModWikiProvider.COMPONENT,
+            ADDON_MOD_WIKI_COMPONENT,
             id,
             siteId,
         );
@@ -895,9 +897,9 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [AddonModWikiProvider.PAGE_CREATED_EVENT]: AddonModWikiPageCreatedData;
-        [AddonModWikiSyncProvider.AUTO_SYNCED]: AddonModWikiAutoSyncData;
-        [AddonModWikiSyncProvider.MANUAL_SYNCED]: AddonModWikiManualSyncData;
+        [ADDON_MOD_WIKI_PAGE_CREATED_EVENT]: AddonModWikiPageCreatedData;
+        [ADDON_MOD_WIKI_AUTO_SYNCED]: AddonModWikiAutoSyncData;
+        [ADDON_MOD_WIKI_MANUAL_SYNCED]: AddonModWikiManualSyncData;
     }
 
 }

@@ -25,6 +25,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { AddonModResource } from '../resource';
 import { AddonModResourceHelper } from '../resource-helper';
 import { CoreUtils } from '@services/utils/utils';
+import { ADDON_MOD_RESOURCE_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support resource modules.
@@ -32,11 +33,9 @@ import { CoreUtils } from '@services/utils/utils';
 @Injectable({ providedIn: 'root' })
 export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_resource';
-
     name = 'AddonModResource';
     modName = 'resource';
-    protected pageName = AddonModResourceModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_RESOURCE_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,

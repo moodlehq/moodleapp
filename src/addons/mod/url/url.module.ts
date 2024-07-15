@@ -27,7 +27,7 @@ import { ADDON_MOD_URL_PAGE_NAME } from './constants';
 const routes: Routes = [
     {
         path: ADDON_MOD_URL_PAGE_NAME,
-        loadChildren: () => import('./url-lazy.module').then(m => m.AddonModUrlLazyModule),
+        loadChildren: () => import('./url-lazy.module'),
     },
 ];
 

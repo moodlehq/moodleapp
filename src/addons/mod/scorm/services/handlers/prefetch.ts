@@ -24,8 +24,9 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModScorm, AddonModScormProvider, AddonModScormScorm } from '../scorm';
+import { AddonModScorm, AddonModScormScorm } from '../scorm';
 import { AddonModScormSync } from '../scorm-sync';
+import { ADDON_MOD_SCORM_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch SCORMs.
@@ -35,7 +36,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
 
     name = 'AddonModScorm';
     modName = 'scorm';
-    component = AddonModScormProvider.COMPONENT;
+    component = ADDON_MOD_SCORM_COMPONENT;
     updatesNames = /^configuration$|^.*files$|^tracks$/;
 
     /**

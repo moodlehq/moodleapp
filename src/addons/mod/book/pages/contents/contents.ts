@@ -35,12 +35,11 @@ import {
     AddonModBook,
     AddonModBookBookWSData,
     AddonModBookContentsMap,
-    AddonModBookNavStyle,
-    AddonModBookProvider,
     AddonModBookTocChapter,
 } from '../../services/book';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrlUtils } from '@services/utils/url';
+import { ADDON_MOD_BOOK_COMPONENT, AddonModBookNavStyle } from '../../constants';
 
 /**
  * Page that displays a book contents.
@@ -58,7 +57,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
     cmId!: number;
     courseId!: number;
     initialChapterId?: number;
-    component = AddonModBookProvider.COMPONENT;
+    component = ADDON_MOD_BOOK_COMPONENT;
     manager?: CoreSwipeSlidesItemsManager<LoadedChapter, AddonModBookSlidesItemsManagerSource>;
     warning = '';
     displayNavBar = true;

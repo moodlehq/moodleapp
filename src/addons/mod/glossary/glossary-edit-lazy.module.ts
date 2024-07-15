@@ -35,4 +35,4 @@ const routes: Routes = [{
         CoreEditorComponentsModule,
     ],
 })
-export class AddonModGlossaryEditLazyModule {}
+export default class AddonModGlossaryEditLazyModule {}

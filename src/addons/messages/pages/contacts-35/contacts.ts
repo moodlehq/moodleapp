@@ -22,13 +22,13 @@ import {
     AddonMessages,
 } from '../../services/messages';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreApp } from '@services/app';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { ActivatedRoute } from '@angular/router';
 import { Translate } from '@singletons';
 import { CoreScreen } from '@services/screen';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreKeyboard } from '@singletons/keyboard';
 
 /**
  * Page that displays the list of contacts.
@@ -205,15 +205,17 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
      * @param query Text to search for.
      * @returns Resolved when done.
      */
-    search(query: string): Promise<void> {
-        CoreApp.closeKeyboard();
+    async search(query: string): Promise<void> {
+        CoreKeyboard.close();
 
         this.loaded = false;
         this.loadingMessage = this.searchingMessages;
 
-        return this.performSearch(query).finally(() => {
+        try {
+            await this.performSearch(query);
+        } finally {
             this.loaded = true;
-        });
+        }
     }
 
     /**

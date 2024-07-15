@@ -23,8 +23,7 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-
-const ROOT_CACHE_KEY = 'mmaModResource:';
+import { ADDON_MOD_RESOURCE_COMPONENT } from '../constants';
 
 /**
  * Service that provides some features for resources.
@@ -32,7 +31,7 @@ const ROOT_CACHE_KEY = 'mmaModResource:';
 @Injectable({ providedIn: 'root' })
 export class AddonModResourceProvider {
 
-    static readonly COMPONENT = 'mmaModResource';
+    protected static readonly ROOT_CACHE_KEY = 'mmaModResource:';
 
     /**
      * Get cache key for resource data WS calls.
@@ -41,7 +40,7 @@ export class AddonModResourceProvider {
      * @returns Cache key.
      */
     protected getResourceCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'resource:' + courseId;
+        return AddonModResourceProvider.ROOT_CACHE_KEY + 'resource:' + courseId;
     }
 
     /**
@@ -68,7 +67,7 @@ export class AddonModResourceProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getResourceCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModResourceProvider.COMPONENT,
+            component: ADDON_MOD_RESOURCE_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -112,7 +111,7 @@ export class AddonModResourceProvider {
         const promises: Promise<void>[] = [];
 
         promises.push(this.invalidateResourceData(courseId, siteId));
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, AddonModResourceProvider.COMPONENT, moduleId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_RESOURCE_COMPONENT, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId, 'resource'));
 
         await CoreUtils.allPromises(promises);
@@ -158,7 +157,7 @@ export class AddonModResourceProvider {
         await CoreCourseLogHelper.log(
             'mod_resource_view_resource',
             params,
-            AddonModResourceProvider.COMPONENT,
+            ADDON_MOD_RESOURCE_COMPONENT,
             id,
             siteId,
         );

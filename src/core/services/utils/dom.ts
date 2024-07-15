@@ -17,7 +17,6 @@ import { IonContent } from '@ionic/angular';
 import { ModalOptions, PopoverOptions, AlertOptions, AlertButton, TextFieldTypes, ToastOptions } from '@ionic/core';
 import { Md5 } from 'ts-md5';
 
-import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreFile } from '@services/file';
 import { CoreWSExternalWarning } from '@services/ws';
@@ -60,6 +59,7 @@ import { CoreLang } from '@services/lang';
 import { CorePasswordModalParams, CorePasswordModalResponse } from '@components/password-modal/password-modal';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreErrorLogs } from '@singletons/error-logs';
+import { CoreKeyboard } from '@singletons/keyboard';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -337,7 +337,7 @@ export class CoreDomUtilsProvider {
                 await CoreUtils.nextTick();
                 if (CorePlatform.isAndroid() && this.supportsInputKeyboard(elementToFocus)) {
                     // On some Android versions the keyboard doesn't open automatically.
-                    CoreApp.openKeyboard();
+                    CoreKeyboard.open();
                 }
                 break;
             }

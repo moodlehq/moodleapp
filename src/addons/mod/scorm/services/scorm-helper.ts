@@ -25,7 +25,6 @@ import {
     AddonModScormAttemptCountResult,
     AddonModScormDataValue,
     AddonModScormGetScosWithDataOptions,
-    AddonModScormProvider,
     AddonModScormScoIcon,
     AddonModScormScorm,
     AddonModScormScoWithData,
@@ -33,6 +32,7 @@ import {
     AddonModScormUserDataMap,
 } from './scorm';
 import { AddonModScormOffline } from './scorm-offline';
+import { AddonModScormMode } from '../constants';
 
 // List of elements we want to ignore when copying attempts (they're calculated).
 const elementsToIgnore = [
@@ -229,8 +229,8 @@ export class AddonModScormHelperProvider {
         options: AddonModScormGetFirstScoOptions = {},
     ): Promise<AddonModScormScoWithData | undefined> {
 
-        const mode = options.mode || AddonModScormProvider.MODENORMAL;
-        const isNormalMode = mode === AddonModScormProvider.MODENORMAL;
+        const mode = options.mode || AddonModScormMode.NORMAL;
+        const isNormalMode = mode === AddonModScormMode.NORMAL;
 
         let scos = options.toc;
         if (!scos || !scos.length) {

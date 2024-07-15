@@ -21,11 +21,11 @@ import { CoreUtils } from '@services/utils/utils';
 import {
     AddonModH5PActivity,
     AddonModH5PActivityData,
-    AddonModH5PActivityProvider,
     AddonModH5PActivityUserAttempts,
 } from '../../services/h5pactivity';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { AddonModH5PActivityGradeMethod } from '../../constants';
 
 /**
  * Page that displays all users that can attempt an H5P activity.
@@ -164,9 +164,9 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
             user.user = await CoreUser.getProfile(user.userid, this.courseId, true);
 
             // Calculate the score of the user.
-            if (h5pActivity.grademethod === AddonModH5PActivityProvider.GRADEMANUAL) {
+            if (h5pActivity.grademethod === AddonModH5PActivityGradeMethod.GRADEMANUAL) {
                 // No score.
-            } else if (h5pActivity.grademethod === AddonModH5PActivityProvider.GRADEAVERAGEATTEMPT) {
+            } else if (h5pActivity.grademethod === AddonModH5PActivityGradeMethod.GRADEAVERAGEATTEMPT) {
                 if (user.attempts.length) {
                     // Calculate the average.
                     const sumScores = user.attempts.reduce((sumScores, attempt) =>

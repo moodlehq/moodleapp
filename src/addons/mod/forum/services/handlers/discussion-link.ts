@@ -18,7 +18,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { AddonModForumModuleHandlerService } from './module';
+import { ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to treat links to forum review.
@@ -66,7 +66,7 @@ export class AddonModForumDiscussionLinkHandlerService extends CoreContentLinksH
                 }
 
                 await CoreNavigator.navigateToSitePath(
-                    `${AddonModForumModuleHandlerService.PAGE_NAME}/discussion/${discussionId}`,
+                    `${ADDON_MOD_FORUM_PAGE_NAME}/discussion/${discussionId}`,
                     { siteId, params: pageParams },
                 );
             },

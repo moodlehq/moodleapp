@@ -28,10 +28,10 @@ import {
     AddonModForumData,
     AddonModForumDiscussion,
     AddonModForumPost,
-    AddonModForumProvider,
 } from './forum';
 import { AddonModForumDiscussionOptions, AddonModForumOffline, AddonModForumOfflineReply } from './forum-offline';
 import { CoreFileEntry } from '@services/file-helper';
+import { ADDON_MOD_FORUM_ALL_GROUPS, ADDON_MOD_FORUM_COMPONENT } from '../constants';
 
 /**
  * Service that provides some features for forums.
@@ -76,7 +76,7 @@ export class AddonModForumHelperProvider {
         // Convenience function to store a message to be synchronized later.
         const storeOffline = async (): Promise<void> => {
             // Multiple groups, the discussion is being posted to all groups.
-            const groupId = groupIds.length > 1 ? AddonModForumProvider.ALL_GROUPS : groupIds[0];
+            const groupId = groupIds.length > 1 ? ADDON_MOD_FORUM_ALL_GROUPS : groupIds[0];
 
             if (offlineAttachments && options) {
                 options.attachmentsid = offlineAttachments;
@@ -502,7 +502,7 @@ export class AddonModForumHelperProvider {
             return this.storeNewDiscussionFiles(forumId, timecreated, files, siteId);
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT, forumId, siteId);
     }
 
     /**
@@ -544,7 +544,7 @@ export class AddonModForumHelperProvider {
             return this.storeReplyFiles(forumId, postId, files, siteId, userId);
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, AddonModForumProvider.COMPONENT, forumId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT, forumId, siteId);
     }
 
 }

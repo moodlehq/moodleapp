@@ -18,6 +18,7 @@ import { CoreModuleHandlerBase } from '@features/course/classes/module-base-hand
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonModH5PActivity } from '../h5pactivity';
+import { ADDON_MOD_H5PACTIVITY_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support H5P activities.
@@ -25,11 +26,9 @@ import { AddonModH5PActivity } from '../h5pactivity';
 @Injectable({ providedIn: 'root' })
 export class AddonModH5PActivityModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_h5pactivity';
-
     name = 'AddonModH5PActivity';
     modName = 'h5pactivity';
-    protected pageName = AddonModH5PActivityModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_H5PACTIVITY_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,

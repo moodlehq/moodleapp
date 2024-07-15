@@ -33,9 +33,9 @@ import { CoreUserCourseOptionHandler } from './services/handlers/course-option';
 import { CoreUserHelper } from './services/user-helper';
 import { AppRoutingModule, conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
-import { COURSE_PAGE_NAME } from '@features/course/course.module';
-import { COURSE_INDEX_PATH } from '@features/course/course-lazy.module';
 import { CoreEvents } from '@singletons/events';
+import { COURSE_PAGE_NAME, COURSE_INDEX_PATH } from '@features/course/constants';
+import { PARTICIPANTS_PAGE_NAME } from './constants';
 
 /**
  * Get user services.
@@ -59,8 +59,6 @@ export async function getUsersServices(): Promise<Type<unknown>[]> {
         CoreUserSyncProvider,
     ];
 }
-
-export const PARTICIPANTS_PAGE_NAME = 'participants';
 
 const appRoutes: Routes = [
     {

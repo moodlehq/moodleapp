@@ -19,18 +19,19 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
-import { AddonModBookModuleHandler, AddonModBookModuleHandlerService } from './services/handlers/module';
+import { AddonModBookModuleHandler } from './services/handlers/module';
 import { AddonModBookIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModBookListLinkHandler } from './services/handlers/list-link';
 import { AddonModBookPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModBookTagAreaHandler } from './services/handlers/tag-area';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { BOOK_SITE_SCHEMA } from './services/database/book';
+import { ADDON_MOD_BOOK_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonModBookModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./book-lazy.module').then(m => m.AddonModBookLazyModule),
+        path: ADDON_MOD_BOOK_PAGE_NAME,
+        loadChildren: () => import('./book-lazy.module'),
     },
 ];
 

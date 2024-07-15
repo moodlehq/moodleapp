@@ -26,8 +26,15 @@ import { makeSingleton, Translate } from '@singletons';
 import { AddonModFeedbackOffline } from './feedback-offline';
 import { AddonModFeedbackAutoSyncData, AddonModFeedbackSyncProvider } from './feedback-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-
-const ROOT_CACHE_KEY = 'AddonModFeedback:';
+import {
+    ADDON_MOD_FEEDBACK_COMPONENT,
+    ADDON_MOD_FEEDBACK_FORM_SUBMITTED,
+    ADDON_MOD_FEEDBACK_LINE_SEP,
+    ADDON_MOD_FEEDBACK_MULTICHOICE_ADJUST_SEP,
+    ADDON_MOD_FEEDBACK_MULTICHOICE_TYPE_SEP,
+    ADDON_MOD_FEEDBACK_MULTICHOICERATED_VALUE_SEP,
+    ADDON_MOD_FEEDBACK_PER_PAGE,
+} from '../constants';
 
 /**
  * Service that provides some features for feedbacks.
@@ -35,14 +42,7 @@ const ROOT_CACHE_KEY = 'AddonModFeedback:';
 @Injectable({ providedIn: 'root' })
 export class AddonModFeedbackProvider {
 
-    static readonly COMPONENT = 'mmaModFeedback';
-    static readonly FORM_SUBMITTED = 'addon_mod_feedback_form_submitted';
-    static readonly LINE_SEP = '|';
-    static readonly MULTICHOICE_TYPE_SEP = '>>>>>';
-    static readonly MULTICHOICE_ADJUST_SEP = '<<<<<';
-    static readonly MULTICHOICE_HIDENOSELECT = 'h';
-    static readonly MULTICHOICERATED_VALUE_SEP = '####';
-    static readonly PER_PAGE = 20;
+    protected static readonly ROOT_CACHE_KEY = 'AddonModFeedback:';
 
     /**
      * Check dependency of a question item.
@@ -80,11 +80,11 @@ export class AddonModFeedbackProvider {
      * @returns Return true if dependency is acomplished and it can be shown. False, otherwise.
      */
     protected compareDependItemMultichoice(item: AddonModFeedbackItem, dependValue: string): boolean {
-        const parts = item.presentation.split(AddonModFeedbackProvider.MULTICHOICE_TYPE_SEP) || [];
+        const parts = item.presentation.split(ADDON_MOD_FEEDBACK_MULTICHOICE_TYPE_SEP) || [];
         const subtype = parts.length > 0 && parts[0] ? parts[0] : 'r';
 
-        const choicesStr = (parts[1] || '').split(AddonModFeedbackProvider.MULTICHOICE_ADJUST_SEP)[0] || '';
-        const choices = choicesStr.split(AddonModFeedbackProvider.LINE_SEP) || [];
+        const choicesStr = (parts[1] || '').split(ADDON_MOD_FEEDBACK_MULTICHOICE_ADJUST_SEP)[0] || '';
+        const choices = choicesStr.split(ADDON_MOD_FEEDBACK_LINE_SEP) || [];
         let values: AddonModFeedbackResponseValue[];
 
         if (subtype === 'c') {
@@ -92,7 +92,7 @@ export class AddonModFeedbackProvider {
                 values = [''];
             } else {
                 item.rawValue = '' + item.rawValue;
-                values = item.rawValue.split(AddonModFeedbackProvider.LINE_SEP);
+                values = item.rawValue.split(ADDON_MOD_FEEDBACK_LINE_SEP);
             }
         } else {
             values = [item.rawValue || ''];
@@ -104,7 +104,7 @@ export class AddonModFeedbackProvider {
                     let value = choices[index];
 
                     if (item.typ == 'multichoicerated') {
-                        value = value.split(AddonModFeedbackProvider.MULTICHOICERATED_VALUE_SEP)[1] || '';
+                        value = value.split(ADDON_MOD_FEEDBACK_MULTICHOICERATED_VALUE_SEP)[1] || '';
                     }
 
                     if (value.trim() == dependValue) {
@@ -195,10 +195,10 @@ export class AddonModFeedbackProvider {
             }
 
             // Treat multichoice checkboxes.
-            if (item.typ === 'multichoice' && item.presentation.split(AddonModFeedbackProvider.MULTICHOICE_TYPE_SEP)[0] === 'c') {
+            if (item.typ === 'multichoice' && item.presentation.split(ADDON_MOD_FEEDBACK_MULTICHOICE_TYPE_SEP)[0] === 'c') {
 
                 offlineValues[item.id] = offlineValues[item.id].filter((value) => Number(value) > 0);
-                item.rawValue = offlineValues[item.id].join(AddonModFeedbackProvider.LINE_SEP);
+                item.rawValue = offlineValues[item.id].join(ADDON_MOD_FEEDBACK_LINE_SEP);
             } else {
                 item.rawValue = offlineValues[item.id][0];
             }
@@ -314,7 +314,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAnalysisDataCacheKey(feedbackId, options.groupId),
-            component: AddonModFeedbackProvider.COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -429,7 +429,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCurrentCompletedTimeModifiedDataCacheKey(feedbackId),
-            component: AddonModFeedbackProvider.COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -476,7 +476,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCurrentValuesDataCacheKey(feedbackId),
-            component: AddonModFeedbackProvider.COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -529,7 +529,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFeedbackAccessInformationDataCacheKey(feedbackId),
-            component: AddonModFeedbackProvider.COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -554,7 +554,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getFeedbackCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'feedback:' + courseId;
+        return AddonModFeedbackProvider.ROOT_CACHE_KEY + 'feedback:' + courseId;
     }
 
     /**
@@ -564,7 +564,7 @@ export class AddonModFeedbackProvider {
      * @returns Cache key.
      */
     protected getFeedbackDataPrefixCacheKey(feedbackId: number): string {
-        return ROOT_CACHE_KEY + feedbackId;
+        return AddonModFeedbackProvider.ROOT_CACHE_KEY + feedbackId;
     }
 
     /**
@@ -590,7 +590,7 @@ export class AddonModFeedbackProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFeedbackCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModFeedbackProvider.COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -648,7 +648,7 @@ export class AddonModFeedbackProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getItemsDataCacheKey(feedbackId),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
-            component: AddonModFeedbackProvider.COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -686,11 +686,11 @@ export class AddonModFeedbackProvider {
             feedbackid: feedbackId,
             groupid: options.groupId,
             page: options.page,
-            perpage: AddonModFeedbackProvider.PER_PAGE,
+            perpage: ADDON_MOD_FEEDBACK_PER_PAGE,
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getNonRespondentsDataCacheKey(feedbackId, options.groupId),
-            component: AddonModFeedbackProvider.COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -862,11 +862,11 @@ export class AddonModFeedbackProvider {
             feedbackid: feedbackId,
             groupid: options.groupId,
             page: options.page,
-            perpage: AddonModFeedbackProvider.PER_PAGE,
+            perpage: ADDON_MOD_FEEDBACK_PER_PAGE,
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getResponsesAnalysisDataCacheKey(feedbackId, options.groupId),
-            component: AddonModFeedbackProvider.COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -910,7 +910,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets = {
             cacheKey: this.getResumePageDataCacheKey(feedbackId),
-            component: AddonModFeedbackProvider.COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1024,7 +1024,7 @@ export class AddonModFeedbackProvider {
      * @returns Promise resolved when the files are invalidated.
      */
     async invalidateFiles(moduleId: number, siteId?: string): Promise<void> {
-        return CoreFilepool.invalidateFilesByComponent(siteId, AddonModFeedbackProvider.COMPONENT, moduleId);
+        return CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_FEEDBACK_COMPONENT, moduleId);
     }
 
     /**
@@ -1082,7 +1082,7 @@ export class AddonModFeedbackProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCompletedDataCacheKey(feedbackId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModFeedbackProvider.COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -1106,7 +1106,7 @@ export class AddonModFeedbackProvider {
         await CoreCourseLogHelper.log(
             'mod_feedback_view_feedback',
             params,
-            AddonModFeedbackProvider.COMPONENT,
+            ADDON_MOD_FEEDBACK_COMPONENT,
             id,
             siteId,
         );
@@ -1252,7 +1252,7 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [AddonModFeedbackProvider.FORM_SUBMITTED]: AddonModFeedbackFormSubmittedData;
+        [ADDON_MOD_FEEDBACK_FORM_SUBMITTED]: AddonModFeedbackFormSubmittedData;
         [AddonModFeedbackSyncProvider.AUTO_SYNCED]: AddonModFeedbackAutoSyncData;
     }
 

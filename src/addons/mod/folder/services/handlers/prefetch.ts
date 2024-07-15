@@ -17,7 +17,8 @@ import { CoreCourseResourcePrefetchHandlerBase } from '@features/course/classes/
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { makeSingleton } from '@singletons';
-import { AddonModFolder, AddonModFolderProvider } from '../folder';
+import { AddonModFolder } from '../folder';
+import { ADDON_MOD_FOLDER_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch folders.
@@ -27,7 +28,7 @@ export class AddonModFolderPrefetchHandlerService extends CoreCourseResourcePref
 
     name = 'AddonModFolder';
     modName = 'folder';
-    component = AddonModFolderProvider.COMPONENT;
+    component = ADDON_MOD_FOLDER_COMPONENT;
 
     /**
      * @inheritdoc

@@ -16,7 +16,6 @@ import { Component, Input, OnInit, OnDestroy, ViewChild, Optional, ViewChildren,
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
-    AddonModAssignProvider,
     AddonModAssignAssign,
     AddonModAssignSubmissionFeedback,
     AddonModAssignSubmissionAttempt,
@@ -33,7 +32,6 @@ import {
     AddonModAssignAutoSyncData,
     AddonModAssignManualSyncData,
     AddonModAssignSync,
-    AddonModAssignSyncProvider,
 } from '../../services/assign-sync';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreTabComponent } from '@components/tabs/tab';
@@ -56,11 +54,19 @@ import { CoreError } from '@classes/errors/error';
 import { CoreGroups } from '@services/groups';
 import { CoreSync } from '@services/sync';
 import { AddonModAssignSubmissionPluginComponent } from '../submission-plugin/submission-plugin';
-import { AddonModAssignModuleHandlerService } from '../../services/handlers/module';
 import { CanLeave } from '@guards/can-leave';
 import { CoreTime } from '@singletons/time';
 import { isSafeNumber, SafeNumber } from '@/core/utils/types';
 import { CoreIonicColorNames } from '@singletons/colors';
+import {
+    ADDON_MOD_ASSIGN_AUTO_SYNCED,
+    ADDON_MOD_ASSIGN_COMPONENT,
+    ADDON_MOD_ASSIGN_GRADED_EVENT,
+    ADDON_MOD_ASSIGN_MANUAL_SYNCED,
+    ADDON_MOD_ASSIGN_PAGE_NAME,
+    ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
+    ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS,
+} from '../../constants';
 
 /**
  * Component that displays an assignment submission.
@@ -137,7 +143,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     statusNew = AddonModAssignSubmissionStatusValues.NEW;
     statusReopened = AddonModAssignSubmissionStatusValues.REOPENED;
     attemptReopenMethodNone = AddonModAssignAttemptReopenMethodValues.NONE;
-    unlimitedAttempts = AddonModAssignProvider.UNLIMITED_ATTEMPTS;
+    unlimitedAttempts = ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS;
 
     protected siteId: string; // Current site ID.
     protected currentUserId: number; // Current user ID.
@@ -161,7 +167,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         this.maxAttemptsText = Translate.instant('addon.mod_assign.unlimitedattempts');
 
         // Refresh data if this assign is synchronized and it's grading.
-        const events = [AddonModAssignSyncProvider.AUTO_SYNCED, AddonModAssignSyncProvider.MANUAL_SYNCED];
+        const events = [ADDON_MOD_ASSIGN_AUTO_SYNCED, ADDON_MOD_ASSIGN_MANUAL_SYNCED];
         this.syncObserver = CoreEvents.onMultiple<AddonModAssignAutoSyncData | AddonModAssignManualSyncData>(
             events,
             async (data) => {
@@ -341,7 +347,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
             if (!this.assign.submissiondrafts && this.userSubmission) {
                 // No drafts allowed, so it was submitted. Trigger event.
-                CoreEvents.trigger(AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT, {
+                CoreEvents.trigger(ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT, {
                     assignmentId: this.assign.id,
                     submissionId: this.userSubmission.id,
                     userId: this.currentUserId,
@@ -389,7 +395,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         }
 
         CoreNavigator.navigateToSitePath(
-            AddonModAssignModuleHandlerService.PAGE_NAME + '/' + this.courseId + '/' + this.moduleId + '/edit',
+            ADDON_MOD_ASSIGN_PAGE_NAME + '/' + this.courseId + '/' + this.moduleId + '/edit',
             {
                 params: {
                     blindId: this.blindId,
@@ -528,7 +534,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                     const result = await AddonModAssignSync.syncAssign(this.assign.id);
 
                     if (result && result.updated) {
-                        CoreEvents.trigger(AddonModAssignSyncProvider.MANUAL_SYNCED, {
+                        CoreEvents.trigger(ADDON_MOD_ASSIGN_MANUAL_SYNCED, {
                             assignId: this.assign.id,
                             warnings: result.warnings,
                             gradesBlocked: result.gradesBlocked,
@@ -703,7 +709,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         await this.treatGradeInfo(assign);
 
         const isManual = assign.attemptreopenmethod == AddonModAssignAttemptReopenMethodValues.MANUAL;
-        const isUnlimited = assign.maxattempts == AddonModAssignProvider.UNLIMITED_ATTEMPTS;
+        const isUnlimited = assign.maxattempts == ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS;
         const isLessThanMaxAttempts = !!this.userSubmission && (this.userSubmission.attemptnumber < (assign.maxattempts - 1));
 
         this.allowAddAttempt = isManual && (!this.userSubmission || isUnlimited || isLessThanMaxAttempts);
@@ -864,7 +870,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 Translate.instant('core.grades.grade'),
                 this.feedback.gradefordisplay,
                 {
-                    component: AddonModAssignProvider.COMPONENT,
+                    component: ADDON_MOD_ASSIGN_COMPONENT,
                     componentId: this.moduleId,
                 },
             );
@@ -903,7 +909,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 );
 
                 // Submitted, trigger event.
-                CoreEvents.trigger(AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT, {
+                CoreEvents.trigger(ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT, {
                     assignmentId: this.assign.id,
                     submissionId: this.userSubmission.id,
                     userId: this.currentUserId,
@@ -977,7 +983,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 // Invalidate and refresh data.
                 this.invalidateAndRefresh(true);
 
-                CoreEvents.trigger(AddonModAssignProvider.GRADED_EVENT, {
+                CoreEvents.trigger(ADDON_MOD_ASSIGN_GRADED_EVENT, {
                     assignmentId: this.assign.id,
                     submissionId: this.submitId,
                     userId: this.currentUserId,
@@ -1228,9 +1234,9 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         const syncId = AddonModAssignSync.getGradeSyncId(this.assign.id, this.submitId);
 
         if (block) {
-            CoreSync.blockOperation(AddonModAssignProvider.COMPONENT, syncId);
+            CoreSync.blockOperation(ADDON_MOD_ASSIGN_COMPONENT, syncId);
         } else {
-            CoreSync.unblockOperation(AddonModAssignProvider.COMPONENT, syncId);
+            CoreSync.unblockOperation(ADDON_MOD_ASSIGN_COMPONENT, syncId);
         }
     }
 

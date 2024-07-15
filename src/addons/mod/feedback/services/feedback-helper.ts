@@ -28,12 +28,18 @@ import {
     AddonModFeedbackGetResponsesAnalysisWSResponse,
     AddonModFeedbackGroupPaginatedOptions,
     AddonModFeedbackItem,
-    AddonModFeedbackProvider,
     AddonModFeedbackResponseValue,
     AddonModFeedbackWSAttempt,
     AddonModFeedbackWSNonRespondent,
 } from './feedback';
-import { AddonModFeedbackModuleHandlerService } from './handlers/module';
+import {
+    ADDON_MOD_FEEDBACK_LINE_SEP,
+    ADDON_MOD_FEEDBACK_MULTICHOICE_TYPE_SEP,
+    ADDON_MOD_FEEDBACK_MULTICHOICE_ADJUST_SEP,
+    ADDON_MOD_FEEDBACK_MULTICHOICERATED_VALUE_SEP,
+    ADDON_MOD_FEEDBACK_MULTICHOICE_HIDENOSELECT,
+    ADDON_MOD_FEEDBACK_PAGE_NAME,
+} from '../constants';
 
 const MODE_RESPONSETIME = 1;
 const MODE_COURSE = 2;
@@ -184,7 +190,7 @@ export class AddonModFeedbackHelperProvider {
             if (params.showcompleted === undefined) {
                 // Param showcompleted not defined. Show entry list.
                 await CoreNavigator.navigateToSitePath(
-                    AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/attempts`,
+                    ADDON_MOD_FEEDBACK_PAGE_NAME + `/${module.course}/${module.id}/attempts`,
                     { siteId },
                 );
 
@@ -198,7 +204,7 @@ export class AddonModFeedbackHelperProvider {
             });
 
             await CoreNavigator.navigateToSitePath(
-                AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/attempts/${attempt.id}`,
+                ADDON_MOD_FEEDBACK_PAGE_NAME + `/${module.course}/${module.id}/attempts/${attempt.id}`,
                 {
                     params: {
                         feedbackId: module.instance,
@@ -295,7 +301,7 @@ export class AddonModFeedbackHelperProvider {
      */
     protected getItemFormNumeric(item: AddonModFeedbackItem): AddonModFeedbackNumericItem {
 
-        const range = item.presentation.split(AddonModFeedbackProvider.LINE_SEP) || [];
+        const range = item.presentation.split(ADDON_MOD_FEEDBACK_LINE_SEP) || [];
         const rangeFrom = range.length > 0 ? parseInt(range[0], 10) : undefined;
         const rangeTo = range.length > 1 ? parseInt(range[1], 10) : undefined;
 
@@ -320,7 +326,7 @@ export class AddonModFeedbackHelperProvider {
     protected getItemFormTextfield(item: AddonModFeedbackItem): AddonModFeedbackTextItem {
         return Object.assign(item, {
             templateName: 'textfield',
-            length: Number(item.presentation.split(AddonModFeedbackProvider.LINE_SEP)[1]) || 255,
+            length: Number(item.presentation.split(ADDON_MOD_FEEDBACK_LINE_SEP)[1]) || 255,
             value: item.rawValue !== undefined ? item.rawValue : '',
             slottedLabel: true,
         });
@@ -348,7 +354,7 @@ export class AddonModFeedbackHelperProvider {
      */
     protected getItemFormMultichoice(item: AddonModFeedbackItem): AddonModFeedbackMultichoiceItem {
 
-        let parts = item.presentation.split(AddonModFeedbackProvider.MULTICHOICE_TYPE_SEP) || [];
+        let parts = item.presentation.split(ADDON_MOD_FEEDBACK_MULTICHOICE_TYPE_SEP) || [];
         const subType = parts.length > 0 && parts[0] ? parts[0] : 'r';
 
         const formItem: AddonModFeedbackMultichoiceItem = Object.assign(item, {
@@ -361,20 +367,20 @@ export class AddonModFeedbackHelperProvider {
 
         formItem.presentation = parts.length > 1 ? parts[1] : '';
         if (formItem.subtype != 'd') {
-            parts = formItem.presentation.split(AddonModFeedbackProvider.MULTICHOICE_ADJUST_SEP) || [];
+            parts = formItem.presentation.split(ADDON_MOD_FEEDBACK_MULTICHOICE_ADJUST_SEP) || [];
             formItem.presentation = parts.length > 0 ? parts[0] : '';
             // Horizontal are not supported right now. item.horizontal = parts.length > 1 && !!parts[1];
         }
 
-        const choices = formItem.presentation.split(AddonModFeedbackProvider.LINE_SEP) || [];
+        const choices = formItem.presentation.split(ADDON_MOD_FEEDBACK_LINE_SEP) || [];
         formItem.choices = choices.map((choice, index) => {
-            const weightValue = choice.split(AddonModFeedbackProvider.MULTICHOICERATED_VALUE_SEP) || [''];
+            const weightValue = choice.split(ADDON_MOD_FEEDBACK_MULTICHOICERATED_VALUE_SEP) || [''];
             choice = weightValue.length == 1 ? weightValue[0] : '(' + weightValue[0] + ') ' + weightValue[1];
 
             return { value: index + 1, label: choice };
         });
 
-        if (formItem.subtype === 'r' && formItem.options.search(AddonModFeedbackProvider.MULTICHOICE_HIDENOSELECT) == -1) {
+        if (formItem.subtype === 'r' && formItem.options.search(ADDON_MOD_FEEDBACK_MULTICHOICE_HIDENOSELECT) == -1) {
             formItem.choices.unshift({ value: 0, label: Translate.instant('addon.mod_feedback.not_selected') });
             formItem.value = formItem.rawValue !== undefined ? Number(formItem.rawValue) : 0;
         } else if (formItem.subtype === 'd') {
@@ -383,7 +389,7 @@ export class AddonModFeedbackHelperProvider {
         } else if (formItem.subtype === 'c') {
             if (formItem.rawValue !== undefined) {
                 formItem.rawValue = String(formItem.rawValue);
-                const values = formItem.rawValue.split(AddonModFeedbackProvider.LINE_SEP);
+                const values = formItem.rawValue.split(ADDON_MOD_FEEDBACK_LINE_SEP);
                 formItem.choices.forEach((choice) => {
                     for (const x in values) {
                         if (choice.value == Number(values[x])) {

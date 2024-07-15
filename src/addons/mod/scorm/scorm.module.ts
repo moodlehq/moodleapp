@@ -26,17 +26,17 @@ import { OFFLINE_SITE_SCHEMA } from './services/database/scorm';
 import { AddonModScormGradeLinkHandler } from './services/handlers/grade-link';
 import { AddonModScormIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModScormListLinkHandler } from './services/handlers/list-link';
-import { AddonModScormModuleHandler, AddonModScormModuleHandlerService } from './services/handlers/module';
+import { AddonModScormModuleHandler } from './services/handlers/module';
 import { AddonModScormPlayerLinkHandler } from './services/handlers/player-link';
 import { AddonModScormPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModScormPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModScormSyncCronHandler } from './services/handlers/sync-cron';
-import { AddonModScormProvider } from './services/scorm';
+import { ADDON_MOD_SCORM_COMPONENT, ADDON_MOD_SCORM_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonModScormModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./scorm-lazy.module').then(m => m.AddonModScormLazyModule),
+        path: ADDON_MOD_SCORM_PAGE_NAME,
+        loadChildren: () => import('./scorm-lazy.module'),
     },
 ];
 
@@ -63,7 +63,7 @@ const routes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonModScormPlayerLinkHandler.instance);
                 CorePluginFileDelegate.registerHandler(AddonModScormPluginFileHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(AddonModScormProvider.COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_SCORM_COMPONENT);
             },
         },
     ],

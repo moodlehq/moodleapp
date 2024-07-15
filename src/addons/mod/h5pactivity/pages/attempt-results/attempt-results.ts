@@ -20,12 +20,12 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import {
     AddonModH5PActivity,
-    AddonModH5PActivityProvider,
     AddonModH5PActivityData,
     AddonModH5PActivityAttemptResults,
 } from '../../services/h5pactivity';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { ADDON_MOD_H5PACTIVITY_COMPONENT } from '../../constants';
 
 /**
  * Page that displays results of an attempt.
@@ -41,7 +41,7 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
     h5pActivity?: AddonModH5PActivityData;
     attempt?: AddonModH5PActivityAttemptResults;
     user?: CoreUserProfile;
-    component = AddonModH5PActivityProvider.COMPONENT;
+    component = ADDON_MOD_H5PACTIVITY_COMPONENT;
     courseId!: number;
     cmId!: number;
 

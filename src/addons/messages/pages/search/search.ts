@@ -22,10 +22,10 @@ import {
     AddonMessages,
 } from '../../services/messages';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreApp } from '@services/app';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreKeyboard } from '@singletons/keyboard';
 
 /**
  * Page for searching users.
@@ -124,7 +124,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
      * @returns Resolved when done.
      */
     async search(query: string, loadMore?: 'contacts' | 'noncontacts' | 'messages', infiniteComplete?: () => void): Promise<void> {
-        CoreApp.closeKeyboard();
+        CoreKeyboard.close();
 
         this.query = query;
         this.disableSearch = true;

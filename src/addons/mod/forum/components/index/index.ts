@@ -20,7 +20,6 @@ import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/
 import {
     AddonModForum,
     AddonModForumData,
-    AddonModForumProvider,
     AddonModForumSortOrder,
     AddonModForumDiscussion,
     AddonModForumNewDiscussionData,
@@ -35,7 +34,6 @@ import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import {
     AddonModForumAutoSyncData,
     AddonModForumManualSyncData,
-    AddonModForumSyncProvider,
     AddonModForumSyncResult,
 } from '@addons/mod/forum/services/forum-sync';
 import { CoreSites } from '@services/sites';
@@ -46,7 +44,6 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonModForumDiscussionOptionsMenuComponent } from '../discussion-options-menu/discussion-options-menu';
 import { CoreScreen } from '@services/screen';
 import { AddonModForumPrefetchHandler } from '../../services/handlers/prefetch';
-import { AddonModForumModuleHandlerService } from '../../services/handlers/module';
 import { CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
@@ -56,7 +53,17 @@ import { CoreListItemsManager } from '@classes/items-management/list-items-manag
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreNavigator } from '@services/navigator';
-import { ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from '@addons/mod/forum/constants';
+import {
+    ADDON_MOD_FORUM_AUTO_SYNCED,
+    ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT,
+    ADDON_MOD_FORUM_COMPONENT,
+    ADDON_MOD_FORUM_MANUAL_SYNCED,
+    ADDON_MOD_FORUM_NEW_DISCUSSION_EVENT,
+    ADDON_MOD_FORUM_PAGE_NAME,
+    ADDON_MOD_FORUM_PREFERENCE_SORTORDER,
+    ADDON_MOD_FORUM_REPLY_DISCUSSION_EVENT,
+    ADDON_MOD_FORUM_SEARCH_PAGE_NAME,
+} from '@addons/mod/forum/constants';
 import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
 /**
  * Component that displays a forum entry page.
@@ -70,7 +77,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    component = AddonModForumProvider.COMPONENT;
+    component = ADDON_MOD_FORUM_COMPONENT;
     pluginName = 'forum';
     descriptionNote?: string;
     promisedDiscussions: CorePromisedValue<AddonModForumDiscussionsManager>;
@@ -87,7 +94,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     showSearch = false;
 
     protected fetchContentDefaultError = 'addon.mod_forum.errorgetforum';
-    protected syncEventName = AddonModForumSyncProvider.AUTO_SYNCED;
+    protected syncEventName = ADDON_MOD_FORUM_AUTO_SYNCED;
     protected syncManualObserver?: CoreEventObserver; // It will observe the sync manual event.
     protected replyObserver?: CoreEventObserver;
     protected newDiscObserver?: CoreEventObserver;
@@ -188,7 +195,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         // Initialize discussions manager.
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
             AddonModForumDiscussionsSource,
-            [this.courseId, this.module.id, this.courseContentsPage ? `${AddonModForumModuleHandlerService.PAGE_NAME}/` : ''],
+            [this.courseId, this.module.id, this.courseContentsPage ? `${ADDON_MOD_FORUM_PAGE_NAME}/` : ''],
         );
 
         this.sourceUnsubscribe = source.addListener({
@@ -229,20 +236,20 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.promisedDiscussions.resolve(new AddonModForumDiscussionsManager(source, this));
 
         // Refresh data if this forum discussion is synchronized from discussions list.
-        this.syncManualObserver = CoreEvents.on(AddonModForumSyncProvider.MANUAL_SYNCED, (data) => {
+        this.syncManualObserver = CoreEvents.on(ADDON_MOD_FORUM_MANUAL_SYNCED, (data) => {
             this.autoSyncEventReceived(data);
         }, this.siteId);
 
         // Listen for discussions added. When a discussion is added, we reload the data.
         this.newDiscObserver = CoreEvents.on(
-            AddonModForumProvider.NEW_DISCUSSION_EVENT,
+            ADDON_MOD_FORUM_NEW_DISCUSSION_EVENT,
             (data) => this.eventReceived(true, data),
         );
         this.replyObserver = CoreEvents.on(
-            AddonModForumProvider.REPLY_DISCUSSION_EVENT,
+            ADDON_MOD_FORUM_REPLY_DISCUSSION_EVENT,
             (data) => this.eventReceived(false, data),
         );
-        this.changeDiscObserver = CoreEvents.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data => {
+        this.changeDiscObserver = CoreEvents.on(ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, data => {
             if (!this.forum) {
                 return;
             }
@@ -419,7 +426,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
             if (updated) {
                 // Sync successful, send event.
-                CoreEvents.trigger(AddonModForumSyncProvider.MANUAL_SYNCED, {
+                CoreEvents.trigger(ADDON_MOD_FORUM_MANUAL_SYNCED, {
                     forumId: forum.id,
                     userId: CoreSites.getCurrentSiteUserId(),
                     source: 'index',
@@ -502,7 +509,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         }
 
         if (this.sortingAvailable) {
-            promises.push(CoreUser.invalidateUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER));
+            promises.push(CoreUser.invalidateUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER));
         }
 
         await Promise.all(promises);
@@ -602,7 +609,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             this.discussions.getSource().setDirty(true);
 
             try {
-                await CoreUser.setUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER, sortOrder.value.toFixed(0));
+                await CoreUser.setUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER, sortOrder.value.toFixed(0));
                 await this.showLoadingAndFetch();
             } catch (error) {
                 CoreDomUtils.showErrorModalDefault(error, 'Error updating preference.');

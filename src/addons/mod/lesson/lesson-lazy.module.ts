@@ -53,4 +53,4 @@ const routes: Routes = [
         AddonModLessonUserRetakePage,
     ],
 })
-export class AddonModLessonLazyModule {}
+export default class AddonModLessonLazyModule {}

@@ -21,6 +21,7 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreError } from '@classes/errors/error';
 import { SafeNumber } from '@/core/utils/types';
+import { CoreGradeType } from '../constants';
 
 /**
  * Service to provide grade functionalities.
@@ -28,12 +29,12 @@ import { SafeNumber } from '@/core/utils/types';
 @Injectable({ providedIn: 'root' })
 export class CoreGradesProvider {
 
-    static readonly TYPE_NONE = 0; // Moodle's GRADE_TYPE_NONE.
-    static readonly TYPE_VALUE = 1; // Moodle's GRADE_TYPE_VALUE.
-    static readonly TYPE_SCALE = 2; // Moodle's GRADE_TYPE_SCALE.
-    static readonly TYPE_TEXT = 3; // Moodle's GRADE_TYPE_TEXT.
+    static readonly TYPE_NONE = CoreGradeType.NONE;
+    static readonly TYPE_VALUE = CoreGradeType.VALUE;
+    static readonly TYPE_SCALE = CoreGradeType.SCALE;
+    static readonly TYPE_TEXT = CoreGradeType.TEXT;
 
-    protected readonly ROOT_CACHE_KEY = 'mmGrades:';
+    protected static readonly ROOT_CACHE_KEY = 'mmGrades:';
 
     protected logger: CoreLogger;
 
@@ -73,7 +74,7 @@ export class CoreGradesProvider {
      * @returns Cache key.
      */
     protected getCourseGradesPrefixCacheKey(courseId: number): string {
-        return this.ROOT_CACHE_KEY + 'items:' + courseId + ':';
+        return CoreGradesProvider.ROOT_CACHE_KEY + 'items:' + courseId + ':';
     }
 
     /**
@@ -92,7 +93,7 @@ export class CoreGradesProvider {
      * @returns Cache key.
      */
     protected getCoursesGradesCacheKey(): string {
-        return this.ROOT_CACHE_KEY + 'coursesgrades';
+        return CoreGradesProvider.ROOT_CACHE_KEY + 'coursesgrades';
     }
 
     /**

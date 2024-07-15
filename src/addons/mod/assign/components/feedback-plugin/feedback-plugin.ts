@@ -20,11 +20,11 @@ import {
     AddonModAssignAssign,
     AddonModAssignSubmission,
     AddonModAssignPlugin,
-    AddonModAssignProvider,
     AddonModAssign,
 } from '../../services/assign';
 import { AddonModAssignHelper, AddonModAssignPluginConfig } from '../../services/assign-helper';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
+import { ADDON_MOD_ASSIGN_COMPONENT } from '../../constants';
 
 /**
  * Component that displays an assignment feedback plugin.
@@ -48,7 +48,7 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
     data?: AddonModAssignFeedbackPluginData; // Data to pass to the component.
 
     // Data to render the plugin if it isn't supported.
-    component = AddonModAssignProvider.COMPONENT;
+    component = ADDON_MOD_ASSIGN_COMPONENT;
     text = '';
     files: CoreWSFile[] = [];
     notSupported = false;

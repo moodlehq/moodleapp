@@ -20,7 +20,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreScreen } from '@services/screen';
 
 import { CoreSettingsIndexPage } from './pages/index';
-import { SHAREDFILES_PAGE_NAME } from '@features/sharedfiles/sharedfiles.module';
+import { SHAREDFILES_PAGE_NAME } from '@features/sharedfiles/constants';
 import { CoreSettingsSynchronizationPage } from '@features/settings/pages/synchronization/synchronization';
 import { CoreSettingsGeneralPage } from '@features/settings/pages/general/general';
 import { CoreSettingsSpaceUsagePage } from '@features/settings/pages/space-usage/space-usage';

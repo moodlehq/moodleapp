@@ -36,4 +36,4 @@ const routes: Routes = [
         AddonModPageIndexPage,
     ],
 })
-export class AddonModPageLazyModule {}
+export default class AddonModPageLazyModule {}

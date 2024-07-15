@@ -21,14 +21,15 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { AddonModImscpIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModImscpListLinkHandler } from './services/handlers/list-link';
-import { AddonModImscpModuleHandler, AddonModImscpModuleHandlerService } from './services/handlers/module';
+import { AddonModImscpModuleHandler } from './services/handlers/module';
 import { AddonModImscpPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModImscpPrefetchHandler } from './services/handlers/prefetch';
+import { ADDON_MOD_IMSCP_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: AddonModImscpModuleHandlerService.PAGE_NAME,
-        loadChildren: () => import('./imscp-lazy.module').then(m => m.AddonModImscpLazyModule),
+        path: ADDON_MOD_IMSCP_PAGE_NAME,
+        loadChildren: () => import('./imscp-lazy.module'),
     },
 ];
 

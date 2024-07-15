@@ -30,7 +30,6 @@ import { AddonModDataComponentsCompileModule } from '../../components/components
 import {
     AddonModDataData,
     AddonModDataField,
-    AddonModDataProvider,
     AddonModData,
     AddonModDataTemplateType,
     AddonModDataEntry,
@@ -45,6 +44,7 @@ import { AddonModDataEntryFieldInitialized } from '../../classes/base-field-plug
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_ENTRY_CHANGED } from '../../constants';
 
 /**
  * Page that displays the view edit page.
@@ -75,7 +75,7 @@ export class AddonModDataEditPage implements OnInit {
     moduleId = 0;
     database?: AddonModDataData;
     title = '';
-    component = AddonModDataProvider.COMPONENT;
+    component = ADDON_MOD_DATA_COMPONENT;
     loaded = false;
     selectedGroup = 0;
     cssClass = '';
@@ -369,7 +369,7 @@ export class AddonModDataEditPage implements OnInit {
                     try {
                         await Promise.all(promises);
                         CoreEvents.trigger(
-                            AddonModDataProvider.ENTRY_CHANGED,
+                            ADDON_MOD_DATA_ENTRY_CHANGED,
                             { dataId: this.database!.id, entryId: this.entryId },
 
                             this.siteId,

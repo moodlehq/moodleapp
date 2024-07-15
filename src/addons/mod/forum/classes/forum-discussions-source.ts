@@ -22,10 +22,10 @@ import {
     AddonModForumCanAddDiscussion,
     AddonModForumData,
     AddonModForumDiscussion,
-    AddonModForumProvider,
     AddonModForumSortOrder,
 } from '../services/forum';
 import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '../services/forum-offline';
+import { ADDON_MOD_FORUM_DISCUSSIONS_PER_PAGE } from '../constants';
 
 export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource<AddonModForumDiscussionItem> {
 
@@ -136,7 +136,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
      * @inheritdoc
      */
     getPageLength(): number {
-        return AddonModForumProvider.DISCUSSIONS_PER_PAGE;
+        return ADDON_MOD_FORUM_DISCUSSIONS_PER_PAGE;
     }
 
     /**

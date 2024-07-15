@@ -23,8 +23,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-
-const ROOT_CACHE_KEY = 'mmaModPage:';
+import { ADDON_MOD_PAGE_COMPONENT } from '../constants';
 
 /**
  * Service that provides some features for page.
@@ -32,7 +31,7 @@ const ROOT_CACHE_KEY = 'mmaModPage:';
 @Injectable({ providedIn: 'root' })
 export class AddonModPageProvider {
 
-    static readonly COMPONENT = 'mmaModPage';
+    protected static readonly ROOT_CACHE_KEY = 'mmaModPage:';
 
     /**
      * Get a page by course module ID.
@@ -69,7 +68,7 @@ export class AddonModPageProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getPageCacheKey(courseId),
             updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: AddonModPageProvider.COMPONENT,
+            component: ADDON_MOD_PAGE_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -90,7 +89,7 @@ export class AddonModPageProvider {
      * @returns Cache key.
      */
     protected getPageCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'page:' + courseId;
+        return AddonModPageProvider.ROOT_CACHE_KEY + 'page:' + courseId;
     }
 
     /**
@@ -107,7 +106,7 @@ export class AddonModPageProvider {
         const promises: Promise<void>[] = [];
 
         promises.push(this.invalidatePageData(courseId, siteId));
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, AddonModPageProvider.COMPONENT, moduleId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_PAGE_COMPONENT, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId));
 
         return CoreUtils.allPromises(promises);
@@ -153,7 +152,7 @@ export class AddonModPageProvider {
         return CoreCourseLogHelper.log(
             'mod_page_view_page',
             params,
-            AddonModPageProvider.COMPONENT,
+            ADDON_MOD_PAGE_COMPONENT,
             pageid,
             siteId,
         );

@@ -14,11 +14,11 @@
 
 import { AddonNotes, AddonNotesPublishState } from '@addons/notes/services/notes';
 import { Component, ViewChild, ElementRef, Input } from '@angular/core';
-import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
+import { CoreKeyboard } from '@singletons/keyboard';
 
 /**
  * Component that displays a text area for composing a note.
@@ -45,7 +45,7 @@ export class AddonNotesAddComponent {
         e.preventDefault();
         e.stopPropagation();
 
-        CoreApp.closeKeyboard();
+        CoreKeyboard.close();
         const loadingModal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         // Freeze the add note button.

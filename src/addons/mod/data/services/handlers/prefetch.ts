@@ -24,9 +24,10 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { AddonModDataProvider, AddonModDataEntry, AddonModData, AddonModDataData } from '../data';
+import { AddonModDataEntry, AddonModData, AddonModDataData } from '../data';
 import { AddonModDataSync, AddonModDataSyncResult } from '../data-sync';
 import { ContextLevel } from '@/core/constants';
+import { ADDON_MOD_DATA_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch databases.
@@ -36,7 +37,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
 
     name = 'AddonModData';
     modName = 'data';
-    component = AddonModDataProvider.COMPONENT;
+    component = ADDON_MOD_DATA_COMPONENT;
     updatesNames = /^configuration$|^.*files$|^entries$|^gradeitems$|^outcomes$|^comments$|^ratings/;
 
     /**

@@ -35,4 +35,4 @@ const routes: Routes = [{
         AddonModForumSearchPage,
     ],
 })
-export class AddonModForumSearchLazyModule {}
+export default class AddonModForumSearchLazyModule {}

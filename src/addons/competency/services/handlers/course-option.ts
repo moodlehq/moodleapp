@@ -24,7 +24,7 @@ import { AddonCompetency } from '../competency';
 import { CoreCourseAnyCourseData, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { ContextLevel } from '@/core/constants';
-import { ADDON_COMPETENCY_COMPETENCIES_PAGE } from '@addons/competency/competency.module';
+import { ADDON_COMPETENCY_COMPETENCIES_PAGE } from '@addons/competency/constants';
 
 /**
  * Course nav handler.

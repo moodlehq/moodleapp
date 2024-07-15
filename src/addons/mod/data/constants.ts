@@ -13,3 +13,11 @@
 // limitations under the License.
 
 export const ADDON_MOD_DATA_FEATURE_NAME = 'CoreCourseModuleDelegate_AddonModData';
+
+export const ADDON_MOD_DATA_COMPONENT = 'mmaModData';
+export const ADDON_MOD_DATA_PAGE_NAME = 'mod_data';
+
+export const ADDON_MOD_DATA_ENTRIES_PER_PAGE = 25;
+
+export const ADDON_MOD_DATA_ENTRY_CHANGED = 'addon_mod_data_entry_changed';
+export const ADDON_MOD_DATA_AUTO_SYNCED = 'addon_mod_data_autom_synced';

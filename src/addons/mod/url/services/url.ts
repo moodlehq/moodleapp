@@ -33,7 +33,6 @@ import { ADDON_MOD_URL_COMPONENT } from '../constants';
 export class AddonModUrlProvider {
 
     protected static readonly ROOT_CACHE_KEY = 'mmaModUrl:';
-    static readonly COMPONENT = ADDON_MOD_URL_COMPONENT;
 
     /**
      * Get the final display type for a certain URL. Based on Moodle's url_get_final_display_type.

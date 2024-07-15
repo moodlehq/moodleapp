@@ -27,10 +27,11 @@ import { CoreWSFile } from '@services/ws';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
-import { AddonModWiki, AddonModWikiProvider } from '../../services/wiki';
+import { AddonModWiki } from '../../services/wiki';
 import { AddonModWikiOffline } from '../../services/wiki-offline';
 import { AddonModWikiSync } from '../../services/wiki-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_PAGE_CREATED_EVENT, ADDON_MOD_WIKI_RENEW_LOCK_TIME } from '../../constants';
 
 /**
  * Page that allows adding or editing a wiki page.
@@ -50,7 +51,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
     contentControl: FormControl<string>; // The FormControl for the page content.
     canEditTitle = false; // Whether title can be edited.
     loaded = false; // Whether the data has been loaded.
-    component = AddonModWikiProvider.COMPONENT; // Component to link the files to.
+    component = ADDON_MOD_WIKI_COMPONENT; // Component to link the files to.
     wrongVersionLock = false; // Whether the page lock doesn't match the initial one.
     editorExtraParams: Record<string, unknown> = {};
 
@@ -190,7 +191,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
                     // Renew the lock every certain time.
                     this.renewLockInterval = window.setInterval(() => {
                         this.renewLock();
-                    }, AddonModWikiProvider.RENEW_LOCK_TIME);
+                    }, ADDON_MOD_WIKI_RENEW_LOCK_TIME);
                 }
             } else {
                 const pageTitle = this.pageForm.controls.title.value;
@@ -442,7 +443,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
             await CoreUtils.ignoreErrors(Promise.all(promises));
 
             // Notify page created.
-            CoreEvents.trigger(AddonModWikiProvider.PAGE_CREATED_EVENT, {
+            CoreEvents.trigger(ADDON_MOD_WIKI_PAGE_CREATED_EVENT, {
                 pageId: this.pageId,
                 subwikiId: this.subwikiId,
                 pageTitle: title,

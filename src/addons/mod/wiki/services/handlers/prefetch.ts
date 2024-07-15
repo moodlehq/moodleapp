@@ -22,8 +22,9 @@ import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { AddonModWiki, AddonModWikiProvider, AddonModWikiSubwikiPage } from '../wiki';
+import { AddonModWiki, AddonModWikiSubwikiPage } from '../wiki';
 import { AddonModWikiSync, AddonModWikiSyncWikiResult } from '../wiki-sync';
+import { ADDON_MOD_WIKI_COMPONENT } from '../../constants';
 
 /**
  * Handler to prefetch wikis.
@@ -33,7 +34,7 @@ export class AddonModWikiPrefetchHandlerService extends CoreCourseActivityPrefet
 
     name = 'AddonModWiki';
     modName = 'wiki';
-    component = AddonModWikiProvider.COMPONENT;
+    component = ADDON_MOD_WIKI_COMPONENT;
     updatesNames = /^.*files$|^pages$/;
 
     /**
