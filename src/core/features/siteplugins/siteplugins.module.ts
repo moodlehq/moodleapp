@@ -20,12 +20,13 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/mainmenu-home-routing.module';
 import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';
 import { CoreSitePluginsComponentsModule } from './components/components.module';
-import { CoreSitePluginsHelper } from './services/siteplugins-helper';
+import { CoreSitePluginsInit } from './services/siteplugins-init';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSitePluginsPluginPage } from '@features/siteplugins/pages/plugin/plugin';
 import { canLeaveGuard } from '@guards/can-leave';
 import { CoreSitePluginsCourseOptionPage } from '@features/siteplugins/pages/course-option/course-option';
 import { CoreSitePluginsModuleIndexPage } from '@features/siteplugins/pages/module-index/module-index';
+import { CORE_SITE_PLUGINS_PATH } from './constants';
 
 /**
  * Get site plugins exported objects.
@@ -65,7 +66,7 @@ export async function getSitePluginsExportedObjects(): Promise<Record<string, un
 
 const routes: Routes = [
     {
-        path: 'siteplugins/content/:component/:method/:hash',
+        path: `${CORE_SITE_PLUGINS_PATH}/content/:component/:method/:hash`,
         component: CoreSitePluginsPluginPage,
         canDeactivate: [canLeaveGuard],
     },
@@ -73,7 +74,7 @@ const routes: Routes = [
 
 const homeRoutes: Routes = [
     {
-        path: 'siteplugins/homecontent/:component/:method',
+        path: `${CORE_SITE_PLUGINS_PATH}/homecontent/:component/:method`,
         component: CoreSitePluginsPluginPage,
         canDeactivate: [canLeaveGuard],
     },
@@ -81,7 +82,7 @@ const homeRoutes: Routes = [
 
 const courseIndexRoutes: Routes = [
     {
-        path: 'siteplugins/:handlerUniqueName',
+        path: `${CORE_SITE_PLUGINS_PATH}/:handlerUniqueName`,
         component: CoreSitePluginsCourseOptionPage,
         canDeactivate: [canLeaveGuard],
     },
@@ -89,7 +90,7 @@ const courseIndexRoutes: Routes = [
 
 const moduleRoutes: Routes = [
     {
-        path: 'siteplugins/module/:courseId/:cmId',
+        path: `${CORE_SITE_PLUGINS_PATH}/module/:courseId/:cmId`,
         component: CoreSitePluginsModuleIndexPage,
         canDeactivate: [canLeaveGuard],
     },
@@ -114,7 +115,7 @@ const moduleRoutes: Routes = [
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreSitePluginsHelper.initialize();
+                CoreSitePluginsInit.init();
             },
         },
     ],

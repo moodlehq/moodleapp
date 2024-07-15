@@ -13,3 +13,7 @@
 // limitations under the License.
 
 export const CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT = 'siteplugins_update_course_content';
+
+export const CORE_SITE_PLUGINS_COMPONENT = 'CoreSitePlugins';
+
+export const CORE_SITE_PLUGINS_PATH = 'siteplugins';
