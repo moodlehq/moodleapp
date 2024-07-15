@@ -16,13 +16,11 @@ import { NgModule } from '@angular/core';
 import { CoreRatingAggregateComponent } from './aggregate/aggregate';
 import { CoreRatingRateComponent } from './rate/rate';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreRatingRatingsComponent } from './ratings/ratings';
 
 @NgModule({
     declarations: [
         CoreRatingAggregateComponent,
         CoreRatingRateComponent,
-        CoreRatingRatingsComponent,
     ],
     imports: [
         CoreSharedModule,
@@ -30,7 +28,6 @@ import { CoreRatingRatingsComponent } from './ratings/ratings';
     exports: [
         CoreRatingAggregateComponent,
         CoreRatingRateComponent,
-        CoreRatingRatingsComponent,
     ],
 })
 export class CoreRatingComponentsModule {}

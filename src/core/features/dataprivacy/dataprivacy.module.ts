@@ -17,7 +17,6 @@ import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { CoreDataPrivacyUserHandler } from './services/handlers/user';
 import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreDataPrivacyComponentsModule } from './components/components.module';
 import { CORE_DATAPRIVACY_PAGE_NAME } from './constants';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreDataPrivacyDataRequestsLinkHandler } from './services/handlers/datarequests-link';
@@ -33,7 +32,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        CoreDataPrivacyComponentsModule,
     ],
     providers: [
         {

@@ -30,8 +30,6 @@ import { CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreUrlUtils } from '@services/utils/url';
-import { CoreLoginSiteHelpComponent } from '@features/login/components/site-help/site-help';
-import { CoreLoginSiteOnboardingComponent } from '@features/login/components/site-onboarding/site-onboarding';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services/urlschemes';
 import { CoreTextUtils } from '@services/utils/text';
@@ -258,6 +256,9 @@ export class CoreLoginSitePage implements OnInit {
      * Show a help modal.
      */
     async showHelp(): Promise<void> {
+        const { CoreLoginSiteHelpComponent } =
+            await import('@features/login/components/site-help/site-help');
+
         await CoreDomUtils.openModal({
             component: CoreLoginSiteHelpComponent,
             cssClass: 'core-modal-fullscreen',
@@ -268,6 +269,9 @@ export class CoreLoginSitePage implements OnInit {
      * Show an onboarding modal.
      */
     async showOnboarding(): Promise<void> {
+        const { CoreLoginSiteOnboardingComponent } =
+            await import('@features/login/components/site-onboarding/site-onboarding');
+
         await CoreDomUtils.openModal({
             component: CoreLoginSiteOnboardingComponent,
             cssClass: 'core-modal-fullscreen',

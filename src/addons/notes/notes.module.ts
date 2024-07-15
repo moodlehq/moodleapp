@@ -21,7 +21,6 @@ import { AddonNotesSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonNotesUserHandler } from './services/handlers/user';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { NOTES_OFFLINE_SITE_SCHEMA } from './services/database/notes';
-import { AddonNotesComponentsModule } from './components/components.module';
 import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
@@ -54,7 +53,6 @@ const routes: Routes = [
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
         CoreCourseIndexRoutingModule.forChild({ children: routes }),
-        AddonNotesComponentsModule,
     ],
     providers: [
         {

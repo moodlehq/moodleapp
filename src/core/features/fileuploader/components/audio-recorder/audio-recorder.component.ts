@@ -27,12 +27,19 @@ import { CoreFileUploaderAudioRecording } from '@features/fileuploader/services/
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CorePath } from '@singletons/path';
 import { CoreNative } from '@features/native/services/native';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreFileUploaderAudioHistogramComponent } from '../audio-histogram/audio-histogram';
 
 @Component({
     selector: 'core-fileuploader-audio-recorder',
-    styleUrls: ['./audio-recorder.scss'],
+    styleUrl: 'audio-recorder.scss',
     templateUrl: 'audio-recorder.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreFileUploaderAudioHistogramComponent,
+    ],
 })
 export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<CoreFileUploaderAudioRecording>
     implements OnDestroy {

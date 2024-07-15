@@ -13,8 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CoreDataPrivacyContactDPOComponent } from '@features/dataprivacy/components/contactdpo/contactdpo';
-import { CoreDataPrivacyNewRequestComponent } from '@features/dataprivacy/components/newrequest/newrequest';
 import {
     CoreDataPrivacy,
     CoreDataPrivacyDataRequestType,
@@ -115,6 +113,9 @@ export class CoreDataPrivacyMainPage implements OnInit {
      * Open the contact DPO modal.
      */
     async contactDPO(): Promise<void> {
+        const { CoreDataPrivacyContactDPOComponent } =
+            await import('@features/dataprivacy/components/contactdpo/contactdpo');
+
         // Create and show the modal.
         const succeed = await CoreDomUtils.openModal<boolean>({
             component: CoreDataPrivacyContactDPOComponent,
@@ -134,6 +135,9 @@ export class CoreDataPrivacyMainPage implements OnInit {
      * Open the new request modal.
      */
     async newRequest(createType?: CoreDataPrivacyDataRequestType): Promise<void> {
+        const { CoreDataPrivacyNewRequestComponent } =
+            await import('@features/dataprivacy/components/newrequest/newrequest');
+
         // Create and show the modal.
         const succeed = await CoreDomUtils.openModal<boolean>({
             component: CoreDataPrivacyNewRequestComponent,

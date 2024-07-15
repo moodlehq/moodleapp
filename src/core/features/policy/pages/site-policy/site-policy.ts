@@ -30,7 +30,6 @@ import { IonContent } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
 import { Subscription } from 'rxjs';
 import { CoreDom } from '@singletons/dom';
-import { CorePolicyViewPolicyModalComponent } from '@features/policy/components/policy-modal/policy-modal';
 
 /**
  * Page to accept a site policy.
@@ -464,7 +463,10 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
      *
      * @param policy Policy.
      */
-    viewFullPolicy(policy: CorePolicySitePolicy): void {
+    async viewFullPolicy(policy: CorePolicySitePolicy): Promise<void> {
+        const { CorePolicyViewPolicyModalComponent } =
+            await import('@features/policy/components/policy-modal/policy-modal');
+
         CoreDomUtils.openModal({
             component: CorePolicyViewPolicyModalComponent,
             componentProps: { policy },

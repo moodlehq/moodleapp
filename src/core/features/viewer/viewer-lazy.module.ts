@@ -33,4 +33,4 @@ const routes: Routes = [
         CoreViewerIframePage,
     ],
 })
-export class CoreViewerLazyModule {}
+export default class CoreViewerLazyModule {}

@@ -19,7 +19,6 @@ import { CoreBlockComponentsModule } from '@features/block/components/components
 import { CoreCourseFormatComponent } from './course-format/course-format';
 import { CoreCourseModuleComponent } from './module/module';
 import { CoreCourseModuleCompletionComponent } from './module-completion/module-completion';
-import { CoreCourseCourseIndexComponent } from './course-index/course-index';
 import { CoreCourseTagAreaComponent } from './tag-area/tag-area';
 import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsupported-module';
 import { CoreCourseModuleCompletionLegacyComponent } from './module-completion-legacy/module-completion-legacy';
@@ -37,7 +36,6 @@ import { CoreCourseModuleCompletionDetailsComponent } from './module-completion-
         CoreCourseModuleCompletionComponent,
         CoreCourseModuleCompletionLegacyComponent,
         CoreCourseModuleInfoComponent,
-        CoreCourseCourseIndexComponent,
         CoreCourseCourseIndexTourComponent,
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
@@ -56,7 +54,6 @@ import { CoreCourseModuleCompletionDetailsComponent } from './module-completion-
         CoreCourseModuleCompletionComponent,
         CoreCourseModuleCompletionLegacyComponent,
         CoreCourseModuleInfoComponent,
-        CoreCourseCourseIndexComponent,
         CoreCourseCourseIndexTourComponent,
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,

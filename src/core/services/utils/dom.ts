@@ -43,7 +43,6 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreBSTooltipComponent } from '@components/bs-tooltip/bs-tooltip';
-import { CoreViewerImageComponent } from '@features/viewer/components/image/image';
 import { CoreModalLateralTransitionEnter, CoreModalLateralTransitionLeave } from '@classes/modal-lateral-transition';
 import { CoreSites } from '@services/sites';
 import { NavigationStart } from '@angular/router';
@@ -1648,6 +1647,7 @@ export class CoreDomUtilsProvider {
         if (!image) {
             return;
         }
+        const { CoreViewerImageComponent } = await import('@features/viewer/components/image/image');
 
         await CoreDomUtils.openModal({
             component: CoreViewerImageComponent,

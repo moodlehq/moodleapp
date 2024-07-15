@@ -269,7 +269,7 @@ export class AddonModQuizHelperProvider {
         }
 
         const { AddonModQuizPreflightModalComponent } =
-            await import('@addons/mod/quiz/components/preflight-modal/preflight-modal.module');
+            await import('@addons/mod/quiz/components/preflight-modal/preflight-modal');
 
         // Create and show the modal.
         const modalData = await CoreDomUtils.openModal<Record<string, string>>({

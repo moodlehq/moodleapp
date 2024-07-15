@@ -25,7 +25,6 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton, Clipboard, InAppBrowser, FileOpener, WebIntent, Translate, NgZone } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { CoreViewerQRScannerComponent } from '@features/viewer/components/qr-scanner/qr-scanner';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreConstants } from '@/core/constants';
@@ -1664,6 +1663,8 @@ export class CoreUtilsProvider {
      * @returns Promise resolved with the captured text or undefined if cancelled or error.
      */
     async scanQR(title?: string): Promise<string | undefined> {
+        const { CoreViewerQRScannerComponent } = await import('@features/viewer/components/qr-scanner/qr-scanner');
+
         return CoreDomUtils.openModal<string>({
             component: CoreViewerQRScannerComponent,
             cssClass: 'core-modal-fullscreen',

@@ -30,16 +30,23 @@ import { AddonModDataHelper } from '../../services/data-helper';
 import { AddonModDataComponentsCompileModule } from '../components-compile.module';
 import { AddonModDataSearchDataParams } from '../index';
 import { AddonModDataTemplateType } from '../../constants';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCompileHtmlComponentModule } from '../../../../../core/features/compile/components/compile-html/compile-html.module';
 
 /**
  * Page that displays the search modal.
  */
 @Component({
     selector: 'addon-mod-data-search-modal',
-    templateUrl: 'search.html',
+    templateUrl: 'search-modal.html',
     styleUrls: ['../../data.scss', '../../data-forms.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCompileHtmlComponentModule,
+    ],
 })
-export class AddonModDataSearchComponent implements OnInit {
+export class AddonModDataSearchModalComponent implements OnInit {
 
     @ViewChild('searchFormEl') formElement!: ElementRef;
 

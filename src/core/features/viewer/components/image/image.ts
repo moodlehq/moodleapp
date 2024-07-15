@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { DomSanitizer, ModalController, Translate } from '@singletons';
 import { CoreMath } from '@singletons/math';
 import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
 import { CoreSwiper } from '@singletons/swiper';
 import { SafeResourceUrl } from '@angular/platform-browser';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Modal component to view an image.
@@ -26,7 +27,12 @@ import { SafeResourceUrl } from '@angular/platform-browser';
 @Component({
     selector: 'core-viewer-image',
     templateUrl: 'image.html',
-    styleUrls: ['image.scss'],
+    styleUrl: 'image.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CoreViewerImageComponent implements OnInit {
 

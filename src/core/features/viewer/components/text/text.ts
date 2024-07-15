@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input } from '@angular/core';
 import { CoreFileEntry } from '@services/file-helper';
 
@@ -25,7 +26,11 @@ import { ModalController } from '@singletons';
 @Component({
     selector: 'page-core-viewer-text',
     templateUrl: 'text.html',
-    styleUrls: ['text.scss'],
+    styleUrl: 'text.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreViewerTextComponent {
 

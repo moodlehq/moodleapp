@@ -21,6 +21,7 @@ import { CoreContentLinksHelper } from '../../services/contentlinks-helper';
 import { CoreError } from '@classes/errors/error';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesFactory } from '@services/sites-factory';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to display the list of sites to choose one to perform a content link action.
@@ -28,6 +29,10 @@ import { CoreSitesFactory } from '@services/sites-factory';
 @Component({
     selector: 'core-content-links-choose-site-modal',
     templateUrl: 'choose-site-modal.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreContentLinksChooseSiteModalComponent implements OnInit {
 

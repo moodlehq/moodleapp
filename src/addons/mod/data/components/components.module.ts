@@ -16,14 +16,12 @@ import { NgModule } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { AddonModDataIndexComponent } from './index';
-import { AddonModDataSearchComponent } from './search/search';
 import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
 import { AddonModDataActionsMenuComponent } from './actionsmenu/actionsmenu';
 
 @NgModule({
     declarations: [
         AddonModDataIndexComponent,
-        AddonModDataSearchComponent,
         AddonModDataActionsMenuComponent,
     ],
     imports: [
@@ -33,7 +31,6 @@ import { AddonModDataActionsMenuComponent } from './actionsmenu/actionsmenu';
     ],
     exports: [
         AddonModDataIndexComponent,
-        AddonModDataSearchComponent,
         AddonModDataActionsMenuComponent,
     ],
 })

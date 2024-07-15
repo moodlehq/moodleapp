@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
-import { AddonNotesAddComponent, AddonNotesAddModalReturn } from '@addons/notes/components/add/add-modal';
+import { AddonNotesAddModalReturn } from '@addons/notes/components/add/add-modal';
 import { AddonNotes, AddonNotesNoteFormatted, AddonNotesPublishState } from '@addons/notes/services/notes';
 import { AddonNotesOffline } from '@addons/notes/services/notes-offline';
 import { AddonNotesSync, AddonNotesSyncProvider } from '@addons/notes/services/notes-sync';
@@ -193,6 +193,8 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
         e.stopPropagation();
 
         this.logViewAdd();
+
+        const { AddonNotesAddComponent } = await import('@addons/notes/components/add/add-modal');
 
         const modalData = await CoreDomUtils.openModal<AddonNotesAddModalReturn>({
             component: AddonNotesAddComponent,

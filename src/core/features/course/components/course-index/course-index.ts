@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import {
     CoreCourse,
@@ -33,7 +34,11 @@ import { CoreDom } from '@singletons/dom';
 @Component({
     selector: 'core-course-course-index',
     templateUrl: 'course-index.html',
-    styleUrls: ['course-index.scss'],
+    styleUrl: 'course-index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCourseCourseIndexComponent implements OnInit {
 

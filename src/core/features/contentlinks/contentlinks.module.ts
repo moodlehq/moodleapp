@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { NgModule, Type } from '@angular/core';
-import { CoreContentLinksComponentsModule } from './components/components.module';
 
 /**
  * Get content links services.
@@ -50,8 +49,5 @@ export async function getContentLinksExportedObjects(): Promise<Record<string, u
 }
 
 @NgModule({
-    imports: [
-        CoreContentLinksComponentsModule,
-    ],
 })
 export class CoreContentLinksModule {}

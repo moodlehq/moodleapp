@@ -17,14 +17,19 @@ import { CoreUtils } from '@services/utils/utils';
 import { ModalController } from '@singletons';
 import { AddonModWorkshopPhaseData, AddonModWorkshopPhaseTaskData } from '../../services/workshop';
 import { AddonModWorkshopPhase } from '../../constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the phase info modal.
  */
 @Component({
-    templateUrl: 'phase.html',
+    templateUrl: 'phase-modal.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModWorkshopPhaseInfoComponent implements OnInit {
+export class AddonModWorkshopPhaseInfoModalComponent implements OnInit {
 
     @Input() phases!: AddonModWorkshopPhaseDataWithSwitch[];
     @Input() workshopPhase!: AddonModWorkshopPhase;

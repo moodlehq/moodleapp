@@ -40,7 +40,6 @@ import { AddonModDataHelper, AddonModDatDisplayFieldsOptions } from '../../servi
 import { AddonModDataAutoSyncData, AddonModDataSyncResult } from '../../services/data-sync';
 import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch-lazy';
 import { AddonModDataComponentsCompileModule } from '../components-compile.module';
-import { AddonModDataSearchComponent } from '../search/search';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreTime } from '@singletons/time';
 import {
@@ -400,8 +399,10 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * Display the chat users modal.
      */
     async showSearch(): Promise<void> {
+        const { AddonModDataSearchModalComponent } = await import('@addons/mod/data/components/search-modal/search-modal');
+
         const modalData = await CoreDomUtils.openModal<AddonModDataSearchDataParams>({
-            component: AddonModDataSearchComponent,
+            component: AddonModDataSearchModalComponent,
             componentProps: {
                 search: this.search,
                 fields: this.fields,

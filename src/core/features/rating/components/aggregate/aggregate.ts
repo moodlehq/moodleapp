@@ -23,7 +23,6 @@ import {
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreRatingRatingsComponent } from '../ratings/ratings';
 
 /**
  * Component that displays the aggregation of a rating item.
@@ -117,6 +116,9 @@ export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
         if (!this.ratingInfo.canviewall || !this.item?.count || this.disabled) {
             return;
         }
+
+        const { CoreRatingRatingsComponent } =
+            await import('@features/rating/components/ratings/ratings');
 
         await CoreDomUtils.openModal({
             component: CoreRatingRatingsComponent,

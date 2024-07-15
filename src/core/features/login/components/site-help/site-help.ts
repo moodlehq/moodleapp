@@ -20,6 +20,7 @@ import { FAQ_QRCODE_IMAGE_HTML, FAQ_URL_IMAGE_HTML, GET_STARTED_URL } from '@fea
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { SubPartial } from '@/core/utils/types';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays help to connect to a site.
@@ -27,7 +28,11 @@ import { SubPartial } from '@/core/utils/types';
 @Component({
     selector: 'core-login-site-help',
     templateUrl: 'site-help.html',
-    styleUrls: ['site-help.scss'],
+    styleUrl: 'site-help.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
 

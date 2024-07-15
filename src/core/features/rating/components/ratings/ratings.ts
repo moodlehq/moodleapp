@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreRating, CoreRatingItemRating } from '@features/rating/services/rating';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -23,6 +24,10 @@ import { ModalController } from '@singletons';
  */
 @Component({
     templateUrl: 'ratings-modal.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreRatingRatingsComponent implements OnInit {
 

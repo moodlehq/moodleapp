@@ -19,12 +19,17 @@ import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a text area for composing a note.
  */
 @Component({
     templateUrl: 'add-modal.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonNotesAddComponent {
 

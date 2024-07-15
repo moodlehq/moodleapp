@@ -244,7 +244,7 @@ export class CoreNavigatorService {
                     // User has been redirected to the login page and will be redirected to the site path after login.
                     return true;
                 }
-            } catch (error) {
+            } catch {
                 // Site doesn't exist.
                 return this.navigate('/login/sites', { reset: true });
             } finally {
