@@ -11,6 +11,7 @@
     "deletecourses": "Delete downloaded data from all courses",
     "deletedata": "Delete downloaded data",
     "deletedatafrom": "Delete all downloaded data from '{{name}}'",
+    "downloaddatafrom": "Download {{name}}",
     "downloadedcourses": "Downloaded courses",
     "downloads": "Downloads",
     "errordeletedownloadeddata": "Error deleting downloaded data.",

@@ -176,7 +176,8 @@
                 </ion-label>
             </ion-item>
             <ion-button fill="outline" expand="block" *ngIf="canPrefetch && displayOptions.displayPrefetch" class="ion-text-wrap"
-                (click)="prefetch()" [disabled]="prefetchDisabled">
+                (click)="prefetch()" [disabled]="prefetchDisabled"
+                [attr.aria-label]="'addon.storagemanager.downloaddatafrom' | translate:{name: module?.name}">
                 <ion-icon *ngIf="!prefetchLoading" name="fas-cloud-arrow-down" slot="start" aria-hidden="true" />
                 <ion-spinner *ngIf="prefetchLoading" slot="start" aria-hidden="true" />
                 <ion-label>

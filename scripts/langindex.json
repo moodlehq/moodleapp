@@ -1168,6 +1168,7 @@
   "addon.storagemanager.deletecourses": "local_moodlemobileapp",
   "addon.storagemanager.deletedata": "local_moodlemobileapp",
   "addon.storagemanager.deletedatafrom": "local_moodlemobileapp",
+  "addon.storagemanager.downloaddatafrom": "local_moodlemobileapp",
   "addon.storagemanager.downloadedcourses": "local_moodlemobileapp",
   "addon.storagemanager.downloads": "local_moodlemobileapp",
   "addon.storagemanager.errordeletedownloadeddata": "local_moodlemobileapp",
