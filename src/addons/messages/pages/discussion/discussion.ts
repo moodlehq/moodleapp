@@ -45,6 +45,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CoreConstants } from '@/core/constants';
 import { CoreDom } from '@singletons/dom';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreText } from '@singletons/text';
 
 /**
  * Page that displays a message discussion page.
@@ -924,7 +925,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      */
     copyMessage(message: AddonMessagesConversationMessageFormatted): void {
         const text = 'smallmessage' in message ? message.smallmessage || message.text || '' : message.text || '';
-        CoreUtils.copyToClipboard(CoreTextUtils.decodeHTMLEntities(text));
+        CoreText.copyToClipboard(CoreTextUtils.decodeHTMLEntities(text));
     }
 
     /**

@@ -29,6 +29,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreNetwork } from '@services/network';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSitesFactory } from '@services/sites-factory';
+import { CoreText } from '@singletons/text';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -226,7 +227,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
      * Copies device info into the clipboard.
      */
     copyInfo(): void {
-        CoreUtils.copyToClipboard(JSON.stringify(this.deviceInfo));
+        CoreText.copyToClipboard(JSON.stringify(this.deviceInfo));
     }
 
     /**
@@ -238,7 +239,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         const el = <Element>e.target;
         const text = el?.closest('ion-item')?.textContent?.trim();
 
-        text && CoreUtils.copyToClipboard(text);
+        text && CoreText.copyToClipboard(text);
     }
 
     /**

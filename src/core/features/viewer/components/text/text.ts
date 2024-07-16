@@ -17,7 +17,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input } from '@angular/core';
 import { CoreFileEntry } from '@services/file-helper';
 
-import { CoreUtils } from '@services/utils/utils';
+import { CoreText } from '@singletons/text';
 import { ModalController } from '@singletons';
 
 /**
@@ -56,7 +56,7 @@ export class CoreViewerTextComponent {
      * Copy the text to clipboard.
      */
     copyText(): void {
-        CoreUtils.copyToClipboard(this.content || '');
+        CoreText.copyToClipboard(this.content || '');
     }
 
 }

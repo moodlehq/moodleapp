@@ -23,7 +23,7 @@ import { CoreWS } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
-import { makeSingleton, Clipboard, InAppBrowser, FileOpener, WebIntent, Translate, NgZone } from '@singletons';
+import { makeSingleton, InAppBrowser, FileOpener, WebIntent, Translate, NgZone } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreFileEntry } from '@services/file-helper';
@@ -40,6 +40,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrlUtils } from './url';
 import { QRScanner } from '@features/native/plugins';
 import { CoreArray } from '@singletons/array';
+import { CoreText } from '@singletons/text';
 
 export type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -366,22 +367,12 @@ export class CoreUtilsProvider {
      * Copies a text to clipboard and shows a toast message.
      *
      * @param text Text to be copied
-     * @returns Promise resolved when text is copied.
+     * @returns Promise resolved when the text is copied.
+     *
+     * @deprecated since 4.5 Use CoreText.copyToClipboard instead.
      */
     async copyToClipboard(text: string): Promise<void> {
-        try {
-            await Clipboard.copy(text);
-        } catch {
-            // Use HTML Copy command.
-            const virtualInput = document.createElement('textarea');
-            virtualInput.innerHTML = text;
-            virtualInput.select();
-            virtualInput.setSelectionRange(0, 99999);
-            document.execCommand('copy'); // eslint-disable-line deprecation/deprecation
-        }
-
-        // Show toast using ionicLoading.
-        CoreDomUtils.showToast('core.copiedtoclipboard', true);
+        return CoreText.copyToClipboard(text);
     }
 
     /**

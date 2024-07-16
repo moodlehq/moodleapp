@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { Clipboard } from '@singletons';
+import { CoreDomUtils } from '@services/utils/dom';
+
 /**
  * Singleton with helper functions for text manipulation.
  */
@@ -66,6 +69,27 @@ export class CoreText {
         }
 
         return text.substring(1);
+    }
+
+    /**
+     * Copies a text to clipboard and shows a toast message.
+     *
+     * @param text Text to be copied
+     */
+    static async copyToClipboard(text: string): Promise<void> {
+        try {
+            await Clipboard.copy(text);
+        } catch {
+            // Use HTML Copy command.
+            const virtualInput = document.createElement('textarea');
+            virtualInput.innerHTML = text;
+            virtualInput.select();
+            virtualInput.setSelectionRange(0, 99999);
+            document.execCommand('copy'); // eslint-disable-line deprecation/deprecation
+        }
+
+        // Show toast using ionicLoading.
+        CoreDomUtils.showToast('core.copiedtoclipboard', true);
     }
 
 }

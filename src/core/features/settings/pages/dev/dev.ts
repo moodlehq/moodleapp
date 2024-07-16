@@ -25,7 +25,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreText } from '@singletons/text';
 
 /**
  * Page that displays the developer options.
@@ -165,7 +165,7 @@ export class CoreSettingsDevPage implements OnInit {
      * Copies site info.
      */
     copyInfo(): void {
-        CoreUtils.copyToClipboard(JSON.stringify({ disabledFeatures: this.disabledFeatures, sitePlugins: this.sitePlugins }));
+        CoreText.copyToClipboard(JSON.stringify({ disabledFeatures: this.disabledFeatures, sitePlugins: this.sitePlugins }));
     }
 
     /**
