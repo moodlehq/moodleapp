@@ -24,7 +24,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { NgZone, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
-import { AddonModChatUsersModalComponent, AddonModChatUsersModalResult } from '../../components/users-modal/users-modal';
+import { AddonModChatUsersModalResult } from '../../components/users-modal/users-modal';
 import { AddonModChat, AddonModChatUser } from '../../services/chat';
 import { AddonModChatFormattedMessage, AddonModChatHelper } from '../../services/chat-helper';
 import { CoreTime } from '@singletons/time';
@@ -187,6 +187,8 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
      * Display the chat users modal.
      */
     async showChatUsers(): Promise<void> {
+        const { AddonModChatUsersModalComponent } = await import('../../components/users-modal/users-modal');
+
         // Create the toc modal.
         const modalData = await CoreModals.openSideModal<AddonModChatUsersModalResult>({
             component: AddonModChatUsersModalComponent,

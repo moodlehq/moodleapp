@@ -28,7 +28,6 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile } from '@services/ws';
 import { ModalController, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { AddonModLessonMenuModalPage } from '../../components/menu-modal/menu-modal';
 import {
     AddonModLesson,
     AddonModLessonEOLPageDataEntry,
@@ -829,6 +828,8 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
      */
     async showMenu(): Promise<void> {
         this.menuShown = true;
+
+        const { AddonModLessonMenuModalPage } = await import('../../components/menu-modal/menu-modal');
 
         await CoreModals.openSideModal({
             component: AddonModLessonMenuModalPage,

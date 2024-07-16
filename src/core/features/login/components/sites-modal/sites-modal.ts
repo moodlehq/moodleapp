@@ -21,6 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreAnimations } from '@components/animations';
 import { ModalController } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Modal that displays a list of sites to be able to enter or delete a site.
@@ -29,6 +30,10 @@ import { ModalController } from '@singletons';
     selector: 'core-login-sites-modal',
     templateUrl: 'sites-modal.html',
     animations: [CoreAnimations.SLIDE_IN_OUT, CoreAnimations.SHOW_HIDE],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreLoginSitesModalComponent implements OnInit {
 

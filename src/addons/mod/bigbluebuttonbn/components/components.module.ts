@@ -25,8 +25,6 @@ import { CoreCourseComponentsModule } from '@features/course/components/componen
         CoreSharedModule,
         CoreCourseComponentsModule,
     ],
-    providers: [
-    ],
     exports: [
         AddonModBBBIndexComponent,
     ],

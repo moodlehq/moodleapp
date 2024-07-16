@@ -33,6 +33,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { ModalController, NgZone } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to display a module summary modal.
@@ -40,7 +41,11 @@ import { Subscription } from 'rxjs';
 @Component({
     selector: 'core-course-module-summary',
     templateUrl: 'module-summary.html',
-    styleUrls: ['module-summary.scss'],
+    styleUrl: 'module-summary.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
 

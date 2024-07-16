@@ -69,7 +69,6 @@ import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreSiteHomeHomeHandlerService } from '@features/sitehome/services/handlers/sitehome-home';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
-import { CoreCourseSummaryPage } from '../pages/course-summary/course-summary.page';
 import { CoreRemindersPushNotificationData } from '@features/reminders/services/reminders';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreEnrol } from '@features/enrol/services/enrol';
@@ -1997,6 +1996,7 @@ export class CoreCourseHelperProvider {
 
     /**
      * Retrieves course summary page module.
+     * This is meant to be here so it can be overriden.
      *
      * @returns Course summary page module.
      */
@@ -2009,7 +2009,9 @@ export class CoreCourseHelperProvider {
      *
      * @param course Course selected
      */
-    openCourseSummary(course: CoreCourseWithImageAndColor & CoreCourseAnyCourseData): void {
+    async openCourseSummary(course: CoreCourseWithImageAndColor & CoreCourseAnyCourseData): Promise<void> {
+        const { CoreCourseSummaryPage } = await import('../pages/course-summary/course-summary.page');
+
         CoreModals.openSideModal<void>({
             component: CoreCourseSummaryPage,
             componentProps: {

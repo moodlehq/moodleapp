@@ -664,8 +664,9 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * Show the map.
      */
     async openMap(): Promise<void> {
-        // Create the toc modal.
         const { AddonModWikiMapModalComponent } = await import('../map/map');
+
+        // Create the map modal.
         const modalData = await CoreModals.openSideModal<AddonModWikiMapModalReturn>({
             component: AddonModWikiMapModalComponent,
             componentProps: {
@@ -885,6 +886,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      */
     async showSubwikiPicker(event: MouseEvent): Promise<void> {
         const { AddonModWikiSubwikiPickerComponent } = await import('../subwiki-picker/subwiki-picker');
+
         const subwiki = await CoreDomUtils.openPopover<AddonModWikiSubwiki>({
             component: AddonModWikiSubwikiPickerComponent,
             componentProps: {

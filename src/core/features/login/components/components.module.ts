@@ -14,14 +14,12 @@
 
 import { NgModule } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreLoginSitesModalComponent } from './sites-modal/sites-modal';
 import { CoreLoginMethodsComponent } from './login-methods/login-methods';
 import { CoreLoginExceededAttemptsComponent } from '@features/login/components/exceeded-attempts/exceeded-attempts';
 
 @NgModule({
     declarations: [
         CoreLoginExceededAttemptsComponent,
-        CoreLoginSitesModalComponent,
         CoreLoginMethodsComponent,
     ],
     imports: [
@@ -29,7 +27,6 @@ import { CoreLoginExceededAttemptsComponent } from '@features/login/components/e
     ],
     exports: [
         CoreLoginExceededAttemptsComponent,
-        CoreLoginSitesModalComponent,
         CoreLoginMethodsComponent,
     ],
 })

@@ -30,7 +30,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
-import { AddonModBookTocComponent } from '../../components/toc/toc';
 import {
     AddonModBook,
     AddonModBookBookWSData,
@@ -250,6 +249,8 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
     async showToc(): Promise<void> {
         // Create the toc modal.
         const visibleChapter = this.manager?.getSelectedItem();
+
+        const { AddonModBookTocComponent } = await import('../../components/toc/toc');
 
         const modalData = await CoreModals.openSideModal<number>({
             component: AddonModBookTocComponent,

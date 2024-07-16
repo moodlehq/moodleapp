@@ -51,7 +51,6 @@ import { CoreCourseCourseIndexTourComponent } from '../course-index-tour/course-
 import { CoreDom } from '@singletons/dom';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreBlockSideBlocksComponent } from '@features/block/components/side-blocks/side-blocks';
 import { ContextLevel } from '@/core/constants';
 import { CoreModals } from '@services/modals';
 
@@ -317,6 +316,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 this.sectionChanged(section);
             }
         } else if (this.initialBlockInstanceId && this.displayBlocks && this.hasBlocks) {
+            const { CoreBlockSideBlocksComponent } = await import('@features/block/components/side-blocks/side-blocks');
+
             CoreModals.openSideModal({
                 component: CoreBlockSideBlocksComponent,
                 componentProps: {

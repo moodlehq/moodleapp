@@ -13,10 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import {
-    CoreCourseModuleSummaryResult,
-    CoreCourseModuleSummaryComponent,
-} from '@features/course/components/module-summary/module-summary';
+import { CoreCourseModuleSummaryResult } from '@features/course/components/module-summary/module-summary';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -106,6 +103,8 @@ export class CoreCourseModulePreviewPage implements OnInit {
         if (!this.module) {
             return;
         }
+
+        const { CoreCourseModuleSummaryComponent } = await import('@features/course/components/module-summary/module-summary');
 
         const data = await CoreModals.openSideModal<CoreCourseModuleSummaryResult>({
             component: CoreCourseModuleSummaryComponent,

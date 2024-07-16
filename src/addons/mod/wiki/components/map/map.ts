@@ -17,6 +17,7 @@ import { ModalController } from '@singletons';
 import { AddonModWikiPageDBRecord } from '../../services/database/wiki';
 import { AddonModWikiSubwikiPage, AddonModWikiWiki } from '../../services/wiki';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Modal to display the map of a Wiki.
@@ -24,6 +25,10 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 @Component({
     selector: 'page-addon-mod-wiki-map',
     templateUrl: 'map.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModWikiMapModalComponent implements OnInit {
 

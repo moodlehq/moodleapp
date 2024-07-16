@@ -16,6 +16,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@singletons';
 import { AddonModBookTocChapter, AddonModBookBookWSData } from '../../services/book';
 import { AddonModBookNumbering } from '../../constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Modal to display the TOC of a book.
@@ -23,7 +24,11 @@ import { AddonModBookNumbering } from '../../constants';
 @Component({
     selector: 'addon-mod-book-toc',
     templateUrl: 'toc.html',
-    styleUrls: ['toc.scss'],
+    styleUrl: 'toc.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModBookTocComponent implements OnInit {
 

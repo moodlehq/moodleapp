@@ -22,7 +22,6 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreDom } from '@singletons/dom';
 import { CoreTime } from '@singletons/time';
 import {
-    AddonModQuizNavigationModalComponent,
     AddonModQuizNavigationModalReturn,
     AddonModQuizNavigationQuestion,
 } from '../../components/navigation-modal/navigation-modal';
@@ -266,6 +265,8 @@ export class AddonModQuizReviewPage implements OnInit {
     }
 
     async openNavigation(): Promise<void> {
+        const { AddonModQuizNavigationModalComponent } = await import('../../components/navigation-modal/navigation-modal');
+
         // Create the navigation modal.
         const modalData = await CoreModals.openSideModal<AddonModQuizNavigationModalReturn>({
             component: AddonModQuizNavigationModalComponent,

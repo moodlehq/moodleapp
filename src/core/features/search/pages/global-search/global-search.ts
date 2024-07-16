@@ -138,7 +138,7 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
      */
     async openFilters(): Promise<void> {
         const { CoreSearchGlobalSearchFiltersComponent } =
-            await import('@features/search/components/global-search-filters/global-search-filters.module');
+            await import('@features/search/components/global-search-filters/global-search-filters.component');
 
         await CoreModals.openSideModal<CoreSearchGlobalSearchFilters>({
             component: CoreSearchGlobalSearchFiltersComponent,

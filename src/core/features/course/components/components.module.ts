@@ -24,7 +24,6 @@ import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsup
 import { CoreCourseModuleCompletionLegacyComponent } from './module-completion-legacy/module-completion-legacy';
 import { CoreCourseModuleInfoComponent } from './module-info/module-info';
 import { CoreCourseModuleNavigationComponent } from './module-navigation/module-navigation';
-import { CoreCourseModuleSummaryComponent } from './module-summary/module-summary';
 import { CoreCourseCourseIndexTourComponent } from './course-index-tour/course-index-tour';
 import { CoreRemindersComponentsModule } from '@features/reminders/components/components.module';
 import { CoreCourseModuleCompletionDetailsComponent } from './module-completion-details/module-completion-details';
@@ -40,7 +39,6 @@ import { CoreCourseModuleCompletionDetailsComponent } from './module-completion-
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
         CoreCourseModuleNavigationComponent,
-        CoreCourseModuleSummaryComponent,
         CoreCourseModuleCompletionDetailsComponent,
     ],
     imports: [
@@ -58,7 +56,6 @@ import { CoreCourseModuleCompletionDetailsComponent } from './module-completion-
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
         CoreCourseModuleNavigationComponent,
-        CoreCourseModuleSummaryComponent,
         CoreCourseModuleCompletionDetailsComponent,
     ],
 })

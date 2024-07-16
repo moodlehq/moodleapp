@@ -15,14 +15,12 @@
 import { NgModule } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from './user-menu-button/user-menu-button';
-import { CoreMainMenuUserMenuComponent } from './user-menu/user-menu';
 import { CoreLoginComponentsModule } from '@features/login/components/components.module';
 import { CoreMainMenuUserMenuTourComponent } from './user-menu-tour/user-menu-tour';
 
 @NgModule({
     declarations: [
         CoreMainMenuUserButtonComponent,
-        CoreMainMenuUserMenuComponent,
         CoreMainMenuUserMenuTourComponent,
     ],
     imports: [
@@ -31,7 +29,6 @@ import { CoreMainMenuUserMenuTourComponent } from './user-menu-tour/user-menu-to
     ],
     exports: [
         CoreMainMenuUserButtonComponent,
-        CoreMainMenuUserMenuComponent,
         CoreMainMenuUserMenuTourComponent,
     ],
 })

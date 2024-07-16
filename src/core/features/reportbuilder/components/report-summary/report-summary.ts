@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { CoreReportBuilderReportDetail } from '@features/reportbuilder/services/reportbuilder';
 import { CoreFormatDatePipe } from '@pipes/format-date';
@@ -21,8 +22,12 @@ import { ModalController } from '@singletons';
 @Component({
     selector: 'core-report-builder-report-summary',
     templateUrl: './report-summary.html',
-    styleUrls: ['./report-summary.scss'],
+    styleUrl: './report-summary.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreReportBuilderReportSummaryComponent implements OnInit {
 
@@ -30,6 +35,9 @@ export class CoreReportBuilderReportSummaryComponent implements OnInit {
     reportUrl!: string;
     reportDetailToDisplay!: { title: string; text: string }[];
 
+    /**
+     * @inheritdoc
+     */
     ngOnInit(): void {
         const formatDate = new CoreFormatDatePipe();
         const site = CoreSites.getRequiredCurrentSite();
@@ -54,6 +62,9 @@ export class CoreReportBuilderReportSummaryComponent implements OnInit {
         ];
     }
 
+    /**
+     * Close the modal.
+     */
     closeModal(): void {
         ModalController.dismiss();
     }

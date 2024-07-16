@@ -30,7 +30,6 @@ import { AddonCalendarFilter, AddonCalendarHelper } from '../../services/calenda
 import { AddonCalendarSync, AddonCalendarSyncProvider } from '../../services/calendar-sync';
 import { CoreCategoryData, CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
-import { AddonCalendarFilterComponent } from '../../components/filter/filter';
 import moment from 'moment-timezone';
 import { NgZone, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
@@ -376,6 +375,8 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * Show the filter menu.
      */
     async openFilter(): Promise<void> {
+        const { AddonCalendarFilterComponent } = await import('../../components/filter/filter');
+
         await CoreModals.openSideModal({
             component: AddonCalendarFilterComponent,
             componentProps: {

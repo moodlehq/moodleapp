@@ -17,14 +17,10 @@ import { NgModule } from '@angular/core';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { CoreTagComponentsModule } from '@features/tag/components/components.module';
 import { AddonModWikiIndexComponent } from './index/index';
-import { AddonModWikiMapModalComponent } from './map/map';
-import { AddonModWikiSubwikiPickerComponent } from './subwiki-picker/subwiki-picker';
 
 @NgModule({
     declarations: [
         AddonModWikiIndexComponent,
-        AddonModWikiSubwikiPickerComponent,
-        AddonModWikiMapModalComponent,
     ],
     imports: [
         CoreSharedModule,
@@ -33,8 +29,6 @@ import { AddonModWikiSubwikiPickerComponent } from './subwiki-picker/subwiki-pic
     ],
     exports: [
         AddonModWikiIndexComponent,
-        AddonModWikiSubwikiPickerComponent,
-        AddonModWikiMapModalComponent,
     ],
 })
 export class AddonModWikiComponentsModule {}

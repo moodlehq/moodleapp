@@ -17,6 +17,7 @@ import { ModalController } from '@singletons';
 import { AddonModScormGetScormAccessInformationWSResponse } from '../../services/scorm';
 import { AddonModScormTOCScoWithIcon } from '../../services/scorm-helper';
 import { AddonModScormMode } from '../../constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Modal to display the TOC of a SCORM.
@@ -24,6 +25,10 @@ import { AddonModScormMode } from '../../constants';
 @Component({
     selector: 'addon-mod-scorm-toc',
     templateUrl: 'toc.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModScormTocComponent implements OnInit {
 

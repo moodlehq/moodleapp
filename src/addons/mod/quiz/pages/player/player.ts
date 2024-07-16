@@ -33,7 +33,6 @@ import { ModalController, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModQuizAutoSave } from '../../classes/auto-save';
 import {
-    AddonModQuizNavigationModalComponent,
     AddonModQuizNavigationModalReturn,
     AddonModQuizNavigationQuestion,
 } from '../../components/navigation-modal/navigation-modal';
@@ -727,6 +726,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             modal.dismiss();
             this.reloadNavigation = false;
         }
+
+        const { AddonModQuizNavigationModalComponent } = await import('../../components/navigation-modal/navigation-modal');
 
         // Create the navigation modal.
         const modalData = await CoreModals.openSideModal<AddonModQuizNavigationModalReturn>({

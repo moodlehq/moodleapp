@@ -16,12 +16,10 @@ import { NgModule } from '@angular/core';
 import { AddonModChatIndexComponent } from './index/index';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
-import { AddonModChatUsersModalComponent } from './users-modal/users-modal';
 
 @NgModule({
     declarations: [
         AddonModChatIndexComponent,
-        AddonModChatUsersModalComponent,
     ],
     imports: [
         CoreSharedModule,
@@ -29,7 +27,6 @@ import { AddonModChatUsersModalComponent } from './users-modal/users-modal';
     ],
     exports: [
         AddonModChatIndexComponent,
-        AddonModChatUsersModalComponent,
     ],
 })
 export class AddonModChatComponentsModule {}

@@ -30,7 +30,6 @@ import { CoreBlockHelper } from '@features/block/services/block-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreBlockSideBlocksComponent } from '@features/block/components/side-blocks/side-blocks';
 import { ContextLevel } from '@/core/constants';
 import { CoreModals } from '@services/modals';
 
@@ -228,11 +227,13 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     /**
      * Check whether there is a focused instance in the page parameters and open it.
      */
-    private openFocusedInstance() {
+    private async openFocusedInstance() {
         const blockInstanceId = CoreNavigator.getRouteNumberParam('blockInstanceId');
         if (!blockInstanceId) {
             return;
         }
+
+        const { CoreBlockSideBlocksComponent } = await import('@features/block/components/side-blocks/side-blocks');
 
         CoreModals.openSideModal({
             component: CoreBlockSideBlocksComponent,

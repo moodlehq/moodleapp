@@ -27,8 +27,6 @@ import { AddonModResourceIndexComponent } from './index/index';
         CoreSharedModule,
         CoreCourseComponentsModule,
     ],
-    providers: [
-    ],
     exports: [
         AddonModResourceIndexComponent,
     ],

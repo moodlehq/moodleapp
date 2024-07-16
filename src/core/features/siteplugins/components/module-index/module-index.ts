@@ -15,10 +15,7 @@
 import { Component, OnInit, OnDestroy, Input, ViewChild, HostBinding } from '@angular/core';
 
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import {
-    CoreCourseModuleSummaryResult,
-    CoreCourseModuleSummaryComponent,
-} from '@features/course/components/module-summary/module-summary';
+import { CoreCourseModuleSummaryResult } from '@features/course/components/module-summary/module-summary';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import {
@@ -156,6 +153,8 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
         if (!this.module) {
             return;
         }
+
+        const { CoreCourseModuleSummaryComponent } = await import('@features/course/components/module-summary/module-summary');
 
         const data = await CoreModals.openSideModal<CoreCourseModuleSummaryResult>({
             component: CoreCourseModuleSummaryComponent,

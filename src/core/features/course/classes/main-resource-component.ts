@@ -24,7 +24,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
-import { CoreCourseModuleSummaryComponent, CoreCourseModuleSummaryResult } from '../components/module-summary/module-summary';
+import { CoreCourseModuleSummaryResult } from '../components/module-summary/module-summary';
 import { CoreCourseContentsPage } from '../pages/contents/contents';
 import { CoreCourse } from '../services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '../services/course-helper';
@@ -424,6 +424,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         if (!this.module) {
             return;
         }
+
+        const { CoreCourseModuleSummaryComponent } = await import('@features/course/components/module-summary/module-summary');
 
         const data = await CoreModals.openSideModal<CoreCourseModuleSummaryResult>({
             component: CoreCourseModuleSummaryComponent,

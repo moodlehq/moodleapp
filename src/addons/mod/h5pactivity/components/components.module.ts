@@ -28,8 +28,6 @@ import { CoreH5PComponentsModule } from '@features/h5p/components/components.mod
         CoreCourseComponentsModule,
         CoreH5PComponentsModule,
     ],
-    providers: [
-    ],
     exports: [
         AddonModH5PActivityIndexComponent,
     ],

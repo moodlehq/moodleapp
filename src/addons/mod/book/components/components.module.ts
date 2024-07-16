@@ -18,12 +18,10 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 import { AddonModBookIndexComponent } from './index/index';
-import { AddonModBookTocComponent } from './toc/toc';
 
 @NgModule({
     declarations: [
         AddonModBookIndexComponent,
-        AddonModBookTocComponent,
     ],
     imports: [
         CoreSharedModule,
@@ -31,7 +29,6 @@ import { AddonModBookTocComponent } from './toc/toc';
     ],
     exports: [
         AddonModBookIndexComponent,
-        AddonModBookTocComponent,
     ],
 })
 export class AddonModBookComponentsModule {}
