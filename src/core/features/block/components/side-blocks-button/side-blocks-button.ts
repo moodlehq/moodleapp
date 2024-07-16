@@ -16,7 +16,7 @@ import { Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreModals } from '@services/modals';
 import { CoreDom } from '@singletons/dom';
 import { CoreBlockSideBlocksTourComponent } from '../side-blocks-tour/side-blocks-tour';
 import { CoreBlockSideBlocksComponent } from '../side-blocks/side-blocks';
@@ -68,7 +68,7 @@ export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
      * Open side blocks.
      */
     openBlocks(): void {
-        CoreDomUtils.openSideModal({
+        CoreModals.openSideModal({
             component: CoreBlockSideBlocksComponent,
             componentProps: {
                 contextLevel: this.contextLevel,

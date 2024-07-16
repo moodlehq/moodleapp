@@ -31,6 +31,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreWait } from '@singletons/wait';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page that displays a chat session.
@@ -187,7 +188,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
      */
     async showChatUsers(): Promise<void> {
         // Create the toc modal.
-        const modalData = await CoreDomUtils.openSideModal<AddonModChatUsersModalResult>({
+        const modalData = await CoreModals.openSideModal<AddonModChatUsersModalResult>({
             component: AddonModChatUsersModalComponent,
             componentProps: {
                 sessionId: this.sessionId,

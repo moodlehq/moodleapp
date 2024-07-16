@@ -20,6 +20,7 @@ import {
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
+import { CoreModals } from '@services/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -106,7 +107,7 @@ export class CoreCourseModulePreviewPage implements OnInit {
             return;
         }
 
-        const data = await CoreDomUtils.openSideModal<CoreCourseModuleSummaryResult>({
+        const data = await CoreModals.openSideModal<CoreCourseModuleSummaryResult>({
             component: CoreCourseModuleSummaryComponent,
             componentProps: {
                 moduleId: this.module.id,

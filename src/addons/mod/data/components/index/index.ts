@@ -51,6 +51,7 @@ import {
     AddonModDataTemplateType,
     AddonModDataTemplateMode,
 } from '../../constants';
+import { CoreModals } from '@services/modals';
 
 const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 
@@ -401,7 +402,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     async showSearch(): Promise<void> {
         const { AddonModDataSearchModalComponent } = await import('@addons/mod/data/components/search-modal/search-modal');
 
-        const modalData = await CoreDomUtils.openModal<AddonModDataSearchDataParams>({
+        const modalData = await CoreModals.openModal<AddonModDataSearchDataParams>({
             component: AddonModDataSearchModalComponent,
             componentProps: {
                 search: this.search,

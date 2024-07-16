@@ -14,16 +14,27 @@
 
 import { Constructor } from '@/core/utils/types';
 import { Injectable } from '@angular/core';
+import { NavigationStart } from '@angular/router';
 import { CoreModalComponent } from '@classes/modal-component';
+import { CoreModalLateralTransitionEnter, CoreModalLateralTransitionLeave } from '@classes/modal-lateral-transition';
 import { CoreSheetModalComponent } from '@components/sheet-modal/sheet-modal';
-import { AngularFrameworkDelegate, makeSingleton } from '@singletons';
+import { AngularFrameworkDelegate, makeSingleton, ModalController, Router } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { Subscription, filter } from 'rxjs';
+import { Md5 } from 'ts-md5';
+import { fixOverlayAriaHidden } from '../utils/fix-aria-hidden';
+import { ModalOptions } from '@ionic/angular';
+import { CoreCanceledError } from '@classes/errors/cancelederror';
+import { CoreWSError } from '@classes/errors/wserror';
+import { CorePasswordModalResponse, CorePasswordModalParams } from '@components/password-modal/password-modal';
 
 /**
  * Handles application modals.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreModalsService {
+
+    protected displayedModals: Record<string, HTMLIonModalElement> = {}; // To prevent duplicated modals.
 
     /**
      * Get index of the overlay on top of the stack.
@@ -84,6 +95,118 @@ export class CoreModalsService {
         return modal.result;
     }
 
-}
+    /**
+     * Opens a Modal.
+     *
+     * @param options Modal Options.
+     * @returns The modal data when the modal closes.
+     */
+    async openModal<T = unknown>(
+        options: OpenModalOptions,
+    ): Promise<T | undefined> {
+        const { waitForDismissCompleted, closeOnNavigate, ...modalOptions } = options;
+        const listenCloseEvents = closeOnNavigate ?? true; // Default to true.
 
+        // TODO: Improve this if we need two modals with same component open at the same time.
+        const modalId = Md5.hashAsciiStr(options.component?.toString() || '');
+        const alreadyDisplayed = !!this.displayedModals[modalId];
+
+        const modal = alreadyDisplayed
+            ? this.displayedModals[modalId]
+            : await ModalController.create(modalOptions);
+
+        let navSubscription: Subscription | undefined;
+
+        // Get the promise before presenting to get result if modal is suddenly hidden.
+        const resultPromise = waitForDismissCompleted ? modal.onDidDismiss<T>() : modal.onWillDismiss<T>();
+
+        if (!this.displayedModals[modalId]) {
+            // Store the modal and remove it when dismissed.
+            this.displayedModals[modalId] = modal;
+
+            if (listenCloseEvents) {
+                // Listen navigation events to close modals.
+                navSubscription = Router.events
+                    .pipe(filter(event => event instanceof NavigationStart))
+                    .subscribe(async () => {
+                        modal.dismiss();
+                    });
+            }
+
+            await modal.present();
+        }
+
+        if (!alreadyDisplayed) {
+            fixOverlayAriaHidden(modal);
+        }
+
+        const result = await resultPromise;
+
+        navSubscription?.unsubscribe();
+        delete this.displayedModals[modalId];
+
+        if (result?.data) {
+            return result?.data;
+        }
+    }
+
+    /**
+     * Opens a side Modal.
+     *
+     * @param options Modal Options.
+     * @returns The modal data when the modal closes.
+     */
+    async openSideModal<T = unknown>(
+        options: OpenModalOptions,
+    ): Promise<T | undefined> {
+
+        options = Object.assign({
+            cssClass: 'core-modal-lateral',
+            showBackdrop: true,
+            backdropDismiss: true,
+            enterAnimation: CoreModalLateralTransitionEnter,
+            leaveAnimation: CoreModalLateralTransitionLeave,
+        }, options);
+
+        return this.openModal<T>(options);
+    }
+
+    /**
+     * Prompts password to the user and returns the entered text.
+     *
+     * @param passwordParams Params to show the modal.
+     * @returns Entered password, error and validation.
+     */
+    async promptPassword<T extends CorePasswordModalResponse>(passwordParams?: CorePasswordModalParams): Promise<T> {
+        const { CorePasswordModalComponent } =
+            await import('@/core/components/password-modal/password-modal.module');
+
+        const modalData = await CoreModals.openModal<T>(
+            {
+                cssClass: 'core-password-modal',
+                showBackdrop: true,
+                backdropDismiss: true,
+                component: CorePasswordModalComponent,
+                componentProps: passwordParams,
+            },
+        );
+
+        if (modalData === undefined) {
+            throw new CoreCanceledError();
+        } else if (modalData instanceof CoreWSError) {
+            throw modalData;
+        }
+
+        return modalData;
+    }
+
+}
 export const CoreModals = makeSingleton(CoreModalsService);
+
+/**
+ * Options for the openModal function.
+ */
+export type OpenModalOptions = ModalOptions & {
+    waitForDismissCompleted?: boolean;
+    closeOnNavigate?: boolean; // Default true.
+};

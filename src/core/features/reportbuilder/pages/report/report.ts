@@ -15,8 +15,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CoreReportBuilderReportSummaryComponent } from '@features/reportbuilder/components/report-summary/report-summary';
 import { CoreReportBuilderReportDetail } from '@features/reportbuilder/services/reportbuilder';
+import { CoreModals } from '@services/modals';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 
 @Component({
     selector: 'core-report-builder-report',
@@ -43,7 +43,7 @@ export class CoreReportBuilderReportPage implements OnInit {
     }
 
     openInfo(): void {
-        CoreDomUtils.openSideModal<void>({
+        CoreModals.openSideModal<void>({
             component: CoreReportBuilderReportSummaryComponent,
             componentProps: { reportDetail: this.reportDetail },
         });

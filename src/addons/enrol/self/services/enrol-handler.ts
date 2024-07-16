@@ -20,6 +20,7 @@ import { CorePasswordModalResponse } from '@components/password-modal/password-m
 import { CoreCoursesProvider } from '@features/courses/services/courses';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEnrol, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
+import { CoreModals } from '@services/modals';
 
 /**
  * Enrol handler.
@@ -145,7 +146,7 @@ export class AddonEnrolSelfHandlerService implements CoreEnrolSelfHandler {
 
         if (!response.validated) {
             try {
-                const response = await CoreDomUtils.promptPassword({
+                const response = await CoreModals.promptPassword({
                     validator: validatePassword,
                     title: method.name,
                     placeholder: 'addon.enrol_self.password',

@@ -15,7 +15,7 @@
 import { Component, Input } from '@angular/core';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreModals } from '@services/modals';
 import { AddonModAssignFeedbackCommentsTextData } from '../feedback/comments/services/handler';
 import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '../services/assign';
 
@@ -49,7 +49,7 @@ export class AddonModAssignFeedbackPluginBaseComponent implements IAddonModAssig
             await import('@addons/mod/assign/components/edit-feedback-modal/edit-feedback-modal');
 
         // Create the navigation modal.
-        const modalData = await CoreDomUtils.openModal<AddonModAssignFeedbackCommentsTextData>({
+        const modalData = await CoreModals.openModal<AddonModAssignFeedbackCommentsTextData>({
             component: AddonModAssignEditFeedbackModalComponent,
             componentProps: {
                 assign: this.assign,

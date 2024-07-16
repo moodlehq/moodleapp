@@ -32,6 +32,7 @@ import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
 import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page that displays a list of notes.
@@ -197,7 +198,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
 
         const { AddonNotesAddComponent } = await import('@addons/notes/components/add/add-modal');
 
-        const modalData = await CoreDomUtils.openModal<AddonNotesAddModalReturn>({
+        const modalData = await CoreModals.openModal<AddonNotesAddModalReturn>({
             component: AddonNotesAddComponent,
             componentProps: {
                 userId: this.userId,

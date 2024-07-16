@@ -31,6 +31,7 @@ import { CoreScreen } from '@services/screen';
 import { Subscription } from 'rxjs';
 import { CoreDom } from '@singletons/dom';
 import { CoreWait } from '@singletons/wait';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page to accept a site policy.
@@ -468,7 +469,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
         const { CorePolicyViewPolicyModalComponent } =
             await import('@features/policy/components/policy-modal/policy-modal');
 
-        CoreDomUtils.openModal({
+        CoreModals.openModal({
             component: CorePolicyViewPolicyModalComponent,
             componentProps: { policy },
         });

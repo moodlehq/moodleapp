@@ -19,6 +19,7 @@ import {
     CoreDataPrivacyGetAccessInformationWSResponse,
     CoreDataPrivacyRequest,
 } from '@features/dataprivacy/services/dataprivacy';
+import { CoreModals } from '@services/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -117,7 +118,7 @@ export class CoreDataPrivacyMainPage implements OnInit {
             await import('@features/dataprivacy/components/contactdpo/contactdpo');
 
         // Create and show the modal.
-        const succeed = await CoreDomUtils.openModal<boolean>({
+        const succeed = await CoreModals.openModal<boolean>({
             component: CoreDataPrivacyContactDPOComponent,
         });
 
@@ -139,7 +140,7 @@ export class CoreDataPrivacyMainPage implements OnInit {
             await import('@features/dataprivacy/components/newrequest/newrequest');
 
         // Create and show the modal.
-        const succeed = await CoreDomUtils.openModal<boolean>({
+        const succeed = await CoreModals.openModal<boolean>({
             component: CoreDataPrivacyNewRequestComponent,
             componentProps: {
                 accessInfo: this.accessInfo,

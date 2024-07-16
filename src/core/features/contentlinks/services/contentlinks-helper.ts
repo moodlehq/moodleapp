@@ -20,6 +20,7 @@ import { CoreSite } from '@classes/sites/site';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
+import { CoreModals } from '@services/modals';
 
 /**
  * Service that provides some features regarding content links.
@@ -98,7 +99,7 @@ export class CoreContentLinksHelperProvider {
         const { CoreContentLinksChooseSiteModalComponent }
             = await import('@features/contentlinks/components/choose-site-modal/choose-site-modal');
 
-        await CoreDomUtils.openModal({
+        await CoreModals.openModal({
             component: CoreContentLinksChooseSiteModalComponent,
             componentProps: {
                 url: url,

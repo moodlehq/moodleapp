@@ -30,7 +30,7 @@ import {
     CoreSitePluginsContent,
     CoreSitePluginsCourseModuleHandlerData,
 } from '@features/siteplugins/services/siteplugins';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreModals } from '@services/modals';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSitePluginsPluginContentComponent, CoreSitePluginsPluginContentLoadedData } from '../plugin-content/plugin-content';
 
@@ -157,7 +157,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
             return;
         }
 
-        const data = await CoreDomUtils.openSideModal<CoreCourseModuleSummaryResult>({
+        const data = await CoreModals.openSideModal<CoreCourseModuleSummaryResult>({
             component: CoreCourseModuleSummaryComponent,
             componentProps: {
                 moduleId: this.module.id,

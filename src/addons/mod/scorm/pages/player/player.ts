@@ -44,6 +44,7 @@ import {
     ADDON_MOD_SCORM_UPDATE_TOC_EVENT,
 } from '../../constants';
 import { CoreWait } from '@singletons/wait';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page that allows playing a SCORM.
@@ -513,7 +514,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      * Show the TOC.
      */
     async openToc(): Promise<void> {
-        const modalData = await CoreDomUtils.openSideModal<AddonModScormScoWithData>({
+        const modalData = await CoreModals.openSideModal<AddonModScormScoWithData>({
             component: AddonModScormTocComponent,
             componentProps: {
                 toc: this.toc,

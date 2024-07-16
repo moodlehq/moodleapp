@@ -29,6 +29,7 @@ import {
 } from '@features/search/services/global-search';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
+import { CoreModals } from '@services/modals';
 
 @Component({
     selector: 'page-core-search-global-search',
@@ -139,7 +140,7 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
         const { CoreSearchGlobalSearchFiltersComponent } =
             await import('@features/search/components/global-search-filters/global-search-filters.module');
 
-        await CoreDomUtils.openSideModal<CoreSearchGlobalSearchFilters>({
+        await CoreModals.openSideModal<CoreSearchGlobalSearchFilters>({
             component: CoreSearchGlobalSearchFiltersComponent,
             componentProps: {
                 hideCourses: !!this.courseId,

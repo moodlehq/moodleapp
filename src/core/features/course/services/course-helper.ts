@@ -75,6 +75,7 @@ import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreEnrol } from '@features/enrol/services/enrol';
 import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 import { LazyRoutesModule } from '@/app/app-routing.module';
+import { CoreModals } from '@services/modals';
 
 /**
  * Prefetch info of a module.
@@ -2009,7 +2010,7 @@ export class CoreCourseHelperProvider {
      * @param course Course selected
      */
     openCourseSummary(course: CoreCourseWithImageAndColor & CoreCourseAnyCourseData): void {
-        CoreDomUtils.openSideModal<void>({
+        CoreModals.openSideModal<void>({
             component: CoreCourseSummaryPage,
             componentProps: {
                 courseId: course.id,

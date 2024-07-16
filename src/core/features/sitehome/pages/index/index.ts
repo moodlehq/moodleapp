@@ -32,6 +32,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreBlockSideBlocksComponent } from '@features/block/components/side-blocks/side-blocks';
 import { ContextLevel } from '@/core/constants';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page that displays site home index.
@@ -229,17 +230,18 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      */
     private openFocusedInstance() {
         const blockInstanceId = CoreNavigator.getRouteNumberParam('blockInstanceId');
-
-        if (blockInstanceId) {
-            CoreDomUtils.openSideModal({
-                component: CoreBlockSideBlocksComponent,
-                componentProps: {
-                    contextLevel: ContextLevel.COURSE,
-                    instanceId: this.siteHomeId,
-                    initialBlockInstanceId: blockInstanceId,
-                },
-            });
+        if (!blockInstanceId) {
+            return;
         }
+
+        CoreModals.openSideModal({
+            component: CoreBlockSideBlocksComponent,
+            componentProps: {
+                contextLevel: ContextLevel.COURSE,
+                instanceId: this.siteHomeId,
+                initialBlockInstanceId: blockInstanceId,
+            },
+        });
     }
 
 }

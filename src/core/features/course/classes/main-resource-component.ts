@@ -34,6 +34,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
 import { CoreText } from '@singletons/text';
+import { CoreModals } from '@services/modals';
 
 /**
  * Result of a resource download.
@@ -424,7 +425,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             return;
         }
 
-        const data = await CoreDomUtils.openSideModal<CoreCourseModuleSummaryResult>({
+        const data = await CoreModals.openSideModal<CoreCourseModuleSummaryResult>({
             component: CoreCourseModuleSummaryComponent,
             componentProps: {
                 moduleId: this.module.id,

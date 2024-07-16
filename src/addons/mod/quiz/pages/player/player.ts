@@ -55,6 +55,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT, AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
 import { CoreWait } from '@singletons/wait';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page that allows attempting a quiz.
@@ -728,7 +729,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         }
 
         // Create the navigation modal.
-        const modalData = await CoreDomUtils.openSideModal<AddonModQuizNavigationModalReturn>({
+        const modalData = await CoreModals.openSideModal<AddonModQuizNavigationModalReturn>({
             component: AddonModQuizNavigationModalComponent,
             componentProps: {
                 navigation: this.navigation,

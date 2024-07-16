@@ -474,7 +474,6 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param accessInfo Quiz access info.
      * @param attempt Attempt.
      * @param modOptions Other options.
-     * @param siteId Site ID.
      * @returns Promise resolved when done.
      */
     protected async prefetchAttemptReview(

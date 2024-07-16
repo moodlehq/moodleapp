@@ -19,7 +19,7 @@ import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/s
 import { IonRouterOutlet } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreModals } from '@services/modals';
 import { CoreMainMenuUserMenuTourComponent } from '../user-menu-tour/user-menu-tour';
 import { CoreMainMenuUserMenuComponent } from '../user-menu/user-menu';
 import { CoreMainMenuPage } from '@features/mainmenu/pages/menu/menu';
@@ -66,7 +66,7 @@ export class CoreMainMenuUserButtonComponent implements OnInit {
         event.preventDefault();
         event.stopPropagation();
 
-        CoreDomUtils.openSideModal<void>({
+        CoreModals.openSideModal<void>({
             component: CoreMainMenuUserMenuComponent,
         });
     }

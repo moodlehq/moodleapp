@@ -28,6 +28,7 @@ import {
     CoreUserProfileHandlerType,
     CoreUserDelegateContext,
 } from '@features/user/services/user-delegate';
+import { CoreModals } from '@services/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -248,7 +249,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         event.preventDefault();
         event.stopPropagation();
 
-        const closeAll = await CoreDomUtils.openSideModal<boolean>({
+        const closeAll = await CoreModals.openSideModal<boolean>({
             component: CoreLoginSitesModalComponent,
             cssClass: 'core-modal-lateral core-modal-lateral-sm',
         });

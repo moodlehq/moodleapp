@@ -15,7 +15,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Translate } from '@singletons';
 import { ModalOptions } from '@ionic/core';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreModals } from '@services/modals';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 /**
@@ -123,7 +123,7 @@ export class CoreComboboxComponent implements ControlValueAccessor {
             this.modalOptions.id = this.listboxId;
         }
 
-        const data = await CoreDomUtils.openModal(this.modalOptions);
+        const data = await CoreModals.openModal(this.modalOptions);
         this.expanded = false;
 
         if (data) {

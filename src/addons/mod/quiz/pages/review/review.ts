@@ -36,6 +36,7 @@ import {
 import { AddonModQuizHelper } from '../../services/quiz-helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page that allows reviewing a quiz attempt.
@@ -266,7 +267,7 @@ export class AddonModQuizReviewPage implements OnInit {
 
     async openNavigation(): Promise<void> {
         // Create the navigation modal.
-        const modalData = await CoreDomUtils.openSideModal<AddonModQuizNavigationModalReturn>({
+        const modalData = await CoreModals.openSideModal<AddonModQuizNavigationModalReturn>({
             component: AddonModQuizNavigationModalComponent,
             componentProps: {
                 navigation: this.navigation,

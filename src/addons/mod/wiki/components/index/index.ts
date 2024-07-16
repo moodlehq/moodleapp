@@ -58,6 +58,7 @@ import {
     ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
     ADDON_MOD_WIKI_PAGE_NAME,
 } from '../../constants';
+import { CoreModals } from '@services/modals';
 
 /**
  * Component that displays a wiki entry page.
@@ -665,7 +666,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     async openMap(): Promise<void> {
         // Create the toc modal.
         const { AddonModWikiMapModalComponent } = await import('../map/map');
-        const modalData = await CoreDomUtils.openSideModal<AddonModWikiMapModalReturn>({
+        const modalData = await CoreModals.openSideModal<AddonModWikiMapModalReturn>({
             component: AddonModWikiMapModalComponent,
             componentProps: {
                 pages: this.subwikiPages,

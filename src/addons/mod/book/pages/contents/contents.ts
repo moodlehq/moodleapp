@@ -40,6 +40,7 @@ import {
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { ADDON_MOD_BOOK_COMPONENT, AddonModBookNavStyle } from '../../constants';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page that displays a book contents.
@@ -250,7 +251,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
         // Create the toc modal.
         const visibleChapter = this.manager?.getSelectedItem();
 
-        const modalData = await CoreDomUtils.openSideModal<number>({
+        const modalData = await CoreModals.openSideModal<number>({
             component: AddonModBookTocComponent,
             componentProps: {
                 moduleId: this.cmId,

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreModals } from '@services/modals';
 import { Subject } from 'rxjs';
 import { AsyncDirective } from './async-directive';
 import { PageLoadWatcher } from './page-load-watcher';
@@ -131,7 +131,7 @@ export class PageLoadsManager {
         const { CoreRefreshButtonModalComponent }
             = await import('@components/refresh-button-modal/refresh-button-modal');
 
-        await CoreDomUtils.openModal<boolean>({
+        await CoreModals.openModal<boolean>({
             component: CoreRefreshButtonModalComponent,
             cssClass: 'core-modal-no-background core-modal-fullscreen',
             closeOnNavigate: true,

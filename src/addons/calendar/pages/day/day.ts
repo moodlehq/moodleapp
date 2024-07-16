@@ -49,6 +49,7 @@ import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-sourc
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page that displays the calendar events for a certain day.
@@ -375,7 +376,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * Show the filter menu.
      */
     async openFilter(): Promise<void> {
-        await CoreDomUtils.openSideModal({
+        await CoreModals.openSideModal({
             component: AddonCalendarFilterComponent,
             componentProps: {
                 courses: this.manager?.getSource().courses,

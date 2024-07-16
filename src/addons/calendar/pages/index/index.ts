@@ -32,6 +32,7 @@ import { AddonCalendarFilterComponent } from '../../components/filter/filter';
 import { CoreNavigator } from '@services/navigator';
 import { CoreConstants } from '@/core/constants';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page that displays the calendar events.
@@ -330,7 +331,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      * Show the filter menu.
      */
     async openFilter(): Promise<void> {
-        await CoreDomUtils.openSideModal({
+        await CoreModals.openSideModal({
             component: AddonCalendarFilterComponent,
             componentProps: {
                 courses: this.courses,

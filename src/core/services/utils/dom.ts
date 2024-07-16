@@ -14,7 +14,7 @@
 
 import { Injectable, SimpleChange, KeyValueChanges } from '@angular/core';
 import { IonContent } from '@ionic/angular';
-import { ModalOptions, PopoverOptions, AlertOptions, AlertButton, TextFieldTypes } from '@ionic/core';
+import { PopoverOptions, AlertOptions, AlertButton, TextFieldTypes } from '@ionic/core';
 import { Md5 } from 'ts-md5';
 
 import { CoreConfig } from '@services/config';
@@ -33,18 +33,12 @@ import {
     Translate,
     AlertController,
     PopoverController,
-    ModalController,
-    Router,
 } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreBSTooltipComponent } from '@components/bs-tooltip/bs-tooltip';
-import { CoreModalLateralTransitionEnter, CoreModalLateralTransitionLeave } from '@classes/modal-lateral-transition';
 import { CoreSites } from '@services/sites';
-import { NavigationStart } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
@@ -53,12 +47,12 @@ import { CorePlatform } from '@services/platform';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLang } from '@services/lang';
 import { CorePasswordModalParams, CorePasswordModalResponse } from '@components/password-modal/password-modal';
-import { CoreWSError } from '@classes/errors/wserror';
 import { CoreErrorLogs } from '@singletons/error-logs';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreWait } from '@singletons/wait';
 import { CoreToasts, ToastDuration, ShowToastOptions } from '../toasts';
 import { fixOverlayAriaHidden } from '@/core/utils/fix-aria-hidden';
+import { CoreModals, OpenModalOptions } from '@services/modals';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -77,7 +71,6 @@ export class CoreDomUtilsProvider {
     protected matchesFunctionName?: string; // Name of the "matches" function to use when simulating a closest call.
     protected debugDisplay = false; // Whether to display debug messages. Store it in a variable to make it synchronous.
     protected displayedAlerts: Record<string, HTMLIonAlertElement> = {}; // To prevent duplicated alerts.
-    protected displayedModals: Record<string, HTMLIonModalElement> = {}; // To prevent duplicated modals.
     protected activeLoadingModals: CoreIonLoadingElement[] = [];
     protected logger: CoreLogger;
 
@@ -1465,54 +1458,13 @@ export class CoreDomUtilsProvider {
      *
      * @param options Modal Options.
      * @returns The modal data when the modal closes.
+     *
+     * @deprecated since 4.5. Use CoreModals.openModal instead.
      */
     async openModal<T = unknown>(
         options: OpenModalOptions,
     ): Promise<T | undefined> {
-        const { waitForDismissCompleted, closeOnNavigate, ...modalOptions } = options;
-        const listenCloseEvents = closeOnNavigate ?? true; // Default to true.
-
-        // TODO: Improve this if we need two modals with same component open at the same time.
-        const modalId = Md5.hashAsciiStr(options.component?.toString() || '');
-        const alreadyDisplayed = !!this.displayedModals[modalId];
-
-        const modal = alreadyDisplayed
-            ? this.displayedModals[modalId]
-            : await ModalController.create(modalOptions);
-
-        let navSubscription: Subscription | undefined;
-
-        // Get the promise before presenting to get result if modal is suddenly hidden.
-        const resultPromise = waitForDismissCompleted ? modal.onDidDismiss<T>() : modal.onWillDismiss<T>();
-
-        if (!this.displayedModals[modalId]) {
-            // Store the modal and remove it when dismissed.
-            this.displayedModals[modalId] = modal;
-
-            if (listenCloseEvents) {
-                // Listen navigation events to close modals.
-                navSubscription = Router.events
-                    .pipe(filter(event => event instanceof NavigationStart))
-                    .subscribe(async () => {
-                        modal.dismiss();
-                    });
-            }
-
-            await modal.present();
-        }
-
-        if (!alreadyDisplayed) {
-            fixOverlayAriaHidden(modal);
-        }
-
-        const result = await resultPromise;
-
-        navSubscription?.unsubscribe();
-        delete this.displayedModals[modalId];
-
-        if (result?.data) {
-            return result?.data;
-        }
+        return CoreModals.openModal(options);
     }
 
     /**
@@ -1520,20 +1472,13 @@ export class CoreDomUtilsProvider {
      *
      * @param options Modal Options.
      * @returns The modal data when the modal closes.
+     *
+     * @deprecated since 4.5. Use CoreModals.openSideModal instead.
      */
     async openSideModal<T = unknown>(
         options: OpenModalOptions,
     ): Promise<T | undefined> {
-
-        options = Object.assign({
-            cssClass: 'core-modal-lateral',
-            showBackdrop: true,
-            backdropDismiss: true,
-            enterAnimation: CoreModalLateralTransitionEnter,
-            leaveAnimation: CoreModalLateralTransitionLeave,
-        }, options);
-
-        return this.openModal<T>(options);
+        return CoreModals.openSideModal(options);
     }
 
     /**
@@ -1574,28 +1519,11 @@ export class CoreDomUtilsProvider {
      *
      * @param passwordParams Params to show the modal.
      * @returns Entered password, error and validation.
+     *
+     * @deprecated since 4.5. Use CoreModals.promptPassword instead.
      */
     async promptPassword<T extends CorePasswordModalResponse>(passwordParams?: CorePasswordModalParams): Promise<T> {
-        const { CorePasswordModalComponent } =
-            await import('@/core/components/password-modal/password-modal.module');
-
-        const modalData = await CoreDomUtils.openModal<T>(
-            {
-                cssClass: 'core-password-modal',
-                showBackdrop: true,
-                backdropDismiss: true,
-                component: CorePasswordModalComponent,
-                componentProps: passwordParams,
-            },
-        );
-
-        if (modalData === undefined) {
-            throw new CoreCanceledError();
-        } else if (modalData instanceof CoreWSError) {
-            throw modalData;
-        }
-
-        return modalData;
+        return CoreModals.promptPassword(passwordParams);
     }
 
     /**
@@ -1617,7 +1545,7 @@ export class CoreDomUtilsProvider {
         }
         const { CoreViewerImageComponent } = await import('@features/viewer/components/image/image');
 
-        await CoreDomUtils.openModal({
+        await CoreModals.openModal({
             component: CoreViewerImageComponent,
             componentProps: {
                 title,
@@ -1763,14 +1691,6 @@ export const CoreDomUtils = makeSingleton(CoreDomUtilsProvider);
  */
 export type OpenPopoverOptions = Omit<PopoverOptions, 'showBackdrop'> & {
     waitForDismissCompleted?: boolean;
-};
-
-/**
- * Options for the openModal function.
- */
-export type OpenModalOptions = ModalOptions & {
-    waitForDismissCompleted?: boolean;
-    closeOnNavigate?: boolean; // Default true.
 };
 
 /**

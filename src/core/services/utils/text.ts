@@ -21,7 +21,7 @@ import { DomSanitizer, makeSingleton, Translate } from '@singletons';
 import { CoreWSFile } from '@services/ws';
 import { Locutus } from '@singletons/locutus';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreDomUtils } from './dom';
+import { CoreModals } from '@services/modals';
 import { CoreUrl } from '@singletons/url';
 import { AlertButton } from '@ionic/angular';
 import { CorePath } from '@singletons/path';
@@ -1050,7 +1050,7 @@ export class CoreTextUtilsProvider {
             ...options,
         };
 
-        await CoreDomUtils.openModal(modalOptions);
+        await CoreModals.openModal(modalOptions);
     }
 
 }

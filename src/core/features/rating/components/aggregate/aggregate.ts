@@ -20,8 +20,8 @@ import {
     CoreRatingInfoItem,
     CoreRatingProvider,
 } from '@features/rating/services/rating';
+import { CoreModals } from '@services/modals';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 /**
@@ -120,7 +120,7 @@ export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
         const { CoreRatingRatingsComponent } =
             await import('@features/rating/components/ratings/ratings');
 
-        await CoreDomUtils.openModal({
+        await CoreModals.openModal({
             component: CoreRatingRatingsComponent,
             componentProps: {
                 contextLevel: this.contextLevel,

@@ -30,6 +30,7 @@ import { SHAREDFILES_PAGE_NAME } from '../constants';
 import { CoreSharedFilesChooseSitePage } from '../pages/choose-site/choose-site';
 import { CoreError } from '@classes/errors/error';
 import { CorePlatform } from '@services/platform';
+import { CoreModals } from '@services/modals';
 
 /**
  * Helper service to share files with the app.
@@ -152,7 +153,7 @@ export class CoreSharedFilesHelperProvider {
         const { CoreSharedFilesListModalComponent } =
             await import('@features/sharedfiles/components/list-modal/list-modal');
 
-        const file = await CoreDomUtils.openModal<FileEntry>({
+        const file = await CoreModals.openModal<FileEntry>({
             component: CoreSharedFilesListModalComponent,
             cssClass: 'core-modal-fullscreen',
             componentProps: { mimetypes, pick: true },
