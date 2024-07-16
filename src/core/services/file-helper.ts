@@ -21,7 +21,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
 import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
@@ -93,7 +93,7 @@ export class CoreFileHelperProvider {
             return;
         }
 
-        if (!CoreUrlUtils.isLocalFileUrl(url)) {
+        if (!CoreUrl.isLocalFileUrl(url)) {
             /* In iOS, if we use the same URL in embedded browser and background download then the download only
                downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
             url = url + '#moodlemobile-embedded';

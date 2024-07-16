@@ -18,7 +18,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { DownloadStatus } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
@@ -168,7 +168,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
      */
     protected async checkCanDownload(): Promise<void> {
         this.observer && this.observer.off();
-        this.urlParams = CoreUrlUtils.extractUrlParams(this.src || '');
+        this.urlParams = CoreUrl.extractUrlParams(this.src || '');
 
         if (this.src && this.siteCanDownload && CoreH5P.canGetTrustedH5PFileInSite() && this.site.containsUrl(this.src)) {
             this.calculateState();

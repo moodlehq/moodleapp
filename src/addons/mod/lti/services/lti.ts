@@ -22,7 +22,7 @@ import { CoreFile } from '@services/file';
 import { CorePlatform } from '@services/platform';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -244,7 +244,7 @@ export class AddonModLtiProvider {
      * @returns Promise resolved when the WS call is successful.
      */
     async launch(url: string, params: AddonModLtiParam[]): Promise<void> {
-        if (!CoreUrlUtils.isHttpURL(url)) {
+        if (!CoreUrl.isHttpURL(url)) {
             throw Translate.instant('addon.mod_lti.errorinvalidlaunchurl');
         }
 

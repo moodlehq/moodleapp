@@ -14,18 +14,12 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreLang, CoreLangFormat } from '@services/lang';
-import { CoreTextUtils } from '@services/utils/text';
-import { CoreConstants } from '@/core/constants';
 import { makeSingleton } from '@singletons';
-import { CoreUrl } from '@singletons/url';
-import { CoreSites } from '@services/sites';
-import { CorePath } from '@singletons/path';
-import { CorePlatform } from '@services/platform';
-import { CoreMedia } from '@singletons/media';
+import { CoreUrl, CoreUrlParams as CoreUrlParamsNew, CoreUrlPartNames } from '@singletons/url';
 
 /*
  * "Utils" service with helper functions for URLs.
+ * @deprecated since 4.5. Use CoreUrl instead.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreUrlUtilsProvider {
@@ -35,19 +29,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url URL to modify.
      * @returns Modified URL.
+     * @deprecated since 4.5. Use CoreUrl.addOrRemoveWWW instead.
      */
     addOrRemoveWWW(url: string): string {
-        if (url) {
-            if (url.match(/http(s)?:\/\/www\./)) {
-                // Already has www. Remove it.
-                url = url.replace('www.', '');
-            } else {
-                url = url.replace('https://', 'https://www.');
-                url = url.replace('http://', 'http://www.');
-            }
-        }
-
-        return url;
+        return CoreUrl.addOrRemoveWWW(url);
     }
 
     /**
@@ -58,43 +43,10 @@ export class CoreUrlUtilsProvider {
      * @param anchor Anchor text if needed.
      * @param boolToNumber Whether to convert bools to 1 or 0.
      * @returns URL with params.
+     * @deprecated since 4.5. Use CoreUrl.addParamsToUrl instead.
      */
     addParamsToUrl(url: string, params?: Record<string, unknown>, anchor?: string, boolToNumber?: boolean): string {
-        // Remove any existing anchor to add the params before it.
-        const urlAndAnchor = url.split('#');
-        url = urlAndAnchor[0];
-
-        let separator = url.indexOf('?') !== -1 ? '&' : '?';
-
-        for (const key in params) {
-            let value = params[key];
-
-            if (boolToNumber && typeof value === 'boolean') {
-                // Convert booleans to 1 or 0.
-                value = value ? '1' : '0';
-            }
-
-            // Ignore objects and undefined.
-            if (typeof value !== 'object' && value !== undefined) {
-                url += separator + key + '=' + value;
-                separator = '&';
-            }
-        }
-
-        // Re-add the anchor if any.
-        if (urlAndAnchor.length > 1) {
-            // Remove the URL from the array.
-            urlAndAnchor.shift();
-
-            // Use a join in case there is more than one #.
-            url += '#' + urlAndAnchor.join('#');
-        }
-
-        if (anchor) {
-            url += '#' + anchor;
-        }
-
-        return url;
+        return CoreUrl.addParamsToUrl(url, params, anchor, boolToNumber);
     }
 
     /**
@@ -103,9 +55,10 @@ export class CoreUrlUtilsProvider {
      * @param url URL.
      * @param text Text of the link.
      * @returns Link.
+     * @deprecated since 4.5. Use CoreUrl.buildLink instead.
      */
     buildLink(url: string, text: string): string {
-        return '<a href="' + url + '">' + text + '</a>';
+        return CoreUrl.buildLink(url, text);
     }
 
     /**
@@ -115,14 +68,10 @@ export class CoreUrlUtilsProvider {
      * @param siteUrl The URL of the site the URL belongs to.
      * @param accessKey User access key for tokenpluginfile.
      * @returns Whether tokenpluginfile.php can be used.
+     * @deprecated since 4.5. Use CoreUrl.canUseTokenPluginFile instead.
      */
     canUseTokenPluginFile(url: string, siteUrl: string, accessKey?: string): boolean {
-        // Do not use tokenpluginfile if site doesn't use slash params, the URL doesn't work.
-        // Also, only use it for "core" pluginfile endpoints. Some plugins can implement their own endpoint (like customcert).
-        return !CoreConstants.CONFIG.disableTokenFile && !!accessKey && !url.match(/[&?]file=/) && (
-            url.indexOf(CorePath.concatenatePaths(siteUrl, 'pluginfile.php')) === 0 ||
-            url.indexOf(CorePath.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0) &&
-            !CoreMedia.sourceUsesJavascriptPlayer({ src: url });
+        return CoreUrl.canUseTokenPluginFile(url, siteUrl, accessKey);
     }
 
     /**
@@ -130,43 +79,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url URL to treat.
      * @returns Object with the params.
+     * @deprecated since 4.5. Use CoreUrl.extractUrlParams instead.
      */
-    extractUrlParams(url: string): CoreUrlParams {
-        const regex = /[?&]+([^=&]+)=?([^&]*)?/gi;
-        const subParamsPlaceholder = '@@@SUBPARAMS@@@';
-        const params: CoreUrlParams = {};
-        const urlAndHash = url.split('#');
-        const questionMarkSplit = urlAndHash[0].split('?');
-        let subParams: string;
-
-        if (questionMarkSplit.length > 2) {
-            // There is more than one question mark in the URL. This can happen if any of the params is a URL with params.
-            // We only want to treat the first level of params, so we'll remove this second list of params and restore it later.
-            questionMarkSplit.splice(0, 2);
-
-            subParams = '?' + questionMarkSplit.join('?');
-            urlAndHash[0] = urlAndHash[0].replace(subParams, subParamsPlaceholder);
-        }
-
-        urlAndHash[0].replace(regex, (match: string, key: string, value: string): string => {
-            params[key] = value !== undefined ? CoreTextUtils.decodeURIComponent(value) : '';
-
-            if (subParams) {
-                params[key] = params[key].replace(subParamsPlaceholder, subParams);
-            }
-
-            return match;
-        });
-
-        if (urlAndHash.length > 1) {
-            // Remove the URL from the array.
-            urlAndHash.shift();
-
-            // Add the hash as a param with a special name. Use a join in case there is more than one #.
-            params.urlHash = urlAndHash.join('#');
-        }
-
-        return params;
+    extractUrlParams(url: string): CoreUrlParamsNew {
+        return CoreUrl.extractUrlParams(url);
     }
 
     /**
@@ -179,40 +95,10 @@ export class CoreUrlUtilsProvider {
      * @param siteUrl The URL of the site the URL belongs to.
      * @param accessKey User access key for tokenpluginfile.
      * @returns Fixed URL.
+     * @deprecated since 4.5. Use CoreUrl.fixPluginfileURL instead.
      */
     fixPluginfileURL(url: string, token: string, siteUrl: string, accessKey?: string): string {
-        if (!url) {
-            return '';
-        }
-
-        url = url.replace(/&amp;/g, '&');
-
-        const canUseTokenPluginFile = accessKey && this.canUseTokenPluginFile(url, siteUrl, accessKey);
-
-        // First check if we need to fix this url or is already fixed.
-        if (!canUseTokenPluginFile && url.indexOf('token=') != -1) {
-            return url;
-        }
-
-        // Check if is a valid URL (contains the pluginfile endpoint) and belongs to the site.
-        if (!this.isPluginFileUrl(url) || url.indexOf(CoreTextUtils.addEndingSlash(siteUrl)) !== 0) {
-            return url;
-        }
-
-        if (canUseTokenPluginFile) {
-            // Use tokenpluginfile.php.
-            url = url.replace(/(\/webservice)?\/pluginfile\.php/, '/tokenpluginfile.php/' + accessKey);
-        } else {
-            // Use pluginfile.php. Some webservices returns directly the correct download url, others not.
-            if (url.indexOf(CorePath.concatenatePaths(siteUrl, 'pluginfile.php')) === 0) {
-                url = url.replace('/pluginfile', '/webservice/pluginfile');
-            }
-
-            url = this.addParamsToUrl(url, { token });
-        }
-
-        // Always send offline=1 (it's for external repositories).
-        return this.addParamsToUrl(url, { offline: '1', lang: CoreLang.getCurrentLanguageSync(CoreLangFormat.LMS) });
+        return CoreUrl.fixPluginfileURL(url, token, siteUrl, accessKey);
     }
 
     /**
@@ -220,54 +106,26 @@ export class CoreUrlUtilsProvider {
      *
      * @param url The url to be formatted.
      * @returns Fromatted url.
+     * @deprecated since 4.5. Use CoreUrl.formatURL instead.
      */
     formatURL(url: string): string {
-        url = url.trim();
-
-        // Check if the URL starts by http or https.
-        if (! /^http(s)?:\/\/.*/i.test(url)) {
-            // Test first allways https.
-            url = 'https://' + url;
-        }
-
-        // http always in lowercase.
-        url = url.replace(/^http/i, 'http');
-        url = url.replace(/^https/i, 'https');
-
-        // Replace last slash.
-        url = url.replace(/\/$/, '');
-
-        return url;
+        return CoreUrl.formatURL(url);
     }
 
     /**
      * Returns the URL to the documentation of the app, based on Moodle version and current language.
      *
-     * @param release Moodle release.
+     * The URL has been simplified and always returns the English version of the latest version of Moodle
+     * to simplify the circular dependencies.
+     *
+     * @param release Moodle release. Unused.
      * @param page Docs page to go to.
      * @returns Promise resolved with the Moodle docs URL.
+     *
+     * @deprecated since 4.5. You can use CoreAuthenticatedSite.getDocsUrl but is also deprecated.
      */
     async getDocsUrl(release?: string, page: string = 'Mobile_app'): Promise<string> {
-        let docsUrl = 'https://docs.moodle.org/en/' + page;
-
-        if (release !== undefined) {
-            const version = CoreSites.getMajorReleaseNumber(release).replace('.', '');
-
-            // Check is a valid number.
-            if (Number(version) >= 24) {
-                // Append release number.
-                docsUrl = docsUrl.replace('https://docs.moodle.org/', 'https://docs.moodle.org/' + version + '/');
-            }
-        }
-
-        try {
-            let lang = await CoreLang.getCurrentLanguage(CoreLangFormat.LMS);
-            lang = CoreLang.getParentLanguage() || lang;
-
-            return docsUrl.replace('/en/', '/' + lang + '/');
-        } catch (error) {
-            return docsUrl;
-        }
+        return 'https://docs.moodle.org/en/' + page;
     }
 
     /**
@@ -275,53 +133,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url URL
      * @returns Youtube Embed Video URL or undefined if not found.
+     * @deprecated since 4.5. Use CoreUrl.getYoutubeEmbedUrl instead.
      */
     getYoutubeEmbedUrl(url?: string): string | void {
-        if (!url) {
-            return;
-        }
-
-        let videoId = '';
-        const params: CoreUrlParams = {};
-
-        url = CoreTextUtils.decodeHTML(url);
-
-        // Get the video ID.
-        let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
-
-        if (match && match[2].length === 11) {
-            videoId = match[2];
-        }
-
-        // No videoId, do not continue.
-        if (!videoId) {
-            return;
-        }
-
-        // Now get the playlist (if any).
-        match = url.match(/[?&]list=([^#&?]+)/);
-
-        if (match && match[1]) {
-            params.list = match[1];
-        }
-
-        // Now get the start time (if any).
-        match = url.match(/[?&]start=(\d+)/);
-
-        if (match && match[1]) {
-            params.start = parseInt(match[1], 10).toString();
-        } else {
-            // No start param, but it could have a time param.
-            match = url.match(/[?&]t=(\d+h)?(\d+m)?(\d+s)?/);
-            if (match) {
-                const start = (match[1] ? parseInt(match[1], 10) * 3600 : 0) +
-                    (match[2] ? parseInt(match[2], 10) * 60 : 0) +
-                    (match[3] ? parseInt(match[3], 10) : 0);
-                params.start = start.toString();
-            }
-        }
-
-        return this.addParamsToUrl('https://www.youtube.com/embed/' + videoId, params);
+        return CoreUrl.getYoutubeEmbedUrl(url);
     }
 
     /**
@@ -331,15 +146,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url URL to treat.
      * @returns Last file without params.
+     * @deprecated since 4.5. Use CoreUrl.getLastFileWithoutParams instead.
      */
     getLastFileWithoutParams(url: string): string {
-        const parsedUrl = CoreUrl.parse(url);
-        if (!parsedUrl) {
-            return '';
-        }
-        const path = parsedUrl.path ?? '';
-
-        return path.split('/').pop() ?? '';
+        return CoreUrl.getLastFileWithoutParams(url);
     }
 
     /**
@@ -348,17 +158,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url URL to treat.
      * @returns Protocol, undefined if no protocol found.
-     * @todo Use CoreUrl.parse
+     * @deprecated since 4.5. Use CoreUrl.getUrlProtocol instead.
      */
     getUrlProtocol(url: string): string | void {
-        if (!url) {
-            return;
-        }
-
-        const matches = url.match(/^([^/:.?]*):\/\//);
-        if (matches && matches[1]) {
-            return matches[1];
-        }
+        return CoreUrl.getUrlProtocol(url);
     }
 
     /**
@@ -367,36 +170,21 @@ export class CoreUrlUtilsProvider {
      *
      * @param url URL to treat.
      * @returns Scheme, undefined if no scheme found.
+     * @deprecated since 4.5. Use CoreUrl.getUrlProtocol instead.
      */
     getUrlScheme(url: string): string | void {
-        if (!url) {
-            return;
-        }
-
-        const matches = url.match(/^([a-z][a-z0-9+\-.]*):/);
-        if (matches && matches[1]) {
-            return matches[1];
-        }
+        return CoreUrl.getUrlProtocol(url);
     }
 
-    /*
+    /**
      * Gets a username from a URL like: user@mysite.com.
      *
      * @param url URL to treat.
      * @returns Username. Undefined if no username found.
-     * @todo Use CoreUrl.parse
+     * @deprecated since 4.5. Use CoreUrl.getUsernameFromUrl instead.
      */
     getUsernameFromUrl(url: string): string | undefined {
-        if (url.indexOf('@') > -1) {
-            // Get URL without protocol.
-            const withoutProtocol = url.replace(/^[^?@/]*:\/\//, '');
-            const matches = withoutProtocol.match(/[^@]*/);
-
-            // Make sure that @ is at the start of the URL, not in a param at the end.
-            if (matches && matches.length && !matches[0].match(/[/|?]/)) {
-                return matches[0];
-            }
-        }
+        return CoreUrl.getUsernameFromUrl(url);
     }
 
     /**
@@ -404,9 +192,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url The url to test against the pattern.
      * @returns Whether the url is absolute.
+     * @deprecated since 4.5. Use CoreUrl.isAbsoluteURL instead.
      */
     isAbsoluteURL(url: string): boolean {
-        return /^[^:]{2,}:\/\//i.test(url) || /^(tel:|mailto:|geo:)/.test(url);
+        return CoreUrl.isAbsoluteURL(url);
     }
 
     /**
@@ -414,9 +203,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url The URL to test.
      * @returns Whether the URL is downloadable.
+     * @deprecated since 4.5. Use CoreUrl.isDownloadableUrl instead.
      */
     isDownloadableUrl(url: string): boolean {
-        return this.isPluginFileUrl(url) || this.isTokenPluginFileUrl(url) || this.isThemeImageUrl(url) || this.isGravatarUrl(url);
+        return CoreUrl.isDownloadableUrl(url);
     }
 
     /**
@@ -424,9 +214,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url The URL to test.
      * @returns Whether the URL is a gravatar URL.
+     * @deprecated since 4.5. Use CoreUrl.isGravatarUrl instead.
      */
     isGravatarUrl(url: string): boolean {
-        return url?.indexOf('gravatar.com/avatar') !== -1;
+        return CoreUrl.isGravatarUrl(url);
     }
 
     /**
@@ -434,10 +225,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url The url to test.
      * @returns Whether the url uses http or https protocol.
-     * @todo Use CoreUrl.parse
+     * @deprecated since 4.5. Use CoreUrl.isHttpURL instead.
      */
     isHttpURL(url: string): boolean {
-        return /^https?:\/\/.+/i.test(url);
+        return CoreUrl.isHttpURL(url);
     }
 
     /**
@@ -445,11 +236,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url URL to check.
      * @returns Whether the URL belongs to a local file.
+     * @deprecated since 4.5. Use CoreUrl.isLocalFileUrl instead.
      */
     isLocalFileUrl(url: string): boolean {
-        const urlParts = CoreUrl.parse(url);
-
-        return this.isLocalFileUrlScheme(urlParts?.protocol || '', urlParts?.domain || '');
+        return CoreUrl.isLocalFileUrl(url);
     }
 
     /**
@@ -457,18 +247,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param scheme Scheme to check.
      * @returns Whether the scheme belongs to a local file.
+     * @deprecated since 4.5. Use CoreUrl.isLocalFileUrlScheme instead.
      */
     isLocalFileUrlScheme(scheme: string, domain: string): boolean {
-        if (!scheme) {
-            return false;
-        }
-        scheme = scheme.toLowerCase();
-
-        return scheme == 'cdvfile' ||
-                scheme == 'file' ||
-                scheme == 'filesystem' ||
-                scheme == CoreConstants.CONFIG.ioswebviewscheme ||
-                (CorePlatform.isMobile() && scheme === 'http' && domain === 'localhost'); // @todo Get served domain from ENV.
+        return CoreUrl.isLocalFileUrlScheme(scheme, domain);
     }
 
     /**
@@ -476,9 +258,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url The URL to test.
      * @returns Whether the URL is a pluginfile URL.
+     * @deprecated since 4.5. Use CoreUrl.isPluginFileUrl instead.
      */
     isPluginFileUrl(url: string): boolean {
-        return url.indexOf('/pluginfile.php') !== -1;
+        return CoreUrl.isPluginFileUrl(url);
     }
 
     /**
@@ -486,9 +269,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url The URL to test.
      * @returns Whether the URL is a tokenpluginfile URL.
+     * @deprecated since 4.5. Use CoreUrl.isTokenPluginFileUrl instead.
      */
     isTokenPluginFileUrl(url: string): boolean {
-        return url.indexOf('/tokenpluginfile.php') !== -1;
+        return CoreUrl.isTokenPluginFileUrl(url);
     }
 
     /**
@@ -497,13 +281,10 @@ export class CoreUrlUtilsProvider {
      * @param imageUrl The URL to test.
      * @param siteUrl The Site Url.
      * @returns Whether the URL is a theme image URL.
+     * @deprecated since 4.5. Use CoreUrl.isThemeImageUrl instead.
      */
     isThemeImageUrl(imageUrl: string, siteUrl?: string): boolean {
-        if (siteUrl) {
-            return imageUrl.startsWith(`${siteUrl}/theme/image.php`);
-        }
-
-        return imageUrl?.indexOf('/theme/image.php') !== -1;
+        return CoreUrl.isThemeImageUrl(imageUrl, siteUrl);
     }
 
     /**
@@ -513,57 +294,10 @@ export class CoreUrlUtilsProvider {
      * @param param Param to get from the URL.
      * @param siteUrl Site URL.
      * @returns Param from the URL.
+     * @deprecated since 4.5. Use CoreUrl.getThemeImageUrlParam instead.
      */
     getThemeImageUrlParam(imageUrl: string, param: string, siteUrl?: string): string {
-        if (!this.isThemeImageUrl(imageUrl, siteUrl)) {
-            // Cannot be guessed.
-            return '';
-        }
-
-        const matches = imageUrl.match('/theme/image.php/(.*)');
-        if (matches?.[1]) {
-            // Slash arguments found.
-            const slasharguments = matches[1].split('/');
-
-            if (slasharguments.length < 4) {
-                // Image not found, malformed URL.
-                return '';
-            }
-
-            // Join from the third element to the end.
-            const image = slasharguments.slice(3).join('/');
-            switch (param) {
-                case 'theme':
-                    return slasharguments[0];
-                case 'component':
-                    return slasharguments[1];
-                case 'rev':
-                    return slasharguments[2];
-                case 'image':
-                    // Remove possible url params.
-                    return CoreUrlUtils.removeUrlParams(image);
-                default:
-                    return CoreUrlUtils.extractUrlParams(image)[param] || '';
-            }
-
-        }
-
-        // URL arguments found.
-        const iconParams = CoreUrlUtils.extractUrlParams(imageUrl);
-
-        switch (param) {
-            case 'theme':
-                return iconParams[param] || 'standard';
-            case 'component':
-                return iconParams[param] || 'core';
-            case 'rev':
-                return iconParams[param] || '-1';
-            case 'svg':
-                return iconParams[param] || '1';
-            case 'image':
-            default:
-                return iconParams[param] || '';
-        }
+        return CoreUrl.getThemeImageUrlParam(imageUrl, param, siteUrl);
     }
 
     /**
@@ -571,14 +305,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url URL to treat.
      * @returns Treated URL.
+     * @deprecated since 4.5. Use CoreUrl.removeUrlParts(url, [CoreUrlPartNames.Protocol, CoreUrlPartNames.WWWInDomain]) instead.
      */
     removeProtocolAndWWW(url: string): string {
-        // Remove protocol.
-        url = url.replace(/^.*?:\/\//, '');
-        // Remove www.
-        url = url.replace(/^www./, '');
-
-        return url;
+        return CoreUrl.removeUrlParts(url, [CoreUrlPartNames.Protocol, CoreUrlPartNames.WWWInDomain]);
     }
 
     /**
@@ -586,11 +316,10 @@ export class CoreUrlUtilsProvider {
      *
      * @param url URL to treat.
      * @returns URL without params.
+     * @deprecated since 4.5. Use CoreUrl.removeUrlParts(url, [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment]) instead.
      */
     removeUrlParams(url: string): string {
-        const matches = url.match(/^[^?]+/);
-
-        return matches ? matches[0] : '';
+        return CoreUrl.removeUrlParts(url, [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment]);
     }
 
     /**
@@ -599,33 +328,16 @@ export class CoreUrlUtilsProvider {
      * @param url The url to be fixed.
      * @param siteUrl The URL of the site the URL belongs to.
      * @returns Modified URL.
+     * @deprecated since 4.5. Use CoreUrl.unfixPluginfileURL instead.
      */
     unfixPluginfileURL(url: string, siteUrl?: string): string {
-        if (!url) {
-            return '';
-        }
-
-        url = url.replace(/&amp;/g, '&');
-
-        // It site URL is supplied, check if the URL belongs to the site.
-        if (siteUrl && url.indexOf(CoreTextUtils.addEndingSlash(siteUrl)) !== 0) {
-            return url;
-        }
-
-        // Check tokenpluginfile first.
-        url = url.replace(/\/tokenpluginfile\.php\/[^/]+\//, '/pluginfile.php/');
-
-        // Treat webservice/pluginfile case.
-        url = url.replace(/\/webservice\/pluginfile\.php\//, '/pluginfile.php/');
-
-        // Make sure the URL doesn't contain the token.
-        url = url.replace(/([?&])token=[^&]*&?/, '$1');
-
-        return url;
+        return CoreUrl.unfixPluginfileURL(url, siteUrl);
     }
 
 }
-
 export const CoreUrlUtils = makeSingleton(CoreUrlUtilsProvider);
 
-export type CoreUrlParams = {[key: string]: string};
+/**
+ * @deprecated since 4.5. Use CoreUrlParams on CoreUrl instead.
+ */
+export type CoreUrlParams = CoreUrlParamsNew;

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonModAssign } from '../assign';
@@ -50,7 +50,7 @@ export class AddonModAssignPushClickHandlerService implements CorePushNotificati
      * @returns Promise resolved when done.
      */
     async handleClick(notification: NotificationData): Promise<void> {
-        const contextUrlParams = CoreUrlUtils.extractUrlParams(notification.contexturl);
+        const contextUrlParams = CoreUrl.extractUrlParams(notification.contexturl);
         const courseId = Number(notification.courseid);
         const moduleId = Number(contextUrlParams.id);
 

@@ -14,9 +14,74 @@
 
 import { mock } from '@/testing/utils';
 import { CoreSite } from '@classes/sites/site';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 
 describe('CoreUrl singleton', () => {
+
+    it('adds www if missing', () => {
+        const originalUrl = 'https://moodle.org';
+        const url = CoreUrl.addOrRemoveWWW(originalUrl);
+
+        expect(url).toEqual('https://www.moodle.org');
+    });
+
+    it('removes www if present', () => {
+        const originalUrl = 'https://www.moodle.org';
+        const url = CoreUrl.addOrRemoveWWW(originalUrl);
+
+        expect(url).toEqual('https://moodle.org');
+    });
+
+    it('adds params to URL without params', () => {
+        const originalUrl = 'https://moodle.org';
+        const params = {
+            first: '1',
+            second: '2',
+        };
+        const url = CoreUrl.addParamsToUrl(originalUrl, params);
+
+        expect(url).toEqual('https://moodle.org?first=1&second=2');
+    });
+
+    it('adds params to URL with existing params', () => {
+        const originalUrl = 'https://moodle.org?existing=1';
+        const params = {
+            first: '1',
+            second: '2',
+        };
+        const url = CoreUrl.addParamsToUrl(originalUrl, params);
+
+        expect(url).toEqual('https://moodle.org?existing=1&first=1&second=2');
+    });
+
+    it('doesn\'t change URL if no params supplied', () => {
+        const originalUrl = 'https://moodle.org';
+        const url = CoreUrl.addParamsToUrl(originalUrl);
+
+        expect(url).toEqual(originalUrl);
+    });
+
+    it('doesn\'t add undefined or null params', () => {
+        const originalUrl = 'https://moodle.org';
+        const url = CoreUrl.addParamsToUrl(originalUrl, {
+            foo: undefined,
+            bar: null,
+            baz: 1,
+        });
+
+        expect(url).toEqual('https://moodle.org?baz=1');
+    });
+
+    it('adds anchor to URL', () => {
+        const originalUrl = 'https://moodle.org';
+        const params = {
+            first: '1',
+            second: '2',
+        };
+        const url = CoreUrl.addParamsToUrl(originalUrl, params, 'myanchor');
+
+        expect(url).toEqual('https://moodle.org?first=1&second=2#myanchor');
+    });
 
     it('parses standard urls', () => {
         expect(CoreUrl.parse('https://u1:pw1@my.subdomain.com/path/?query=search#hash')).toEqual({
@@ -83,9 +148,34 @@ describe('CoreUrl singleton', () => {
     });
 
     it('removes protocol', () => {
-        expect(CoreUrl.removeProtocol('https://school.edu')).toEqual('school.edu');
-        expect(CoreUrl.removeProtocol('ftp://school.edu')).toEqual('school.edu');
-        expect(CoreUrl.removeProtocol('school.edu')).toEqual('school.edu');
+        expect(CoreUrl.removeUrlParts('https://school.edu', CoreUrlPartNames.Protocol)).toEqual('school.edu');
+        expect(CoreUrl.removeUrlParts('ftp://school.edu', CoreUrlPartNames.Protocol)).toEqual('school.edu');
+        expect(CoreUrl.removeUrlParts('school.edu', CoreUrlPartNames.Protocol)).toEqual('school.edu');
+    });
+
+    it('removes protocol and www', () => {
+        expect(CoreUrl.removeUrlParts('https://www.school.edu', [CoreUrlPartNames.Protocol, CoreUrlPartNames.WWWInDomain]))
+            .toEqual('school.edu');
+        expect(CoreUrl.removeUrlParts('ftp://school.edu', [CoreUrlPartNames.Protocol, CoreUrlPartNames.WWWInDomain]))
+            .toEqual('school.edu');
+        expect(CoreUrl.removeUrlParts('www.school.edu', [CoreUrlPartNames.Protocol, CoreUrlPartNames.WWWInDomain]))
+            .toEqual('school.edu');
+        // Test that it works in a different order.
+        expect(CoreUrl.removeUrlParts('https://www.school.edu', [CoreUrlPartNames.WWWInDomain, CoreUrlPartNames.Protocol]))
+            .toEqual('school.edu');
+        expect(CoreUrl.removeUrlParts('ftp://school.edu', [CoreUrlPartNames.WWWInDomain, CoreUrlPartNames.Protocol]))
+            .toEqual('school.edu');
+        expect(CoreUrl.removeUrlParts('www.school.edu', [CoreUrlPartNames.WWWInDomain, CoreUrlPartNames.Protocol]))
+            .toEqual('school.edu');
+    });
+
+    it('removes params', () => {
+        expect(CoreUrl.removeUrlParts('https://www.school.edu?blabla#a', [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment]))
+            .toEqual('https://www.school.edu');
+        expect(CoreUrl.removeUrlParts('ftp://school.edu?blabla=r#a', [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment]))
+            .toEqual('ftp://school.edu');
+        expect(CoreUrl.removeUrlParts('www.school.edu?blabla=5&gg=3', [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment]))
+            .toEqual('www.school.edu');
     });
 
     it('compares domains and paths', () => {
@@ -108,9 +198,21 @@ describe('CoreUrl singleton', () => {
     });
 
     it('removes the anchor of a URL', () => {
-        expect(CoreUrl.removeUrlAnchor('https://school.edu#foo')).toEqual('https://school.edu');
-        expect(CoreUrl.removeUrlAnchor('https://school.edu#foo#bar')).toEqual('https://school.edu');
-        expect(CoreUrl.removeUrlAnchor('https://school.edu')).toEqual('https://school.edu');
+        expect(CoreUrl.removeUrlParts('https://school.edu#foo', CoreUrlPartNames.Fragment)).toEqual('https://school.edu');
+        expect(CoreUrl.removeUrlParts('https://school.edu#foo#bar', CoreUrlPartNames.Fragment)).toEqual('https://school.edu');
+        expect(CoreUrl.removeUrlParts('https://school.edu', CoreUrlPartNames.Fragment)).toEqual('https://school.edu');
+    });
+
+    it('gets the username from a URL', () => {
+        expect(CoreUrl.getUsernameFromUrl(
+            'https://username@domain.com?token=TOKEN&privatetoken=PRIVATETOKEN&redirect=http://domain.com/course/view.php?id=2',
+        )).toEqual('username');
+        expect(CoreUrl.getUsernameFromUrl(
+            'https://username:password@domain.com?token=TOKEN&privatetoken=PRIVATETOKEN&redirect=http://domain.com/course/',
+        )).toEqual('username');
+        expect(CoreUrl.getUsernameFromUrl(
+            'https://domain.com?token=TOKEN&privatetoken=PRIVATETOKEN&redirect=http://domain.com/course/view.php?id=2',
+        )).toEqual(undefined);
     });
 
     it('converts to absolute URLs', () => {

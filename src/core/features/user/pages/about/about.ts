@@ -32,7 +32,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { Translate } from '@singletons';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Page that displays info about a user.
@@ -247,7 +247,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
             return 'undefined';
         }
 
-        if (CoreUrlUtils.isThemeImageUrl(avatarUrl, this.site?.siteUrl)) {
+        if (CoreUrl.isThemeImageUrl(avatarUrl, this.site?.siteUrl)) {
             return 'default';
         }
 

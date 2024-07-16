@@ -26,7 +26,7 @@ import { CoreEvents, CoreEventSiteData, CoreEventUserDeletedData, CoreEventUserS
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreConstants } from '@/core/constants';
 
@@ -668,7 +668,7 @@ export class CoreUserProvider {
             }
 
             // Do not prefetch when initials are set and image is default.
-            if (imageUrl && CoreUrlUtils.isThemeImageUrl(imageUrl)) {
+            if (imageUrl && CoreUrl.isThemeImageUrl(imageUrl)) {
                 return;
             }
 

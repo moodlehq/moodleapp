@@ -25,7 +25,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CorePolicy, CorePolicyAgreementStyle, CorePolicySitePolicy } from '@features/policy/services/policy';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { IonContent } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
 import { Subscription } from 'rxjs';
@@ -223,7 +223,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
             ws: 'tool_policy_get_user_acceptances',
             name: this.currentPolicy.name,
             data: analyticsParams,
-            url: CoreUrlUtils.addParamsToUrl('/admin/tool/policy/view.php', analyticsParams),
+            url: CoreUrl.addParamsToUrl('/admin/tool/policy/view.php', analyticsParams),
         });
     }
 
@@ -236,7 +236,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
             ws: 'tool_policy_get_user_acceptances',
             name: Translate.instant('core.policy.consentpagetitle'),
             data: {},
-            url: CoreUrlUtils.addParamsToUrl('/admin/tool/policy/index.php'),
+            url: CoreUrl.addParamsToUrl('/admin/tool/policy/index.php'),
         });
     }
 

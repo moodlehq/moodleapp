@@ -28,8 +28,7 @@ import {
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
-import { CoreUrl } from '@singletons/url';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services/urlschemes';
 import { CoreTextUtils } from '@services/utils/text';
@@ -206,7 +205,9 @@ export class CoreLoginSitePage implements OnInit {
      */
     protected extendCoreLoginSiteInfo(sites: CoreLoginSiteInfoExtended[]): CoreLoginSiteInfoExtended[] {
         return sites.map((site) => {
-            site.noProtocolUrl = this.siteFinderSettings.displayurl && site.url ? CoreUrl.removeProtocol(site.url) : '';
+            site.noProtocolUrl = this.siteFinderSettings.displayurl && site.url
+                ? CoreUrl.removeUrlParts(site.url, CoreUrlPartNames.Protocol)
+                : '';
 
             const name = this.siteFinderSettings.displaysitename ? site.name : '';
             const alias = this.siteFinderSettings.displayalias && site.alias ? site.alias : '';
@@ -510,7 +511,7 @@ export class CoreLoginSitePage implements OnInit {
                 name: 'connect',
                 title: '',
                 location: '',
-                noProtocolUrl: CoreUrl.removeProtocol(search),
+                noProtocolUrl: CoreUrl.removeUrlParts(search, CoreUrlPartNames.Protocol),
             };
         } else {
             this.enteredSiteUrl = undefined;
@@ -563,7 +564,7 @@ export class CoreLoginSitePage implements OnInit {
         }
 
         // Not a custom URL scheme, check if it's a URL scheme to another app.
-        const scheme = CoreUrlUtils.getUrlProtocol(text);
+        const scheme = CoreUrl.getUrlProtocol(text);
 
         if (scheme && scheme != 'http' && scheme != 'https') {
             CoreDomUtils.showErrorModal(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));

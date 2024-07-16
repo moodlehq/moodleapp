@@ -26,7 +26,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -313,7 +313,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
             ws: 'core_notes_view_notes',
             name: Translate.instant('addon.notes.notes'),
             data: { courseid: this.courseId, userid: this.userId || 0, category: 'notes' },
-            url: CoreUrlUtils.addParamsToUrl('/notes/index.php', {
+            url: CoreUrl.addParamsToUrl('/notes/index.php', {
                 user: this.userId,
                 course: this.courseId !== CoreSites.getCurrentSiteHomeId() ? this.courseId : undefined,
             }),
@@ -329,7 +329,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
             ws: 'core_notes_create_notes',
             name: Translate.instant('addon.notes.notes'),
             data: { courseid: this.courseId, userid: this.userId || 0, category: 'notes' },
-            url: CoreUrlUtils.addParamsToUrl('/notes/edit.php', {
+            url: CoreUrl.addParamsToUrl('/notes/edit.php', {
                 courseid: this.courseId,
                 userid: this.userId,
                 publishstate: this.type === 'personal' ? 'draft' : (this.type === 'course' ? 'public' : 'site'),

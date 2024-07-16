@@ -18,7 +18,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreWSFile } from '@services/ws';
 import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreLogger } from '@singletons/logger';
@@ -367,7 +367,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
             }
 
             if (fileManagerUrl) {
-                const params = CoreUrlUtils.extractUrlParams(fileManagerUrl);
+                const params = CoreUrl.extractUrlParams(fileManagerUrl);
                 const maxBytes = Number(params.maxbytes);
                 const areaMaxBytes = Number(params.areamaxbytes);
 

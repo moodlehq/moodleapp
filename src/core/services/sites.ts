@@ -21,7 +21,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreWS } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import {
@@ -286,9 +286,9 @@ export class CoreSitesProvider {
      */
     async checkSite(siteUrl: string, protocol: string = 'https://'): Promise<CoreSiteCheckResponse> {
         // The formatURL function adds the protocol if is missing.
-        siteUrl = CoreUrlUtils.formatURL(siteUrl);
+        siteUrl = CoreUrl.formatURL(siteUrl);
 
-        if (!CoreUrlUtils.isHttpURL(siteUrl)) {
+        if (!CoreUrl.isHttpURL(siteUrl)) {
             throw new CoreError(Translate.instant('core.login.invalidsite'));
         }
 
@@ -350,7 +350,7 @@ export class CoreSitesProvider {
             }
 
             // Try to add or remove 'www'.
-            temporarySite.setURL(CoreUrlUtils.addOrRemoveWWW(temporarySite.getURL()));
+            temporarySite.setURL(CoreUrl.addOrRemoveWWW(temporarySite.getURL()));
 
             try {
                 config = await temporarySite.getPublicConfig();
@@ -546,7 +546,7 @@ export class CoreSitesProvider {
 
         // We only allow one retry (to avoid loops).
         if (!retry && data.errorcode == 'requirecorrectaccess') {
-            siteUrl = CoreUrlUtils.addOrRemoveWWW(siteUrl);
+            siteUrl = CoreUrl.addOrRemoveWWW(siteUrl);
 
             return this.getUserToken(siteUrl, username, password, service, true);
         }
@@ -1697,7 +1697,7 @@ export class CoreSitesProvider {
         // Check if URL has http(s) protocol.
         if (!url.match(/^https?:\/\//i)) {
             // URL doesn't have http(s) protocol. Check if it has any protocol.
-            if (CoreUrlUtils.isAbsoluteURL(url)) {
+            if (CoreUrl.isAbsoluteURL(url)) {
                 // It has some protocol. Return empty array.
                 return [];
             }
@@ -1943,11 +1943,13 @@ export class CoreSitesProvider {
         const site = await this.getSite(siteIds[0]);
 
         const siteUrl = CoreText.removeEndingSlash(
-            CoreUrlUtils.removeProtocolAndWWW(site.getURL()),
+            CoreUrl.removeUrlParts(site.getURL(), [CoreUrlPartNames.Protocol, CoreUrlPartNames.WWWInDomain]),
         );
-        const treatedUrl = CoreText.removeEndingSlash(CoreUrlUtils.removeProtocolAndWWW(url));
+        const treatedUrl = CoreText.removeEndingSlash(
+            CoreUrl.removeUrlParts(url, [CoreUrlPartNames.Protocol, CoreUrlPartNames.WWWInDomain]),
+        );
 
-        if (siteUrl == treatedUrl) {
+        if (siteUrl === treatedUrl) {
             result.site = site;
         }
 

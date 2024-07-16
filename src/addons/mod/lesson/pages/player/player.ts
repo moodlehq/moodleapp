@@ -23,7 +23,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile } from '@services/ws';
 import { ModalController, Translate } from '@singletons';
@@ -439,7 +439,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         // Format review lesson if present.
         if (this.eolData.reviewlesson) {
-            const params = CoreUrlUtils.extractUrlParams(<string> this.eolData.reviewlesson.value);
+            const params = CoreUrl.extractUrlParams(<string> this.eolData.reviewlesson.value);
 
             if (!params || !params.pageid) {
                 // No pageid in the URL, the user cannot review (probably didn't answer any question).

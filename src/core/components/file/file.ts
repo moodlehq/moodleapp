@@ -20,7 +20,7 @@ import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
 import { DownloadStatus } from '@/core/constants';
@@ -195,10 +195,10 @@ export class CoreFileComponent implements OnInit, OnDestroy {
 
         if (!this.canDownload || !this.state || this.state === DownloadStatus.NOT_DOWNLOADABLE) {
             // File cannot be downloaded, just open it.
-            if (CoreUrlUtils.isLocalFileUrl(this.fileUrl)) {
+            if (CoreUrl.isLocalFileUrl(this.fileUrl)) {
                 CoreUtils.openFile(this.fileUrl);
             } else {
-                CoreUtils.openOnlineFile(CoreUrlUtils.unfixPluginfileURL(this.fileUrl));
+                CoreUtils.openOnlineFile(CoreUrl.unfixPluginfileURL(this.fileUrl));
             }
 
             return;

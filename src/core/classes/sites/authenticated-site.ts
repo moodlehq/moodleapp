@@ -39,7 +39,6 @@ import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreSiteInfo, CoreSiteInfoResponse, CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from './unauthenticated-site';
 import { Md5 } from 'ts-md5';
-import { CoreUrlUtils } from '@services/utils/url';
 import { CoreSiteWSCacheRecord } from '@services/database/sites';
 import { CoreErrorLogs } from '@singletons/error-logs';
 import { CoreWait } from '@singletons/wait';
@@ -1268,11 +1267,33 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      *
      * @param page Docs page to go to.
      * @returns Promise resolved with the Moodle docs URL.
+     *
+     * @deprecated since 4.5. Not needed anymore.
      */
-    getDocsUrl(page?: string): Promise<string> {
+    async getDocsUrl(page?: string): Promise<string> {
         const release = this.infos?.release ? this.infos.release : undefined;
+        let docsUrl = 'https://docs.moodle.org/en/' + page;
 
-        return CoreUrlUtils.getDocsUrl(release, page);
+        if (release !== undefined) {
+            // Remove this part of the function if this file only uses CoreSites here.
+            const version = CoreSites.getMajorReleaseNumber(release).replace('.', '');
+
+            // Check is a valid number.
+            if (Number(version) >= 24) {
+                // Append release number.
+                docsUrl = docsUrl.replace('https://docs.moodle.org/', 'https://docs.moodle.org/' + version + '/');
+            }
+        }
+
+        try {
+            // Remove this part of the function if this file only uses CoreLang here.
+            let lang = CoreLang.getCurrentLanguageSync(CoreLangFormat.LMS);
+            lang = CoreLang.getParentLanguage() || lang;
+
+            return docsUrl.replace('/en/', '/' + lang + '/');
+        } catch {
+            return docsUrl;
+        }
     }
 
     /**

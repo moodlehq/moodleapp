@@ -23,7 +23,6 @@ import { CoreSites, CoreLoginSiteInfo, CoreSiteBasicInfo } from '@services/sites
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUrlParams, CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
@@ -31,7 +30,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { DomSanitizer, makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl, CoreUrlParams } from '@singletons/url';
 import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
@@ -356,7 +355,7 @@ export class CoreLoginHelperProvider {
 
         if (siteConfig.identityproviders && siteConfig.identityproviders.length) {
             siteConfig.identityproviders.forEach((provider) => {
-                const urlParams = CoreUrlUtils.extractUrlParams(provider.url);
+                const urlParams = CoreUrl.extractUrlParams(provider.url);
 
                 if (
                     provider.url &&
@@ -397,7 +396,7 @@ export class CoreLoginHelperProvider {
 
         if (siteConfig.identityproviders && siteConfig.identityproviders.length) {
             siteConfig.identityproviders.forEach((provider) => {
-                const urlParams = CoreUrlUtils.extractUrlParams(provider.url);
+                const urlParams = CoreUrl.extractUrlParams(provider.url);
 
                 if (provider.url && (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1) &&
                         !site.isFeatureDisabled(IDENTITY_PROVIDER_FEATURE_NAME_PREFIX + urlParams.id)) {
@@ -642,7 +641,7 @@ export class CoreLoginHelperProvider {
             return false;
         }
 
-        const params = CoreUrlUtils.extractUrlParams(provider.url);
+        const params = CoreUrl.extractUrlParams(provider.url);
 
         if (!params.id) {
             return false;
@@ -830,7 +829,7 @@ export class CoreLoginHelperProvider {
         loginUrl += '&urlscheme=' + CoreConstants.CONFIG.customurlscheme;
 
         if (urlParams) {
-            loginUrl = CoreUrlUtils.addParamsToUrl(loginUrl, urlParams);
+            loginUrl = CoreUrl.addParamsToUrl(loginUrl, urlParams);
         }
 
         // Store the siteurl and passport in CoreConfigProvider for persistence.
@@ -1334,7 +1333,7 @@ export class CoreLoginHelperProvider {
             }
         } else if (text) {
             // Not a custom URL scheme, check if it's a URL scheme to another app.
-            const scheme = CoreUrlUtils.getUrlProtocol(text);
+            const scheme = CoreUrl.getUrlProtocol(text);
 
             if (scheme && scheme != 'http' && scheme != 'https') {
                 CoreDomUtils.showErrorModal(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));

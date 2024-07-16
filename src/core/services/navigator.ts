@@ -23,7 +23,7 @@ import { CoreMainMenu } from '@features/mainmenu/services/mainmenu';
 import { CoreObject } from '@singletons/object';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton, NavController, Router } from '@singletons';
 import { CoreScreen } from './screen';
@@ -262,7 +262,7 @@ export class CoreNavigatorService {
      * @returns Current path.
      */
     getCurrentPath(): string {
-        return CoreUrlUtils.removeUrlParams(Router.url);
+        return CoreUrl.removeUrlParts(Router.url, [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment]);
     }
 
     /**

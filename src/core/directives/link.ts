@@ -19,7 +19,7 @@ import { IonContent } from '@ionic/angular';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreConstants } from '@/core/constants';
@@ -27,7 +27,6 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { DomSanitizer } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
-import { CoreUrl } from '@singletons/url';
 import { CoreDom } from '@singletons/dom';
 
 /**
@@ -87,7 +86,7 @@ export class CoreLinkDirective implements OnInit {
 
         href = href || this.element.getAttribute('href') || this.element.getAttribute('xlink:href');
 
-        if (!href || CoreUrlUtils.getUrlScheme(href) === 'javascript') {
+        if (!href || CoreUrl.getUrlProtocol(href) === 'javascript') {
             return;
         }
 
@@ -116,7 +115,7 @@ export class CoreLinkDirective implements OnInit {
      */
     protected async navigate(href: string, openIn?: string | null): Promise<void> {
 
-        if (CoreUrlUtils.isLocalFileUrl(href)) {
+        if (CoreUrl.isLocalFileUrl(href)) {
             return this.openLocalFile(href);
         }
 

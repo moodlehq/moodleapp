@@ -19,7 +19,7 @@ import { AddonModForum } from '@addons/mod/forum/services/forum';
 import { CoreNavigator } from '@services/navigator';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 
@@ -56,7 +56,7 @@ export class AddonModForumPushClickHandlerService implements CorePushNotificatio
      * @returns Promise resolved when done.
      */
     async handleClick(notification: NotificationData): Promise<void> {
-        const contextUrlParams = CoreUrlUtils.extractUrlParams(notification.contexturl);
+        const contextUrlParams = CoreUrl.extractUrlParams(notification.contexturl);
         const data = notification.customdata || {};
         const courseId = Number(notification.courseid);
         const discussionId = Number(contextUrlParams.d || data.discussionid);

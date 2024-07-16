@@ -18,7 +18,7 @@ import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/def
 import { CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { makeSingleton } from '@singletons';
 import { CoreH5PPlayerComponent } from '@features/h5p/components/h5p-player/h5p-player';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreH5PHelper } from '@features/h5p/classes/helper';
 
 /**
@@ -57,7 +57,7 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
 
         embeddedH5PIframes.forEach((iframe) => {
             // Add the preventredirect param to allow authenticating if auto-login fails.
-            iframe.src = CoreUrlUtils.addParamsToUrl(iframe.src, { preventredirect: false });
+            iframe.src = CoreUrl.addParamsToUrl(iframe.src, { preventredirect: false });
 
             // Add resizer script so the H5P has the right height.
             CoreH5PHelper.addResizerScript();

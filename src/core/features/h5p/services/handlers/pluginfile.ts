@@ -19,7 +19,7 @@ import { CoreFilepoolOnProgressCallback } from '@services/filepool';
 import { CorePluginFileDownloadableResult, CorePluginFileHandler } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { CoreH5P } from '../h5p';
@@ -80,7 +80,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
         const urls: string[] = [];
 
         for (let i = 0; i < iframes.length; i++) {
-            const params = CoreUrlUtils.extractUrlParams(iframes[i].src);
+            const params = CoreUrl.extractUrlParams(iframes[i].src);
 
             if (params.url) {
                 urls.push(params.url);

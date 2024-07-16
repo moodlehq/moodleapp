@@ -37,7 +37,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreUrlUtils } from './url';
+import { CoreUrl } from '@singletons/url';
 import { QRScanner } from '@features/native/plugins';
 import { CoreArray } from '@singletons/array';
 import { CoreText } from '@singletons/text';
@@ -1114,7 +1114,7 @@ export class CoreUtilsProvider {
 
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.OPEN_LINK,
-            link: CoreUrlUtils.unfixPluginfileURL(options.originalUrl ?? url),
+            link: CoreUrl.unfixPluginfileURL(options.originalUrl ?? url),
         });
 
         return this.iabInstance;
@@ -1172,7 +1172,7 @@ export class CoreUtilsProvider {
      */
     async openInBrowser(url: string, options: CoreUtilsOpenInBrowserOptions = {}): Promise<void> {
         // eslint-disable-next-line deprecation/deprecation
-        const originaUrl = CoreUrlUtils.unfixPluginfileURL(options.originalUrl ?? options.browserWarningUrl ?? url);
+        const originaUrl = CoreUrl.unfixPluginfileURL(options.originalUrl ?? options.browserWarningUrl ?? url);
         if (options.showBrowserWarning || options.showBrowserWarning === undefined) {
             try {
                 await CoreWindow.confirmOpenBrowserIfNeeded(originaUrl);
@@ -1217,7 +1217,7 @@ export class CoreUtilsProvider {
 
                 CoreAnalytics.logEvent({
                     type: CoreAnalyticsEventType.OPEN_LINK,
-                    link: CoreUrlUtils.unfixPluginfileURL(url),
+                    link: CoreUrl.unfixPluginfileURL(url),
                 });
 
                 return;

@@ -21,7 +21,7 @@ import { USER_PROFILE_PICTURE_UPDATED, CoreUserBasicData } from '@features/user/
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreUserHelper } from '@features/user/services/user-helper';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 
 /**
@@ -124,7 +124,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
 
         this.fullname = this.fullname || (this.user && (this.user.fullname || this.user.userfullname));
 
-        if (this.avatarUrl && CoreUrlUtils.isThemeImageUrl(this.avatarUrl)) {
+        if (this.avatarUrl && CoreUrl.isThemeImageUrl(this.avatarUrl)) {
             this.avatarUrl = undefined;
         }
 

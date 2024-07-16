@@ -31,7 +31,7 @@ import { CoreCourseHelper, CoreCourseModuleData } from '../services/course-helpe
 import { CoreCourseModuleDelegate, CoreCourseModuleMainComponent } from '../services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '../services/module-prefetch-delegate';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
 
 /**
@@ -506,7 +506,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
                 url = options.url;
             } else if (this.pluginName) {
                 // Use default value.
-                url = CoreUrlUtils.addParamsToUrl(`/mod/${this.pluginName}/view.php?id=${this.module.id}`, options.data);
+                url = CoreUrl.addParamsToUrl(`/mod/${this.pluginName}/view.php?id=${this.module.id}`, options.data);
             }
         }
 

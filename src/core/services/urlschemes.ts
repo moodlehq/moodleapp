@@ -28,7 +28,7 @@ import { CoreNavigator, CoreRedirectPayload } from './navigator';
 import { CoreSiteCheckResponse, CoreSites } from './sites';
 import { CoreDomUtils } from './utils/dom';
 import { CoreTextErrorObject, CoreTextUtils } from './utils/text';
-import { CoreUrlUtils } from './utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from './utils/utils';
 
 /*
@@ -240,13 +240,13 @@ export class CoreCustomURLSchemesProvider {
         url = this.removeCustomURLScheme(url);
 
         // Detect if there's a user specified.
-        const username = CoreUrlUtils.getUsernameFromUrl(url);
+        const username = CoreUrl.getUsernameFromUrl(url);
         if (username) {
             url = url.replace(username + '@', ''); // Remove the username from the URL.
         }
 
         // Get the params of the URL.
-        const params = CoreUrlUtils.extractUrlParams(url);
+        const params = CoreUrl.extractUrlParams(url);
 
         // Remove the params to get the site URL.
         if (url.indexOf('?') != -1) {
@@ -293,7 +293,7 @@ export class CoreCustomURLSchemesProvider {
         url = this.removeCustomURLLinkScheme(url);
 
         // Detect if there's a user specified.
-        const username = CoreUrlUtils.getUsernameFromUrl(url);
+        const username = CoreUrl.getUsernameFromUrl(url);
         if (username) {
             url = url.replace(username + '@', ''); // Remove the username from the URL.
         }

@@ -454,7 +454,7 @@ class behat_app_helper extends behat_base {
         $result = $this->zone_js("customUrlSchemes.handleCustomURL('$customurl')");
 
         if ($result !== 'OK') {
-            throw new DriverException('Error handling url - ' . $result);
+            throw new DriverException('Error handling url - ' . $customurl . ' - '.$result);
         }
         if (!empty($successXPath)) {
             // Wait until the page appears.

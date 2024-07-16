@@ -31,7 +31,7 @@ import { Subscription } from 'rxjs';
 import { CoreSites } from '@services/sites';
 import { CoreFilepool } from '@services/filepool';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventFormActionData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreEditorOffline } from '../../services/editor-offline';
@@ -514,7 +514,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
             const url = el.src;
 
-            if (!url || !CoreUrlUtils.isDownloadableUrl(url) || (!canDownloadFiles && site?.isSitePluginFileUrl(url))) {
+            if (!url || !CoreUrl.isDownloadableUrl(url) || (!canDownloadFiles && site?.isSitePluginFileUrl(url))) {
                 // Nothing to treat.
                 return;
             }

@@ -84,7 +84,7 @@ import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/class
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { CoreObject } from '@singletons/object';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CorePath } from '@singletons/path';
 import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 import { CoreSitePluginsEnrolHandler } from '../classes/handlers/enrol-handler';
@@ -170,7 +170,7 @@ export class CoreSitePluginsInitService {
 
         // Make sure it's an absolute URL. Do not use toAbsoluteURL because it can change the behaviour and break plugin styles.
         let url = handlerSchema.styles?.url;
-        if (url && !CoreUrlUtils.isAbsoluteURL(url)) {
+        if (url && !CoreUrl.isAbsoluteURL(url)) {
             url = CorePath.concatenatePaths(site.getURL(), url);
         }
 
