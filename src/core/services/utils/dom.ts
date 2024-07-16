@@ -1715,24 +1715,11 @@ export class CoreDomUtilsProvider {
      * @param windowHeight Initial window height.
      * @param retries Number of retries done.
      * @returns Promise resolved when done.
+     *
+     * @deprecated since 4.5. Use CoreWait.waitForResizeDone instead.
      */
     async waitForResizeDone(windowWidth?: number, windowHeight?: number, retries = 0): Promise<void> {
-        if (!CorePlatform.isIOS()) {
-            return; // Only wait in iOS.
-        }
-
-        windowWidth = windowWidth || window.innerWidth;
-        windowHeight = windowHeight || window.innerHeight;
-
-        if (windowWidth != window.innerWidth || windowHeight != window.innerHeight || retries >= 10) {
-            // Window size changed or max number of retries reached, stop.
-            return;
-        }
-
-        // Wait a bit and try again.
-        await CoreWait.wait(50);
-
-        return this.waitForResizeDone(windowWidth, windowHeight, retries+1);
+        return CoreWait.waitForResizeDone(windowWidth, windowHeight, retries);
     }
 
     /**

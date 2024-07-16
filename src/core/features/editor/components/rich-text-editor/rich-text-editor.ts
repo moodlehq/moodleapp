@@ -1045,7 +1045,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * Window resized.
      */
     protected async windowResized(): Promise<void> {
-        await CoreDomUtils.waitForResizeDone();
+        await CoreWait.waitForResizeDone();
         this.isPhone = CoreScreen.isMobile;
 
         this.maximizeEditorSize();
