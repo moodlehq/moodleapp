@@ -48,7 +48,6 @@ import { CoreSendMessageFormComponent } from './send-message-form/send-message-f
 import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreSitePickerComponent } from './site-picker/site-picker';
 import { CoreSplitViewComponent } from './split-view/split-view';
-import { CoreStyleComponent } from './style/style';
 import { CoreTabComponent } from './tabs/tab';
 import { CoreTabsComponent } from './tabs/tabs';
 import { CoreTabsOutletComponent } from './tabs-outlet/tabs-outlet';
@@ -100,8 +99,6 @@ import { CoreSitesListComponent } from './sites-list/sites-list';
         CoreShowPasswordComponent, // eslint-disable-line deprecation/deprecation
         CoreSitePickerComponent,
         CoreSplitViewComponent,
-        // eslint-disable-next-line deprecation/deprecation
-        CoreStyleComponent,
         CoreSwipeSlidesComponent,
         CoreTabComponent,
         CoreTabsComponent,
@@ -156,8 +153,6 @@ import { CoreSitesListComponent } from './sites-list/sites-list';
         CoreShowPasswordComponent, // eslint-disable-line deprecation/deprecation
         CoreSitePickerComponent,
         CoreSplitViewComponent,
-        // eslint-disable-next-line deprecation/deprecation
-        CoreStyleComponent,
         CoreSwipeSlidesComponent,
         CoreTabComponent,
         CoreTabsComponent,
