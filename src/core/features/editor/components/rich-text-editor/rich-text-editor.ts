@@ -550,7 +550,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     /**
      * Check if text is empty.
      *
-     * @param value Text or element containing the text.
+     * @param valueOrEl Text or element containing the text.
      * @returns If value is null only a white space.
      */
     protected isNullOrWhiteSpace(valueOrEl: string | HTMLElement | null | undefined): boolean {

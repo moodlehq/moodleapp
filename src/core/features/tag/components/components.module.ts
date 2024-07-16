@@ -26,8 +26,6 @@ import { CoreTagListComponent } from './list/list';
     imports: [
         CoreSharedModule,
     ],
-    providers: [
-    ],
     exports: [
         CoreTagFeedComponent,
         CoreTagListComponent,
