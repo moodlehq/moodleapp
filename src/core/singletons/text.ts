@@ -95,4 +95,14 @@ export class CoreText {
         });
     }
 
+    /**
+     * Make a string's first character uppercase.
+     *
+     * @param text Text to treat.
+     * @returns Treated text.
+     */
+    static capitalize(text: string): string {
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
 }

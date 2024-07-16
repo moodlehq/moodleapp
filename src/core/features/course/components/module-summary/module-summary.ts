@@ -28,7 +28,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { ModalController, NgZone } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -222,7 +222,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
 
         if (this.canPrefetch) {
             if (moduleInfo.downloadTime && moduleInfo.downloadTime > 0) {
-                this.downloadTimeReadable = CoreTextUtils.ucFirst(moduleInfo.downloadTimeReadable);
+                this.downloadTimeReadable = CoreText.capitalize(moduleInfo.downloadTimeReadable);
             }
             this.prefetchLoading = moduleInfo.status === DownloadStatus.DOWNLOADING;
             this.prefetchDisabled = moduleInfo.status === DownloadStatus.DOWNLOADED;

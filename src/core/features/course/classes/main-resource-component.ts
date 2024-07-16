@@ -33,6 +33,7 @@ import { CoreCourseModulePrefetchDelegate } from '../services/module-prefetch-de
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
+import { CoreText } from '@singletons/text';
 
 /**
  * Result of a resource download.
@@ -232,7 +233,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         const lastDownloaded =
                 await CoreCourseHelper.getModulePackageLastDownloaded(this.module, this.component);
 
-        this.downloadTimeReadable = CoreTextUtils.ucFirst(lastDownloaded.downloadTimeReadable);
+        this.downloadTimeReadable = CoreText.capitalize(lastDownloaded.downloadTimeReadable);
     }
 
     /**

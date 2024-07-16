@@ -28,6 +28,7 @@ import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
 import { ContextLevel } from '@/core/constants';
 import { CoreDom } from '@singletons/dom';
+import { CoreText } from '@singletons/text';
 
 /**
  * Different type of errors the app can treat.
@@ -1007,9 +1008,10 @@ export class CoreTextUtilsProvider {
      *
      * @param text Text to treat.
      * @returns Treated text.
+     * @deprecated since 4.5. Use CoreText.capitalize instead.
      */
     ucFirst(text: string): string {
-        return text.charAt(0).toUpperCase() + text.slice(1);
+        return CoreText.capitalize(text);
     }
 
     /**
