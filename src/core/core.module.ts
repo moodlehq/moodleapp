@@ -47,6 +47,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreMimetypeUtilsProvider } = await import('@services/utils/mimetype');
     const { CoreNavigatorService } = await import('@services/navigator');
     const { CorePluginFileDelegateService } = await import('@services/plugin-file-delegate');
+    const { CorePopoversService } = await import('@services/popovers');
     const { CoreScreenService } = await import('@services/screen');
     const { CoreSitesProvider } = await import('@services/sites');
     const { CoreSyncProvider } = await import('@services/sync');
@@ -77,6 +78,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
         CoreMimetypeUtilsProvider,
         CoreNavigatorService,
         CorePluginFileDelegateService,
+        CorePopoversService,
         CorePlatformService,
         CoreScreenService,
         CoreSitesProvider,

@@ -44,6 +44,7 @@ import { CoreLocalNotifications } from '@services/local-notifications';
 import { CorePlatform } from '@services/platform';
 import { CoreConfig } from '@services/config';
 import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CorePopovers } from '@services/popovers';
 
 /**
  * Page that displays a single calendar event.
@@ -384,7 +385,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             return;
         }
 
-        const reminderTime = await CoreDomUtils.openPopover<{timeBefore: number}>({
+        const reminderTime = await CorePopovers.open<{timeBefore: number}>({
             component: CoreRemindersSetReminderMenuComponent,
             componentProps: {
                 eventTime: this.event.timestart,

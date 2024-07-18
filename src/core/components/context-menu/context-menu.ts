@@ -15,7 +15,7 @@
 import { Component, Input, OnInit, OnDestroy, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import { auditTime } from 'rxjs/operators';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CorePopovers } from '@services/popovers';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
@@ -183,7 +183,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
         if (!this.expanded) {
             this.expanded = true;
 
-            const popoverData = await CoreDomUtils.openPopover<CoreContextMenuItemComponent>({
+            const popoverData = await CorePopovers.open<CoreContextMenuItemComponent>({
                 event,
                 component: CoreContextMenuPopoverComponent,
                 componentProps: {

@@ -31,6 +31,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
+import { CorePopovers } from '@services/popovers';
 
 /**
  * Page that displays the list of blog entries.
@@ -327,7 +328,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
         event.preventDefault();
         event.stopPropagation();
 
-        const popoverData = await CoreDomUtils.openPopover<string>({
+        const popoverData = await CorePopovers.open<string>({
             component: AddonBlogEntryOptionsMenuComponent,
             event,
         });

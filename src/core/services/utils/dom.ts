@@ -32,7 +32,6 @@ import {
     makeSingleton,
     Translate,
     AlertController,
-    PopoverController,
 } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
@@ -53,6 +52,7 @@ import { CoreWait } from '@singletons/wait';
 import { CoreToasts, ToastDuration, ShowToastOptions } from '../toasts';
 import { fixOverlayAriaHidden } from '@/core/utils/fix-aria-hidden';
 import { CoreModals, OpenModalOptions } from '@services/modals';
+import { CorePopovers, OpenPopoverOptions } from '@services/popovers';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -540,7 +540,7 @@ export class CoreDomUtilsProvider {
             el.addEventListener('click', async (ev: Event) => {
                 const html = el.getAttribute('data-html');
 
-                await CoreDomUtils.openPopoverWithoutResult({
+                await CorePopovers.openWithoutResult({
                     component: CoreBSTooltipComponent,
                     componentProps: {
                         content,
@@ -1486,16 +1486,11 @@ export class CoreDomUtilsProvider {
      *
      * @param options Options.
      * @returns Promise resolved when the popover is dismissed or will be dismissed.
+     *
+     * @deprecated since 4.5. Use CorePopovers.open instead.
      */
     async openPopover<T = void>(options: OpenPopoverOptions): Promise<T | undefined> {
-
-        const { waitForDismissCompleted, ...popoverOptions } = options;
-        const popover = await this.openPopoverWithoutResult(popoverOptions);
-
-        const result = waitForDismissCompleted ? await popover.onDidDismiss<T>() : await popover.onWillDismiss<T>();
-        if (result?.data) {
-            return result?.data;
-        }
+        return CorePopovers.open(options);
     }
 
     /**
@@ -1503,15 +1498,11 @@ export class CoreDomUtilsProvider {
      *
      * @param options Options.
      * @returns Promise resolved when the popover is displayed.
+     *
+     * @deprecated since 4.5. Use CorePopovers.openWithoutResult instead.
      */
     async openPopoverWithoutResult(options: Omit<PopoverOptions, 'showBackdrop'>): Promise<HTMLIonPopoverElement> {
-        const popover = await PopoverController.create(options);
-
-        await popover.present();
-
-        fixOverlayAriaHidden(popover);
-
-        return popover;
+        return CorePopovers.openWithoutResult(options);
     }
 
     /**
@@ -1685,13 +1676,6 @@ export class CoreDomUtilsProvider {
 }
 
 export const CoreDomUtils = makeSingleton(CoreDomUtilsProvider);
-
-/**
- * Options for the openPopover function.
- */
-export type OpenPopoverOptions = Omit<PopoverOptions, 'showBackdrop'> & {
-    waitForDismissCompleted?: boolean;
-};
 
 /**
  * Buttons for prompt alert.

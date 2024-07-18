@@ -59,6 +59,7 @@ import {
     ADDON_MOD_GLOSSARY_ENTRY_UPDATED,
     ADDON_MOD_GLOSSARY_PAGE_NAME,
 } from '../../constants';
+import { CorePopovers } from '@services/popovers';
 
 /**
  * Component that displays a glossary entry page.
@@ -357,7 +358,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
         const entries = await this.promisedEntries;
         const previousMode = entries.getSource().fetchMode;
-        const newMode = await CoreDomUtils.openPopover<AddonModGlossaryFetchMode>({
+        const newMode = await CorePopovers.open<AddonModGlossaryFetchMode>({
             component: AddonModGlossaryModePickerPopoverComponent,
             componentProps: {
                 browseModes: this.glossary.browsemodes,

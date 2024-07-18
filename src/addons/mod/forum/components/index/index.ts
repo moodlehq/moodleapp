@@ -66,6 +66,7 @@ import {
 } from '@addons/mod/forum/constants';
 import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
 import { CoreToasts } from '@services/toasts';
+import { CorePopovers } from '@services/popovers';
 /**
  * Component that displays a forum entry page.
  */
@@ -635,7 +636,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         event.preventDefault();
         event.stopPropagation();
 
-        const popoverData = await CoreDomUtils.openPopover<{ action?: string; value: boolean }>({
+        const popoverData = await CorePopovers.open<{ action?: string; value: boolean }>({
             component: AddonModForumDiscussionOptionsMenuComponent,
             componentProps: {
                 discussion,

@@ -14,7 +14,7 @@
 
 import { CoreReminderData, CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
 import { Component, Input, OnInit } from '@angular/core';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CorePopovers } from '@services/popovers';
 import { CoreRemindersSetReminderMenuComponent } from '../set-reminder-menu/set-reminder-menu';
 import { Translate } from '@singletons';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -72,7 +72,7 @@ export class CoreRemindersSetButtonComponent implements OnInit {
         }
 
         // Open popover.
-        const reminderTime = await CoreDomUtils.openPopover<{timeBefore: number}>({
+        const reminderTime = await CorePopovers.open<{timeBefore: number}>({
             component: CoreRemindersSetReminderMenuComponent,
             componentProps: {
                 initialValue: this.timebefore,

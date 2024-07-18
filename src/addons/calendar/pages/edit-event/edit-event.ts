@@ -47,6 +47,7 @@ import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/compo
 import moment from 'moment-timezone';
 import { ADDON_CALENDAR_COMPONENT } from '@addons/calendar/constants';
 import { ContextLevel } from '@/core/constants';
+import { CorePopovers } from '@services/popovers';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -637,7 +638,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         const formData = this.form.value;
         const eventTime = moment(formData.timestart).unix();
 
-        const reminderTime = await CoreDomUtils.openPopover<{timeBefore: number}>({
+        const reminderTime = await CorePopovers.open<{timeBefore: number}>({
             component: CoreRemindersSetReminderMenuComponent,
             componentProps: {
                 eventTime,

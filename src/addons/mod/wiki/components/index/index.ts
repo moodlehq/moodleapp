@@ -59,6 +59,7 @@ import {
     ADDON_MOD_WIKI_PAGE_NAME,
 } from '../../constants';
 import { CoreModals } from '@services/modals';
+import { CorePopovers } from '@services/popovers';
 
 /**
  * Component that displays a wiki entry page.
@@ -887,7 +888,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     async showSubwikiPicker(event: MouseEvent): Promise<void> {
         const { AddonModWikiSubwikiPickerComponent } = await import('../subwiki-picker/subwiki-picker');
 
-        const subwiki = await CoreDomUtils.openPopover<AddonModWikiSubwiki>({
+        const subwiki = await CorePopovers.open<AddonModWikiSubwiki>({
             component: AddonModWikiSubwikiPickerComponent,
             componentProps: {
                 courseId: this.courseId,

@@ -19,7 +19,7 @@ import { CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizConnectionErrorComponent } from '../components/connection-error/connection-error';
 import { AddonModQuiz, AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '../services/quiz';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CorePopovers } from '@services/popovers';
 
 /**
  * Class to support auto-save in quiz. Every certain seconds, it will check if there are changes in the current page answers
@@ -197,7 +197,7 @@ export class AddonModQuizAutoSave {
         };
         this.popoverShown = true;
 
-        this.popover = await CoreDomUtils.openPopoverWithoutResult({
+        this.popover = await CorePopovers.openWithoutResult({
             component: AddonModQuizConnectionErrorComponent,
             event: <Event> event,
         });
