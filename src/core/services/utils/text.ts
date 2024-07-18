@@ -14,21 +14,19 @@
 
 import { Injectable } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
-import { ModalOptions } from '@ionic/core';
 
 import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { DomSanitizer, makeSingleton, Translate } from '@singletons';
 import { CoreWSFile } from '@services/ws';
 import { Locutus } from '@singletons/locutus';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreModals } from '@services/modals';
 import { CoreUrl } from '@singletons/url';
 import { AlertButton } from '@ionic/angular';
 import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
-import { ContextLevel } from '@/core/constants';
 import { CoreDom } from '@singletons/dom';
 import { CoreText } from '@singletons/text';
+import { CoreViewer, CoreViewerTextOptions } from '@features/viewer/services/viewer';
 
 /**
  * Different type of errors the app can treat.
@@ -1030,27 +1028,11 @@ export class CoreTextUtilsProvider {
      * @param title Title of the new state.
      * @param content Content of the text to be expanded.
      * @param options Options.
-     * @returns Promise resolved when the modal is displayed.
+     *
+     * @deprecated since 4.5. Use CoreViewer.viewText instead.
      */
-    async viewText(title: string, content: string, options?: CoreTextUtilsViewTextOptions): Promise<void> {
-        if (!content.length) {
-            return;
-        }
-
-        options = options || {};
-        const { CoreViewerTextComponent } = await import('@features/viewer/components/text/text');
-
-        const modalOptions: ModalOptions = Object.assign(options.modalOptions || {}, {
-            component: CoreViewerTextComponent,
-        });
-        delete options.modalOptions;
-        modalOptions.componentProps = {
-            title,
-            content,
-            ...options,
-        };
-
-        await CoreModals.openModal(modalOptions);
+    async viewText(title: string, content: string, options?: CoreViewerTextOptions): Promise<void> {
+        await CoreViewer.viewText(title, content, options);
     }
 
 }
@@ -1058,18 +1040,10 @@ export const CoreTextUtils = makeSingleton(CoreTextUtilsProvider);
 
 /**
  * Options for viewText.
+ *
+ * @deprecated since 4.5. Use CoreViewerTextOptions instead.
  */
-export type CoreTextUtilsViewTextOptions = {
-    component?: string; // Component to link the embedded files to.
-    componentId?: string | number; // An ID to use in conjunction with the component.
-    files?: CoreWSFile[]; // List of files to display along with the text.
-    filter?: boolean; // Whether the text should be filtered.
-    contextLevel?: ContextLevel; // The context level.
-    instanceId?: number; // The instance ID related to the context.
-    courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
-    displayCopyButton?: boolean; // Whether to display a button to copy the text.
-    modalOptions?: Partial<ModalOptions>; // Modal options.
-};
+export type CoreTextUtilsViewTextOptions = CoreViewerTextOptions;
 
 /**
  * Define text formatting types.

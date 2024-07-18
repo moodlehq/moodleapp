@@ -67,6 +67,7 @@ import {
     ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
     ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS,
 } from '../../constants';
+import { CoreViewer } from '@features/viewer/services/viewer';
 
 /**
  * Component that displays an assignment submission.
@@ -866,7 +867,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
      */
     showAdvancedGrade(): void {
         if (this.feedback && this.feedback.advancedgrade) {
-            CoreTextUtils.viewText(
+            CoreViewer.viewText(
                 Translate.instant('core.grades.grade'),
                 this.feedback.gradefordisplay,
                 {

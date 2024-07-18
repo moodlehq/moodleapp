@@ -26,6 +26,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { Translate } from '@singletons';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreDom } from '@singletons/dom';
+import { CoreViewer } from '@features/viewer/services/viewer';
 
 /**
  * Page that displays the more page of the app.
@@ -133,7 +134,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      * @param item Item to open.
      */
     openItem(item: CoreMainMenuCustomItem): void {
-        CoreNavigator.navigateToSitePath('viewer/iframe', { params: { title: item.label, url: item.url } });
+        CoreViewer.openIframeViewer(item.label, item.url);
     }
 
     /**
@@ -166,7 +167,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
             });
         } else {
             // It's not a URL, open it in a modal so the user can see it and copy it.
-            CoreTextUtils.viewText(Translate.instant('core.qrscanner'), text, {
+            CoreViewer.viewText(Translate.instant('core.qrscanner'), text, {
                 displayCopyButton: true,
             });
         }

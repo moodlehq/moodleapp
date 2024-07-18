@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 
 import { CoreNavigator } from '@services/navigator';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
@@ -24,6 +23,7 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 import { AddonNotifications } from '../notifications';
 import { AddonNotificationsMainMenuHandlerService } from './mainmenu';
 import { AddonNotificationsHelper } from '../notifications-helper';
+import { CoreViewer } from '@features/viewer/services/viewer';
 
 /**
  * Handler for non-messaging push notifications clicks.
@@ -77,7 +77,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
 
         if (notification.customdata?.extendedtext) {
             // Display the text in a modal.
-            return CoreTextUtils.viewText(notification.title || '', <string> notification.customdata.extendedtext, {
+            return CoreViewer.viewText(notification.title || '', <string> notification.customdata.extendedtext, {
                 displayCopyButton: true,
                 modalOptions: { cssClass: 'core-modal-fullscreen' },
             });

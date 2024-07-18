@@ -23,6 +23,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { AddonModAssignSubmissionOnlineTextPluginData } from '../services/handler';
 import { ContextLevel } from '@/core/constants';
 import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
+import { CoreViewer } from '@features/viewer/services/viewer';
 
 /**
  * Component to render an onlinetext submission plugin.
@@ -84,7 +85,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
 
                     if (this.text) {
                         // Open a new state with the interpolated contents.
-                        CoreTextUtils.viewText(this.plugin.name, this.text, {
+                        CoreViewer.viewText(this.plugin.name, this.text, {
                             component: this.component,
                             componentId: this.assign.cmid,
                             filter: true,

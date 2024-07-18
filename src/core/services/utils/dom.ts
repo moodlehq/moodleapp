@@ -52,6 +52,7 @@ import { CoreToasts, ToastDuration, ShowToastOptions } from '../toasts';
 import { fixOverlayAriaHidden } from '@/core/utils/fix-aria-hidden';
 import { CoreModals, OpenModalOptions } from '@services/modals';
 import { CorePopovers, OpenPopoverOptions } from '@services/popovers';
+import { CoreViewer } from '@features/viewer/services/viewer';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -1525,6 +1526,8 @@ export class CoreDomUtilsProvider {
      * @param title Title of the page or modal.
      * @param component Component to link the image to if needed.
      * @param componentId An ID to use in conjunction with the component.
+     *
+     * @deprecated since 4.5. Use CoreViewer.viewImage instead.
      */
     async viewImage(
         image: string,
@@ -1532,22 +1535,7 @@ export class CoreDomUtilsProvider {
         component?: string,
         componentId?: string | number,
     ): Promise<void> {
-        if (!image) {
-            return;
-        }
-        const { CoreViewerImageComponent } = await import('@features/viewer/components/image/image');
-
-        await CoreModals.openModal({
-            component: CoreViewerImageComponent,
-            componentProps: {
-                title,
-                image,
-                component,
-                componentId,
-            },
-            cssClass: 'core-modal-transparent',
-        });
-
+        await CoreViewer.viewImage(image, title, component, componentId);
     }
 
     /**

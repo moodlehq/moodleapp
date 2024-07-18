@@ -14,6 +14,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
+import { CoreDomUtils } from '@services/utils/dom';
 
 /**
  * Page to display a URL in an iframe.
@@ -28,9 +29,21 @@ export class CoreViewerIframePage implements OnInit {
     url?: string; // Iframe URL.
     autoLogin?: boolean; // Whether to try to use auto-login.
 
+    /**
+     * @inheritdoc
+     */
     async ngOnInit(): Promise<void> {
-        this.title = CoreNavigator.getRouteParam('title');
-        this.url = CoreNavigator.getRouteParam('url');
+        try {
+            this.title = CoreNavigator.getRequiredRouteParam('title');
+            this.url = CoreNavigator.getRequiredRouteParam('url');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
+
         this.autoLogin = CoreNavigator.getRouteBooleanParam('autoLogin') ?? true;
     }
 

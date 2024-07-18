@@ -36,6 +36,7 @@ import { CoreDom } from '@singletons/dom';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { EMAIL_SIGNUP_FEATURE_NAME } from '@features/login/constants';
 import { CoreInputErrorsMessages } from '@components/input-errors/input-errors';
+import { CoreViewer } from '@features/viewer/services/viewer';
 
 /**
  * Page to signup using email.
@@ -385,7 +386,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * Show authentication instructions.
      */
     showAuthInstructions(): void {
-        CoreTextUtils.viewText(Translate.instant('core.login.instructions'), this.authInstructions);
+        CoreViewer.viewText(Translate.instant('core.login.instructions'), this.authInstructions);
     }
 
     /**

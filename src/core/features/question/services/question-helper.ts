@@ -30,6 +30,7 @@ import { CoreIcons } from '@singletons/icons';
 import { CoreUrl } from '@singletons/url';
 import { ContextLevel } from '@/core/constants';
 import { CoreIonicColorNames } from '@singletons/colors';
+import { CoreViewer } from '@features/viewer/services/viewer';
 
 /**
  * Service with some common functions to handle questions.
@@ -914,7 +915,7 @@ export class CoreQuestionHelperProvider {
                 event.preventDefault();
                 event.stopPropagation();
 
-                CoreTextUtils.viewText(title, target.html ?? '', {
+                CoreViewer.viewText(title, target.html ?? '', {
                     component: component,
                     componentId: componentId,
                     filter: true,
