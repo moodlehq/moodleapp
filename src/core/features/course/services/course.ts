@@ -61,6 +61,7 @@ import { asyncObservable } from '@/core/utils/rxjs';
 import { firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
+import { CoreLoadings } from '@services/loadings';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -1360,7 +1361,7 @@ export class CoreCourseProvider {
             return;
         }
 
-        const loading = await CoreDomUtils.showModalLoading();
+        const loading = await CoreLoadings.show();
 
         // Wait for site plugins to be fetched.
         await CoreUtils.ignoreErrors(CoreSitePlugins.waitFetchPlugins());

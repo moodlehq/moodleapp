@@ -37,6 +37,7 @@ import { AddonModFeedbackFormItem, AddonModFeedbackHelper } from '../../services
 import { AddonModFeedbackSync } from '../../services/feedback-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_FEEDBACK_COMPONENT, ADDON_MOD_FEEDBACK_FORM_SUBMITTED, ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays feedback form.
@@ -423,7 +424,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
             return CoreNavigator.back();
         }
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             await CoreSites.visitLink(this.siteAfterSubmit, { siteId: this.currentSite.id });

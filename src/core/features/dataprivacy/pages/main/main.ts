@@ -19,6 +19,7 @@ import {
     CoreDataPrivacyGetAccessInformationWSResponse,
     CoreDataPrivacyRequest,
 } from '@features/dataprivacy/services/dataprivacy';
+import { CoreLoadings } from '@services/loadings';
 import { CoreModals } from '@services/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
@@ -123,7 +124,7 @@ export class CoreDataPrivacyMainPage implements OnInit {
         });
 
         if (succeed) {
-            const modal = await CoreDomUtils.showModalLoading();
+            const modal = await CoreLoadings.show();
             try {
                 await this.refreshContent();
             } finally {
@@ -149,7 +150,7 @@ export class CoreDataPrivacyMainPage implements OnInit {
         });
 
         if (succeed) {
-            const modal = await CoreDomUtils.showModalLoading();
+            const modal = await CoreLoadings.show();
             try {
                 await this.refreshContent();
             } finally {
@@ -175,7 +176,7 @@ export class CoreDataPrivacyMainPage implements OnInit {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             await CoreDataPrivacy.cancelDataRequest(requestId);

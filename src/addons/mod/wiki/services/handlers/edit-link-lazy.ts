@@ -21,6 +21,7 @@ import { makeSingleton } from '@singletons';
 import { AddonModWiki } from '../wiki';
 import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 import { AddonModWikiEditLinkHandlerService } from '@addons/mod/wiki/services/handlers/edit-link';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Handler to treat links to edit a wiki page.
@@ -32,7 +33,7 @@ export class AddonModWikiEditLinkHandlerLazyService extends AddonModWikiEditLink
      * @inheritdoc
      */
     async handleAction(siteId: string, params: Record<string, string>): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             const pageId = Number(params.pageid);

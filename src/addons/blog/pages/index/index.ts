@@ -31,6 +31,7 @@ import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
 import { CorePopovers } from '@services/popovers';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays the list of blog entries.
@@ -242,7 +243,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
      * @param enabled If true, filter my entries. False otherwise.
      */
     async onlyMyEntriesToggleChanged(enabled: boolean): Promise<void> {
-        const loading = await CoreDomUtils.showModalLoading();
+        const loading = await CoreLoadings.show();
 
         try {
             this.filter.userid = !enabled ? undefined : this.currentUserId;
@@ -307,7 +308,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
      * @param id Entry id.
      */
     async deleteEntry(id: number): Promise<void> {
-        const loading = await CoreDomUtils.showModalLoading();
+        const loading = await CoreLoadings.show();
         try {
             await AddonBlog.deleteEntry({ entryid: id });
             await this.refresh();

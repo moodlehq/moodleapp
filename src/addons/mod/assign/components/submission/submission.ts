@@ -68,6 +68,7 @@ import {
     ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS,
 } from '../../constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Component that displays an assignment submission.
@@ -321,7 +322,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         }
 
         const previousSubmission = this.previousAttempt.submission;
-        let modal = await CoreDomUtils.showModalLoading();
+        let modal = await CoreLoadings.show();
 
         const size = await CoreUtils.ignoreErrors(
             AddonModAssignHelper.getSubmissionSizeForCopy(this.assign, previousSubmission),
@@ -339,7 +340,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         }
 
         // User confirmed, copy the attempt.
-        modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        modal = await CoreLoadings.show('core.sending', true);
 
         try {
             await AddonModAssignHelper.copyPreviousAttempt(this.assign, previousSubmission);
@@ -898,7 +899,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             // Ask for confirmation. @todo plugin precheck_submission
             await CoreDomUtils.showConfirm(Translate.instant('addon.mod_assign.confirmsubmission'));
 
-            const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+            const modal = await CoreLoadings.show('core.sending', true);
 
             try {
                 await AddonModAssign.submitForGrading(
@@ -949,7 +950,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             throw new CoreError(Translate.instant('core.grades.badgrade'));
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         (this.gradeInfo?.outcomes || []).forEach((outcome) => {
             if (outcome.itemNumber && outcome.selectedId) {

@@ -33,6 +33,7 @@ import { SafeHtml } from '@angular/platform-browser';
 import { CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { ALWAYS_SHOW_LOGIN_FORM_CHANGED, FORGOTTEN_PASSWORD_FEATURE_NAME } from '@features/login/constants';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -243,7 +244,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             // Start the authentication process.

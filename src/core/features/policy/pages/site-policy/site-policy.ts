@@ -32,6 +32,7 @@ import { Subscription } from 'rxjs';
 import { CoreDom } from '@singletons/dom';
 import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/modals';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page to accept a site policy.
@@ -375,7 +376,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             if (!this.isPoliciesURL) {

@@ -23,6 +23,7 @@ import { CoreToasts, ToastDuration } from '@services/toasts';
 import { CoreUtils } from '@services/utils/utils';
 
 import { ModalController } from '@singletons';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Component that displays the contact DPO page.
@@ -57,7 +58,7 @@ export class CoreDataPrivacyContactDPOComponent implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         // Get current user email.
         const userId = CoreSites.getCurrentSiteUserId();
@@ -75,7 +76,7 @@ export class CoreDataPrivacyContactDPOComponent implements OnInit {
         event.preventDefault();
         event.stopPropagation();
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             // Send the message.

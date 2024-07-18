@@ -75,6 +75,7 @@ import { CoreEnrol } from '@features/enrol/services/enrol';
 import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 import { LazyRoutesModule } from '@/app/app-routing.module';
 import { CoreModals } from '@services/modals';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Prefetch info of a module.
@@ -1033,7 +1034,7 @@ export class CoreCourseHelperProvider {
      * @returns Promise resolved when done.
      */
     async getAndOpenCourse(courseId: number, params?: Params, siteId?: string): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         let course: CoreCourseAnyCourseData | { id: number };
 
@@ -1442,7 +1443,7 @@ export class CoreCourseHelperProvider {
         options: CoreCourseNavigateToModuleByInstanceOptions = {},
     ): Promise<void> {
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             const module = await CoreCourse.getModuleBasicInfoByInstance(instanceId, modName, { siteId: options.siteId });
@@ -1478,7 +1479,7 @@ export class CoreCourseHelperProvider {
         let courseId = options.courseId;
         let sectionId = options.sectionId;
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             if (!courseId || !sectionId) {
@@ -1962,7 +1963,7 @@ export class CoreCourseHelperProvider {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
         completion.state = completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE
             ? CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE
             : CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE;

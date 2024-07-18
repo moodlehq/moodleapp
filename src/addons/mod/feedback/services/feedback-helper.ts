@@ -40,6 +40,7 @@ import {
     ADDON_MOD_FEEDBACK_MULTICHOICE_HIDENOSELECT,
     ADDON_MOD_FEEDBACK_PAGE_NAME,
 } from '../constants';
+import { CoreLoadings } from '@services/loadings';
 
 const MODE_RESPONSETIME = 1;
 const MODE_COURSE = 2;
@@ -179,7 +180,7 @@ export class AddonModFeedbackHelperProvider {
     async handleShowEntriesLink(params: Record<string, string>, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             const module = await CoreCourse.getModuleBasicInfo(

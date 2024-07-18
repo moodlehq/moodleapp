@@ -19,6 +19,7 @@ import {
 import { Component, OnInit } from '@angular/core';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreLoadings } from '@services/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -123,7 +124,7 @@ export class AddonCourseCompletionReportPage implements OnInit {
      * Mark course as completed.
      */
     async completeCourse(): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             await AddonCourseCompletion.markCourseAsSelfCompleted(this.courseId);

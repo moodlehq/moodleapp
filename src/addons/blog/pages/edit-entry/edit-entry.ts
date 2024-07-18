@@ -33,6 +33,7 @@ import { CoreEditorComponentsModule } from '@features/editor/components/componen
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreTagComponentsModule } from '@features/tag/components/components.module';
 import { CanLeave } from '@guards/can-leave';
+import { CoreLoadings } from '@services/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -267,7 +268,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
             return;
         }
 
-        const loading = await CoreDomUtils.showModalLoading('core.sending', true);
+        const loading = await CoreLoadings.show('core.sending', true);
 
         if (this.entry) {
             try {

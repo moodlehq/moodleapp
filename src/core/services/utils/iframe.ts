@@ -36,6 +36,7 @@ import { CoreMimetypeUtils } from './mimetype';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNative } from '@features/native/services/native';
+import { CoreLoadings } from '@services/loadings';
 
 type CoreFrameElement = FrameElement & {
     window?: Window;
@@ -674,7 +675,7 @@ export class CoreIframeUtilsProvider {
      * @param options Options
      */
     async frameLaunchExternal(url: string, options: LaunchExternalOptions = {}): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             if (!CoreNetwork.isOnline()) {

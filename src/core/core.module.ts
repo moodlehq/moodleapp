@@ -59,6 +59,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreWSProvider } = await import('@services/ws');
     const { CorePlatformService } = await import('@services/platform');
     const { CoreQRScanService } = await import('@services/qrscan');
+    const { CoreLoadingsService } = await import('@services/loadings');
 
     return [
         CoreAppProvider,
@@ -75,6 +76,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
         CoreGroupsProvider,
         CoreIframeUtilsProvider,
         CoreLangProvider,
+        CoreLoadingsService,
         CoreLocalNotificationsProvider,
         CoreMimetypeUtilsProvider,
         CoreNavigatorService,

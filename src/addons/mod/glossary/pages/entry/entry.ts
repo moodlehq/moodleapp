@@ -41,6 +41,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_GLOSSARY_COMPONENT, ADDON_MOD_GLOSSARY_ENTRY_UPDATED, ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays a glossary entry.
@@ -191,7 +192,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             if (this.onlineEntry) {

@@ -20,6 +20,7 @@ import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/logi
 import { CoreNavigator } from '@services/navigator';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreAnimations } from '@components/animations';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays the list of sites stored in the device.
@@ -105,7 +106,7 @@ export class CoreLoginSitesPage implements OnInit {
      * @returns Promise resolved when done.
      */
     async login(site: CoreSiteBasicInfo): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             const loggedIn = await CoreSites.loadSite(site.id);

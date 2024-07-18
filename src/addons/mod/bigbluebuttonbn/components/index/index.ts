@@ -32,6 +32,7 @@ import {
     AddonModBBBRecordingPlaybackTypes,
 } from '../../services/bigbluebuttonbn';
 import { ADDON_MOD_BBB_COMPONENT } from '../../constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Component that displays a Big Blue Button activity.
@@ -295,7 +296,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      * @returns Promise resolved when done.
      */
     async joinRoom(): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             const joinUrl = await AddonModBBB.getJoinUrl(this.module.id, this.groupId);
@@ -336,7 +337,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             await AddonModBBB.endMeeting(this.bbb.id, this.groupId);

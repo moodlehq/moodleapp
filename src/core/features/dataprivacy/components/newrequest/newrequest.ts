@@ -24,6 +24,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreToasts, ToastDuration } from '@services/toasts';
 
 import { ModalController } from '@singletons';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Component that displays the new request page.
@@ -100,7 +101,7 @@ export class CoreDataPrivacyNewRequestComponent implements OnInit {
         event.preventDefault();
         event.stopPropagation();
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             // Send the message.

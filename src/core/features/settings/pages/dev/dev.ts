@@ -202,7 +202,7 @@ export class CoreSettingsDevPage implements OnInit {
      * Invalidate app caches.
      */
     async invalidateCaches(): Promise<void> {
-        const success = await CoreDomUtils.showOperationModals('Invalidating caches', true, async () => {
+        const success = await CoreDomUtils.showOperationModals('Invalidating caches', false, async () => {
             await CoreCacheManager.invalidate();
 
             return true;

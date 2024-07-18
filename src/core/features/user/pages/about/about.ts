@@ -33,6 +33,7 @@ import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuplo
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays info about a user.
@@ -176,7 +177,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
         try {
             const result = await CoreFileUploaderHelper.selectAndUploadFile(maxSize, title, mimetypes);
 
-            modal = await CoreDomUtils.showModalLoading('core.sending', true);
+            modal = await CoreLoadings.show('core.sending', true);
 
             const profileImageURL = await CoreUser.changeProfilePicture(result.itemid, this.userId, this.site.getId());
 

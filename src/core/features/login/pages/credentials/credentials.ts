@@ -41,6 +41,7 @@ import {
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page to enter the user credentials.
@@ -290,7 +291,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         // Start the authentication process.
         try {

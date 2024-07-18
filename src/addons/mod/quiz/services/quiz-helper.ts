@@ -41,6 +41,7 @@ import { QuestionDisplayOptionsMarks } from '@features/question/constants';
 import { CoreGroups } from '@services/groups';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreModals } from '@services/modals';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Helper service that provides some features for quiz.
@@ -335,7 +336,7 @@ export class AddonModQuizHelperProvider {
     async handleReviewLink(attemptId: number, page?: number, quizId?: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             if (!quizId) {

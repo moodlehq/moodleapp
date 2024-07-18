@@ -25,6 +25,7 @@ import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { AddonModChat } from '@addons/mod/chat/services/chat';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays list of chat sessions.
@@ -126,7 +127,7 @@ export class AddonModChatSessionsPage implements OnInit, AfterViewInit, OnDestro
      * Reload chat sessions.
      */
     async reloadSessions(): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             await this.sessions.reload();

@@ -48,6 +48,7 @@ import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreText } from '@singletons/text';
 import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/modals';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays a message discussion page.
@@ -232,7 +233,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     protected async fetchData(): Promise<void> {
         let loader: CoreIonLoadingElement | undefined;
         if (this.showLoadingModal) {
-            loader = await CoreDomUtils.showModalLoading();
+            loader = await CoreLoadings.show();
         }
 
         if (!this.groupMessagingEnabled && this.userId) {
@@ -965,7 +966,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 options,
             );
 
-            const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
+            const modal = await CoreLoadings.show('core.deleting', true);
 
             try {
                 await AddonMessages.deleteMessage(message, data && data[0]);
@@ -1406,7 +1407,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             await CoreDomUtils.showConfirm(template, undefined, okText);
             this.blockIcon = CoreConstants.ICON_LOADING;
 
-            const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+            const modal = await CoreLoadings.show('core.sending', true);
             this.showLoadingModal = true;
 
             try {
@@ -1488,7 +1489,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
             this.blockIcon = CoreConstants.ICON_LOADING;
 
-            const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+            const modal = await CoreLoadings.show('core.sending', true);
             this.showLoadingModal = true;
 
             try {
@@ -1527,7 +1528,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
             this.addRemoveIcon = CoreConstants.ICON_LOADING;
 
-            const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+            const modal = await CoreLoadings.show('core.sending', true);
             this.showLoadingModal = true;
 
             try {
@@ -1558,7 +1559,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             throw new CoreError('No member selected to be confirmed.');
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
         this.showLoadingModal = true;
 
         try {
@@ -1584,7 +1585,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             throw new CoreError('No member selected to be declined.');
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
         this.showLoadingModal = true;
 
         try {
@@ -1618,7 +1619,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
             this.addRemoveIcon = CoreConstants.ICON_LOADING;
 
-            const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+            const modal = await CoreLoadings.show('core.sending', true);
             this.showLoadingModal = true;
 
             try {

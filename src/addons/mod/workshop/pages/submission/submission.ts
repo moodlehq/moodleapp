@@ -55,6 +55,7 @@ import {
     AddonModWorkshopAction,
     AddonModWorkshopPhase,
 } from '@addons/mod/workshop/constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays a workshop submission.
@@ -510,7 +511,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
      * @returns Resolved when done.
      */
     protected async sendEvaluation(): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         const inputData: {
             grade: number | string;
@@ -559,7 +560,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
+        const modal = await CoreLoadings.show('core.deleting', true);
 
         let success = false;
         try {

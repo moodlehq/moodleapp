@@ -55,6 +55,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT, AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
 import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/modals';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that allows attempting a quiz.
@@ -166,7 +167,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         }
 
         // Save answers.
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             await this.processAttempt(false, false);
@@ -217,7 +218,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             // Confirm that the user really wants to do it.
             await CoreDomUtils.showConfirm(Translate.instant('core.areyousure'));
 
-            modal = await CoreDomUtils.showModalLoading('core.sending', true);
+            modal = await CoreLoadings.show('core.sending', true);
 
             // Get the answers.
             const answers = await this.prepareAnswers(this.quiz.coursemodule);
@@ -292,7 +293,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         // First try to save the attempt data. We only save it if we're not seeing the summary.
         if (!this.showSummary) {
-            const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+            const modal = await CoreLoadings.show('core.sending', true);
 
             try {
                 await this.processAttempt(false, false);
@@ -440,7 +441,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
                 );
             }
 
-            modal = await CoreDomUtils.showModalLoading('core.sending', true);
+            modal = await CoreLoadings.show('core.sending', true);
 
             await this.processAttempt(userFinish, timeUp);
 
@@ -719,7 +720,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         if (this.reloadNavigation) {
             // Some data has changed, reload the navigation.
-            const modal = await CoreDomUtils.showModalLoading();
+            const modal = await CoreLoadings.show();
 
             await CoreUtils.ignoreErrors(this.loadNavigation());
 

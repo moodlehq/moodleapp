@@ -27,6 +27,7 @@ import { CORE_DATAPRIVACY_FEATURE_NAME, CORE_DATAPRIVACY_PAGE_NAME } from '@feat
 import { CoreNavigator } from '@services/navigator';
 import { CoreDataPrivacy } from '@features/dataprivacy/services/dataprivacy';
 import { CoreModals } from '@services/modals';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page to view user acceptances.
@@ -212,7 +213,7 @@ export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
         event.preventDefault();
         event.stopPropagation();
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             await CorePolicy.setUserAcceptances({ [policy.versionid]: accept ? 1 : 0 });

@@ -48,6 +48,7 @@ import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreModals } from '@services/modals';
 import { CoreQRScan } from '@services/qrscan';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -322,7 +323,7 @@ export class CoreLoginSitePage implements OnInit {
 
         } else {
             // Not a demo site.
-            const modal = await CoreDomUtils.showModalLoading();
+            const modal = await CoreLoadings.show();
 
             let checkResult: CoreSiteCheckResponse;
 
@@ -361,7 +362,7 @@ export class CoreLoginSitePage implements OnInit {
      * @returns Promise resolved when done.
      */
     protected async loginDemoSite(siteData: CoreSitesDemoSiteData): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             const data = await CoreSites.getUserToken(siteData.url, siteData.username, siteData.password);
@@ -595,7 +596,7 @@ export class CoreLoginSitePage implements OnInit {
      */
     protected async treatErrorInAuthenticationCustomURL(customURL: string, error: CoreCustomURLSchemesHandleError): Promise<void> {
         const siteUrl = error.data?.siteUrl || '';
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         // Set the site URL in the input.
         this.siteForm.controls.siteUrl.setValue(siteUrl);

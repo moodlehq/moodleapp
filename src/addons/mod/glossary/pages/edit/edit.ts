@@ -40,6 +40,7 @@ import { AddonModGlossaryHelper } from '../../services/glossary-helper';
 import { AddonModGlossaryOffline } from '../../services/glossary-offline';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_GLOSSARY_COMPONENT } from '../../constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays the edit form.
@@ -211,7 +212,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             const savedOnline = await this.handler.save(this.glossary);

@@ -47,6 +47,7 @@ import moment from 'moment-timezone';
 import { ADDON_CALENDAR_COMPONENT } from '@addons/calendar/constants';
 import { ContextLevel } from '@/core/constants';
 import { CorePopovers } from '@services/popovers';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -407,7 +408,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             await this.loadGroups(courseId);
@@ -513,7 +514,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         }
 
         // Send the data.
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
         let event: AddonCalendarEvent | AddonCalendarOfflineEventDBRecord;
 
         try {

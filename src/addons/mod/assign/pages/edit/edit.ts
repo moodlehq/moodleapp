@@ -46,6 +46,7 @@ import {
     ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
 } from '../../constants';
 import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that allows adding or editing an assigment submission.
@@ -314,7 +315,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
     protected async hasDataChanged(): Promise<boolean> {
         // Usually the hasSubmissionDataChanged call will be resolved inmediately, causing the modal to be shown just an instant.
         // We'll wait a bit before showing it to prevent this "blink".
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         const data = this.getInputData();
 
@@ -397,7 +398,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             throw Translate.instant('addon.mod_assign.acceptsubmissionstatement');
         }
 
-        let modal = await CoreDomUtils.showModalLoading();
+        let modal = await CoreLoadings.show();
         let size = -1;
 
         // Get size to ask for confirmation.
@@ -414,7 +415,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             // Confirm action.
             await CoreFileUploaderHelper.confirmUploadFile(size, true, this.allowOffline);
 
-            modal = await CoreDomUtils.showModalLoading('core.sending', true);
+            modal = await CoreLoadings.show('core.sending', true);
 
             const pluginData = await this.prepareSubmissionData(inputData);
             if (!Object.keys(pluginData).length) {

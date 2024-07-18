@@ -44,6 +44,7 @@ import {
     ADDON_MOD_WORKSHOP_COMPONENT,
     AddonModWorkshopPhase,
 } from '@addons/mod/workshop/constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays a workshop assessment.
@@ -372,7 +373,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
      * @returns Resolved when done.
      */
     protected async sendEvaluation(): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
         const inputData: AddonModWorkshopAssessmentEvaluation = this.evaluateForm.value;
 
         const grade = inputData.grade >= 0 ? String(inputData.grade) : '';

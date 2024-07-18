@@ -24,6 +24,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonModH5PActivity } from '../h5pactivity';
 import { ADDON_MOD_H5PACTIVITY_PAGE_NAME } from '../../constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Handler to treat links to H5P activity report.
@@ -45,7 +46,7 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: async (siteId) => {
-                const modal = await CoreDomUtils.showModalLoading();
+                const modal = await CoreLoadings.show();
 
                 try {
                     const instanceId = Number(params.a);

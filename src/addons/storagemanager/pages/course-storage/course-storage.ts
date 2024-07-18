@@ -26,6 +26,7 @@ import {
     CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourseAnyCourseData, CoreCourses } from '@features/courses/services/courses';
 import { AccordionGroupChangeEventDetail, IonAccordionGroup } from '@ionic/angular';
+import { CoreLoadings } from '@services/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -469,7 +470,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      * @returns Promise<void> Once deleting has finished
      */
     protected async deleteModules(modules: AddonStorageManagerModule[], section?: AddonStorageManagerCourseSection): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
+        const modal = await CoreLoadings.show('core.deleting', true);
 
         const promises: Promise<void>[] = [];
         modules.forEach((module) => {

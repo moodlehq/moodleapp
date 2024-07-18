@@ -21,6 +21,7 @@ import { ModalController } from '@singletons';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Component that displays a text area for composing a note.
@@ -52,7 +53,7 @@ export class AddonNotesAddComponent {
         e.stopPropagation();
 
         CoreKeyboard.close();
-        const loadingModal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const loadingModal = await CoreLoadings.show('core.sending', true);
 
         // Freeze the add note button.
         this.processing = true;

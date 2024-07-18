@@ -44,6 +44,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_ENTRY_CHANGED, AddonModDataTemplateType } from '../../constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays the view edit page.
@@ -285,7 +286,7 @@ export class AddonModDataEditPage implements OnInit {
                 throw new CoreError(Translate.instant('addon.mod_data.emptyaddform'));
             }
 
-            const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+            const modal = await CoreLoadings.show('core.sending', true);
 
             // Create an ID to assign files.
             const entryTemp = this.entryId ? this.entryId : - (Date.now());

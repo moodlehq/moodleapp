@@ -27,7 +27,7 @@ import { CoreNetwork } from '@services/network';
 import { CorePlatform } from '@services/platform';
 import { CoreDB } from '@services/db';
 import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreLoadings } from '@services/loadings';
 import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -71,8 +71,8 @@ const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
         isOnline: () => true,
         onChange: () => new Observable(),
     })],
-    [CoreDomUtils, mock({
-        showModalLoading: () => Promise.resolve(mock<CoreIonLoadingElement>({ dismiss: jest.fn() })),
+    [CoreLoadings, mock({
+        show: () => Promise.resolve(mock<CoreIonLoadingElement>({ dismiss: jest.fn() })),
     })],
     [CoreUtils, mock(new CoreUtilsProvider(), {
         nextTick: () => Promise.resolve(),

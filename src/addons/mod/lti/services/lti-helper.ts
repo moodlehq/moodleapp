@@ -23,6 +23,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModLti, AddonModLtiLti } from './lti';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Service that provides some helper functions for LTI.
@@ -62,7 +63,7 @@ export class AddonModLtiHelperProvider {
     async getDataAndLaunch(courseId: number, module: CoreCourseModuleData, lti?: AddonModLtiLti, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             const openInBrowser = await AddonModLti.shouldLaunchInBrowser(siteId);

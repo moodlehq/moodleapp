@@ -21,6 +21,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonReportInsights } from '../insights';
 import { CoreToasts } from '@services/toasts';
+import { CoreLoadings } from '@services/loadings';
 
 // Bulk actions supported, along with the related lang string.
 const BULK_ACTIONS = {
@@ -51,7 +52,7 @@ export class AddonReportInsightsActionLinkHandlerService extends CoreContentLink
         return [{
             action: async (siteId?: string): Promise<void> => {
                 // Send the action.
-                const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+                const modal = await CoreLoadings.show('core.sending', true);
 
                 try {
                     await AddonReportInsights.sendActionExecuted(params.action, [Number(params.predictionid)], siteId);

@@ -32,6 +32,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { ADDON_MOD_RESOURCE_COMPONENT } from '../constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Service that provides helper functions for resources.
@@ -190,7 +191,7 @@ export class AddonModResourceHelperProvider {
      * @returns Resolved when done.
      */
     async openModuleFile(module: CoreCourseModuleData, courseId: number, options: CoreUtilsOpenFileOptions = {}): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             // Download and open the file from the resource contents.

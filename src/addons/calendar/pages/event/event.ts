@@ -44,6 +44,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreConfig } from '@services/config';
 import { CoreToasts, ToastDuration } from '@services/toasts';
 import { CorePopovers } from '@services/popovers';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays a single calendar event.
@@ -418,7 +419,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         try {
             await CoreDomUtils.showDeleteConfirm();
 
-            const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
+            const modal = await CoreLoadings.show('core.deleting', true);
 
             try {
                 await CoreReminders.removeReminder(id);
@@ -525,12 +526,11 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         try {
             deleteAll = await CoreDomUtils.showConfirm(message, title, undefined, undefined, options);
         } catch {
-
             // User canceled.
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             let onlineEventDeleted = false;
@@ -587,7 +587,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
 

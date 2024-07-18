@@ -14,6 +14,7 @@
 
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
 import { CoreFileHelper } from '@services/file-helper';
+import { CoreLoadings } from '@services/loadings';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSFile } from '@services/ws';
 
@@ -48,7 +49,7 @@ export class CoreDownloadFileDirective implements OnInit {
             ev.preventDefault();
             ev.stopPropagation();
 
-            const modal = await CoreDomUtils.showModalLoading();
+            const modal = await CoreLoadings.show();
 
             try {
                 await CoreFileHelper.downloadAndOpenFile(this.file, this.component, this.componentId);

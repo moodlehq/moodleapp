@@ -66,6 +66,7 @@ import {
 import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
 import { CoreToasts } from '@services/toasts';
 import { CorePopovers } from '@services/popovers';
+import { CoreLoadings } from '@services/loadings';
 /**
  * Component that displays a forum entry page.
  */
@@ -669,7 +670,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * Group has changed.
      */
     async groupChanged(): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             await Promise.all([
