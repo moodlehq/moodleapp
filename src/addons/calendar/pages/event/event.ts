@@ -39,7 +39,6 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-source';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
-import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CorePlatform } from '@services/platform';
 import { CoreConfig } from '@services/config';
@@ -384,6 +383,9 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         if (!this.event || !this.event.id) {
             return;
         }
+
+        const { CoreRemindersSetReminderMenuComponent } =
+            await import('@features/reminders/components/set-reminder-menu/set-reminder-menu');
 
         const reminderTime = await CorePopovers.open<{timeBefore: number}>({
             component: CoreRemindersSetReminderMenuComponent,

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
-import { AddonBlogEntryOptionsMenuComponent } from '@addons/blog/components/entry-options-menu';
 import { ADDON_BLOG_ENTRY_UPDATED } from '@addons/blog/constants';
 import { AddonBlog, AddonBlogFilter, AddonBlogPost, AddonBlogProvider } from '@addons/blog/services/blog';
 import { Component, OnDestroy, OnInit } from '@angular/core';
@@ -327,6 +326,9 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
     async showEntryActionsPopover(event: Event, entry: AddonBlogPostFormatted): Promise<void> {
         event.preventDefault();
         event.stopPropagation();
+
+        const { AddonBlogEntryOptionsMenuComponent } =
+            await import('@addons/blog/components/entry-options-menu/entry-options-menu');
 
         const popoverData = await CorePopovers.open<string>({
             component: AddonBlogEntryOptionsMenuComponent,

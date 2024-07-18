@@ -27,7 +27,7 @@ import {
 import { AddonModDataHelper } from '../../services/data-helper';
 import { AddonModDataOffline } from '../../services/data-offline';
 import { CorePopovers } from '@services/popovers';
-import { AddonModDataActionsMenuComponent, AddonModDataActionsMenuItem } from '../actionsmenu/actionsmenu';
+import { AddonModDataActionsMenuItem } from '../actionsmenu/actionsmenu';
 import {
     ADDON_MOD_DATA_ENTRY_CHANGED,
     ADDON_MOD_DATA_PAGE_NAME,
@@ -201,6 +201,8 @@ export class AddonModDataActionComponent implements OnInit {
                 icon: 'fas-magnifying-glass-plus',
             });
         }
+
+        const { AddonModDataActionsMenuComponent } = await import('../actionsmenu/actionsmenu');
 
         await CorePopovers.openWithoutResult({
             component: AddonModDataActionsMenuComponent,

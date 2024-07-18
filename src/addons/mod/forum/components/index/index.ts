@@ -41,7 +41,6 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { AddonModForumDiscussionOptionsMenuComponent } from '../discussion-options-menu/discussion-options-menu';
 import { CoreScreen } from '@services/screen';
 import { AddonModForumPrefetchHandler } from '../../services/handlers/prefetch';
 import { CoreRatingProvider } from '@features/rating/services/rating';
@@ -635,6 +634,9 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
         event.preventDefault();
         event.stopPropagation();
+
+        const { AddonModForumDiscussionOptionsMenuComponent } =
+            await import('../discussion-options-menu/discussion-options-menu');
 
         const popoverData = await CorePopovers.open<{ action?: string; value: boolean }>({
             component: AddonModForumDiscussionOptionsMenuComponent,

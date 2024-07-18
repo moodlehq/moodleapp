@@ -19,7 +19,6 @@ import { CorePopovers } from '@services/popovers';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
-import { CoreContextMenuPopoverComponent } from './context-menu-popover';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 
 /**
@@ -182,6 +181,8 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
     async showContextMenu(event: MouseEvent): Promise<void> {
         if (!this.expanded) {
             this.expanded = true;
+
+            const { CoreContextMenuPopoverComponent } = await import('./context-menu-popover');
 
             const popoverData = await CorePopovers.open<CoreContextMenuItemComponent>({
                 event,

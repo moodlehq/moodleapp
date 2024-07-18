@@ -20,6 +20,7 @@ import { CoreEvents } from '@singletons/events';
 import { AddonModForum, AddonModForumDiscussion } from '../../services/forum';
 import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT } from '../../constants';
 import { CoreToasts } from '@services/toasts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * This component is meant to display a popover with the discussion options.
@@ -27,6 +28,10 @@ import { CoreToasts } from '@services/toasts';
 @Component({
     selector: 'addon-forum-discussion-options-menu',
     templateUrl: 'discussion-options-menu.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
 

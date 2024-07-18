@@ -20,17 +20,13 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreTagComponentsModule } from '@features/tag/components/components.module';
 import { CoreRatingComponentsModule } from '@features/rating/components/components.module';
 
-import { AddonModForumDiscussionOptionsMenuComponent } from './discussion-options-menu/discussion-options-menu';
 import { AddonModForumIndexComponent } from './index/index';
 import { AddonModForumPostComponent } from './post/post';
-import { AddonModForumPostOptionsMenuComponent } from './post-options-menu/post-options-menu';
 
 @NgModule({
     declarations: [
-        AddonModForumDiscussionOptionsMenuComponent,
         AddonModForumIndexComponent,
         AddonModForumPostComponent,
-        AddonModForumPostOptionsMenuComponent,
     ],
     imports: [
         CoreSharedModule,

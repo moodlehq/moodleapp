@@ -17,6 +17,7 @@ import { CoreCourses } from '../../services/courses';
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { PopoverController } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * This component is meant to display a popover with the course options.
@@ -24,6 +25,11 @@ import { PopoverController } from '@singletons';
 @Component({
     selector: 'core-courses-course-options-menu',
     templateUrl: 'core-courses-course-options-menu.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
+
 })
 export class CoreCoursesCourseOptionsMenuComponent implements OnInit {
 

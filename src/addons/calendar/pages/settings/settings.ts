@@ -18,7 +18,6 @@ import {
     CoreReminders,
     CoreRemindersService,
 } from '@features/reminders/services/reminders';
-import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
 
 /**
  * Page that displays the calendar settings.
@@ -50,6 +49,9 @@ export class AddonCalendarSettingsPage implements OnInit {
         e.stopPropagation();
         e.stopImmediatePropagation();
         e.preventDefault();
+
+        const { CoreRemindersSetReminderMenuComponent } =
+            await import('@features/reminders/components/set-reminder-menu/set-reminder-menu');
 
         const reminderTime = await CorePopovers.open<{timeBefore: number}>({
             component: CoreRemindersSetReminderMenuComponent,

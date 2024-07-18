@@ -36,7 +36,6 @@ import {
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreNetworkError } from '@classes/errors/network-error';
-import { CoreBSTooltipComponent } from '@components/bs-tooltip/bs-tooltip';
 import { CoreSites } from '@services/sites';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteError } from '@classes/errors/siteerror';
@@ -539,6 +538,8 @@ export class CoreDomUtilsProvider {
 
             el.addEventListener('click', async (ev: Event) => {
                 const html = el.getAttribute('data-html');
+
+                const { CoreBSTooltipComponent } = await import('@components/bs-tooltip/bs-tooltip');
 
                 await CorePopovers.openWithoutResult({
                     component: CoreBSTooltipComponent,

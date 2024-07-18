@@ -25,7 +25,6 @@ import { CoreColors } from '@singletons/colors';
 import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourseListItem, CoreCourses, CoreCoursesProvider } from '../../services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
-import { CoreCoursesCourseOptionsMenuComponent } from '../course-options-menu/course-options-menu';
 import { CoreEnrolHelper } from '@features/enrol/services/enrol-helper';
 import { CoreDownloadStatusTranslatable } from '@components/download-refresh/download-refresh';
 import { toBoolean } from '@/core/transforms/boolean';
@@ -297,6 +296,8 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
         event.stopPropagation();
 
         this.initPrefetchCourse(true);
+
+        const { CoreCoursesCourseOptionsMenuComponent } = await import('../course-options-menu/course-options-menu');
 
         const popoverData = await CorePopovers.open<string>({
             component: CoreCoursesCourseOptionsMenuComponent,

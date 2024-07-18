@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input } from '@angular/core';
 import { CoreRemindersUnits } from '@features/reminders/services/reminders';
 import { PopoverController } from '@singletons';
@@ -21,6 +22,10 @@ import { PopoverController } from '@singletons';
  */
 @Component({
     templateUrl: 'set-reminder-custom.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreRemindersSetReminderCustomComponent {
 

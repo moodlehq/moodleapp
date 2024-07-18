@@ -43,7 +43,6 @@ import { CoreNavigator } from '@services/navigator';
 import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
 import { CoreReminders, CoreRemindersService, CoreRemindersUnits } from '@features/reminders/services/reminders';
-import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
 import moment from 'moment-timezone';
 import { ADDON_CALENDAR_COMPONENT } from '@addons/calendar/constants';
 import { ContextLevel } from '@/core/constants';
@@ -637,6 +636,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     async addReminder(): Promise<void> {
         const formData = this.form.value;
         const eventTime = moment(formData.timestart).unix();
+
+        const { CoreRemindersSetReminderMenuComponent } =
+            await import('@features/reminders/components/set-reminder-menu/set-reminder-menu');
 
         const reminderTime = await CorePopovers.open<{timeBefore: number}>({
             component: CoreRemindersSetReminderMenuComponent,

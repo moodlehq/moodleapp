@@ -11,12 +11,17 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component } from '@angular/core';
 import { PopoverController } from '@singletons';
 
 @Component({
     selector: 'addon-blog-entry-options-menu',
-    templateUrl: './entry-options-menu.html',
+    templateUrl: 'entry-options-menu.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonBlogEntryOptionsMenuComponent {
 

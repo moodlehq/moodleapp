@@ -45,7 +45,6 @@ import { CoreTextUtils } from '@services/utils/text';
 import { AddonModForumHelper } from '../../services/forum-helper';
 import { AddonModForumOffline } from '../../services/forum-offline';
 import { CoreUtils } from '@services/utils/utils';
-import { AddonModForumPostOptionsMenuComponent } from '../post-options-menu/post-options-menu';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreForms } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
@@ -234,6 +233,9 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      * @param event Click Event.
      */
     async showOptionsMenu(event: Event): Promise<void> {
+        const { AddonModForumPostOptionsMenuComponent } =
+            await import('../post-options-menu/post-options-menu');
+
         const popoverData = await CorePopovers.open<{ action?: string }>({
             component: AddonModForumPostOptionsMenuComponent,
             componentProps: {

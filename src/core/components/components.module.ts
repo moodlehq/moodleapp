@@ -27,7 +27,6 @@ import { CoreChartComponent } from './chart/chart';
 import { CoreChronoComponent } from './chrono/chrono';
 import { CoreContextMenuComponent } from './context-menu/context-menu';
 import { CoreContextMenuItemComponent } from './context-menu/context-menu-item';
-import { CoreContextMenuPopoverComponent } from './context-menu/context-menu-popover';
 import { CoreDownloadRefreshComponent } from './download-refresh/download-refresh';
 import { CoreDynamicComponent } from './dynamic-component/dynamic-component';
 import { CoreEmptyBoxComponent } from './empty-box/empty-box';
@@ -88,7 +87,6 @@ export async function getCoreStandaloneComponents(): Promise<Type<unknown>[]> {
         CoreChronoComponent,
         CoreContextMenuComponent,
         CoreContextMenuItemComponent,
-        CoreContextMenuPopoverComponent,
         CoreCourseImageComponent,
         CoreDownloadRefreshComponent,
         CoreDynamicComponent,
@@ -141,7 +139,6 @@ export async function getCoreStandaloneComponents(): Promise<Type<unknown>[]> {
         CoreChronoComponent,
         CoreContextMenuComponent,
         CoreContextMenuItemComponent,
-        CoreContextMenuPopoverComponent,
         CoreCourseImageComponent,
         CoreDownloadRefreshComponent,
         CoreDynamicComponent,

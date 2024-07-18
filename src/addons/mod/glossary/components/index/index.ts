@@ -50,7 +50,6 @@ import {
     GLOSSARY_AUTO_SYNCED,
 } from '../../services/glossary-sync';
 import { AddonModGlossaryPrefetchHandler } from '../../services/handlers/prefetch';
-import { AddonModGlossaryModePickerPopoverComponent } from '../mode-picker/mode-picker';
 import { CoreTime } from '@singletons/time';
 import {
     ADDON_MOD_GLOSSARY_COMPONENT,
@@ -355,6 +354,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         if (!this.glossary) {
             return;
         }
+        const { AddonModGlossaryModePickerPopoverComponent } = await import('../mode-picker/mode-picker');
 
         const entries = await this.promisedEntries;
         const previousMode = entries.getSource().fetchMode;

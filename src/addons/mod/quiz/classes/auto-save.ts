@@ -17,7 +17,6 @@ import { BehaviorSubject } from 'rxjs';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreLogger } from '@singletons/logger';
-import { AddonModQuizConnectionErrorComponent } from '../components/connection-error/connection-error';
 import { AddonModQuiz, AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '../services/quiz';
 import { CorePopovers } from '@services/popovers';
 
@@ -196,6 +195,8 @@ export class AddonModQuizAutoSave {
             preventDefault: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
         };
         this.popoverShown = true;
+
+        const { AddonModQuizConnectionErrorComponent } = await import('../components/connection-error/connection-error');
 
         this.popover = await CorePopovers.openWithoutResult({
             component: AddonModQuizConnectionErrorComponent,

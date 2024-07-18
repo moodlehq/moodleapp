@@ -19,7 +19,6 @@ import {
     CoreCourseModuleCompletionStatus,
 } from '@features/course/services/course';
 import { CorePopovers } from '@services/popovers';
-import { CoreCourseModuleCompletionDetailsComponent } from '../module-completion-details/module-completion-details';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUser } from '@features/user/services/user';
 import { Translate } from '@singletons';
@@ -131,6 +130,9 @@ export class CoreCourseModuleCompletionComponent
             if (target && target.tagName !== 'ION-BUTTON') {
                 target = target.parentElement;
             }
+
+            const { CoreCourseModuleCompletionDetailsComponent } =
+                await import('../module-completion-details/module-completion-details');
 
             CorePopovers.openWithoutResult({
                 component: CoreCourseModuleCompletionDetailsComponent,

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input } from '@angular/core';
 import { PopoverController } from '@singletons';
 
@@ -21,6 +22,10 @@ import { PopoverController } from '@singletons';
 @Component({
     selector: 'addon-mod-data-actionsmenu',
     templateUrl: 'actionsmenu.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModDataActionsMenuComponent  {
 

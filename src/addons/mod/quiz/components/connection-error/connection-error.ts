@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component } from '@angular/core';
 
 /**
@@ -20,7 +21,11 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'addon-mod-quiz-connection-error',
     templateUrl: 'connection-error.html',
-    styleUrls: ['connection-error.scss'],
+    styleUrl: 'connection-error.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModQuizConnectionErrorComponent {
 
