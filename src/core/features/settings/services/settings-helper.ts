@@ -437,7 +437,7 @@ export class CoreSettingsHelperProvider {
         const isDark = CoreDomUtils.hasModeClass('dark');
 
         if (isDark !== enable) {
-            CoreDomUtils.toggleModeClass('dark', enable, { includeLegacy: true });
+            CoreDomUtils.toggleModeClass('dark', enable);
             this.darkModeObservable.next(enable);
 
             CoreApp.setSystemUIColors();

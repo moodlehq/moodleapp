@@ -143,6 +143,6 @@
 
 }
 
-html.dark .core-error-accordion {
+:root.dark .core-error-accordion {
     --background-color: var(--gray-700);
 }

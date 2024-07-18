@@ -77,7 +77,7 @@
                     {{ message.timecreated | coreFormatDate: "strftimedayshort" }}
                 </h3>
 
-                <ion-chip class="addon-messages-unreadfrom" *ngIf="unreadMessageFrom > 0 && message.id === unreadMessageFrom" color="light">
+                <ion-chip class="addon-messages-unreadfrom" *ngIf="unreadMessageFrom > 0 && message.id === unreadMessageFrom">
                     <ion-label>{{ 'addon.messages.newmessages' | translate }}</ion-label>
                     <ion-icon name="fas-arrow-down" aria-hidden="true" />
                 </ion-chip>

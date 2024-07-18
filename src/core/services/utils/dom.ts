@@ -1790,17 +1790,12 @@ export class CoreDomUtilsProvider {
      *
      * @param className Class name.
      * @param enable Whether to add or remove the class.
-     * @param options Legacy options, deprecated since 4.1.
      */
     toggleModeClass(
         className: string,
         enable = false,
-        options: { includeLegacy: boolean } = { includeLegacy: false },
     ): void {
         document.documentElement.classList.toggle(className, enable);
-
-        // @deprecated since 4.1.
-        document.body.classList.toggle(className, enable && options.includeLegacy);
     }
 
 }

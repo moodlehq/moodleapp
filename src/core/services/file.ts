@@ -1016,17 +1016,6 @@ export class CoreFileProvider {
     }
 
     /**
-     * Remove the starting slash of a path if it's there. E.g. '/sites/filepool' -> 'sites/filepool'.
-     *
-     * @param path Path.
-     * @returns Path without a slash in the first position.
-     * @deprecated since 4.1. Use CoreText.removeStartingSlash instead.
-     */
-    removeStartingSlash(path: string): string {
-        return CoreText.removeStartingSlash(path);
-    }
-
-    /**
      * Convenience function to copy or move an external file.
      *
      * @param from Absolute path to the file to copy/move.

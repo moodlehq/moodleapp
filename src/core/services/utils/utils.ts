@@ -1185,7 +1185,7 @@ export class CoreUtilsProvider {
         if (options.showBrowserWarning || options.showBrowserWarning === undefined) {
             try {
                 await CoreWindow.confirmOpenBrowserIfNeeded(originaUrl);
-            } catch (error) {
+            } catch {
                 return; // Cancelled, stop.
             }
         }
@@ -1407,16 +1407,6 @@ export class CoreUtilsProvider {
      */
     enumKeys<O extends object, K extends keyof O = keyof O>(enumeration: O): K[] {
         return Object.keys(enumeration).filter(k => Number.isNaN(+k)) as K[];
-    }
-
-    /**
-     * Create a deferred promise that can be resolved or rejected explicitly.
-     *
-     * @returns The deferred promise.
-     * @deprecated since 4.1. Use CorePromisedValue instead.
-     */
-    promiseDefer<T>(): CorePromisedValue<T> {
-        return new CorePromisedValue<T>();
     }
 
     /**

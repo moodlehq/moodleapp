@@ -430,16 +430,6 @@ export class CoreLocalNotificationsProvider {
     }
 
     /**
-     * Returns whether local notifications are available.
-     *
-     * @returns Whether local notifications are available.
-     * @deprecated since 4.1. It will always return true.
-     */
-    isAvailable(): boolean {
-        return true;
-    }
-
-    /**
      * Returns whether local notifications plugin is available.
      *
      * @returns Whether local notifications plugin is available.

@@ -31,7 +31,8 @@ import { Component, HostBinding, Input } from '@angular/core';
  *
  * <core-course-module-description [description]="myDescription"></core-course-module-description>
  *
- * @deprecated since 4.0 use core-course-module-info
+ * @deprecated since 4.0 use core-course-module-info instead.
+ * Keeping this a bit more to avoid plugins breaking.
  */
 @Component({
     selector: 'core-course-module-description',

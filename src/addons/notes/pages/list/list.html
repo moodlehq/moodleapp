@@ -11,7 +11,8 @@
     </ion-toolbar>
 </ion-header>
 <core-navbar-buttons slot="end">
-    <ion-button [hidden]="!canDeleteNotes" slot="end" fill="clear" (click)="toggleDelete()" [ariaLabel]="'core.toggledelete' | translate">
+    <ion-button [class.hidden]="!canDeleteNotes" slot="end" fill="clear" (click)="toggleDelete()"
+        [ariaLabel]="'core.toggledelete' | translate">
         <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true" />
     </ion-button>
     <core-context-menu>

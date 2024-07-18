@@ -196,10 +196,13 @@ export class TestingBehatBlockingService {
         await CoreUtils.nextTick();
 
         const blockingElements = Array.from(
-            document.querySelectorAll<HTMLElement>('div.core-loading-container, ion-loading, .click-block-active'),
+            document.querySelectorAll<HTMLElement>('div.core-loading-container, ion-loading'),
         );
 
         const isBlocked = blockingElements.some(element => {
+            // @TODO Fix ion-loading present check with CoreDom.isElementVisible.
+            // ion-loading never has offsetParent since position is fixed.
+            // Using isElementVisible solve the problem but will block behats (like BBB).
             if (!element.offsetParent) {
                 return false;
             }

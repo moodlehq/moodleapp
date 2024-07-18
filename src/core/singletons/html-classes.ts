@@ -34,7 +34,7 @@ export class CoreHTMLClasses {
      * Initialize HTML classes.
      */
     static initialize(): void {
-        CoreDomUtils.toggleModeClass('ionic7', true);
+        CoreDomUtils.toggleModeClass('ionic8', true);
         CoreDomUtils.toggleModeClass('development', CoreConstants.BUILD.isDevelopment);
         CoreHTMLClasses.addVersionClass(MOODLEAPP_VERSION_PREFIX, CoreConstants.CONFIG.versionname.replace('-dev', ''));
 
@@ -72,9 +72,9 @@ export class CoreHTMLClasses {
         parts[1] = parts[1] || '0';
         parts[2] = parts[2] || '0';
 
-        CoreDomUtils.toggleModeClass(prefix + parts[0], true, { includeLegacy: true });
-        CoreDomUtils.toggleModeClass(prefix + parts[0] + '-' + parts[1], true, { includeLegacy: true });
-        CoreDomUtils.toggleModeClass(prefix + parts[0] + '-' + parts[1] + '-' + parts[2], true, { includeLegacy: true });
+        CoreDomUtils.toggleModeClass(prefix + parts[0], true);
+        CoreDomUtils.toggleModeClass(prefix + parts[0] + '-' + parts[1], true);
+        CoreDomUtils.toggleModeClass(prefix + parts[0] + '-' + parts[1] + '-' + parts[2], true);
     }
 
     /**
@@ -88,7 +88,7 @@ export class CoreHTMLClasses {
                 continue;
             }
 
-            CoreDomUtils.toggleModeClass(modeClass, false, { includeLegacy: true });
+            CoreDomUtils.toggleModeClass(modeClass, false);
         }
     }
 

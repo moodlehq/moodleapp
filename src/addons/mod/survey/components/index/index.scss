@@ -25,7 +25,7 @@
     }
 }
 
-:host-context(html.dark) {
+:host-context(:root.dark) {
     --grid-background: var(--gray-900);
     --even-background: var(--medium);
 }

@@ -2,8 +2,15 @@ This file describes API changes in the Moodle App that affect site plugins, info
 
 For more information about upgrading, read the official documentation: https://moodledev.io/general/app/upgrading/
 
+=== 4.5.0 ===
+
+ - Ionic has been upgraded to major version 8. See breaking changes and upgrade guide here: https://ionicframework.com/docs/updating/8-0
+ - core-show-password has been deprecated in favor of ion-input-password-toggle
+
+
 === 4.4.0 ===
 
+ - Ionic has been upgraded to major version 7. See breaking changes and upgrade guide here: https://ionicframework.com/docs/updating/7-0 and https://ionicframework.com/docs/updating/6-0
  - Starting with this release, this file will only document breaking changes for APIs exposed to site plugins. Internal changes will no longer be documented.
  - CoreCache has been deprecated, use plain object as in-memory stores instead.
  - Renamed CoreLoginSitesComponent to CoreLoginSitesModalComponent to make it clear that it's a modal and to avoid confusing it with the new CoreSitesListComponent.

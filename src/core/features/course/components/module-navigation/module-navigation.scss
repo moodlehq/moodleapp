@@ -50,6 +50,6 @@
     height: 0 !important;
 }
 
-:host-context(html.dark) {
+:host-context(:root.dark) {
     --button-color: var(--gray-100);
 }

@@ -55,14 +55,6 @@ export class CorePromisedValue<T = unknown> extends CorePromise<T> {
         this.rejectPromise = rejectPromise;
     }
 
-    /**
-     * @returns Promise.
-     * @deprecated since 4.1. The instance can be directly used as a promise.
-     */
-    get promise(): Promise<T> {
-        return this;
-    }
-
     get value(): T | null {
         return this.resolvedValue ?? null;
     }

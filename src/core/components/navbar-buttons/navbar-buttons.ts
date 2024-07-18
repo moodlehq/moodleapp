@@ -40,12 +40,12 @@ const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
  *
  * You can use the [hidden] input to hide all the inner buttons if a certain condition is met.
  *
- * IMPORTANT: Do not use *ngIf in the buttons inside this component, it can cause problems. Please use [hidden] instead.
+ * IMPORTANT: Do not use *ngIf in the buttons inside this component, it can cause problems. Please use [class.hidden] instead.
  *
  * Example usage:
  *
  * <core-navbar-buttons slot="end">
- *     <ion-button [hidden]="!buttonShown" [attr.aria-label]="Do something" (click)="action()">
+ *     <ion-button [class.hidden]="!buttonShown" [ariaLabel]="Do something" (click)="action()">
  *         <ion-icon name="funnel" slot="icon-only" aria-hidden="true"></ion-icon>
  *     </ion-button>
  * </core-navbar-buttons>

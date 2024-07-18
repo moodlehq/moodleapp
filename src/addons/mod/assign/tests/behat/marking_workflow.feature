@@ -100,6 +100,7 @@ Feature: Test marking workflow in assignment activity in app
     And I press "Grade" in the app
     When I set the field "Grade out of 100" to "60" in the app
     And I press "Done" in the app
+    And I wait loading to finish in the app
     And I press "Student1" in the app
     And I press "Grade" in the app
     Then I should find "60 / 100" within "Current grade in assignment" "ion-item" in the app
@@ -112,6 +113,7 @@ Feature: Test marking workflow in assignment activity in app
     And I press "Grade" in the app
     When I set the field "Grade out of 100" to "80" in the app
     And I press "Done" in the app
+    And I wait loading to finish in the app
     And I press "Student3" in the app
     And I press "Grade" in the app
     Then I should find "80" within "Current grade in gradebook" "ion-item" in the app

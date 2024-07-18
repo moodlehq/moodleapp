@@ -78,7 +78,7 @@
     --margin-end: 12px;
 }
 
-:host-context(html.dark) {
+:host-context(:root.dark) {
     &.version_40:not(.colorize),
     &.version_current {
         background-color: var(--white);

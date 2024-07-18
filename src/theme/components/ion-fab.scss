@@ -6,25 +6,6 @@ ion-fab[core-fab] {
     }
 }
 
-// The following 4 selectors can probably be removed after Ionic migration to 7+
-ion-fab.fab-horizontal-start {
-    left: calc(10px + var(--ion-safe-area-right, 0px));
-}
-
-&[dir=rtl] ion-fab.fab-horizontal-start {
-    right: calc(10px + var(--ion-safe-area-right, 0px));
-    left: unset
-}
-
-ion-fab.fab-horizontal-end {
-    right: calc(10px + var(--ion-safe-area-right, 0px));
-}
-
-&[dir=rtl] ion-fab.fab-horizontal-end {
-    left: calc(10px + var(--ion-safe-area-right, 0px));
-    right: unset
-}
-
 ion-content.has-collapsible-footer ion-fab {
     bottom: calc(var(--core-collapsible-footer-height, 0px) + 10px);
     @include core-transition(all, 200ms);

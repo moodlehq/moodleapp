@@ -18,21 +18,6 @@
 export class CoreArray {
 
     /**
-     * Check whether an array contains an item.
-     *
-     * @param arr Array.
-     * @param item Item.
-     * @returns Whether item is within the array.
-     * @deprecated since 4.1. Use arr.includes() instead.
-     */
-    static contains<T>(arr: T[], item: T): boolean {
-        // eslint-disable-next-line no-console
-        console.warn('CoreArray.contains is deprecated and will be removed soon. Please use array \'includes\' instead.');
-
-        return arr.indexOf(item) !== -1;
-    }
-
-    /**
      * Flatten the first dimension of a multi-dimensional array.
      *
      * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat#reduce_and_concat

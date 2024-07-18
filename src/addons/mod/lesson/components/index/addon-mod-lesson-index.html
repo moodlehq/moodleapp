@@ -31,7 +31,7 @@
                             <ion-input labelPlacement="stacked" name="password" type="password"
                                 placeholder="{{ 'core.login.password' | translate }}" core-auto-focus #passwordinput [clearOnEdit]="false"
                                 [label]="'addon.mod_lesson.enterpassword' | translate">
-                                <core-show-password slot="end" />
+                                <ion-input-password-toggle slot="end" showIcon="fas-eye" hideIcon="fas-eye-slash" />
                             </ion-input>
                         </ion-item>
                         <ion-button expand="block" type="submit">

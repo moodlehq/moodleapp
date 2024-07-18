@@ -476,23 +476,6 @@ export class CoreSite extends CoreAuthenticatedSite {
     }
 
     /**
-     * Open a URL in browser using auto-login in the Moodle site if available and the URL belongs to the site.
-     *
-     * @param url The URL to open.
-     * @param alertMessage If defined, an alert will be shown before opening the browser.
-     * @param options Other options.
-     * @returns Promise resolved when done, rejected otherwise.
-     * @deprecated since 4.1. Use openInBrowserWithAutoLogin instead, now it always checks that URL belongs to same site.
-     */
-    async openInBrowserWithAutoLoginIfSameSite(
-        url: string,
-        alertMessage?: string,
-        options: CoreUtilsOpenInBrowserOptions = {},
-    ): Promise<void> {
-        return this.openInBrowserWithAutoLogin(url, alertMessage, options);
-    }
-
-    /**
      * Open a URL in inappbrowser using auto-login in the Moodle site if available.
      *
      * @param url The URL to open.
@@ -504,23 +487,6 @@ export class CoreSite extends CoreAuthenticatedSite {
         const iabInstance = <InAppBrowserObject> await this.openWithAutoLogin(true, url, options, alertMessage);
 
         return iabInstance;
-    }
-
-    /**
-     * Open a URL in inappbrowser using auto-login in the Moodle site if available and the URL belongs to the site.
-     *
-     * @param url The URL to open.
-     * @param options Override default options passed to inappbrowser.
-     * @param alertMessage If defined, an alert will be shown before opening the inappbrowser.
-     * @returns Promise resolved when done.
-     * @deprecated since 4.1. Use openInAppWithAutoLogin instead, now it always checks that URL belongs to same site.
-     */
-    async openInAppWithAutoLoginIfSameSite(
-        url: string,
-        options?: InAppBrowserOptions,
-        alertMessage?: string,
-    ): Promise<InAppBrowserObject> {
-        return this.openInAppWithAutoLogin(url, options, alertMessage);
     }
 
     /**
@@ -573,25 +539,6 @@ export class CoreSite extends CoreAuthenticatedSite {
         } else {
             return CoreUtils.openInBrowser(autoLoginUrl, options);
         }
-    }
-
-    /**
-     * Open a URL in browser or InAppBrowser using auto-login in the Moodle site if available and the URL belongs to the site.
-     *
-     * @param inApp True to open it in InAppBrowser, false to open in browser.
-     * @param url The URL to open.
-     * @param options Override default options passed to inappbrowser.
-     * @param alertMessage If defined, an alert will be shown before opening the browser/inappbrowser.
-     * @returns Promise resolved when done. Resolve param is returned only if inApp=true.
-     * @deprecated since 4.1. Use openWithAutoLogin instead, now it always checks that URL belongs to same site.
-     */
-    async openWithAutoLoginIfSameSite(
-        inApp: boolean,
-        url: string,
-        options: InAppBrowserOptions & CoreUtilsOpenInBrowserOptions = {},
-        alertMessage?: string,
-    ): Promise<InAppBrowserObject | void> {
-        return this.openWithAutoLogin(inApp, url, options, alertMessage);
     }
 
     /**

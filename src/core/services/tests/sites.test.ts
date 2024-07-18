@@ -51,7 +51,7 @@ describe('CoreSitesProvider', () => {
         CoreHTMLClasses.initialize();
         CoreSites.initialize();
 
-        expect(document.documentElement.classList.contains('ionic7')).toBe(true);
+        expect(document.documentElement.classList.contains('ionic8')).toBe(true);
 
         const site = mock(new CoreSite('42', siteUrl, 'token', { info: {
                 sitename: 'Example Campus',

@@ -65,7 +65,7 @@
                             placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false"
                             autocomplete="current-password" enterkeyhint="go" required="true"
                             [attr.aria-label]="'core.login.password' | translate">
-                            <core-show-password slot="end" />
+                            <ion-input-password-toggle slot="end" showIcon="fas-eye" hideIcon="fas-eye-slash" />
                         </ion-input>
                     </ion-item>
                     <ion-button type="submit" expand="block" [disabled]="!credForm.valid"
