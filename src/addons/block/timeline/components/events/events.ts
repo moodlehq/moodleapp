@@ -18,6 +18,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { AddonBlockTimelineDayEvents } from '@addons/block/timeline/classes/section';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Directive to render a list of events in course overview.
@@ -25,7 +26,11 @@ import { AddonBlockTimelineDayEvents } from '@addons/block/timeline/classes/sect
 @Component({
     selector: 'addon-block-timeline-events',
     templateUrl: 'addon-block-timeline-events.html',
-    styleUrls: ['events.scss'],
+    styleUrl: 'events.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonBlockTimelineEventsComponent implements OnInit {
 

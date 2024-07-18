@@ -36,6 +36,8 @@ import { CoreNavigator } from '@services/navigator';
 import { PageLoadWatcher } from '@classes/page-load-watcher';
 import { PageLoadsManager } from '@classes/page-loads-manager';
 import { DownloadStatus } from '@/core/constants';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
 
 const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
     ['all', 'inprogress', 'future', 'past', 'favourite', 'allincludinghidden', 'hidden'];
@@ -46,7 +48,12 @@ const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
 @Component({
     selector: 'addon-block-myoverview',
     templateUrl: 'addon-block-myoverview.html',
-    styleUrls: ['myoverview.scss'],
+    styleUrl: 'myoverview.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCoursesComponentsModule,
+    ],
 })
 export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy, OnChanges {
 

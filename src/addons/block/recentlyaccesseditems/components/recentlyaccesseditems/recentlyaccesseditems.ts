@@ -22,6 +22,7 @@ import {
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a recently accessed items block.
@@ -29,7 +30,11 @@ import { CoreUtils } from '@services/utils/utils';
 @Component({
     selector: 'addon-block-recentlyaccesseditems',
     templateUrl: 'addon-block-recentlyaccesseditems.html',
-    styleUrls: ['recentlyaccesseditems.scss'],
+    styleUrl: 'recentlyaccesseditems.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseComponent implements OnInit {
 
