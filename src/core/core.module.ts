@@ -58,6 +58,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreUtilsProvider } = await import('@services/utils/utils');
     const { CoreWSProvider } = await import('@services/ws');
     const { CorePlatformService } = await import('@services/platform');
+    const { CoreQRScanService } = await import('@services/qrscan');
 
     return [
         CoreAppProvider,
@@ -80,6 +81,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
         CorePluginFileDelegateService,
         CorePopoversService,
         CorePlatformService,
+        CoreQRScanService,
         CoreScreenService,
         CoreSitesProvider,
         CoreSyncProvider,

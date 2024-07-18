@@ -33,7 +33,6 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreUrl, CoreUrlParams } from '@singletons/url';
 import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
-import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
@@ -59,6 +58,7 @@ import {
 } from '../constants';
 import { LazyRoutesModule } from '@/app/app-routing.module';
 import { CoreSiteError, CoreSiteErrorDebug } from '@classes/errors/siteerror';
+import { CoreQRScan } from '@services/qrscan';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -1271,7 +1271,7 @@ export class CoreLoginHelperProvider {
      * @returns Whether the QR reader should be displayed in site screen.
      */
     displayQRInSiteScreen(): boolean {
-        return CoreUtils.canScanQR() && (CoreConstants.CONFIG.displayqronsitescreen === undefined ||
+        return CoreQRScan.canScanQR() && (CoreConstants.CONFIG.displayqronsitescreen === undefined ||
             !!CoreConstants.CONFIG.displayqronsitescreen);
     }
 
@@ -1282,7 +1282,7 @@ export class CoreLoginHelperProvider {
      * @returns Whether the QR reader should be displayed in credentials screen.
      */
     async displayQRInCredentialsScreen(qrCodeType = CoreSiteQRCodeType.QR_CODE_LOGIN): Promise<boolean> {
-        if (!CoreUtils.canScanQR()) {
+        if (!CoreQRScan.canScanQR()) {
             return false;
         }
 
@@ -1340,23 +1340,19 @@ export class CoreLoginHelperProvider {
      */
     async scanQR(): Promise<void> {
         // Scan for a QR code.
-        const text = await CoreUtils.scanQR();
+        const text = await CoreQRScan.scanQRWithUrlHandling();
 
-        if (text && CoreCustomURLSchemes.isCustomURL(text)) {
-            try {
-                await CoreCustomURLSchemes.handleCustomURL(text);
-            } catch (error) {
-                CoreCustomURLSchemes.treatHandleCustomURLError(error);
-            }
-        } else if (text) {
-            // Not a custom URL scheme, check if it's a URL scheme to another app.
-            const scheme = CoreUrl.getUrlProtocol(text);
+        if (!text) {
+            return;
+        }
 
-            if (scheme && scheme != 'http' && scheme != 'https') {
-                CoreDomUtils.showErrorModal(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
-            } else {
-                CoreDomUtils.showErrorModal('core.login.errorqrnoscheme', true);
-            }
+        // Not a custom URL scheme, check if it's a URL scheme to another app.
+        const scheme = CoreUrl.getUrlProtocol(text);
+
+        if (scheme && scheme != 'http' && scheme != 'https') {
+            CoreDomUtils.showErrorModal(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
+        } else {
+            CoreDomUtils.showErrorModal('core.login.errorqrnoscheme', true);
         }
     }
 

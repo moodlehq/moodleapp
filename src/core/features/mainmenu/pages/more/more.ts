@@ -16,13 +16,11 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreQRScan } from '@services/qrscan';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../services/mainmenu-delegate';
 import { CoreMainMenu, CoreMainMenuCustomItem } from '../../services/mainmenu';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
-import { CoreCustomURLSchemes } from '@services/urlschemes';
-import { CoreTextUtils } from '@services/utils/text';
 import { Translate } from '@singletons';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreDom } from '@singletons/dom';
@@ -58,7 +56,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
 
         this.loadCustomMenuItems();
 
-        this.showScanQR = CoreUtils.canScanQR() &&
+        this.showScanQR = CoreQRScan.canScanQR() &&
                 !CoreSites.getCurrentSite()?.isFeatureDisabled('CoreMainMenuDelegate_QrReader');
     }
 
@@ -149,18 +147,14 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      */
     async scanQR(): Promise<void> {
         // Scan for a QR code.
-        const text = await CoreUtils.scanQR();
+        const text = await CoreQRScan.scanQRWithUrlHandling();
 
         if (!text) {
             return;
         }
 
-        if (CoreCustomURLSchemes.isCustomURL(text)) {
-            // Is a custom URL scheme, handle it.
-            CoreCustomURLSchemes.handleCustomURL(text).catch((error) => {
-                CoreCustomURLSchemes.treatHandleCustomURLError(error);
-            });
-        } else if (/^[^:]{2,}:\/\/[^ ]+$/i.test(text)) { // Check if it's a URL.
+        // Check if it's a URL.
+        if (/^[^:]{2,}:\/\/[^ ]+$/i.test(text)) {
             await CoreSites.visitLink(text, {
                 checkRoot: true,
                 openBrowserRoot: true,

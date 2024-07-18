@@ -47,6 +47,7 @@ import { ONBOARDING_DONE } from '@features/login/constants';
 import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreModals } from '@services/modals';
+import { CoreQRScan } from '@services/qrscan';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -543,7 +544,7 @@ export class CoreLoginSitePage implements OnInit {
      */
     async scanQR(): Promise<void> {
         // Scan for a QR code.
-        const text = await CoreUtils.scanQR();
+        const text = await CoreQRScan.scanQR();
 
         if (!text) {
             return;
