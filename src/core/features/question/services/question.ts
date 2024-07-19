@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile } from '@services/ws';
@@ -415,7 +415,7 @@ export class CoreQuestionProvider {
                 return;
             }
 
-            question.parsedSettings = CoreTextUtils.parseJSON(question.settings, null);
+            question.parsedSettings = CoreText.parseJSON(question.settings, null);
         });
 
         return parsedQuestions;

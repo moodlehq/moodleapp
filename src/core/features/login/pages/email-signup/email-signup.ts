@@ -16,7 +16,7 @@ import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef } from '@an
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreCountry, CoreUtils } from '@services/utils/utils';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { Translate } from '@singletons';
@@ -312,10 +312,10 @@ export class CoreLoginEmailSignupPage implements OnInit {
         const params: SignupUserWSParams = {
             username: this.signupForm.value.username.trim().toLowerCase(),
             password: this.signupForm.value.password,
-            firstname: CoreTextUtils.cleanTags(this.signupForm.value.firstname),
-            lastname: CoreTextUtils.cleanTags(this.signupForm.value.lastname),
+            firstname: CoreText.cleanTags(this.signupForm.value.firstname),
+            lastname: CoreText.cleanTags(this.signupForm.value.lastname),
             email: this.signupForm.value.email.trim(),
-            city: CoreTextUtils.cleanTags(this.signupForm.value.city),
+            city: CoreText.cleanTags(this.signupForm.value.city),
             country: this.signupForm.value.country,
         };
 
@@ -380,7 +380,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * @returns Escaped mail.
      */
     escapeMail(text: string): string {
-        return CoreTextUtils.escapeForRegex(text);
+        return CoreText.escapeForRegex(text);
     }
 
     /**

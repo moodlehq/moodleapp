@@ -29,7 +29,7 @@ import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
@@ -312,7 +312,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
                 // Consider it is 'letter_all'.
                 const getDivider = (entry) => {
                     // Try to get the first letter without HTML tags.
-                    const noTags = CoreTextUtils.cleanTags(entry.concept);
+                    const noTags = CoreText.cleanTags(entry.concept);
 
                     return (noTags || entry.concept).substring(0, 1).toUpperCase();
                 };

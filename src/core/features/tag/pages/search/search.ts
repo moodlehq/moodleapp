@@ -16,7 +16,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreUrl } from '@singletons/url';
 import { CoreTagCloud, CoreTagCollection, CoreTagCloudTag, CoreTag } from '@features/tag/services/tag';
 import { Translate } from '@singletons';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
@@ -120,7 +120,7 @@ export class CoreTagSearchPage implements OnInit {
      * Go to tag index page.
      */
     openTag(tag: CoreTagCloudTag): void {
-        const url = CoreTextUtils.decodeURI(tag.viewurl);
+        const url = CoreUrl.decodeURI(tag.viewurl);
         CoreContentLinksHelper.handleLink(url);
     }
 

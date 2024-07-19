@@ -24,11 +24,12 @@ import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offlin
 import { AddonModAssignFeedbackHandler } from '@addons/mod/assign/services/feedback-delegate';
 import { Injectable, Type } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModAssignFeedbackCommentsComponent } from '../component/comments';
+import { CoreFileHelper } from '@services/file-helper';
 
 /**
  * Handler for comments feedback plugin.
@@ -56,7 +57,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
 
         const files = plugin.fileareas && plugin.fileareas[0] ? plugin.fileareas[0].files : [];
 
-        return CoreTextUtils.restorePluginfileUrls(inputData.assignfeedbackcomments_editor, files || []);
+        return CoreFileHelper.restorePluginfileUrls(inputData.assignfeedbackcomments_editor, files || []);
     }
 
     /**
@@ -180,7 +181,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
 
         if (draft) {
             // Add some HTML to the text if needed.
-            draft.text = CoreTextUtils.formatHtmlLines(draft.text);
+            draft.text = CoreText.formatHtmlLines(draft.text);
 
             pluginData.assignfeedbackcomments_editor = draft;
         }

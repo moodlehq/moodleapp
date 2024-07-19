@@ -106,9 +106,9 @@ export class CoreSharedFilesHelperProvider {
 
         const result = await alert.onDidDismiss();
 
-        if (result.role == 'rename') {
+        if (result.role === 'rename') {
             return newName;
-        } else if (result.role == 'replace') {
+        } else if (result.role === 'replace') {
             return originalName;
         } else {
             // Canceled.

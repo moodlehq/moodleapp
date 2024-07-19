@@ -19,7 +19,6 @@ import { CoreInterceptor } from '@classes/interceptor';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreGrades } from '@features/grades/services/grades';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -431,7 +430,7 @@ export class AddonModAssignProvider {
         });
 
         if (!keepUrls && submissionPlugin.fileareas && submissionPlugin.fileareas[0]) {
-            text = CoreTextUtils.replacePluginfileUrls(text, submissionPlugin.fileareas[0].files || []);
+            text = CoreFileHelper.replacePluginfileUrls(text, submissionPlugin.fileareas[0].files || []);
         }
 
         return text;

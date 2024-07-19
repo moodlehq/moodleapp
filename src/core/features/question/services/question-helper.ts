@@ -20,7 +20,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -163,7 +163,7 @@ export class CoreQuestionHelperProvider {
                     id: input.id,
                     name: input.name,
                     value: input.value,
-                    text: CoreTextUtils.cleanTags(label.innerHTML),
+                    text: CoreText.cleanTags(label.innerHTML),
                     disabled: input.disabled,
                 });
 
@@ -333,7 +333,7 @@ export class CoreQuestionHelperProvider {
                     initMatch = initMatch.substring(0, initMatch.length - 2);
 
                     // Try to convert it to an object and add it to the question.
-                    question.initObjects = CoreTextUtils.parseJSON(initMatch, null);
+                    question.initObjects = CoreText.parseJSON(initMatch, null);
                 }
             }
 
@@ -344,7 +344,7 @@ export class CoreQuestionHelperProvider {
 
             if (amdMatch) {
                 // Try to convert the arguments to an array and add them to the question.
-                question.amdArgs = CoreTextUtils.parseJSON('[' + amdMatch[1] + ']', null);
+                question.amdArgs = CoreText.parseJSON('[' + amdMatch[1] + ']', null);
             }
         });
     }
@@ -438,7 +438,7 @@ export class CoreQuestionHelperProvider {
 
             // Check anchor is valid.
             if (anchor.href && content) {
-                content = CoreTextUtils.cleanTags(content, { singleLine: true, trim: true });
+                content = CoreText.cleanTags(content, { singleLine: true, trim: true });
                 attachments.push({
                     filename: content,
                     fileurl: anchor.href,

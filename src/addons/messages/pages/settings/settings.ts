@@ -27,7 +27,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreConstants } from '@/core/constants';
 import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons/notifications/services/notifications';
 import { CorePlatform } from '@services/platform';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreErrorHelper } from '@services/error-helper';
 import { CoreLoadings } from '@services/loadings';
 
 /**
@@ -112,7 +112,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
             this.warningMessage.set(undefined);
         } catch (error) {
             if (error.errorcode === 'nopermissions') {
-                this.warningMessage.set(CoreTextUtils.getErrorMessageFromError(error));
+                this.warningMessage.set(CoreErrorHelper.getErrorMessageFromError(error));
 
                 return;
             }

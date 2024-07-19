@@ -21,7 +21,7 @@ import { CoreApp } from '@services/app';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
@@ -185,7 +185,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             });
 
             return {
-                name: CoreTextUtils.cleanTags(String(recordingData.recording), { singleLine: true }),
+                name: CoreText.cleanTags(String(recordingData.recording), { singleLine: true }),
                 playbackLabel: columns.playback.label,
                 playbacks,
                 details,

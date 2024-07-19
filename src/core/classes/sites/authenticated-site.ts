@@ -22,7 +22,7 @@ import {
     CoreWSTypeExpected,
 } from '@services/ws';
 import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
@@ -418,7 +418,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             splitRequest: preSets.splitRequest,
         };
 
-        if (wsPreSets.cleanUnicode && CoreTextUtils.hasUnicodeData(data)) {
+        if (wsPreSets.cleanUnicode && CoreText.hasUnicodeData(data)) {
             // Data will be cleaned, notify the user.
             CoreToasts.show({
                 message: 'core.unicodenotsupported',
@@ -676,7 +676,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 error.message = Translate.instant('core.policy.sitepolicynotagreederror');
 
                 throw new CoreSilentError(error);
-            } else if (error.errorcode === 'dmlwriteexception' && CoreTextUtils.hasUnicodeData(data)) {
+            } else if (error.errorcode === 'dmlwriteexception' && CoreText.hasUnicodeData(data)) {
                 if (!this.cleanUnicode) {
                     // Try again cleaning unicode.
                     this.cleanUnicode = true;
@@ -961,7 +961,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                     // Request not executed, enqueue again.
                     this.enqueueRequest(request);
                 } else if (response.error) {
-                    const rejectReason = CoreTextUtils.parseJSON(response.exception || '') as Error | undefined;
+                    const rejectReason = CoreText.parseJSON(response.exception || '') as Error | undefined;
                     request.deferred.reject(rejectReason);
                     CoreErrorLogs.addErrorLog({
                         method: request.method,
@@ -971,7 +971,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                         data: request.data,
                     });
                 } else {
-                    let responseData = response.data ? CoreTextUtils.parseJSON(response.data) : {};
+                    let responseData = response.data ? CoreText.parseJSON(response.data) : {};
                     // Match the behaviour of CoreWSProvider.call when no response is expected.
                     const responseExpected = wsPresets.responseExpected === undefined || wsPresets.responseExpected;
                     if (!responseExpected && (responseData == null || responseData === '')) {
@@ -1097,7 +1097,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             }
 
             return {
-                response: <T> CoreTextUtils.parseJSON(entry.data, {}),
+                response: <T> CoreText.parseJSON(entry.data, {}),
                 expirationIgnored: forceCache,
                 expirationTime,
             };

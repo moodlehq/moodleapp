@@ -18,7 +18,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
@@ -214,8 +214,8 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
                     // Get the info to calculate the available size.
                     this.filesInfo = await AddonPrivateFiles.getPrivateFilesInfo();
 
-                    this.spaceUsed = CoreTextUtils.bytesToSize(this.filesInfo.filesizewithoutreferences, 1);
-                    this.userQuotaReadable = CoreTextUtils.bytesToSize(this.userQuota, 1);
+                    this.spaceUsed = CoreText.bytesToSize(this.filesInfo.filesizewithoutreferences, 1);
+                    this.userQuotaReadable = CoreText.bytesToSize(this.userQuota, 1);
                 } else {
                     // User quota isn't useful, delete it.
                     delete this.userQuota;

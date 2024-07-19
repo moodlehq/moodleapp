@@ -23,7 +23,7 @@ import { CoreCourses } from '@features/courses/services/courses';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -334,7 +334,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             if (canStart && (!attempt || AddonModQuiz.isAttemptCompleted(attempt.state))) {
                 // Check if the user can attempt the quiz.
                 if (attemptAccessInfo.preventnewattemptreasons.length) {
-                    throw new CoreError(CoreTextUtils.buildMessage(attemptAccessInfo.preventnewattemptreasons));
+                    throw new CoreError(CoreText.buildMessage(attemptAccessInfo.preventnewattemptreasons));
                 }
 
                 startAttempt = true;

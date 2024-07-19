@@ -21,7 +21,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
@@ -400,7 +400,7 @@ export class AddonModScormProvider {
         if (scorm.grademethod !== AddonModScormGradingMethod.GRADESCOES && scorm.maxgrade) {
             grade = (grade / scorm.maxgrade) * 100;
 
-            return Translate.instant('core.percentagenumber', { $a: CoreTextUtils.roundToDecimals(grade, 2) });
+            return Translate.instant('core.percentagenumber', { $a: CoreText.roundToDecimals(grade, 2) });
         }
 
         return String(grade);

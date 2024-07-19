@@ -19,7 +19,7 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { AddonModQuizEssayQuestion, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreFileSession } from '@services/file-session';
 import { CoreQuestion } from '@features/question/services/question';
 import { CoreFileEntry } from '@services/file-helper';
@@ -71,7 +71,7 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent<AddonMod
 
         if (this.offlineEnabled && this.question.localAnswers?.attachments_offline) {
 
-            const attachmentsData: CoreFileUploaderStoreFilesResult = CoreTextUtils.parseJSON(
+            const attachmentsData: CoreFileUploaderStoreFilesResult = CoreText.parseJSON(
                 this.question.localAnswers.attachments_offline,
                 {
                     online: [],

@@ -24,7 +24,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils, OpenFileAction } from '@services/utils/utils';
 import { NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
@@ -118,7 +118,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
         const resource = await AddonModResource.getResourceData(this.courseId, this.module.id);
         this.description = resource.intro || '';
         const options: AddonModResourceCustomData =
-            resource.displayoptions ? CoreTextUtils.unserialize(resource.displayoptions) : {};
+            resource.displayoptions ? CoreText.unserialize(resource.displayoptions) : {};
 
         this.displayDescription = options.printintro === undefined || !!options.printintro;
         this.dataRetrieved.emit(resource);
@@ -172,11 +172,11 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
 
             if ('contentsinfo' in this.module && this.module.contentsinfo) {
                 mimetype = this.module.contentsinfo.mimetypes[0];
-                this.readableSize = CoreTextUtils.bytesToSize(this.module.contentsinfo.filessize, 1);
+                this.readableSize = CoreText.bytesToSize(this.module.contentsinfo.filessize, 1);
                 this.timemodified = this.module.contentsinfo.lastmodified * 1000;
             } else {
                 mimetype = await CoreUtils.getMimeTypeFromUrl(CoreFileHelper.getFileUrl(contents[0]));
-                this.readableSize = CoreTextUtils.bytesToSize(contents[0].filesize, 1);
+                this.readableSize = CoreText.bytesToSize(contents[0].filesize, 1);
                 this.timemodified = contents[0].timemodified * 1000;
             }
 

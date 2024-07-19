@@ -24,7 +24,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -472,7 +472,7 @@ class AddonModGlossaryOfflineFormHandler extends AddonModGlossaryFormHandler {
         const originalData = this.page.originalData;
         const data = this.page.data;
         const options = this.getSaveOptions(glossary);
-        const definition = CoreTextUtils.formatHtmlLines(data.definition);
+        const definition = CoreText.formatHtmlLines(data.definition);
 
         if (!originalData) {
             return;
@@ -561,7 +561,7 @@ class AddonModGlossaryNewFormHandler extends AddonModGlossaryFormHandler {
     ): Promise<void> {
         const data = this.page.data;
         const options = this.getSaveOptions(glossary);
-        const definition = CoreTextUtils.formatHtmlLines(data.definition);
+        const definition = CoreText.formatHtmlLines(data.definition);
 
         await this.checkDuplicates(glossary);
         await AddonModGlossaryOffline.addOfflineEntry(
@@ -594,7 +594,7 @@ class AddonModGlossaryNewFormHandler extends AddonModGlossaryFormHandler {
     ): Promise<number | false> {
         const data = this.page.data;
         const options = this.getSaveOptions(glossary);
-        const definition = CoreTextUtils.formatHtmlLines(data.definition);
+        const definition = CoreText.formatHtmlLines(data.definition);
         const entryId = await AddonModGlossary.addEntry(
             glossary.id,
             data.concept,
@@ -674,7 +674,7 @@ class AddonModGlossaryOnlineFormHandler extends AddonModGlossaryFormHandler {
 
         const data = this.page.data;
         const options = this.getSaveOptions(glossary);
-        const definition = CoreTextUtils.formatHtmlLines(data.definition);
+        const definition = CoreText.formatHtmlLines(data.definition);
 
         // Upload attachments, if any.
         let attachmentsId: number | undefined = undefined;

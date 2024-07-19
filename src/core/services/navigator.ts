@@ -23,7 +23,7 @@ import { CoreObject } from '@singletons/object';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { makeSingleton, NavController, Router } from '@singletons';
 import { CoreScreen } from './screen';
 import { CoreError } from '@classes/errors/error';
@@ -85,7 +85,7 @@ export class CoreNavigatorService {
      * @returns Whether the active route is using the given path.
      */
     isCurrent(path: string): boolean {
-        return CoreTextUtils.matchesGlob(this.getCurrentPath(), path);
+        return CoreText.matchesGlob(this.getCurrentPath(), path);
     }
 
     /**
@@ -325,7 +325,7 @@ export class CoreNavigatorService {
             // Try to retrieve the param from local storage in browser.
             const storageParam = localStorage.getItem(value);
             if (storageParam) {
-                storedParam = CoreTextUtils.parseJSON(storageParam);
+                storedParam = CoreText.parseJSON(storageParam);
             }
         }
 
@@ -763,7 +763,7 @@ export class CoreNavigatorService {
      */
     getRelativePathToParent(parentPath: string): string {
         // Add an ending slash to avoid collisions with other routes (e.g. /foo and /foobar).
-        parentPath = CoreTextUtils.addEndingSlash(parentPath);
+        parentPath = CoreText.addEndingSlash(parentPath);
 
         const path = this.getCurrentPath();
         const parentRouteIndex = path.indexOf(parentPath);

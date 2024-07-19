@@ -25,7 +25,7 @@ import { CoreTag, CoreTagItem } from '@features/tag/services/tag';
 import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreErrorHelper } from '@services/error-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import {
@@ -385,7 +385,7 @@ class AddonModBookSlidesItemsManagerSource extends CoreSwipeSlidesItemsManagerSo
 
             return newChapters;
         } catch (error) {
-            if (!CoreTextUtils.getErrorMessageFromError(error)) {
+            if (!CoreErrorHelper.getErrorMessageFromError(error)) {
                 throw new CoreError(Translate.instant('addon.mod_book.errorchapter'));
             }
 

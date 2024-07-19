@@ -20,7 +20,6 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreConstants } from '@/core/constants';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
@@ -96,7 +95,7 @@ export class CoreLinkDirective implements OnInit {
         const openIn = this.element.getAttribute('data-open-in');
 
         if (this.capture) {
-            const treated = await CoreContentLinksHelper.handleLink(CoreTextUtils.decodeURI(href), undefined, true, true);
+            const treated = await CoreContentLinksHelper.handleLink(CoreUrl.decodeURI(href), undefined, true, true);
 
             if (!treated) {
                 this.navigate(href, openIn);

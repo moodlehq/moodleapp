@@ -23,7 +23,7 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreErrorHelper } from '@services/error-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { AddonModImscp, AddonModImscpImscp, AddonModImscpTocItem } from '../../services/imscp';
@@ -124,7 +124,7 @@ export class AddonModImscpViewPage implements OnInit {
             }
 
             if (downloadResult?.failed) {
-                const error = CoreTextUtils.getErrorMessageFromError(downloadResult.error) || downloadResult.error;
+                const error = CoreErrorHelper.getErrorMessageFromError(downloadResult.error) || downloadResult.error;
                 this.warning = Translate.instant('core.errordownloadingsomefiles') + (error ? ' ' + error : '');
             } else {
                 this.warning = '';

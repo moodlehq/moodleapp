@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreFormatTextDirective } from '@directives/format-text';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreCoordinates, CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
@@ -490,7 +490,7 @@ export class AddonQtypeDdwtosQuestion {
         }
 
         groupItems.forEach((item) => {
-            item.innerHTML = CoreTextUtils.decodeHTML(item.innerHTML);
+            item.innerHTML = CoreText.decodeHTML(item.innerHTML);
         });
 
         // Wait to render in order to calculate size.

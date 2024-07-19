@@ -26,7 +26,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextErrorObject } from '@services/utils/text';
+import { CoreErrorObject } from '@services/error-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreTime } from '@singletons/time';
@@ -131,7 +131,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
             this.logView(report);
             this.onReportLoaded.emit(report.details);
         } catch {
-            const errorConfig: CoreTextErrorObject = {
+            const errorConfig: CoreErrorObject = {
                 title: Translate.instant('core.error'),
                 body: `
                     <p>${Translate.instant('addon.mod_page.errorwhileloadingthepage')}</p>

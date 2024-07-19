@@ -24,7 +24,7 @@ import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSExternalFile, CoreWSFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreUtils, CoreUtilsOpenFileOptions } from '@services/utils/utils';
@@ -1339,7 +1339,7 @@ export class CoreFilepoolProvider {
         url = this.removeRevisionFromUrl(url);
 
         // Decode URL.
-        url = CoreTextUtils.decodeHTML(CoreTextUtils.decodeURIComponent(url));
+        url = CoreText.decodeHTML(CoreUrl.decodeURIComponent(url));
 
         if (url.indexOf('/webservice/pluginfile') !== -1) {
             // Remove attributes that do not matter.
@@ -1376,7 +1376,7 @@ export class CoreFilepoolProvider {
         url = url.replace(/\/tokenpluginfile\.php\/[^/]+\//, '/webservice/pluginfile.php/');
 
         // Decode URL.
-        url = CoreTextUtils.decodeHTML(CoreTextUtils.decodeURIComponent(url));
+        url = CoreText.decodeHTML(CoreUrl.decodeURIComponent(url));
 
         if (url.indexOf('/webservice/pluginfile') !== -1) {
             // Remove attributes that do not matter.
@@ -2205,7 +2205,7 @@ export class CoreFilepoolProvider {
             filename += '_' + hashes.join('_');
         }
 
-        return CoreTextUtils.removeSpecialCharactersForFiles(filename);
+        return CoreText.removeSpecialCharactersForFiles(filename);
     }
 
     /**
@@ -2299,7 +2299,7 @@ export class CoreFilepoolProvider {
 
         return {
             ...entry,
-            linksUnserialized: CoreTextUtils.parseJSON(entry.links, []),
+            linksUnserialized: CoreText.parseJSON(entry.links, []),
         };
     }
 
@@ -2653,7 +2653,7 @@ export class CoreFilepoolProvider {
 
             return this.processQueueItem({
                 ...item,
-                linksUnserialized: CoreTextUtils.parseJSON(item.links, []),
+                linksUnserialized: CoreText.parseJSON(item.links, []),
             });
         } catch (err) {
             throw CoreFilepoolProvider.ERR_QUEUE_IS_EMPTY;
@@ -3095,7 +3095,7 @@ export class CoreFilepoolProvider {
                 fileUrl = CoreFile.convertFileSrc(fileUrl);
 
                 if (fileUrl !== url) {
-                    cssCode = cssCode.replace(new RegExp(CoreTextUtils.escapeForRegex(url), 'g'), fileUrl);
+                    cssCode = cssCode.replace(new RegExp(CoreText.escapeForRegex(url), 'g'), fileUrl);
                     updated = true;
                 }
             } catch (error) {
@@ -3103,7 +3103,7 @@ export class CoreFilepoolProvider {
 
                 // If the URL is relative, store the absolute URL.
                 if (absoluteUrl !== url) {
-                    cssCode = cssCode.replace(new RegExp(CoreTextUtils.escapeForRegex(url), 'g'), absoluteUrl);
+                    cssCode = cssCode.replace(new RegExp(CoreText.escapeForRegex(url), 'g'), absoluteUrl);
                     updated = true;
                 }
             }

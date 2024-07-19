@@ -39,7 +39,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreErrorHelper } from '@services/error-helper';
 import { CoreLoadings } from '@services/loadings';
 
 /**
@@ -122,7 +122,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
             this.logView();
         } catch (error) {
             if (error.errorcode === 'nopermissions') {
-                this.warningMessage.set(CoreTextUtils.getErrorMessageFromError(error));
+                this.warningMessage.set(CoreErrorHelper.getErrorMessageFromError(error));
 
                 return;
             }

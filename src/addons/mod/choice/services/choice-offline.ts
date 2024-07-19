@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { makeSingleton } from '@singletons';
 import { AddonModChoiceResponsesDBRecord, RESPONSES_TABLE_NAME } from './database/choice';
 
@@ -101,7 +101,7 @@ export class AddonModChoiceOfflineProvider {
     protected parseResponse(entry: AddonModChoiceResponsesDBRecord): AddonModChoiceOfflineResponses {
         return {
             ...entry,
-            responses: CoreTextUtils.parseJSON(entry.responses, <number[]> []),
+            responses: CoreText.parseJSON(entry.responses, <number[]> []),
         };
     }
 

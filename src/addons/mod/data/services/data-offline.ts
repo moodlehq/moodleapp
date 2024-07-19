@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CorePath } from '@singletons/path';
@@ -90,7 +90,7 @@ export class AddonModDataOfflineProvider {
         const promises: Promise<void>[] = [];
 
         entry.fields.forEach((field) => {
-            const value = CoreTextUtils.parseJSON<CoreFileUploaderStoreFilesResult | null>(field.value, null);
+            const value = CoreText.parseJSON<CoreFileUploaderStoreFilesResult | null>(field.value, null);
 
             if (!value || !value.offline) {
                 return;
@@ -234,7 +234,7 @@ export class AddonModDataOfflineProvider {
      */
     protected parseRecord(record: AddonModDataEntryDBRecord): AddonModDataOfflineAction {
         return Object.assign(record, {
-            fields: CoreTextUtils.parseJSON<AddonModDataEntryWSField[]>(record.fields),
+            fields: CoreText.parseJSON<AddonModDataEntryWSField[]>(record.fields),
         });
     }
 

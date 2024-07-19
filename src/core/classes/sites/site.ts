@@ -25,7 +25,6 @@ import {
     CoreWSUploadFileResult,
 } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils, CoreUtilsOpenInBrowserOptions } from '@services/utils/utils';
@@ -166,7 +165,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      */
     setConfig(config: CoreSiteConfig): void {
         if (config) {
-            config.tool_mobile_disabledfeatures = CoreTextUtils.treatDisabledFeatures(config.tool_mobile_disabledfeatures);
+            config.tool_mobile_disabledfeatures = this.treatDisabledFeatures(config.tool_mobile_disabledfeatures);
         }
 
         this.config = config;

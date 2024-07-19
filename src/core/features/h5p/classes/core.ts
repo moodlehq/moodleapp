@@ -15,7 +15,7 @@
 import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { CoreH5PFileStorage } from './file-storage';
@@ -270,7 +270,7 @@ export class CoreH5PCore {
 
         const params = {
             library: CoreH5PCore.libraryToString(content.library),
-            params: CoreTextUtils.parseJSON(content.params, false),
+            params: CoreText.parseJSON(content.params, false),
         };
 
         if (!params.params) {

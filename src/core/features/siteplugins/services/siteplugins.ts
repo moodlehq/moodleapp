@@ -22,7 +22,7 @@ import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -238,7 +238,7 @@ export class CoreSitePluginsProvider {
                 const value = otherData[name];
 
                 if (typeof value == 'string' && (value[0] == '{' || value[0] == '[')) {
-                    otherData[name] = CoreTextUtils.parseJSON(value);
+                    otherData[name] = CoreText.parseJSON(value);
                 }
             }
         }
@@ -466,7 +466,7 @@ export class CoreSitePluginsProvider {
 
         // Site plugin not disabled. Check if it has handlers.
         if (!plugin.parsedHandlers) {
-            plugin.parsedHandlers = CoreTextUtils.parseJSON(
+            plugin.parsedHandlers = CoreText.parseJSON(
                 plugin.handlers,
                 null,
                 error => this.logger.error('Error parsing site plugin handlers', error),

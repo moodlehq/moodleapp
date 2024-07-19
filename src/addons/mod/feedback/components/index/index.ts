@@ -20,7 +20,7 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -312,7 +312,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
             case 'info':
                 item.data = <string[]> item.data.map((dataItem) => {
-                    const parsed = <Record<string, string>> CoreTextUtils.parseJSON(dataItem);
+                    const parsed = <Record<string, string>> CoreText.parseJSON(dataItem);
 
                     return parsed.show !== undefined ? parsed.show : false;
                 }).filter((dataItem) => dataItem); // Filter false entries.
@@ -325,7 +325,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
             case 'multichoicerated':
             case 'multichoice': {
                 const parsedData = <Record<string, string | number>[]> item.data.map((dataItem) => {
-                    const parsed = <Record<string, string | number>> CoreTextUtils.parseJSON(dataItem);
+                    const parsed = <Record<string, string | number>> CoreText.parseJSON(dataItem);
 
                     return parsed.answertext !== undefined ? parsed : false;
                 }).filter((dataItem) => dataItem); // Filter false entries.

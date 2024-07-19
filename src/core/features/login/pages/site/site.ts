@@ -31,7 +31,7 @@ import { Translate } from '@singletons';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services/urlschemes';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreErrorHelper } from '@services/error-helper';
 import { CoreForms } from '@singletons/form';
 import { AlertButton } from '@ionic/core';
 import { CoreSiteError, CoreSiteErrorDebug } from '@classes/errors/siteerror';
@@ -620,7 +620,7 @@ export class CoreLoginSitePage implements OnInit {
         }
 
         // Now display the error.
-        error.error = CoreTextUtils.addTextToError(
+        error.error = CoreErrorHelper.addTextToError(
             error.error,
             '<br><br>' + Translate.instant('core.login.youcanstillconnectwithcredentials'),
         );

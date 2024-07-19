@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { makeSingleton } from '@singletons';
 import {
     AddonModForumOfflineDiscussionDBRecord,
@@ -399,7 +399,7 @@ export class AddonModForumOfflineProvider {
         R extends { options: string },
         O extends Record<string, unknown> = Record<string, unknown>
     >(record: R): Omit<R, 'options'> & { options: O } {
-        record.options = CoreTextUtils.parseJSON(record.options);
+        record.options = CoreText.parseJSON(record.options);
 
         return record as unknown as Omit<R, 'options'> & { options: O };
     }

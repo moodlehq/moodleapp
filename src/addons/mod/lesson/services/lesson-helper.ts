@@ -17,7 +17,7 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFormFields } from '@singletons/form';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton, Translate } from '@singletons';
 import {
@@ -567,7 +567,7 @@ export class AddonModLessonHelperProvider {
 
             // Add some HTML to the answer if needed.
             if (textarea) {
-                data[textarea.name] = CoreTextUtils.formatHtmlLines(<string> data[textarea.name] || '');
+                data[textarea.name] = CoreText.formatHtmlLines(<string> data[textarea.name] || '');
             }
         } else if (question.template == 'multichoice' && (<AddonModLessonMultichoiceQuestion> question).multi) {
             // Only send the options with value set to true.

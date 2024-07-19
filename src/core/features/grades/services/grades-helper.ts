@@ -33,7 +33,7 @@ import {
     CoreGradesTableLeaderColumn,
     CoreGradesTableRow,
 } from '@features/grades/services/grades';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreMenuItem, CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -111,7 +111,7 @@ export class CoreGradesHelperProvider {
                 }
 
                 content = content.replace(/<\/span>/gi, '\n');
-                content = CoreTextUtils.cleanTags(content, { trim: true });
+                content = CoreText.cleanTags(content, { trim: true });
                 name = 'gradeitem';
             } else if (name === 'grade') {
                 // Add the pass/fail class if present.
@@ -119,7 +119,7 @@ export class CoreGradesHelperProvider {
                     (column.class.includes('gradefail') ? 'text-danger' : '');
 
                 if (content.includes('action-menu')) {
-                    content = CoreTextUtils.processHTML(content, (element) => {
+                    content = CoreText.processHTML(content, (element) => {
                         element.querySelector('.action-menu')?.parentElement?.remove();
                     });
                 }
@@ -127,14 +127,14 @@ export class CoreGradesHelperProvider {
                 if (content.includes('fa-check')) {
                     row.gradeIcon = 'fas-check';
                     row.gradeIconAlt = Translate.instant('core.grades.pass');
-                    content = CoreTextUtils.cleanTags(content);
+                    content = CoreText.cleanTags(content);
                 } else if (content.includes('fa-times') || content.includes('fa-xmark')) {
                     row.gradeIcon = 'fas-xmark';
                     row.gradeIconAlt = Translate.instant('core.grades.fail');
-                    content = CoreTextUtils.cleanTags(content);
+                    content = CoreText.cleanTags(content);
                 }
             } else {
-                content = CoreTextUtils.replaceNewLines(content, '<br>');
+                content = CoreText.replaceNewLines(content, '<br>');
             }
 
             if (row.itemtype !== 'category') {

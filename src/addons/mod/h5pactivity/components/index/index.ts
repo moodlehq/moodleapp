@@ -44,7 +44,7 @@ import {
     AddonModH5PActivitySyncResult,
 } from '../../services/h5pactivity-sync';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import {
     ADDON_MOD_H5PACTIVITY_AUTO_SYNCED,
@@ -269,7 +269,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             return;
         }
 
-        const contentStateObj = CoreTextUtils.parseJSON<{h5p: string}>(contentState, { h5p: '{}' });
+        const contentStateObj = CoreText.parseJSON<{h5p: string}>(contentState, { h5p: '{}' });
 
         // The H5P state doesn't always use JSON, so an h5p property was added to jsonize it.
         this.contentState = contentStateObj.h5p ?? '{}';

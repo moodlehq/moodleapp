@@ -40,7 +40,7 @@ import {
 import { AddonModDataHelper } from '../../services/data-helper';
 import { CoreDom } from '@singletons/dom';
 import { AddonModDataEntryFieldInitialized } from '../../classes/base-field-plugin-component';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_ENTRY_CHANGED, AddonModDataTemplateType } from '../../constants';
@@ -395,7 +395,7 @@ export class AddonModDataEditPage implements OnInit {
                     if (updateEntryResult.generalnotifications?.length) {
                         CoreDomUtils.showAlertWithOptions({
                             header: Translate.instant('core.notice'),
-                            message: CoreTextUtils.buildMessage(updateEntryResult.generalnotifications),
+                            message: CoreText.buildMessage(updateEntryResult.generalnotifications),
                             buttons: [Translate.instant('core.ok')],
                         });
                     }

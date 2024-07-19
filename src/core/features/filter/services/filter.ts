@@ -18,7 +18,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreWSExternalWarning } from '@services/ws';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreFilterDelegate } from './filter-delegate';
 import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
@@ -253,15 +253,15 @@ export class CoreFilterProvider {
         }
 
         if (options.clean) {
-            text = CoreTextUtils.cleanTags(text, { singleLine: options.singleLine });
+            text = CoreText.cleanTags(text, { singleLine: options.singleLine });
         }
 
         if (options.shortenLength && options.shortenLength > 0) {
-            text = CoreTextUtils.shortenText(text, options.shortenLength);
+            text = CoreText.shortenText(text, options.shortenLength);
         }
 
         if (options.highlight) {
-            text = CoreTextUtils.highlightText(text, options.highlight);
+            text = CoreText.highlightText(text, options.highlight);
         }
 
         return text;

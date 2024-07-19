@@ -29,7 +29,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { Observable, Subject } from 'rxjs';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreErrorHelper } from '@services/error-helper';
 import { CoreNavigator } from '@services/navigator';
 
 /**
@@ -263,7 +263,7 @@ export class CoreSettingsHelperProvider {
         try {
             await syncPromise;
         } catch (error) {
-            throw CoreTextUtils.addTitleToError(error, Translate.instant('core.settings.sitesyncfailed'));
+            throw CoreErrorHelper.addTitleToError(error, Translate.instant('core.settings.sitesyncfailed'));
         } finally {
             delete this.syncPromises[siteId];
         }

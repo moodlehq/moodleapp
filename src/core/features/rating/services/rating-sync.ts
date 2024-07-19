@@ -18,7 +18,7 @@ import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreErrorHelper } from '@services/error-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -227,7 +227,7 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider<CoreRatingSyncI
                     throw error;
                 }
 
-                const warning = CoreTextUtils.getErrorMessageFromError(error);
+                const warning = CoreErrorHelper.getErrorMessageFromError(error);
 
                 if (warning) {
                     result.warnings.push(warning);

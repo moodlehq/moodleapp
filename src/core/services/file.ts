@@ -17,7 +17,6 @@ import { Injectable } from '@angular/core';
 import { FileEntry, DirectoryEntry, Entry, Metadata, IFile } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
@@ -29,6 +28,7 @@ import { CoreText } from '@singletons/text';
 import { CorePlatform } from '@services/platform';
 import { CorePath } from '@singletons/path';
 import { Zip } from '@features/native/plugins';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Progress event used when writing a file data into a file.
@@ -439,7 +439,7 @@ export class CoreFileProvider {
      * @returns The file name normalized.
      */
     normalizeFileName(filename: string): string {
-        filename = CoreTextUtils.decodeURIComponent(filename);
+        filename = CoreUrl.decodeURIComponent(filename);
 
         return filename;
     }
@@ -481,7 +481,7 @@ export class CoreFileProvider {
                 return File.readAsArrayBuffer(folder, path);
             case CoreFileFormat.FORMATJSON:
                 return File.readAsText(folder, path).then((text) => {
-                    const parsed = CoreTextUtils.parseJSON(text, null);
+                    const parsed = CoreText.parseJSON(text, null);
 
                     if (parsed == null && text != null) {
                         throw new CoreError('Error parsing JSON file: ' + path);
@@ -512,7 +512,7 @@ export class CoreFileProvider {
                 if (event.target?.result !== undefined && event.target.result !== null) {
                     if (format == CoreFileFormat.FORMATJSON) {
                         // Convert to object.
-                        const parsed = CoreTextUtils.parseJSON(<string> event.target.result, null);
+                        const parsed = CoreText.parseJSON(<string> event.target.result, null);
 
                         if (parsed == null) {
                             reject('Error parsing JSON file.');
@@ -1081,8 +1081,8 @@ export class CoreFileProvider {
             let extension = CoreMimetypeUtils.getFileExtension(fileName) || defaultExt;
 
             // Clean the file name.
-            fileNameWithoutExtension = CoreTextUtils.removeSpecialCharactersForFiles(
-                CoreTextUtils.decodeURIComponent(fileNameWithoutExtension),
+            fileNameWithoutExtension = CoreText.removeSpecialCharactersForFiles(
+                CoreUrl.decodeURIComponent(fileNameWithoutExtension),
             );
 
             // Index the files by name.
@@ -1100,7 +1100,7 @@ export class CoreFileProvider {
             return this.calculateUniqueName(files, fileNameWithoutExtension + extension);
         } catch (error) {
             // Folder doesn't exist, name is unique. Clean it and return it.
-            return CoreTextUtils.removeSpecialCharactersForFiles(CoreTextUtils.decodeURIComponent(fileName));
+            return CoreText.removeSpecialCharactersForFiles(CoreUrl.decodeURIComponent(fileName));
         }
     }
 

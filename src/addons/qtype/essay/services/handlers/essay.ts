@@ -23,11 +23,12 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
 import { CoreFileSession } from '@services/file-session';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonQtypeEssayComponent } from '../../component/essay';
+import { CoreFileHelper } from '@services/file-helper';
 
 /**
  * Handler to support essay question type.
@@ -177,7 +178,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         }
 
         // Count the number of words in the response string.
-        const count = CoreTextUtils.countWords(answer);
+        const count = CoreText.countWords(answer);
         if (maxWords && count > maxWords) {
             return Translate.instant('addon.qtype_essay.maxwordlimitboundary', { $a: { limit: maxWords, count: count } });
         } else if (count < minWords) {
@@ -386,7 +387,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             return;
         }
 
-        const attachmentsData: CoreFileUploaderStoreFilesResult = CoreTextUtils.parseJSON(
+        const attachmentsData: CoreFileUploaderStoreFilesResult = CoreText.parseJSON(
             <string> answers.attachments_offline,
             {
                 online: [],
@@ -438,7 +439,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             // Restore draftfile URLs.
             const site = await CoreSites.getSite(siteId);
 
-            answers[textarea.name] = CoreTextUtils.restoreDraftfileUrls(
+            answers[textarea.name] = CoreFileHelper.restoreDraftfileUrls(
                 site.getURL(),
                 <string> answers[textarea.name],
                 question.html,
@@ -459,7 +460,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
 
         if (!isPlainText) {
             // Add some HTML to the text if needed.
-            answers[textarea.name] = CoreTextUtils.formatHtmlLines(<string> answers[textarea.name] || '');
+            answers[textarea.name] = CoreText.formatHtmlLines(<string> answers[textarea.name] || '');
         }
     }
 

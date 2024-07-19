@@ -21,7 +21,7 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/
 import { CoreConstants, ModPurpose } from '@/core/constants';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUser } from '@features/user/services/user';
 import { ADDON_MOD_FORUM_MARK_READ_EVENT, ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
 
@@ -57,7 +57,7 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
         const data = await super.getData(module, courseId);
 
         const customData = module.customdata ?
-            CoreTextUtils.parseJSON<{ trackingtype?: string | number } | ''>(module.customdata, {}) : {};
+            CoreText.parseJSON<{ trackingtype?: string | number } | ''>(module.customdata, {}) : {};
         const trackingType = typeof customData !== 'string' && customData.trackingtype !== undefined ?
             Number(customData.trackingtype) : undefined;
 

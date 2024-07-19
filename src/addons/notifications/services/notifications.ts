@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUser, USER_NOREPLY_USER } from '@features/user/services/user';
 import { CoreSite } from '@classes/sites/site';
@@ -120,7 +120,7 @@ export class AddonNotificationsProvider {
             notification.read = notification.timeread > 0;
 
             if (typeof notification.customdata === 'string') {
-                notification.customdata = CoreTextUtils.parseJSON<Record<string, string|number>>(notification.customdata, {});
+                notification.customdata = CoreText.parseJSON<Record<string, string|number>>(notification.customdata, {});
             }
 
             // Try to set courseid the notification belongs to.

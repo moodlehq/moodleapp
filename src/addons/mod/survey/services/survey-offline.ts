@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { makeSingleton } from '@singletons';
 import { AddonModSurveyAnswersDBRecord, SURVEY_TABLE } from './database/survey';
 import { AddonModSurveySubmitAnswerData } from './survey';
@@ -51,7 +51,7 @@ export class AddonModSurveyOfflineProvider {
         const entries = await site.getDb().getAllRecords<AddonModSurveyAnswersDBRecord>(SURVEY_TABLE);
 
         return entries.map((entry) => Object.assign(entry, {
-            answers: CoreTextUtils.parseJSON<AddonModSurveySubmitAnswerData[]>(entry.answers),
+            answers: CoreText.parseJSON<AddonModSurveySubmitAnswerData[]>(entry.answers),
         }));
     }
 
@@ -91,7 +91,7 @@ export class AddonModSurveyOfflineProvider {
         );
 
         return Object.assign(entry, {
-            answers: CoreTextUtils.parseJSON<AddonModSurveySubmitAnswerData[]>(entry.answers),
+            answers: CoreText.parseJSON<AddonModSurveySubmitAnswerData[]>(entry.answers),
         });
     }
 

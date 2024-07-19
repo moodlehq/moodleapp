@@ -18,7 +18,7 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreFileHelper } from '@services/file-helper';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
@@ -41,6 +41,7 @@ import {
     ADDON_MOD_FEEDBACK_PAGE_NAME,
 } from '../constants';
 import { CoreLoadings } from '@services/loadings';
+import { CoreText } from '@singletons/text';
 
 const MODE_RESPONSETIME = 1;
 const MODE_COURSE = 2;
@@ -253,7 +254,7 @@ export class AddonModFeedbackHelperProvider {
      */
     protected getItemFormLabel(item: AddonModFeedbackItem): AddonModFeedbackFormBasicItem {
         item.name = '';
-        item.presentation = CoreTextUtils.replacePluginfileUrls(item.presentation, item.itemfiles);
+        item.presentation = CoreFileHelper.replacePluginfileUrls(item.presentation, item.itemfiles);
 
         return Object.assign(item, {
             templateName: 'label',
@@ -421,7 +422,7 @@ export class AddonModFeedbackHelperProvider {
             slottedLabel: false,
         });
 
-        const data = <string[]> CoreTextUtils.parseJSON(item.otherdata);
+        const data = <string[]> CoreText.parseJSON(item.otherdata);
         if (data && data.length > 3) {
             formItem.captcha = {
                 recaptchapublickey: data[3],

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNetwork } from '@services/network';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
@@ -330,7 +330,7 @@ export class AddonCalendarProvider {
     ): Promise<string> {
 
         const getTimeHtml = (time: string, a11yLangKey: string): string =>
-            `<span aria-label="${Translate.instant(a11yLangKey, { $a: CoreTextUtils.cleanTags(time) })}">${time}</span>`;
+            `<span aria-label="${Translate.instant(a11yLangKey, { $a: CoreText.cleanTags(time) })}">${time}</span>`;
         const getStartTimeHtml = (time: string): string => getTimeHtml(time, 'core.startingtime');
         const getEndTimeHtml = (time: string): string => getTimeHtml(time, 'core.endingtime');
 
@@ -666,18 +666,18 @@ export class AddonCalendarProvider {
         eventConverted.iscategoryevent = originalEvent.eventtype == AddonCalendarEventType.CATEGORY;
         eventConverted.normalisedeventtype = this.getEventType(recordAsRecord);
         try {
-            eventConverted.category = CoreTextUtils.parseJSON(recordAsRecord.category || '');
+            eventConverted.category = CoreText.parseJSON(recordAsRecord.category || '');
         } catch {
             // Ignore errors.
         }
 
         try {
-            eventConverted.course = CoreTextUtils.parseJSON(recordAsRecord.course || '');
+            eventConverted.course = CoreText.parseJSON(recordAsRecord.course || '');
         } catch {
             // Ignore errors.
         }
         try {
-            eventConverted.subscription = CoreTextUtils.parseJSON(recordAsRecord.subscription || '');
+            eventConverted.subscription = CoreText.parseJSON(recordAsRecord.subscription || '');
         } catch {
             // Ignore errors.
         }

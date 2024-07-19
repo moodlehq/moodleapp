@@ -37,7 +37,7 @@ import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profi
 import { CoreFilepool } from '@services/filepool';
 import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWS } from '@services/ws';
 import { CoreEvents } from '@singletons/events';
@@ -344,7 +344,7 @@ export class CoreSitePluginsInitService {
         this.logger.debug('Load site plugin:', plugin);
 
         if (!plugin.parsedHandlers && plugin.handlers) {
-            plugin.parsedHandlers = CoreTextUtils.parseJSON(
+            plugin.parsedHandlers = CoreText.parseJSON(
                 plugin.handlers,
                 null,
                 error => this.logger.error('Error parsing site plugin handlers', error),
@@ -352,7 +352,7 @@ export class CoreSitePluginsInitService {
         }
 
         if (!plugin.parsedLang && plugin.lang) {
-            plugin.parsedLang = CoreTextUtils.parseJSON(
+            plugin.parsedLang = CoreText.parseJSON(
                 plugin.lang,
                 null,
                 error => this.logger.error('Error parsing site plugin lang', error),

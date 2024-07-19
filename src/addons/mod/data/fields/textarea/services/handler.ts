@@ -15,13 +15,14 @@
 import { AddonModDataEntryField, AddonModDataField, AddonModDataSubfieldData } from '@addons/mod/data/services/data';
 import { Injectable, Type } from '@angular/core';
 import { CoreFormFields } from '@singletons/form';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModDataFieldTextHandlerService } from '../../text/services/handler';
 import { AddonModDataFieldTextareaComponent } from '../component/textarea';
-import { CoreFileEntry } from '@services/file-helper';
+import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Handler for textarea data field plugin.
@@ -50,12 +51,12 @@ export class AddonModDataFieldTextareaHandlerService extends AddonModDataFieldTe
         const fieldName = 'f_' + field.id;
         const files = this.getFieldEditFiles(field, inputData, originalFieldData);
 
-        let text = CoreTextUtils.restorePluginfileUrls(inputData[fieldName] || '', <CoreWSFile[]> files);
+        let text = CoreFileHelper.restorePluginfileUrls(inputData[fieldName] || '', <CoreWSFile[]> files);
         // Add some HTML to the text if needed.
-        text = CoreTextUtils.formatHtmlLines(text);
+        text = CoreText.formatHtmlLines(text);
 
         // WS does not properly check if HTML content is blank when the field is required.
-        if (CoreTextUtils.htmlIsBlank(text)) {
+        if (CoreDom.htmlIsBlank(text)) {
             text = '';
         }
 
@@ -102,7 +103,7 @@ export class AddonModDataFieldTextareaHandlerService extends AddonModDataFieldTe
 
         const value = inputData.find((value) => value.subfield == '');
 
-        if (!value || CoreTextUtils.htmlIsBlank(<string>value.value || '')) {
+        if (!value || CoreDom.htmlIsBlank(<string>value.value || '')) {
             return Translate.instant('addon.mod_data.errormustsupplyvalue');
         }
 
@@ -115,7 +116,7 @@ export class AddonModDataFieldTextareaHandlerService extends AddonModDataFieldTe
         originalContent.content = offlineContent[''] || '';
         if (originalContent.content.length > 0 && originalContent.files && originalContent.files.length > 0) {
             // Take the original files since we cannot edit them on the app.
-            originalContent.content = CoreTextUtils.replacePluginfileUrls(
+            originalContent.content = CoreFileHelper.replacePluginfileUrls(
                 originalContent.content,
                 <CoreWSFile[]> originalContent.files,
             );

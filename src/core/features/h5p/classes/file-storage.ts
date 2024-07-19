@@ -16,7 +16,7 @@ import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CorePath } from '@singletons/path';
 import {
@@ -118,7 +118,7 @@ export class CoreH5PFileStorage {
                     const assetPathFolder = CoreFile.getFileAndDirectoryFromPath(assetPath).directory;
 
                     fileContent = fileContent.replace(
-                        new RegExp(CoreTextUtils.escapeForRegex(match), 'g'),
+                        new RegExp(CoreText.escapeForRegex(match), 'g'),
                         'url("' + CorePath.changeRelativePath(assetPathFolder, url, newFolder) + '")',
                     );
                 });

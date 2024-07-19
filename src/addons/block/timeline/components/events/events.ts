@@ -15,7 +15,7 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreLoadings } from '@services/loadings';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { AddonBlockTimelineDayEvents } from '@addons/block/timeline/classes/section';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -64,7 +64,7 @@ export class AddonBlockTimelineEventsComponent implements OnInit {
         event.stopPropagation();
 
         // Fix URL format.
-        url = CoreTextUtils.decodeHTMLEntities(url);
+        url = CoreText.decodeHTMLEntities(url);
 
         const modal = await CoreLoadings.show();
 

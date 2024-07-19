@@ -25,7 +25,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
@@ -120,7 +120,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
             const notesList: AddonNotesNoteFormatted[] = allNotes[this.type + 'notes'] || [];
 
             notesList.forEach((note) => {
-                note.content = CoreTextUtils.decodeHTML(note.content);
+                note.content = CoreText.decodeHTML(note.content);
             });
 
             await AddonNotes.setOfflineDeletedNotes(notesList, this.courseId);
@@ -301,7 +301,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
      * @param warnings the warnings
      */
     protected showSyncWarnings(warnings: string[]): void {
-        const message = CoreTextUtils.buildMessage(warnings);
+        const message = CoreText.buildMessage(warnings);
 
         if (message) {
             CoreDomUtils.showAlert(undefined, message);

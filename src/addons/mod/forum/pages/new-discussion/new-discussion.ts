@@ -34,7 +34,7 @@ import { AddonModForumDiscussionOptions, AddonModForumOffline } from '@addons/mo
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CanLeave } from '@guards/can-leave';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreForms } from '@singletons/form';
@@ -553,7 +553,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
         const modal = await CoreLoadings.show('core.sending', true);
 
         // Add some HTML to the message if needed.
-        message = CoreTextUtils.formatHtmlLines(message);
+        message = CoreText.formatHtmlLines(message);
 
         if (pin) {
             options.discussionpinned = true;

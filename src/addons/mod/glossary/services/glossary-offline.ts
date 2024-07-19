@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CorePath } from '@singletons/path';
@@ -269,9 +269,9 @@ export class AddonModGlossaryOfflineProvider {
      */
     protected parseRecord(record: AddonModGlossaryOfflineEntryDBRecord): AddonModGlossaryOfflineEntry {
         return Object.assign(record, {
-            options: <Record<string, AddonModGlossaryEntryOption>> CoreTextUtils.parseJSON(record.options),
+            options: <Record<string, AddonModGlossaryEntryOption>> CoreText.parseJSON(record.options),
             attachments: record.attachments ?
-                <CoreFileUploaderStoreFilesResult> CoreTextUtils.parseJSON(record.attachments) : undefined,
+                <CoreFileUploaderStoreFilesResult> CoreText.parseJSON(record.attachments) : undefined,
         });
     }
 

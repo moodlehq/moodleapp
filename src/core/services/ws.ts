@@ -24,7 +24,7 @@ import { CoreNativeToAngularHttpResponse } from '@classes/native-to-angular-http
 import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileFormat } from '@services/file';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextErrorObject, CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreInterceptor } from '@classes/interceptor';
@@ -43,6 +43,8 @@ import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest
 import { CoreSites } from '@services/sites';
 import { CoreLang, CoreLangFormat } from './lang';
 import { CoreErrorLogs } from '@singletons/error-logs';
+import { CoreErrorHelper, CoreErrorObject } from './error-helper';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -174,9 +176,9 @@ export class CoreWSProvider {
                 if (value == null) {
                     return null;
                 }
-            } else if (typeof value == 'string') {
+            } else if (typeof value === 'string') {
                 if (stripUnicode) {
-                    const stripped = CoreTextUtils.stripUnicode(value);
+                    const stripped = CoreText.stripUnicode(value);
                     if (stripped != value && stripped.trim().length == 0) {
                         return null;
                     }
@@ -532,45 +534,45 @@ export class CoreWSProvider {
                         options.debug = {
                             code: 'invalidcertificate',
                             details: Translate.instant('core.certificaterror', {
-                                details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Invalid certificate',
+                                details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Invalid certificate',
                             }),
                         };
                         break;
                     case NativeHttp.ErrorCode.SERVER_NOT_FOUND:
                         options.debug = {
                             code: 'servernotfound',
-                            details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Server could not be found',
+                            details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Server could not be found',
                         };
                         break;
                     case NativeHttp.ErrorCode.TIMEOUT:
                         options.debug = {
                             code: 'requesttimeout',
-                            details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request timed out',
+                            details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Request timed out',
                         };
                         break;
                     case NativeHttp.ErrorCode.UNSUPPORTED_URL:
                         options.debug = {
                             code: 'unsupportedurl',
-                            details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Url not supported',
+                            details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Url not supported',
                         };
                         break;
                     case NativeHttp.ErrorCode.NOT_CONNECTED:
                         options.debug = {
                             code: 'connectionerror',
-                            details: CoreTextUtils.getErrorMessageFromError(data.error)
+                            details: CoreErrorHelper.getErrorMessageFromError(data.error)
                                 ?? 'Connection error, is network available?',
                         };
                         break;
                     case NativeHttp.ErrorCode.ABORTED:
                         options.debug = {
                             code: 'requestaborted',
-                            details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request aborted',
+                            details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Request aborted',
                         };
                         break;
                     case NativeHttp.ErrorCode.POST_PROCESSING_FAILED:
                         options.debug = {
                             code: 'requestprocessingfailed',
-                            details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request processing failed',
+                            details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Request processing failed',
                         };
                         break;
                 }
@@ -587,7 +589,7 @@ export class CoreWSProvider {
                         };
                         break;
                     default: {
-                        const details = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Unknown error';
+                        const details = CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Unknown error';
 
                         options.debug = {
                             code: 'serverconnectionajax',
@@ -836,7 +838,7 @@ export class CoreWSProvider {
                     debug: {
                         code: 'invalidcertificate',
                         details: Translate.instant('core.certificaterror', {
-                            details: CoreTextUtils.getErrorMessageFromError(error) ?? 'Unknown error',
+                            details: CoreErrorHelper.getErrorMessageFromError(error) ?? 'Unknown error',
                         }),
                     },
                 });
@@ -845,7 +847,7 @@ export class CoreWSProvider {
             }
 
             throw new CoreError(Translate.instant('core.serverconnection', {
-                details: CoreTextUtils.getErrorMessageFromError(error) ?? 'Unknown error',
+                details: CoreErrorHelper.getErrorMessageFromError(error) ?? 'Unknown error',
             }));
         }).catch(err => {
             CoreErrorLogs.addErrorLog({
@@ -965,7 +967,7 @@ export class CoreWSProvider {
             }
 
             // Treat response.
-            data = CoreTextUtils.parseJSON(data);
+            data = CoreText.parseJSON(data);
 
             // Some moodle web services return null.
             // If the responseExpected value is set then so long as no data is returned, we create a blank object.
@@ -1057,7 +1059,7 @@ export class CoreWSProvider {
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const data = CoreTextUtils.parseJSON<any>(
+        const data = CoreText.parseJSON<any>(
             success.response,
             null,
             error => this.logger.error('Error parsing response from upload', success.response, error),
@@ -1119,12 +1121,12 @@ export class CoreWSProvider {
      * @param status Status code (if any).
      * @returns CoreHttpError.
      */
-    protected createHttpError(error: CoreTextErrorObject, status: number): CoreHttpError {
-        const message = CoreTextUtils.buildSeveralParagraphsMessage([
+    protected createHttpError(error: CoreErrorObject, status: number): CoreHttpError {
+        const message = CoreErrorHelper.buildSeveralParagraphsMessage([
             CoreSites.isLoggedIn()
                 ? Translate.instant('core.siteunavailablehelp', { site: CoreSites.getCurrentSite()?.siteUrl })
                 : Translate.instant('core.sitenotfoundhelp'),
-            CoreTextUtils.getHTMLBodyContent(CoreTextUtils.getErrorMessageFromError(error) || ''),
+            CoreDom.getHTMLBodyContent(CoreErrorHelper.getErrorMessageFromError(error) || ''),
         ]);
 
         return new CoreHttpError(message, status);

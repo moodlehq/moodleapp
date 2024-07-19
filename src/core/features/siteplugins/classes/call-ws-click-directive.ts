@@ -15,7 +15,7 @@
 import { Input, OnInit, ElementRef, Directive } from '@angular/core';
 
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreErrorHelper } from '@services/error-helper';
 import { Translate } from '@singletons';
 import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { CoreSitePluginsCallWSBaseDirective } from './call-ws-directive';
@@ -77,7 +77,7 @@ export class CoreSitePluginsCallWSOnClickBaseDirective extends CoreSitePluginsCa
                 CoreDomUtils.showErrorModalDefault(
                     error,
                     Translate.instant('core.serverconnection', {
-                        details: CoreTextUtils.getErrorMessageFromError(error) ?? 'Unknown error',
+                        details: CoreErrorHelper.getErrorMessageFromError(error) ?? 'Unknown error',
                     }),
                 );
             }
