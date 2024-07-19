@@ -645,9 +645,8 @@ export class CoreCourseHelperProvider {
 
         // Now determine the status of the whole list.
         let status = statuses[0];
-        const filepool = CoreFilepool.instance;
         for (let i = 1; i < statuses.length; i++) {
-            status = filepool.determinePackagesStatus(status, statuses[i]);
+            status = CoreFilepool.determinePackagesStatus(status, statuses[i]);
         }
 
         return status;

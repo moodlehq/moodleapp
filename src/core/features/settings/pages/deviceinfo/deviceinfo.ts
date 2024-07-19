@@ -86,9 +86,6 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
     protected onlineObserver?: Subscription;
 
     constructor() {
-        const sitesProvider = CoreSites.instance;
-        const device = Device.instance;
-        const translate = Translate.instance;
         const navigator = window.navigator;
 
         this.deviceInfo = {
@@ -128,7 +125,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
                     this.deviceOsTranslated = matches[1];
                 } else {
                     this.deviceInfo.deviceOs = 'unknown';
-                    this.deviceOsTranslated = translate.instant('core.unknown');
+                    this.deviceOsTranslated = Translate.instant('core.unknown');
                 }
             }
         } else {
@@ -139,39 +136,35 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
                 this.deviceOsTranslated = matches[1];
             } else {
                 this.deviceInfo.deviceOs = 'unknown';
-                this.deviceOsTranslated = translate.instant('core.unknown');
+                this.deviceOsTranslated = Translate.instant('core.unknown');
             }
         }
 
-        if (navigator) {
-            if (navigator.userAgent) {
-                this.deviceInfo.userAgent = navigator.userAgent;
-            }
-
-            if (navigator.language) {
-                this.deviceInfo.browserLanguage = navigator.language;
-            }
+        if (navigator.userAgent) {
+            this.deviceInfo.userAgent = navigator.userAgent;
         }
 
-        if (device) {
-            if (device.cordova) {
-                this.deviceInfo.cordovaVersion = device.cordova;
-            }
-            if (device.platform) {
-                this.deviceInfo.platform = device.platform;
-            }
-            if (device.version) {
-                this.deviceInfo.osVersion = device.version;
-            }
-            if (device.model) {
-                this.deviceInfo.model = device.model;
-            }
-            if (device.uuid) {
-                this.deviceInfo.uuid = device.uuid;
-            }
+        if (navigator.language) {
+            this.deviceInfo.browserLanguage = navigator.language;
         }
 
-        const currentSite = sitesProvider.getCurrentSite();
+        if (Device.cordova) {
+            this.deviceInfo.cordovaVersion = Device.cordova;
+        }
+        if (Device.platform) {
+            this.deviceInfo.platform = Device.platform;
+        }
+        if (Device.version) {
+            this.deviceInfo.osVersion = Device.version;
+        }
+        if (Device.model) {
+            this.deviceInfo.model = Device.model;
+        }
+        if (Device.uuid) {
+            this.deviceInfo.uuid = Device.uuid;
+        }
+
+        const currentSite = CoreSites.getCurrentSite();
         this.deviceInfo.siteId = currentSite?.getId();
         this.deviceInfo.siteVersion = currentSite?.getInfo()?.release;
 
@@ -190,14 +183,11 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
      * Async part of the constructor.
      */
     protected async asyncInit(): Promise<void> {
-        const sitesProvider = CoreSites.instance;
-        const fileProvider = CoreFile.instance;
-
         const lang = await CoreLang.getCurrentLanguage();
         this.deviceInfo.currentLanguage = lang;
         this.currentLangName = CoreConstants.CONFIG.languages[lang];
 
-        const currentSite = sitesProvider.getCurrentSite();
+        const currentSite = CoreSites.getCurrentSite();
         const isSingleFixedSite = await CoreLoginHelper.isSingleFixedSite();
         const sites = await CoreLoginHelper.getAvailableSites();
         const firstUrl = isSingleFixedSite && sites[0].url;
@@ -207,10 +197,10 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         this.displaySiteUrl = !!this.deviceInfo.siteUrl &&
             (currentSite ?? CoreSitesFactory.makeUnauthenticatedSite(this.deviceInfo.siteUrl)).shouldDisplayInformativeLinks();
 
-        if (fileProvider.isAvailable()) {
-            const basepath = await fileProvider.getBasePath();
+        if (CoreFile.isAvailable()) {
+            const basepath = await CoreFile.getBasePath();
             this.deviceInfo.fileSystemRoot = basepath;
-            this.fsClickable = fileProvider.usesHTMLAPI();
+            this.fsClickable = CoreFile.usesHTMLAPI();
         }
 
         const showDevOptionsOnConfig = await CoreConfig.get('showDevOptions', 0);
