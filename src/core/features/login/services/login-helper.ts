@@ -510,8 +510,12 @@ export class CoreLoginHelperProvider {
      * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
     isFeatureDisabled(feature: string, config?: CoreSitePublicConfigResponse): boolean {
-        // eslint-disable-next-line deprecation/deprecation
-        return this.isFeatureDisabled(feature, config);
+       // eslint-disable-next-line deprecation/deprecation
+       const disabledFeatures = this.getDisabledFeatures(config);
+
+        const regEx = new RegExp('(,|^)' + feature + '(,|$)', 'g');
+
+        return !!disabledFeatures.match(regEx);
     }
 
     /**
