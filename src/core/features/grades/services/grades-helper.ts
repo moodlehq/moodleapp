@@ -44,7 +44,7 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseAccess } from '@features/course/services/course-options-delegate';
 import { CoreLoadings } from '@services/loadings';
-import { convertHTMLToHTMLElement } from '@/core/utils/create-html-element';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 
 export const GRADES_PAGE_NAME = 'grades';
 export const GRADES_PARTICIPANTS_PAGE_NAME = 'participant-grades';
@@ -574,7 +574,7 @@ export class CoreGradesHelperProvider {
             const modname = module?.[1];
 
             if (modname !== undefined) {
-                const modicon = convertHTMLToHTMLElement(text).querySelector('img')?.getAttribute('src') ?? undefined;
+                const modicon = convertTextToHTMLElement(text).querySelector('img')?.getAttribute('src') ?? undefined;
 
                 row.itemtype = 'mod';
                 row.itemmodule = modname;

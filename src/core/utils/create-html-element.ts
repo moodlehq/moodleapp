@@ -21,7 +21,7 @@ export const CoreTemplateElement: HTMLTemplateElement = document.createElement('
  * @param html Text to convert.
  * @returns Element.
  */
-export function convertHTMLToHTMLElement(html: string): HTMLElement {
+export function convertTextToHTMLElement(html: string): HTMLElement {
    // Add a div to hold the content, that's the element that will be returned.
    CoreTemplateElement.innerHTML = '<div>' + html + '</div>';
 

@@ -16,7 +16,7 @@ import { Clipboard, Translate } from '@singletons';
 import { CoreToasts } from '@services/toasts';
 import { Locutus } from './locutus';
 import { CoreError } from '@classes/errors/error';
-import { convertHTMLToHTMLElement } from '../utils/create-html-element';
+import { convertTextToHTMLElement } from '../utils/create-html-element';
 
 /**
  * Singleton with helper functions for text manipulation.
@@ -190,7 +190,7 @@ export class CoreText {
         // First, we use a regexpr.
         text = text.replace(/(<([^>]+)>)/ig, '');
         // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
-        text = convertHTMLToHTMLElement(text).textContent || '';
+        text = convertTextToHTMLElement(text).textContent || '';
         // Trim text
         text = options.trim ? text.trim() : text;
         // Recover or remove new lines.
@@ -229,7 +229,7 @@ export class CoreText {
      */
     static decodeHTMLEntities(text: string): string {
         if (text) {
-            text = convertHTMLToHTMLElement(text).textContent || '';
+            text = convertTextToHTMLElement(text).textContent || '';
         }
 
         return text;
@@ -424,7 +424,7 @@ export class CoreText {
      * @returns Processed HTML string.
      */
     static processHTML(text: string, process: (element: HTMLElement) => unknown): string {
-        const element = convertHTMLToHTMLElement(text);
+        const element = convertTextToHTMLElement(text);
 
         process(element);
 

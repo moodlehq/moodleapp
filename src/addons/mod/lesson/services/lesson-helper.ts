@@ -28,7 +28,7 @@ import {
 import { CoreTime } from '@singletons/time';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModLessonPageSubtype } from '../constants';
-import { convertHTMLToHTMLElement } from '@/core/utils/create-html-element';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 
 /**
  * Helper service that provides some features for quiz.
@@ -47,7 +47,7 @@ export class AddonModLessonHelperProvider {
      * @returns Formatted data.
      */
     formatActivityLink(activityLink: string): AddonModLessonActivityLink {
-        const element = convertHTMLToHTMLElement(activityLink);
+        const element = convertTextToHTMLElement(activityLink);
         const anchor = element.querySelector('a');
 
         if (!anchor) {
@@ -77,7 +77,7 @@ export class AddonModLessonHelperProvider {
             buttonText: '',
             content: '',
         };
-        const element = convertHTMLToHTMLElement(html);
+        const element = convertTextToHTMLElement(html);
 
         // Search the input button.
         const button = <HTMLInputElement> element.querySelector('input[type="button"]');
@@ -101,7 +101,7 @@ export class AddonModLessonHelperProvider {
      */
     getPageButtonsFromHtml(html: string): AddonModLessonPageButton[] {
         const buttons: AddonModLessonPageButton[] = [];
-        const element = convertHTMLToHTMLElement(html);
+        const element = convertTextToHTMLElement(html);
 
         // Get the container of the buttons if it exists.
         let buttonsContainer = element.querySelector('.branchbuttoncontainer');
@@ -153,7 +153,7 @@ export class AddonModLessonHelperProvider {
      */
     getPageContentsFromPageData(data: AddonModLessonGetPageDataWSResponse): string {
         // Search the page contents inside the whole page HTML. Use data.pagecontent because it's filtered.
-        const element = convertHTMLToHTMLElement(data.pagecontent || '');
+        const element = convertTextToHTMLElement(data.pagecontent || '');
         const contents = element.querySelector('.contents');
 
         if (contents) {
@@ -179,7 +179,7 @@ export class AddonModLessonHelperProvider {
      * @returns Question data.
      */
     getQuestionFromPageData(questionForm: FormGroup, pageData: AddonModLessonGetPageDataWSResponse): AddonModLessonQuestion {
-        const element = convertHTMLToHTMLElement(pageData.pagecontent || '');
+        const element = convertTextToHTMLElement(pageData.pagecontent || '');
 
         // Get the container of the question answers if it exists.
         const fieldContainer = <HTMLElement> element.querySelector('.fcontainer');
@@ -464,7 +464,7 @@ export class AddonModLessonHelperProvider {
      * @returns Object with the data to render the answer. If the answer doesn't require any parsing, return a string with the HTML.
      */
     getQuestionPageAnswerDataFromHtml(html: string): AddonModLessonAnswerData {
-        const element = convertHTMLToHTMLElement(html);
+        const element = convertTextToHTMLElement(html);
 
         // Check if it has a checkbox.
         let input = element.querySelector<HTMLInputElement>('input[type="checkbox"][name*="answer"]');
@@ -589,7 +589,7 @@ export class AddonModLessonHelperProvider {
      * @returns Feedback without the question text.
      */
     removeQuestionFromFeedback(html: string): string {
-        const element = convertHTMLToHTMLElement(html);
+        const element = convertTextToHTMLElement(html);
 
         // Remove the question text.
         CoreDomUtils.removeElement(element, '.generalbox:not(.feedback):not(.correctanswer)');

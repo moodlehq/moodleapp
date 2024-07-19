@@ -18,7 +18,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { convertHTMLToHTMLElement } from '@/core/utils/create-html-element';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
@@ -164,7 +164,7 @@ export class AddonModLessonProvider {
         if (page.answerdata && !this.answerPageIsQuestion(page)) {
             // It isn't a question page, but it can be an end of branch, etc. Check if the first answer has a button.
             if (page.answerdata.answers && page.answerdata.answers[0]) {
-                const element = convertHTMLToHTMLElement(page.answerdata.answers[0][0]);
+                const element = convertTextToHTMLElement(page.answerdata.answers[0][0]);
 
                 return !!element.querySelector('input[type="button"]');
             }

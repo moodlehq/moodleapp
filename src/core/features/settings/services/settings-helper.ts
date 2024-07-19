@@ -31,6 +31,7 @@ import { CoreError } from '@classes/errors/error';
 import { Observable, Subject } from 'rxjs';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreNavigator } from '@services/navigator';
+import { CoreHTMLClasses } from '@singletons/html-classes';
 
 /**
  * Object with space usage and cache entries that can be erased.
@@ -433,10 +434,10 @@ export class CoreSettingsHelperProvider {
      * @param enable True to enable dark mode, false to disable.
      */
     protected toggleDarkMode(enable: boolean = false): void {
-        const isDark = CoreDomUtils.hasModeClass('dark');
+        const isDark = CoreHTMLClasses.hasModeClass('dark');
 
         if (isDark !== enable) {
-            CoreDomUtils.toggleModeClass('dark', enable);
+            CoreHTMLClasses.toggleModeClass('dark', enable);
             this.darkModeObservable.next(enable);
 
             CoreApp.setSystemUIColors();

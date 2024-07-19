@@ -16,7 +16,7 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
-import { convertHTMLToHTMLElement } from '@/core/utils/create-html-element';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonQtypeCalculatedComponent } from '../../component/calculated';
@@ -53,7 +53,7 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
      */
     hasSeparateUnitField(question: CoreQuestionQuestionParsed): boolean {
         if (!question.parsedSettings) {
-            const element = convertHTMLToHTMLElement(question.html);
+            const element = convertTextToHTMLElement(question.html);
 
             return !!(element.querySelector('select[name*=unit]') || element.querySelector('input[type="radio"]'));
         }

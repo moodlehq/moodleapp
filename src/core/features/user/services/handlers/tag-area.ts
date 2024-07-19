@@ -14,7 +14,7 @@
 
 import { Injectable, Type } from '@angular/core';
 
-import { convertHTMLToHTMLElement } from '@/core/utils/create-html-element';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreTagAreaHandler } from '@features/tag/services/tag-area-delegate';
 import { CoreUserTagAreaComponent } from '@features/user/components/tag-area/tag-area';
 import { CoreTagFeedElement } from '@features/tag/services/tag-helper';
@@ -47,7 +47,7 @@ export class CoreUserTagAreaHandlerService implements CoreTagAreaHandler {
      */
     parseContent(content: string): CoreUserTagFeedElement[] {
         const items: CoreUserTagFeedElement[] = [];
-        const element = convertHTMLToHTMLElement(content);
+        const element = convertTextToHTMLElement(content);
 
         Array.from(element.querySelectorAll('div.user-box')).forEach((userbox: HTMLElement) => {
             const avatarLink = userbox.querySelector('a:first-child');

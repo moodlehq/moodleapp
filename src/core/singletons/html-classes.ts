@@ -14,29 +14,31 @@
 
 import { CoreSiteInfo, CoreSiteInfoResponse } from '@classes/sites/unauthenticated-site';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from './url';
 import { CoreConstants } from '../constants';
 import { ScrollDetail } from '@ionic/angular';
 import { CoreDom } from './dom';
-
-const MOODLE_SITE_URL_PREFIX = 'url-';
-const MOODLE_VERSION_PREFIX = 'version-';
-const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
-const MOODLE_SITE_THEME_PREFIX = 'theme-site-';
 
 /**
  * Singleton with helper functions to manage HTML classes.
  */
 export class CoreHTMLClasses {
 
+    protected static readonly MOODLE_SITE_URL_PREFIX = 'url-';
+    protected static readonly MOODLE_VERSION_PREFIX = 'version-';
+    protected static readonly MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
+    protected static readonly MOODLE_SITE_THEME_PREFIX = 'theme-site-';
+
     /**
      * Initialize HTML classes.
      */
     static initialize(): void {
-        CoreDomUtils.toggleModeClass('ionic8', true);
-        CoreDomUtils.toggleModeClass('development', CoreConstants.BUILD.isDevelopment);
-        CoreHTMLClasses.addVersionClass(MOODLEAPP_VERSION_PREFIX, CoreConstants.CONFIG.versionname.replace('-dev', ''));
+        CoreHTMLClasses.toggleModeClass('ionic8', true);
+        CoreHTMLClasses.toggleModeClass('development', CoreConstants.BUILD.isDevelopment);
+        CoreHTMLClasses.addVersionClass(
+            CoreHTMLClasses.MOODLEAPP_VERSION_PREFIX,
+            CoreConstants.CONFIG.versionname.replace('-dev', ''),
+        );
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const win = <any> window;
@@ -72,9 +74,9 @@ export class CoreHTMLClasses {
         parts[1] = parts[1] || '0';
         parts[2] = parts[2] || '0';
 
-        CoreDomUtils.toggleModeClass(prefix + parts[0], true);
-        CoreDomUtils.toggleModeClass(prefix + parts[0] + '-' + parts[1], true);
-        CoreDomUtils.toggleModeClass(prefix + parts[0] + '-' + parts[1] + '-' + parts[2], true);
+        CoreHTMLClasses.toggleModeClass(prefix + parts[0], true);
+        CoreHTMLClasses.toggleModeClass(prefix + parts[0] + '-' + parts[1], true);
+        CoreHTMLClasses.toggleModeClass(prefix + parts[0] + '-' + parts[1] + '-' + parts[2], true);
     }
 
     /**
@@ -83,12 +85,12 @@ export class CoreHTMLClasses {
      * @param prefixes Prefixes of the class mode to be removed.
      */
     protected static removeModeClasses(prefixes: string[]): void {
-        for (const modeClass of CoreDomUtils.getModeClasses()) {
+        for (const modeClass of CoreHTMLClasses.getModeClasses()) {
             if (!prefixes.some((prefix) => modeClass.startsWith(prefix))) {
                 continue;
             }
 
-            CoreDomUtils.toggleModeClass(modeClass, false);
+            CoreHTMLClasses.toggleModeClass(modeClass, false);
         }
     }
 
@@ -101,11 +103,11 @@ export class CoreHTMLClasses {
         // Add version classes to html tag.
         this.removeSiteClasses();
 
-        this.addVersionClass(MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(siteInfo.release || ''));
+        this.addVersionClass(CoreHTMLClasses.MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(siteInfo.release || ''));
         this.addSiteUrlClass(siteInfo.siteurl);
 
         if (siteInfo.theme) {
-            CoreDomUtils.toggleModeClass(MOODLE_SITE_THEME_PREFIX + siteInfo.theme, true);
+            CoreHTMLClasses.toggleModeClass(CoreHTMLClasses.MOODLE_SITE_THEME_PREFIX + siteInfo.theme, true);
         }
     }
 
@@ -115,7 +117,11 @@ export class CoreHTMLClasses {
     static removeSiteClasses(): void {
         // Remove version classes from html tag.
         this.removeModeClasses(
-            [MOODLE_VERSION_PREFIX, MOODLE_SITE_URL_PREFIX, MOODLE_SITE_THEME_PREFIX],
+            [
+                CoreHTMLClasses.MOODLE_VERSION_PREFIX,
+                CoreHTMLClasses.MOODLE_SITE_URL_PREFIX,
+                CoreHTMLClasses.MOODLE_SITE_THEME_PREFIX,
+            ],
         );
     }
 
@@ -157,7 +163,39 @@ export class CoreHTMLClasses {
     static addSiteUrlClass(siteUrl: string): void {
         const className = this.urlToClassName(siteUrl);
 
-        CoreDomUtils.toggleModeClass(MOODLE_SITE_URL_PREFIX + className, true);
+        CoreHTMLClasses.toggleModeClass(CoreHTMLClasses.MOODLE_SITE_URL_PREFIX + className, true);
+    }
+
+    /**
+     * Check whether a CSS class indicating an app mode is set.
+     *
+     * @param className Class name.
+     * @returns Whether the CSS class is set.
+     */
+    static hasModeClass(className: string): boolean {
+        return document.documentElement.classList.contains(className);
+    }
+
+    /**
+     * Get active mode CSS classes.
+     *
+     * @returns Mode classes.
+     */
+    static getModeClasses(): string[] {
+        return Array.from(document.documentElement.classList);
+    }
+
+    /**
+     * Toggle a CSS class in the root element used to indicate app modes.
+     *
+     * @param className Class name.
+     * @param enable Whether to add or remove the class.
+     */
+    static toggleModeClass(
+        className: string,
+        enable = false,
+    ): void {
+        document.documentElement.classList.toggle(className, enable);
     }
 
 }

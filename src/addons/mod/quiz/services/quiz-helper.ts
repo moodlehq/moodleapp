@@ -42,7 +42,7 @@ import { CoreGroups } from '@services/groups';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreModals } from '@services/modals';
 import { CoreLoadings } from '@services/loadings';
-import { convertHTMLToHTMLElement } from '@/core/utils/create-html-element';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 
 /**
  * Helper service that provides some features for quiz.
@@ -302,7 +302,7 @@ export class AddonModQuizHelperProvider {
      * @returns Question's mark.
      */
     getQuestionMarkFromHtml(html: string): string | undefined {
-        const element = convertHTMLToHTMLElement(html);
+        const element = convertTextToHTMLElement(html);
 
         return CoreDomUtils.getContentsOfElement(element, '.grade');
     }

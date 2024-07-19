@@ -14,7 +14,7 @@
 
 import { Component, AfterViewInit, Input, ContentChild, ViewEncapsulation } from '@angular/core';
 import { IonInput } from '@ionic/angular';
-import { convertHTMLToHTMLElement } from '@/core/utils/create-html-element';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 
 import { CoreUtils } from '@services/utils/utils';
 import { CoreLogger } from '@singletons/logger';
@@ -84,7 +84,7 @@ export class CoreShowPasswordComponent implements AfterViewInit {
             return;
         }
 
-        const toggle = convertHTMLToHTMLElement('<ion-input-password-toggle slot="end" />');
+        const toggle = convertTextToHTMLElement('<ion-input-password-toggle slot="end" />');
         input.parentElement?.appendChild(toggle.children[0]);
     }
 

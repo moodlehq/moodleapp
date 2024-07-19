@@ -18,7 +18,7 @@ import { CoreModuleHandlerBase } from '@features/course/classes/module-base-hand
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreNavigator } from '@services/navigator';
-import { convertHTMLToHTMLElement } from '@/core/utils/create-html-element';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_FOLDER_PAGE_NAME } from '../../constants';
 
@@ -58,7 +58,7 @@ export class AddonModFolderModuleHandlerService extends CoreModuleHandlerBase im
 
         if (module.description) {
             // Module description can contain the folder contents if it's inline, remove it.
-            const descriptionElement = convertHTMLToHTMLElement(module.description);
+            const descriptionElement = convertTextToHTMLElement(module.description);
 
             Array.from(descriptionElement.querySelectorAll('.foldertree, .folderbuttons, .tertiary-navigation'))
                 .forEach(element => element.remove());

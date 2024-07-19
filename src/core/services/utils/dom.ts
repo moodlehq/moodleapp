@@ -55,7 +55,8 @@ import { CorePopovers, OpenPopoverOptions } from '@services/popovers';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/loadings';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
-import { convertHTMLToHTMLElement, CoreTemplateElement } from '@/core/utils/create-html-element';
+import { convertTextToHTMLElement, CoreTemplateElement } from '@/core/utils/create-html-element';
+import { CoreHTMLClasses } from '@singletons/html-classes';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -199,7 +200,7 @@ export class CoreDomUtilsProvider {
      * @deprecated since 4.5. Use convertToElement directly instead.
      */
     convertToElement(html: string): HTMLElement {
-        return convertHTMLToHTMLElement(html);
+        return convertTextToHTMLElement(html);
     }
 
     /**
@@ -387,7 +388,7 @@ export class CoreDomUtilsProvider {
      * @returns Attribute value.
      */
     getHTMLElementAttribute(html: string, attribute: string): string | null {
-        return convertHTMLToHTMLElement(html).children[0].getAttribute(attribute);
+        return convertTextToHTMLElement(html).children[0].getAttribute(attribute);
     }
 
     /**
@@ -648,7 +649,7 @@ export class CoreDomUtilsProvider {
      * @returns HTML without the element.
      */
     removeElementFromHtml(html: string, selector: string, removeAll?: boolean): string {
-        const element = convertHTMLToHTMLElement(html);
+        const element = convertTextToHTMLElement(html);
 
         if (removeAll) {
             const selected = element.querySelectorAll(selector);
@@ -696,7 +697,7 @@ export class CoreDomUtilsProvider {
         paths: {[url: string]: string},
         anchorFn?: (anchor: HTMLElement, href: string) => void,
     ): string {
-        const element = convertHTMLToHTMLElement(html);
+        const element = convertTextToHTMLElement(html);
 
         // Treat elements with src (img, audio, video, ...).
         const media = Array.from(element.querySelectorAll<HTMLElement>('img, video, audio, source, track, iframe, embed'));
@@ -1399,7 +1400,7 @@ export class CoreDomUtilsProvider {
      * @returns Same text converted to HTMLCollection.
      */
     toDom(text: string): HTMLCollection {
-        const element = convertHTMLToHTMLElement(text);
+        const element = convertTextToHTMLElement(text);
 
         return element.children;
     }
@@ -1610,18 +1611,22 @@ export class CoreDomUtilsProvider {
      *
      * @param className Class name.
      * @returns Whether the CSS class is set.
+     *
+     * @deprecated since 4.5. Use CoreHTMLClasses.hasModeClass instead.
      */
     hasModeClass(className: string): boolean {
-        return document.documentElement.classList.contains(className);
+        return CoreHTMLClasses.hasModeClass(className);
     }
 
     /**
      * Get active mode CSS classes.
      *
      * @returns Mode classes.
+     *
+     * @deprecated since 4.5. Use CoreHTMLClasses.getModeClasses instead.
      */
     getModeClasses(): string[] {
-        return Array.from(document.documentElement.classList);
+        return CoreHTMLClasses.getModeClasses();
     }
 
     /**
@@ -1629,12 +1634,14 @@ export class CoreDomUtilsProvider {
      *
      * @param className Class name.
      * @param enable Whether to add or remove the class.
+     *
+     * @deprecated since 4.5. Use CoreHTMLClasses.toggleModeClass instead.
      */
     toggleModeClass(
         className: string,
         enable = false,
     ): void {
-        document.documentElement.classList.toggle(className, enable);
+        CoreHTMLClasses.toggleModeClass(className, enable);
     }
 
 }
