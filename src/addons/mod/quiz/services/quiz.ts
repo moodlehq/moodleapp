@@ -29,7 +29,7 @@ import {
 } from '@features/question/services/question';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { convertHTMLToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
@@ -1588,7 +1588,7 @@ export class AddonModQuizProvider {
      * @returns Whether it's blocked.
      */
     isQuestionBlocked(question: CoreQuestionQuestionParsed): boolean {
-        const element = CoreDomUtils.convertToElement(question.html);
+        const element = convertHTMLToHTMLElement(question.html);
 
         return !!element.querySelector('.mod_quiz-blocked_question_warning');
     }

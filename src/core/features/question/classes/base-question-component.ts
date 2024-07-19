@@ -25,6 +25,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreQuestionBehaviourButton, CoreQuestionHelper, CoreQuestionQuestion } from '../services/question-helper';
 import { ContextLevel } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
+import { convertHTMLToHTMLElement } from '@/core/utils/create-html-element';
 
 /**
  * Base class for components to render a question.
@@ -87,7 +88,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 
         this.hostElement.classList.add('core-question-container');
 
-        const questionElement = CoreDomUtils.convertToElement(this.question.html);
+        const questionElement = convertHTMLToHTMLElement(this.question.html);
 
         // Extract question text.
         this.question.text = CoreDomUtils.getContentsOfElement(questionElement, '.qtext');
@@ -433,7 +434,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
             return;
         }
 
-        const element = CoreDomUtils.convertToElement(this.question.html);
+        const element = convertHTMLToHTMLElement(this.question.html);
 
         // Get question content.
         const content = element.querySelector<HTMLElement>(contentSelector);

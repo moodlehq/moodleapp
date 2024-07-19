@@ -33,6 +33,7 @@ import {
 } from '../../services/bigbluebuttonbn';
 import { ADDON_MOD_BBB_COMPONENT } from '../../constants';
 import { CoreLoadings } from '@services/loadings';
+import { convertHTMLToHTMLElement } from '@/core/utils/create-html-element';
 
 /**
  * Component that displays a Big Blue Button activity.
@@ -147,7 +148,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
 
         this.recordings = recordingsTable.parsedData.map(recordingData => {
             const details: RecordingDetail[] = [];
-            const playbacksEl = CoreDomUtils.convertToElement(String(recordingData.playback));
+            const playbacksEl = convertHTMLToHTMLElement(String(recordingData.playback));
             const playbacks: RecordingPlayback[] = Array.from(playbacksEl.querySelectorAll('a')).map(playbackAnchor => ({
                 name: playbackAnchor.textContent ?? '',
                 url: playbackAnchor.href,
@@ -164,7 +165,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
                     value = CoreTimeUtils.userDate(Number(value), 'core.strftimedaydate');
                 } else if (columnData.allowHTML && typeof value === 'string') {
                     // If the HTML is empty, don't display it.
-                    const valueElement = CoreDomUtils.convertToElement(value);
+                    const valueElement = convertHTMLToHTMLElement(value);
                     if (!valueElement.querySelector('img') && (valueElement.textContent ?? '').trim() === '') {
                         return;
                     }

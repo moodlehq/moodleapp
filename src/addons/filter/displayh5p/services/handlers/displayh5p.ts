@@ -20,6 +20,7 @@ import { makeSingleton } from '@singletons';
 import { CoreH5PPlayerComponent } from '@features/h5p/components/h5p-player/h5p-player';
 import { CoreUrl } from '@singletons/url';
 import { CoreH5PHelper } from '@features/h5p/classes/helper';
+import { CoreTemplateElement } from '@/core/utils/create-html-element';
 
 /**
  * Handler to support the Display H5P filter.
@@ -30,17 +31,15 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
     name = 'AddonFilterDisplayH5PHandler';
     filterName = 'displayh5p';
 
-    protected template = document.createElement('template'); // A template element to convert HTML to element.
-
     /**
      * @inheritdoc
      */
     filter(
         text: string,
     ): string | Promise<string> {
-        this.template.innerHTML = text;
+        CoreTemplateElement.innerHTML = text;
 
-        const h5pIframes = <HTMLIFrameElement[]> Array.from(this.template.content.querySelectorAll('iframe.h5p-iframe'));
+        const h5pIframes = <HTMLIFrameElement[]> Array.from(CoreTemplateElement.content.querySelectorAll('iframe.h5p-iframe'));
 
         // Replace all iframes with an empty div that will be treated in handleHtml.
         h5pIframes.forEach((iframe) => {
@@ -53,7 +52,9 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
         });
 
         // Handle H5P iframes embedded using the embed HTML code.
-        const embeddedH5PIframes = <HTMLIFrameElement[]> Array.from(this.template.content.querySelectorAll('iframe.h5p-player'));
+        const embeddedH5PIframes = <HTMLIFrameElement[]> Array.from(
+            CoreTemplateElement.content.querySelectorAll('iframe.h5p-player'),
+        );
 
         embeddedH5PIframes.forEach((iframe) => {
             // Add the preventredirect param to allow authenticating if auto-login fails.
@@ -70,7 +71,7 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
             }
         });
 
-        return this.template.innerHTML;
+        return CoreTemplateElement.innerHTML;
     }
 
     /**

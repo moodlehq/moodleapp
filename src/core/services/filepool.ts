@@ -58,6 +58,7 @@ import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreAnalytics, CoreAnalyticsEventType } from './analytics';
+import { convertHTMLToHTMLElement } from '../utils/create-html-element';
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.
@@ -1147,7 +1148,7 @@ export class CoreFilepoolProvider {
     extractDownloadableFilesFromHtml(html: string): string[] {
         let urls: string[] = [];
 
-        const element = CoreDomUtils.convertToElement(html);
+        const element = convertHTMLToHTMLElement(html);
         const elements: AnchorOrMediaElement[] = Array.from(element.querySelectorAll('a, img, audio, video, source, track'));
 
         for (let i = 0; i < elements.length; i++) {

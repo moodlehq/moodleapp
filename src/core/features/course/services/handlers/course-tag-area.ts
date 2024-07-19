@@ -14,7 +14,7 @@
 
 import { Injectable, Type } from '@angular/core';
 
-import { CoreDomUtils } from '@services/utils/dom';
+import { convertHTMLToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreTagAreaHandler } from '@features/tag/services/tag-area-delegate';
 import { CoreCourseTagAreaComponent } from '../../components/tag-area/tag-area';
 import { makeSingleton } from '@singletons';
@@ -45,7 +45,7 @@ export class CoreCourseTagAreaHandlerService implements CoreTagAreaHandler {
      */
     parseContent(content: string): CoreCouseTagItems[] {
         const items: CoreCouseTagItems[] = [];
-        const element = CoreDomUtils.convertToElement(content);
+        const element = convertHTMLToHTMLElement(content);
 
         Array.from(element.querySelectorAll('div.coursebox')).forEach((coursebox) => {
             const courseId = parseInt(coursebox.getAttribute('data-courseid') || '', 10);

@@ -17,9 +17,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver } from '@singletons/events';
 import { CorePlatform } from '@services/platform';
 import { CoreWait } from './wait';
-
-// A template element to convert HTML to element.
-export const CoreTemplateElement: HTMLTemplateElement = document.createElement('template');
+import { CoreTemplateElement } from '../utils/create-html-element';
 
 /**
  * Singleton with helper functions for dom.

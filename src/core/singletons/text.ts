@@ -16,7 +16,7 @@ import { Clipboard, Translate } from '@singletons';
 import { CoreToasts } from '@services/toasts';
 import { Locutus } from './locutus';
 import { CoreError } from '@classes/errors/error';
-import { CoreTemplateElement } from './dom';
+import { convertHTMLToHTMLElement } from '../utils/create-html-element';
 
 /**
  * Singleton with helper functions for text manipulation.
@@ -190,27 +190,13 @@ export class CoreText {
         // First, we use a regexpr.
         text = text.replace(/(<([^>]+)>)/ig, '');
         // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
-        text = CoreText.convertToElement(text).textContent || '';
+        text = convertHTMLToHTMLElement(text).textContent || '';
         // Trim text
         text = options.trim ? text.trim() : text;
         // Recover or remove new lines.
         text = CoreText.replaceNewLines(text, options.singleLine ? ' ' : '<br>');
 
         return text;
-    }
-
-    /**
-     * Convert some HTML as text into an HTMLElement. This HTML is put inside a div or a body.
-     * This function is the same as in DomUtils, but we cannot use that one because of circular dependencies.
-     *
-     * @param html Text to convert.
-     * @returns Element.
-     */
-    protected static convertToElement(html: string): HTMLElement {
-        // Add a div to hold the content, that's the element that will be returned.
-        CoreTemplateElement.innerHTML = '<div>' + html + '</div>';
-
-        return <HTMLElement> CoreTemplateElement.content.children[0];
     }
 
     /**
@@ -243,7 +229,7 @@ export class CoreText {
      */
     static decodeHTMLEntities(text: string): string {
         if (text) {
-            text = CoreText.convertToElement(text).textContent || '';
+            text = convertHTMLToHTMLElement(text).textContent || '';
         }
 
         return text;
@@ -438,7 +424,7 @@ export class CoreText {
      * @returns Processed HTML string.
      */
     static processHTML(text: string, process: (element: HTMLElement) => unknown): string {
-        const element = CoreText.convertToElement(text);
+        const element = convertHTMLToHTMLElement(text);
 
         process(element);
 

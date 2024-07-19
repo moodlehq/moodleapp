@@ -22,7 +22,7 @@ import { CoreQuestionHandler } from '@features/question/services/question-delega
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { CoreFileSession } from '@services/file-session';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { convertHTMLToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
@@ -90,7 +90,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             };
         }
 
-        const element = CoreDomUtils.convertToElement(question.html);
+        const element = convertHTMLToHTMLElement(question.html);
 
         return {
             text: !!element.querySelector('textarea[name*=_answer]'),
@@ -116,7 +116,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
      * @inheritdoc
      */
     getPreventSubmitMessage(question: CoreQuestionQuestionParsed): string | undefined {
-        const element = CoreDomUtils.convertToElement(question.html);
+        const element = convertHTMLToHTMLElement(question.html);
         const uploadFilesSupported = question.responsefileareas !== undefined;
 
         if (!uploadFilesSupported && element.querySelector('div[id*=filemanager]')) {
@@ -293,7 +293,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         siteId?: string,
     ): Promise<void> {
 
-        const element = CoreDomUtils.convertToElement(question.html);
+        const element = convertHTMLToHTMLElement(question.html);
         const attachmentsInput = <HTMLInputElement> element.querySelector('.attachments input[name*=_attachments]');
 
         // Search the textarea to get its name.
@@ -375,7 +375,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         siteId?: string,
     ): Promise<void> {
 
-        const element = CoreDomUtils.convertToElement(question.html);
+        const element = convertHTMLToHTMLElement(question.html);
         const attachmentsInput = <HTMLInputElement> element.querySelector('.attachments input[name*=_attachments]');
 
         if (attachmentsInput) {
@@ -454,7 +454,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             isPlainText = question.parsedSettings.responseformat == 'monospaced' ||
                 question.parsedSettings.responseformat == 'plain';
         } else {
-            const questionEl = CoreDomUtils.convertToElement(question.html);
+            const questionEl = convertHTMLToHTMLElement(question.html);
             isPlainText = !!questionEl.querySelector('.qtype_essay_monospaced') || !!questionEl.querySelector('.qtype_essay_plain');
         }
 
