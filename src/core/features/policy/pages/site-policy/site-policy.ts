@@ -30,6 +30,7 @@ import { IonContent } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
 import { Subscription } from 'rxjs';
 import { CoreDom } from '@singletons/dom';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Page to accept a site policy.
@@ -337,7 +338,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
      * Check if the content has scroll.
      */
     protected async checkScroll(): Promise<void> {
-        await CoreUtils.wait(400);
+        await CoreWait.wait(400);
 
         const scrollElement = await this.content?.getScrollElement();
 

@@ -54,6 +54,7 @@ import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT, AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Page that allows attempting a quiz.
@@ -831,7 +832,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @param slot Slot of the question to scroll to.
      */
     protected async scrollToQuestion(slot: number): Promise<void> {
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
         await CoreDirectivesRegistry.waitDirectivesReady(this.elementRef.nativeElement, 'core-question');
         await CoreDom.scrollToElement(
             this.elementRef.nativeElement,

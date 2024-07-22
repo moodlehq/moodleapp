@@ -85,6 +85,7 @@ import { CorePath } from '@singletons/path';
 import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
+import { CoreWait } from '@singletons/wait';
 import { CoreWindow } from '@singletons/window';
 import { CoreCache } from '@classes/cache';
 import { CoreDelegate } from '@classes/delegate';
@@ -314,6 +315,7 @@ export class CoreCompileProvider {
         instance['CoreText'] = CoreText;
         instance['CoreTime'] = CoreTime;
         instance['CoreUrl'] = CoreUrl;
+        instance['CoreWait'] = CoreWait;
         instance['CoreWindow'] = CoreWindow;
         instance['CoreCache'] = CoreCache; // @deprecated since 4.4, plugins should use plain objects instead.
         instance['CoreDelegate'] = CoreDelegate;

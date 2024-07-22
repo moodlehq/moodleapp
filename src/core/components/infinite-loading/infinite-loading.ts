@@ -14,7 +14,7 @@
 
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange, ViewChild, ElementRef } from '@angular/core';
 import { IonInfiniteScroll } from '@ionic/angular';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from '@singletons/wait';
 
 const THRESHOLD = .15; // % of the scroll element height that must be close to the edge to consider loading more items necessary.
 
@@ -77,8 +77,8 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
         }
 
         // Wait to allow items to render and scroll content to grow.
-        await CoreUtils.nextTick();
-        await CoreUtils.waitFor(() => scrollElement.scrollHeight > scrollElement.clientHeight, { timeout: 1000 });
+        await CoreWait.nextTick();
+        await CoreWait.waitFor(() => scrollElement.scrollHeight > scrollElement.clientHeight, { timeout: 1000 });
 
         // Calculate distance from edge.
         const infiniteHeight = this.hostElement.getBoundingClientRect().height;
@@ -116,7 +116,7 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
      */
     async complete(): Promise<void> {
         // Wait a bit before allowing loading more, otherwise it could be re-triggered automatically when it shouldn't.
-        await CoreUtils.wait(400);
+        await CoreWait.wait(400);
 
         await this.completeLoadMore();
     }

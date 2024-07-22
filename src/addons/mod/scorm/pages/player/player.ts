@@ -43,6 +43,7 @@ import {
     ADDON_MOD_SCORM_LAUNCH_PREV_SCO_EVENT,
     ADDON_MOD_SCORM_UPDATE_TOC_EVENT,
 } from '../../constants';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Page that allows playing a SCORM.
@@ -436,7 +437,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             // Changing SCO. First unload the existing SCO to make sure the callback to send the data has been called.
             this.src = '';
 
-            await CoreUtils.nextTick();
+            await CoreWait.nextTick();
 
             // Load the SCO in the existing model.
             this.dataModel.loadSco(sco.id);

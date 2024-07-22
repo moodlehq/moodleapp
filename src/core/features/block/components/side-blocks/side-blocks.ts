@@ -23,6 +23,7 @@ import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreDom } from '@singletons/dom';
 import { ContextLevel } from '@/core/constants';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Component that displays the list of side blocks.
@@ -135,8 +136,8 @@ export class CoreBlockSideBlocksComponent implements OnInit {
 
         const selector = '#block-' + this.initialBlockInstanceId;
 
-        await CoreUtils.waitFor(() => !!this.elementRef.nativeElement.querySelector(selector));
-        await CoreUtils.wait(200);
+        await CoreWait.waitFor(() => !!this.elementRef.nativeElement.querySelector(selector));
+        await CoreWait.wait(200);
 
         CoreDom.scrollToElement(this.elementRef.nativeElement, selector, { addYAxis: -10 });
     }

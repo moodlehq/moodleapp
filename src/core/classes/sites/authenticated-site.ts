@@ -42,6 +42,7 @@ import { Md5 } from 'ts-md5';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreSiteWSCacheRecord } from '@services/database/sites';
 import { CoreErrorLogs } from '@singletons/error-logs';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Class that represents a site (combination of site + user) where the user has authenticated but the site hasn't been validated
@@ -1584,7 +1585,7 @@ export function chainRequests<T, O extends ObservableInput<any>>(
                 firstValue = false;
 
                 // Wait to see if the observable is completed (no more values).
-                await CoreUtils.nextTick();
+                await CoreWait.nextTick();
 
                 if (isCompleted) {
                     // Current request only returns cached data. Let chained requests update in background.
@@ -1601,7 +1602,7 @@ export function chainRequests<T, O extends ObservableInput<any>>(
             complete: async () => {
                 isCompleted = true;
 
-                await CoreUtils.nextTick();
+                await CoreWait.nextTick();
 
                 subscriber.complete();
             },

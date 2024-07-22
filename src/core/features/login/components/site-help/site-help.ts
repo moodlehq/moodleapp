@@ -21,6 +21,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { SubPartial } from '@/core/utils/types';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Component that displays help to connect to a site.
@@ -118,7 +119,7 @@ export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
         const answers = Array.from(this.el.nativeElement.querySelectorAll<HTMLElement>('.core-login-site-help--answer'));
 
         await Promise.all(answers.map(async answer => {
-            await this.track(CoreUtils.waitFor(() => answer.clientHeight !== 0));
+            await this.track(CoreWait.waitFor(() => answer.clientHeight !== 0));
             await this.track(CoreDomUtils.waitForImages(answer));
 
             answer.style.setProperty('--height', `${answer.clientHeight}px`);

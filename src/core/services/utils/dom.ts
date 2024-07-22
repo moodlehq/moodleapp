@@ -59,6 +59,7 @@ import { CorePasswordModalParams, CorePasswordModalResponse } from '@components/
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreErrorLogs } from '@singletons/error-logs';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreWait } from '@singletons/wait';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -333,7 +334,7 @@ export class CoreDomUtilsProvider {
             elementToFocus.focus();
 
             if (elementToFocus === document.activeElement || (isIonButton && element === document.activeElement)) {
-                await CoreUtils.nextTick();
+                await CoreWait.nextTick();
                 if (CorePlatform.isAndroid() && this.supportsInputKeyboard(elementToFocus)) {
                     // On some Android versions the keyboard doesn't open automatically.
                     CoreKeyboard.open();
@@ -342,7 +343,7 @@ export class CoreDomUtilsProvider {
             }
 
             // @TODO Probably a Mutation Observer would get this working.
-            await CoreUtils.wait(50);
+            await CoreWait.wait(50);
             retries--;
         }
     }
@@ -1762,7 +1763,7 @@ export class CoreDomUtilsProvider {
         }
 
         // Wait a bit and try again.
-        await CoreUtils.wait(50);
+        await CoreWait.wait(50);
 
         return this.waitForResizeDone(windowWidth, windowHeight, retries+1);
     }

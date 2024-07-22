@@ -23,6 +23,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreEvents } from '@singletons/events';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Handler to support the MathJax filter.
@@ -321,7 +322,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
             return;
         }
 
-        await CoreUtils.wait(250);
+        await CoreWait.wait(250);
         await CoreUtils.ignoreErrors(this.waitForReady(retries + 1));
     }
 

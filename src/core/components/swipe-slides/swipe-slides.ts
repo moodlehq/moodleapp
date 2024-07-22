@@ -20,7 +20,7 @@ import { CoreSwipeSlidesItemsManager } from '@classes/items-management/swipe-sli
 import { CorePromisedValue } from '@classes/promised-value';
 import { IonContent } from '@ionic/angular';
 import { CoreDomUtils, VerticalPoint } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from '@singletons/wait';
 import { NgZone } from '@singletons';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
@@ -230,7 +230,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      */
     protected async onItemsUpdated(): Promise<void> {
         // Wait for slides to be added in DOM.
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         // Update the slides component so the slides list reflects the new items.
         await this.updateSlidesComponent();
@@ -348,7 +348,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         this.swiper.update();
 
         // We need to ensure the slides are updated before continuing.
-        await CoreUtils.nextTicks(2);
+        await CoreWait.nextTicks(2);
     }
 
     /**

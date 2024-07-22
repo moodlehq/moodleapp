@@ -41,6 +41,7 @@ import { CoreUrlUtils } from './url';
 import { QRScanner } from '@features/native/plugins';
 import { CoreArray } from '@singletons/array';
 import { CoreText } from '@singletons/text';
+import { CoreWait, CoreWaitOptions } from '@singletons/wait';
 
 export type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -1783,10 +1784,10 @@ export class CoreUtilsProvider {
      * Wait some time.
      *
      * @param milliseconds Number of milliseconds to wait.
-     * @returns Promise resolved after the time has passed.
+     * @deprecated since 4.5. Use CoreWait.wait instead.
      */
-    wait(milliseconds: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, milliseconds));
+    async wait(milliseconds: number): Promise<void> {
+        await CoreWait.wait(milliseconds);
     }
 
     /**
@@ -1794,51 +1795,34 @@ export class CoreUtilsProvider {
      *
      * @param condition Condition.
      * @returns Cancellable promise.
+     * @deprecated since 4.5. Use CoreWait.waitFor instead.
      */
     waitFor(condition: () => boolean): CoreCancellablePromise<void>;
-    waitFor(condition: () => boolean, options: CoreUtilsWaitOptions): CoreCancellablePromise<void>;
+    waitFor(condition: () => boolean, options: CoreWaitOptions): CoreCancellablePromise<void>;
     waitFor(condition: () => boolean, interval: number): CoreCancellablePromise<void>;
-    waitFor(condition: () => boolean, optionsOrInterval: CoreUtilsWaitOptions | number = {}): CoreCancellablePromise<void> {
+    waitFor(condition: () => boolean, optionsOrInterval: CoreWaitOptions | number = {}): CoreCancellablePromise<void> {
         const options = typeof optionsOrInterval === 'number' ? { interval: optionsOrInterval } : optionsOrInterval;
 
-        if (condition()) {
-            return CoreCancellablePromise.resolve();
-        }
-
-        const startTime = Date.now();
-        let intervalId: number | undefined;
-
-        return new CoreCancellablePromise<void>(
-            async (resolve) => {
-                intervalId = window.setInterval(() => {
-                    if (!condition() && (!options.timeout || (Date.now() - startTime < options.timeout))) {
-                        return;
-                    }
-
-                    resolve();
-                    window.clearInterval(intervalId);
-                }, options.interval ?? 50);
-            },
-            () => window.clearInterval(intervalId),
-        );
+        return CoreWait.waitFor(condition, options);
     }
 
     /**
      * Wait until the next tick.
      *
-     * @returns Promise resolved when tick has been done.
+     * @deprecated since 4.5. Use CoreWait.nextTick instead.
      */
-    nextTick(): Promise<void> {
-        return this.wait(0);
+    async nextTick(): Promise<void> {
+        await CoreWait.nextTick();
     }
 
     /**
      * Wait until several next ticks.
+     *
+     * @param numTicks Number of ticks to wait.
+     * @deprecated since 4.5. Use CoreWait.nextTicks instead.
      */
     async nextTicks(numTicks = 0): Promise<void> {
-        for (let i = 0; i < numTicks; i++) {
-            await this.wait(0);
-        }
+        await CoreWait.nextTicks(numTicks);
     }
 
     /**
@@ -1916,11 +1900,10 @@ export type CoreUtilsOpenInAppOptions = InAppBrowserOptions & {
 
 /**
  * Options for waiting.
+ *
+ * @deprecated since 4.5. Use CoreWaitOptions instead.
  */
-export type CoreUtilsWaitOptions = {
-    interval?: number;
-    timeout?: number;
-};
+export type CoreUtilsWaitOptions = CoreWaitOptions;
 
 /**
  * Possible default picker actions.

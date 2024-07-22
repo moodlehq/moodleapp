@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { EventEmitter } from '@angular/core';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from './wait';
 import { Observable, Subscription } from 'rxjs';
 
 /**
@@ -52,7 +52,7 @@ export class CoreSubscriptions {
         };
         const unsubscribe = async () => {
             // Subscription variable might not be set because we can receive a value immediately. Wait for next tick.
-            await CoreUtils.nextTick();
+            await CoreWait.nextTick();
 
             subscription?.unsubscribe();
         };

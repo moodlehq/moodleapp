@@ -16,7 +16,7 @@ import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModAssignIndexComponent } from '../../components/index/index';
 import { CoreNavigator } from '@services/navigator';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Page that displays an assign.
@@ -44,7 +44,7 @@ export class AddonModAssignIndexPage extends CoreCourseModuleMainActivityPage<Ad
     async ngAfterViewInit(): Promise<void> {
         switch (this.action) {
             case 'editsubmission':
-                await CoreUtils.waitFor(() => !!this.activityComponent?.submissionComponent, { timeout: 5000 });
+                await CoreWait.waitFor(() => !!this.activityComponent?.submissionComponent, { timeout: 5000 });
                 await this.activityComponent?.submissionComponent?.goToEdit();
 
                 break;

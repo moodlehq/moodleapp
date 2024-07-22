@@ -14,12 +14,12 @@
 
 import { CoreFormatTextDirective } from '@directives/format-text';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreCoordinates, CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizDdwtosQuestionData } from '../component/ddwtos';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Class to make a question of ddwtos type work.
@@ -491,7 +491,7 @@ export class AddonQtypeDdwtosQuestion {
         } else {
             // Group items should always have a parent, add a fallback just in case.
             await CoreDom.waitToBeInDOM(groupItems[0]);
-            await CoreUtils.nextTicks(5);
+            await CoreWait.nextTicks(5);
         }
 
         // Find max height and width.

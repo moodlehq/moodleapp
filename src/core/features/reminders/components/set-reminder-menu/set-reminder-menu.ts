@@ -20,7 +20,7 @@ import {
     CoreReminderValueAndUnit,
 } from '@features/reminders/services/reminders';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from '@singletons/wait';
 import { PopoverController } from '@singletons';
 import { CoreRemindersSetReminderCustomComponent } from '../set-reminder-custom/set-reminder-custom';
 
@@ -175,7 +175,7 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
         this.customLabel = CoreReminders.getUnitValueLabel(this.customValue, this.customUnits);
 
         // Let the dimissed popover to be removed.
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         PopoverController.dismiss({ timeBefore: Math.abs(this.customValue) * this.customUnits });
     }

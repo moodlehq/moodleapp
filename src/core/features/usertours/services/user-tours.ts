@@ -27,6 +27,7 @@ import { CoreSubscriptions } from '@singletons/subscriptions';
 import { CoreUserToursUserTourComponent } from '../components/user-tour/user-tour';
 import { APP_SCHEMA, CoreUserToursDBEntry, USER_TOURS_TABLE_NAME } from './database/user-tours';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Service to manage User Tours.
@@ -113,7 +114,7 @@ export class CoreUserToursService {
     protected async show(options: CoreUserToursBasicOptions | CoreUserToursFocusedOptions): Promise<CoreUserToursUserTour> {
         const { delay, ...componentOptions } = options;
 
-        await CoreUtils.wait(delay ?? 200);
+        await CoreWait.wait(delay ?? 200);
 
         options.after && await this.waitForUserTour(options.after, options.afterTimeout);
 

@@ -31,6 +31,7 @@ import { CoreCourses } from '../../services/courses';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Page that shows a my courses.
@@ -129,7 +130,7 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
                 this.loadedBlock = blocks.mainBlocks.concat(blocks.sideBlocks).find((block) => block.name == 'myoverview');
                 this.hasSideBlocks = supportsMyParam && CoreBlockDelegate.hasSupportedBlock(blocks.sideBlocks);
 
-                await CoreUtils.nextTicks(2);
+                await CoreWait.nextTicks(2);
 
                 this.myOverviewBlock = this.block?.dynamicComponent?.instance as AddonBlockMyOverviewComponent;
 

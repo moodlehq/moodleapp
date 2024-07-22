@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from '@singletons/wait';
 import { LoadingController } from '@singletons';
 
 /**
@@ -105,7 +105,7 @@ export class CoreIonLoadingElement {
         // Wait a bit before presenting the modal, to prevent it being displayed if dismiss is called fast.
         this.scheduled = true;
 
-        await CoreUtils.wait(40);
+        await CoreWait.wait(40);
 
         if (!this.scheduled) {
             return;

@@ -23,6 +23,7 @@ import { CoreEventObserver } from '@singletons/events';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreDom } from '@singletons/dom';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Directive to make an element fixed at the bottom collapsible when scrolling.
@@ -101,7 +102,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         await this.viewportPromise;
 
         this.element.classList.remove('is-active');
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         // Set a minimum height value.
         this.initialHeight = this.element.getBoundingClientRect().height || this.initialHeight;

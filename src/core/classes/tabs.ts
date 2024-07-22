@@ -31,7 +31,7 @@ import { CoreSettingsHelper } from '@features/settings/services/settings-helper'
 import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from './aria-role-tab';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreDom } from '@singletons/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from '@singletons/wait';
 import { CoreError } from './errors/error';
 import { CorePromisedValue } from './promised-value';
 import { AsyncDirective } from './async-directive';
@@ -218,7 +218,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
         this.slideChanged();
 
         this.swiper.update();
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         if (!this.hasSliddenToInitial && this.selectedIndex && this.selectedIndex >= this.swiper.slidesPerViewDynamic()) {
             this.hasSliddenToInitial = true;
@@ -344,7 +344,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
         }
 
         this.maxSlides = 3;
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         if (!this.swiper.width) {
             return;

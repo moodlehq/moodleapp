@@ -27,6 +27,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreMath } from '@singletons/math';
 import { Subscription } from 'rxjs';
 import { CoreFormatTextDirective } from './format-text';
+import { CoreWait } from '@singletons/wait';
 
 declare module '@singletons/events' {
 
@@ -344,7 +345,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         await this.visiblePromise;
 
         this.page.classList.remove('collapsible-header-page-is-active');
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         // Add floating title and measure initial position.
         const collapsedHeaderTitle = this.collapsedHeader.querySelector('h1') as HTMLHeadingElement;
@@ -429,7 +430,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         }
 
         // Make sure elements have been added to the DOM.
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         // Wait all loadings and tabs to finish loading.
         await CoreDirectivesRegistry.waitMultipleDirectivesReady(this.page, [
