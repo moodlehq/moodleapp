@@ -97,6 +97,7 @@ export class CoreFilepoolProvider {
         new RegExp('(\\?|&)forcedownload=[0-1]'),
         new RegExp('(\\?|&)preview=[A-Za-z0-9]+'),
         new RegExp('(\\?|&)offline=[0-1]', 'g'),
+        new RegExp(/(\\?|&)lang=[A-Za-z\-_]+/, 'g'),
     ];
 
     // To handle file downloads using the queue.
