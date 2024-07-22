@@ -934,14 +934,15 @@ export class CoreDomUtilsProvider {
      * @param options More options. See https://ionicframework.com/docs/v3/api/components/alert/AlertController/
      * @returns Promise resolved if the user confirms and rejected with a canceled error if he cancels.
      */
-    showDeleteConfirm(
+    async showDeleteConfirm(
         translateMessage: string = 'core.areyousure',
         translateArgs: Record<string, unknown> = {},
         options: AlertOptions = {},
     ): Promise<void> {
-        return new Promise((resolve, reject): void => {
-            options.message = Translate.instant(translateMessage, translateArgs);
+        options.message = Translate.instant(translateMessage, translateArgs);
+        options.message = await CoreLang.filterMultilang(options.message);
 
+        return new Promise((resolve, reject): void => {
             options.buttons = [
                 {
                     text: Translate.instant('core.cancel'),
