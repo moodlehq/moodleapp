@@ -1,23 +1,25 @@
 <ng-container *ngIf="enabled && !loading">
     <!-- Download button. -->
     <ion-button *ngIf="status === statusNotDownloaded" fill="clear" (click)="download($event, false)" @coreShowHideAnimation
-        [ariaLabel]="(statusTranslatable || 'core.download') | translate">
+        [ariaLabel]="(statusTranslatable || translates.notdownloaded) | translate: { name : statusSubject }">
         <ion-icon slot="icon-only" name="fas-cloud-arrow-down" aria-hidden="true" />
     </ion-button>
 
     <!-- Refresh button. -->
     <ion-button *ngIf="status === statusOutdated || (status === statusDownloaded && !canTrustDownload)" fill="clear"
-        (click)="download($event, true)" @coreShowHideAnimation [ariaLabel]="(statusTranslatable || 'core.refresh') | translate">
+        (click)="download($event, true)" @coreShowHideAnimation
+        [ariaLabel]="(statusTranslatable || translates.outdated) | translate: { name : statusSubject }">
         <ion-icon slot="icon-only" name="fam-cloud-refresh" aria-hidden="true" />
     </ion-button>
 
     <!-- Downloaded status icon. -->
     <ion-icon *ngIf="status === statusDownloaded && canTrustDownload" class="core-icon-downloaded ion-padding-horizontal" color="success"
-        name="fam-cloud-done" [attr.aria-label]="(statusTranslatable || 'core.downloaded') | translate" role="status" />
+        name="fam-cloud-done" [attr.aria-label]="(statusTranslatable || translates.downloaded) | translate: { name : statusSubject }"
+        role="status" />
 
     <ion-spinner *ngIf="status === statusDownloading" @coreShowHideAnimation
-        [attr.aria-label]="(statusTranslatable || 'core.downloading') | translate" />
+        [attr.aria-label]="(statusTranslatable || translates.downloading) | translate: { name : statusSubject }" />
 </ng-container>
 
 <!-- Spinner. -->
-<ion-spinner *ngIf="loading" @coreShowHideAnimation [attr.aria-label]="'core.loading' | translate" />
+<ion-spinner *ngIf="loading" @coreShowHideAnimation [attr.aria-label]="translates.loading | translate: { name : statusSubject }" />

@@ -78,7 +78,8 @@
                                 <core-download-refresh *ngIf="!section.isDownloading && section.downloadStatus !== statusDownloaded"
                                     [status]="section.downloadStatus" [enabled]="true" (action)="prefecthSection(section)"
                                     [loading]="section.isDownloading || section.isCalculating" [canTrustDownload]="true"
-                                    [statusTranslatable]="'addon.storagemanager.downloaddatafrom' | translate: { name: section.name }" />
+                                    [statusesTranslatable]="{notdownloaded: 'addon.storagemanager.downloaddatafrom' }"
+                                    [statusSubject]="section.name" />
 
                                 <ion-badge class="core-course-download-section-progress"
                                     *ngIf="section.isDownloading && section.count < section.total" role="progressbar"
@@ -124,7 +125,8 @@
                                         module.downloadStatus !== statusDownloaded" [status]="module.downloadStatus" [enabled]="true"
                                         [canTrustDownload]="true" [loading]="module.spinner || module.handlerData.spinner"
                                         (action)="prefetchModule(module)"
-                                        [statusTranslatable]="'addon.storagemanager.downloaddatafrom' | translate: { name: module.name }" />
+                                        [statusesTranslatable]="{notdownloaded: 'addon.storagemanager.downloaddatafrom' }"
+                                        [statusSubject]="module.name" />
                                     <ion-button fill="clear" (click)="deleteForModule($event, module, section)"
                                         *ngIf="!module.calculatingSize && module.totalSize > 0" color="danger">
                                         <ion-icon name="fas-trash" slot="icon-only"
