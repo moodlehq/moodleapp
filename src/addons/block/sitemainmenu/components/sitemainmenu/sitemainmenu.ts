@@ -19,6 +19,8 @@ import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/c
 import { CoreSiteHome, FrontPageItemNames } from '@features/sitehome/services/sitehome';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 /**
  * Component to render a site main menu block.
@@ -26,6 +28,11 @@ import { CoreBlockBaseComponent } from '@features/block/classes/base-block-compo
 @Component({
     selector: 'addon-block-sitemainmenu',
     templateUrl: 'addon-block-sitemainmenu.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+    ],
 })
 export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent implements OnInit {
 

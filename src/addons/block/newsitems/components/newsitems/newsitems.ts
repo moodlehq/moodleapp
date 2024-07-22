@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component } from '@angular/core';
 import { CoreBlockPreRenderedComponent } from '@features/block/components/pre-rendered-block/pre-rendered-block';
 
@@ -21,6 +22,10 @@ import { CoreBlockPreRenderedComponent } from '@features/block/components/pre-re
 @Component({
     selector: 'addon-block-news-items',
     templateUrl: '../../../../../core/features/block/components/pre-rendered-block/core-block-pre-rendered.html',
-    styleUrls: ['newsitems.scss'],
+    styleUrl: 'newsitems.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonBlockNewsItemsComponent extends CoreBlockPreRenderedComponent {}

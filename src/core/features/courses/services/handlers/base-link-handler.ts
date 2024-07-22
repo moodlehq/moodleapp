@@ -30,6 +30,11 @@ export class CoreCoursesLinksHandlerBase extends CoreContentLinksHandlerBase {
 
     /**
      * Get actions to open course content.
+     *
+     * @param url URL to treat.
+     * @param courseId Course ID.
+     * @param pageParams Params to send to the new page.
+     * @returns Promise resolved with the actions.
      */
     protected getCourseActions(url: string, courseId: number, pageParams: Params = {}): CoreContentLinksAction[] {
         return [{

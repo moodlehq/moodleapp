@@ -23,6 +23,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUrlUtils } from '@services/utils/url';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render an "activity modules" block.
@@ -30,7 +31,11 @@ import { CoreUrlUtils } from '@services/utils/url';
 @Component({
     selector: 'addon-block-activitymodules',
     templateUrl: 'addon-block-activitymodules.html',
-    styleUrls: ['activitymodules.scss'],
+    styleUrl: 'activitymodules.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent implements OnInit {
 

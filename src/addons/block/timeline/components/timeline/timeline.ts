@@ -27,6 +27,9 @@ import { AddonBlockTimelineDateRange, AddonBlockTimelineSection } from '@addons/
 import { FormControl } from '@angular/forms';
 import { formControlValue, resolved } from '@/core/utils/rxjs';
 import { CoreLogger } from '@singletons/logger';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSearchComponentsModule } from '@features/search/components/components.module';
+import { AddonBlockTimelineEventsComponent } from '../events/events';
 
 /**
  * Component to render a timeline block.
@@ -34,8 +37,14 @@ import { CoreLogger } from '@singletons/logger';
 @Component({
     selector: 'addon-block-timeline',
     templateUrl: 'addon-block-timeline.html',
-    styleUrls: ['timeline.scss'],
+    styleUrl: 'timeline.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSearchComponentsModule,
+        AddonBlockTimelineEventsComponent,
+    ],
 })
 export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent {
 

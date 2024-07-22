@@ -20,8 +20,8 @@ Feature: Use custom communication link in course
     And I navigate to "Communication" in current page administration
     And I select "Custom link" from the "Provider" singleselect
     And I set the following fields to these values:
-      | communicationroomname | Test URL                                                                                   |
-      | customlinkurl         | #wwwroot#/communication/provider/customlink/tests/behat/fixtures/custom_link_test_page.php |
+      | communication_customlinkroomname | Test URL                                                                                   |
+      | customlinkurl                    | #wwwroot#/communication/provider/customlink/tests/behat/fixtures/custom_link_test_page.php |
     And I press "Save changes"
 
   Scenario: Use communication link

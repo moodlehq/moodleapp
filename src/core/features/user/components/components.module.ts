@@ -26,8 +26,6 @@ import { CoreUserTagAreaComponent } from './tag-area/tag-area';
     imports: [
         CoreSharedModule,
     ],
-    providers: [
-    ],
     exports: [
         CoreUserProfileFieldComponent,
         CoreUserTagAreaComponent,

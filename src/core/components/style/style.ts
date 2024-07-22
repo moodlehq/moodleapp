@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, ElementRef, Input, OnChanges } from '@angular/core';
 import { CoreDom } from '@singletons/dom';
 
@@ -24,11 +25,15 @@ import { CoreDom } from '@singletons/dom';
  * Example:
  *
  * <core-style [css]="'p { color: red; }'" prefix=".custom-rules"></core-style>
- * @deprecated since 4.5.0. Not needed anymore, core-compile-html accepts now CSS code.
+ * @deprecated since 4.5. Not needed anymore, core-compile-html accepts now CSS code.
  */
 @Component({
     selector: 'core-style',
     template: '',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreStyleComponent implements OnChanges {
 

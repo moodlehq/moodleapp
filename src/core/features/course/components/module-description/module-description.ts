@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, HostBinding, Input } from '@angular/core';
 
 /**
@@ -37,6 +38,10 @@ import { Component, HostBinding, Input } from '@angular/core';
 @Component({
     selector: 'core-course-module-description',
     templateUrl: 'core-course-module-description.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCourseModuleDescriptionComponent {
 

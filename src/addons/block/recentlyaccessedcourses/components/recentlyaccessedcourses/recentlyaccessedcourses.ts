@@ -31,6 +31,8 @@ import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursec
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSite } from '@classes/sites/site';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
 
 /**
  * Component to render a recent courses block.
@@ -38,6 +40,11 @@ import { CoreSite } from '@classes/sites/site';
 @Component({
     selector: 'addon-block-recentlyaccessedcourses',
     templateUrl: 'addon-block-recentlyaccessedcourses.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCoursesComponentsModule,
+    ],
 })
 export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
 

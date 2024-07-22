@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
@@ -48,7 +48,6 @@ import { CoreSendMessageFormComponent } from './send-message-form/send-message-f
 import { CoreShowPasswordComponent } from './show-password/show-password';
 import { CoreSitePickerComponent } from './site-picker/site-picker';
 import { CoreSplitViewComponent } from './split-view/split-view';
-import { CoreStyleComponent } from './style/style';
 import { CoreTabComponent } from './tabs/tab';
 import { CoreTabsComponent } from './tabs/tabs';
 import { CoreTabsOutletComponent } from './tabs-outlet/tabs-outlet';
@@ -66,6 +65,20 @@ import { CoreRefreshButtonModalComponent } from './refresh-button-modal/refresh-
 import { CoreSheetModalComponent } from '@components/sheet-modal/sheet-modal';
 import { CoreCourseImageComponent } from '@components/course-image/course-image';
 import { CoreSitesListComponent } from './sites-list/sites-list';
+
+/**
+ * Get standalone components for site plugins.
+ *
+ * @returns Returns core standalone components.
+ */
+export async function getCoreStandaloneComponents(): Promise<Type<unknown>[]> {
+    // eslint-disable-next-line deprecation/deprecation
+    const { CoreStyleComponent } = await import('@components/style/style');
+
+    return [
+        CoreStyleComponent,
+    ];
+}
 
 @NgModule({
     declarations: [
@@ -100,8 +113,6 @@ import { CoreSitesListComponent } from './sites-list/sites-list';
         CoreShowPasswordComponent, // eslint-disable-line deprecation/deprecation
         CoreSitePickerComponent,
         CoreSplitViewComponent,
-        // eslint-disable-next-line deprecation/deprecation
-        CoreStyleComponent,
         CoreSwipeSlidesComponent,
         CoreTabComponent,
         CoreTabsComponent,
@@ -156,8 +167,6 @@ import { CoreSitesListComponent } from './sites-list/sites-list';
         CoreShowPasswordComponent, // eslint-disable-line deprecation/deprecation
         CoreSitePickerComponent,
         CoreSplitViewComponent,
-        // eslint-disable-next-line deprecation/deprecation
-        CoreStyleComponent,
         CoreSwipeSlidesComponent,
         CoreTabComponent,
         CoreTabsComponent,
