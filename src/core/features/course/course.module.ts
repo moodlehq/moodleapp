@@ -87,6 +87,25 @@ export async function getCourseExportedObjects(): Promise<Record<string, unknown
     /* eslint-enable @typescript-eslint/naming-convention */
 }
 
+/**
+ * Get standalone components for site plugins.
+ *
+ * @returns Returns standalone components.
+ */
+export async function getCourseStandaloneComponents(): Promise<Type<unknown>[]> {
+    // eslint-disable-next-line deprecation/deprecation
+    const { CoreCourseModuleDescriptionComponent } =
+        await import('@features/course/components/module-description/module-description');
+    // eslint-disable-next-line deprecation/deprecation
+    const { CoreCourseModuleManualCompletionComponent } =
+        await import('@features/course/components/module-manual-completion/module-manual-completion');
+
+    return [
+        CoreCourseModuleDescriptionComponent,
+        CoreCourseModuleManualCompletionComponent,
+    ];
+}
+
 const routes: Routes = [
     {
         matcher: buildRegExpUrlMatcher(new RegExp(`^${COURSE_PAGE_NAME}(/deep)*`)),

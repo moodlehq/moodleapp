@@ -16,12 +16,10 @@ import {
     Injectable,
     Injector,
     Component,
-    NgModule,
     ComponentRef,
     NO_ERRORS_SCHEMA,
     Type,
     Provider,
-    createNgModule,
     ViewContainerRef,
 } from '@angular/core';
 import {
@@ -43,7 +41,7 @@ import { getCoreServices } from '@/core/core.module';
 import { getBlockServices } from '@features/block/block.module';
 import { getCommentsServices } from '@features/comments/comments.module';
 import { getContentLinksExportedObjects, getContentLinksServices } from '@features/contentlinks/contentlinks.module';
-import { getCourseExportedObjects, getCourseServices } from '@features/course/course.module';
+import { getCourseExportedObjects, getCourseServices, getCourseStandaloneComponents } from '@features/course/course.module';
 import { getCoursesServices } from '@features/courses/courses.module';
 import { getEditorServices } from '@features/editor/editor.module';
 import { getEnrolServices } from '@features/enrol/enrol.module';
@@ -77,9 +75,13 @@ import { Md5 } from 'ts-md5/dist/md5';
 // Import core classes that can be useful for site plugins.
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreArray } from '@singletons/array';
+import { CoreColors } from '@singletons/colors';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreForms } from '@singletons/form';
+import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreObject } from '@singletons/object';
+import { CorePath } from '@singletons/path';
 import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
@@ -115,6 +117,9 @@ import { getModWorkshopComponentModules, getModWorkshopServices } from '@addons/
 import { getNotesServices } from '@addons/notes/notes.module';
 import { getNotificationsServices } from '@addons/notifications/notifications.module';
 import { getPrivateFilesServices } from '@addons/privatefiles/privatefiles.module';
+
+// Import standalone components used by site plugins.
+import { getCoreStandaloneComponents } from '@components/components.module';
 
 // Import some addon modules that define components, directives and pipes. Only import the important ones.
 import { CorePromisedValue } from '@classes/promised-value';
@@ -157,6 +162,8 @@ export class CoreCompileProvider {
         getModAssignComponentModules,
         getModQuizComponentModules,
         getModWorkshopComponentModules,
+        getCoreStandaloneComponents,
+        getCourseStandaloneComponents,
     ];
 
     protected componentId = 0;
@@ -187,13 +194,6 @@ export class CoreCompileProvider {
         // Import the Angular compiler to be able to compile components in runtime.
         await import('@angular/compiler');
 
-        // Create the component using the template and the class.
-        const component = Component({
-            template,
-            host: { 'compiled-component-id': String(this.componentId++) },
-            styles,
-        })(componentClass);
-
         const lazyImports = await Promise.all(this.LAZY_IMPORTS.map(getModules => getModules()));
         const imports = [
             ...lazyImports.flat(),
@@ -201,20 +201,21 @@ export class CoreCompileProvider {
             ...extraImports,
         ];
 
+        // Create the component using the template and the class.
+        const component = Component({
+            template,
+            host: { 'compiled-component-id': String(this.componentId++) },
+            styles,
+            standalone: true,
+            imports,
+            schemas: [NO_ERRORS_SCHEMA],
+        })(componentClass);
+
         try {
             viewContainerRef.clear();
 
-            // Now create the module containing the component.
-            const ngModuleRef = createNgModule(
-                NgModule({ imports, declarations: [component], schemas: [NO_ERRORS_SCHEMA] })(class {}),
-                this.injector,
-            );
-
             return viewContainerRef.createComponent(
                 component,
-                {
-                    environmentInjector: ngModuleRef,
-                },
             );
         } catch (error) {
             this.logger.error('Error compiling template', template);
@@ -299,13 +300,17 @@ export class CoreCompileProvider {
          * Keeping this a bit more to avoid plugins breaking.
          */
         instance['Network'] = CoreNetwork.instance;
-        instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
-        instance['CoreArray'] = CoreArray;
-        instance['CoreDirectivesRegistry'] = CoreDirectivesRegistry;
         instance['CoreNetwork'] = CoreNetwork.instance;
         instance['CorePlatform'] = CorePlatform.instance;
+        instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
+        instance['CoreArray'] = CoreArray;
+        instance['CoreColors'] = CoreColors;
+        instance['CoreDirectivesRegistry'] = CoreDirectivesRegistry;
         instance['CoreDom'] = CoreDom;
         instance['CoreForms'] = CoreForms;
+        instance['CoreKeyboard'] = CoreKeyboard;
+        instance['CoreObject'] = CoreObject;
+        instance['CorePath'] = CorePath;
         instance['CoreText'] = CoreText;
         instance['CoreTime'] = CoreTime;
         instance['CoreUrl'] = CoreUrl;

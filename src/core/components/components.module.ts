@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
@@ -65,6 +65,20 @@ import { CoreRefreshButtonModalComponent } from './refresh-button-modal/refresh-
 import { CoreSheetModalComponent } from '@components/sheet-modal/sheet-modal';
 import { CoreCourseImageComponent } from '@components/course-image/course-image';
 import { CoreSitesListComponent } from './sites-list/sites-list';
+
+/**
+ * Get standalone components for site plugins.
+ *
+ * @returns Returns core standalone components.
+ */
+export async function getCoreStandaloneComponents(): Promise<Type<unknown>[]> {
+    // eslint-disable-next-line deprecation/deprecation
+    const { CoreStyleComponent } = await import('@components/style/style');
+
+    return [
+        CoreStyleComponent,
+    ];
+}
 
 @NgModule({
     declarations: [
