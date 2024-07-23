@@ -7,10 +7,9 @@ module.exports = {
     testMatch: ['**/?(*.)test.ts'],
     collectCoverageFrom: [
         'src/**/*.ts',
-        '!src/**/*.{test,stories}.ts',
+        '!src/**/*.test.ts',
         '!src/assets/**/*',
         '!src/testing/**/*',
-        '!src/storybook/**/*',
         '!src/core/initializers/index.ts',
         '!src/core/features/emulators/services/zip.ts',
     ],
