@@ -12,33 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { asyncInstance } from '@/core/utils/async-instance';
 import { CoreCronHandler } from '@services/cron';
-import { makeSingleton } from '@singletons';
-import { AddonModWikiSync } from '../wiki-sync';
+import type { AddonModWikiSyncCronHandlerLazyService } from '@addons/mod/wiki/services/handlers/sync-cron-lazy';
 
-/**
- * Synchronization cron handler.
- */
-@Injectable({ providedIn: 'root' })
-export class AddonModWikiSyncCronHandlerService implements CoreCronHandler {
+export class AddonModWikiSyncCronHandlerService {
 
     name = 'AddonModWikiSyncCronHandler';
 
-    /**
-     * @inheritdoc
-     */
-    execute(siteId?: string, force?: boolean): Promise<void> {
-        return AddonModWikiSync.syncAllWikis(siteId, force);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getInterval(): number {
-        return AddonModWikiSync.syncInterval;
-    }
-
 }
 
-export const AddonModWikiSyncCronHandler = makeSingleton(AddonModWikiSyncCronHandlerService);
+/**
+ * Get cron handler instance.
+ *
+ * @returns Cron handler.
+ */
+export function getCronHandlerInstance(): CoreCronHandler {
+    const lazyHandler = asyncInstance<
+        AddonModWikiSyncCronHandlerLazyService,
+        AddonModWikiSyncCronHandlerService
+    >(async () => {
+        const { AddonModWikiSyncCronHandler } = await import('./sync-cron-lazy');
+
+        return AddonModWikiSyncCronHandler.instance;
+    });
+
+    lazyHandler.setEagerInstance(new AddonModWikiSyncCronHandlerService());
+    lazyHandler.setLazyMethods(['execute', 'getInterval']);
+
+    return lazyHandler;
+}

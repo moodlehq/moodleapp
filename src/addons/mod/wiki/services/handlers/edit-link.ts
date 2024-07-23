@@ -12,75 +12,57 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { asyncInstance } from '@/core/utils/async-instance';
+import { ADDON_MOD_WIKI_FEATURE_NAME } from '@addons/mod/wiki/constants';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
-import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreCourse } from '@features/course/services/course';
-import { CoreNavigator } from '@services/navigator';
-import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { makeSingleton } from '@singletons';
-import { AddonModWiki } from '../wiki';
-import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
+import { CoreContentLinksAction, CoreContentLinksHandler } from '@features/contentlinks/services/contentlinks-delegate';
+import type { AddonModWikiEditLinkHandlerLazyService } from '@addons/mod/wiki/services/handlers/edit-link-lazy';
 
-/**
- * Handler to treat links to edit a wiki page.
- */
-@Injectable({ providedIn: 'root' })
 export class AddonModWikiEditLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModWikiEditLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModWiki';
+    featureName = ADDON_MOD_WIKI_FEATURE_NAME;
     pattern = /\/mod\/wiki\/edit\.php.*([&?]pageid=\d+)/;
 
     /**
      * @inheritdoc
      */
-    getActions(
-        siteIds: string[],
-        url: string,
-        params: Record<string, string>,
-    ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
-
+    getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
         return [{
-            action: async (siteId: string) => {
-                const modal = await CoreDomUtils.showModalLoading();
-
-                try {
-                    const pageId = Number(params.pageid);
-
-                    const pageContents = await AddonModWiki.getPageContents(pageId, { siteId });
-
-                    const module = await CoreCourse.getModuleBasicInfoByInstance(
-                        pageContents.wikiid,
-                        'wiki',
-                        { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
-                    );
-
-                    let section = '';
-                    if (params.section !== undefined) {
-                        section = params.section.replace(/\+/g, ' ');
-                    }
-
-                    await CoreNavigator.navigateToSitePath(
-                        `${ADDON_MOD_WIKI_PAGE_NAME}/${module.course}/${module.id}/edit`,
-                        {
-                            params: {
-                                section: section,
-                                pageId: pageId,
-                            },
-                            siteId,
-                        },
-                    );
-                } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'addon.mod_wiki.errorloadingpage', true);
-                } finally {
-                    modal.dismiss();
-                }
-            },
+            action: (siteId) => this.handleAction(siteId, params),
         }];
+    }
+
+    /**
+     * Handle link action.
+     *
+     * @param siteId Site id.
+     * @param params Params.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async handleAction(siteId: string, params: Record<string, string>): Promise<void> {
+        // Stub to override.
     }
 
 }
 
-export const AddonModWikiEditLinkHandler = makeSingleton(AddonModWikiEditLinkHandlerService);
+/**
+ * Get edit link handler instance.
+ *
+ * @returns Link handler.
+ */
+export function getEditLinkHandlerInstance(): CoreContentLinksHandler {
+    const lazyHandler = asyncInstance<
+        AddonModWikiEditLinkHandlerLazyService,
+        AddonModWikiEditLinkHandlerService
+    >(async () => {
+        const { AddonModWikiEditLinkHandler } = await import('./edit-link-lazy');
+
+        return AddonModWikiEditLinkHandler.instance;
+    });
+
+    lazyHandler.setEagerInstance(new AddonModWikiEditLinkHandlerService());
+    lazyHandler.setLazyOverrides(['handleAction']);
+
+    return lazyHandler;
+}

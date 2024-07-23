@@ -12,100 +12,58 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { asyncInstance } from '@/core/utils/async-instance';
+import { ADDON_MOD_WIKI_FEATURE_NAME } from '@addons/mod/wiki/constants';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
-import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreCourse } from '@features/course/services/course';
-import { CoreNavigator } from '@services/navigator';
-import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { makeSingleton } from '@singletons';
-import { Md5 } from 'ts-md5';
-import { AddonModWiki } from '../wiki';
-import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
+import { CoreContentLinksAction, CoreContentLinksHandler } from '@features/contentlinks/services/contentlinks-delegate';
+import type { AddonModWikiPageOrMapLinkHandlerLazyService } from '@addons/mod/wiki/services/handlers/page-or-map-link-lazy';
 
-/**
- * Handler to treat links to a wiki page or the wiki map.
- */
-@Injectable({ providedIn: 'root' })
 export class AddonModWikiPageOrMapLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModWikiPageOrMapLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModWiki';
+    featureName = ADDON_MOD_WIKI_FEATURE_NAME;
     pattern = /\/mod\/wiki\/(view|map)\.php.*([&?]pageid=\d+)/;
 
     /**
      * @inheritdoc
      */
-    getActions(
-        siteIds: string[],
-        url: string,
-        params: Record<string, string>,
-    ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
-
+    getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
         return [{
-            action: async (siteId: string) => {
-                const modal = await CoreDomUtils.showModalLoading();
-                const pageId = parseInt(params.pageid, 10);
-                const action = url.indexOf('mod/wiki/map.php') != -1 ? 'map' : 'page';
-
-                try {
-                    // Get the page data to obtain wikiId, subwikiId, etc.
-                    const page = await AddonModWiki.getPageContents(pageId, { siteId });
-
-                    const module = await CoreCourse.getModuleBasicInfoByInstance(
-                        page.wikiid,
-                        'wiki',
-                        { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
-                    );
-
-                    const hash = Md5.hashAsciiStr(JSON.stringify({
-                        pageId: page.id,
-                        pageTitle: page.title,
-                        subwikiId: page.subwikiid,
-                        action: action,
-                        timestamp: Date.now(),
-                    }));
-
-                    await CoreNavigator.navigateToSitePath(
-                        `${ADDON_MOD_WIKI_PAGE_NAME}/${module.course}/${module.id}/page/${hash}`,
-                        {
-                            params: {
-                                module,
-                                pageId: page.id,
-                                pageTitle: page.title,
-                                subwikiId: page.subwikiid,
-                                action: action,
-                            },
-                            siteId,
-                        },
-                    );
-                } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'addon.mod_wiki.errorloadingpage', true);
-                } finally {
-                    modal.dismiss();
-                }
-            },
+            action: (siteId) => this.handleAction(url, siteId, params),
         }];
     }
 
     /**
-     * @inheritdoc
+     * Handle link action.
+     *
+     * @param url Url.
+     * @param siteId Site id.
+     * @param params Params.
      */
-    async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        const isMap = url.indexOf('mod/wiki/map.php') != -1;
-
-        if (params.id && !isMap) {
-            // ID param is more prioritary than pageid in index page, it's a index URL.
-            return false;
-        } else if (isMap && params.option !== undefined && params.option != '5') {
-            // Map link but the option isn't "Page list", not supported.
-            return false;
-        }
-
-        return true;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async handleAction(url: string, siteId: string, params: Record<string, string>): Promise<void> {
+        // Stub to override.
     }
 
 }
 
-export const AddonModWikiPageOrMapLinkHandler = makeSingleton(AddonModWikiPageOrMapLinkHandlerService);
+/**
+ * Get page or map link handler instance.
+ *
+ * @returns Link handler.
+ */
+export function getPageOrMapLinkHandlerInstance(): CoreContentLinksHandler {
+    const lazyHandler = asyncInstance<
+        AddonModWikiPageOrMapLinkHandlerLazyService,
+        AddonModWikiPageOrMapLinkHandlerService
+    >(async () => {
+        const { AddonModWikiPageOrMapLinkHandler } = await import('./page-or-map-link-lazy');
+
+        return AddonModWikiPageOrMapLinkHandler.instance;
+    });
+
+    lazyHandler.setEagerInstance(new AddonModWikiPageOrMapLinkHandlerService());
+    lazyHandler.setLazyOverrides(['isEnabled', 'handleAction']);
+
+    return lazyHandler;
+}

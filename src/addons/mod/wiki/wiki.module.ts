@@ -23,14 +23,14 @@ import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { OFFLINE_SITE_SCHEMA } from './services/database/wiki';
-import { AddonModWikiCreateLinkHandler } from './services/handlers/create-link';
-import { AddonModWikiEditLinkHandler } from './services/handlers/edit-link';
+import { getCreateLinkHandlerInstance } from './services/handlers/create-link';
+import { getEditLinkHandlerInstance } from './services/handlers/edit-link';
 import { AddonModWikiIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModWikiListLinkHandler } from './services/handlers/list-link';
 import { AddonModWikiModuleHandler } from './services/handlers/module';
-import { AddonModWikiPageOrMapLinkHandler } from './services/handlers/page-or-map-link';
-import { AddonModWikiPrefetchHandler } from './services/handlers/prefetch';
-import { AddonModWikiSyncCronHandler } from './services/handlers/sync-cron';
+import { getPageOrMapLinkHandlerInstance } from './services/handlers/page-or-map-link';
+import { getPrefetchHandlerInstance } from './services/handlers/prefetch';
+import { getCronHandlerInstance } from './services/handlers/sync-cron';
 import { AddonModWikiTagAreaHandler } from './services/handlers/tag-area';
 import { ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_PAGE_NAME } from './constants';
 
@@ -55,14 +55,15 @@ const routes: Routes = [
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
+                CoreContentLinksDelegate.registerHandler(getCreateLinkHandlerInstance());
+                CoreContentLinksDelegate.registerHandler(getEditLinkHandlerInstance());
+                CoreContentLinksDelegate.registerHandler(getPageOrMapLinkHandlerInstance());
+                CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
+                CoreCronDelegate.register(getCronHandlerInstance());
+
                 CoreCourseModuleDelegate.registerHandler(AddonModWikiModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModWikiPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModWikiSyncCronHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModWikiIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModWikiListLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModWikiCreateLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModWikiEditLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModWikiPageOrMapLinkHandler.instance);
                 CoreTagAreaDelegate.registerHandler(AddonModWikiTagAreaHandler.instance);
 
                 CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_WIKI_COMPONENT);

@@ -21,3 +21,9 @@ export const ADDON_MOD_WIKI_MANUAL_SYNCED = 'addon_mod_wiki_manual_synced';
 
 export const ADDON_MOD_WIKI_PAGE_CREATED_EVENT = 'addon_mod_wiki_page_created';
 export const ADDON_MOD_WIKI_RENEW_LOCK_TIME = 30000; // Milliseconds.
+
+export const ADDON_MOD_WIKI_FEATURE_NAME = 'CoreCourseModuleDelegate_AddonModWiki';
+
+export const ADDON_MOD_WIKI_PREFETCH_NAME = 'AddonModWiki';
+export const ADDON_MOD_WIKI_PREFETCH_MODNAME = 'wiki';
+export const ADDON_MOD_WIKI_PREFETCH_COMPONENT = ADDON_MOD_WIKI_COMPONENT;
