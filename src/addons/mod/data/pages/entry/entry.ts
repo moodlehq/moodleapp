@@ -30,8 +30,6 @@ import {
     AddonModDataData,
     AddonModDataGetDataAccessInformationWSResponse,
     AddonModDataField,
-    AddonModDataTemplateType,
-    AddonModDataTemplateMode,
     AddonModDataEntry,
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
@@ -42,6 +40,8 @@ import {
     ADDON_MOD_DATA_COMPONENT,
     ADDON_MOD_DATA_ENTRIES_PER_PAGE,
     ADDON_MOD_DATA_ENTRY_CHANGED,
+    AddonModDataTemplateType,
+    AddonModDataTemplateMode,
 } from '../../constants';
 
 /**

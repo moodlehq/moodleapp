@@ -31,8 +31,6 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     AddonModData,
     AddonModDataEntry,
-    AddonModDataTemplateType,
-    AddonModDataTemplateMode,
     AddonModDataField,
     AddonModDataGetDataAccessInformationWSResponse,
     AddonModDataData,
@@ -51,6 +49,8 @@ import {
     ADDON_MOD_DATA_ENTRIES_PER_PAGE,
     ADDON_MOD_DATA_ENTRY_CHANGED,
     ADDON_MOD_DATA_PAGE_NAME,
+    AddonModDataTemplateType,
+    AddonModDataTemplateMode,
 } from '../../constants';
 
 const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';

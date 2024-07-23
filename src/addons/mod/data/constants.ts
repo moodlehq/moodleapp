@@ -26,3 +26,41 @@ export const ADDON_MOD_DATA_AUTO_SYNCED = 'addon_mod_data_autom_synced';
 export const ADDON_MOD_DATA_PREFETCH_NAME = 'AddonModData';
 export const ADDON_MOD_DATA_PREFETCH_MODNAME = 'data';
 export const ADDON_MOD_DATA_PREFETCH_COMPONENT = ADDON_MOD_DATA_COMPONENT;
+
+export enum AddonModDataAction {
+    ADD = 'add',
+    EDIT = 'edit',
+    DELETE = 'delete',
+    APPROVE = 'approve',
+    DISAPPROVE = 'disapprove',
+    USER = 'user',
+    USERPICTURE = 'userpicture',
+    MORE = 'more',
+    MOREURL = 'moreurl',
+    COMMENTS = 'comments',
+    TIMEADDED = 'timeadded',
+    TIMEMODIFIED = 'timemodified',
+    TAGS = 'tags',
+    APPROVALSTATUS = 'approvalstatus',
+    APPROVALSTATUSCLASS = 'approvalstatusclass',
+    DELCHECK = 'delcheck', // Unused.
+    EXPORT = 'export', // Unused.
+    ACTIONSMENU = 'actionsmenu',
+    ID = 'id',
+}
+
+export enum AddonModDataTemplateType {
+    LIST_HEADER = 'listtemplateheader',
+    LIST = 'listtemplate',
+    LIST_FOOTER = 'listtemplatefooter',
+    ADD = 'addtemplate',
+    SEARCH = 'asearchtemplate',
+    SINGLE = 'singletemplate',
+}
+
+export enum AddonModDataTemplateMode {
+    LIST = 'list',
+    EDIT = 'edit',
+    SHOW = 'show',
+    SEARCH = 'search',
+}

@@ -23,13 +23,13 @@ import { ModalController } from '@singletons';
 import {
     AddonModDataField,
     AddonModDataData,
-    AddonModDataTemplateType,
     AddonModDataSearchEntriesAdvancedField,
 } from '../../services/data';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
 import { AddonModDataHelper } from '../../services/data-helper';
 import { AddonModDataComponentsCompileModule } from '../components-compile.module';
 import { AddonModDataSearchDataParams } from '../index';
+import { AddonModDataTemplateType } from '../../constants';
 
 /**
  * Page that displays the search modal.

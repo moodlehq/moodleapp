@@ -29,10 +29,10 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { AddonModData, AddonModDataData, AddonModDataAction } from './data';
+import { AddonModData, AddonModDataData } from './data';
 import { AddonModDataHelper } from './data-helper';
 import { AddonModDataOffline, AddonModDataOfflineAction } from './data-offline';
-import { ADDON_MOD_DATA_AUTO_SYNCED, ADDON_MOD_DATA_COMPONENT } from '../constants';
+import { ADDON_MOD_DATA_AUTO_SYNCED, ADDON_MOD_DATA_COMPONENT, AddonModDataAction } from '../constants';
 
 /**
  * Service to sync databases.

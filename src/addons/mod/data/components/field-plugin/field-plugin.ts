@@ -17,8 +17,9 @@ import { FormGroup } from '@angular/forms';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreFormFields } from '@singletons/form';
 import { AddonModDataEntryFieldInitialized, AddonModDataFieldPluginBaseComponent } from '../../classes/base-field-plugin-component';
-import { AddonModDataData, AddonModDataField, AddonModDataTemplateMode } from '../../services/data';
+import { AddonModDataData, AddonModDataField } from '../../services/data';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
+import { AddonModDataTemplateMode } from '../../constants';
 
 /**
  * Component that displays a database field plugin.

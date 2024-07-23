@@ -20,17 +20,20 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreEvents } from '@singletons/events';
 import {
-    AddonModDataAction,
     AddonModDataData,
     AddonModDataEntry,
     AddonModDataGetDataAccessInformationWSResponse,
-    AddonModDataTemplateMode,
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
 import { AddonModDataOffline } from '../../services/data-offline';
 import { CoreDomUtils } from '@services/utils/dom';
 import { AddonModDataActionsMenuComponent, AddonModDataActionsMenuItem } from '../actionsmenu/actionsmenu';
-import { ADDON_MOD_DATA_ENTRY_CHANGED, ADDON_MOD_DATA_PAGE_NAME } from '../../constants';
+import {
+    ADDON_MOD_DATA_ENTRY_CHANGED,
+    ADDON_MOD_DATA_PAGE_NAME,
+    AddonModDataAction,
+    AddonModDataTemplateMode,
+} from '../../constants';
 
 /**
  * Component that displays a database action.

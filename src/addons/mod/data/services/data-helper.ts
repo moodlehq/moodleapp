@@ -31,19 +31,22 @@ import {
     AddonModDataSearchEntriesOptions,
     AddonModDataEntries,
     AddonModDataEntryFields,
-    AddonModDataAction,
     AddonModDataGetEntryFormatted,
     AddonModDataData,
-    AddonModDataTemplateType,
     AddonModDataGetDataAccessInformationWSResponse,
-    AddonModDataTemplateMode,
     AddonModDataField,
     AddonModDataEntryWSField,
 } from './data';
 import { AddonModDataFieldsDelegate } from './data-fields-delegate';
 import { AddonModDataOffline, AddonModDataOfflineAction } from './data-offline';
 import { CoreFileEntry } from '@services/file-helper';
-import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_ENTRY_CHANGED } from '../constants';
+import {
+    ADDON_MOD_DATA_COMPONENT,
+    ADDON_MOD_DATA_ENTRY_CHANGED,
+    AddonModDataAction,
+    AddonModDataTemplateType,
+    AddonModDataTemplateMode,
+} from '../constants';
 
 /**
  * Service that provides helper functions for datas.
