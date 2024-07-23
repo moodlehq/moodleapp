@@ -211,7 +211,8 @@ export class CoreUrlUtilsProvider {
             url = this.addParamsToUrl(url, { token });
         }
 
-        return this.addParamsToUrl(url, { offline: '1' }); // Always send offline=1 (it's for external repositories).
+        // Always send offline=1 (it's for external repositories).
+        return this.addParamsToUrl(url, { offline: '1', lang: CoreLang.getCurrentLanguageSync(CoreLangFormat.LMS) });
     }
 
     /**

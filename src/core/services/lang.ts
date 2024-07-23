@@ -250,6 +250,19 @@ export class CoreLangProvider {
     }
 
     /**
+     * Get current language sync.
+     *
+     * @returns Current language or undefined.
+     */
+    getCurrentLanguageSync(format?: CoreLangFormat): string | undefined {
+        if (this.currentLanguage === undefined) {
+            return;
+        }
+
+        return format ? this.formatLanguage(this.currentLanguage, format) : this.currentLanguage;
+    }
+
+    /**
      * Update a language code to the given format.
      *
      * @param lang Language code.
