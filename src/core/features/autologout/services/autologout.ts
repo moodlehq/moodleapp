@@ -52,10 +52,12 @@ export class CoreAutoLogoutService {
      */
     initialize(): void {
         CoreEvents.on(CoreEvents.LOGIN, async() => await this.refreshListeners());
-        CoreEvents.on(CoreEvents.LOGOUT, async() => {
+        CoreEvents.on(CoreEvents.LOGOUT, async({ siteId }) => {
             this.cancelListeners();
-            const storage = CoreStorage.forCurrentSite();
-            await storage.remove(CoreAutoLogoutService.TIMESTAMP_DB_KEY);
+
+            const site = await CoreSites.getSite(siteId);
+
+            await CoreStorage.forSite(site).remove(CoreAutoLogoutService.TIMESTAMP_DB_KEY);
         });
     }
 
