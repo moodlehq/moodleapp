@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants, DownloadStatus } from '@/core/constants';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import {
     CoreCourseHelper,
@@ -25,6 +25,7 @@ import {
     CoreCourseModulePrefetchDelegate,
     CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourseAnyCourseData, CoreCourses } from '@features/courses/services/courses';
+import { AccordionGroupChangeEventDetail, IonAccordionGroup } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -40,10 +41,12 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 @Component({
     selector: 'page-addon-storagemanager-course-storage',
     templateUrl: 'course-storage.html',
-    styleUrls: ['course-storage.scss'],
+    styleUrl: 'course-storage.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
+
+    @ViewChild('accordionGroup', { static: true }) accordionGroup!: IonAccordionGroup;
 
     courseId!: number;
     title = '';
@@ -64,7 +67,6 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
     statusDownloaded = DownloadStatus.DOWNLOADED;
 
-    protected initialSectionId?: number;
     protected siteUpdatedObserver?: CoreEventObserver;
     protected courseStatusObserver?: CoreEventObserver;
     protected sectionStatusObserver?: CoreEventObserver;
@@ -106,7 +108,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         this.isGuest = CoreNavigator.getRouteBooleanParam('isGuest') ??
             (await CoreCourseHelper.courseUsesGuestAccessInfo(this.courseId)).guestAccess;
 
-        this.initialSectionId = CoreNavigator.getRouteNumberParam('sectionId');
+        const initialSectionId = CoreNavigator.getRouteNumberParam('sectionId');
 
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
         this.downloadEnabled = !CoreSites.getRequiredCurrentSite().isOfflineDisabled();
@@ -118,7 +120,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                 ...section,
                 totalSize: 0,
                 calculatingSize: true,
-                expanded: section.id === this.initialSectionId,
+                expanded: section.id === initialSectionId,
                 modules: section.modules.map(module => ({
                     ...module,
                     calculatingSize: true,
@@ -127,9 +129,11 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         this.loaded = true;
 
+        this.accordionGroup.value = String(initialSectionId);
+
         CoreDom.scrollToElement(
             this.elementRef.nativeElement,
-            '.core-course-storage-section-expanded',
+            '.accordion-expanded',
             { addYAxis: -10 },
         );
 
@@ -719,12 +723,17 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      * Toggle expand status.
      *
      * @param event Event object.
-     * @param section Section to expand / collapse.
      */
-    toggleExpand(event: Event, section: AddonStorageManagerCourseSection): void {
-        section.expanded = !section.expanded;
-        event.stopPropagation();
-        event.preventDefault();
+    accordionGroupChange(event: AccordionGroupChangeEventDetail): void {
+        this.sections.forEach((section) => {
+            section.expanded = false;
+        });
+        event.value.forEach((sectionId) => {
+            const section = this.sections.find((section) => section.id === Number(sectionId));
+            if (section) {
+                section.expanded = true;
+            }
+        });
     }
 
     /**

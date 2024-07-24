@@ -8,11 +8,18 @@
     }
 
     ion-card.section {
-        ion-card-header {
+        ion-item.card-header {
             padding: 0;
+            --border-width: 0px;
 
             .item-heading {
                 font: var(--mdl-typography-heading4-font);
+            }
+        }
+
+        .accordion-expanded {
+            ion-item.card-header {
+                --border-width: 0 0 1px 0;
             }
         }
         ion-card-content {
