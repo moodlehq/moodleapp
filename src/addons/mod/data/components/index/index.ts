@@ -31,8 +31,6 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     AddonModData,
     AddonModDataEntry,
-    AddonModDataTemplateType,
-    AddonModDataTemplateMode,
     AddonModDataField,
     AddonModDataGetDataAccessInformationWSResponse,
     AddonModDataData,
@@ -40,7 +38,7 @@ import {
 } from '../../services/data';
 import { AddonModDataHelper, AddonModDatDisplayFieldsOptions } from '../../services/data-helper';
 import { AddonModDataAutoSyncData, AddonModDataSyncResult } from '../../services/data-sync';
-import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch';
+import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch-lazy';
 import { AddonModDataComponentsCompileModule } from '../components-compile.module';
 import { AddonModDataSearchComponent } from '../search/search';
 import { CoreUrlUtils } from '@services/utils/url';
@@ -51,6 +49,8 @@ import {
     ADDON_MOD_DATA_ENTRIES_PER_PAGE,
     ADDON_MOD_DATA_ENTRY_CHANGED,
     ADDON_MOD_DATA_PAGE_NAME,
+    AddonModDataTemplateType,
+    AddonModDataTemplateMode,
 } from '../../constants';
 
 const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';

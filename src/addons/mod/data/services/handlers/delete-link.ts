@@ -12,18 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { asyncInstance } from '@/core/utils/async-instance';
+import { ADDON_MOD_DATA_FEATURE_NAME } from '@addons/mod/data/constants';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
-import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { makeSingleton } from '@singletons';
-import { AddonModDataHelper } from '../data-helper';
-import { ADDON_MOD_DATA_FEATURE_NAME } from '../../constants';
+import { CoreContentLinksAction, CoreContentLinksHandler } from '@features/contentlinks/services/contentlinks-delegate';
+import type { AddonModDataDeleteLinkHandlerLazyService } from '@addons/mod/data/services/handlers/delete-link-lazy';
 
-/**
- * Content links handler for database delete entry.
- * Match mod/data/view.php?d=6&delete=5 with a valid data id and entryid.
- */
-@Injectable({ providedIn: 'root' })
 export class AddonModDataDeleteLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModDataDeleteLinkHandler';
@@ -35,26 +29,41 @@ export class AddonModDataDeleteLinkHandlerService extends CoreContentLinksHandle
      */
     getActions(siteIds: string[], url: string, params: Record<string, string>, courseId?: number): CoreContentLinksAction[] {
         return [{
-            action: async (siteId): Promise<void> => {
-                const dataId = parseInt(params.d, 10);
-                const entryId = parseInt(params.delete, 10);
-
-                await AddonModDataHelper.showDeleteEntryModal(dataId, entryId, courseId, siteId);
-            },
+            action: (siteId) => this.handleAction(siteId, params, courseId),
         }];
     }
 
     /**
-     * @inheritdoc
+     * Handle link action.
+     *
+     * @param siteId Site id.
+     * @param params Params.
+     * @param courseId Course id.
      */
-    async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        if (params.d === undefined || params.delete === undefined) {
-            // Required fields not defined. Cannot treat the URL.
-            return false;
-        }
-
-        return true;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async handleAction(siteId: string, params: Record<string, string>, courseId?: number): Promise<void> {
+        // Stub to override.
     }
 
 }
-export const AddonModDataDeleteLinkHandler = makeSingleton(AddonModDataDeleteLinkHandlerService);
+
+/**
+ * Get delete link handler instance.
+ *
+ * @returns Link handler.
+ */
+export function getDeleteLinkHandlerInstance(): CoreContentLinksHandler {
+    const lazyHandler = asyncInstance<
+        AddonModDataDeleteLinkHandlerLazyService,
+        AddonModDataDeleteLinkHandlerService
+    >(async () => {
+        const { AddonModDataDeleteLinkHandler } = await import('./delete-link-lazy');
+
+        return AddonModDataDeleteLinkHandler.instance;
+    });
+
+    lazyHandler.setEagerInstance(new AddonModDataDeleteLinkHandlerService());
+    lazyHandler.setLazyOverrides(['isEnabled', 'handleAction']);
+
+    return lazyHandler;
+}

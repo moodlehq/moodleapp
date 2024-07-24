@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSiteSchema } from '@services/sites';
-import { AddonModDataAction } from '../data';
+import { AddonModDataAction } from '../../constants';
 
 /**
  * Database variables for AddonModDataOfflineProvider.

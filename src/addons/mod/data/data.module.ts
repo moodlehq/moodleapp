@@ -22,15 +22,15 @@ import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { ADDON_MOD_DATA_OFFLINE_SITE_SCHEMA } from './services/database/data';
-import { AddonModDataApproveLinkHandler } from './services/handlers/approve-link';
-import { AddonModDataDeleteLinkHandler } from './services/handlers/delete-link';
-import { AddonModDataEditLinkHandler } from './services/handlers/edit-link';
+import { getApproveLinkHandlerInstance } from './services/handlers/approve-link';
+import { getDeleteLinkHandlerInstance } from './services/handlers/delete-link';
+import { getEditLinkHandlerInstance } from './services/handlers/edit-link';
 import { AddonModDataIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModDataListLinkHandler } from './services/handlers/list-link';
 import { AddonModDataModuleHandler } from './services/handlers/module';
-import { AddonModDataPrefetchHandler } from './services/handlers/prefetch';
-import { AddonModDataShowLinkHandler } from './services/handlers/show-link';
-import { AddonModDataSyncCronHandler } from './services/handlers/sync-cron';
+import { getPrefetchHandlerInstance } from './services/handlers/prefetch';
+import { getShowLinkHandlerInstance } from './services/handlers/show-link';
+import { getCronHandlerInstance } from './services/handlers/sync-cron';
 import { AddonModDataTagAreaHandler } from './services/handlers/tag-area';
 import { AddonModDataFieldModule } from './fields/field.module';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -58,15 +58,16 @@ const routes: Routes = [
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
+                CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
+                CoreCronDelegate.register(getCronHandlerInstance());
+                CoreContentLinksDelegate.registerHandler(getApproveLinkHandlerInstance());
+                CoreContentLinksDelegate.registerHandler(getDeleteLinkHandlerInstance());
+                CoreContentLinksDelegate.registerHandler(getShowLinkHandlerInstance());
+                CoreContentLinksDelegate.registerHandler(getEditLinkHandlerInstance());
+
                 CoreCourseModuleDelegate.registerHandler(AddonModDataModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModDataPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModDataSyncCronHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModDataIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModDataListLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModDataApproveLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModDataDeleteLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModDataShowLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModDataEditLinkHandler.instance);
                 CoreTagAreaDelegate.registerHandler(AddonModDataTagAreaHandler.instance);
 
                 CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_DATA_COMPONENT);

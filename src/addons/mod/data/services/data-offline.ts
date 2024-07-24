@@ -20,8 +20,9 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CorePath } from '@singletons/path';
-import { AddonModDataAction, AddonModDataEntryWSField } from './data';
+import { AddonModDataEntryWSField } from './data';
 import { AddonModDataEntryDBRecord, DATA_ENTRY_TABLE } from './database/data';
+import { AddonModDataAction } from '../constants';
 
 /**
  * Service to handle Offline data.

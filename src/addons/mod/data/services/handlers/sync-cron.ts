@@ -12,32 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { asyncInstance } from '@/core/utils/async-instance';
 import { CoreCronHandler } from '@services/cron';
-import { makeSingleton } from '@singletons';
-import { AddonModDataSync } from '../data-sync';
+import type { AddonModDataSyncCronHandlerLazyService } from '@addons/mod/data/services/handlers/sync-cron-lazy';
 
-/**
- * Synchronization cron handler.
- */
-@Injectable({ providedIn: 'root' })
-export class AddonModDataSyncCronHandlerService implements CoreCronHandler {
+export class AddonModDataSyncCronHandlerService {
 
     name = 'AddonModDataSyncCronHandler';
 
-    /**
-     * @inheritdoc
-     */
-    execute(siteId?: string, force?: boolean): Promise<void> {
-        return AddonModDataSync.syncAllDatabases(siteId, force);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getInterval(): number {
-        return AddonModDataSync.syncInterval;
-    }
-
 }
-export const AddonModDataSyncCronHandler = makeSingleton(AddonModDataSyncCronHandlerService);
+
+/**
+ * Get cron handler instance.
+ *
+ * @returns Cron handler.
+ */
+export function getCronHandlerInstance(): CoreCronHandler {
+    const lazyHandler = asyncInstance<
+        AddonModDataSyncCronHandlerLazyService,
+        AddonModDataSyncCronHandlerService
+    >(async () => {
+        const { AddonModDataSyncCronHandler } = await import('./sync-cron-lazy');
+
+        return AddonModDataSyncCronHandler.instance;
+    });
+
+    lazyHandler.setEagerInstance(new AddonModDataSyncCronHandlerService());
+    lazyHandler.setLazyMethods(['execute', 'getInterval']);
+
+    return lazyHandler;
+}

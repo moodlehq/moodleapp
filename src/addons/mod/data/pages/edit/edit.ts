@@ -31,7 +31,6 @@ import {
     AddonModDataData,
     AddonModDataField,
     AddonModData,
-    AddonModDataTemplateType,
     AddonModDataEntry,
     AddonModDataEntryFields,
     AddonModDataEditEntryResult,
@@ -44,7 +43,7 @@ import { AddonModDataEntryFieldInitialized } from '../../classes/base-field-plug
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_ENTRY_CHANGED } from '../../constants';
+import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_ENTRY_CHANGED, AddonModDataTemplateType } from '../../constants';
 
 /**
  * Page that displays the view edit page.
