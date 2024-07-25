@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild, ElementRef, Optional } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreNetworkError } from '@classes/errors/network-error';
-import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CanLeave } from '@guards/can-leave';
 import { CoreFileEntry } from '@services/file-helper';
@@ -83,7 +82,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
     protected isDestroyed = false;
     protected saved = false;
 
-    constructor(protected route: ActivatedRoute, @Optional() protected splitView: CoreSplitViewComponent) {}
+    constructor(protected route: ActivatedRoute) {}
 
     /**
      * @inheritdoc
@@ -109,8 +108,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
             }
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
-
-            this.goBack();
+            CoreNavigator.back();
 
             return;
         }
@@ -144,8 +142,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
             });
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingglossary', true);
-
-            this.goBack();
+            CoreNavigator.back();
         }
     }
 
@@ -223,7 +220,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
             CoreForms.triggerFormSubmittedEvent(this.formElement, savedOnline, CoreSites.getCurrentSiteId());
 
-            this.goBack();
+            CoreNavigator.back();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.cannoteditentry', true);
         } finally {
@@ -247,17 +244,6 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
         }
 
         return CoreFileUploader.areFileListDifferent(this.data.attachments, this.originalData.attachments);
-    }
-
-    /**
-     * Helper function to go back.
-     */
-    protected goBack(): void {
-        if (this.splitView?.outletActivated) {
-            CoreNavigator.navigate('../../');
-        } else {
-            CoreNavigator.back();
-        }
     }
 
 }
