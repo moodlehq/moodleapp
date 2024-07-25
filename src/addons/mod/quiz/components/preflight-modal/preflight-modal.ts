@@ -22,6 +22,7 @@ import { ModalController, Translate } from '@singletons';
 import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-delegate';
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '../../services/quiz';
 import { CoreDom } from '@singletons/dom';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Modal that renders the access rules for a quiz.
@@ -29,6 +30,10 @@ import { CoreDom } from '@singletons/dom';
 @Component({
     selector: 'page-addon-mod-quiz-preflight-modal',
     templateUrl: 'preflight-modal.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModQuizPreflightModalComponent implements OnInit {
 

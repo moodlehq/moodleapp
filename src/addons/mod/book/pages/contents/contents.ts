@@ -38,7 +38,7 @@ import {
     AddonModBookTocChapter,
 } from '../../services/book';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { ADDON_MOD_BOOK_COMPONENT, AddonModBookNavStyle } from '../../constants';
 
 /**
@@ -293,7 +293,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
             ws: 'mod_book_view_book',
             name: this.module.name,
             data: { id: this.module.instance, category: 'book', chapterid: chapterId },
-            url: CoreUrlUtils.addParamsToUrl(`/mod/book/view.php?id=${this.module.id}`, { chapterid: chapterId }),
+            url: CoreUrl.addParamsToUrl(`/mod/book/view.php?id=${this.module.id}`, { chapterid: chapterId }),
         });
 
         const currentChapterIndex = this.chapters.findIndex((chapter) => chapter.id == chapterId);

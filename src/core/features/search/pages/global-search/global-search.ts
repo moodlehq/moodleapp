@@ -19,7 +19,7 @@ import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import {
     CoreSearchGlobalSearchResult,
@@ -115,7 +115,7 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
                     query,
                     filters: JSON.stringify(this.resultsSource.getFilters()),
                 },
-                url: CoreUrlUtils.addParamsToUrl('/search/index.php', {
+                url: CoreUrl.addParamsToUrl('/search/index.php', {
                     q: query,
                 }),
             });

@@ -69,8 +69,7 @@ jobs:
         cat circular-dependencies
         lines=$(cat circular-dependencies | wc -l)
         echo "Total circular dependencies: $lines"
-        test $lines -ge 138
-        test $lines -le 148
+        test $lines -eq 135
     - name: JavaScript code compatibility
       run: |
         npx check-es-compat www/*.js --polyfills="\{Array,String,TypedArray\}.prototype.at,Object.hasOwn"

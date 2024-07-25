@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 
 @Component({
     selector: 'core-audio-histogram',
     templateUrl: 'audio-histogram.html',
-    styleUrls: ['audio-histogram.scss'],
+    styleUrl: 'audio-histogram.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, OnDestroy {
 

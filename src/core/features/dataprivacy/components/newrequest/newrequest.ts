@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {
@@ -29,6 +30,10 @@ import { ModalController } from '@singletons';
 @Component({
     selector: 'core-data-privacy-new-request',
     templateUrl: 'newrequest.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreDataPrivacyNewRequestComponent implements OnInit {
 

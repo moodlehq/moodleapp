@@ -21,6 +21,7 @@ import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CorePromisedValue } from '@classes/promised-value';
 import { AsyncDirective } from '@classes/async-directive';
 import { CorePlatform } from '@services/platform';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Component to show a loading spinner and message while data is being loaded.
@@ -72,13 +73,13 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
 
         // Throttle 20ms to let mutations resolve.
         const throttleMutation = CoreUtils.throttle(async () => {
-            await CoreUtils.nextTick();
+            await CoreWait.nextTick();
             if (!this.loaded) {
                 return;
             }
 
             this.element.style.display = 'inline';
-            await CoreUtils.nextTick();
+            await CoreWait.nextTick();
             this.element.style.removeProperty('display');
         }, 20);
 

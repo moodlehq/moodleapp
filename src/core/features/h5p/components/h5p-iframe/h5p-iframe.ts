@@ -22,7 +22,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { DownloadStatus } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
@@ -140,7 +140,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
                 );
 
                 // Add the preventredirect param so the user can authenticate.
-                this.iframeSrc = CoreUrlUtils.addParamsToUrl(src, { preventredirect: false });
+                this.iframeSrc = CoreUrl.addParamsToUrl(src, { preventredirect: false });
             }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading H5P package.', true);

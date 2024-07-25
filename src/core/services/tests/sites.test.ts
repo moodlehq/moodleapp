@@ -22,7 +22,7 @@ import { Http } from '@singletons';
 import { of } from 'rxjs';
 import { CoreSite } from '@classes/sites/site';
 import { CoreHTMLClasses } from '@singletons/html-classes';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from '@singletons/wait';
 
 describe('CoreSitesProvider', () => {
 
@@ -74,7 +74,7 @@ describe('CoreSitesProvider', () => {
 
         CoreEvents.trigger(CoreEvents.LOGIN, {}, '42');
         // Wait the event to be processed.
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         expect(document.documentElement.classList.contains('theme-site-'+themeName)).toBe(true);
         expect(document.documentElement.classList.contains('theme-site-'+themeName2)).toBe(false);
@@ -86,7 +86,7 @@ describe('CoreSitesProvider', () => {
         CoreEvents.trigger(CoreEvents.SITE_UPDATED, site.infos , '42');
 
         // Wait the event to be processed.
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         expect(document.documentElement.classList.contains('theme-site-'+themeName2)).toBe(true);
         expect(document.documentElement.classList.contains('theme-site-'+themeName)).toBe(false);
@@ -99,7 +99,7 @@ describe('CoreSitesProvider', () => {
         CoreEvents.trigger(CoreEvents.SITE_ADDED, site.infos , '42');
 
         // Wait the event to be processed.
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         expect(document.documentElement.classList.contains('theme-site-'+themeName2)).toBe(true);
         expect(document.documentElement.classList.contains('theme-site-'+themeName)).toBe(false);

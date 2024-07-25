@@ -32,6 +32,7 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreError } from '@classes/errors/error';
 import { CoreTextErrorObject, CoreTextUtils } from '@services/utils/text';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Service to sync messages.
@@ -252,7 +253,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
             // In some Moodle versions, wait 1 second to make sure timecreated is different.
             // This is because there was a bug where messages with the same timecreated had a wrong order.
             if (!groupMessagingEnabled && i < messages.length - 1) {
-                await CoreUtils.wait(1000);
+                await CoreWait.wait(1000);
             }
         }
 

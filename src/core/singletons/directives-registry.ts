@@ -14,7 +14,7 @@
 
 import { Directive } from '@angular/core';
 import { AsyncDirective } from '@classes/async-directive';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from './wait';
 import { CoreLogger } from './logger';
 
 /**
@@ -135,7 +135,7 @@ export class CoreDirectivesRegistry {
         }));
 
         // Wait for next tick to ensure directives are completely rendered.
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         // Check if there are new elements now that the found elements are ready (there could be nested elements).
         if (elements.length !== findElements().length) {
@@ -181,7 +181,7 @@ export class CoreDirectivesRegistry {
         }));
 
         // Wait for next tick to ensure directives are completely rendered.
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         // Check if there are new elements now that the found elements are ready (there could be nested elements).
         const elementsAfterReady = directives.reduce((elements, directive) => {

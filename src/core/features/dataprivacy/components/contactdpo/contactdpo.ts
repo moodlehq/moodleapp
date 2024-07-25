@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreDataPrivacy } from '@features/dataprivacy/services/dataprivacy';
@@ -28,6 +29,11 @@ import { ModalController } from '@singletons';
 @Component({
     selector: 'core-data-privacy-contact-dpo',
     templateUrl: 'contactdpo.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
+
 })
 export class CoreDataPrivacyContactDPOComponent implements OnInit {
 

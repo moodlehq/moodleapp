@@ -18,7 +18,7 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
 import { CoreDomUtils } from '@services/utils/dom';
 import { ItemReorderEventDetail } from '@ionic/angular';
 import { Translate } from '@singletons';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from '@singletons/wait';
 import { CorePlatform } from '@services/platform';
 
 /**
@@ -153,7 +153,7 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
             complete: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
         });
 
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         // When moving an item to the first or last position, the button that was clicked will be hidden. In this case, we need to
         // focus the other button. Otherwise, re-focus the same button since the focus is lost in some cases.

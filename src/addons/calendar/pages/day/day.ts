@@ -47,7 +47,7 @@ import {
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-source';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
 
 /**
@@ -201,7 +201,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
                     ...params,
                     category: 'calendar',
                 },
-                url: CoreUrlUtils.addParamsToUrl('/calendar/view.php?view=day', params),
+                url: CoreUrl.addParamsToUrl('/calendar/view.php?view=day', params),
             });
         });
     }

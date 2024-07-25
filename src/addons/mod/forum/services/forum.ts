@@ -24,7 +24,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning, CoreWSStoredFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -1312,7 +1312,7 @@ export class AddonModForumProvider {
     protected translateWSPost(post: AddonModForumWSPost): AddonModForumPost {
         (post as unknown as AddonModForumPost).tags = (post.tags || []).map((tag) => {
             const viewUrl = (tag.urls && tag.urls.view) || '';
-            const params = CoreUrlUtils.extractUrlParams(viewUrl);
+            const params = CoreUrl.extractUrlParams(viewUrl);
 
             return {
                 id: tag.tagid,

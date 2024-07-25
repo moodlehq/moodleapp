@@ -42,6 +42,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreRefreshContext, CORE_REFRESH_CONTEXT } from '@/core/utils/refresh-context';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { CoreSites } from '@services/sites';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Page that displays the contents of a course.
@@ -411,7 +412,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
             this.changeDetectorRef.detectChanges();
 
             if (scrollTop > 0) {
-                await CoreUtils.nextTick();
+                await CoreWait.nextTick();
                 this.content?.scrollToPoint(0, scrollTop, 0);
             }
         }

@@ -23,7 +23,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -463,7 +463,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
             // Mark the retake as finished in a sync if it can be reviewed.
             if (!ignoreBlock && response.data?.reviewlesson) {
-                const params = CoreUrlUtils.extractUrlParams(<string> response.data.reviewlesson.value);
+                const params = CoreUrl.extractUrlParams(<string> response.data.reviewlesson.value);
                 if (params.pageid) {
                     // The retake can be reviewed, mark it as finished. Don't block the user for this.
                     this.setRetakeFinishedInSync(lessonId, retake.retake, Number(params.pageid), siteId);

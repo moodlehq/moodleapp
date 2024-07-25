@@ -25,12 +25,12 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CorePolicy, CorePolicyAgreementStyle, CorePolicySitePolicy } from '@features/policy/services/policy';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { IonContent } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
 import { Subscription } from 'rxjs';
 import { CoreDom } from '@singletons/dom';
-import { CorePolicyViewPolicyModalComponent } from '@features/policy/components/policy-modal/policy-modal';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Page to accept a site policy.
@@ -223,7 +223,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
             ws: 'tool_policy_get_user_acceptances',
             name: this.currentPolicy.name,
             data: analyticsParams,
-            url: CoreUrlUtils.addParamsToUrl('/admin/tool/policy/view.php', analyticsParams),
+            url: CoreUrl.addParamsToUrl('/admin/tool/policy/view.php', analyticsParams),
         });
     }
 
@@ -236,7 +236,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
             ws: 'tool_policy_get_user_acceptances',
             name: Translate.instant('core.policy.consentpagetitle'),
             data: {},
-            url: CoreUrlUtils.addParamsToUrl('/admin/tool/policy/index.php'),
+            url: CoreUrl.addParamsToUrl('/admin/tool/policy/index.php'),
         });
     }
 
@@ -338,7 +338,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
      * Check if the content has scroll.
      */
     protected async checkScroll(): Promise<void> {
-        await CoreUtils.wait(400);
+        await CoreWait.wait(400);
 
         const scrollElement = await this.content?.getScrollElement();
 
@@ -464,7 +464,10 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
      *
      * @param policy Policy.
      */
-    viewFullPolicy(policy: CorePolicySitePolicy): void {
+    async viewFullPolicy(policy: CorePolicySitePolicy): Promise<void> {
+        const { CorePolicyViewPolicyModalComponent } =
+            await import('@features/policy/components/policy-modal/policy-modal');
+
         CoreDomUtils.openModal({
             component: CorePolicyViewPolicyModalComponent,
             componentProps: { policy },

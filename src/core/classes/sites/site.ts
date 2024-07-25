@@ -27,7 +27,7 @@ import {
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils, CoreUtilsOpenInBrowserOptions } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
@@ -380,7 +380,7 @@ export class CoreSite extends CoreAuthenticatedSite {
         const accessKey = this.tokenPluginFileWorks || this.tokenPluginFileWorks === undefined ?
             this.infos && this.infos.userprivateaccesskey : undefined;
 
-        return CoreUrlUtils.fixPluginfileURL(url, this.token || '', this.siteUrl, accessKey);
+        return CoreUrl.fixPluginfileURL(url, this.token || '', this.siteUrl, accessKey);
     }
 
     /**
@@ -775,7 +775,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      * @returns Promise resolved with boolean: whether it works or not.
      */
     checkTokenPluginFile(url: string): Promise<boolean> {
-        if (!CoreUrlUtils.canUseTokenPluginFile(url, this.siteUrl, this.infos && this.infos.userprivateaccesskey)) {
+        if (!CoreUrl.canUseTokenPluginFile(url, this.siteUrl, this.infos && this.infos.userprivateaccesskey)) {
             // Cannot use tokenpluginfile.
             return Promise.resolve(false);
         } else if (this.tokenPluginFileWorks !== undefined) {

@@ -18,7 +18,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreNetwork } from '@services/network';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreGroups } from '@services/groups';
 import { CoreLocalNotifications } from '@services/local-notifications';
@@ -362,14 +362,14 @@ export class AddonCalendarProvider {
                 // Add links to the days if needed.
                 if (dayStart && (!seenDay || !moment(seenDay).isSame(start, 'day'))) {
                     promises.push(this.getViewUrl('day', event.timestart, undefined, siteId).then((url) => {
-                        dayStart = CoreUrlUtils.buildLink(url, dayStart);
+                        dayStart = CoreUrl.buildLink(url, dayStart);
 
                         return;
                     }));
                 }
                 if (dayEnd && (!seenDay || !moment(seenDay).isSame(end, 'day'))) {
                     promises.push(this.getViewUrl('day', end / 1000, undefined, siteId).then((url) => {
-                        dayEnd = CoreUrlUtils.buildLink(url, dayEnd);
+                        dayEnd = CoreUrl.buildLink(url, dayEnd);
 
                         return;
                     }));
@@ -398,7 +398,7 @@ export class AddonCalendarProvider {
         // Add link to view the day.
         const url = await this.getViewUrl('day', event.timestart, undefined, siteId);
 
-        return CoreUrlUtils.buildLink(url, this.getDayRepresentation(start, useCommonWords)) + ', ' + time;
+        return CoreUrl.buildLink(url, this.getDayRepresentation(start, useCommonWords)) + ', ' + time;
     }
 
     /**

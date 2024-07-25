@@ -26,7 +26,7 @@ import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { CoreCategoryData, CoreCourses } from '@features/courses/services/courses';
 import { CoreConstants } from '@/core/constants';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 
@@ -103,7 +103,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
                     ...params,
                     category: 'calendar',
                 },
-                url: CoreUrlUtils.addParamsToUrl('/calendar/view.php?view=upcoming', params),
+                url: CoreUrl.addParamsToUrl('/calendar/view.php?view=upcoming', params),
             });
         });
     }

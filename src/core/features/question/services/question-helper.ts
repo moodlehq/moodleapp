@@ -27,7 +27,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreQuestion, CoreQuestionProvider, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from './question';
 import { CoreQuestionDelegate } from './question-delegate';
 import { CoreIcons } from '@singletons/icons';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { ContextLevel } from '@/core/constants';
 import { CoreIonicColorNames } from '@singletons/colors';
 
@@ -681,7 +681,7 @@ export class CoreQuestionHelperProvider {
                 return;
             }
 
-            if (CoreUrlUtils.isThemeImageUrl(fileUrl) && fileUrl.indexOf('flagged') > -1) {
+            if (CoreUrl.isThemeImageUrl(fileUrl) && fileUrl.indexOf('flagged') > -1) {
                 // Ignore flag images.
                 return;
             }

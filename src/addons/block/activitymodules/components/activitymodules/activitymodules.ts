@@ -22,7 +22,7 @@ import { Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -103,7 +103,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
                 brandedIcons[mod.modname] = mod.branded;
 
                 // If this is not a theme image, leave it undefined to avoid having specific activity icons.
-                if (CoreUrlUtils.isThemeImageUrl(mod.modicon)) {
+                if (CoreUrl.isThemeImageUrl(mod.modicon)) {
                     modIcons[mod.modname] = mod.modicon;
                 }
             });

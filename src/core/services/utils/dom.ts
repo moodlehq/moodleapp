@@ -21,7 +21,7 @@ import { CoreConfig } from '@services/config';
 import { CoreFile } from '@services/file';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreTextUtils, CoreTextErrorObject } from '@services/utils/text';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
@@ -43,7 +43,6 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreBSTooltipComponent } from '@components/bs-tooltip/bs-tooltip';
-import { CoreViewerImageComponent } from '@features/viewer/components/image/image';
 import { CoreModalLateralTransitionEnter, CoreModalLateralTransitionLeave } from '@classes/modal-lateral-transition';
 import { CoreSites } from '@services/sites';
 import { NavigationStart } from '@angular/router';
@@ -60,6 +59,7 @@ import { CorePasswordModalParams, CorePasswordModalResponse } from '@components/
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreErrorLogs } from '@singletons/error-logs';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreWait } from '@singletons/wait';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -334,7 +334,7 @@ export class CoreDomUtilsProvider {
             elementToFocus.focus();
 
             if (elementToFocus === document.activeElement || (isIonButton && element === document.activeElement)) {
-                await CoreUtils.nextTick();
+                await CoreWait.nextTick();
                 if (CorePlatform.isAndroid() && this.supportsInputKeyboard(elementToFocus)) {
                     // On some Android versions the keyboard doesn't open automatically.
                     CoreKeyboard.open();
@@ -343,7 +343,7 @@ export class CoreDomUtilsProvider {
             }
 
             // @TODO Probably a Mutation Observer would get this working.
-            await CoreUtils.wait(50);
+            await CoreWait.wait(50);
             retries--;
         }
     }
@@ -710,7 +710,10 @@ export class CoreDomUtilsProvider {
         media.forEach((media: HTMLElement) => {
             const currentSrc = media.getAttribute('src');
             const newSrc = currentSrc ?
-                paths[CoreUrlUtils.removeUrlParams(CoreTextUtils.decodeURIComponent(currentSrc))] :
+                paths[CoreUrl.removeUrlParts(
+                    CoreTextUtils.decodeURIComponent(currentSrc),
+                    [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment],
+                )] :
                 undefined;
 
             if (newSrc !== undefined) {
@@ -732,7 +735,10 @@ export class CoreDomUtilsProvider {
         anchors.forEach((anchor: HTMLElement) => {
             const currentHref = anchor.getAttribute('href');
             const newHref = currentHref ?
-                paths[CoreUrlUtils.removeUrlParams(CoreTextUtils.decodeURIComponent(currentHref))] :
+                paths[CoreUrl.removeUrlParts(
+                    CoreTextUtils.decodeURIComponent(currentHref),
+                    [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment],
+                )] :
                 undefined;
 
             if (newHref !== undefined) {
@@ -1648,6 +1654,7 @@ export class CoreDomUtilsProvider {
         if (!image) {
             return;
         }
+        const { CoreViewerImageComponent } = await import('@features/viewer/components/image/image');
 
         await CoreDomUtils.openModal({
             component: CoreViewerImageComponent,
@@ -1762,7 +1769,7 @@ export class CoreDomUtilsProvider {
         }
 
         // Wait a bit and try again.
-        await CoreUtils.wait(50);
+        await CoreWait.wait(50);
 
         return this.waitForResizeDone(windowWidth, windowHeight, retries+1);
     }

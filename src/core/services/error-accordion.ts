@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Translate, makeSingleton } from '@singletons';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from '@singletons/wait';
 import { CoreDom } from '@singletons/dom';
 import { CoreForms } from '@singletons/form';
 import { CoreLogger } from '@singletons/logger';
@@ -113,7 +113,7 @@ export class CoreErrorAccordionService {
         wrapper.style.setProperty('--description-height', `${description.clientHeight}px`);
         wrapper.classList.add('hydrated');
 
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         hideText.style.display = 'revert';
     }

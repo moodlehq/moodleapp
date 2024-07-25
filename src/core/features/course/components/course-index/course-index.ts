@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import {
     CoreCourse,
@@ -23,7 +24,7 @@ import { CoreCourseFormatDelegate } from '@features/course/services/format-deleg
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from '@singletons/wait';
 import { ModalController } from '@singletons';
 import { CoreDom } from '@singletons/dom';
 
@@ -33,7 +34,11 @@ import { CoreDom } from '@singletons/dom';
 @Component({
     selector: 'core-course-course-index',
     templateUrl: 'course-index.html',
-    styleUrls: ['course-index.scss'],
+    styleUrl: 'course-index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCourseCourseIndexComponent implements OnInit {
 
@@ -118,11 +123,11 @@ export class CoreCourseCourseIndexComponent implements OnInit {
         this.highlighted = CoreCourseFormatDelegate.getSectionHightlightedName(this.course);
 
         // Wait a bit to render the data, otherwise the modal takes a while to appear in big courses or slow devices.
-        await CoreUtils.wait(400);
+        await CoreWait.wait(400);
 
         this.loaded = true;
 
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         CoreDom.scrollToElement(
             this.elementRef.nativeElement,

@@ -59,7 +59,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSite } from '@classes/sites/site';
 import { CoreFile } from '@services/file';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
@@ -710,7 +710,7 @@ export class CoreCourseHelperProvider {
             options,
         );
 
-        if (CoreUrlUtils.isLocalFileUrl(result.path)) {
+        if (CoreUrl.isLocalFileUrl(result.path)) {
             return CoreUtils.openFile(result.path, options);
         }
 

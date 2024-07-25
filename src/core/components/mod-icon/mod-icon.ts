@@ -28,7 +28,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 
 const assetsPath = 'assets/img/';
 const fallbackModName = 'external-tool';
@@ -155,8 +155,8 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         }
 
         // If it's an Moodle Theme icon, check if filtericon is set and use it.
-        if (CoreUrlUtils.isThemeImageUrl(this.iconUrl())) {
-            const filter = CoreUrlUtils.getThemeImageUrlParam(this.iconUrl(), 'filtericon');
+        if (CoreUrl.isThemeImageUrl(this.iconUrl())) {
+            const filter = CoreUrl.getThemeImageUrlParam(this.iconUrl(), 'filtericon');
             if (filter === '1') {
                 this.brandedClass = false;
 
@@ -233,7 +233,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
      * @returns Guessed modname.
      */
     protected getComponentNameFromIconUrl(iconUrl: string): string {
-        const component = CoreUrlUtils.getThemeImageUrlParam(iconUrl, 'component');
+        const component = CoreUrl.getThemeImageUrlParam(iconUrl, 'component');
 
         // Some invalid components (others may be added later on).
         if (component === 'core' || component === 'theme') {

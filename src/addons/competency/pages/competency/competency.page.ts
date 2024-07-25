@@ -40,7 +40,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { AddonCompetencyCourseCompetenciesSource } from '@addons/competency/classes/competency-course-competencies-source';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Page that displays the competency information.
@@ -306,7 +306,7 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
                     planstatus: this.planStatus,
                     userid: userId,
                 },
-                url: CoreUrlUtils.addParamsToUrl('/admin/tool/lp/user_competency_in_plan.php', {
+                url: CoreUrl.addParamsToUrl('/admin/tool/lp/user_competency_in_plan.php', {
                     planid: source.PLAN_ID,
                     userid: userId,
                     competencyid: compId,
@@ -328,7 +328,7 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
                 courseid: source.COURSE_ID,
                 userid: userId,
             },
-            url: CoreUrlUtils.addParamsToUrl('/admin/tool/lp/user_competency_in_course.php', {
+            url: CoreUrl.addParamsToUrl('/admin/tool/lp/user_competency_in_course.php', {
                 courseid: source.COURSE_ID,
                 competencyid: compId,
                 userid: userId,

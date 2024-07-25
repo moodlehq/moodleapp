@@ -19,7 +19,6 @@ import { CoreCourseComponentsModule } from '@features/course/components/componen
 import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModWorkshopAssessmentComponentsModule } from '@addons/mod/workshop/assessment/assesment-components.module';
-import { AddonModWorkshopPhaseInfoComponent } from './phase/phase';
 import { AddonModWorkshopAssessmentComponent } from './assessment/assessment';
 import { AddonModWorkshopAssessmentStrategyComponent } from './assessment-strategy/assessment-strategy';
 
@@ -27,7 +26,6 @@ import { AddonModWorkshopAssessmentStrategyComponent } from './assessment-strate
     declarations: [
         AddonModWorkshopIndexComponent,
         AddonModWorkshopSubmissionComponent,
-        AddonModWorkshopPhaseInfoComponent,
         AddonModWorkshopAssessmentComponent,
         AddonModWorkshopAssessmentStrategyComponent,
     ],
@@ -40,7 +38,6 @@ import { AddonModWorkshopAssessmentStrategyComponent } from './assessment-strate
     exports: [
         AddonModWorkshopIndexComponent,
         AddonModWorkshopSubmissionComponent,
-        AddonModWorkshopPhaseInfoComponent,
         AddonModWorkshopAssessmentComponent,
         AddonModWorkshopAssessmentStrategyComponent,
     ],

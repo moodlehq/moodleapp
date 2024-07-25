@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreText } from '@singletons/text';
 import { CoreErrorLogs, CoreSettingsErrorLog } from '@singletons/error-logs';
 
 /**
@@ -39,9 +39,9 @@ export class CoreSettingsErrorLogPage implements OnInit {
      */
     async copyError(error?: CoreSettingsErrorLog): Promise<void> {
         if (error) {
-            await CoreUtils.copyToClipboard(JSON.stringify(error));
+            await CoreText.copyToClipboard(JSON.stringify(error));
         } else {
-            await CoreUtils.copyToClipboard(JSON.stringify({ errors: this.errorLogs }));
+            await CoreText.copyToClipboard(JSON.stringify({ errors: this.errorLogs }));
         }
     }
 

@@ -1,0 +1,94 @@
+// (C) Copyright 2015 Moodle Pty Ltd.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import { CoreCancellablePromise } from '@classes/cancellable-promise';
+
+/**
+ * Singleton with helper functions to wait.
+ */
+export class CoreWait {
+
+    /**
+     * Wait until the next tick.
+     *
+     * @returns Promise resolved when tick has been done.
+     */
+    static async nextTick(): Promise<void> {
+        return CoreWait.wait(0);
+    }
+
+    /**
+     * Wait until several next ticks.
+     *
+     * @param numTicks Number of ticks to wait.
+     */
+    static async nextTicks(numTicks = 0): Promise<void> {
+        for (let i = 0; i < numTicks; i++) {
+            await CoreWait.wait(0);
+        }
+    }
+
+    /**
+     * Wait some time.
+     *
+     * @param milliseconds Number of milliseconds to wait.
+     * @returns Promise resolved after the time has passed.
+     */
+    static wait(milliseconds: number): Promise<void> {
+        return new Promise(resolve => setTimeout(resolve, milliseconds));
+    }
+
+    /**
+     * Wait until a given condition is met.
+     *
+     * @param condition Condition.
+     * @returns Cancellable promise.
+     */
+    static waitFor(condition: () => boolean): CoreCancellablePromise<void>;
+    static waitFor(condition: () => boolean, options: CoreWaitOptions): CoreCancellablePromise<void>;
+    static waitFor(condition: () => boolean, interval: number): CoreCancellablePromise<void>;
+    static waitFor(condition: () => boolean, optionsOrInterval: CoreWaitOptions | number = {}): CoreCancellablePromise<void> {
+        const options = typeof optionsOrInterval === 'number' ? { interval: optionsOrInterval } : optionsOrInterval;
+
+        if (condition()) {
+            return CoreCancellablePromise.resolve();
+        }
+
+        const startTime = Date.now();
+        let intervalId: number | undefined;
+
+        return new CoreCancellablePromise<void>(
+            async (resolve) => {
+                intervalId = window.setInterval(() => {
+                    if (!condition() && (!options.timeout || (Date.now() - startTime < options.timeout))) {
+                        return;
+                    }
+
+                    resolve();
+                    window.clearInterval(intervalId);
+                }, options.interval ?? 50);
+            },
+            () => window.clearInterval(intervalId),
+        );
+    }
+
+}
+
+/**
+ * Options for waiting.
+ */
+export type CoreWaitOptions = {
+    interval?: number;
+    timeout?: number;
+};

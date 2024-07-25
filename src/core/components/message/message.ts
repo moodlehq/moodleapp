@@ -16,7 +16,7 @@ import { ContextLevel } from '@/core/constants';
 import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
 import { CoreAnimations } from '@components/animations';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreText } from '@singletons/text';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUserWithAvatar } from '@components/user-avatar/user-avatar';
 
@@ -102,7 +102,7 @@ export class CoreMessageComponent implements OnInit {
      * Copy message to clipboard.
      */
     copyMessage(): void {
-        CoreUtils.copyToClipboard(CoreTextUtils.decodeHTMLEntities(this.text));
+        CoreText.copyToClipboard(CoreTextUtils.decodeHTMLEntities(this.text));
     }
 
 }

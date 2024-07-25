@@ -18,7 +18,7 @@ import { CoreConfig } from '@services/config';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreConstants } from '../constants';
@@ -40,7 +40,7 @@ export class CoreWindow {
      * @returns Promise resolved if confirmed, rejected if rejected.
      */
     static async confirmOpenBrowserIfNeeded(url: string): Promise<void> {
-        if (!CoreUrlUtils.isHttpURL(url)) {
+        if (!CoreUrl.isHttpURL(url)) {
             // Only ask confirm for http(s), other cases usually launch external apps.
             return;
         }
@@ -76,7 +76,7 @@ export class CoreWindow {
      * @returns Promise resolved when done.
      */
     static async open(url: string, name?: string): Promise<void> {
-        if (CoreUrlUtils.isLocalFileUrl(url)) {
+        if (CoreUrl.isLocalFileUrl(url)) {
             const filename = url.substring(url.lastIndexOf('/') + 1);
 
             if (!CoreFileHelper.isOpenableInApp({ filename })) {

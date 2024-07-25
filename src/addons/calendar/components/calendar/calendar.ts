@@ -50,7 +50,7 @@ import {
 import { CoreSwipeSlidesDynamicItemsManager } from '@classes/items-management/swipe-slides-dynamic-items-manager';
 import moment from 'moment-timezone';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 
@@ -132,7 +132,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
                     ...params,
                     category: 'calendar',
                 },
-                url: CoreUrlUtils.addParamsToUrl('/calendar/view.php?view=month', params),
+                url: CoreUrl.addParamsToUrl('/calendar/view.php?view=month', params),
             });
         });
     }

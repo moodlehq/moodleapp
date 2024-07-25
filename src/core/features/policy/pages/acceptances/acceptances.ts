@@ -20,7 +20,6 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CorePolicy, CorePolicySitePolicy, CorePolicyStatus } from '@features/policy/services/policy';
-import { CorePolicyViewPolicyModalComponent } from '@features/policy/components/policy-modal/policy-modal';
 import { CoreTime } from '@singletons/time';
 import { CoreScreen } from '@services/screen';
 import { Subscription } from 'rxjs';
@@ -188,9 +187,12 @@ export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
      * @param event Event.
      * @param policy Policy.
      */
-    viewFullPolicy(event: Event, policy: CorePolicySitePolicy): void {
+    async viewFullPolicy(event: Event, policy: CorePolicySitePolicy): Promise<void> {
         event.preventDefault();
         event.stopPropagation();
+
+        const { CorePolicyViewPolicyModalComponent } =
+            await import('@features/policy/components/policy-modal/policy-modal');
 
         CoreDomUtils.openModal({
             component: CorePolicyViewPolicyModalComponent,

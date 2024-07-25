@@ -159,7 +159,7 @@ export class CoreFileUploaderProvider {
      */
     async captureAudioInApp(): Promise<CoreFileUploaderAudioRecording> {
         const { CoreFileUploaderAudioRecorderComponent } =
-            await import('@features/fileuploader/components/audio-recorder/audio-recorder.module');
+            await import('@features/fileuploader/components/audio-recorder/audio-recorder.component');
 
         const recording = await CoreModals.openSheet(CoreFileUploaderAudioRecorderComponent);
 

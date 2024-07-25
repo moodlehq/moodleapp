@@ -31,7 +31,7 @@ import { Subscription } from 'rxjs';
 import { CoreSites } from '@services/sites';
 import { CoreFilepool } from '@services/filepool';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventFormActionData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreEditorOffline } from '../../services/editor-offline';
@@ -46,6 +46,7 @@ import { SwiperOptions } from 'swiper/types';
 import { ContextLevel } from '@/core/constants';
 import { CoreSwiper } from '@singletons/swiper';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Component to display a rich text editor if enabled.
@@ -369,7 +370,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @returns Blank height in px. Will be negative if no blank space.
      */
     protected async getBlankHeightInContent(): Promise<number> {
-        await CoreUtils.nextTicks(5); // Ensure content is completely loaded in the DOM.
+        await CoreWait.nextTicks(5); // Ensure content is completely loaded in the DOM.
 
         let content: Element | null = this.element.closest('ion-content');
         const contentHeight = await CoreDomUtils.getContentHeight(this.content);
@@ -485,7 +486,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             this.textareaElement?.removeAttribute('hidden');
         }
 
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         this.focusRTE(event);
     }
@@ -513,7 +514,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
             const url = el.src;
 
-            if (!url || !CoreUrlUtils.isDownloadableUrl(url) || (!canDownloadFiles && site?.isSitePluginFileUrl(url))) {
+            if (!url || !CoreUrl.isDownloadableUrl(url) || (!canDownloadFiles && site?.isSitePluginFileUrl(url))) {
                 // Nothing to treat.
                 return;
             }
@@ -826,7 +827,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             this.toolbarArrows = true;
         }
 
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         this.toolbarSlides.update();
 

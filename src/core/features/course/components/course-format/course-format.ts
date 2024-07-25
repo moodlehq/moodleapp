@@ -41,7 +41,7 @@ import { CoreCourseFormatDelegate } from '@features/course/services/format-deleg
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { IonContent } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreCourseCourseIndexComponent, CoreCourseIndexSectionWithModule } from '../course-index/course-index';
+import { CoreCourseIndexSectionWithModule } from '../course-index/course-index';
 import { CoreBlockHelper } from '@features/block/services/block-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -428,6 +428,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     async openCourseIndex(): Promise<void> {
         const selectedId = await this.getSelectedSectionId();
+
+        const { CoreCourseCourseIndexComponent } = await import('@features/course/components/course-index/course-index');
 
         const data = await CoreDomUtils.openModal<CoreCourseIndexSectionWithModule>({
             component: CoreCourseCourseIndexComponent,

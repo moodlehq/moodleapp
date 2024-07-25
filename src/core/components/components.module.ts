@@ -61,7 +61,6 @@ import { CoreSwipeSlidesComponent } from './swipe-slides/swipe-slides';
 import { CoreSwipeNavigationTourComponent } from './swipe-navigation-tour/swipe-navigation-tour';
 import { CoreMessageComponent } from './message/message';
 import { CoreGroupSelectorComponent } from './group-selector/group-selector';
-import { CoreRefreshButtonModalComponent } from './refresh-button-modal/refresh-button-modal';
 import { CoreSheetModalComponent } from '@components/sheet-modal/sheet-modal';
 import { CoreCourseImageComponent } from '@components/course-image/course-image';
 import { CoreSitesListComponent } from './sites-list/sites-list';
@@ -123,7 +122,6 @@ export async function getCoreStandaloneComponents(): Promise<Type<unknown>[]> {
         CoreSpacerComponent,
         CoreHorizontalScrollControlsComponent,
         CoreSwipeNavigationTourComponent,
-        CoreRefreshButtonModalComponent,
         CoreSheetModalComponent,
         CoreSitesListComponent,
     ],
@@ -177,7 +175,6 @@ export async function getCoreStandaloneComponents(): Promise<Type<unknown>[]> {
         CoreSpacerComponent,
         CoreHorizontalScrollControlsComponent,
         CoreSwipeNavigationTourComponent,
-        CoreRefreshButtonModalComponent,
         CoreSheetModalComponent,
         CoreSitesListComponent,
     ],

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from '@singletons/wait';
 import { makeSingleton, NgZone } from '@singletons';
 import { TestingBehatElementLocator, TestingBehatFindOptions } from './behat-runtime';
 
@@ -756,7 +756,7 @@ export class TestingBehatDomUtilsService {
 
             // Pretend we have cut and pasted the new text.
             if (element.tagName !== 'ION-SELECT' && getValue() !== '') {
-                await CoreUtils.nextTick();
+                await CoreWait.nextTick();
                 await setValue('');
 
                 element.dispatchEvent(new InputEvent('input', {
@@ -768,7 +768,7 @@ export class TestingBehatDomUtilsService {
             }
 
             if (value !== '') {
-                await CoreUtils.nextTick();
+                await CoreWait.nextTick();
                 await setValue(value);
 
                 element.dispatchEvent(new InputEvent('input', {

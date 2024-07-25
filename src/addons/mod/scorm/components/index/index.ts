@@ -49,6 +49,7 @@ import {
     ADDON_MOD_SCORM_DATA_AUTO_SYNCED,
     ADDON_MOD_SCORM_PAGE_NAME,
 } from '../../constants';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Component that displays a SCORM entry page.
@@ -616,7 +617,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
         if (CoreSync.isBlocked(ADDON_MOD_SCORM_COMPONENT, this.scorm.id) && retries < 5) {
             // Sync is currently blocked, this can happen when SCORM player is left. Retry in a bit.
-            await CoreUtils.wait(400);
+            await CoreWait.wait(400);
 
             return this.sync(retries + 1);
         }

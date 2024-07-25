@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, OnInit, Input } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFile } from '@services/file';
 import { ModalController, Translate } from '@singletons';
+import { CoreSharedFilesComponentsModule } from '../components.module';
 
 /**
  * Modal to display the list of shared files.
@@ -24,6 +26,11 @@ import { ModalController, Translate } from '@singletons';
 @Component({
     selector: 'core-shared-files-list-modal',
     templateUrl: 'list-modal.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSharedFilesComponentsModule,
+    ],
 })
 export class CoreSharedFilesListModalComponent implements OnInit {
 

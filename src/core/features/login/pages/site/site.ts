@@ -28,10 +28,7 @@ import {
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
-import { CoreUrl } from '@singletons/url';
-import { CoreUrlUtils } from '@services/utils/url';
-import { CoreLoginSiteHelpComponent } from '@features/login/components/site-help/site-help';
-import { CoreLoginSiteOnboardingComponent } from '@features/login/components/site-onboarding/site-onboarding';
+import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services/urlschemes';
 import { CoreTextUtils } from '@services/utils/text';
@@ -208,7 +205,9 @@ export class CoreLoginSitePage implements OnInit {
      */
     protected extendCoreLoginSiteInfo(sites: CoreLoginSiteInfoExtended[]): CoreLoginSiteInfoExtended[] {
         return sites.map((site) => {
-            site.noProtocolUrl = this.siteFinderSettings.displayurl && site.url ? CoreUrl.removeProtocol(site.url) : '';
+            site.noProtocolUrl = this.siteFinderSettings.displayurl && site.url
+                ? CoreUrl.removeUrlParts(site.url, CoreUrlPartNames.Protocol)
+                : '';
 
             const name = this.siteFinderSettings.displaysitename ? site.name : '';
             const alias = this.siteFinderSettings.displayalias && site.alias ? site.alias : '';
@@ -258,6 +257,9 @@ export class CoreLoginSitePage implements OnInit {
      * Show a help modal.
      */
     async showHelp(): Promise<void> {
+        const { CoreLoginSiteHelpComponent } =
+            await import('@features/login/components/site-help/site-help');
+
         await CoreDomUtils.openModal({
             component: CoreLoginSiteHelpComponent,
             cssClass: 'core-modal-fullscreen',
@@ -268,6 +270,9 @@ export class CoreLoginSitePage implements OnInit {
      * Show an onboarding modal.
      */
     async showOnboarding(): Promise<void> {
+        const { CoreLoginSiteOnboardingComponent } =
+            await import('@features/login/components/site-onboarding/site-onboarding');
+
         await CoreDomUtils.openModal({
             component: CoreLoginSiteOnboardingComponent,
             cssClass: 'core-modal-fullscreen',
@@ -506,7 +511,7 @@ export class CoreLoginSitePage implements OnInit {
                 name: 'connect',
                 title: '',
                 location: '',
-                noProtocolUrl: CoreUrl.removeProtocol(search),
+                noProtocolUrl: CoreUrl.removeUrlParts(search, CoreUrlPartNames.Protocol),
             };
         } else {
             this.enteredSiteUrl = undefined;
@@ -559,7 +564,7 @@ export class CoreLoginSitePage implements OnInit {
         }
 
         // Not a custom URL scheme, check if it's a URL scheme to another app.
-        const scheme = CoreUrlUtils.getUrlProtocol(text);
+        const scheme = CoreUrl.getUrlProtocol(text);
 
         if (scheme && scheme != 'http' && scheme != 'https') {
             CoreDomUtils.showErrorModal(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));

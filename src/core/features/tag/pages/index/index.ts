@@ -21,7 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Page that displays the tag index.
@@ -62,7 +62,7 @@ export class CoreTagIndexPage implements OnInit {
                 ws: 'core_tag_get_tagindex_per_area',
                 name: this.tagName || Translate.instant('core.tag.tag'),
                 data: { id: this.tagId || undefined, ...params, category: 'tag' },
-                url: CoreUrlUtils.addParamsToUrl('/tag/index.php', params),
+                url: CoreUrl.addParamsToUrl('/tag/index.php', params),
             });
         });
     }

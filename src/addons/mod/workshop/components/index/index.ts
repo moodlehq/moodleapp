@@ -48,7 +48,6 @@ import {
     AddonModWorkshopAutoSyncData,
     AddonModWorkshopSyncResult,
 } from '../../services/workshop-sync';
-import { AddonModWorkshopPhaseInfoComponent } from '../phase/phase';
 import {
     ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED,
     ADDON_MOD_WORKSHOP_AUTO_SYNCED,
@@ -398,9 +397,11 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         if (!this.phases || !this.workshop) {
             return;
         }
+        const { AddonModWorkshopPhaseInfoModalComponent } =
+            await import('@addons/mod/workshop/components/phase-modal/phase-modal');
 
         const modalData = await CoreDomUtils.openModal<boolean>({
-            component: AddonModWorkshopPhaseInfoComponent,
+            component: AddonModWorkshopPhaseInfoModalComponent,
             componentProps: {
                 phases: CoreUtils.objectToArray(this.phases),
                 workshopPhase: this.workshop.phase,

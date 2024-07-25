@@ -56,6 +56,7 @@ import { FrameElement, FrameElementController } from '@classes/element-controlle
 import { CoreUrl } from '@singletons/url';
 import { CoreIcons } from '@singletons/icons';
 import { ContextLevel } from '../constants';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -339,7 +340,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         // Show the element again.
         this.element.classList.remove('core-loading');
 
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         // Emit the afterRender output.
         this.afterRender.emit();
@@ -380,7 +381,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         this.elementControllers.forEach(controller => controller.destroy());
         this.elementControllers = result.elementControllers;
 
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         // Add magnifying glasses to images.
         this.addImageViewerButton();
@@ -705,7 +706,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             const previousDisplay = getComputedStyle(this.element).display;
 
             this.element.style.display = 'inline-block';
-            await CoreUtils.nextTick();
+            await CoreWait.nextTick();
 
             width = this.element.getBoundingClientRect().width;
 

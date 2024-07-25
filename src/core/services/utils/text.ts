@@ -20,7 +20,6 @@ import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { DomSanitizer, makeSingleton, Translate } from '@singletons';
 import { CoreWSFile } from '@services/ws';
 import { Locutus } from '@singletons/locutus';
-import { CoreViewerTextComponent } from '@features/viewer/components/text/text';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreDomUtils } from './dom';
 import { CoreUrl } from '@singletons/url';
@@ -1037,6 +1036,7 @@ export class CoreTextUtilsProvider {
         }
 
         options = options || {};
+        const { CoreViewerTextComponent } = await import('@features/viewer/components/text/text');
 
         const modalOptions: ModalOptions = Object.assign(options.modalOptions || {}, {
             component: CoreViewerTextComponent,

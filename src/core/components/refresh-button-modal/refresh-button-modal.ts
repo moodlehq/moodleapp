@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component } from '@angular/core';
 import { ModalController } from '@singletons';
 
@@ -20,7 +21,11 @@ import { ModalController } from '@singletons';
  */
 @Component({
     templateUrl: 'refresh-button-modal.html',
-    styleUrls: ['refresh-button-modal.scss'],
+    styleUrl: 'refresh-button-modal.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreRefreshButtonModalComponent {
 

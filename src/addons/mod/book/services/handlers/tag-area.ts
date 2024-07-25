@@ -18,7 +18,7 @@ import { CoreTagFeedComponent } from '@features/tag/components/feed/feed';
 import { CoreTagAreaHandler } from '@features/tag/services/tag-area-delegate';
 import { CoreTagFeedElement, CoreTagHelper } from '@features/tag/services/tag-helper';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { makeSingleton } from '@singletons';
 import { AddonModBook } from '../book';
 
@@ -51,7 +51,7 @@ export class AddonModBookTagAreaHandlerService implements CoreTagAreaHandler {
 
         // Find module ids of the returned books, they are needed by the link delegate.
         await Promise.all(items.map(async (item) => {
-            const params = item.url ? CoreUrlUtils.extractUrlParams(item.url) : {};
+            const params = item.url ? CoreUrl.extractUrlParams(item.url) : {};
             if (params.b && !params.id) {
                 const bookId = parseInt(params.b, 10);
 

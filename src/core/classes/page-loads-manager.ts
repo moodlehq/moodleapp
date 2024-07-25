@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreRefreshButtonModalComponent } from '@components/refresh-button-modal/refresh-button-modal';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Subject } from 'rxjs';
@@ -129,6 +128,9 @@ export class PageLoadsManager {
      * Notify the user, asking him if he wants to update the data.
      */
     protected async notifyUser(): Promise<void> {
+        const { CoreRefreshButtonModalComponent }
+            = await import('@components/refresh-button-modal/refresh-button-modal');
+
         await CoreDomUtils.openModal<boolean>({
             component: CoreRefreshButtonModalComponent,
             cssClass: 'core-modal-no-background core-modal-fullscreen',

@@ -19,7 +19,6 @@ import { CoreContentLinksDelegate, CoreContentLinksAction } from './contentlinks
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
-import { CoreContentLinksChooseSiteModalComponent } from '../components/choose-site-modal/choose-site-modal';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 
 /**
@@ -96,6 +95,9 @@ export class CoreContentLinksHelperProvider {
      * @todo set correct root.
      */
     async goToChooseSite(url: string): Promise<void> {
+        const { CoreContentLinksChooseSiteModalComponent }
+            = await import('@features/contentlinks/components/choose-site-modal/choose-site-modal');
+
         await CoreDomUtils.openModal({
             component: CoreContentLinksChooseSiteModalComponent,
             componentProps: {

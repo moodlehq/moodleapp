@@ -45,6 +45,8 @@ import { ActivatedRoute } from '@angular/router';
 import { CoreConstants } from '@/core/constants';
 import { CoreDom } from '@singletons/dom';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreText } from '@singletons/text';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Page that displays a message discussion page.
@@ -883,7 +885,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             return;
         }
 
-        await CoreUtils.wait(400);
+        await CoreWait.wait(400);
         await CoreUtils.ignoreErrors(this.waitForFetch());
     }
 
@@ -924,7 +926,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      */
     copyMessage(message: AddonMessagesConversationMessageFormatted): void {
         const text = 'smallmessage' in message ? message.smallmessage || message.text || '' : message.text || '';
-        CoreUtils.copyToClipboard(CoreTextUtils.decodeHTMLEntities(text));
+        CoreText.copyToClipboard(CoreTextUtils.decodeHTMLEntities(text));
     }
 
     /**
@@ -1071,7 +1073,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             this.setNewMessagesBadge(0);
 
             // Leave time for the view to be rendered.
-            await CoreUtils.nextTicks(5);
+            await CoreWait.nextTicks(5);
 
             if (!this.viewDestroyed && this.content) {
                 this.content.scrollToBottom(0);

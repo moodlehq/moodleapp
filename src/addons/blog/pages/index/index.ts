@@ -26,7 +26,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -79,7 +79,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
                     ...this.filter,
                     category: 'blog',
                 },
-                url: CoreUrlUtils.addParamsToUrl('/blog/index.php', {
+                url: CoreUrl.addParamsToUrl('/blog/index.php', {
                     ...this.filter,
                     modid: this.filter.cmid,
                     cmid: undefined,

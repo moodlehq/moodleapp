@@ -34,7 +34,7 @@ import {
     CoreGradesTableRow,
 } from '@features/grades/services/grades';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreMenuItem, CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
@@ -416,7 +416,7 @@ export class CoreGradesHelperProvider {
                 const matches = row.itemname.content.match(regex);
 
                 if (matches && matches.length) {
-                    const hrefParams = CoreUrlUtils.extractUrlParams(matches[1]);
+                    const hrefParams = CoreUrl.extractUrlParams(matches[1]);
 
                     return hrefParams && parseInt(hrefParams.id) === moduleId;
                 }

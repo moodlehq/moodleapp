@@ -30,6 +30,7 @@ import { AddonModChatFormattedMessage, AddonModChatHelper } from '../../services
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Page that displays a chat session.
@@ -358,7 +359,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
      */
     async scrollToBottom(): Promise<void> {
         // Need a timeout to leave time to the view to be rendered.
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
         if (!this.viewDestroyed) {
             this.content?.scrollToBottom();
         }

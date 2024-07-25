@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreQueueRunner } from '@classes/queue-runner';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from '@singletons/wait';
 
 describe('CoreQueueRunner', () => {
 
@@ -26,7 +26,7 @@ describe('CoreQueueRunner', () => {
 
         // Act
         await Promise.all(range.map((i) => lock.run(async () => {
-            await CoreUtils.wait(Math.floor(Math.random() * 10));
+            await CoreWait.wait(Math.floor(Math.random() * 10));
 
             items.push(`Item #${i}`);
         })));

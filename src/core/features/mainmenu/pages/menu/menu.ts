@@ -31,6 +31,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDom } from '@singletons/dom';
 import { CoreLogger } from '@singletons/logger';
 import { CorePlatform } from '@services/platform';
+import { CoreWait } from '@singletons/wait';
 
 const ANIMATION_DURATION = 500;
 
@@ -203,7 +204,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
         if (this.loaded && (!mainMenuTab || removedHandlersPages.includes(mainMenuTab))) {
             // No tab selected or handler no longer available, select the first one.
-            await CoreUtils.nextTick();
+            await CoreWait.nextTick();
 
             const tabPage = this.tabs[0] ? this.tabs[0].page : this.morePageName;
             const tabPageParams = this.tabs[0] ? this.tabs[0].pageParams : {};
@@ -330,9 +331,9 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
      * Notify that the menu visibility has been updated.
      */
     protected async notifyVisibilityUpdated(): Promise<void> {
-        await CoreUtils.nextTick();
-        await CoreUtils.wait(ANIMATION_DURATION);
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
+        await CoreWait.wait(ANIMATION_DURATION);
+        await CoreWait.nextTick();
 
         CoreEvents.trigger(CoreMainMenuProvider.MAIN_MENU_VISIBILITY_UPDATED);
     }

@@ -16,19 +16,16 @@ import { NgModule } from '@angular/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSharedFilesListComponent } from './list/list';
-import { CoreSharedFilesListModalComponent } from './list-modal/list-modal';
 
 @NgModule({
     declarations: [
         CoreSharedFilesListComponent,
-        CoreSharedFilesListModalComponent,
     ],
     imports: [
         CoreSharedModule,
     ],
     exports: [
         CoreSharedFilesListComponent,
-        CoreSharedFilesListModalComponent,
     ],
 })
 export class CoreSharedFilesComponentsModule {}

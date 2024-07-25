@@ -17,7 +17,7 @@ import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular
 import { CoreModalComponent } from '@classes/modal-component';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreModals } from '@services/modals';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from '@singletons/wait';
 import { AngularFrameworkDelegate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 
@@ -64,13 +64,13 @@ export class CoreSheetModalComponent<T extends CoreModalComponent> implements Af
         const wrapper = await this.wrapperElement;
         this.content = await AngularFrameworkDelegate.attachViewToDom(wrapper, this.component, this.componentProps ?? {});
 
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         this.element.classList.add('active');
         this.element.style.zIndex = `${20000 + CoreModals.getTopOverlayIndex()}`;
 
-        await CoreUtils.nextTick();
-        await CoreUtils.wait(300);
+        await CoreWait.nextTick();
+        await CoreWait.wait(300);
 
         const instance = CoreDirectivesRegistry.resolve(this.content, this.component);
 
@@ -89,8 +89,8 @@ export class CoreSheetModalComponent<T extends CoreModalComponent> implements Af
 
         this.element.classList.remove('active');
 
-        await CoreUtils.nextTick();
-        await CoreUtils.wait(300);
+        await CoreWait.nextTick();
+        await CoreWait.wait(300);
         await AngularFrameworkDelegate.removeViewFromDom(wrapper, this.content);
     }
 

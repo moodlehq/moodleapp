@@ -30,6 +30,7 @@ import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/course
 import { CoreColors } from '@singletons/colors';
 import { CorePath } from '@singletons/path';
 import { CoreSites } from '@services/sites';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -209,7 +210,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         // Select the tab if needed.
         this.firstTabName = undefined;
         if (tabToLoad) {
-            await CoreUtils.nextTick();
+            await CoreWait.nextTick();
 
             this.tabsComponent?.selectByIndex(tabToLoad);
         }

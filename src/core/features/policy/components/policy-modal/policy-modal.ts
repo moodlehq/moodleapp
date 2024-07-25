@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input } from '@angular/core';
 import { CorePolicySitePolicy } from '@features/policy/services/policy';
 import { ModalController } from '@singletons';
@@ -22,6 +23,10 @@ import { ModalController } from '@singletons';
 @Component({
     selector: 'core-policy-view-policy-modal',
     templateUrl: 'policy-modal.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CorePolicyViewPolicyModalComponent {
 

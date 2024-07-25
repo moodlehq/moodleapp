@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input } from '@angular/core';
 import { CoreFileEntry } from '@services/file-helper';
 
-import { CoreUtils } from '@services/utils/utils';
+import { CoreText } from '@singletons/text';
 import { ModalController } from '@singletons';
 
 /**
@@ -25,7 +26,11 @@ import { ModalController } from '@singletons';
 @Component({
     selector: 'page-core-viewer-text',
     templateUrl: 'text.html',
-    styleUrls: ['text.scss'],
+    styleUrl: 'text.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreViewerTextComponent {
 
@@ -51,7 +56,7 @@ export class CoreViewerTextComponent {
      * Copy the text to clipboard.
      */
     copyText(): void {
-        CoreUtils.copyToClipboard(this.content || '');
+        CoreText.copyToClipboard(this.content || '');
     }
 
 }

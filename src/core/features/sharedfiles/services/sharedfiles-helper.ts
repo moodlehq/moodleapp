@@ -25,7 +25,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { AlertController, ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
-import { CoreSharedFilesListModalComponent } from '../components/list-modal/list-modal';
 import { CoreSharedFiles } from './sharedfiles';
 import { SHAREDFILES_PAGE_NAME } from '../constants';
 import { CoreSharedFilesChooseSitePage } from '../pages/choose-site/choose-site';
@@ -150,6 +149,9 @@ export class CoreSharedFilesHelperProvider {
      * @returns Promise resolved when a file is picked, rejected if file picker is closed without selecting a file.
      */
     async pickSharedFile(mimetypes?: string[]): Promise<CoreFileUploaderHandlerResult> {
+        const { CoreSharedFilesListModalComponent } =
+            await import('@features/sharedfiles/components/list-modal/list-modal');
+
         const file = await CoreDomUtils.openModal<FileEntry>({
             component: CoreSharedFilesListModalComponent,
             cssClass: 'core-modal-fullscreen',

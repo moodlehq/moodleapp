@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -23,6 +24,10 @@ import { ModalController, Translate } from '@singletons';
 @Component({
     selector: 'core-viewer-qr-scanner',
     templateUrl: 'qr-scanner.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreViewerQRScannerComponent implements OnInit, OnDestroy {
 

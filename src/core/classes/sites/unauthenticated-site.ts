@@ -17,7 +17,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreWS, CoreWSAjaxPreSets, CoreWSExternalWarning } from '@services/ws';
 import { CorePath } from '@singletons/path';
 
@@ -37,7 +37,10 @@ export class CoreUnauthenticatedSite {
      * @param publicConfig Site public config.
      */
     constructor(siteUrl: string, publicConfig?: CoreSitePublicConfigResponse) {
-        this.siteUrl = CoreUrlUtils.removeUrlParams(siteUrl); // Make sure the URL doesn't have params.
+        this.siteUrl = CoreUrl.removeUrlParts(
+            siteUrl,
+            [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment],
+        ); // Make sure the URL doesn't have params.
         if (publicConfig) {
             this.setPublicConfig(publicConfig);
         }
@@ -143,7 +146,7 @@ export class CoreUnauthenticatedSite {
      * @returns URL with params.
      */
     createSiteUrl(path: string, params?: Record<string, unknown>, anchor?: string): string {
-        return CoreUrlUtils.addParamsToUrl(CorePath.concatenatePaths(this.siteUrl, path), params, anchor);
+        return CoreUrl.addParamsToUrl(CorePath.concatenatePaths(this.siteUrl, path), params, anchor);
     }
 
     /**
@@ -157,8 +160,10 @@ export class CoreUnauthenticatedSite {
             return false;
         }
 
-        const siteUrl = CoreTextUtils.addEndingSlash(CoreUrlUtils.removeProtocolAndWWW(this.siteUrl));
-        url = CoreTextUtils.addEndingSlash(CoreUrlUtils.removeProtocolAndWWW(url));
+        const siteUrl = CoreTextUtils.addEndingSlash(
+            CoreUrl.removeUrlParts(this.siteUrl, [CoreUrlPartNames.Protocol, CoreUrlPartNames.WWWInDomain]),
+        );
+        url = CoreTextUtils.addEndingSlash(CoreUrl.removeUrlParts(url, [CoreUrlPartNames.Protocol, CoreUrlPartNames.WWWInDomain]));
 
         return url.indexOf(siteUrl) == 0;
     }
@@ -244,7 +249,10 @@ export class CoreUnauthenticatedSite {
 
         // Use the wwwroot returned by the server.
         if (config.httpswwwroot) {
-            this.siteUrl = CoreUrlUtils.removeUrlParams(config.httpswwwroot); // Make sure the URL doesn't have params.
+            this.siteUrl = CoreUrl.removeUrlParts(
+                config.httpswwwroot,
+                [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment],
+            ); // Make sure the URL doesn't have params.
         }
 
         return config;
@@ -268,7 +276,7 @@ export class CoreUnauthenticatedSite {
      * @returns Whether it's a site file URL.
      */
     isSitePluginFileUrl(url: string): boolean {
-        const isPluginFileUrl = CoreUrlUtils.isPluginFileUrl(url) || CoreUrlUtils.isTokenPluginFileUrl(url);
+        const isPluginFileUrl = CoreUrl.isPluginFileUrl(url) || CoreUrl.isTokenPluginFileUrl(url);
         if (!isPluginFileUrl) {
             return false;
         }
@@ -283,7 +291,7 @@ export class CoreUnauthenticatedSite {
      * @returns Whether it's a site theme image URL.
      */
     isSiteThemeImageUrl(url: string): boolean {
-        if (!CoreUrlUtils.isThemeImageUrl(url)) {
+        if (!CoreUrl.isThemeImageUrl(url)) {
             return false;
         }
 

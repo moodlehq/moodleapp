@@ -23,7 +23,7 @@ import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@
 import { CoreSync } from '@services/sync';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWS, CoreWSExternalFile, CoreWSExternalWarning, CoreWSFile, CoreWSPreSets } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -1328,7 +1328,7 @@ export class AddonModScormProvider {
     protected isExternalLink(link: string): boolean {
         link = link.toLowerCase();
 
-        if (link.match(/^https?:\/\//i) && !CoreUrlUtils.isLocalFileUrl(link)) {
+        if (link.match(/^https?:\/\//i) && !CoreUrl.isLocalFileUrl(link)) {
             return true;
         } else if (link.substring(0, 4) == 'www.') {
             return true;

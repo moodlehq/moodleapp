@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWait } from '@singletons/wait';
 import { makeSingleton, NgZone } from '@singletons';
 import { BehatTestsWindow, TestingBehatRuntime } from './behat-runtime';
 
@@ -117,7 +117,7 @@ export class TestingBehatBlockingService {
                 // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers
                 // "This API does not guarantee that timers will run exactly on schedule.
                 // Delays due to CPU load, other tasks, etc, are to be expected."
-                await CoreUtils.nextTicks(10);
+                await CoreWait.nextTicks(10);
             }
 
             // Check there isn't a spinner...
@@ -193,7 +193,7 @@ export class TestingBehatBlockingService {
      * (and if not, removes it).
      */
     protected async checkUIBlocked(): Promise<void> {
-        await CoreUtils.nextTick();
+        await CoreWait.nextTick();
 
         const blockingElements = Array.from(
             document.querySelectorAll<HTMLElement>('div.core-loading-container, ion-loading'),

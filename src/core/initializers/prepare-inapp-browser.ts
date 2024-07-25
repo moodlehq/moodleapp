@@ -20,7 +20,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUrlUtils } from '@services/utils/url';
+import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -34,9 +34,9 @@ export default function(): void {
     // Check URLs loaded in any InAppBrowser.
     CoreEvents.on(CoreEvents.IAB_LOAD_START, async (event) => {
         // URLs with a custom scheme can be prefixed with "http://" or "https://", we need to remove this.
-        const protocol = CoreUrlUtils.getUrlProtocol(event.url);
+        const protocol = CoreUrl.getUrlProtocol(event.url);
         const url = event.url.replace(/^https?:\/\//, '');
-        const urlScheme = CoreUrlUtils.getUrlProtocol(url);
+        const urlScheme = CoreUrl.getUrlProtocol(url);
         const isExternalApp = urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile';
 
         if (CoreCustomURLSchemes.isCustomURL(url)) {
