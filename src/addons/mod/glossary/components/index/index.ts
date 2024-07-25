@@ -427,11 +427,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * Opens new entry editor.
      */
     openNewEntry(): void {
-        CoreNavigator.navigate(
-            this.splitView.outletActivated
-                ? '../new'
-                : './entry/new',
-        );
+        CoreNavigator.navigateToSitePath(`${ADDON_MOD_GLOSSARY_PAGE_NAME}/${this.courseId}/${this.module.id}/entry/new`);
     }
 
     /**
