@@ -51,6 +51,7 @@ import {
     ADDON_MOD_FORUM_COMPONENT,
     ADDON_MOD_FORUM_NEW_DISCUSSION_EVENT,
 } from '../../constants';
+import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 
 type NewDiscussionData = {
     subject: string;
@@ -114,7 +115,11 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     protected initialGroupId?: number;
     protected logView: () => void;
 
-    constructor(protected route: ActivatedRoute, @Optional() protected splitView: CoreSplitViewComponent) {
+    constructor(
+        protected route: ActivatedRoute,
+        @Optional() protected splitView: CoreSplitViewComponent,
+        @Optional() protected courseContentsPage?: CoreCourseContentsPage,
+    ) {
         this.logView = CoreTime.once(() => {
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM,
@@ -678,7 +683,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
      */
     protected goBack(): void {
         if (this.splitView?.outletActivated) {
-            CoreNavigator.navigate('../../');
+            CoreNavigator.navigate((this.courseContentsPage ? '../' : '') + '../../');
         } else {
             CoreNavigator.back();
         }

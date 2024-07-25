@@ -58,6 +58,7 @@ import {
     ADDON_MOD_FORUM_MARK_READ_EVENT,
     ADDON_MOD_FORUM_REPLY_DISCUSSION_EVENT,
 } from '../../constants';
+import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 
 type SortType = 'flat-newest' | 'flat-oldest' | 'nested';
 
@@ -133,6 +134,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         @Optional() protected splitView: CoreSplitViewComponent,
         protected elementRef: ElementRef,
         protected route: ActivatedRoute,
+        @Optional() protected courseContentsPage?: CoreCourseContentsPage,
     ) {}
 
     get isMobile(): boolean {
@@ -316,7 +318,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         }
 
         if (this.splitView?.outletActivated) {
-            CoreNavigator.navigate('../');
+            CoreNavigator.navigate((this.courseContentsPage ? '../' : '') + '../');
         } else {
             CoreNavigator.back();
         }
