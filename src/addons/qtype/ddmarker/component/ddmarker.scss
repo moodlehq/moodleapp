@@ -17,6 +17,10 @@ core-format-text ::ng-deep {
         user-select: none;
     }
 
+    .d-none {
+        display: none;
+    }
+
     .qtext {
         margin-bottom: 0.5em;
         display: block;
