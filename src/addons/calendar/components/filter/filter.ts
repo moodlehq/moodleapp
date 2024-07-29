@@ -20,6 +20,7 @@ import { CoreEvents } from '@singletons/events';
 import { AddonCalendarEventType, AddonCalendarProvider } from '../../services/calendar';
 import { AddonCalendarFilter, AddonCalendarEventIcons } from '../../services/calendar-helper';
 import { ALL_COURSES_ID } from '@features/courses/services/courses-helper';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to display the events filter that includes events types and a list of courses.
@@ -28,6 +29,10 @@ import { ALL_COURSES_ID } from '@features/courses/services/courses-helper';
     selector: 'addon-calendar-filter',
     templateUrl: 'filter.html',
     styleUrls: ['../../calendar-common.scss', 'filter.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonCalendarFilterComponent implements OnInit {
 

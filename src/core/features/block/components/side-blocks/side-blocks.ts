@@ -24,6 +24,8 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreDom } from '@singletons/dom';
 import { ContextLevel } from '@/core/constants';
 import { CoreWait } from '@singletons/wait';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreBlockComponentsModule } from '../components.module';
 
 /**
  * Component that displays the list of side blocks.
@@ -31,7 +33,12 @@ import { CoreWait } from '@singletons/wait';
 @Component({
     selector: 'core-block-side-blocks',
     templateUrl: 'side-blocks.html',
-    styleUrls: ['side-blocks.scss'],
+    styleUrl: 'side-blocks.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreBlockComponentsModule,
+    ],
 })
 export class CoreBlockSideBlocksComponent implements OnInit {
 

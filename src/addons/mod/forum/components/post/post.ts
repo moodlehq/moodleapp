@@ -53,6 +53,7 @@ import { AddonModForumSharedPostFormData } from '../../pages/discussion/discussi
 import { CoreDom } from '@singletons/dom';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, ADDON_MOD_FORUM_COMPONENT } from '../../constants';
+import { CoreToasts } from '@services/toasts';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -167,7 +168,10 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                     CoreSites.getCurrentSiteId(),
                 );
 
-                CoreDomUtils.showToast('addon.mod_forum.deletedpost', true);
+                CoreToasts.show({
+                    message: 'addon.mod_forum.deletedpost',
+                    translateMessage: true,
+                });
             } catch (error) {
                 CoreDomUtils.showErrorModal(error);
             } finally {

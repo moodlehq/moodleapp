@@ -136,11 +136,10 @@ export class CoreSettingsHelperProvider {
         // Clear cache tables.
         const cleanSchemas = CoreSites.getSiteTableSchemasToClear(site);
         const promises: Promise<number | void>[] = cleanSchemas.map((name) => site.getDb().deleteRecords(name));
-        const filepoolService = CoreFilepool.instance;
 
         promises.push(site.deleteFolder().then(() => {
-            filepoolService.clearAllPackagesStatus(siteId);
-            filepoolService.clearFilepool(siteId);
+            CoreFilepool.clearAllPackagesStatus(siteId);
+            CoreFilepool.clearFilepool(siteId);
             CoreCourse.clearAllCoursesStatus(siteId);
 
             siteInfo.spaceUsage = 0;
@@ -149,7 +148,7 @@ export class CoreSettingsHelperProvider {
         }).catch(async (error) => {
             if (error && error.code === FileError.NOT_FOUND_ERR) {
                 // Not found, set size 0.
-                filepoolService.clearAllPackagesStatus(siteId);
+                CoreFilepool.clearAllPackagesStatus(siteId);
                 siteInfo.spaceUsage = 0;
             } else {
                 // Error, recalculate the site usage.

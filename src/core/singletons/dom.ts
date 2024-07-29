@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver } from '@singletons/events';
 import { CorePlatform } from '@services/platform';
+import { CoreWait } from './wait';
 
 /**
  * Singleton with helper functions for dom.
@@ -214,7 +214,7 @@ export class CoreDom {
      */
     static onWindowResize(resizeFunction: (ev?: Event) => void, debounceDelay = 20): CoreEventObserver {
         const resizeListener = CoreUtils.debounce(async (ev?: Event) => {
-            await CoreDomUtils.waitForResizeDone();
+            await CoreWait.waitForResizeDone();
 
             resizeFunction(ev);
         }, debounceDelay);

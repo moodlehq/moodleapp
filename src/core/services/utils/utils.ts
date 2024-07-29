@@ -20,7 +20,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CoreLang } from '@services/lang';
 import { CoreWS } from '@services/ws';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreModals } from '@services/modals';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton, InAppBrowser, FileOpener, WebIntent, Translate, NgZone } from '@singletons';
@@ -1657,7 +1657,7 @@ export class CoreUtilsProvider {
     async scanQR(title?: string): Promise<string | undefined> {
         const { CoreViewerQRScannerComponent } = await import('@features/viewer/components/qr-scanner/qr-scanner');
 
-        return CoreDomUtils.openModal<string>({
+        return CoreModals.openModal<string>({
             component: CoreViewerQRScannerComponent,
             cssClass: 'core-modal-fullscreen',
             componentProps: {

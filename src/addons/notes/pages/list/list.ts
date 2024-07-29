@@ -24,13 +24,15 @@ import { IonContent } from '@ionic/angular';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
+import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page that displays a list of notes.
@@ -196,7 +198,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
 
         const { AddonNotesAddComponent } = await import('@addons/notes/components/add/add-modal');
 
-        const modalData = await CoreDomUtils.openModal<AddonNotesAddModalReturn>({
+        const modalData = await CoreModals.openModal<AddonNotesAddModalReturn>({
             component: AddonNotesAddComponent,
             componentProps: {
                 userId: this.userId,
@@ -240,7 +242,11 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
 
                 this.refreshNotes(false);
 
-                CoreDomUtils.showToast('addon.notes.eventnotedeleted', true, ToastDuration.LONG);
+                CoreToasts.show({
+                    message: 'addon.notes.eventnotedeleted',
+                    translateMessage: true,
+                    duration: ToastDuration.LONG,
+                });
 
             } catch (error) {
                 CoreDomUtils.showErrorModalDefault(error, 'Delete note failed.');

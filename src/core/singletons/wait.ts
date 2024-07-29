@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Singleton with helper functions to wait.
@@ -81,6 +82,34 @@ export class CoreWait {
             },
             () => window.clearInterval(intervalId),
         );
+    }
+
+    /**
+     * In iOS the resize event is triggered before the window size changes. Wait for the size to change.
+     * Use of this function is discouraged. Please use CoreDom.onWindowResize to check window resize event.
+     *
+     * @param windowWidth Initial window width.
+     * @param windowHeight Initial window height.
+     * @param retries Number of retries done.
+     * @returns Promise resolved when done.
+     */
+    static async waitForResizeDone(windowWidth?: number, windowHeight?: number, retries = 0): Promise<void> {
+        if (!CorePlatform.isIOS()) {
+            return; // Only wait in iOS.
+        }
+
+        windowWidth = windowWidth || window.innerWidth;
+        windowHeight = windowHeight || window.innerHeight;
+
+        if (windowWidth != window.innerWidth || windowHeight != window.innerHeight || retries >= 10) {
+            // Window size changed or max number of retries reached, stop.
+            return;
+        }
+
+        // Wait a bit and try again.
+        await CoreWait.wait(50);
+
+        return CoreWait.waitForResizeDone(windowWidth, windowHeight, retries+1);
     }
 
 }

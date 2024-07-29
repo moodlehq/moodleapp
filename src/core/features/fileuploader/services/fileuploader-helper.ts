@@ -44,6 +44,7 @@ import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 import { Chooser } from '@features/native/plugins';
+import { CoreToasts } from '@services/toasts';
 
 /**
  * Helper service to upload files.
@@ -457,7 +458,11 @@ export class CoreFileUploaderHelperProvider {
 
             await this.uploadGenericFile(CoreFile.getFileEntryURL(fileEntry), file.name, file.type, deleteAfterUpload, siteId);
 
-            CoreDomUtils.showToast('core.fileuploader.fileuploaded', true, undefined, 'core-toast-success');
+            CoreToasts.show({
+                message: 'core.fileuploader.fileuploaded',
+                translateMessage: true,
+                cssClass: 'core-toast-success',
+            });
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.fileuploader.errorreadingfile', true);
 

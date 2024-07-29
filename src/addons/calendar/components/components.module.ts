@@ -18,13 +18,11 @@ import { CoreSharedModule } from '@/core/shared.module';
 
 import { AddonCalendarCalendarComponent } from './calendar/calendar';
 import { AddonCalendarUpcomingEventsComponent } from './upcoming-events/upcoming-events';
-import { AddonCalendarFilterComponent } from './filter/filter';
 
 @NgModule({
     declarations: [
         AddonCalendarCalendarComponent,
         AddonCalendarUpcomingEventsComponent,
-        AddonCalendarFilterComponent,
     ],
     imports: [
         CoreSharedModule,
@@ -32,7 +30,6 @@ import { AddonCalendarFilterComponent } from './filter/filter';
     exports: [
         AddonCalendarCalendarComponent,
         AddonCalendarUpcomingEventsComponent,
-        AddonCalendarFilterComponent,
     ],
 })
 export class AddonCalendarComponentsModule {}

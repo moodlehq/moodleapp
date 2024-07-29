@@ -18,12 +18,10 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 import { AddonModImscpIndexComponent } from './index';
-import { AddonModImscpTocComponent } from './toc/toc';
 
 @NgModule({
     declarations: [
         AddonModImscpIndexComponent,
-        AddonModImscpTocComponent,
     ],
     imports: [
         CoreSharedModule,
@@ -31,7 +29,6 @@ import { AddonModImscpTocComponent } from './toc/toc';
     ],
     exports: [
         AddonModImscpIndexComponent,
-        AddonModImscpTocComponent,
     ],
 })
 export class AddonModImscpComponentsModule {}

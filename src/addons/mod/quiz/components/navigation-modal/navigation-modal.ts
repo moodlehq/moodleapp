@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input } from '@angular/core';
 
 import { CoreQuestionQuestionParsed } from '@features/question/services/question';
@@ -23,6 +24,10 @@ import { ModalController } from '@singletons';
 @Component({
     selector: 'addon-mod-quiz-navigation-modal',
     templateUrl: 'navigation-modal.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModQuizNavigationModalComponent {
 

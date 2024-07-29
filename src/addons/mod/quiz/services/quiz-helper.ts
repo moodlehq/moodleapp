@@ -40,6 +40,7 @@ import {
 import { QuestionDisplayOptionsMarks } from '@features/question/constants';
 import { CoreGroups } from '@services/groups';
 import { CoreTimeUtils } from '@services/utils/time';
+import { CoreModals } from '@services/modals';
 
 /**
  * Helper service that provides some features for quiz.
@@ -272,7 +273,7 @@ export class AddonModQuizHelperProvider {
             await import('@addons/mod/quiz/components/preflight-modal/preflight-modal');
 
         // Create and show the modal.
-        const modalData = await CoreDomUtils.openModal<Record<string, string>>({
+        const modalData = await CoreModals.openModal<Record<string, string>>({
             component: AddonModQuizPreflightModalComponent,
             componentProps: {
                 title: options.title,

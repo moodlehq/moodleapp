@@ -16,6 +16,7 @@ import { Component, Input } from '@angular/core';
 
 import { ModalController } from '@singletons';
 import { AddonModLessonPlayerPage } from '../../pages/player/player';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Modal that renders the lesson menu and media file.
@@ -23,6 +24,10 @@ import { AddonModLessonPlayerPage } from '../../pages/player/player';
 @Component({
     selector: 'page-addon-mod-lesson-menu-modal',
     templateUrl: 'menu-modal.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModLessonMenuModalPage {
 

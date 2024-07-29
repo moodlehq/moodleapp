@@ -26,8 +26,6 @@ import { CoreH5PIframeComponent } from './h5p-iframe/h5p-iframe';
     imports: [
         CoreSharedModule,
     ],
-    providers: [
-    ],
     exports: [
         CoreH5PPlayerComponent,
         CoreH5PIframeComponent,

@@ -47,6 +47,7 @@ import { CoreDom } from '@singletons/dom';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreText } from '@singletons/text';
 import { CoreWait } from '@singletons/wait';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page that displays a message discussion page.
@@ -1250,7 +1251,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 await import('@addons/messages/components/conversation-info/conversation-info.module');
 
             // Display the group information.
-            const userId = await CoreDomUtils.openSideModal<number>({
+            const userId = await CoreModals.openSideModal<number>({
                 component: AddonMessagesConversationInfoComponent,
                 componentProps: {
                     conversationId: this.conversationId,

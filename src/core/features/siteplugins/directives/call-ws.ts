@@ -15,7 +15,7 @@
 import { Directive, Input, ElementRef, Optional } from '@angular/core';
 
 import { Translate } from '@singletons';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreToasts } from '@services/toasts';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitePluginsCallWSOnClickBaseDirective } from '../classes/call-ws-click-directive';
@@ -74,7 +74,7 @@ export class CoreSitePluginsCallWSDirective extends CoreSitePluginsCallWSOnClick
 
         if (this.successMessage !== undefined) {
             // Display the success message.
-            CoreDomUtils.showToast(this.successMessage || Translate.instant('core.success'));
+            CoreToasts.show({ message: this.successMessage || Translate.instant('core.success') });
         }
     }
 

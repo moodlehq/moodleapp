@@ -51,8 +51,8 @@ import { CoreCourseCourseIndexTourComponent } from '../course-index-tour/course-
 import { CoreDom } from '@singletons/dom';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreBlockSideBlocksComponent } from '@features/block/components/side-blocks/side-blocks';
 import { ContextLevel } from '@/core/constants';
+import { CoreModals } from '@services/modals';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -316,7 +316,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 this.sectionChanged(section);
             }
         } else if (this.initialBlockInstanceId && this.displayBlocks && this.hasBlocks) {
-            CoreDomUtils.openSideModal({
+            const { CoreBlockSideBlocksComponent } = await import('@features/block/components/side-blocks/side-blocks');
+
+            CoreModals.openSideModal({
                 component: CoreBlockSideBlocksComponent,
                 componentProps: {
                     contextLevel: ContextLevel.COURSE,
@@ -431,7 +433,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         const { CoreCourseCourseIndexComponent } = await import('@features/course/components/course-index/course-index');
 
-        const data = await CoreDomUtils.openModal<CoreCourseIndexSectionWithModule>({
+        const data = await CoreModals.openModal<CoreCourseIndexSectionWithModule>({
             component: CoreCourseCourseIndexComponent,
             initialBreakpoint: 1,
             breakpoints: [0, 1],

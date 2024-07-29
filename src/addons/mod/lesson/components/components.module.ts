@@ -17,22 +17,17 @@ import { NgModule } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { AddonModLessonIndexComponent } from './index/index';
-import { AddonModLessonMenuModalPage } from './menu-modal/menu-modal';
 
 @NgModule({
     declarations: [
         AddonModLessonIndexComponent,
-        AddonModLessonMenuModalPage,
     ],
     imports: [
         CoreSharedModule,
         CoreCourseComponentsModule,
     ],
-    providers: [
-    ],
     exports: [
         AddonModLessonIndexComponent,
-        AddonModLessonMenuModalPage,
     ],
 })
 export class AddonModLessonComponentsModule {}

@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreSite } from '@classes/sites/site';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { CoreFilter } from '@features/filter/services/filter';
-import { CoreLoginSitesModalComponent } from '@features/login/components/sites-modal/sites-modal';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreUserSupport } from '@features/user/services/support';
@@ -28,6 +28,7 @@ import {
     CoreUserProfileHandlerType,
     CoreUserDelegateContext,
 } from '@features/user/services/user-delegate';
+import { CoreModals } from '@services/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -41,7 +42,11 @@ import { Subscription } from 'rxjs';
 @Component({
     selector: 'core-main-menu-user-menu',
     templateUrl: 'user-menu.html',
-    styleUrls: ['user-menu.scss'],
+    styleUrl: 'user-menu.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
@@ -248,7 +253,9 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         event.preventDefault();
         event.stopPropagation();
 
-        const closeAll = await CoreDomUtils.openSideModal<boolean>({
+        const { CoreLoginSitesModalComponent } = await import('@features/login/components/sites-modal/sites-modal');
+
+        const closeAll = await CoreModals.openSideModal<boolean>({
             component: CoreLoginSitesModalComponent,
             cssClass: 'core-modal-lateral core-modal-lateral-sm',
         });

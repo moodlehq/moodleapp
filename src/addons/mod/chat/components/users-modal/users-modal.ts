@@ -11,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
@@ -19,6 +18,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { ModalController, NgZone } from '@singletons';
 import { Subscription } from 'rxjs';
 import { AddonModChat, AddonModChatUser } from '../../services/chat';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * MMdal that displays the chat session users.
@@ -26,6 +26,10 @@ import { AddonModChat, AddonModChatUser } from '../../services/chat';
 @Component({
     selector: 'addon-mod-chat-users-modal',
     templateUrl: 'users-modal.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModChatUsersModalComponent implements OnInit, OnDestroy {
 

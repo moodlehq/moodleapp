@@ -29,6 +29,7 @@ import { NgZone } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreSettingsHandlersSource } from '@features/settings/classes/settings-handlers-source';
+import { CoreToasts } from '@services/toasts';
 
 /**
  * Page that displays the list of site settings pages.
@@ -117,7 +118,10 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
             // Using syncOnlyOnWifi false to force manual sync.
             await CoreSettingsHelper.synchronizeSite(false, this.siteId);
 
-            CoreDomUtils.showToast('core.settings.sitesynccompleted', true);
+            CoreToasts.show({
+                message: 'core.settings.sitesynccompleted',
+                translateMessage: true,
+            });
         } catch (error) {
             if (this.isDestroyed) {
                 return;

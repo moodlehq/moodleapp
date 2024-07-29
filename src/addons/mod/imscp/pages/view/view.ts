@@ -26,8 +26,8 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
-import { AddonModImscpTocComponent } from '../../components/toc/toc';
 import { AddonModImscp, AddonModImscpImscp, AddonModImscpTocItem } from '../../services/imscp';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page that displays a IMSCP content.
@@ -272,8 +272,10 @@ export class AddonModImscpViewPage implements OnInit {
      * Show the TOC.
      */
     async showToc(): Promise<void> {
+        const { AddonModImscpTocComponent } = await import('../../components/toc/toc');
+
         // Create the toc modal.
-        const itemHref = await CoreDomUtils.openSideModal<string>({
+        const itemHref = await CoreModals.openSideModal<string>({
             component: AddonModImscpTocComponent,
             componentProps: {
                 items: this.items,

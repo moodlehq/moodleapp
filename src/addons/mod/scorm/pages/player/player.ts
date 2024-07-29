@@ -23,7 +23,6 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModScormDataModel12 } from '../../classes/data-model-12';
-import { AddonModScormTocComponent } from '../../components/toc/toc';
 import {
     AddonModScorm,
     AddonModScormAttemptCountResult,
@@ -44,6 +43,7 @@ import {
     ADDON_MOD_SCORM_UPDATE_TOC_EVENT,
 } from '../../constants';
 import { CoreWait } from '@singletons/wait';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page that allows playing a SCORM.
@@ -513,7 +513,9 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      * Show the TOC.
      */
     async openToc(): Promise<void> {
-        const modalData = await CoreDomUtils.openSideModal<AddonModScormScoWithData>({
+        const { AddonModScormTocComponent } = await import('../../components/toc/toc');
+
+        const modalData = await CoreModals.openSideModal<AddonModScormScoWithData>({
             component: AddonModScormTocComponent,
             componentProps: {
                 toc: this.toc,

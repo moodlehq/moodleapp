@@ -29,8 +29,6 @@ import { CoreSearchComponentsModule } from '@features/search/components/componen
         CoreCourseComponentsModule,
         CoreSearchComponentsModule,
     ],
-    providers: [
-    ],
     exports: [
         AddonModGlossaryIndexComponent,
         AddonModGlossaryModePickerPopoverComponent,

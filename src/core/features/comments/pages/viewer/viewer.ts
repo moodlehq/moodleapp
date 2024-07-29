@@ -31,7 +31,7 @@ import { ContextLevel, CoreConstants } from '@/core/constants';
 import { CoreNavigator } from '@services/navigator';
 import { NgZone, Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUser } from '@features/user/services/user';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreError } from '@classes/errors/error';
@@ -43,6 +43,7 @@ import moment from 'moment-timezone';
 import { Subscription } from 'rxjs';
 import { CoreAnimations } from '@components/animations';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreToasts, ToastDuration } from '@services/toasts';
 
 /**
  * Page that displays comments.
@@ -323,11 +324,11 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                 this.area,
             );
 
-            CoreDomUtils.showToast(
-                commentsResponse ? 'core.comments.eventcommentcreated' : 'core.datastoredoffline',
-                true,
-                ToastDuration.LONG,
-            );
+            CoreToasts.show({
+                message: commentsResponse ? 'core.comments.eventcommentcreated' : 'core.datastoredoffline',
+                translateMessage: true,
+                duration: ToastDuration.LONG,
+            });
 
             if (commentsResponse) {
                 this.invalidateComments();
@@ -426,7 +427,11 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
 
             this.invalidateComments();
 
-            CoreDomUtils.showToast('core.comments.eventcommentdeleted', true, ToastDuration.LONG);
+            CoreToasts.show({
+                message: 'core.comments.eventcommentdeleted',
+                translateMessage: true,
+                duration: ToastDuration.LONG,
+            });
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Delete comment failed.');
         }

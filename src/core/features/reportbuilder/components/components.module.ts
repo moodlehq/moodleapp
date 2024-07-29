@@ -16,7 +16,6 @@ import { NgModule } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreReportBuilderReportColumnComponent } from './report-column/report-column';
 import { CoreReportBuilderReportDetailComponent } from './report-detail/report-detail';
-import { CoreReportBuilderReportSummaryComponent } from './report-summary/report-summary';
 
 @NgModule({
     imports: [
@@ -25,12 +24,10 @@ import { CoreReportBuilderReportSummaryComponent } from './report-summary/report
     declarations: [
         CoreReportBuilderReportDetailComponent,
         CoreReportBuilderReportColumnComponent,
-        CoreReportBuilderReportSummaryComponent,
     ],
     exports: [
         CoreReportBuilderReportDetailComponent,
         CoreReportBuilderReportColumnComponent,
-        CoreReportBuilderReportSummaryComponent,
     ],
 })
 export class CoreReportBuilderComponentsModule {}

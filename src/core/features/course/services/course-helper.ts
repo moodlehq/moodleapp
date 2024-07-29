@@ -69,12 +69,12 @@ import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreSiteHomeHomeHandlerService } from '@features/sitehome/services/handlers/sitehome-home';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
-import { CoreCourseSummaryPage } from '../pages/course-summary/course-summary.page';
 import { CoreRemindersPushNotificationData } from '@features/reminders/services/reminders';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreEnrol } from '@features/enrol/services/enrol';
 import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 import { LazyRoutesModule } from '@/app/app-routing.module';
+import { CoreModals } from '@services/modals';
 
 /**
  * Prefetch info of a module.
@@ -645,9 +645,8 @@ export class CoreCourseHelperProvider {
 
         // Now determine the status of the whole list.
         let status = statuses[0];
-        const filepool = CoreFilepool.instance;
         for (let i = 1; i < statuses.length; i++) {
-            status = filepool.determinePackagesStatus(status, statuses[i]);
+            status = CoreFilepool.determinePackagesStatus(status, statuses[i]);
         }
 
         return status;
@@ -1996,6 +1995,7 @@ export class CoreCourseHelperProvider {
 
     /**
      * Retrieves course summary page module.
+     * This is meant to be here so it can be overriden.
      *
      * @returns Course summary page module.
      */
@@ -2008,8 +2008,10 @@ export class CoreCourseHelperProvider {
      *
      * @param course Course selected
      */
-    openCourseSummary(course: CoreCourseWithImageAndColor & CoreCourseAnyCourseData): void {
-        CoreDomUtils.openSideModal<void>({
+    async openCourseSummary(course: CoreCourseWithImageAndColor & CoreCourseAnyCourseData): Promise<void> {
+        const { CoreCourseSummaryPage } = await import('../pages/course-summary/course-summary.page');
+
+        CoreModals.openSideModal<void>({
             component: CoreCourseSummaryPage,
             componentProps: {
                 courseId: course.id,

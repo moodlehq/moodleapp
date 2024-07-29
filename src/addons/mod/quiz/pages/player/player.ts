@@ -33,7 +33,6 @@ import { ModalController, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModQuizAutoSave } from '../../classes/auto-save';
 import {
-    AddonModQuizNavigationModalComponent,
     AddonModQuizNavigationModalReturn,
     AddonModQuizNavigationQuestion,
 } from '../../components/navigation-modal/navigation-modal';
@@ -55,6 +54,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT, AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
 import { CoreWait } from '@singletons/wait';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page that allows attempting a quiz.
@@ -727,8 +727,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             this.reloadNavigation = false;
         }
 
+        const { AddonModQuizNavigationModalComponent } = await import('../../components/navigation-modal/navigation-modal');
+
         // Create the navigation modal.
-        const modalData = await CoreDomUtils.openSideModal<AddonModQuizNavigationModalReturn>({
+        const modalData = await CoreModals.openSideModal<AddonModQuizNavigationModalReturn>({
             component: AddonModQuizNavigationModalComponent,
             componentProps: {
                 navigation: this.navigation,

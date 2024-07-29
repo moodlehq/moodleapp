@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFile } from '@services/file';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreWSFile } from '@services/ws';
@@ -466,7 +466,7 @@ export class CoreMimetypeUtilsProvider {
             const value = attr[key];
             translateParams[key] = value;
             translateParams[key.toUpperCase()] = value.toUpperCase();
-            translateParams[CoreTextUtils.ucFirst(key)] = CoreTextUtils.ucFirst(value);
+            translateParams[CoreText.capitalize(key)] = CoreText.capitalize(value);
         }
 
         // MIME types may include + symbol but this is not permitted in string ids.
@@ -486,7 +486,7 @@ export class CoreMimetypeUtilsProvider {
         }
 
         if (capitalise) {
-            result = CoreTextUtils.ucFirst(result);
+            result = CoreText.capitalize(result);
         }
 
         return result;

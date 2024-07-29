@@ -14,7 +14,7 @@
 
 import { Injectable, SimpleChange, KeyValueChanges } from '@angular/core';
 import { IonContent } from '@ionic/angular';
-import { ModalOptions, PopoverOptions, AlertOptions, AlertButton, TextFieldTypes, ToastOptions } from '@ionic/core';
+import { PopoverOptions, AlertOptions, AlertButton, TextFieldTypes } from '@ionic/core';
 import { Md5 } from 'ts-md5';
 
 import { CoreConfig } from '@services/config';
@@ -32,22 +32,13 @@ import {
     makeSingleton,
     Translate,
     AlertController,
-    ToastController,
     PopoverController,
-    ModalController,
-    Router,
-    ActionSheetController,
-    LoadingController,
 } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreBSTooltipComponent } from '@components/bs-tooltip/bs-tooltip';
-import { CoreModalLateralTransitionEnter, CoreModalLateralTransitionLeave } from '@classes/modal-lateral-transition';
 import { CoreSites } from '@services/sites';
-import { NavigationStart } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
@@ -56,10 +47,12 @@ import { CorePlatform } from '@services/platform';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLang } from '@services/lang';
 import { CorePasswordModalParams, CorePasswordModalResponse } from '@components/password-modal/password-modal';
-import { CoreWSError } from '@classes/errors/wserror';
 import { CoreErrorLogs } from '@singletons/error-logs';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreWait } from '@singletons/wait';
+import { CoreToasts, ToastDuration, ShowToastOptions } from '../toasts';
+import { fixOverlayAriaHidden } from '@/core/utils/fix-aria-hidden';
+import { CoreModals, OpenModalOptions } from '@services/modals';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -78,7 +71,6 @@ export class CoreDomUtilsProvider {
     protected matchesFunctionName?: string; // Name of the "matches" function to use when simulating a closest call.
     protected debugDisplay = false; // Whether to display debug messages. Store it in a variable to make it synchronous.
     protected displayedAlerts: Record<string, HTMLIonAlertElement> = {}; // To prevent duplicated alerts.
-    protected displayedModals: Record<string, HTMLIonModalElement> = {}; // To prevent duplicated modals.
     protected activeLoadingModals: CoreIonLoadingElement[] = [];
     protected logger: CoreLogger;
 
@@ -874,7 +866,7 @@ export class CoreDomUtilsProvider {
                 alertMessageEl && this.treatAnchors(alertMessageEl);
             }
 
-            this.fixAriaHidden(alert);
+            fixOverlayAriaHidden(alert);
 
             return;
         });
@@ -1375,27 +1367,26 @@ export class CoreDomUtilsProvider {
     /**
      * Displays an autodimissable toast modal window.
      *
-     * @param text The text of the toast.
-     * @param needsTranslate Whether the 'text' needs to be translated.
+     * @param message The text of the toast.
+     * @param translateMessage Whether the 'text' needs to be translated.
      * @param duration Duration in ms of the dimissable toast.
      * @param cssClass Class to add to the toast.
      * @returns Toast instance.
+     *
+     * @deprecated since 4.5. Use CoreToasts.show instead.
      */
     async showToast(
-        text: string,
-        needsTranslate?: boolean,
+        message: string,
+        translateMessage?: boolean,
         duration: ToastDuration | number = ToastDuration.SHORT,
         cssClass: string = '',
     ): Promise<HTMLIonToastElement> {
-        if (needsTranslate) {
-            text = Translate.instant(text);
-        }
-
-        return this.showToastWithOptions({
-            message: text,
-            duration: duration,
+        return CoreToasts.show({
+            message,
+            translateMessage,
+            duration,
+            cssClass,
             position: 'bottom',
-            cssClass: cssClass,
         });
     }
 
@@ -1404,22 +1395,11 @@ export class CoreDomUtilsProvider {
      *
      * @param options Options.
      * @returns Promise resolved with Toast instance.
+     *
+     * @deprecated since 4.5. Use CoreToasts.show instead.
      */
     async showToastWithOptions(options: ShowToastOptions): Promise<HTMLIonToastElement> {
-        // Convert some values and set default values.
-        const toastOptions: ToastOptions = {
-            ...options,
-            duration: CoreConstants.CONFIG.toastDurations[options.duration] ?? options.duration ?? 2000,
-            position: options.position ?? 'bottom',
-        };
-
-        const loader = await ToastController.create(toastOptions);
-
-        await loader.present();
-
-        this.fixAriaHidden(loader);
-
-        return loader;
+        return CoreToasts.show(options);
     }
 
     /**
@@ -1478,80 +1458,13 @@ export class CoreDomUtilsProvider {
      *
      * @param options Modal Options.
      * @returns The modal data when the modal closes.
+     *
+     * @deprecated since 4.5. Use CoreModals.openModal instead.
      */
     async openModal<T = unknown>(
         options: OpenModalOptions,
     ): Promise<T | undefined> {
-        const { waitForDismissCompleted, closeOnNavigate, ...modalOptions } = options;
-        const listenCloseEvents = closeOnNavigate ?? true; // Default to true.
-
-        // TODO: Improve this if we need two modals with same component open at the same time.
-        const modalId = Md5.hashAsciiStr(options.component?.toString() || '');
-        const alreadyDisplayed = !!this.displayedModals[modalId];
-
-        const modal = alreadyDisplayed
-            ? this.displayedModals[modalId]
-            : await ModalController.create(modalOptions);
-
-        let navSubscription: Subscription | undefined;
-
-        // Get the promise before presenting to get result if modal is suddenly hidden.
-        const resultPromise = waitForDismissCompleted ? modal.onDidDismiss<T>() : modal.onWillDismiss<T>();
-
-        if (!this.displayedModals[modalId]) {
-            // Store the modal and remove it when dismissed.
-            this.displayedModals[modalId] = modal;
-
-            if (listenCloseEvents) {
-                // Listen navigation events to close modals.
-                navSubscription = Router.events
-                    .pipe(filter(event => event instanceof NavigationStart))
-                    .subscribe(async () => {
-                        modal.dismiss();
-                    });
-            }
-
-            await modal.present();
-        }
-
-        if (!alreadyDisplayed) {
-            this.fixAriaHidden(modal);
-        }
-
-        const result = await resultPromise;
-
-        navSubscription?.unsubscribe();
-        delete this.displayedModals[modalId];
-
-        if (result?.data) {
-            return result?.data;
-        }
-    }
-
-    /**
-     * Temporary fix to remove aria-hidden from ion-router-outlet if needed. It can be removed once the Ionic bug is fixed.
-     * https://github.com/ionic-team/ionic-framework/issues/29396
-     *
-     * @param overlay Overlay dismissed.
-     */
-    protected async fixAriaHidden(
-        overlay: HTMLIonModalElement | HTMLIonPopoverElement | HTMLIonAlertElement | HTMLIonToastElement,
-    ): Promise<void> {
-
-        await overlay.onDidDismiss();
-
-        const overlays = await Promise.all([
-            ModalController.getTop(),
-            PopoverController.getTop(),
-            ActionSheetController.getTop(),
-            AlertController.getTop(),
-            LoadingController.getTop(),
-            ToastController.getTop(),
-        ]);
-
-        if (!overlays.find(overlay => overlay !== undefined)) {
-            document.querySelector('ion-router-outlet')?.removeAttribute('aria-hidden');
-        }
+        return CoreModals.openModal(options);
     }
 
     /**
@@ -1559,20 +1472,13 @@ export class CoreDomUtilsProvider {
      *
      * @param options Modal Options.
      * @returns The modal data when the modal closes.
+     *
+     * @deprecated since 4.5. Use CoreModals.openSideModal instead.
      */
     async openSideModal<T = unknown>(
         options: OpenModalOptions,
     ): Promise<T | undefined> {
-
-        options = Object.assign({
-            cssClass: 'core-modal-lateral',
-            showBackdrop: true,
-            backdropDismiss: true,
-            enterAnimation: CoreModalLateralTransitionEnter,
-            leaveAnimation: CoreModalLateralTransitionLeave,
-        }, options);
-
-        return this.openModal<T>(options);
+        return CoreModals.openSideModal(options);
     }
 
     /**
@@ -1603,7 +1509,7 @@ export class CoreDomUtilsProvider {
 
         await popover.present();
 
-        this.fixAriaHidden(popover);
+        fixOverlayAriaHidden(popover);
 
         return popover;
     }
@@ -1613,28 +1519,11 @@ export class CoreDomUtilsProvider {
      *
      * @param passwordParams Params to show the modal.
      * @returns Entered password, error and validation.
+     *
+     * @deprecated since 4.5. Use CoreModals.promptPassword instead.
      */
     async promptPassword<T extends CorePasswordModalResponse>(passwordParams?: CorePasswordModalParams): Promise<T> {
-        const { CorePasswordModalComponent } =
-            await import('@/core/components/password-modal/password-modal.module');
-
-        const modalData = await CoreDomUtils.openModal<T>(
-            {
-                cssClass: 'core-password-modal',
-                showBackdrop: true,
-                backdropDismiss: true,
-                component: CorePasswordModalComponent,
-                componentProps: passwordParams,
-            },
-        );
-
-        if (modalData === undefined) {
-            throw new CoreCanceledError();
-        } else if (modalData instanceof CoreWSError) {
-            throw modalData;
-        }
-
-        return modalData;
+        return CoreModals.promptPassword(passwordParams);
     }
 
     /**
@@ -1656,7 +1545,7 @@ export class CoreDomUtilsProvider {
         }
         const { CoreViewerImageComponent } = await import('@features/viewer/components/image/image');
 
-        await CoreDomUtils.openModal({
+        await CoreModals.openModal({
             component: CoreViewerImageComponent,
             componentProps: {
                 title,
@@ -1754,24 +1643,11 @@ export class CoreDomUtilsProvider {
      * @param windowHeight Initial window height.
      * @param retries Number of retries done.
      * @returns Promise resolved when done.
+     *
+     * @deprecated since 4.5. Use CoreWait.waitForResizeDone instead.
      */
     async waitForResizeDone(windowWidth?: number, windowHeight?: number, retries = 0): Promise<void> {
-        if (!CorePlatform.isIOS()) {
-            return; // Only wait in iOS.
-        }
-
-        windowWidth = windowWidth || window.innerWidth;
-        windowHeight = windowHeight || window.innerHeight;
-
-        if (windowWidth != window.innerWidth || windowHeight != window.innerHeight || retries >= 10) {
-            // Window size changed or max number of retries reached, stop.
-            return;
-        }
-
-        // Wait a bit and try again.
-        await CoreWait.wait(50);
-
-        return this.waitForResizeDone(windowWidth, windowHeight, retries+1);
+        return CoreWait.waitForResizeDone(windowWidth, windowHeight, retries);
     }
 
     /**
@@ -1818,14 +1694,6 @@ export type OpenPopoverOptions = Omit<PopoverOptions, 'showBackdrop'> & {
 };
 
 /**
- * Options for the openModal function.
- */
-export type OpenModalOptions = ModalOptions & {
-    waitForDismissCompleted?: boolean;
-    closeOnNavigate?: boolean; // Default true.
-};
-
-/**
  * Buttons for prompt alert.
  */
 export type PromptButton = Omit<AlertButton, 'handler'> & {
@@ -1841,19 +1709,3 @@ export enum VerticalPoint {
     MID = 'mid',
     BOTTOM = 'bottom',
 }
-
-/**
- * Toast duration.
- */
-export enum ToastDuration {
-    LONG = 'long',
-    SHORT = 'short',
-    STICKY = 'sticky',
-}
-
-/**
- * Options for showToastWithOptions.
- */
-export type ShowToastOptions = Omit<ToastOptions, 'duration'> & {
-    duration: ToastDuration | number;
-};

@@ -24,7 +24,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
-import { CoreCourseModuleSummaryComponent, CoreCourseModuleSummaryResult } from '../components/module-summary/module-summary';
+import { CoreCourseModuleSummaryResult } from '../components/module-summary/module-summary';
 import { CoreCourseContentsPage } from '../pages/contents/contents';
 import { CoreCourse } from '../services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '../services/course-helper';
@@ -33,6 +33,8 @@ import { CoreCourseModulePrefetchDelegate } from '../services/module-prefetch-de
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
+import { CoreText } from '@singletons/text';
+import { CoreModals } from '@services/modals';
 
 /**
  * Result of a resource download.
@@ -232,7 +234,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         const lastDownloaded =
                 await CoreCourseHelper.getModulePackageLastDownloaded(this.module, this.component);
 
-        this.downloadTimeReadable = CoreTextUtils.ucFirst(lastDownloaded.downloadTimeReadable);
+        this.downloadTimeReadable = CoreText.capitalize(lastDownloaded.downloadTimeReadable);
     }
 
     /**
@@ -423,7 +425,9 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             return;
         }
 
-        const data = await CoreDomUtils.openSideModal<CoreCourseModuleSummaryResult>({
+        const { CoreCourseModuleSummaryComponent } = await import('@features/course/components/module-summary/module-summary');
+
+        const data = await CoreModals.openSideModal<CoreCourseModuleSummaryResult>({
             component: CoreCourseModuleSummaryComponent,
             componentProps: {
                 moduleId: this.module.id,

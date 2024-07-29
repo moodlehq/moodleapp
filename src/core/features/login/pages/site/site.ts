@@ -46,6 +46,7 @@ import { CoreSitesFactory } from '@services/sites-factory';
 import { ONBOARDING_DONE } from '@features/login/constants';
 import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreModals } from '@services/modals';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -260,7 +261,7 @@ export class CoreLoginSitePage implements OnInit {
         const { CoreLoginSiteHelpComponent } =
             await import('@features/login/components/site-help/site-help');
 
-        await CoreDomUtils.openModal({
+        await CoreModals.openModal({
             component: CoreLoginSiteHelpComponent,
             cssClass: 'core-modal-fullscreen',
         });
@@ -273,7 +274,7 @@ export class CoreLoginSitePage implements OnInit {
         const { CoreLoginSiteOnboardingComponent } =
             await import('@features/login/components/site-onboarding/site-onboarding');
 
-        await CoreDomUtils.openModal({
+        await CoreModals.openModal({
             component: CoreLoginSiteOnboardingComponent,
             cssClass: 'core-modal-fullscreen',
         });

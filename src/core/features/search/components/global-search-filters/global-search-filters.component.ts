@@ -23,6 +23,7 @@ import {
 import { CoreEvents } from '@singletons/events';
 import { ModalController } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreSharedModule } from '@/core/shared.module';
 
 type Filter<T=unknown> = T & { checked: boolean };
 
@@ -30,6 +31,10 @@ type Filter<T=unknown> = T & { checked: boolean };
     selector: 'core-search-global-search-filters',
     templateUrl: 'global-search-filters.html',
     styleUrls: ['./global-search-filters.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreSearchGlobalSearchFiltersComponent implements OnInit {
 

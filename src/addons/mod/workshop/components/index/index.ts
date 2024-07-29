@@ -21,7 +21,7 @@ import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreModals } from '@services/modals';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
@@ -400,7 +400,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         const { AddonModWorkshopPhaseInfoModalComponent } =
             await import('@addons/mod/workshop/components/phase-modal/phase-modal');
 
-        const modalData = await CoreDomUtils.openModal<boolean>({
+        const modalData = await CoreModals.openModal<boolean>({
             component: AddonModWorkshopPhaseInfoModalComponent,
             componentProps: {
                 phases: CoreUtils.objectToArray(this.phases),

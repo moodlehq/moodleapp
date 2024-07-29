@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreCoordinates, CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
@@ -267,7 +267,7 @@ export class AddonQtypeDdMarkerQuestion {
         }
 
         // Check that a function to draw this shape exists.
-        const drawFunc = 'drawShape' + CoreTextUtils.ucFirst(shape);
+        const drawFunc = 'drawShape' + CoreText.capitalize(shape);
         if (!(this[drawFunc] instanceof Function)) {
             return;
         }

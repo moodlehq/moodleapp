@@ -26,6 +26,7 @@ import { Subscription } from 'rxjs';
 import { CORE_DATAPRIVACY_FEATURE_NAME, CORE_DATAPRIVACY_PAGE_NAME } from '@features/dataprivacy/constants';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDataPrivacy } from '@features/dataprivacy/services/dataprivacy';
+import { CoreModals } from '@services/modals';
 
 /**
  * Page to view user acceptances.
@@ -194,7 +195,7 @@ export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
         const { CorePolicyViewPolicyModalComponent } =
             await import('@features/policy/components/policy-modal/policy-modal');
 
-        CoreDomUtils.openModal({
+        CoreModals.openModal({
             component: CorePolicyViewPolicyModalComponent,
             componentProps: { policy },
         });

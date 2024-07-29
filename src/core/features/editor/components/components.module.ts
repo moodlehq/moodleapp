@@ -24,8 +24,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     imports: [
         CoreSharedModule,
     ],
-    providers: [
-    ],
     exports: [
         CoreEditorRichTextEditorComponent,
     ],
