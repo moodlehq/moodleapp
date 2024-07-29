@@ -56,6 +56,8 @@ import { CoreModals } from '@services/modals';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockComponentsModule } from '@features/block/components/components.module';
 import { CoreCourseComponentsModule } from '../components.module';
+import { CoreSites } from '@services/sites';
+import { COURSE_ALL_SECTIONS_PREFERRED_PREFIX } from '@features/course/constants';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -316,8 +318,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         } else if (this.initialSectionId || this.initialSectionNumber !== undefined) {
             // We have an input indicating the section ID to load. Search the section.
             const section = sections.find((section) =>
-                section.id == this.initialSectionId ||
-                    (section.section !== undefined && section.section == this.initialSectionNumber));
+                section.id === this.initialSectionId ||
+                    (section.section !== undefined && section.section === this.initialSectionNumber));
 
             // Don't load the section if it cannot be viewed by the user.
             if (section && this.canViewSection(section)) {
@@ -337,6 +339,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             });
         }
 
+        const allSectionsPreferred = await this.isAllSectionsPreferred();
         if (!this.loaded) {
             // No section specified, not found or not visible, load current section or the section with last module viewed.
             const currentSectionData = await CoreCourseFormatDelegate.getCurrentSection(this.course, sections);
@@ -345,15 +348,18 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             let section = currentSectionData.section;
             let moduleId: number | undefined;
 
-            if (!currentSectionData.forceSelected && lastModuleViewed) {
-                // Search the section with the last module viewed.
-                const lastModuleSection = this.getViewedModuleSection(sections, lastModuleViewed);
+            // If all sections is not preferred, load the last viewed module section.
+            if (!allSectionsPreferred && lastModuleViewed) {
+                if (!currentSectionData.forceSelected) {
+                    // Search the section with the last module viewed.
+                    const lastModuleSection = this.getViewedModuleSection(sections, lastModuleViewed);
 
-                section = lastModuleSection || section;
-                moduleId = lastModuleSection ? lastModuleViewed?.cmId : undefined;
-            } else if (lastModuleViewed && currentSectionData.section.modules.some(module => module.id === lastModuleViewed.cmId)) {
-                // Last module viewed is inside the highlighted section.
-                moduleId = lastModuleViewed.cmId;
+                    section = lastModuleSection || section;
+                    moduleId = lastModuleSection ? lastModuleViewed?.cmId : undefined;
+                } else if (currentSectionData.section.modules.some(module => module.id === lastModuleViewed.cmId)) {
+                    // Last module viewed is inside the highlighted section.
+                    moduleId = lastModuleViewed.cmId;
+                }
             }
 
             this.loaded = true;
@@ -456,7 +462,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (!data) {
             return;
         }
-        const section = this.sections.find((section) => section.id == data.sectionId);
+        const section = this.sections.find((section) => section.id === data.sectionId);
         if (!section) {
             return;
         }
@@ -465,7 +471,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (!data.moduleId) {
             return;
         }
-        const module = section.modules.find((module) => module.id == data.moduleId);
+        const module = section.modules.find((module) => module.id === data.moduleId);
         if (!module) {
             return;
         }
@@ -513,7 +519,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.selectedSection = newSection;
         this.data.section = this.selectedSection;
 
-        if (newSection.id != this.allSectionsId) {
+        if (newSection.id !== this.allSectionsId) {
             // Select next and previous sections to show the arrows.
             const i = this.sections.findIndex((value) => this.compareSections(value, newSection));
 
@@ -531,11 +537,13 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 }
             }
             this.nextSection = j < this.sections.length ? this.sections[j] : undefined;
+            this.setAllSectionsPreferred(false);
         } else {
             this.previousSection = undefined;
             this.nextSection = undefined;
             this.lastShownSectionIndex = -1;
             this.showMoreActivities();
+            this.setAllSectionsPreferred(true);
         }
 
         // Scroll to module if needed. Give more priority to the input.
@@ -696,6 +704,31 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             data: { id: this.course.id, sectionnumber: sectionNumber, category: 'course' },
             url: `/course/view.php?id=${this.course.id}${extraParams}`,
         });
+    }
+
+    /**
+     * Set all sections is preferred for the course.
+     *
+     * @param show Whether if all sections is preferred.
+     */
+    async setAllSectionsPreferred(show: boolean): Promise<void> {
+        const site = CoreSites.getCurrentSite();
+
+        await site?.setLocalSiteConfig(`${COURSE_ALL_SECTIONS_PREFERRED_PREFIX}${this.course.id}`, show ? 1 : 0);
+    }
+
+    /**
+     * Check if all sections is preferred for the course.
+     *
+     * @returns Whether if all sections is preferred.
+     */
+    async isAllSectionsPreferred(): Promise<boolean> {
+        const site = CoreSites.getCurrentSite();
+
+        const showAllSections =
+            await site?.getLocalSiteConfig<number>(`${COURSE_ALL_SECTIONS_PREFERRED_PREFIX}${this.course.id}`, 0);
+
+        return !!showAllSections;
     }
 
 }
