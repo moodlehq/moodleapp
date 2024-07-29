@@ -22,6 +22,8 @@ import { AddonQtypeDdMarkerGraphicsApi } from './graphics_api';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreExternalContentDirective } from '@directives/external-content';
+import { CoreLinkDirective } from '@directives/link';
+import { ElementRef } from '@angular/core';
 
 /**
  * Class to make a question of ddmarker type work.
@@ -96,6 +98,8 @@ export class AddonQtypeDdMarkerQuestion {
         drag.classList.add('item' + itemNo);
         drag.classList.remove('dragplaceholder'); // In case it has it.
         dragHome.classList.add('dragplaceholder');
+
+        this.treatAnchors(drag);
 
         // Insert the new drag after the dragHome.
         dragHome.parentElement?.insertBefore(drag, dragHome.nextSibling);
@@ -252,6 +256,7 @@ export class AddonQtypeDdMarkerQuestion {
             // Marker text already exists. Update it or remove it if empty.
             if (markerText !== '') {
                 existingMarkerText.innerHTML = markerText;
+                this.treatAnchors(existingMarkerText);
             } else {
                 existingMarkerText.remove();
             }
@@ -262,6 +267,7 @@ export class AddonQtypeDdMarkerQuestion {
 
             span.className = classNames;
             span.innerHTML = markerText;
+            this.treatAnchors(span);
 
             markerTexts.appendChild(span);
         }
@@ -894,6 +900,19 @@ export class AddonQtypeDdMarkerQuestion {
         if (itemNo !== null) {
             drag.classList.remove('item' + itemNo);
         }
+    }
+
+    /**
+     * Treat anchors inside an element, adding the core-link directive.
+     *
+     * @param el Element to treat.
+     */
+    protected treatAnchors(el: HTMLElement): void {
+        Array.from(el.querySelectorAll('a')).forEach((anchor) => {
+            const linkDir = new CoreLinkDirective(new ElementRef(anchor));
+            linkDir.capture = true;
+            linkDir.ngOnInit();
+        });
     }
 
 }

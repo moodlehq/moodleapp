@@ -69,7 +69,9 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonMo
         }
 
         this.question.readOnly = answerContainer.classList.contains('readonly');
-        this.question.answers = answerContainer.outerHTML;
+        // Add the drags container inside the answers so it's rendered inside core-format-text,
+        // otherwise some styles could be different between the drag homes and the draggables.
+        this.question.answers = answerContainer.outerHTML + '<div class="drags"></div>';
 
         // Get the inputs where the answers will be stored and add them to the question text.
         const inputEls = Array.from(

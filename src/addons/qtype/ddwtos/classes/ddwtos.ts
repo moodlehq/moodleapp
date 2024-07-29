@@ -20,6 +20,8 @@ import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizDdwtosQuestionData } from '../component/ddwtos';
 import { CoreWait } from '@singletons/wait';
+import { CoreLinkDirective } from '@directives/link';
+import { ElementRef } from '@angular/core';
 
 /**
  * Class to make a question of ddwtos type work.
@@ -68,6 +70,13 @@ export class AddonQtypeDdwtosQuestion {
 
         drag.style.visibility = 'visible';
         drag.style.position = 'absolute';
+
+        Array.from(drag.querySelectorAll('a')).forEach((anchor) => {
+            // Cloning the item doesn't clone its directives. Add core-link to the anchors.
+            const linkDir = new CoreLinkDirective(new ElementRef(anchor));
+            linkDir.capture = true;
+            linkDir.ngOnInit();
+        });
 
         const container = this.container.querySelector(this.selectors.dragContainer());
         container?.appendChild(drag);
