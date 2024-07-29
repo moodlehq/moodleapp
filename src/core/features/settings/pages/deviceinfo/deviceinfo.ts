@@ -23,7 +23,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { Subscription } from 'rxjs';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreConfig } from '@services/config';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreToasts } from '@services/toasts';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreNetwork } from '@services/network';
@@ -265,7 +265,10 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
                 this.showDevOptions = true;
                 await CoreConfig.set('showDevOptions', 1);
 
-                CoreDomUtils.showToast('core.settings.youradev', true);
+                CoreToasts.show({
+                    message: 'core.settings.youradev',
+                    translateMessage: true,
+                });
             } else {
                 this.showDevOptions = false;
                 await CoreConfig.delete('showDevOptions');

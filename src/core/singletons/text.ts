@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Clipboard } from '@singletons';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreToasts } from '@services/toasts';
 
 /**
  * Singleton with helper functions for text manipulation.
@@ -89,7 +89,10 @@ export class CoreText {
         }
 
         // Show toast using ionicLoading.
-        CoreDomUtils.showToast('core.copiedtoclipboard', true);
+        CoreToasts.show({
+                message: 'core.copiedtoclipboard',
+                translateMessage: true,
+        });
     }
 
 }

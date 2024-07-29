@@ -19,6 +19,7 @@ import { PopoverController } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModForum, AddonModForumDiscussion } from '../../services/forum';
 import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT } from '../../constants';
+import { CoreToasts } from '@services/toasts';
 
 /**
  * This component is meant to display a popover with the discussion options.
@@ -74,7 +75,10 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
 
             CoreEvents.trigger(ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
             PopoverController.dismiss({ action: 'lock', value: locked });
-            CoreDomUtils.showToast('addon.mod_forum.lockupdated', true);
+            CoreToasts.show({
+                message: 'addon.mod_forum.lockupdated',
+                translateMessage: true,
+            });
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
             PopoverController.dismiss();
@@ -103,7 +107,10 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
 
             CoreEvents.trigger(ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
             PopoverController.dismiss({ action: 'pin', value: pinned });
-            CoreDomUtils.showToast('addon.mod_forum.pinupdated', true);
+            CoreToasts.show({
+                message: 'addon.mod_forum.pinupdated',
+                translateMessage: true,
+            });
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
             PopoverController.dismiss();
@@ -132,7 +139,10 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
 
             CoreEvents.trigger(ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, data, CoreSites.getCurrentSiteId());
             PopoverController.dismiss({ action: 'star', value: starred });
-            CoreDomUtils.showToast('addon.mod_forum.favouriteupdated', true);
+            CoreToasts.show({
+                message: 'addon.mod_forum.favouriteupdated',
+                translateMessage: true,
+            });
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
             PopoverController.dismiss();

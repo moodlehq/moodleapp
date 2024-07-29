@@ -20,6 +20,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonReportInsights } from '../insights';
+import { CoreToasts } from '@services/toasts';
 
 // Bulk actions supported, along with the related lang string.
 const BULK_ACTIONS = {
@@ -64,12 +65,17 @@ export class AddonReportInsightsActionLinkHandlerService extends CoreContentLink
 
                 if (BULK_ACTIONS[params.action]) {
                     // Done, display a toast.
-                    CoreDomUtils.showToast(Translate.instant('addon.report_insights.actionsaved', {
-                        $a: Translate.instant(BULK_ACTIONS[params.action]),
-                    }));
+                    CoreToasts.show({
+                        message: Translate.instant('addon.report_insights.actionsaved', {
+                            $a: Translate.instant(BULK_ACTIONS[params.action]),
+                        }),
+                    });
                 } else if (!params.forwardurl) {
                     // Forward URL not defined, display a toast.
-                    CoreDomUtils.showToast('core.success', true);
+                    CoreToasts.show({
+                        message: 'core.success',
+                        translateMessage: true,
+                    });
                 } else {
                     // Try to open the link in the app.
                     const forwardUrl = decodeURIComponent(params.forwardurl);

@@ -23,7 +23,8 @@ import {
 } from '@features/rating/services/rating';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreToasts, ToastDuration } from '@services/toasts';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
@@ -147,7 +148,11 @@ export class CoreRatingRateComponent implements OnChanges, OnDestroy {
             );
 
             if (response === undefined) {
-                CoreDomUtils.showToast('core.datastoredoffline', true, ToastDuration.LONG);
+                CoreToasts.show({
+                    message: 'core.datastoredoffline',
+                    translateMessage: true,
+                    duration: ToastDuration.LONG,
+                });
             } else {
                 this.onUpdate.emit();
             }

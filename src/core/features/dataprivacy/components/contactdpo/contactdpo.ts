@@ -18,7 +18,8 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreDataPrivacy } from '@features/dataprivacy/services/dataprivacy';
 import { CoreUser } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreToasts, ToastDuration } from '@services/toasts';
 import { CoreUtils } from '@services/utils/utils';
 
 import { ModalController } from '@singletons';
@@ -80,7 +81,11 @@ export class CoreDataPrivacyContactDPOComponent implements OnInit {
             // Send the message.
             const succeed = await CoreDataPrivacy.contactDPO(this.message);
             if (succeed) {
-                CoreDomUtils.showToast('core.dataprivacy.requestsubmitted', true, ToastDuration.LONG);
+                CoreToasts.show({
+                    message: 'core.dataprivacy.requestsubmitted',
+                    translateMessage: true,
+                    duration: ToastDuration.LONG,
+                });
                 ModalController.dismiss(true);
             }
         } catch (error) {

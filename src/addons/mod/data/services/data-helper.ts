@@ -19,7 +19,7 @@ import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fi
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFormFields } from '@singletons/form';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
@@ -47,6 +47,7 @@ import {
     AddonModDataTemplateType,
     AddonModDataTemplateMode,
 } from '../constants';
+import { CoreToasts, ToastDuration } from '@services/toasts';
 
 /**
  * Service that provides helper functions for datas.
@@ -176,11 +177,11 @@ export class AddonModDataHelperProvider {
 
             CoreEvents.trigger(ADDON_MOD_DATA_ENTRY_CHANGED, { dataId: dataId, entryId: entryId }, siteId);
 
-            CoreDomUtils.showToast(
-                approve ? 'addon.mod_data.recordapproved' : 'addon.mod_data.recorddisapproved',
-                true,
-                ToastDuration.LONG,
-            );
+            CoreToasts.show({
+                message: approve ? 'addon.mod_data.recordapproved' : 'addon.mod_data.recorddisapproved',
+                translateMessage: true,
+                duration: ToastDuration.LONG,
+            });
         } catch {
             // Ignore error, it was already displayed.
         } finally {
@@ -883,7 +884,11 @@ export class AddonModDataHelperProvider {
 
             CoreEvents.trigger(ADDON_MOD_DATA_ENTRY_CHANGED, { dataId, entryId, deleted: true }, siteId);
 
-            CoreDomUtils.showToast('addon.mod_data.recorddeleted', true, ToastDuration.LONG);
+            CoreToasts.show({
+                message: 'addon.mod_data.recorddeleted',
+                translateMessage: true,
+                duration: ToastDuration.LONG,
+            });
 
             modal.dismiss();
         } catch {

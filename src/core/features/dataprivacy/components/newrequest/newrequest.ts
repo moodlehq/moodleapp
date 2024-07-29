@@ -20,7 +20,8 @@ import {
     CoreDataPrivacyDataRequestType,
     CoreDataPrivacyGetAccessInformationWSResponse,
 } from '@features/dataprivacy/services/dataprivacy';
-import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreToasts, ToastDuration } from '@services/toasts';
 
 import { ModalController } from '@singletons';
 
@@ -105,7 +106,11 @@ export class CoreDataPrivacyNewRequestComponent implements OnInit {
             // Send the message.
             const requestId = await CoreDataPrivacy.createDataRequest(this.typeControl.value, this.message);
             if (requestId) {
-                CoreDomUtils.showToast('core.dataprivacy.requestsubmitted', true, ToastDuration.LONG);
+                CoreToasts.show({
+                    message: 'core.dataprivacy.requestsubmitted',
+                    translateMessage: true,
+                    duration: ToastDuration.LONG,
+                });
                 ModalController.dismiss(true);
             }
         } catch (error) {

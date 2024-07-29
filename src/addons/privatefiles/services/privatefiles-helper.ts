@@ -20,6 +20,7 @@ import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuplo
 import { AddonPrivateFiles, AddonPrivateFilesGetUserInfoWSResult } from './privatefiles';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
+import { CoreToasts } from '@services/toasts';
 
 /**
  * Service that provides some helper functions regarding private and site files.
@@ -64,7 +65,11 @@ export class AddonPrivateFilesHelperProvider {
         try {
             await AddonPrivateFiles.moveFromDraftToPrivate(result.itemid);
 
-            CoreDomUtils.showToast('core.fileuploader.fileuploaded', true, undefined, 'core-toast-success');
+            CoreToasts.show({
+                message: 'core.fileuploader.fileuploaded',
+                translateMessage: true,
+                cssClass: 'core-toast-success',
+            });
         } finally {
             modal.dismiss();
         }

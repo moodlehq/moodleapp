@@ -15,11 +15,12 @@
 import { AddonNotes, AddonNotesPublishState } from '@addons/notes/services/notes';
 import { Component, ViewChild, ElementRef, Input } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreToasts, ToastDuration } from '@services/toasts';
 
 /**
  * Component that displays a text area for composing a note.
@@ -62,7 +63,11 @@ export class AddonNotesAddComponent {
             CoreForms.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
 
             ModalController.dismiss(<AddonNotesAddModalReturn>{ type: this.type, sent: true }).finally(() => {
-                CoreDomUtils.showToast(sent ? 'addon.notes.eventnotecreated' : 'core.datastoredoffline', true, ToastDuration.LONG);
+                CoreToasts.show({
+                    message: sent ? 'addon.notes.eventnotecreated' : 'core.datastoredoffline',
+                    translateMessage: true,
+                    duration: ToastDuration.LONG,
+                });
             });
         } catch (error){
             CoreDomUtils.showErrorModal(error);

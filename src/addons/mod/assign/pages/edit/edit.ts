@@ -20,7 +20,7 @@ import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFormFields, CoreForms } from '@singletons/form';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -45,6 +45,7 @@ import {
     ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT,
     ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
 } from '../../constants';
+import { CoreToasts, ToastDuration } from '@services/toasts';
 
 /**
  * Page that allows adding or editing an assigment submission.
@@ -488,7 +489,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
      * Function called when the time is up.
      */
     async timeUp(): Promise<void> {
-        this.timeUpToast = await CoreDomUtils.showToastWithOptions({
+        this.timeUpToast = await CoreToasts.show({
             message: Translate.instant('addon.mod_assign.caneditsubmission'),
             duration: ToastDuration.STICKY,
             buttons: [Translate.instant('core.dismiss')],

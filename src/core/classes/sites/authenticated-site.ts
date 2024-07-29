@@ -21,7 +21,7 @@ import {
     CoreWSPreSetsSplitRequest,
     CoreWSTypeExpected,
 } from '@services/ws';
-import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
+import { CoreToasts, ToastDuration } from '@services/toasts';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
@@ -420,7 +420,11 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
         if (wsPreSets.cleanUnicode && CoreTextUtils.hasUnicodeData(data)) {
             // Data will be cleaned, notify the user.
-            CoreDomUtils.showToast('core.unicodenotsupported', true, ToastDuration.LONG);
+            CoreToasts.show({
+                message: 'core.unicodenotsupported',
+                translateMessage: true,
+                duration: ToastDuration.LONG,
+            });
         } else {
             // No need to clean data in this call.
             wsPreSets.cleanUnicode = false;
