@@ -99,10 +99,13 @@ export async function getCourseStandaloneComponents(): Promise<Type<unknown>[]> 
     // eslint-disable-next-line deprecation/deprecation
     const { CoreCourseModuleManualCompletionComponent } =
         await import('@features/course/components/module-manual-completion/module-manual-completion');
+    const { CoreCourseFormatComponent } =
+        await import('@features/course/components/course-format/course-format');
 
     return [
         CoreCourseModuleDescriptionComponent,
         CoreCourseModuleManualCompletionComponent,
+        CoreCourseFormatComponent,
     ];
 }
 

@@ -53,6 +53,9 @@ import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ContextLevel } from '@/core/constants';
 import { CoreModals } from '@services/modals';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreBlockComponentsModule } from '@features/block/components/components.module';
+import { CoreCourseComponentsModule } from '../components.module';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -68,6 +71,12 @@ import { CoreModals } from '@services/modals';
     selector: 'core-course-format',
     templateUrl: 'course-format.html',
     styleUrls: ['course-format.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreBlockComponentsModule,
+        CoreCourseComponentsModule,
+    ],
 })
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
