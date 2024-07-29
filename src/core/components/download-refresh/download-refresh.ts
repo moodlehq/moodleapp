@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { DownloadStatus } from '@/core/constants';
 import { CoreAnimations } from '@components/animations';
 
@@ -29,22 +29,43 @@ import { CoreAnimations } from '@components/animations';
     styleUrls: ['download-refresh.scss'],
     animations: [CoreAnimations.SHOW_HIDE],
 })
-export class CoreDownloadRefreshComponent {
+export class CoreDownloadRefreshComponent implements OnInit {
 
     @Input() status?: DownloadStatus; // Download status.
-    @Input() statusTranslatable?: string; // Download status translatable string.
+    @Input() statusesTranslatable?: Partial<CoreDownloadStatusTranslatable>; // Download statuses translatable strings.
+    @Input() statusSubject = ''; // Status subject to use on name filed in the translatable string.
     @Input() enabled = false; // Whether the download is enabled.
     @Input() loading = true; // Force loading status when is not downloading.
     @Input() canTrustDownload = false; // If false, refresh will be shown if downloaded.
     @Output() action: EventEmitter<boolean>; // Will emit an event when the item clicked.
+
+    /**
+     * @deprecated since 4.5. Use statusesTranslatable instead.
+     */
+    @Input() statusTranslatable?: string; // Download status translatable string.
 
     statusDownloaded = DownloadStatus.DOWNLOADED;
     statusNotDownloaded = DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED;
     statusOutdated = DownloadStatus.OUTDATED;
     statusDownloading = DownloadStatus.DOWNLOADING;
 
+    translates: CoreDownloadStatusTranslatable = {
+        downloaded: 'core.downloaded',
+        notdownloaded: 'core.download',
+        outdated: 'core.refresh',
+        downloading: 'core.downloading',
+        loading: 'core.loading',
+    };
+
     constructor() {
         this.action = new EventEmitter();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        this.translates = Object.assign(this.translates, this.statusesTranslatable || {});
     }
 
     /**
@@ -61,3 +82,11 @@ export class CoreDownloadRefreshComponent {
     }
 
 }
+
+export type CoreDownloadStatusTranslatable = {
+    downloaded: string;
+    notdownloaded: string;
+    outdated: string;
+    downloading: string;
+    loading: string;
+};

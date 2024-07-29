@@ -23,7 +23,7 @@ import { AddonStorageManagerSettingsHandler } from './services/handlers/settings
 const routes: Routes = [
     {
         path: '',
-        loadChildren: () => import('@addons/storagemanager/storagemanager-lazy.module').then(m => m.AddonStorageManagerLazyModule),
+        loadChildren: () => import('@addons/storagemanager/storagemanager-lazy.module'),
     },
 ];
 

@@ -10,8 +10,8 @@
     <ng-container *ngIf="isEnrolled && layout !== 'summarycard'">
         <div class="core-button-spinner" *ngIf="!courseOptionMenuEnabled && showDownload">
             <core-download-refresh [status]="prefetchCourseData.status" [enabled]="showDownload"
-                [statusTranslatable]="prefetchCourseData.statusTranslatable" [canTrustDownload]="false"
-                [loading]="prefetchCourseData.loading" (action)="prefetchCourse()" />
+                [statusesTranslatable]="statusesTranslatable" [canTrustDownload]="false" [loading]="prefetchCourseData.loading"
+                (action)="prefetchCourse()" />
         </div>
 
         <div class="core-button-spinner" *ngIf="courseOptionMenuEnabled">

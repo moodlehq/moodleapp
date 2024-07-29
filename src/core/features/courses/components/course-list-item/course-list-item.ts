@@ -27,6 +27,7 @@ import { CoreCourseListItem, CoreCourses, CoreCoursesProvider } from '../../serv
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CoreCoursesCourseOptionsMenuComponent } from '../course-options-menu/course-options-menu';
 import { CoreEnrolHelper } from '@features/enrol/services/enrol-helper';
+import { CoreDownloadStatusTranslatable } from '@components/download-refresh/download-refresh';
 
 /**
  * This directive is meant to display an item for a list of courses.
@@ -53,6 +54,12 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
         statusTranslatable: 'core.loading',
         status: DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED,
         loading: true,
+    };
+
+    statusesTranslatable: Partial<CoreDownloadStatusTranslatable> = {
+        downloaded: 'core.course.refreshcourse',
+        notdownloaded: 'core.course.downloadcourse',
+        outdated: 'core.course.downloadcourse',
     };
 
     showSpinner = false;

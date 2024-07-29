@@ -40,4 +40,4 @@ const routes: Routes = [
         AddonStorageManagerCourseStoragePage,
     ],
 })
-export class AddonStorageManagerLazyModule {}
+export default class AddonStorageManagerLazyModule {}
