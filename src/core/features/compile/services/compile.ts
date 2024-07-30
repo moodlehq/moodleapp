@@ -21,6 +21,8 @@ import {
     Type,
     Provider,
     ViewContainerRef,
+    signal,
+    computed,
 } from '@angular/core';
 import {
     ActionSheetController,
@@ -294,6 +296,8 @@ export class CoreCompileProvider {
         instance['CoreConfigConstants'] = CoreConstants.CONFIG;
         instance['CoreEventsProvider'] = CoreEvents;
         instance['CoreLoggerProvider'] = CoreLogger;
+        instance['signal'] = signal;
+        instance['computed'] = computed;
         instance['moment'] = moment;
         instance['Md5'] = Md5;
         /**
