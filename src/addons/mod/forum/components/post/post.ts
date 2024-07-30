@@ -54,6 +54,7 @@ import { CoreDom } from '@singletons/dom';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, ADDON_MOD_FORUM_COMPONENT } from '../../constants';
 import { CoreToasts } from '@services/toasts';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -65,21 +66,21 @@ import { CoreToasts } from '@services/toasts';
 })
 export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges {
 
-    @Input() post!: AddonModForumPost; // Post.
-    @Input() courseId!: number; // Post's course ID.
-    @Input() discussionId!: number; // Post's' discussion ID.
+    @Input({ required: true }) post!: AddonModForumPost; // Post.
+    @Input({ required: true }) courseId!: number; // Post's course ID.
+    @Input({ required: true }) discussionId!: number; // Post's' discussion ID.
     @Input() discussion?: AddonModForumDiscussion; // Post's' discussion, only for starting posts.
-    @Input() component!: string; // Component this post belong to.
-    @Input() componentId!: number; // Component ID.
-    @Input() formData!: AddonModForumSharedPostFormData; // Object with the new post data. Usually shared between posts.
-    @Input() originalData!: Omit<AddonModForumPostFormData, 'id'>; // Original post data. Usually shared between posts.
-    @Input() trackPosts!: boolean; // True if post is being tracked.
-    @Input() forum!: AddonModForumData; // The forum the post belongs to. Required for attachments and offline posts.
-    @Input() accessInfo!: AddonModForumAccessInformation; // Forum access information.
+    @Input({ required: true }) component!: string; // Component this post belong to.
+    @Input({ required: true }) componentId!: number; // Component ID.
+    @Input({ required: true }) formData!: AddonModForumSharedPostFormData; // New post data. Usually shared between posts.
+    @Input({ required: true }) originalData!: Omit<AddonModForumPostFormData, 'id'>; // Original data. Usually shared between posts.
+    @Input({ required: true, transform: toBoolean }) trackPosts = false; // True if post is being tracked.
+    @Input({ required: true }) forum!: AddonModForumData; // The forum the post belongs to.
+    @Input({ required: true }) accessInfo!: AddonModForumAccessInformation; // Forum access information.
     @Input() parentSubject?: string; // Subject of parent post.
     @Input() ratingInfo?: CoreRatingInfo; // Rating info item.
-    @Input() leavingPage?: boolean; // Whether the page that contains this post is being left and will be destroyed.
-    @Input() highlight = false;
+    @Input({ transform: toBoolean }) leavingPage = false; // Whether the page that contains this post is being left.
+    @Input({ transform: toBoolean }) highlight = false;
     @Output() onPostChange: EventEmitter<void> = new EventEmitter<void>(); // Event emitted when a reply is posted or modified.
 
     @ViewChild('replyFormEl') formElement!: ElementRef;

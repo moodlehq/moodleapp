@@ -25,6 +25,7 @@ import { AddonModAssignSubmissionDelegate } from '../../services/submission-dele
 import { CoreFileEntry } from '@services/file-helper';
 import type { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { ADDON_MOD_ASSIGN_COMPONENT } from '../../constants';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component that displays an assignment submission plugin.
@@ -37,11 +38,11 @@ export class AddonModAssignSubmissionPluginComponent implements OnInit {
 
     @ViewChild(CoreDynamicComponent) dynamicComponent!: CoreDynamicComponent<AddonModAssignSubmissionPluginBaseComponent>;
 
-    @Input() assign!: AddonModAssignAssign; // The assignment.
-    @Input() submission!: AddonModAssignSubmission; // The submission.
-    @Input() plugin!: AddonModAssignPlugin; // The plugin object.
-    @Input() edit = false; // Whether the user is editing.
-    @Input() allowOffline = false; // Whether to allow offline.
+    @Input({ required: true }) assign!: AddonModAssignAssign; // The assignment.
+    @Input({ required: true }) submission!: AddonModAssignSubmission; // The submission.
+    @Input({ required: true }) plugin!: AddonModAssignPlugin; // The plugin object.
+    @Input({ transform: toBoolean }) edit = false; // Whether the user is editing.
+    @Input({ transform: toBoolean }) allowOffline = false; // Whether to allow offline.
 
     pluginComponent?: Type<AddonModAssignSubmissionPluginBaseComponent>; // Component to render the plugin.
     data?: AddonModAssignSubmissionPluginData; // Data to pass to the component.

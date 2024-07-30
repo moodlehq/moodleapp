@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
+import { toBoolean } from '@/core/transforms/boolean';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 
 @Component({
@@ -31,8 +32,8 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
     private static readonly BARS_MIN_HEIGHT = 4;
     private static readonly BARS_GUTTER = 4;
 
-    @Input() analyser!: AnalyserNode;
-    @Input() paused?: boolean;
+    @Input({ required: true }) analyser!: AnalyserNode;
+    @Input({ transform: toBoolean }) paused = false;
     @ViewChild('canvas') canvasRef?: ElementRef<HTMLCanvasElement>;
 
     private element: HTMLElement;

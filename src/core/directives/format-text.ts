@@ -56,6 +56,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreIcons } from '@singletons/icons';
 import { ContextLevel } from '../constants';
 import { CoreWait } from '@singletons/wait';
+import { toBoolean } from '../transforms/boolean';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -77,19 +78,20 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     @Input() siteId?: string; // Site ID to use.
     @Input() component?: string; // Component for CoreExternalContentDirective.
     @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
-    @Input() adaptImg?: boolean | string = true; // Whether to adapt images to screen width.
-    @Input() clean?: boolean | string; // Whether all the HTML tags should be removed.
-    @Input() singleLine?: boolean | string; // Whether new lines should be removed (all text in single line). Only if clean=true.
+    @Input({ transform: toBoolean }) adaptImg = true; // Whether to adapt images to screen width.
+    @Input({ transform: toBoolean }) clean = false; // Whether all the HTML tags should be removed.
+    @Input({ transform: toBoolean }) singleLine = false; // Whether new lines should be removed. Only if clean=true.
     @Input() highlight?: string; // Text to highlight.
-    @Input() filter?: boolean | string; // Whether to filter the text. If not defined, true if contextLevel and instanceId are set.
+    @Input({ transform: toBoolean }) filter?: boolean; // Whether to filter the text.
+                                                       // If not defined, true if contextLevel and instanceId are set.
     @Input() contextLevel?: ContextLevel; // The context level of the text.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
-    @Input() wsNotFiltered?: boolean | string; // If true it means the WS didn't filter the text for some reason.
-    @Input() captureLinks?: boolean; // Whether links should tried to be opened inside the app. Defaults to true.
-    @Input() openLinksInApp?: boolean; // Whether links should be opened in InAppBrowser.
-    @Input() hideIfEmpty = false; // If true, the tag will contain nothing if text is empty.
-    @Input() disabled?: boolean; // If disabled, autoplay elements will be disabled.
+    @Input({ transform: toBoolean }) wsNotFiltered = false; // If true it means the WS didn't filter the text for some reason.
+    @Input({ transform: toBoolean }) captureLinks = true; // Whether links should tried to be opened inside the app.
+    @Input({ transform: toBoolean }) openLinksInApp = false; // Whether links should be opened in InAppBrowser.
+    @Input({ transform: toBoolean }) hideIfEmpty = false; // If true, the tag will contain nothing if text is empty.
+    @Input({ transform: toBoolean }) disabled = false; // If disabled, autoplay elements will be disabled.
 
     @Output() afterRender: EventEmitter<void>; // Called when the data is rendered.
     @Output() onClick: EventEmitter<void> = new EventEmitter(); // Called when clicked.
@@ -361,7 +363,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         }
 
         if (!this.element.getAttribute('singleLine')) {
-            this.element.setAttribute('singleLine', String(CoreUtils.isTrueOrOne(this.singleLine)));
+            this.element.setAttribute('singleLine', String(this.singleLine));
         }
 
         this.text = this.text ? this.text.trim() : '';
@@ -423,15 +425,14 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             this.contextInstanceId = this.courseId;
         }
 
-        const filter = this.filter === undefined ?
-            !!(this.contextLevel && this.contextInstanceId !== undefined) : CoreUtils.isTrueOrOne(this.filter);
+        const filter = this.filter ?? !!(this.contextLevel && this.contextInstanceId !== undefined);
 
         const options: CoreFilterFormatTextOptions = {
-            clean: CoreUtils.isTrueOrOne(this.clean),
-            singleLine: CoreUtils.isTrueOrOne(this.singleLine),
+            clean: this.clean,
+            singleLine: this.singleLine,
             highlight: this.highlight,
             courseId: this.courseId,
-            wsNotFiltered: CoreUtils.isTrueOrOne(this.wsNotFiltered),
+            wsNotFiltered: this.wsNotFiltered,
         };
 
         let formatted: string;
@@ -521,7 +522,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
                     externalImages.push(externalImage);
                 }
 
-                if (CoreUtils.isTrueOrOne(this.adaptImg) && !img.classList.contains('icon')) {
+                if (this.adaptImg && !img.classList.contains('icon')) {
                     this.adaptImage(img);
                 }
             });

@@ -42,6 +42,7 @@ import {
     ADDON_MOD_WORKSHOP_COMPONENT,
     AddonModWorkshopOverallFeedbackMode,
 } from '@addons/mod/workshop/constants';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component that displays workshop assessment strategy form.
@@ -52,12 +53,12 @@ import {
 })
 export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDestroy {
 
-    @Input() workshop!: AddonModWorkshopData;
-    @Input() access!: AddonModWorkshopGetWorkshopAccessInformationWSResponse;
-    @Input() assessmentId!: number;
-    @Input() userId!: number;
-    @Input() strategy!: string;
-    @Input() edit = false;
+    @Input({ required: true }) workshop!: AddonModWorkshopData;
+    @Input({ required: true }) access!: AddonModWorkshopGetWorkshopAccessInformationWSResponse;
+    @Input({ required: true }) assessmentId!: number;
+    @Input({ required: true }) userId!: number;
+    @Input({ required: true }) strategy!: string;
+    @Input({ transform: toBoolean }) edit = false;
 
     @ViewChild('assessmentForm') formElement!: ElementRef;
 

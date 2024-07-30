@@ -41,8 +41,8 @@ import { CoreSitePluginsPluginContentComponent, CoreSitePluginsPluginContentLoad
 })
 export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {
 
-    @Input() module!: CoreCourseModuleData; // The module.
-    @Input() courseId!: number; // Course ID the module belongs to.
+    @Input({ required: true }) module!: CoreCourseModuleData; // The module.
+    @Input({ required: true }) courseId!: number; // Course ID the module belongs to.
     @Input() pageTitle?: string; // Current page title. It can be used by the "new-content" directives.
 
     @ViewChild(CoreSitePluginsPluginContentComponent) content?: CoreSitePluginsPluginContentComponent;

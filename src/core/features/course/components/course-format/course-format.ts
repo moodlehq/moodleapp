@@ -58,6 +58,7 @@ import { CoreBlockComponentsModule } from '@features/block/components/components
 import { CoreCourseComponentsModule } from '../components.module';
 import { CoreSites } from '@services/sites';
 import { COURSE_ALL_SECTIONS_PREFERRED_PREFIX } from '@features/course/constants';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -84,13 +85,13 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     static readonly LOAD_MORE_ACTIVITIES = 10; // How many activities should load each time showMoreActivities is called.
 
-    @Input() course!: CoreCourseAnyCourseData; // The course to render.
+    @Input({ required: true }) course!: CoreCourseAnyCourseData; // The course to render.
     @Input() sections: CoreCourseSectionToDisplay[] = []; // List of course sections.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() initialBlockInstanceId?: number; // The instance to focus.
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
-    @Input() isGuest?: boolean; // If user is accessing using an ACCESS_GUEST enrolment method.
+    @Input({ transform: toBoolean }) isGuest = false; // If user is accessing using an ACCESS_GUEST enrolment method.
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @ViewChildren(CoreDynamicComponent) dynamicComponents?: QueryList<CoreDynamicComponent<any>>;

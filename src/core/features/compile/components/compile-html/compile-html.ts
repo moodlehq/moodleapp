@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { toBoolean } from '@/core/transforms/boolean';
 import {
     Component,
     Input,
@@ -32,6 +33,7 @@ import {
     AfterViewInit,
     Type,
     KeyValueDiffer,
+    Injector,
 } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 
@@ -63,14 +65,14 @@ import { CoreDom } from '@singletons/dom';
 })
 export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
-    @Input() text!: string; // The HTML text to display.
+    @Input({ required: true }) text!: string; // The HTML text to display.
     @Input() javascript?: string; // The Javascript to execute in the component.
     @Input() jsData?: Record<string, unknown>; // Data to pass to the fake component.
     @Input() cssCode?: string; // The styles to apply.
     @Input() stylesPath?: string; // The styles URL to apply (only if cssCode is not set).
     @Input() extraImports: unknown[] = []; // Extra import modules.
     @Input() extraProviders: Type<unknown>[] = []; // Extra providers.
-    @Input() forceCompile = false; // Set it to true to force compile even if the text/javascript hasn't changed.
+    @Input({ transform: toBoolean }) forceCompile = false; // True to force compile even if the text/javascript hasn't changed.
     @Output() created = new EventEmitter<unknown>(); // Will emit an event when the component is instantiated.
     @Output() compiling = new EventEmitter<boolean>(); // Event that indicates whether the template is being compiled.
 
@@ -88,6 +90,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
     constructor(
         protected changeDetector: ChangeDetectorRef,
+        protected injector: Injector,
         element: ElementRef,
         differs: KeyValueDiffers,
     ) {
@@ -122,7 +125,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
         // Only compile if text/javascript has changed or the forceCompile flag has been set to true.
         if (this.text === undefined ||
             !(changes.text || changes.javascript || changes.cssCode || changes.stylesPath ||
-                (changes.forceCompile && CoreUtils.isTrueOrOne(this.forceCompile)))) {
+                (changes.forceCompile && this.forceCompile))) {
             return;
         }
 
@@ -222,6 +225,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                 CoreCompile.injectLibraries(
                     this,
                     compileInstance.extraProviders,
+                    compileInstance.injector,
                 );
 
                 // Always add these elements, they could be needed on component init (componentObservable).

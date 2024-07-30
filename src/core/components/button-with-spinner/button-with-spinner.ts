@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input } from '@angular/core';
 import { CoreAnimations } from '@components/animations';
 
@@ -31,7 +32,7 @@ import { CoreAnimations } from '@components/animations';
 })
 export class CoreButtonWithSpinnerComponent {
 
-    @Input() loading = true;
+    @Input({ transform: toBoolean }) loading = true;
     @Input() loadingLabel = 'core.loading';
 
 }

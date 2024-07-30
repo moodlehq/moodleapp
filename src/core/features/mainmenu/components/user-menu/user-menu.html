@@ -17,7 +17,7 @@
         <ion-list>
             <!-- Site info with URL and clickable. -->
             <ion-item button class="core-usermenu-siteinfo ion-text-wrap" *ngIf="siteInfo && displaySiteUrl" lines="full" [detail]="false"
-                [href]="siteUrl" core-link auto-login="yes">
+                [href]="siteUrl" core-link>
                 <ion-label>
                     <!-- Show site logo. -->
                     <img class="core-usermenu-site-logo" *ngIf="siteLogo && siteLogoLoaded" [src]="siteLogo" role="presentation" alt=""
@@ -25,7 +25,7 @@
                     <p class="core-usermenu-sitename">
                         <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true" />
                     </p>
-                    <a [href]="siteUrl" core-link auto-login="yes" class="core-usermenu-siteurl">{{ siteUrl }}</a>
+                    <a [href]="siteUrl" core-link class="core-usermenu-siteurl">{{ siteUrl }}</a>
                 </ion-label>
             </ion-item>
             <!-- Site info without URL and not clickable. -->

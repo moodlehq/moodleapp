@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
+import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 
@@ -28,9 +29,9 @@ import { CoreUserProfileField } from '@features/user/services/user';
 export abstract class CoreUserProfileFieldBaseComponent<T = string> implements OnInit {
 
     @Input() field?: AuthEmailSignupProfileField | CoreUserProfileField; // The profile field to be rendered.
-    @Input() signup = false; // True if editing the field in signup. Defaults to false.
-    @Input() edit = false; // True if editing the field. Defaults to false.
-    @Input() disabled = false; // True if disabled. Defaults to false.
+    @Input({ transform: toBoolean }) signup = false; // True if editing the field in signup.
+    @Input({ transform: toBoolean }) edit = false; // True if editing the field.
+    @Input({ transform: toBoolean }) disabled = false; // True if disabled.
     @Input() form?: FormGroup; // Form where to add the form control. Required if edit=true or signup=true.
     @Input() registerAuth?: string; // Register auth method. E.g. 'email'.
     @Input() contextLevel?: ContextLevel; // The context level.

@@ -32,8 +32,8 @@ export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
 
     @ViewChild(CoreDynamicComponent) dynamicComponent?: CoreDynamicComponent<AddonModDataFieldPluginBaseComponent>;
 
-    @Input() mode!: AddonModDataTemplateMode; // The render mode.
-    @Input() field!: AddonModDataField; // The field to render.
+    @Input({ required: true }) mode!: AddonModDataTemplateMode; // The render mode.
+    @Input({ required: true }) field!: AddonModDataField; // The field to render.
     @Input() value?: unknown; // The value of the field.
     @Input() database?: AddonModDataData; // Database object.
     @Input() error?: string; // Error when editing.

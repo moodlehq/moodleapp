@@ -17,6 +17,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '@addons/mod/assign/services/assign';
 import { AddonModAssignFeedbackDelegate } from '@addons/mod/assign/services/feedback-delegate';
 import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/classes/compile-init-component';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component that displays an assign feedback plugin created using a site plugin.
@@ -28,13 +29,13 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
 })
 export class CoreSitePluginsAssignFeedbackComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
 
-    @Input() assign!: AddonModAssignAssign; // The assignment.
-    @Input() submission!: AddonModAssignSubmission; // The submission.
-    @Input() plugin!: AddonModAssignPlugin; // The plugin object.
-    @Input() userId!: number; // The user ID of the submission.
+    @Input({ required: true }) assign!: AddonModAssignAssign; // The assignment.
+    @Input({ required: true }) submission!: AddonModAssignSubmission; // The submission.
+    @Input({ required: true }) plugin!: AddonModAssignPlugin; // The plugin object.
+    @Input({ required: true }) userId!: number; // The user ID of the submission.
     @Input() configs?: Record<string,string>; // The configs for the plugin.
-    @Input() canEdit = false; // Whether the user can edit.
-    @Input() edit = false; // Whether the user is editing.
+    @Input({ transform: toBoolean }) canEdit = false; // Whether the user can edit.
+    @Input({ transform: toBoolean }) edit = false; // Whether the user is editing.
 
     /**
      * @inheritdoc

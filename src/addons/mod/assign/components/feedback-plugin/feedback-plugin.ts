@@ -25,6 +25,7 @@ import {
 import { AddonModAssignHelper, AddonModAssignPluginConfig } from '../../services/assign-helper';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
 import { ADDON_MOD_ASSIGN_COMPONENT } from '../../constants';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component that displays an assignment feedback plugin.
@@ -37,12 +38,12 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
 
     @ViewChild(CoreDynamicComponent) dynamicComponent!: CoreDynamicComponent<IAddonModAssignFeedbackPluginComponent>;
 
-    @Input() assign!: AddonModAssignAssign; // The assignment.
-    @Input() submission!: AddonModAssignSubmission; // The submission.
-    @Input() plugin!: AddonModAssignPlugin; // The plugin object.
-    @Input() userId!: number; // The user ID of the submission.
-    @Input() canEdit = false; // Whether the user can edit.
-    @Input() edit = false; // Whether the user is editing.
+    @Input({ required: true }) assign!: AddonModAssignAssign; // The assignment.
+    @Input({ required: true }) submission!: AddonModAssignSubmission; // The submission.
+    @Input({ required: true }) plugin!: AddonModAssignPlugin; // The plugin object.
+    @Input({ required: true }) userId!: number; // The user ID of the submission.
+    @Input({ transform: toBoolean }) canEdit = false; // Whether the user can edit.
+    @Input({ transform: toBoolean }) edit = false; // Whether the user is editing.
 
     pluginComponent?: Type<IAddonModAssignFeedbackPluginComponent>; // Component to render the plugin.
     data?: AddonModAssignFeedbackPluginData; // Data to pass to the component.

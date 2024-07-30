@@ -19,6 +19,7 @@ import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUserWithAvatar } from '@components/user-avatar/user-avatar';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component to handle a message in a conversation.
@@ -39,7 +40,7 @@ export class CoreMessageComponent implements OnInit {
     @Input() instanceId = 0;
     @Input() courseId?: number;
     @Input() contextLevel: ContextLevel = ContextLevel.SYSTEM;
-    @Input() showDelete = false;
+    @Input({ transform: toBoolean }) showDelete = false;
     @Output() onDeleteMessage = new EventEmitter<void>();
     @Output() onUndoDeleteMessage = new EventEmitter<void>();
     @Output() afterRender = new EventEmitter<void>();

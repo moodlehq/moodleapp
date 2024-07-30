@@ -36,8 +36,8 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 })
 export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
 
-    @Input() courseId!: number; // Course ID.
-    @Input() currentModuleId!: number; // Current module Id.
+    @Input({ required: true }) courseId!: number; // Course ID.
+    @Input({ required: true }) currentModuleId!: number; // Current module Id.
 
     nextModule?: CoreCourseModuleData;
     previousModule?: CoreCourseModuleData;

@@ -33,8 +33,8 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModChatUsersModalComponent implements OnInit, OnDestroy {
 
-    @Input() sessionId!: string;
-    @Input() cmId!: number;
+    @Input({ required: true }) sessionId!: string;
+    @Input({ required: true }) cmId!: number;
 
     users: AddonModChatUser[] = [];
     usersLoaded = false;

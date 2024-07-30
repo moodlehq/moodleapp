@@ -24,6 +24,7 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUser } from '@features/user/services/user';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component to handle activity completion. It shows a checkbox with the current status, and allows manually changing
@@ -43,8 +44,8 @@ export class CoreCourseModuleCompletionComponent
     extends CoreCourseModuleCompletionBaseComponent
     implements OnInit, OnChanges, OnDestroy {
 
-    @Input() showCompletionConditions = false; // Whether to show activity completion conditions.
-    @Input() showManualCompletion = false; // Whether to show manual completion.
+    @Input({ transform: toBoolean }) showCompletionConditions = false; // Whether to show activity completion conditions.
+    @Input({ transform: toBoolean }) showManualCompletion = false; // Whether to show manual completion.
 
     completed = false;
     accessibleDescription: string | null = null;

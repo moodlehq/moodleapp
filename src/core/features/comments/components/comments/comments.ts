@@ -22,6 +22,7 @@ import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
 import { ContextLevel } from '@/core/constants';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component that displays the count of comments.
@@ -33,15 +34,15 @@ import { ContextLevel } from '@/core/constants';
 })
 export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestroy {
 
-    @Input() contextLevel!: ContextLevel;
-    @Input() instanceId!: number;
-    @Input() component!: string;
-    @Input() itemId!: number;
+    @Input({ required: true }) contextLevel!: ContextLevel;
+    @Input({ required: true }) instanceId!: number;
+    @Input({ required: true }) component!: string;
+    @Input({ required: true }) itemId!: number;
     @Input() area = '';
     @Input() title?: string;
     @Output() onLoading = new EventEmitter<boolean>();  // Event that indicates whether the component is loading data.
     @Input() courseId?: number; // Course ID the comments belong to. It can be used to improve performance with filters.
-    @Input() showItem = false; // Show button as an item.
+    @Input({ transform: toBoolean }) showItem = false; // Show button as an item.
 
     commentsLoaded = false;
     commentsCount = '';

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input, OnInit } from '@angular/core';
 
 import { CoreLang, CoreLangFormat } from '@services/lang';
@@ -32,7 +33,7 @@ export class CoreRecaptchaComponent implements OnInit {
     @Input() publicKey?: string; // The site public key.
     @Input() modelValueName = 'recaptcharesponse'; // Name of the model property where to store the response.
     @Input() siteUrl = ''; // The site URL. If not defined, current site.
-    @Input() showRequiredError = false; // Whether to display the required error if recaptcha hasn't been answered.
+    @Input({ transform: toBoolean }) showRequiredError = false; // Whether to display the required error if recaptcha not answered.
 
     expired = false;
 

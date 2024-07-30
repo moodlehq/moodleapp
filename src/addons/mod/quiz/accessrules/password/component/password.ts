@@ -16,6 +16,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '@addons/mod/quiz/services/quiz';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component to render the preflight for password.
@@ -29,7 +30,7 @@ export class AddonModQuizAccessPasswordComponent implements OnInit {
     @Input() rule?: string; // The name of the rule.
     @Input() quiz?: AddonModQuizQuizWSData; // The quiz the rule belongs to.
     @Input() attempt?: AddonModQuizAttemptWSData; // The attempt being started/continued.
-    @Input() prefetch?: boolean; // Whether the user is prefetching the quiz.
+    @Input({ transform: toBoolean }) prefetch = false; // Whether the user is prefetching the quiz.
     @Input() siteId?: string; // Site ID.
     @Input() form?: FormGroup; // Form where to add the form control.
 

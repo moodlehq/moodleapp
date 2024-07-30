@@ -23,7 +23,7 @@ import { CoreUserSupport } from '@features/user/services/support';
 })
 export class CoreLoginExceededAttemptsComponent implements OnInit {
 
-    @Input() supportConfig!: CoreUserSupportConfig;
+    @Input({ required: true }) supportConfig!: CoreUserSupportConfig;
     @Input() supportSubject?: string;
 
     canContactSupport = false;

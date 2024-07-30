@@ -35,9 +35,9 @@ export class AddonModScormTocComponent implements OnInit {
     @Input() toc: AddonModScormTOCScoWithIcon[] = [];
     @Input() attemptToContinue?: number;
     @Input() selected?: number;
-    @Input() moduleId!: number;
-    @Input() courseId!: number;
-    @Input() accessInfo!: AddonModScormGetScormAccessInformationWSResponse;
+    @Input({ required: true }) moduleId!: number;
+    @Input({ required: true }) courseId!: number;
+    @Input({ required: true }) accessInfo!: AddonModScormGetScormAccessInformationWSResponse;
     @Input() mode = '';
 
     isBrowse = false;

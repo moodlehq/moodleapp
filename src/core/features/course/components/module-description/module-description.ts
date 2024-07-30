@@ -14,6 +14,7 @@
 
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
+import { toBoolean } from '@/core/transforms/boolean';
 import { Component, HostBinding, Input } from '@angular/core';
 
 /**
@@ -49,7 +50,7 @@ export class CoreCourseModuleDescriptionComponent {
     @Input() note?: string; // A note to display along with the description.
     @Input() component?: string; // Component for format text directive.
     @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
-    @Input() showFull?: string | boolean; // Whether to always display the full description.
+    @Input({ transform: toBoolean }) showFull = false; // Whether to always display the full description.
     @Input() contextLevel?: ContextLevel; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.

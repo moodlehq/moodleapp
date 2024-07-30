@@ -33,12 +33,12 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 })
 export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
 
-    @Input() ratingInfo!: CoreRatingInfo;
-    @Input() contextLevel!: ContextLevel;
-    @Input() instanceId!: number;
-    @Input() itemId!: number;
-    @Input() aggregateMethod!: number;
-    @Input() scaleId!: number;
+    @Input({ required: true }) ratingInfo!: CoreRatingInfo;
+    @Input({ required: true }) contextLevel!: ContextLevel;
+    @Input({ required: true }) instanceId!: number;
+    @Input({ required: true }) itemId!: number;
+    @Input({ required: true }) aggregateMethod!: number;
+    @Input({ required: true }) scaleId!: number;
     @Input() courseId?: number;
 
     item?: CoreRatingInfoItem;

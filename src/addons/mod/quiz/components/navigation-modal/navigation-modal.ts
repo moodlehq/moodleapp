@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
+import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input } from '@angular/core';
 
 import { CoreQuestionQuestionParsed } from '@features/question/services/question';
@@ -32,11 +33,11 @@ import { ModalController } from '@singletons';
 export class AddonModQuizNavigationModalComponent {
 
     @Input() navigation?: AddonModQuizNavigationQuestion[]; // Whether the user is reviewing the attempt.
-    @Input() summaryShown?: boolean; // Whether summary is currently being shown.
+    @Input({ transform: toBoolean }) summaryShown = false; // Whether summary is currently being shown.
     @Input() nextPage?: number; // Next page.
     @Input() currentPage?: number; // Current page.
-    @Input() isReview?: boolean; // Whether the user is reviewing the attempt.
-    @Input() isSequential?: boolean; // Whether quiz navigation is sequential.
+    @Input({ transform: toBoolean }) isReview = false; // Whether the user is reviewing the attempt.
+    @Input({ transform: toBoolean }) isSequential = false; // Whether quiz navigation is sequential.
 
     /**
      * Close modal.

@@ -26,8 +26,8 @@ import { AddonModDataTemplateMode } from '../constants';
 })
 export abstract class AddonModDataFieldPluginBaseComponent implements OnInit, OnChanges {
 
-    @Input() mode!: AddonModDataTemplateMode; // The render mode.
-    @Input() field!: AddonModDataField; // The field to render.
+    @Input({ required: true }) mode!: AddonModDataTemplateMode; // The render mode.
+    @Input({ required: true }) field!: AddonModDataField; // The field to render.
     @Input() value?: Partial<AddonModDataEntryField>; // The value of the field.
     @Input() database?: AddonModDataData; // Database object.
     @Input() error?: string; // Error when editing.

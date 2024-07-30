@@ -30,6 +30,7 @@ import {
 } from '../../services/workshop-helper';
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
 import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME, AddonModWorkshopPhase } from '@addons/mod/workshop/constants';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component that displays workshop submission.
@@ -41,13 +42,13 @@ import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME, AddonModWor
 })
 export class AddonModWorkshopSubmissionComponent implements OnInit {
 
-    @Input() submission!: AddonModWorkshopSubmissionDataWithOfflineData;
-    @Input() module!: CoreCourseModuleData;
-    @Input() workshop!: AddonModWorkshopData;
-    @Input() access!: AddonModWorkshopGetWorkshopAccessInformationWSResponse;
-    @Input() courseId!: number;
+    @Input({ required: true }) submission!: AddonModWorkshopSubmissionDataWithOfflineData;
+    @Input({ required: true }) module!: CoreCourseModuleData;
+    @Input({ required: true }) workshop!: AddonModWorkshopData;
+    @Input({ required: true }) access!: AddonModWorkshopGetWorkshopAccessInformationWSResponse;
+    @Input({ required: true }) courseId!: number;
     @Input() assessment?: AddonModWorkshopSubmissionAssessmentWithFormData;
-    @Input() summary = false;
+    @Input({ transform: toBoolean }) summary = false;
 
     component = ADDON_MOD_WORKSHOP_COMPONENT;
     componentId?: number;

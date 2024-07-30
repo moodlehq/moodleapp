@@ -82,9 +82,9 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     @ViewChildren(AddonModAssignSubmissionPluginComponent) submissionComponents!:
         QueryList<AddonModAssignSubmissionPluginComponent>;
 
-    @Input() courseId!: number; // Course ID the submission belongs to.
-    @Input() moduleId!: number; // Module ID the submission belongs to.
-    @Input() submitId!: number; // User that did the submission.
+    @Input({ required: true }) courseId!: number; // Course ID the submission belongs to.
+    @Input({ required: true }) moduleId!: number; // Module ID the submission belongs to.
+    @Input() submitId!: number; // User that did the submission. Defaults to current user
     @Input() blindId?: number; // Blinded user ID (if it's blinded).
 
     loaded = false; // Whether data has been loaded.

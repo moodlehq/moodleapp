@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
+import { toBoolean } from '@/core/transforms/boolean';
 import { Component, OnInit, Input } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
@@ -36,10 +37,10 @@ export class CoreSharedFilesListModalComponent implements OnInit {
 
     @Input() siteId?: string;
     @Input() mimetypes?: string[];
-    @Input() manage?: boolean;
-    @Input() pick?: boolean; // To pick a file you MUST use a modal.
+    @Input({ transform: toBoolean }) manage = false;
+    @Input({ transform: toBoolean }) pick = false; // To pick a file you MUST use a modal.
     @Input() path?: string;
-    @Input() hideSitePicker?: boolean;
+    @Input({ transform: toBoolean }) hideSitePicker = false;
 
     title?: string;
 

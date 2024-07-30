@@ -44,7 +44,7 @@
                 <ion-item class="ion-text-wrap" *ngIf="user.email">
                     <ion-label>
                         <p class="item-heading">{{ 'core.user.email' | translate }}</p>
-                        <p><a class="core-anchor" href="mailto:{{user.email}}" core-link auto-login="no" [showBrowserWarning]="false">
+                        <p><a class="core-anchor" href="mailto:{{user.email}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
                                 {{ user.email }}
                             </a></p>
                     </ion-label>
@@ -70,7 +70,7 @@
                 <ion-item class="ion-text-wrap" *ngIf="user.phone1">
                     <ion-label>
                         <p class="item-heading">{{ 'core.user.phone1' | translate}}</p>
-                        <p><a class="core-anchor" href="tel:{{user.phone1}}" core-link auto-login="no" [showBrowserWarning]="false">
+                        <p><a class="core-anchor" href="tel:{{user.phone1}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
                                 {{ user.phone1 }}
                             </a></p>
                     </ion-label>
@@ -78,7 +78,7 @@
                 <ion-item class="ion-text-wrap" *ngIf="user.phone2">
                     <ion-label>
                         <p class="item-heading">{{ 'core.user.phone2' | translate}}</p>
-                        <p><a class="core-anchor" href="tel:{{user.phone2}}" core-link auto-login="no" [showBrowserWarning]="false">
+                        <p><a class="core-anchor" href="tel:{{user.phone2}}" core-link [autoLogin]="false" [showBrowserWarning]="false">
                                 {{ user.phone2 }}
                             </a></p>
                     </ion-label>

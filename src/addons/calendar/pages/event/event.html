@@ -104,7 +104,7 @@
                 <ion-label>
                     <p class="item-heading">{{ 'core.location' | translate}}</p>
                     <p>
-                        <a [href]="event.encodedLocation" core-link auto-login="no">
+                        <a [href]="event.encodedLocation" core-link [autoLogin]="false">
                             <core-format-text [text]="event.location" [contextLevel]="event.contextLevel"
                                 [contextInstanceId]="event.contextInstanceId" />
                         </a>

@@ -23,6 +23,10 @@ import {
     ViewContainerRef,
     signal,
     computed,
+    effect,
+    EffectCleanupRegisterFn,
+    CreateEffectOptions,
+    EffectRef,
 } from '@angular/core';
 import {
     ActionSheetController,
@@ -260,9 +264,10 @@ export class CoreCompileProvider {
      *
      * @param instance The instance where to inject the libraries.
      * @param extraLibraries Extra imported providers if needed and not imported by this class.
+     * @param injector Injector of the injection context. E.g. for a component, use the component's injector.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    injectLibraries(instance: any, extraLibraries: Type<unknown>[] = []): void {
+    injectLibraries(instance: any, extraLibraries: Type<unknown>[] = [], injector?: Injector): void {
         if (!this.libraries || !this.exportedObjects) {
             throw new CoreError('Libraries not loaded. You need to call loadLibraries before calling injectLibraries.');
         }
@@ -271,6 +276,7 @@ export class CoreCompileProvider {
             ...this.libraries,
             ...extraLibraries,
         ];
+        injector = injector ?? this.injector;
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
         for (const i in libraries) {
@@ -278,7 +284,7 @@ export class CoreCompileProvider {
             if (typeof libraryDef === 'function' && libraryDef.name) {
                 try {
                     // Inject the provider to the instance. We use the class name as the property name.
-                    instance[libraryDef.name.replace(/DelegateService$/, 'Delegate')] = this.injector.get<Provider>(libraryDef);
+                    instance[libraryDef.name.replace(/DelegateService$/, 'Delegate')] = injector.get<Provider>(libraryDef);
                 } catch (ex) {
                     this.logger.error('Error injecting provider', libraryDef.name, ex);
                 }
@@ -289,17 +295,26 @@ export class CoreCompileProvider {
         instance['CoreCompileProvider'] = this;
 
         // Add some final classes.
-        instance['injector'] = this.injector;
+        instance['injector'] = injector;
         instance['Validators'] = Validators;
         instance['CoreConstants'] = CoreConstants;
         instance['DownloadStatus'] = DownloadStatus;
         instance['CoreConfigConstants'] = CoreConstants.CONFIG;
         instance['CoreEventsProvider'] = CoreEvents;
         instance['CoreLoggerProvider'] = CoreLogger;
-        instance['signal'] = signal;
-        instance['computed'] = computed;
         instance['moment'] = moment;
         instance['Md5'] = Md5;
+        instance['signal'] = signal;
+        instance['computed'] = computed;
+        // Create a wrapper to call effect with the proper injection context.
+        instance['effect'] = (
+            effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
+            options?: Omit<CreateEffectOptions, 'injector'>,
+        ): EffectRef =>
+            effect(effectFn, {
+                ...options,
+                injector,
+            });
         /**
          * @deprecated since 4.1, plugins should use CoreNetwork instead.
          * Keeping this a bit more to avoid plugins breaking.

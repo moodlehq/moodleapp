@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
+import { toBoolean } from '@/core/transforms/boolean';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
@@ -33,11 +34,11 @@ export class CoreSitePluginsQuestionBehaviourComponent extends CoreSitePluginsCo
     @Input() component?: string; // The component the question belongs to.
     @Input() componentId?: number; // ID of the component the question belongs to.
     @Input() attemptId?: number; // Attempt ID.
-    @Input() offlineEnabled?: boolean | string; // Whether the question can be answered in offline.
+    @Input({ transform: toBoolean }) offlineEnabled = false; // Whether the question can be answered in offline.
     @Input() contextLevel?: ContextLevel; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the question belongs to (if any). It can be used to improve performance with filters.
-    @Input() review?: boolean; // Whether the user is in review mode.
+    @Input({ transform: toBoolean }) review = false; // Whether the user is in review mode.
     @Input() preferredBehaviour?: string; // Preferred behaviour.
     @Output() buttonClicked = new EventEmitter<CoreQuestionBehaviourButton>(); // Will emit when a behaviour button is clicked.
     @Output() onAbort = new EventEmitter<void>(); // Should emit an event if the question should be aborted.
@@ -58,6 +59,8 @@ export class CoreSitePluginsQuestionBehaviourComponent extends CoreSitePluginsCo
         this.jsData.offlineEnabled = this.offlineEnabled;
         this.jsData.contextLevel = this.contextLevel;
         this.jsData.contextInstanceId = this.contextInstanceId;
+        this.jsData.courseId = this.courseId;
+        this.jsData.review = this.review;
         this.jsData.buttonClicked = this.buttonClicked;
         this.jsData.onAbort = this.onAbort;
 

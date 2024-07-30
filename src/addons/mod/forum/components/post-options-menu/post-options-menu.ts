@@ -30,9 +30,9 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 })
 export class AddonModForumPostOptionsMenuComponent implements OnInit {
 
-    @Input() post!: AddonModForumPost; // The post.
-    @Input() cmId!: number;
-    @Input() forumId!: number; // The forum Id.
+    @Input({ required: true }) post!: AddonModForumPost; // The post.
+    @Input({ required: true }) cmId!: number;
+    @Input({ required: true }) forumId!: number; // The forum Id.
 
     canEdit = false;
     canDelete = false;

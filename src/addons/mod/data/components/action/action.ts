@@ -45,10 +45,10 @@ import {
 export class AddonModDataActionComponent implements OnInit {
 
     @Input() access?: AddonModDataGetDataAccessInformationWSResponse; // Access info.
-    @Input() mode!: AddonModDataTemplateMode; // The render mode.
-    @Input() action!: AddonModDataAction; // The field to render.
-    @Input() entry!: AddonModDataEntry; // The value of the field.
-    @Input() database!: AddonModDataData; // Database object.
+    @Input({ required: true }) mode!: AddonModDataTemplateMode; // The render mode.
+    @Input({ required: true }) action!: AddonModDataAction; // The field to render.
+    @Input({ required: true }) entry!: AddonModDataEntry; // The value of the field.
+    @Input({ required: true }) database!: AddonModDataData; // Database object.
     @Input() title = ''; // Name of the module.
     @Input() group = 0; // Module group.
     @Input() offset?: number; // Offset of the entry.

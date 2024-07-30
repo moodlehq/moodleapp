@@ -31,7 +31,7 @@ import { ModalController } from '@singletons';
 })
 export class CoreReportBuilderReportSummaryComponent implements OnInit {
 
-    @Input() reportDetail!: CoreReportBuilderReportDetail;
+    @Input({ required: true }) reportDetail!: CoreReportBuilderReportDetail;
     reportUrl!: string;
     reportDetailToDisplay!: { title: string; text: string }[];
 

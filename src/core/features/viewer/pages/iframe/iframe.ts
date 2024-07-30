@@ -31,10 +31,7 @@ export class CoreViewerIframePage implements OnInit {
     async ngOnInit(): Promise<void> {
         this.title = CoreNavigator.getRouteParam('title');
         this.url = CoreNavigator.getRouteParam('url');
-        const autoLoginParam = CoreNavigator.getRouteParam('autoLogin') ?? true;
-        this.autoLogin = typeof autoLoginParam === 'boolean' ?
-            autoLoginParam :
-            autoLoginParam !== 'no'; // Support deprecated values yes/no/check.
+        this.autoLogin = CoreNavigator.getRouteBooleanParam('autoLogin') ?? true;
     }
 
 }

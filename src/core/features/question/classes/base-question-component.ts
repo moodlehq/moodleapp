@@ -24,6 +24,7 @@ import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreLogger } from '@singletons/logger';
 import { CoreQuestionBehaviourButton, CoreQuestionHelper, CoreQuestionQuestion } from '../services/question-helper';
 import { ContextLevel } from '@/core/constants';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Base class for components to render a question.
@@ -37,11 +38,11 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
     @Input() component?: string; // The component the question belongs to.
     @Input() componentId?: number; // ID of the component the question belongs to.
     @Input() attemptId?: number; // Attempt ID.
-    @Input() offlineEnabled?: boolean | string; // Whether the question can be answered in offline.
+    @Input({ transform: toBoolean }) offlineEnabled = false; // Whether the question can be answered in offline.
     @Input() contextLevel?: ContextLevel; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // The course the question belongs to (if any).
-    @Input() review?: boolean; // Whether the user is in review mode.
+    @Input({ transform: toBoolean }) review = false; // Whether the user is in review mode.
     @Input() preferredBehaviour?: string; // Preferred behaviour.
     @Output() buttonClicked = new EventEmitter<CoreQuestionBehaviourButton>(); // Will emit when a behaviour button is clicked.
     @Output() onAbort = new EventEmitter<void>(); // Should emit an event if the question should be aborted.

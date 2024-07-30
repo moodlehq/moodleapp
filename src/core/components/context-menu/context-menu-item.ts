@@ -14,6 +14,7 @@
 
 import { Component, Input, Output, OnInit, OnDestroy, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * This directive adds a item to the Context Menu popover.
@@ -40,19 +41,19 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     // If is "toggle" a toggle switch will be shown.
     // If no icon or spinner is selected, no action or link will work.
     // If href but no iconAction is provided arrow-right will be used.
-    @Input() iconSlash?: boolean; // Display a red slash over the icon.
+    @Input({ transform: toBoolean }) iconSlash = false; // Display a red slash over the icon.
     @Input() ariaAction?: string; // Aria label to add to iconAction. If not set, it will be equal to content.
     @Input() href?: string; // Link to go if no action provided.
-    @Input() captureLink?: boolean | string; // Whether the link needs to be captured by the app.
-    @Input() autoLogin: boolean | string = true; // Whether the link needs to be opened using auto-login.
-    @Input() closeOnClick = true; // Whether to close the popover when the item is clicked.
+    @Input({ transform: toBoolean }) captureLink = false; // Whether the link needs to be captured by the app.
+    @Input({ transform: toBoolean }) autoLogin = true; // Whether the link needs to be opened using auto-login.
+    @Input({ transform: toBoolean }) closeOnClick = true; // Whether to close the popover when the item is clicked.
     @Input() priority?: number; // Used to sort items. The highest priority, the highest position.
     @Input() badge?: string; // A badge to show in the item.
     @Input() badgeClass?: number; // A class to set in the badge.
     @Input() badgeA11yText?: string; // Description for the badge, if needed.
-    @Input() hidden?: boolean; // Whether the item should be hidden.
-    @Input() showBrowserWarning = true; // Whether to show a warning before opening browser (for links). Defaults to true.
-    @Input() toggle = false; // Whether the toggle is on or off.
+    @Input({ transform: toBoolean }) hidden = false; // Whether the item should be hidden.
+    @Input({ transform: toBoolean }) showBrowserWarning = true; // Whether to show a warning before opening browser (for links).
+    @Input({ transform: toBoolean }) toggle = false; // Whether the toggle is on or off.
     @Output() action?: EventEmitter<() => void>; // Will emit an event when the item clicked.
     @Output() onClosed?: EventEmitter<() => void>; // Will emit an event when the popover is closed because the item was clicked.
     @Output() toggleChange = new EventEmitter<boolean>();// Will emit an event when toggle changes to enable 2-way data binding.
@@ -94,10 +95,6 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
      * @param event Event.
      */
     toggleChanged(event: Event): void {
-        if (this.toggle === undefined) {
-            return;
-        }
-
         event.preventDefault();
         event.stopPropagation();
         this.toggleChange.emit(this.toggle);

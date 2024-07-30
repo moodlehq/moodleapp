@@ -18,6 +18,7 @@ import { FormGroup } from '@angular/forms';
 import { AddonModQuizAccessRuleDelegate } from '@addons/mod/quiz/services/access-rules-delegate';
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '@addons/mod/quiz/services/quiz';
 import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/classes/compile-init-component';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component that displays a quiz access rule created using a site plugin.
@@ -32,7 +33,7 @@ export class CoreSitePluginsQuizAccessRuleComponent extends CoreSitePluginsCompi
     @Input() rule?: string; // The name of the rule.
     @Input() quiz?: AddonModQuizQuizWSData; // The quiz the rule belongs to.
     @Input() attempt?: AddonModQuizAttemptWSData; // The attempt being started/continued.
-    @Input() prefetch?: boolean; // Whether the user is prefetching the quiz.
+    @Input({ transform: toBoolean }) prefetch = false; // Whether the user is prefetching the quiz.
     @Input() siteId?: string; // Site ID.
     @Input() form?: FormGroup; // Form where to add the form control.
 

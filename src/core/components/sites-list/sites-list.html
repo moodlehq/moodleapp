@@ -27,7 +27,7 @@
                 <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id" />
             </h2>
             <p *ngIf="displaySiteUrl(site)">
-                <a [href]="site.siteUrl" core-link [autoLogin]="isCurrentSite ? 'yes' : 'no'">
+                <a [href]="site.siteUrl" core-link [autoLogin]="!!isCurrentSite">
                     {{ site.siteUrlWithoutProtocol }}
                 </a>
             </p>

@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, AfterViewInit, ElementRef } from '@angular/core';
+import { toBoolean } from '@/core/transforms/boolean';
+import { Component, Input, AfterViewInit, ElementRef } from '@angular/core';
 
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 
 /**
@@ -33,9 +33,9 @@ import { Translate } from '@singletons';
     templateUrl: 'core-mark-required.html',
     styleUrls: ['mark-required.scss'],
 })
-export class CoreMarkRequiredComponent implements OnInit, AfterViewInit {
+export class CoreMarkRequiredComponent implements AfterViewInit {
 
-    @Input('core-mark-required') coreMarkRequired: boolean | string = true;
+    @Input({ alias: 'core-mark-required', transform: toBoolean }) coreMarkRequired = true;
 
     protected hostElement: HTMLElement;
     requiredLabel = Translate.instant('core.required');
@@ -44,13 +44,6 @@ export class CoreMarkRequiredComponent implements OnInit, AfterViewInit {
         element: ElementRef,
     ) {
         this.hostElement = element.nativeElement;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        this.coreMarkRequired = CoreUtils.isTrueOrOne(this.coreMarkRequired);
     }
 
     /**

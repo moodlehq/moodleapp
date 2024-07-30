@@ -36,12 +36,12 @@ import { AddonModWorkshopOffline } from '../../services/workshop-offline';
 })
 export class AddonModWorkshopAssessmentComponent implements OnInit {
 
-    @Input() assessment!: AddonModWorkshopSubmissionAssessmentWithFormData;
-    @Input() courseId!: number;
-    @Input() workshop!: AddonModWorkshopData;
-    @Input() access!: AddonModWorkshopGetWorkshopAccessInformationWSResponse;
-    @Input() submission!: AddonModWorkshopSubmissionDataWithOfflineData;
-    @Input() module!: CoreCourseModuleData;
+    @Input({ required: true }) assessment!: AddonModWorkshopSubmissionAssessmentWithFormData;
+    @Input({ required: true }) courseId!: number;
+    @Input({ required: true }) workshop!: AddonModWorkshopData;
+    @Input({ required: true }) access!: AddonModWorkshopGetWorkshopAccessInformationWSResponse;
+    @Input({ required: true }) submission!: AddonModWorkshopSubmissionDataWithOfflineData;
+    @Input({ required: true }) module!: CoreCourseModuleData;
 
     canViewAssessment = false;
     canSelfAssess = false;
