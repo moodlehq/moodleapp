@@ -33,6 +33,7 @@ import {
     AfterViewInit,
     Type,
     KeyValueDiffer,
+    Injector,
 } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 
@@ -89,6 +90,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
     constructor(
         protected changeDetector: ChangeDetectorRef,
+        protected injector: Injector,
         element: ElementRef,
         differs: KeyValueDiffers,
     ) {
@@ -223,6 +225,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                 CoreCompile.injectLibraries(
                     this,
                     compileInstance.extraProviders,
+                    compileInstance.injector,
                 );
 
                 // Always add these elements, they could be needed on component init (componentObservable).
