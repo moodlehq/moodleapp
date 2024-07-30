@@ -19,6 +19,7 @@ import { CoreCourseComponentsModule } from '@features/course/components/componen
 import { CoreSharedModule } from '@/core/shared.module';
 import { resolveContentsRoutes } from '@features/course/course-contents-routing.module';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import { CoreCourseFormatComponent } from './components/course-format/course-format';
 
 /**
  * Build module routes.
@@ -46,6 +47,7 @@ function buildRoutes(injector: Injector): Routes {
     imports: [
         CoreSharedModule,
         CoreCourseComponentsModule,
+        CoreCourseFormatComponent,
     ],
     declarations: [
         CoreCourseContentsPage,

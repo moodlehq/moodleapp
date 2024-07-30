@@ -16,3 +16,5 @@ export const COURSE_INDEX_PATH = ':courseId';
 export const COURSE_PAGE_NAME = 'course';
 export const CONTENTS_PAGE_NAME = 'contents';
 export const COURSE_CONTENTS_PATH = `${COURSE_PAGE_NAME}/${COURSE_INDEX_PATH}/${CONTENTS_PAGE_NAME}`;
+
+export const COURSE_ALL_SECTIONS_PREFERRED_PREFIX = 'CoreCourseFormatAllSectionsPreferred-';

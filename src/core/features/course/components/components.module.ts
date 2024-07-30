@@ -16,7 +16,6 @@ import { NgModule } from '@angular/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockComponentsModule } from '@features/block/components/components.module';
-import { CoreCourseFormatComponent } from './course-format/course-format';
 import { CoreCourseModuleComponent } from './module/module';
 import { CoreCourseModuleCompletionComponent } from './module-completion/module-completion';
 import { CoreCourseTagAreaComponent } from './tag-area/tag-area';
@@ -30,7 +29,6 @@ import { CoreCourseModuleCompletionDetailsComponent } from './module-completion-
 
 @NgModule({
     declarations: [
-        CoreCourseFormatComponent,
         CoreCourseModuleComponent,
         CoreCourseModuleCompletionComponent,
         CoreCourseModuleCompletionLegacyComponent,
@@ -47,7 +45,6 @@ import { CoreCourseModuleCompletionDetailsComponent } from './module-completion-
         CoreSharedModule,
     ],
     exports: [
-        CoreCourseFormatComponent,
         CoreCourseModuleComponent,
         CoreCourseModuleCompletionComponent,
         CoreCourseModuleCompletionLegacyComponent,

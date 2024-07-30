@@ -1400,7 +1400,7 @@ export class CoreCourseProvider {
             });
 
             return;
-        } catch (error) {
+        } catch {
             // The site plugin failed to load. The user needs to restart the app to try loading it again.
             const message = Translate.instant('core.courses.errorloadplugins');
             const reload = Translate.instant('core.courses.reload');
