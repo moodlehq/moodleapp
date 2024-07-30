@@ -23,7 +23,6 @@ core-format-text ::ng-deep, .drags ::ng-deep {
     }
 
     .draghome {
-        margin-bottom: 1em;
         max-width: calc(100%);
     }
 
@@ -47,6 +46,10 @@ core-format-text ::ng-deep, .drags ::ng-deep {
         white-space: normal;
         overflow: visible;
         word-wrap: break-word;
+        margin-bottom: 1em;
+        border-radius: 5px;
+        line-height: 25px;
+        cursor: var(--cursor);
     }
     .draghome, .drag.unplaced{
         border: 1px solid var(--core-dd-question-border);
@@ -56,9 +59,6 @@ core-format-text ::ng-deep, .drags ::ng-deep {
     }
     .drag {
         z-index: 2;
-        border-radius: 5px;
-        line-height: 25px;
-        cursor: var(--cursor);
     }
     .drag.selected,
     .drop.selected {

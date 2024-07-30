@@ -16,6 +16,8 @@ import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizDdImageOrTextQuestionData } from '../component/ddimageortext';
+import { CoreLinkDirective } from '@directives/link';
+import { ElementRef } from '@angular/core';
 
 /**
  * Class to make a question of ddimageortext type work.
@@ -856,6 +858,12 @@ export class AddonQtypeDdImageOrTextQuestionDocStructure {
         divDrag.setAttribute('draginstanceno', String(dragInstanceNo));
         divDrag.setAttribute('dragitemno', String(dragItemNo));
         divDrag.setAttribute('tabindex', '0');
+
+        Array.from(divDrag.querySelectorAll('a')).forEach((anchor) => {
+            const linkDir = new CoreLinkDirective(new ElementRef(anchor));
+            linkDir.capture = true;
+            linkDir.ngOnInit();
+        });
 
         // Insert the new drag after the dragHome.
         dragHome.parentElement?.insertBefore(divDrag, dragHome.nextSibling);

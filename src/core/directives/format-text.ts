@@ -27,7 +27,6 @@ import {
     Inject,
     ChangeDetectorRef,
 } from '@angular/core';
-import { IonContent } from '@ionic/angular';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -104,7 +103,6 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
     constructor(
         element: ElementRef,
-        @Optional() protected content: IonContent,
         protected viewContainerRef: ViewContainerRef,
         @Optional() @Inject(CORE_REFRESH_CONTEXT) protected refreshContext?: CoreRefreshContext,
     ) {
@@ -503,8 +501,8 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
                 return;
             }
 
-            // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
-            const linkDir = new CoreLinkDirective(new ElementRef(anchor), this.content);
+            // Angular doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
+            const linkDir = new CoreLinkDirective(new ElementRef(anchor));
             linkDir.capture = this.captureLinks ?? true;
             linkDir.inApp = this.openLinksInApp;
             linkDir.ngOnInit();

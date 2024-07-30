@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef, Optional, SecurityContext } from '@angular/core';
+import { Directive, Input, OnInit, ElementRef, SecurityContext } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
-import { IonContent } from '@ionic/angular';
 
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
@@ -47,7 +46,6 @@ export class CoreLinkDirective implements OnInit {
 
     constructor(
         element: ElementRef,
-        @Optional() protected content: IonContent,
     ) {
         this.element = element.nativeElement;
     }
