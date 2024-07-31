@@ -23,10 +23,7 @@ import {
     ViewContainerRef,
     signal,
     computed,
-    effect,
-    EffectCleanupRegisterFn,
-    CreateEffectOptions,
-    EffectRef,
+    untracked,
 } from '@angular/core';
 import {
     ActionSheetController,
@@ -41,6 +38,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreEvents } from '@singletons/events';
 import { makeSingleton } from '@singletons';
+import { effectWithInjectionContext, modelWithInjectionContext } from '@/core/utils/signals';
 
 // Import core services.
 import { getCoreServices } from '@/core/core.module';
@@ -306,15 +304,10 @@ export class CoreCompileProvider {
         instance['Md5'] = Md5;
         instance['signal'] = signal;
         instance['computed'] = computed;
-        // Create a wrapper to call effect with the proper injection context.
-        instance['effect'] = (
-            effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
-            options?: Omit<CreateEffectOptions, 'injector'>,
-        ): EffectRef =>
-            effect(effectFn, {
-                ...options,
-                injector,
-            });
+        instance['untracked'] = untracked;
+        instance['effect'] = effectWithInjectionContext(injector);
+        instance['model'] = modelWithInjectionContext(injector);
+
         /**
          * @deprecated since 4.1, plugins should use CoreNetwork instead.
          * Keeping this a bit more to avoid plugins breaking.
