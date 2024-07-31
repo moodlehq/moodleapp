@@ -24,9 +24,7 @@ import {
     signal,
     computed,
     effect,
-    EffectCleanupRegisterFn,
-    CreateEffectOptions,
-    EffectRef,
+    untracked,
 } from '@angular/core';
 import {
     ActionSheetController,
@@ -41,6 +39,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreEvents } from '@singletons/events';
 import { makeSingleton } from '@singletons';
+import { effectWithInjectionContext, modelWithInjectionContext } from '@/core/utils/signals';
 
 // Import core services.
 import { getCoreServices } from '@/core/core.module';
@@ -263,20 +262,19 @@ export class CoreCompileProvider {
      * Inject all the core libraries in a certain object.
      *
      * @param instance The instance where to inject the libraries.
-     * @param extraLibraries Extra imported providers if needed and not imported by this class.
-     * @param injector Injector of the injection context. E.g. for a component, use the component's injector.
+     * @param options Options.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    injectLibraries(instance: any, extraLibraries: Type<unknown>[] = [], injector?: Injector): void {
+    injectLibraries(instance: any, options: InjectLibrariesOptions = {}): void {
         if (!this.libraries || !this.exportedObjects) {
             throw new CoreError('Libraries not loaded. You need to call loadLibraries before calling injectLibraries.');
         }
 
         const libraries = [
             ...this.libraries,
-            ...extraLibraries,
+            ...options.extraLibraries ?? [],
         ];
-        injector = injector ?? this.injector;
+        const injector = options.injector ?? this.injector;
 
         // We cannot inject anything to this constructor. Use the Injector to inject all the providers into the instance.
         for (const i in libraries) {
@@ -306,15 +304,10 @@ export class CoreCompileProvider {
         instance['Md5'] = Md5;
         instance['signal'] = signal;
         instance['computed'] = computed;
-        // Create a wrapper to call effect with the proper injection context.
-        instance['effect'] = (
-            effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
-            options?: Omit<CreateEffectOptions, 'injector'>,
-        ): EffectRef =>
-            effect(effectFn, {
-                ...options,
-                injector,
-            });
+        instance['untracked'] = untracked;
+        instance['effect'] = options.effectWrapper ?? effectWithInjectionContext(injector);
+        instance['model'] = modelWithInjectionContext(injector);
+
         /**
          * @deprecated since 4.1, plugins should use CoreNetwork instead.
          * Keeping this a bit more to avoid plugins breaking.
@@ -437,3 +430,13 @@ export class CoreCompileProvider {
 }
 
 export const CoreCompile = makeSingleton(CoreCompileProvider);
+
+/**
+ * Options for injectLibraries.
+ */
+type InjectLibrariesOptions = {
+    extraLibraries?: Type<unknown>[]; // Extra imported providers if needed and not imported by this class.
+    injector?: Injector; // Injector of the injection context. E.g. for a component, use the component's injector.
+    effectWrapper?: typeof effect; // Wrapper function to create an effect. If not provided, a wrapper will be created using the
+                                   // injector. Use this wrapper if you want to capture the created EffectRefs.
+};

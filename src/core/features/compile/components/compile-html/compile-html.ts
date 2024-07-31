@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
+import { effectWithInjectionContext } from '@/core/utils/signals';
 import {
     Component,
     Input,
@@ -34,6 +35,9 @@ import {
     Type,
     KeyValueDiffer,
     Injector,
+    EffectRef,
+    EffectCleanupRegisterFn,
+    CreateEffectOptions,
 } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 
@@ -212,6 +216,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
         return class CoreCompileHtmlFakeComponent implements OnInit, AfterContentInit, AfterViewInit, OnDestroy {
 
             private ongoingLifecycleHooks: Set<keyof AfterViewInit | keyof AfterContentInit | keyof OnDestroy> = new Set();
+            protected effectRefs: EffectRef[] = [];
 
             constructor() {
                 // Store this instance so it can be accessed by the outer component.
@@ -221,12 +226,25 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                 this['dataObject'] = {};
                 this['dataArray'] = [];
 
+                const effectWithContext = effectWithInjectionContext(compileInstance.injector);
+
                 // Inject the libraries.
-                CoreCompile.injectLibraries(
-                    this,
-                    compileInstance.extraProviders,
-                    compileInstance.injector,
-                );
+                CoreCompile.injectLibraries(this, {
+                    extraLibraries: compileInstance.extraProviders,
+                    injector: compileInstance.injector,
+                    // Capture calls to effect to retrieve the effectRefs and destroy them when this component is destroyed.
+                    // Otherwise effects are only destroyed when the parent component is destroyed.
+                    effectWrapper: (
+                        effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
+                        options?: Omit<CreateEffectOptions, 'injector'>,
+                    ): EffectRef => {
+                        const effectRef = effectWithContext(effectFn, options);
+
+                        this.effectRefs.push(effectRef);
+
+                        return effectRef;
+                    },
+                });
 
                 // Always add these elements, they could be needed on component init (componentObservable).
                 this['ChangeDetectorRef'] = compileInstance.changeDetector;
@@ -280,6 +298,9 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
              * @inheritdoc
              */
             ngOnDestroy(): void {
+                this.effectRefs.forEach(effectRef => effectRef.destroy());
+                this.effectRefs = [];
+
                 this.callLifecycleHookOverride('ngOnDestroy');
             }
 
