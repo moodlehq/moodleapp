@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import {
     AddonMessagesProvider, AddonMessagesMessagePreferences,
     AddonMessagesMessagePreferencesNotification,
@@ -27,6 +27,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreConstants } from '@/core/constants';
 import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons/notifications/services/notifications';
 import { CorePlatform } from '@services/platform';
+import { CoreTextUtils } from '@services/utils/text';
 
 /**
  * Page that displays the messages settings page.
@@ -49,6 +50,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     siteValue = AddonMessagesProvider.MESSAGE_PRIVACY_SITE;
     groupMessagingEnabled = false;
     sendOnEnter = false;
+    warningMessage = signal<string | undefined>(undefined);
 
     protected loggedInOffLegacyMode = false;
     protected previousContactableValue?: number | boolean;
@@ -106,7 +108,14 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
             this.preferences = preferences;
             this.contactablePrivacy = preferences.blocknoncontacts;
             this.previousContactableValue = this.contactablePrivacy;
+            this.warningMessage.set(undefined);
         } catch (error) {
+            if (error.errorcode === 'nopermissions') {
+                this.warningMessage.set(CoreTextUtils.getErrorMessageFromError(error));
+
+                return;
+            }
+
             CoreDomUtils.showErrorModal(error);
         } finally {
             this.preferencesLoaded = true;

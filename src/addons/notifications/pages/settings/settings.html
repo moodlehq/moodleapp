@@ -20,6 +20,14 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="preferencesLoaded">
+        @if (warningMessage()) {
+        <ion-card class="core-warning-card ion-margin-top">
+            <ion-item>
+                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                <ion-label>{{ warningMessage() }}</ion-label>
+            </ion-item>
+        </ion-card>
+        } @else {
         <ion-card>
             <ion-item class="ion-text-wrap" *ngIf="preferences">
                 <ion-toggle [(ngModel)]="preferences.enableall" (ngModelChange)="enableAll(preferences.enableall)">
@@ -52,6 +60,7 @@
                 <ng-container *ngTemplateOutlet="settings; context: {preferences: preferences}" />
             </ng-container>
         </ion-card>
+        }
     </core-loading>
 
 </ion-content>
