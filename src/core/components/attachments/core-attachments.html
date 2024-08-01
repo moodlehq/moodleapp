@@ -13,16 +13,28 @@
                 <ion-icon name="fas-plus" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="fileTypes && fileTypes.mimetypes && fileTypes.mimetypes.length">
-            <ion-label>
-                <p>{{ 'core.fileuploader.filesofthesetypes' | translate }}</p>
-                <ul class="list-with-style">
+
+        @if (fileTypes && fileTypes.mimetypes && fileTypes.mimetypes.length) {
+        <ion-accordion-group>
+            <ion-accordion toggleIconSlot="start">
+                <ion-item class="core-attachments-header ion-text-wrap" slot="header">
+                    <ion-label>
+                        <p class="item-heading">{{ 'core.fileuploader.filesofthesetypes' | translate }}</p>
+                    </ion-label>
+                    <ion-icon name="fas-circle-info" aria-hidden="true" slot="end" color="dark" />
+                </ion-item>
+
+                <ul class="core-attachments" slot="content">
                     <li *ngFor="let typeInfo of fileTypes.info">
                         <strong *ngIf="typeInfo.name">{{typeInfo.name}} </strong>{{typeInfo.extlist}}
                     </li>
                 </ul>
-            </ion-label>
-        </ion-item>
+            </ion-accordion>
+        </ion-accordion-group>
+        }
+
+
+
         <ng-container *ngFor="let file of files; let index=index">
             <!-- Files already attached to the submission, either in online or in offline. -->
             <core-file *ngIf="!file.name" [file]="file" [component]="component" [componentId]="componentId" [canDelete]="true"
