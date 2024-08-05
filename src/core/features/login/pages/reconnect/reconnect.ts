@@ -21,7 +21,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSite } from '@classes/sites/site';
-import { CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreError } from '@classes/errors/error';
 import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
@@ -31,7 +31,7 @@ import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/suppo
 import { Translate } from '@singletons';
 import { SafeHtml } from '@angular/platform-browser';
 import { CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
-import { FORGOTTEN_PASSWORD_FEATURE_NAME } from '@features/login/constants';
+import { ALWAYS_SHOW_LOGIN_FORM_CHANGED, FORGOTTEN_PASSWORD_FEATURE_NAME } from '@features/login/constants';
 import { CoreKeyboard } from '@singletons/keyboard';
 
 /**
@@ -63,11 +63,13 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     exceededAttemptsHTML?: SafeHtml | string | null;
     siteConfig?: CoreSitePublicConfigResponse;
     redirectData?: CoreRedirectPayload;
+    showLoginForm = true;
 
     protected viewLeft = false;
     protected eventThrown = false;
     protected loginSuccessful = false;
     protected username = '';
+    protected alwaysShowLoginFormObserver?: CoreEventObserver;
 
     constructor(
         protected fb: FormBuilder,
@@ -126,6 +128,10 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
             await this.checkSiteConfig();
 
+            this.alwaysShowLoginFormObserver = CoreEvents.on(ALWAYS_SHOW_LOGIN_FORM_CHANGED, async () => {
+                this.showLoginForm = await CoreLoginHelper.shouldShowLoginForm(this.siteConfig);
+            });
+
             this.showLoading = false;
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
@@ -147,6 +153,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             },
             this.siteId,
         );
+        this.alwaysShowLoginFormObserver?.off();
     }
 
     /**
@@ -167,6 +174,8 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
         this.siteConfig = await CoreUtils.ignoreErrors(this.site.getPublicConfig({
             readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
         }));
+
+        this.showLoginForm = await CoreLoginHelper.shouldShowLoginForm(this.siteConfig);
 
         if (!this.siteConfig) {
             return;

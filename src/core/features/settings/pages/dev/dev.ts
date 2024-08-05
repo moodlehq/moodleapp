@@ -14,12 +14,18 @@
 
 import { CoreConstants } from '@/core/constants';
 import { Component, OnInit } from '@angular/core';
-import { FAQ_QRCODE_INFO_DONE, ONBOARDING_DONE } from '@features/login/constants';
+import {
+    ALWAYS_SHOW_LOGIN_FORM,
+    ALWAYS_SHOW_LOGIN_FORM_CHANGED,
+    FAQ_QRCODE_INFO_DONE,
+    ONBOARDING_DONE,
+} from '@features/login/constants';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
 import { CoreCacheManager } from '@services/cache-manager';
 import { CoreConfig } from '@services/config';
+import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
@@ -40,6 +46,7 @@ export class CoreSettingsDevPage implements OnInit {
     rtl = false;
     forceSafeAreaMargins = false;
     direction = 'ltr';
+    alwaysShowLoginForm = false;
 
     remoteStyles = true;
     remoteStylesCount = 0;
@@ -70,6 +77,7 @@ export class CoreSettingsDevPage implements OnInit {
             this.enableStagingSites = await CoreSettingsHelper.hasEnabledStagingSites();
             this.previousEnableStagingSites = this.enableStagingSites;
         }
+        this.alwaysShowLoginForm = Boolean(await CoreConfig.get(ALWAYS_SHOW_LOGIN_FORM, 0));
 
         if (!this.siteId) {
             return;
@@ -123,6 +131,15 @@ export class CoreSettingsDevPage implements OnInit {
      */
     safeAreaChanged(): void {
         document.documentElement.classList.toggle('force-safe-area-margins', this.forceSafeAreaMargins);
+    }
+
+    /**
+     * Called when always show login form is enabled or disabled.
+     */
+    async alwaysShowLoginFormChanged(): Promise<void> {
+        const value = Number(this.alwaysShowLoginForm);
+        await CoreConfig.set(ALWAYS_SHOW_LOGIN_FORM, value);
+        CoreEvents.trigger(ALWAYS_SHOW_LOGIN_FORM_CHANGED, { value });
     }
 
     /**

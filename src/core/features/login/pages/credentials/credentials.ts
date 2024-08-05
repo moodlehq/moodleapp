@@ -24,7 +24,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
 import { CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
-import { CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
 import { CoreUserSupport } from '@features/user/services/support';
@@ -33,7 +33,11 @@ import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest
 import { SafeHtml } from '@angular/platform-browser';
 import { CorePlatform } from '@services/platform';
 import { CoreSitesFactory } from '@services/sites-factory';
-import { EMAIL_SIGNUP_FEATURE_NAME, FORGOTTEN_PASSWORD_FEATURE_NAME } from '@features/login/constants';
+import {
+    ALWAYS_SHOW_LOGIN_FORM_CHANGED,
+    EMAIL_SIGNUP_FEATURE_NAME,
+    FORGOTTEN_PASSWORD_FEATURE_NAME,
+} from '@features/login/constants';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreKeyboard } from '@singletons/keyboard';
@@ -66,6 +70,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     siteConfig?: CoreSitePublicConfigResponse;
     siteCheckError = '';
     displaySiteUrl = false;
+    showLoginForm = true;
 
     protected siteCheck?: CoreSiteCheckResponse;
     protected eventThrown = false;
@@ -73,6 +78,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     protected siteId?: string;
     protected urlToOpen?: string;
     protected valueChangeSubscription?: Subscription;
+    protected alwaysShowLoginFormObserver?: CoreEventObserver;
 
     constructor(
         protected fb: FormBuilder,
@@ -137,6 +143,10 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
                 }
             });
         }
+
+        this.alwaysShowLoginFormObserver = CoreEvents.on(ALWAYS_SHOW_LOGIN_FORM_CHANGED, async () => {
+            this.showLoginForm = await CoreLoginHelper.shouldShowLoginForm(this.siteConfig);
+        });
     }
 
     /**
@@ -191,6 +201,8 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * Treat the site configuration (if it exists).
      */
     protected async treatSiteConfig(): Promise<void> {
+        this.showLoginForm = await CoreLoginHelper.shouldShowLoginForm(this.siteConfig);
+
         if (!this.siteConfig) {
             this.authInstructions = undefined;
             this.canSignup = false;
@@ -365,6 +377,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.siteId,
         );
         this.valueChangeSubscription?.unsubscribe();
+        this.alwaysShowLoginFormObserver?.off();
     }
 
 }

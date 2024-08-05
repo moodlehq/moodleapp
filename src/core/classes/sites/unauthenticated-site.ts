@@ -464,6 +464,7 @@ export type CoreSitePublicConfigResponse = {
     tool_mobile_setuplink?: string; // App download page.
     tool_mobile_qrcodetype?: CoreSiteQRCodeType; // eslint-disable-line @typescript-eslint/naming-convention
     warnings?: CoreWSExternalWarning[];
+    showloginform?: number; // @since 4.5. Display default login form.
 };
 
 /**

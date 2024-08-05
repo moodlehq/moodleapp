@@ -33,6 +33,11 @@
                 <p class="item-heading">Enable staging sites <ion-badge>{{stagingSitesCount}}</ion-badge></p>
             </ion-toggle>
         </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-toggle [(ngModel)]="alwaysShowLoginForm" (ionChange)="alwaysShowLoginFormChanged()">
+                <p class="item-heading">Always show login form</p>
+            </ion-toggle>
+        </ion-item>
         <ng-container *ngIf="siteId">
             <ion-item class="ion-text-wrap">
                 <ion-toggle [(ngModel)]="remoteStyles" (ionChange)="remoteStylesChanged()">
