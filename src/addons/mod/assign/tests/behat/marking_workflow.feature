@@ -44,6 +44,7 @@ Feature: Test marking workflow in assignment activity in app
     # Mark submissions.
     And I am on the "Group Assign" "assign activity" page logged in as teacher1
     And I follow "View all submissions"
+    And I change window size to "large"
     And I click on "Grade" "link" in the "Student1" "table_row"
     And I set the field "Grade out of 100" to "50"
     And I set the field "Marking workflow state" to "In review"
