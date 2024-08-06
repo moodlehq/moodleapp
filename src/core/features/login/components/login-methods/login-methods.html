@@ -1,4 +1,5 @@
-<div *ngIf="loginMethods.length || identityProviders.length || showScanQR" class="ion-text-center ion-padding core-login-methods-separator">
+<div *ngIf="(showLoginForm || isBrowserSSO) && (loginMethods.length || identityProviders.length || showScanQR)"
+    class="ion-text-center ion-padding core-login-methods-separator">
     <span>{{ 'core.login.or' | translate }}</span>
 </div>
 

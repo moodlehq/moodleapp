@@ -47,6 +47,8 @@ import {
     TypeOfLogin,
 } from '@classes/sites/unauthenticated-site';
 import {
+    ALWAYS_SHOW_LOGIN_FORM,
+    ALWAYS_SHOW_LOGIN_FORM_CHANGED,
     APP_UNSUPPORTED_CHURN,
     EMAIL_SIGNUP_FEATURE_NAME,
     FAQ_QRCODE_IMAGE_HTML,
@@ -925,6 +927,21 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Check if the default login form should be displayed.
+     *
+     * @param config Site public config.
+     * @returns True if the login form should be displayed.
+     */
+    async shouldShowLoginForm(config?: CoreSitePublicConfigResponse): Promise<boolean> {
+        // Only hide the form if the setting exists and is set to 0.
+        if (config?.showloginform === 0) {
+            return Boolean(await CoreConfig.get(ALWAYS_SHOW_LOGIN_FORM, 0));
+        }
+
+        return true;
+    }
+
+    /**
      * Check if a confirm should be shown to open a SSO authentication.
      *
      * @param typeOfLogin TypeOfLogin.BROWSER or TypeOfLogin.EMBEDDED.
@@ -1692,6 +1709,7 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
+        [ALWAYS_SHOW_LOGIN_FORM_CHANGED]: { value: number };
         [APP_UNSUPPORTED_CHURN]: { siteUrl: string; debug?: CoreSiteErrorDebug };
     }
 

@@ -59,7 +59,8 @@
             </div>
 
             <div class="core-login-methods">
-                <form *ngIf="!isBrowserSSO" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>
+                <form *ngIf="showLoginForm && !isBrowserSSO" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form"
+                    #reconnectForm>
                     <ion-item class="ion-margin-bottom" lines="inset">
                         <ion-input class="core-ioninput-password" name="password" type="password"
                             placeholder="{{ 'core.login.password' | translate }}" formControlName="password" [clearOnEdit]="false"
@@ -91,7 +92,7 @@
 
                 <!-- Additional Login methods -->
                 <core-login-methods *ngIf="siteConfig" [siteConfig]="siteConfig" [reconnect]="true" [siteUrl]="site.siteUrl"
-                    [redirectData]="redirectData" />
+                    [redirectData]="redirectData" [showLoginForm]="showLoginForm" />
             </div>
         </div>
     </core-loading>

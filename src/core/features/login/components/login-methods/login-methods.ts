@@ -32,6 +32,7 @@ export class CoreLoginMethodsComponent implements OnInit {
     @Input() siteUrl = '';
     @Input() siteConfig?: CoreSitePublicConfigResponse;
     @Input() redirectData?: CoreRedirectPayload;
+    @Input() showLoginForm = true;
 
     isBrowserSSO  = false;
     showScanQR  = false;
