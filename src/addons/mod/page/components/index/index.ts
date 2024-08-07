@@ -15,7 +15,6 @@
 import { Component, OnInit, Optional } from '@angular/core';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModPagePage, AddonModPage } from '../../services/page';
@@ -38,7 +37,6 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
     displayTimemodified = true;
     timemodified?: number;
     page?: AddonModPagePage;
-    warning?: string;
 
     protected fetchContentDefaultError = 'addon.mod_page.errorwhileloadingthepage';
 
@@ -68,19 +66,12 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
      * @inheritdoc
      */
     protected async fetchContent(refresh?: boolean): Promise<void> {
-        // Download the resource if it needs to be downloaded.
-        const downloadResult = await this.downloadResourceIfNeeded(refresh);
-
-        // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
-        const contents = await CoreCourse.getModuleContents(this.module);
-
-        const results = await Promise.all([
+        const [contents] = await Promise.all([
+            this.getModuleContents(refresh),
             this.loadPageData(),
-            AddonModPageHelper.getPageHtml(contents, this.module.id),
         ]);
 
-        this.contents = results[1];
-        this.warning = downloadResult?.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';
+        this.contents = await AddonModPageHelper.getPageHtml(contents, this.module.id);
     }
 
     /**
