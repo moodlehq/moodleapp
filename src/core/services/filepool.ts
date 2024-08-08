@@ -553,6 +553,35 @@ export class CoreFilepoolProvider {
     }
 
     /**
+     * Check if a file is outdated, updating its timemodified if the entry doesn't have it but it's not outdated.
+     *
+     * @param siteId Site ID.
+     * @param entry Entry to check.
+     * @param revision File revision number.
+     * @param timemodified The time this file was modified.
+     * @returns Whether the file is outdated.
+     */
+    protected async checkFileOutdated(
+        siteId: string,
+        entry: CoreFilepoolFileEntry,
+        revision = 0,
+        timemodified = 0,
+    ): Promise<boolean> {
+        if (this.isFileOutdated(entry, revision, timemodified)) {
+            return true;
+        }
+
+        if (timemodified > 0 && !entry.timemodified) {
+            // Entry is not outdated but it doesn't have timemodified. Update it.
+            await CoreUtils.ignoreErrors(this.filesTables[siteId].update({ timemodified }, { fileId: entry.fileId }));
+
+            entry.timemodified = timemodified;
+        }
+
+        return false;
+    }
+
+    /**
      * Check the queue processing.
      *
      * @description
@@ -1071,13 +1100,10 @@ export class CoreFilepoolProvider {
 
         try {
             const fileObject = await this.hasFileInPool(siteId, fileId);
+            const isOutdated = await this.checkFileOutdated(siteId, fileObject, options.revision, options.timemodified);
             let url: string;
 
-            if (!fileObject ||
-                this.isFileOutdated(fileObject, options.revision, options.timemodified) &&
-                CoreNetwork.isOnline() &&
-                !ignoreStale
-            ) {
+            if (isOutdated && CoreNetwork.isOnline() && !ignoreStale) {
                 throw new CoreError('Needs to be downloaded');
             }
 
@@ -1558,8 +1584,9 @@ export class CoreFilepoolProvider {
             try {
                 // File is not being downloaded. Check if it's downloaded and if it's outdated.
                 const entry = await this.hasFileInPool(siteId, fileId);
+                const isOutdated = await this.checkFileOutdated(siteId, entry, revision, timemodified);
 
-                if (this.isFileOutdated(entry, revision, timemodified)) {
+                if (isOutdated) {
                     return DownloadStatus.OUTDATED;
                 }
 
@@ -1627,12 +1654,9 @@ export class CoreFilepoolProvider {
 
         try {
             const entry = await this.hasFileInPool(siteId, fileId);
+            const isOutdated = await this.checkFileOutdated(siteId, entry, revision, timemodified);
 
-            if (entry === undefined) {
-                throw new CoreError('File not downloaded.');
-            }
-
-            if (this.isFileOutdated(entry, revision, timemodified) && CoreNetwork.isOnline()) {
+            if (isOutdated && CoreNetwork.isOnline()) {
                 throw new CoreError('File is outdated');
             }
         } catch (error) {
@@ -2379,8 +2403,9 @@ export class CoreFilepoolProvider {
      * @returns Whether the file is outdated.
      */
     protected isFileOutdated(entry: CoreFilepoolFileEntry, revision = 0, timemodified = 0): boolean {
-        // Don't allow undefined values, convert them to 0.
-        const entryTimemodified = entry.timemodified ?? 0;
+        // If the entry doesn't have a timemodified, use the download time instead. This is to prevent re-downloading
+        // files that haven't been updated in the server.
+        const entryTimemodified = entry.timemodified || Math.floor(entry.downloadTime / 1000);
         const entryRevision = entry.revision ?? 0;
 
         return !!entry.stale || revision > entryRevision || timemodified > entryTimemodified;
@@ -2624,7 +2649,11 @@ export class CoreFilepoolProvider {
             // File not in pool.
         }
 
-        if (entry && !options.isexternalfile && !this.isFileOutdated(entry, options.revision, options.timemodified)) {
+        if (
+            entry &&
+            !options.isexternalfile &&
+            !(await this.checkFileOutdated(siteId, entry, options.revision, options.timemodified))
+        ) {
             // We have the file, it is not stale, we can update links and remove from queue.
             this.logger.debug('Queued file already in store, ignoring...');
             this.addFileLinks(siteId, fileId, links).catch(() => {
