@@ -1186,48 +1186,6 @@ export class CoreFilepoolProvider {
     }
 
     /**
-     * Fill Missing Extension In the File Object if needed.
-     * This is to migrate from old versions.
-     *
-     * @param entry File object to be migrated.
-     * @param siteId SiteID to get migrated.
-     * @returns Promise resolved when done.
-     */
-    protected async fillExtensionInFile(entry: CoreFilepoolFileEntry, siteId: string): Promise<void> {
-        if (entry.extension !== undefined) {
-            // Already filled.
-            return;
-        }
-
-        const extension = CoreMimetypeUtils.getFileExtension(entry.path);
-        if (!extension) {
-            // Files does not have extension. Invalidate file (stale = true).
-            // Minor problem: file will remain in the filesystem once downloaded again.
-            this.logger.debug('Staled file with no extension ' + entry.fileId);
-
-            await this.filesTables[siteId].update({ stale: 1 }, { fileId: entry.fileId });
-
-            return;
-        }
-
-        // File has extension. Save extension, and add extension to path.
-        const fileId = entry.fileId;
-        entry.fileId = CoreMimetypeUtils.removeExtension(fileId);
-        entry.extension = extension;
-
-        await this.filesTables[siteId].update(entry, { fileId });
-        if (entry.fileId == fileId) {
-            // File ID hasn't changed, we're done.
-            this.logger.debug('Removed extesion ' + extension + ' from file ' + entry.fileId);
-
-            return;
-        }
-
-        // Now update the links.
-        await this.linksTables[siteId].update({ fileId: entry.fileId }, { fileId });
-    }
-
-    /**
      * Fix a component ID to always be a Number if possible.
      *
      * @param componentId The component ID.
