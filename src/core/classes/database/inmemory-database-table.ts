@@ -96,4 +96,24 @@ export abstract class CoreInMemoryDatabaseTable<
         return rowId;
     }
 
+    /**
+     * Update a record in memory.
+     *
+     * @param record Record to update.
+     * @param updates New values.
+     * @param records Records object.
+     */
+    protected updateMemoryRecord(record: DBRecord, updates: Partial<DBRecord>, records: Record<string, DBRecord | null>): void {
+        const previousPrimaryKey = this.serializePrimaryKey(this.getPrimaryKeyFromRecord(record));
+
+        Object.assign(record, updates);
+
+        const newPrimaryKey = this.serializePrimaryKey(this.getPrimaryKeyFromRecord(record));
+
+        if (newPrimaryKey !== previousPrimaryKey) {
+            delete records[previousPrimaryKey];
+            records[newPrimaryKey] = record;
+        }
+    }
+
 }

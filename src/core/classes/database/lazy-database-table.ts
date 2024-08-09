@@ -156,7 +156,7 @@ export class CoreLazyDatabaseTable<
                 continue;
             }
 
-            Object.assign(record, updates);
+            this.updateMemoryRecord(record, updates, this.records);
         }
     }
 
@@ -171,7 +171,7 @@ export class CoreLazyDatabaseTable<
                 continue;
             }
 
-            Object.assign(record, updates);
+            this.updateMemoryRecord(record, updates, this.records);
         }
     }
 

@@ -172,7 +172,7 @@ export class CoreEagerDatabaseTable<
                 continue;
             }
 
-            Object.assign(record, updates);
+            this.updateMemoryRecord(record, updates, this.records);
         }
     }
 
@@ -187,7 +187,7 @@ export class CoreEagerDatabaseTable<
                 continue;
             }
 
-            Object.assign(record, updates);
+            this.updateMemoryRecord(record, updates, this.records);
         }
     }
 
