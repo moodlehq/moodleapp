@@ -84,6 +84,7 @@
     "overdue": "Assignment is overdue by: {{$a}}",
     "submission": "Submission",
     "submissioneditable": "Student can edit this submission",
+    "submissionempty": "Nothing was submitted",
     "submissionnoteditable": "Student cannot edit this submission",
     "submissionnotsupported": "This submission is not supported by the app and may not contain all the information.",
     "submissionslocked": "This assignment is not accepting submissions",

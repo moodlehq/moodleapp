@@ -61,6 +61,29 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
     /**
      * @inheritdoc
      */
+    isEmptyForEdit(
+        assign: AddonModAssignAssign,
+        plugin: AddonModAssignPlugin,
+        inputData: AddonModAssignSubmissionOnlineTextData,
+     ): boolean {
+        const text = this.getTextToSubmit(plugin, inputData);
+
+        if (CoreText.countWords(text) > 0) {
+            return false;
+        }
+
+        // Check if the online text submission contains video, audio or image elements
+        // that can be ignored and stripped by count_words().
+        if (/<\s*((video|audio)[^>]*>(.*?)<\s*\/\s*(video|audio)>)|(img[^>]*>)/.test(text)) {
+            return false;
+        }
+
+        return true;
+     }
+
+    /**
+     * @inheritdoc
+     */
     async copySubmissionData(
         assign: AddonModAssignAssign,
         plugin: AddonModAssignPlugin,

@@ -238,6 +238,31 @@ export class AddonModAssignHelperProvider {
     }
 
     /**
+     * Check whether the edited submission has no content.
+     *
+     * @param assign Assignment object.
+     * @param submission Submission to inspect.
+     * @param inputData Data entered in the submission form.
+     * @returns Whether the submission is empty.
+     */
+    isSubmissionEmptyForEdit(
+        assign: AddonModAssignAssign,
+        submission: AddonModAssignSubmission,
+        inputData: CoreFormFields,
+    ): boolean {
+        const anyNotEmpty = submission.plugins?.some((plugin) =>
+            !AddonModAssignSubmissionDelegate.isPluginEmptyForEdit(assign, plugin, inputData));
+
+        // If any plugin is not empty, we consider that the submission is not empty either.
+        if (anyNotEmpty) {
+            return false;
+        }
+
+        // If all the plugins were empty (or there were no plugins), we consider the submission to be empty.
+        return true;
+    }
+
+    /**
      * List the participants for a single assignment, with some summary info about their submissions.
      *
      * @param assign Assignment object.

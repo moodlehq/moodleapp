@@ -398,6 +398,10 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             throw Translate.instant('addon.mod_assign.acceptsubmissionstatement');
         }
 
+        if (AddonModAssignHelper.isSubmissionEmptyForEdit(this.assign!, this.userSubmission!, inputData)) {
+            throw Translate.instant('addon.mod_assign.submissionempty');
+        }
+
         let modal = await CoreLoadings.show();
         let size = -1;
 

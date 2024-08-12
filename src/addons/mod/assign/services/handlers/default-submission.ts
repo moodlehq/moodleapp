@@ -53,6 +53,17 @@ export class AddonModAssignDefaultSubmissionHandler implements AddonModAssignSub
     /**
      * @inheritdoc
      */
+   isEmptyForEdit(
+       assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
+       plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
+       inputData: CoreFormFields, // eslint-disable-line @typescript-eslint/no-unused-vars
+    ): boolean {
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
     clearTmpData(
         assign: AddonModAssignAssign, // eslint-disable-line @typescript-eslint/no-unused-vars
         submission: AddonModAssignSubmission, // eslint-disable-line @typescript-eslint/no-unused-vars

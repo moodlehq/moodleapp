@@ -64,6 +64,15 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
     /**
      * @inheritdoc
      */
+    isEmptyForEdit(assign: AddonModAssignAssign): boolean {
+        const currentFiles = CoreFileSession.getFiles(ADDON_MOD_ASSIGN_COMPONENT, assign.id);
+
+        return currentFiles.length == 0;
+     }
+
+    /**
+     * @inheritdoc
+     */
     clearTmpData(assign: AddonModAssignAssign): void {
         const files = CoreFileSession.getFiles(ADDON_MOD_ASSIGN_COMPONENT, assign.id);
 

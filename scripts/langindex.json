@@ -432,6 +432,7 @@
   "addon.mod_assign.overdue": "assign",
   "addon.mod_assign.submission": "assign",
   "addon.mod_assign.submissioneditable": "assign",
+  "addon.mod_assign.submissionempty": "assign",
   "addon.mod_assign.submissionnoteditable": "assign",
   "addon.mod_assign.submissionnotsupported": "local_moodlemobileapp",
   "addon.mod_assign.submissionslocked": "assign",
