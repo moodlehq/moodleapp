@@ -260,4 +260,17 @@ describe('CoreUrl singleton', () => {
             .toEqual(`${siteUrl}/media/player/vimeo/wsplayer.php?video=123456&token=${token}&h=foo`);
     });
 
+    it('extracts args from pluginfile URLs', () => {
+        expect(CoreUrl.getPluginFileArgs('http://mysite.com/pluginfile.php/6/mod_foo/content/14/foo.txt'))
+            .toEqual(['6', 'mod_foo', 'content', '14', 'foo.txt']);
+        expect(CoreUrl.getPluginFileArgs('http://mysite.com/webservice/pluginfile.php/6/mod_foo/content/14/foo.txt'))
+            .toEqual(['6', 'mod_foo', 'content', '14', 'foo.txt']);
+
+        // It doesn't work with tokenpluginfile or other URLs, and also when pluginfile doesn't have enough params.
+        expect(CoreUrl.getPluginFileArgs('http://mysite.com')).toEqual(undefined);
+        expect(CoreUrl.getPluginFileArgs('http://mysite.com/pluginfile.php/6/')).toEqual(undefined);
+        expect(CoreUrl.getPluginFileArgs('http://mysite.com/tokenpluginfile.php/abcdef123456/6/mod_foo/content/14/foo.txt'))
+            .toEqual(undefined);
+    });
+
 });

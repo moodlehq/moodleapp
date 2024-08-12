@@ -29,6 +29,8 @@ import { CoreFileHelper } from './file-helper';
 @Injectable({ providedIn: 'root' })
 export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHandler> {
 
+    protected handlerNameProperty = 'component';
+
     constructor() {
         super('CorePluginFileDelegate');
     }

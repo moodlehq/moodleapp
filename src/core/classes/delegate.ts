@@ -249,12 +249,12 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
         const key = handler[this.handlerNameProperty] || handler.name;
 
         if (this.handlers[key] !== undefined) {
-            this.logger.log(`Handler '${handler[this.handlerNameProperty]}' already registered`);
+            this.logger.log(`Handler '${key}' already registered`);
 
             return false;
         }
 
-        this.logger.log(`Registered handler '${handler[this.handlerNameProperty]}'`);
+        this.logger.log(`Registered handler '${key}'`);
         this.handlers[key] = handler;
 
         return true;
