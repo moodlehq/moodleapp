@@ -599,7 +599,10 @@ export class CoreLangProvider {
                         // Merge parent translations with the child ones.
                         const parentTranslations = Translate.translations[fallbackLang] ?? await this.readLangFile(fallbackLang);
 
-                        const mergedData = Object.assign(parentTranslations, data);
+                        const mergedData = {
+                            ...parentTranslations,
+                            ...data,
+                        };
 
                         Object.assign(data, mergedData);
                     } catch {
