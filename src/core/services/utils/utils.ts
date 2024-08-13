@@ -1068,8 +1068,6 @@ export class CoreUtilsProvider {
 
         this.setInAppBrowserToolbarColors(options);
 
-        this.iabInstance?.close(); // Close window if there is one already open, only allow one.
-
         this.iabInstance = InAppBrowser.create(url, '_blank', options);
 
         if (CorePlatform.isMobile()) {
