@@ -643,6 +643,29 @@ export class CoreUrl {
     }
 
     /**
+     * Return the array of arguments of the pluginfile url.
+     *
+     * @param url URL to get the args.
+     * @returns The args found, undefined if not a pluginfile.
+     */
+    static getPluginFileArgs(url: string): string[] | undefined {
+        if (!CoreUrl.isPluginFileUrl(url)) {
+            // Not pluginfile, return.
+            return;
+        }
+
+        const relativePath = url.substring(url.indexOf('/pluginfile.php') + 16);
+        const args = relativePath.split('/');
+
+        if (args.length < 3) {
+            // To be a plugin file it should have at least contextId, Component and Filearea.
+            return;
+        }
+
+        return args;
+    }
+
+    /**
      * Get the protocol from a URL.
      * E.g. http://www.google.com returns 'http'.
      *
