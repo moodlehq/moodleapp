@@ -26,7 +26,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreCourseModuleSummaryResult } from '../components/module-summary/module-summary';
 import { CoreCourseContentsPage } from '../pages/contents/contents';
-import { CoreCourse } from '../services/course';
+import { CoreCourse, CoreCourseModuleContentFile } from '../services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleDelegate, CoreCourseModuleMainComponent } from '../services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '../services/module-prefetch-delegate';
@@ -364,22 +364,34 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
         if (!this.module.contents?.length || (refresh && !contentsAlreadyLoaded)) {
             // Try to load the contents.
-            const ignoreCache = refresh && CoreNetwork.isOnline();
-
-            try {
-                await CoreCourse.loadModuleContents(this.module, undefined, undefined, false, ignoreCache);
-            } catch (error) {
-                // Error loading contents. If we ignored cache, try to get the cached value.
-                if (ignoreCache && !this.module.contents) {
-                    await CoreCourse.loadModuleContents(this.module);
-                } else if (!this.module.contents) {
-                    // Not able to load contents, throw the error.
-                    throw error;
-                }
-            }
+            await this.getModuleContents(refresh);
         }
 
         return result;
+    }
+
+    /**
+     * Get module contents.
+     *
+     * @param refresh Whether we're refreshing data.
+     * @returns Module contents.
+     */
+    protected async getModuleContents(refresh?: boolean): Promise<CoreCourseModuleContentFile[]> {
+        const ignoreCache = refresh && CoreNetwork.isOnline();
+
+        try {
+            return await CoreCourse.getModuleContents(this.module, undefined, undefined, false, ignoreCache);
+        } catch (error) {
+            // Error loading contents. If we ignored cache, try to get the cached value.
+            if (ignoreCache && !this.module.contents) {
+                return await CoreCourse.getModuleContents(this.module);
+            } else if (!this.module.contents) {
+                // Not able to load contents, throw the error.
+                throw error;
+            }
+
+            return this.module.contents;
+        }
     }
 
     /**

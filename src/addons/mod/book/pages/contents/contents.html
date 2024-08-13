@@ -22,13 +22,6 @@
 
     <core-loading [hideUntil]="loaded">
         <div class="safe-area-padding-horizontal core-swipe-slides-container">
-            <ion-card class="core-warning-card" *ngIf="warning">
-                <ion-item>
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label><span [innerHTML]="warning"></span></ion-label>
-                </ion-item>
-            </ion-card>
-
             <core-swipe-slides [manager]="manager" [options]="swiperOpts">
                 <ng-template let-chapter="item" let-active="active">
                     <div class="ion-padding">

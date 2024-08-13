@@ -12,13 +12,6 @@
     <core-course-module-info [module]="module" [description]="displayDescription && description" [component]="component"
         [componentId]="componentId" [courseId]="courseId" (completionChanged)="onCompletionChange()" />
 
-    <ion-card class="core-warning-card" *ngIf="warning">
-        <ion-item>
-            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-            <ion-label><span [innerHTML]="warning"></span></ion-label>
-        </ion-item>
-    </ion-card>
-
     <div class="ion-padding">
         <core-format-text [component]="component" [componentId]="componentId" [text]="contents" contextLevel="module"
             [contextInstanceId]="module.id" [courseId]="courseId" />
