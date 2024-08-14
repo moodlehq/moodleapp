@@ -19,17 +19,21 @@ import {
     CoreRemindersUnits,
     CoreReminderValueAndUnit,
 } from '@features/reminders/services/reminders';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CorePopovers } from '@services/popovers';
 import { CoreWait } from '@singletons/wait';
 import { PopoverController } from '@singletons';
-import { CoreRemindersSetReminderCustomComponent } from '../set-reminder-custom/set-reminder-custom';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * This component is meant to display a popover with the reminder options.
  */
 @Component({
     templateUrl: 'set-reminder-menu.html',
-    styleUrls: ['set-reminder-menu.scss'],
+    styleUrl: 'set-reminder-menu.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreRemindersSetReminderMenuComponent implements OnInit {
 
@@ -155,7 +159,10 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
         ev.stopPropagation();
         ev.preventDefault();
 
-        const reminderTime = await CoreDomUtils.openPopover<CoreReminderValueAndUnit>({
+        const { CoreRemindersSetReminderCustomComponent }
+            = await import('../set-reminder-custom/set-reminder-custom');
+
+        const reminderTime = await CorePopovers.open<CoreReminderValueAndUnit>({
             component: CoreRemindersSetReminderCustomComponent,
             componentProps: {
                 customValue: this.customValue,

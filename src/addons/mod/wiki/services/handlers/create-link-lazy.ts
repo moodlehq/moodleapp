@@ -22,6 +22,7 @@ import { makeSingleton } from '@singletons';
 import { AddonModWiki } from '../wiki';
 import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 import { AddonModWikiCreateLinkHandlerService } from '@addons/mod/wiki/services/handlers/create-link';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Handler to treat links to create a wiki page.
@@ -84,7 +85,7 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
      * @inheritdoc
      */
     async handleAction(siteId: string, courseId: number, params: Record<string, string>): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
         const { AddonModWikiIndexPage } = await import('../../pages/index');
 
         try {

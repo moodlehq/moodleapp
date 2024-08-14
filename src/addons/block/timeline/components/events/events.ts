@@ -14,7 +14,7 @@
 
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreLoadings } from '@services/loadings';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { AddonBlockTimelineDayEvents } from '@addons/block/timeline/classes/section';
@@ -66,7 +66,7 @@ export class AddonBlockTimelineEventsComponent implements OnInit {
         // Fix URL format.
         url = CoreTextUtils.decodeHTMLEntities(url);
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             await CoreSites.visitLink(url);

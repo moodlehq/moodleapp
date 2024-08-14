@@ -20,7 +20,7 @@ import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/servic
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreNavigationOptions } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreLoadings } from '@services/loadings';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonModUrl } from '../url';
@@ -82,7 +82,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
             class: 'addon-mod_url-handler',
             showDownloadButton: false,
             action: async (event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions) => {
-                const modal = await CoreDomUtils.showModalLoading();
+                const modal = await CoreLoadings.show();
 
                 try {
                     const shouldOpen = await this.shouldOpenLink(module);

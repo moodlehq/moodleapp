@@ -50,7 +50,6 @@ import {
     GLOSSARY_AUTO_SYNCED,
 } from '../../services/glossary-sync';
 import { AddonModGlossaryPrefetchHandler } from '../../services/handlers/prefetch';
-import { AddonModGlossaryModePickerPopoverComponent } from '../mode-picker/mode-picker';
 import { CoreTime } from '@singletons/time';
 import {
     ADDON_MOD_GLOSSARY_COMPONENT,
@@ -59,6 +58,7 @@ import {
     ADDON_MOD_GLOSSARY_ENTRY_UPDATED,
     ADDON_MOD_GLOSSARY_PAGE_NAME,
 } from '../../constants';
+import { CorePopovers } from '@services/popovers';
 
 /**
  * Component that displays a glossary entry page.
@@ -354,10 +354,11 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         if (!this.glossary) {
             return;
         }
+        const { AddonModGlossaryModePickerPopoverComponent } = await import('../mode-picker/mode-picker');
 
         const entries = await this.promisedEntries;
         const previousMode = entries.getSource().fetchMode;
-        const newMode = await CoreDomUtils.openPopover<AddonModGlossaryFetchMode>({
+        const newMode = await CorePopovers.open<AddonModGlossaryFetchMode>({
             component: AddonModGlossaryModePickerPopoverComponent,
             componentProps: {
                 browseModes: this.glossary.browsemodes,

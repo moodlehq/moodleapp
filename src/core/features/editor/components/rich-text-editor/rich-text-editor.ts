@@ -48,6 +48,7 @@ import { CoreSwiper } from '@singletons/swiper';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreQRScan } from '@services/qrscan';
 
 /**
  * Component to display a rich text editor if enabled.
@@ -182,7 +183,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.canScanQR = CoreUtils.canScanQR();
+        this.canScanQR = CoreQRScan.canScanQR();
         this.isPhone = CoreScreen.isMobile;
         this.toolbarHidden = this.isPhone;
     }
@@ -1033,7 +1034,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         this.stopBubble(event);
 
         // Scan for a QR code.
-        const text = await CoreUtils.scanQR();
+        const text = await CoreQRScan.scanQR();
 
         if (text) {
             this.focusRTE(event); // Make sure the editor is focused.

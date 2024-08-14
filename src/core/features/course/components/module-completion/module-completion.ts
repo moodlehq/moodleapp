@@ -18,8 +18,7 @@ import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classe
 import {
     CoreCourseModuleCompletionStatus,
 } from '@features/course/services/course';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreCourseModuleCompletionDetailsComponent } from '../module-completion-details/module-completion-details';
+import { CorePopovers } from '@services/popovers';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUser } from '@features/user/services/user';
 import { Translate } from '@singletons';
@@ -132,7 +131,10 @@ export class CoreCourseModuleCompletionComponent
                 target = target.parentElement;
             }
 
-            CoreDomUtils.openPopoverWithoutResult({
+            const { CoreCourseModuleCompletionDetailsComponent } =
+                await import('../module-completion-details/module-completion-details');
+
+            CorePopovers.openWithoutResult({
                 component: CoreCourseModuleCompletionDetailsComponent,
                 componentProps: {
                     completion: this.completion,

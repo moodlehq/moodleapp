@@ -148,12 +148,11 @@ export class CoreFileProvider {
      * @param path Relative path to the file.
      * @returns Promise resolved when the file is retrieved.
      */
-    getFile(path: string): Promise<FileEntry> {
-        return this.init().then(() => {
-            this.logger.debug('Get file: ' + path);
+    async getFile(path: string): Promise<FileEntry> {
+        await this.init();
+        this.logger.debug('Get file: ' + path);
 
-            return File.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(path));
-        }).then((entry) => <FileEntry> entry);
+        return <FileEntry> await File.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(path));
     }
 
     /**
@@ -162,12 +161,12 @@ export class CoreFileProvider {
      * @param path Relative path to the directory.
      * @returns Promise resolved when the directory is retrieved.
      */
-    getDir(path: string): Promise<DirectoryEntry> {
-        return this.init().then(() => {
-            this.logger.debug('Get directory: ' + path);
+    async getDir(path: string): Promise<DirectoryEntry> {
+        await this.init();
 
-            return File.resolveDirectoryUrl(this.addBasePathIfNeeded(path));
-        });
+        this.logger.debug('Get directory: ' + path);
+
+        return await File.resolveDirectoryUrl(this.addBasePathIfNeeded(path));
     }
 
     /**
@@ -377,12 +376,14 @@ export class CoreFileProvider {
      * @param path Relative path to the directory.
      * @returns Promise to be resolved when the size is calculated.
      */
-    getDirectorySize(path: string): Promise<number> {
+    async getDirectorySize(path: string): Promise<number> {
         path = this.removeBasePath(path);
 
         this.logger.debug('Get size of dir: ' + path);
 
-        return this.getDir(path).then((dirEntry) => this.getSize(dirEntry));
+        const dirEntry = await this.getDir(path);
+
+        return this.getSize(dirEntry);
     }
 
     /**
@@ -391,12 +392,14 @@ export class CoreFileProvider {
      * @param path Relative path to the file.
      * @returns Promise to be resolved when the size is calculated.
      */
-    getFileSize(path: string): Promise<number> {
+    async getFileSize(path: string): Promise<number> {
         path = this.removeBasePath(path);
 
         this.logger.debug('Get size of file: ' + path);
 
-        return this.getFile(path).then((fileEntry) => this.getSize(fileEntry));
+        const fileEntry = await this.getFile(path);
+
+        return this.getSize(fileEntry);
     }
 
     /**
@@ -418,16 +421,15 @@ export class CoreFileProvider {
      *
      * @returns Promise resolved with the estimated free space in bytes.
      */
-    calculateFreeSpace(): Promise<number> {
-        return File.getFreeDiskSpace().then((size) => {
-            if (CorePlatform.isIOS()) {
-                // In iOS the size is in bytes.
-                return Number(size);
-            }
+    async calculateFreeSpace(): Promise<number> {
+        const size = await File.getFreeDiskSpace();
 
-            // The size is in KB, convert it to bytes.
-            return Number(size) * 1024;
-        });
+        if (CorePlatform.isIOS()) {
+            // In iOS the size is in bytes.
+            return Number(size);
+        }
+
+        return Number(size) * 1024;
     }
 
     /**
@@ -642,8 +644,10 @@ export class CoreFileProvider {
      * @param fullPath Absolute path to the file.
      * @returns Promise to be resolved when the file is retrieved.
      */
-    getExternalFile(fullPath: string): Promise<FileEntry> {
-        return File.resolveLocalFilesystemUrl(fullPath).then((entry) => <FileEntry> entry);
+    async getExternalFile(fullPath: string): Promise<FileEntry> {
+        const entry = await File.resolveLocalFilesystemUrl(fullPath);
+
+        return <FileEntry>entry;
     }
 
     /**
@@ -676,14 +680,14 @@ export class CoreFileProvider {
      *
      * @returns Promise to be resolved when the base path is retrieved.
      */
-    getBasePath(): Promise<string> {
-        return this.init().then(() => {
-            if (this.basePath.slice(-1) == '/') {
-                return this.basePath;
-            } else {
-                return this.basePath + '/';
-            }
-        });
+    async getBasePath(): Promise<string> {
+        await this.init();
+
+        if (this.basePath.slice(-1) === '/') {
+            return this.basePath;
+        } else {
+            return this.basePath + '/';
+        }
     }
 
     /**
@@ -1004,15 +1008,10 @@ export class CoreFileProvider {
      * @param isDir True if directory, false if file.
      * @returns Promise resolved with metadata.
      */
-    getMetadataFromPath(path: string, isDir?: boolean): Promise<Metadata> {
-        let promise;
-        if (isDir) {
-            promise = this.getDir(path);
-        } else {
-            promise = this.getFile(path);
-        }
+    async getMetadataFromPath(path: string, isDir?: boolean): Promise<Metadata> {
+        const entry = isDir ? await this.getDir(path) : await this.getFile(path);
 
-        return promise.then((entry) => this.getMetadata(entry));
+        return this.getMetadata(entry);
     }
 
     /**

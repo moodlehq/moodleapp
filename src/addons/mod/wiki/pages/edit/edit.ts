@@ -32,6 +32,7 @@ import { AddonModWikiOffline } from '../../services/wiki-offline';
 import { AddonModWikiSync } from '../../services/wiki-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_PAGE_CREATED_EVENT, ADDON_MOD_WIKI_RENEW_LOCK_TIME } from '../../constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that allows adding or editing a wiki page.
@@ -362,7 +363,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
         const title = values.title;
         let text = values.text ?? '';
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         text = CoreTextUtils.restorePluginfileUrls(text, this.subwikiFiles);
         text = CoreTextUtils.formatHtmlLines(text);

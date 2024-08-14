@@ -36,6 +36,8 @@ import { CoreDom } from '@singletons/dom';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { EMAIL_SIGNUP_FEATURE_NAME } from '@features/login/constants';
 import { CoreInputErrorsMessages } from '@components/input-errors/input-errors';
+import { CoreViewer } from '@features/viewer/services/viewer';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page to signup using email.
@@ -305,7 +307,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         const params: SignupUserWSParams = {
             username: this.signupForm.value.username.trim().toLowerCase(),
@@ -385,7 +387,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * Show authentication instructions.
      */
     showAuthInstructions(): void {
-        CoreTextUtils.viewText(Translate.instant('core.login.instructions'), this.authInstructions);
+        CoreViewer.viewText(Translate.instant('core.login.instructions'), this.authInstructions);
     }
 
     /**
@@ -414,7 +416,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         const params = this.ageVerificationForm.value;
 

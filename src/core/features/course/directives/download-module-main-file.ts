@@ -18,6 +18,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUtilsOpenFileOptions } from '@services/utils/utils';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Directive to allow downloading and open the main file of a module.
@@ -57,7 +58,7 @@ export class CoreCourseDownloadModuleMainFileDirective implements OnInit {
             ev.preventDefault();
             ev.stopPropagation();
 
-            const modal = await CoreDomUtils.showModalLoading();
+            const modal = await CoreLoadings.show();
             const courseId = this.courseId ? Number(this.courseId) : undefined;
 
             try {

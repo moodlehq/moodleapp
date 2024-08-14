@@ -17,6 +17,7 @@ import { CoreCourse, CoreCourseWSSection } from '@features/course/services/cours
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { IonContent } from '@ionic/angular';
+import { CoreLoadings } from '@services/loadings';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -204,7 +205,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         // Re-calculate module in case a new module was made visible.
         await CoreUtils.ignoreErrors(this.setNextAndPreviousModules(CoreSitesReadingStrategy.PREFER_NETWORK, next, !next));

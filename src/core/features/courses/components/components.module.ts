@@ -16,19 +16,16 @@ import { NgModule } from '@angular/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCoursesCourseListItemComponent } from './course-list-item/course-list-item';
-import { CoreCoursesCourseOptionsMenuComponent } from './course-options-menu/course-options-menu';
 
 @NgModule({
     declarations: [
         CoreCoursesCourseListItemComponent,
-        CoreCoursesCourseOptionsMenuComponent,
     ],
     imports: [
         CoreSharedModule,
     ],
     exports: [
         CoreCoursesCourseListItemComponent,
-        CoreCoursesCourseOptionsMenuComponent,
     ],
 })
 export class CoreCoursesComponentsModule {}

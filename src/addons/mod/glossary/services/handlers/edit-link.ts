@@ -21,6 +21,7 @@ import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Content links handler for glossary new entry.
@@ -40,7 +41,7 @@ export class AddonModGlossaryEditLinkHandlerService extends CoreContentLinksHand
     getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
         return [{
             action: async (siteId: string) => {
-                const modal = await CoreDomUtils.showModalLoading();
+                const modal = await CoreLoadings.show();
 
                 const cmId = Number(params.cmid);
 

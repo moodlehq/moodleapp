@@ -40,6 +40,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays notifications settings.
@@ -311,7 +312,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             CoreUser.updateUserPreferences([], !enable);

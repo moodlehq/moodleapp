@@ -21,6 +21,7 @@ import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
+import { CoreLoadings } from '@services/loadings';
 /**
  * Content links handler for feedback show non respondents.
  * Match mod/feedback/show_nonrespondents.php with a valid feedback id.
@@ -38,7 +39,7 @@ export class AddonModFeedbackShowNonRespondentsLinkHandlerService extends CoreCo
     getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
         return [{
             action: async (siteId: string) => {
-                const modal = await CoreDomUtils.showModalLoading();
+                const modal = await CoreLoadings.show();
 
                 const moduleId = Number(params.id);
 

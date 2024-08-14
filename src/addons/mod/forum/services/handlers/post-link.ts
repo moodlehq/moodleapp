@@ -18,7 +18,7 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreLoadings } from '@services/loadings';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
 
@@ -43,7 +43,7 @@ export class AddonModForumPostLinkHandlerService extends CoreContentLinksHandler
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: async (siteId): Promise<void> => {
-                const modal = await CoreDomUtils.showModalLoading();
+                const modal = await CoreLoadings.show();
                 const forumId = parseInt(params.forum, 10);
 
                 try {

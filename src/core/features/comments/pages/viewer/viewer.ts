@@ -44,6 +44,7 @@ import { Subscription } from 'rxjs';
 import { CoreAnimations } from '@components/animations';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays comments.
@@ -311,7 +312,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      */
     async addComment(text: string): Promise<void> {
         CoreKeyboard.close();
-        const loadingModal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const loadingModal = await CoreLoadings.show('core.sending', true);
         // Freeze the add comment button.
         this.sending = true;
         try {

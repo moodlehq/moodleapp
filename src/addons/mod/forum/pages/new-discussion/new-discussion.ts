@@ -52,6 +52,7 @@ import {
     ADDON_MOD_FORUM_NEW_DISCUSSION_EVENT,
 } from '../../constants';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import { CoreLoadings } from '@services/loadings';
 
 type NewDiscussionData = {
     subject: string;
@@ -549,7 +550,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         // Add some HTML to the message if needed.
         message = CoreTextUtils.formatHtmlLines(message);

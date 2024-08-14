@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreLoadings } from '@services/loadings';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -29,7 +29,7 @@ export class AddonModUrlHelperProvider {
      * @param url The URL to go to.
      */
     async open(url: string): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             await CoreSites.visitLink(url, {

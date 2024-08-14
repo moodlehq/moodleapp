@@ -44,6 +44,7 @@ import {
     AddonModWorkshopAction,
     AddonModWorkshopSubmissionType,
 } from '@addons/mod/workshop/constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays the workshop edit submission.
@@ -353,7 +354,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
 
         let saveOffline = false;
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
         const submissionId = this.submission?.id;
 
         // Add some HTML to the message if needed.

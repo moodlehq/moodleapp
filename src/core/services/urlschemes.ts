@@ -30,6 +30,7 @@ import { CoreDomUtils } from './utils/dom';
 import { CoreTextErrorObject, CoreTextUtils } from './utils/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from './utils/utils';
+import { CoreLoadings } from './loadings';
 
 /*
  * Provider to handle custom URL schemes.
@@ -110,7 +111,7 @@ export class CoreCustomURLSchemesProvider {
         // Some sites add a # at the end of the URL. If it's there, remove it.
         url = url.replace(/\/?(#.*)?\/?$/, '');
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
         let data: CoreCustomURLSchemesParams;
 
         // Get the data from the URL.

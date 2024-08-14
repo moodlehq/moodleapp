@@ -18,7 +18,6 @@ import { ActivatedRoute, ActivatedRouteSnapshot, Data, NavigationEnd, Params, Ur
 import { NavigationOptions } from '@ionic/angular/common/providers/nav-controller';
 
 import { CoreConstants } from '@/core/constants';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMainMenu } from '@features/mainmenu/services/mainmenu';
 import { CoreObject } from '@singletons/object';
 import { CoreSites } from '@services/sites';
@@ -33,6 +32,7 @@ import { CorePlatform } from '@services/platform';
 import { filter } from 'rxjs/operators';
 import { CorePromisedValue } from '@classes/promised-value';
 import { BehaviorSubject } from 'rxjs';
+import { CoreLoadings } from './loadings';
 
 /**
  * Redirect payload.
@@ -232,7 +232,7 @@ export class CoreNavigatorService {
 
         // If we are not logged into the site, load the site.
         if (!CoreSites.isLoggedIn()) {
-            const modal = await CoreDomUtils.showModalLoading();
+            const modal = await CoreLoadings.show();
 
             try {
                 const loggedIn = await CoreSites.loadSite(siteId, {

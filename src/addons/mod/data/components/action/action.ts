@@ -26,8 +26,8 @@ import {
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
 import { AddonModDataOffline } from '../../services/data-offline';
-import { CoreDomUtils } from '@services/utils/dom';
-import { AddonModDataActionsMenuComponent, AddonModDataActionsMenuItem } from '../actionsmenu/actionsmenu';
+import { CorePopovers } from '@services/popovers';
+import { AddonModDataActionsMenuItem } from '../actionsmenu/actionsmenu';
 import {
     ADDON_MOD_DATA_ENTRY_CHANGED,
     ADDON_MOD_DATA_PAGE_NAME,
@@ -202,7 +202,9 @@ export class AddonModDataActionComponent implements OnInit {
             });
         }
 
-        await CoreDomUtils.openPopoverWithoutResult({
+        const { AddonModDataActionsMenuComponent } = await import('../actionsmenu/actionsmenu');
+
+        await CorePopovers.openWithoutResult({
             component: AddonModDataActionsMenuComponent,
             componentProps: { items },
             id: 'actionsmenu-popover',

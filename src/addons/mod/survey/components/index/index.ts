@@ -38,6 +38,7 @@ import {
 } from '../../services/survey-sync';
 import { CoreUtils } from '@services/utils/utils';
 import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT } from '../../constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Component that displays a survey.
@@ -197,7 +198,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
             await CoreDomUtils.showConfirm(Translate.instant('core.areyousure'));
 
             const answers: AddonModSurveySubmitAnswerData[] = [];
-            modal = await CoreDomUtils.showModalLoading('core.sending', true);
+            modal = await CoreLoadings.show('core.sending', true);
 
             for (const x in this.answers) {
                 answers.push({

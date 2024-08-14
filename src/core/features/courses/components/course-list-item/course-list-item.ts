@@ -25,10 +25,11 @@ import { CoreColors } from '@singletons/colors';
 import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourseListItem, CoreCourses, CoreCoursesProvider } from '../../services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
-import { CoreCoursesCourseOptionsMenuComponent } from '../course-options-menu/course-options-menu';
 import { CoreEnrolHelper } from '@features/enrol/services/enrol-helper';
 import { CoreDownloadStatusTranslatable } from '@components/download-refresh/download-refresh';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CorePopovers } from '@services/popovers';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * This directive is meant to display an item for a list of courses.
@@ -275,7 +276,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             await CoreCourseHelper.deleteCourseFiles(this.course.id);
@@ -297,7 +298,9 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
 
         this.initPrefetchCourse(true);
 
-        const popoverData = await CoreDomUtils.openPopover<string>({
+        const { CoreCoursesCourseOptionsMenuComponent } = await import('../course-options-menu/course-options-menu');
+
+        const popoverData = await CorePopovers.open<string>({
             component: CoreCoursesCourseOptionsMenuComponent,
             componentProps: {
                 course: this.course,

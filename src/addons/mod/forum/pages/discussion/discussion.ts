@@ -60,6 +60,7 @@ import {
 } from '../../constants';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreToasts } from '@services/toasts';
+import { CoreLoadings } from '@services/loadings';
 
 type SortType = 'flat-newest' | 'flat-oldest' | 'nested';
 
@@ -717,7 +718,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             const response = await AddonModForum.setLockState(this.forumId, this.discussionId, locked);
@@ -752,7 +753,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             await AddonModForum.setPinState(this.discussionId, pinned);
@@ -788,7 +789,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             await AddonModForum.toggleFavouriteState(this.discussionId, starred);

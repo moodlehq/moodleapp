@@ -20,6 +20,8 @@ import { CoreEvents } from '@singletons/events';
 import { AddonModForum, AddonModForumDiscussion } from '../../services/forum';
 import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT } from '../../constants';
 import { CoreToasts } from '@services/toasts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * This component is meant to display a popover with the discussion options.
@@ -27,6 +29,10 @@ import { CoreToasts } from '@services/toasts';
 @Component({
     selector: 'addon-forum-discussion-options-menu',
     templateUrl: 'discussion-options-menu.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
 
@@ -62,7 +68,7 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
      * @param locked True to lock the discussion, false to unlock.
      */
     async setLockState(locked: boolean): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             const response = await AddonModForum.setLockState(this.forumId, this.discussion.discussion, locked);
@@ -93,7 +99,7 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
      * @param pinned True to pin the discussion, false to unpin it.
      */
     async setPinState(pinned: boolean): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             await AddonModForum.setPinState(this.discussion.discussion, pinned);
@@ -125,7 +131,7 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
      * @param starred True to star the discussion, false to unstar it.
      */
     async toggleFavouriteState(starred: boolean): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             await AddonModForum.toggleFavouriteState(this.discussion.discussion, starred);

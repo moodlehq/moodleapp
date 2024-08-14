@@ -43,6 +43,7 @@ import {
     AddonModWorkshopOverallFeedbackMode,
 } from '@addons/mod/workshop/constants';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Component that displays workshop assessment strategy form.
@@ -302,7 +303,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
         let saveOffline = false;
         let allowOffline = !files.length;
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         this.data.fieldErrors = {};
 

@@ -43,6 +43,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseAccess } from '@features/course/services/course-options-delegate';
+import { CoreLoadings } from '@services/loadings';
 
 export const GRADES_PAGE_NAME = 'grades';
 export const GRADES_PARTICIPANTS_PAGE_NAME = 'participant-grades';
@@ -441,7 +442,7 @@ export class CoreGradesHelperProvider {
         moduleId?: number,
         siteId?: string,
     ): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         const site = await CoreSites.getSite(siteId);
 

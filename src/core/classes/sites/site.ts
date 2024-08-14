@@ -55,6 +55,7 @@ import { CoreSiteInfo } from './unauthenticated-site';
 import { CoreAuthenticatedSite, CoreAuthenticatedSiteOptionalData, CoreSiteWSPreSets, WSObservable } from './authenticated-site';
 import { firstValueFrom } from 'rxjs';
 import { CorePlatform } from '@services/platform';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Class that represents a site (combination of site + user).
@@ -703,7 +704,7 @@ export class CoreSite extends CoreAuthenticatedSite {
         let modal: CoreIonLoadingElement | undefined;
 
         if (showModal) {
-            modal = await CoreDomUtils.showModalLoading();
+            modal = await CoreLoadings.show();
         }
 
         try {

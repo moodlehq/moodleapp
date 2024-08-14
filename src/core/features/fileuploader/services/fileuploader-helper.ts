@@ -45,6 +45,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 import { Chooser } from '@features/native/plugins';
 import { CoreToasts } from '@services/toasts';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Helper service to upload files.
@@ -75,7 +76,7 @@ export class CoreFileUploaderHelperProvider {
         mimetypes?: string[],
     ): Promise<CoreWSUploadFileResult | FileEntry> {
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         const result = await Chooser.getFileMetadata(mimetypes ? mimetypes.join(',') : undefined);
 
@@ -160,7 +161,7 @@ export class CoreFileUploaderHelperProvider {
     async copyAndUploadFile(file: IFile | File, upload?: boolean, name?: string): Promise<CoreWSUploadFileResult | FileEntry> {
         name = name || file.name;
 
-        const modal = await CoreDomUtils.showModalLoading('core.fileuploader.readingfile', true);
+        const modal = await CoreLoadings.show('core.fileuploader.readingfile', true);
         let fileEntry: FileEntry | undefined;
 
         try {
@@ -821,7 +822,7 @@ export class CoreFileUploaderHelperProvider {
         }
 
         // File isn't too large and user confirmed, let's upload.
-        const modal = await CoreDomUtils.showModalLoading(uploadingStr);
+        const modal = await CoreLoadings.show(uploadingStr);
 
         try {
             return await CoreFileUploader.uploadFile(

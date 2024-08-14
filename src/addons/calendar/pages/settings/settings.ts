@@ -13,12 +13,11 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CorePopovers } from '@services/popovers';
 import {
     CoreReminders,
     CoreRemindersService,
 } from '@features/reminders/services/reminders';
-import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
 
 /**
  * Page that displays the calendar settings.
@@ -51,7 +50,10 @@ export class AddonCalendarSettingsPage implements OnInit {
         e.stopImmediatePropagation();
         e.preventDefault();
 
-        const reminderTime = await CoreDomUtils.openPopover<{timeBefore: number}>({
+        const { CoreRemindersSetReminderMenuComponent } =
+            await import('@features/reminders/components/set-reminder-menu/set-reminder-menu');
+
+        const reminderTime = await CorePopovers.open<{timeBefore: number}>({
             component: CoreRemindersSetReminderMenuComponent,
             componentProps: {
                 initialValue: this.defaultTime,

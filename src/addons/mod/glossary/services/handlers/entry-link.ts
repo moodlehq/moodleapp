@@ -22,6 +22,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModGlossary } from '../glossary';
 import { ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Handler to treat links to glossary entries.
@@ -39,7 +40,7 @@ export class AddonModGlossaryEntryLinkHandlerService extends CoreContentLinksHan
     getActions(siteIds: string[], url: string, params: Record<string, string>): CoreContentLinksAction[] {
         return [{
             action: async (siteId: string) => {
-                const modal = await CoreDomUtils.showModalLoading();
+                const modal = await CoreLoadings.show();
 
                 try {
                     const entryId = params.mode == 'entry' ? Number(params.hook) : Number(params.eid);

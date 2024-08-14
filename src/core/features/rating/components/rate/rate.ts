@@ -27,6 +27,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreToasts, ToastDuration } from '@services/toasts';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Component that displays the user rating select.
@@ -130,7 +131,7 @@ export class CoreRatingRateComponent implements OnChanges, OnDestroy {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             const response = await CoreRating.addRating(

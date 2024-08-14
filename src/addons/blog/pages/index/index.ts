@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
-import { AddonBlogEntryOptionsMenuComponent } from '@addons/blog/components/entry-options-menu';
 import { ADDON_BLOG_ENTRY_UPDATED } from '@addons/blog/constants';
 import { AddonBlog, AddonBlogFilter, AddonBlogPost, AddonBlogProvider } from '@addons/blog/services/blog';
 import { Component, OnDestroy, OnInit } from '@angular/core';
@@ -31,6 +30,8 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
+import { CorePopovers } from '@services/popovers';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays the list of blog entries.
@@ -242,7 +243,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
      * @param enabled If true, filter my entries. False otherwise.
      */
     async onlyMyEntriesToggleChanged(enabled: boolean): Promise<void> {
-        const loading = await CoreDomUtils.showModalLoading();
+        const loading = await CoreLoadings.show();
 
         try {
             this.filter.userid = !enabled ? undefined : this.currentUserId;
@@ -307,7 +308,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
      * @param id Entry id.
      */
     async deleteEntry(id: number): Promise<void> {
-        const loading = await CoreDomUtils.showModalLoading();
+        const loading = await CoreLoadings.show();
         try {
             await AddonBlog.deleteEntry({ entryid: id });
             await this.refresh();
@@ -327,7 +328,10 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
         event.preventDefault();
         event.stopPropagation();
 
-        const popoverData = await CoreDomUtils.openPopover<string>({
+        const { AddonBlogEntryOptionsMenuComponent } =
+            await import('@addons/blog/components/entry-options-menu/entry-options-menu');
+
+        const popoverData = await CorePopovers.open<string>({
             component: AddonBlogEntryOptionsMenuComponent,
             event,
         });

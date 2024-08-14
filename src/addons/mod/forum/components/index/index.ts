@@ -41,7 +41,6 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { AddonModForumDiscussionOptionsMenuComponent } from '../discussion-options-menu/discussion-options-menu';
 import { CoreScreen } from '@services/screen';
 import { AddonModForumPrefetchHandler } from '../../services/handlers/prefetch';
 import { CoreRatingProvider } from '@features/rating/services/rating';
@@ -66,6 +65,8 @@ import {
 } from '@addons/mod/forum/constants';
 import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
 import { CoreToasts } from '@services/toasts';
+import { CorePopovers } from '@services/popovers';
+import { CoreLoadings } from '@services/loadings';
 /**
  * Component that displays a forum entry page.
  */
@@ -635,7 +636,10 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         event.preventDefault();
         event.stopPropagation();
 
-        const popoverData = await CoreDomUtils.openPopover<{ action?: string; value: boolean }>({
+        const { AddonModForumDiscussionOptionsMenuComponent } =
+            await import('../discussion-options-menu/discussion-options-menu');
+
+        const popoverData = await CorePopovers.open<{ action?: string; value: boolean }>({
             component: AddonModForumDiscussionOptionsMenuComponent,
             componentProps: {
                 discussion,
@@ -666,7 +670,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * Group has changed.
      */
     async groupChanged(): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             await Promise.all([

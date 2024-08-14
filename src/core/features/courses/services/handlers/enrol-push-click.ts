@@ -17,6 +17,7 @@ import { Params } from '@angular/router';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
+import { CoreLoadings } from '@services/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -51,7 +52,7 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
     async handleClick(notification: CoreCoursesEnrolNotificationData): Promise<void> {
         const courseId = notification.courseid;
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             const result = await CoreCourseHelper.getCourse(courseId, notification.site);

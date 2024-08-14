@@ -57,6 +57,7 @@ import { CoreIcons } from '@singletons/icons';
 import { ContextLevel } from '../constants';
 import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '../transforms/boolean';
+import { CoreViewer } from '@features/viewer/services/viewer';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -294,7 +295,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
                 e.preventDefault();
                 e.stopPropagation();
-                CoreDomUtils.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId);
+                CoreViewer.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId);
             });
 
             img.parentNode?.appendChild(button);

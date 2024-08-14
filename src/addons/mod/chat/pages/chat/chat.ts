@@ -32,6 +32,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/modals';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page that displays a chat session.
@@ -342,7 +343,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
      * @returns Promise resolved when done.
      */
     async reconnect(): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             // Call startPolling would take a while for the first execution, so we'll execute it manually to check if it works now.

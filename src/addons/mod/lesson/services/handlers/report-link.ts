@@ -22,6 +22,7 @@ import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Handler to treat links to lesson report.
@@ -86,7 +87,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
      */
     protected async openReportOverview(moduleId: number, groupId?: number, siteId?: string): Promise<void> {
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             // Get the module object.
@@ -132,7 +133,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
         siteId: string,
     ): Promise<void> {
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             // Get the module object.

@@ -21,6 +21,7 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreSettingsHelper, CoreSiteSpaceUsage } from '@features/settings/services/settings-helper';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
+import { CoreLoadings } from '@services/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -121,7 +122,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
+        const modal = await CoreLoadings.show('core.deleting', true);
         const deletedCourseIds = this.completelyDownloadedCourses.map((course) => course.id);
 
         try {
@@ -160,7 +161,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
+        const modal = await CoreLoadings.show('core.deleting', true);
 
         try {
             await CoreCourseHelper.deleteCourseFiles(course.id);

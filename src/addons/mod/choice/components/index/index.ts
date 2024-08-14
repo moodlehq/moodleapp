@@ -41,6 +41,7 @@ import {
     ADDON_MOD_CHOICE_PUBLISH_ANONYMOUS,
     AddonModChoiceShowResults,
 } from '../../constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Component that displays a choice.
@@ -383,7 +384,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             responses.push(this.selectedOption.id);
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             const online = await AddonModChoice.submitResponse(this.choice.id, this.choice.name, this.courseId, responses);
@@ -421,7 +422,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         try {
             await AddonModChoice.deleteResponses(this.choice.id, this.choice.name, this.courseId);

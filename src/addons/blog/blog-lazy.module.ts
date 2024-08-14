@@ -21,7 +21,6 @@ import { CoreCommentsComponentsModule } from '@features/comments/components/comp
 
 import { CoreTagComponentsModule } from '@features/tag/components/components.module';
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
-import { AddonBlogEntryOptionsMenuComponent } from './components/entry-options-menu';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { ADDON_BLOG_MAINMENU_PAGE_NAME } from './constants';
 import { canLeaveGuard } from '@guards/can-leave';
@@ -62,7 +61,6 @@ import { canLeaveGuard } from '@guards/can-leave';
     ],
     declarations: [
         AddonBlogIndexPage,
-        AddonBlogEntryOptionsMenuComponent,
     ],
     providers: [
         {

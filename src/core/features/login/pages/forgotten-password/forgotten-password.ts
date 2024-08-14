@@ -25,6 +25,7 @@ import { CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from '@classes/
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreSitesFactory } from '@services/sites-factory';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Page to recover a forgotten password.
@@ -90,7 +91,7 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
         const isMail = field === 'email';
 
         try {

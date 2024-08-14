@@ -26,6 +26,7 @@ import {
     AddonModWorkshopSubmissionDataWithOfflineData,
 } from '../../services/workshop-helper';
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Component that displays workshop assessment.
@@ -123,7 +124,7 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
             };
 
             if (!this.submission) {
-                const modal = await CoreDomUtils.showModalLoading();
+                const modal = await CoreLoadings.show();
 
                 try {
                     params.submission = await AddonModWorkshopHelper.getSubmissionById(

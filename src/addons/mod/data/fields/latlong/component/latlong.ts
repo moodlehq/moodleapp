@@ -19,6 +19,7 @@ import { FormBuilder } from '@angular/forms';
 import { SafeUrl } from '@angular/platform-browser';
 import { CoreAnyError } from '@classes/errors/error';
 import { CoreGeolocation, CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
+import { CoreLoadings } from '@services/loadings';
 import { CorePlatform } from '@services/platform';
 import { CoreDomUtils } from '@services/utils/dom';
 import { DomSanitizer } from '@singletons';
@@ -118,7 +119,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginBa
     async getLocation(event: Event): Promise<void> {
         event.preventDefault();
 
-        const modal = await CoreDomUtils.showModalLoading('addon.mod_data.gettinglocation', true);
+        const modal = await CoreLoadings.show('addon.mod_data.gettinglocation', true);
 
         try {
             const coordinates = await CoreGeolocation.getCoordinates();

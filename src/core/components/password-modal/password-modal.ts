@@ -17,7 +17,7 @@ import { Component, ViewChild, ElementRef, Input } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Modal that asks the password.
@@ -82,7 +82,7 @@ export class CorePasswordModalComponent {
             return response;
         }
 
-        const modal = await CoreDomUtils.showModalLoading('core.loading', true);
+        const modal = await CoreLoadings.show('core.loading', true);
         try {
             return await this.validator(password);
         } catch (error) {

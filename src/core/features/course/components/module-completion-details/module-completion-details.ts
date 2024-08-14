@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input, OnInit } from '@angular/core';
 
 import {
@@ -28,7 +29,11 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'core-course-module-completion-details',
     templateUrl: 'module-completion-details.html',
-    styleUrls: ['module-completion-details.scss'],
+    styleUrl: 'module-completion-details.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCourseModuleCompletionDetailsComponent implements OnInit {
 

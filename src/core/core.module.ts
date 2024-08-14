@@ -47,6 +47,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreMimetypeUtilsProvider } = await import('@services/utils/mimetype');
     const { CoreNavigatorService } = await import('@services/navigator');
     const { CorePluginFileDelegateService } = await import('@services/plugin-file-delegate');
+    const { CorePopoversService } = await import('@services/popovers');
     const { CoreScreenService } = await import('@services/screen');
     const { CoreSitesProvider } = await import('@services/sites');
     const { CoreSyncProvider } = await import('@services/sync');
@@ -57,6 +58,8 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreUtilsProvider } = await import('@services/utils/utils');
     const { CoreWSProvider } = await import('@services/ws');
     const { CorePlatformService } = await import('@services/platform');
+    const { CoreQRScanService } = await import('@services/qrscan');
+    const { CoreLoadingsService } = await import('@services/loadings');
 
     return [
         CoreAppProvider,
@@ -73,11 +76,14 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
         CoreGroupsProvider,
         CoreIframeUtilsProvider,
         CoreLangProvider,
+        CoreLoadingsService,
         CoreLocalNotificationsProvider,
         CoreMimetypeUtilsProvider,
         CoreNavigatorService,
         CorePluginFileDelegateService,
+        CorePopoversService,
         CorePlatformService,
+        CoreQRScanService,
         CoreScreenService,
         CoreSitesProvider,
         CoreSyncProvider,

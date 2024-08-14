@@ -23,6 +23,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModLesson } from '../lesson';
 import { ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Handler to treat links to lesson grade.
@@ -55,7 +56,7 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
         const moduleId = Number(params.id);
         const userId = Number(params.userid) || 0;
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreLoadings.show();
 
         try {
             const module = await CoreCourse.getModuleBasicInfo(

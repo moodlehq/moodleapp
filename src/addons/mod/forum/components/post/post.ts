@@ -45,7 +45,6 @@ import { CoreTextUtils } from '@services/utils/text';
 import { AddonModForumHelper } from '../../services/forum-helper';
 import { AddonModForumOffline } from '../../services/forum-offline';
 import { CoreUtils } from '@services/utils/utils';
-import { AddonModForumPostOptionsMenuComponent } from '../post-options-menu/post-options-menu';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreForms } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
@@ -55,6 +54,8 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, ADDON_MOD_FORUM_COMPONENT } from '../../constants';
 import { CoreToasts } from '@services/toasts';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CorePopovers } from '@services/popovers';
+import { CoreLoadings } from '@services/loadings';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -150,7 +151,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         try {
             await CoreDomUtils.showDeleteConfirm('addon.mod_forum.deletesure');
 
-            const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
+            const modal = await CoreLoadings.show('core.deleting', true);
 
             try {
                 const response = await AddonModForum.deletePost(this.post.id);
@@ -233,7 +234,10 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      * @param event Click Event.
      */
     async showOptionsMenu(event: Event): Promise<void> {
-        const popoverData = await CoreDomUtils.openPopover<{ action?: string }>({
+        const { AddonModForumPostOptionsMenuComponent } =
+            await import('../post-options-menu/post-options-menu');
+
+        const popoverData = await CorePopovers.open<{ action?: string }>({
             component: AddonModForumPostOptionsMenuComponent,
             componentProps: {
                 post: this.post,
@@ -363,7 +367,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         const replyingTo = this.formData.replyingTo!;
         const files = this.formData.files || [];
         const isEditOnline = this.formData.id && this.formData.id > 0;
-        const modal = await CoreDomUtils.showModalLoading('core.sending', true);
+        const modal = await CoreLoadings.show('core.sending', true);
 
         // Add some HTML to the message if needed.
         message = CoreTextUtils.formatHtmlLines(message);
