@@ -17,7 +17,7 @@ import { InAppBrowserObject, InAppBrowserOptions } from '@awesome-cordova-plugin
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
-import { CoreLang } from '@services/lang';
+import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreWS } from '@services/ws';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
@@ -1173,12 +1173,14 @@ export class CoreUtilsProvider {
             }
         }
 
-        CoreAnalytics.logEvent({
-            type: CoreAnalyticsEventType.OPEN_LINK,
-            link: originaUrl,
-        });
-
-        window.open(url, '_system');
+        const site = CoreSites.getCurrentSite();
+        CoreAnalytics.logEvent({ type: CoreAnalyticsEventType.OPEN_LINK, link: originaUrl });
+        window.open(
+            site?.containsUrl(url)
+                ? CoreUrl.addParamsToUrl(url, { lang: await CoreLang.getCurrentLanguage(CoreLangFormat.LMS) })
+                : url,
+            '_system',
+        );
     }
 
     /**
