@@ -20,7 +20,7 @@ import { Md5 } from 'ts-md5';
 import { CoreConfig } from '@services/config';
 import { CoreFile } from '@services/file';
 import { CoreWSExternalWarning } from '@services/ws';
-import { CoreTextUtils, CoreTextErrorObject } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
@@ -54,6 +54,9 @@ import { CoreModals, OpenModalOptions } from '@services/modals';
 import { CorePopovers, OpenPopoverOptions } from '@services/popovers';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/loadings';
+import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
+import { CoreHTMLClasses } from '@singletons/html-classes';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -66,8 +69,6 @@ export class CoreDomUtilsProvider {
     // List of input types that support keyboard.
     protected readonly INPUT_SUPPORT_KEYBOARD: string[] = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number',
         'password', 'search', 'tel', 'text', 'time', 'url', 'week'];
-
-    protected template: HTMLTemplateElement = document.createElement('template'); // A template element to convert HTML to element.
 
     protected matchesFunctionName?: string; // Name of the "matches" function to use when simulating a closest call.
     protected debugDisplay = false; // Whether to display debug messages. Store it in a variable to make it synchronous.
@@ -109,7 +110,7 @@ export class CoreDomUtilsProvider {
         limitedThreshold?: number,
         alwaysConfirm?: boolean,
     ): Promise<void> {
-        const readableSize = CoreTextUtils.bytesToSize(size.size, 2);
+        const readableSize = CoreText.bytesToSize(size.size, 2);
 
         const getAvailableBytes = async (): Promise<number | null> => {
             const availableBytes = await CoreFile.calculateFreeSpace();
@@ -131,7 +132,7 @@ export class CoreDomUtilsProvider {
             if (availableBytes === null) {
                 return '';
             } else {
-                const availableSize = CoreTextUtils.bytesToSize(availableBytes, 2);
+                const availableSize = CoreText.bytesToSize(availableBytes, 2);
 
                 if (CorePlatform.isAndroid() && size.size > availableBytes - CoreConstants.MINIMUM_FREE_SPACE) {
                     throw new CoreError(
@@ -195,12 +196,11 @@ export class CoreDomUtilsProvider {
      *
      * @param html Text to convert.
      * @returns Element.
+     *
+     * @deprecated since 4.5. Use convertTextToHTMLElement directly instead.
      */
     convertToElement(html: string): HTMLElement {
-        // Add a div to hold the content, that's the element that will be returned.
-        this.template.innerHTML = '<div>' + html + '</div>';
-
-        return <HTMLElement> this.template.content.children[0];
+        return convertTextToHTMLElement(html);
     }
 
     /**
@@ -262,24 +262,23 @@ export class CoreDomUtilsProvider {
      * @returns Fixed HTML text.
      */
     fixHtml(html: string): string {
-        this.template.innerHTML = html;
+        return CoreText.processHTML(html, (element) => {
+            // eslint-disable-next-line no-control-regex
+            const attrNameRegExp = /[^\x00-\x20\x7F-\x9F"'>/=]+/;
+            const fixElement = (element: Element): void => {
+                // Remove attributes with an invalid name.
+                Array.from(element.attributes).forEach((attr) => {
+                    if (!attrNameRegExp.test(attr.name)) {
+                        element.removeAttributeNode(attr);
+                    }
+                });
 
-        // eslint-disable-next-line no-control-regex
-        const attrNameRegExp = /[^\x00-\x20\x7F-\x9F"'>/=]+/;
-        const fixElement = (element: Element): void => {
-            // Remove attributes with an invalid name.
-            Array.from(element.attributes).forEach((attr) => {
-                if (!attrNameRegExp.test(attr.name)) {
-                    element.removeAttributeNode(attr);
-                }
-            });
+                Array.from(element.children).forEach(fixElement);
+            };
 
             Array.from(element.children).forEach(fixElement);
-        };
+        });
 
-        Array.from(this.template.content.children).forEach(fixElement);
-
-        return this.template.innerHTML;
     }
 
     /**
@@ -388,7 +387,7 @@ export class CoreDomUtilsProvider {
      * @returns Attribute value.
      */
     getHTMLElementAttribute(html: string, attribute: string): string | null {
-        return this.convertToElement(html).children[0].getAttribute(attribute);
+        return convertTextToHTMLElement(html).children[0].getAttribute(attribute);
     }
 
     /**
@@ -409,7 +408,7 @@ export class CoreDomUtilsProvider {
      * @param error Error object.
      * @returns True if the message error is a network error, false otherwise.
      */
-    protected isNetworkError(message: string, error?: CoreError | CoreTextErrorObject | string): boolean {
+    protected isNetworkError(message: string, error?: CoreError | CoreErrorObject | string): boolean {
         return message == Translate.instant('core.networkerrormsg') ||
             message == Translate.instant('core.fileuploader.errormustbeonlinetoupload') ||
             error instanceof CoreNetworkError;
@@ -423,7 +422,7 @@ export class CoreDomUtilsProvider {
      */
     protected isSiteUnavailableError(message: string): boolean {
         let siteUnavailableMessage = Translate.instant('core.siteunavailablehelp', { site: 'SITEURLPLACEHOLDER' });
-        siteUnavailableMessage = CoreTextUtils.escapeForRegex(siteUnavailableMessage);
+        siteUnavailableMessage = CoreText.escapeForRegex(siteUnavailableMessage);
         siteUnavailableMessage = siteUnavailableMessage.replace('SITEURLPLACEHOLDER', '.*');
 
         return new RegExp(siteUnavailableMessage).test(message);
@@ -436,7 +435,7 @@ export class CoreDomUtilsProvider {
      * @param needsTranslate Whether the error needs to be translated.
      * @returns Error message, null if no error should be displayed.
      */
-    getErrorMessage(error: CoreError | CoreTextErrorObject | string, needsTranslate?: boolean): string | null {
+    getErrorMessage(error: CoreError | CoreErrorObject | string, needsTranslate?: boolean): string | null {
         if (typeof error != 'string' && !error) {
             return null;
         }
@@ -448,11 +447,11 @@ export class CoreDomUtilsProvider {
             if (this.debugDisplay) {
                 // Get the debug info. Escape the HTML so it is displayed as it is in the view.
                 if ('debuginfo' in error && error.debuginfo) {
-                    extraInfo = '<br><br>' + CoreTextUtils.escapeHTML(error.debuginfo, false);
+                    extraInfo = '<br><br>' + CoreText.escapeHTML(error.debuginfo, false);
                 }
                 if ('backtrace' in error && error.backtrace) {
-                    extraInfo += '<br><br>' + CoreTextUtils.replaceNewLines(
-                        CoreTextUtils.escapeHTML(error.backtrace, false),
+                    extraInfo += '<br><br>' + CoreText.replaceNewLines(
+                        CoreText.escapeHTML(error.backtrace, false),
                         '<br>',
                     );
                 }
@@ -467,7 +466,7 @@ export class CoreDomUtilsProvider {
             }
 
             // We received an object instead of a string. Search for common properties.
-            errorMessage = CoreTextUtils.getErrorMessageFromError(error);
+            errorMessage = CoreErrorHelper.getErrorMessageFromError(error);
             CoreErrorLogs.addErrorLog({ message: JSON.stringify(error), type: errorMessage || '', time: new Date().getTime() });
             if (!errorMessage) {
                 // No common properties found, just stringify it.
@@ -484,7 +483,7 @@ export class CoreDomUtilsProvider {
             errorMessage = error;
         }
 
-        let message = CoreTextUtils.decodeHTML(needsTranslate ? Translate.instant(errorMessage) : errorMessage);
+        let message = CoreText.decodeHTML(needsTranslate ? Translate.instant(errorMessage) : errorMessage);
 
         if (extraInfo) {
             message += extraInfo;
@@ -649,7 +648,7 @@ export class CoreDomUtilsProvider {
      * @returns HTML without the element.
      */
     removeElementFromHtml(html: string, selector: string, removeAll?: boolean): string {
-        const element = this.convertToElement(html);
+        const element = convertTextToHTMLElement(html);
 
         if (removeAll) {
             const selected = element.querySelectorAll(selector);
@@ -697,7 +696,7 @@ export class CoreDomUtilsProvider {
         paths: {[url: string]: string},
         anchorFn?: (anchor: HTMLElement, href: string) => void,
     ): string {
-        const element = this.convertToElement(html);
+        const element = convertTextToHTMLElement(html);
 
         // Treat elements with src (img, audio, video, ...).
         const media = Array.from(element.querySelectorAll<HTMLElement>('img, video, audio, source, track, iframe, embed'));
@@ -705,7 +704,7 @@ export class CoreDomUtilsProvider {
             const currentSrc = media.getAttribute('src');
             const newSrc = currentSrc ?
                 paths[CoreUrl.removeUrlParts(
-                    CoreTextUtils.decodeURIComponent(currentSrc),
+                    CoreUrl.decodeURIComponent(currentSrc),
                     [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment],
                 )] :
                 undefined;
@@ -717,7 +716,7 @@ export class CoreDomUtilsProvider {
             // Treat video posters.
             const currentPoster = media.getAttribute('poster');
             if (media.tagName == 'VIDEO' && currentPoster) {
-                const newPoster = paths[CoreTextUtils.decodeURIComponent(currentPoster)];
+                const newPoster = paths[CoreUrl.decodeURIComponent(currentPoster)];
                 if (newPoster !== undefined) {
                     media.setAttribute('poster', newPoster);
                 }
@@ -730,7 +729,7 @@ export class CoreDomUtilsProvider {
             const currentHref = anchor.getAttribute('href');
             const newHref = currentHref ?
                 paths[CoreUrl.removeUrlParts(
-                    CoreTextUtils.decodeURIComponent(currentHref),
+                    CoreUrl.decodeURIComponent(currentHref),
                     [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment],
                 )] :
                 undefined;
@@ -838,7 +837,7 @@ export class CoreDomUtilsProvider {
             ? options.message
             : options.message?.value || '';
 
-        const hasHTMLTags = CoreTextUtils.hasHTMLTags(message);
+        const hasHTMLTags = CoreText.hasHTMLTags(message);
 
         if (hasHTMLTags && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.7')) {
             // Treat multilang.
@@ -1022,7 +1021,7 @@ export class CoreDomUtilsProvider {
      * @returns Promise resolved with the alert modal.
      */
     async showErrorModal(
-        error: CoreError | CoreTextErrorObject | string,
+        error: CoreError | CoreErrorObject | string,
         needsTranslate?: boolean,
         autocloseTime?: number,
     ): Promise<HTMLIonAlertElement | null> {
@@ -1117,7 +1116,7 @@ export class CoreDomUtilsProvider {
         let errorMessage = error || undefined;
 
         if (error && typeof error != 'string') {
-            errorMessage = CoreTextUtils.getErrorMessageFromError(error);
+            errorMessage = CoreErrorHelper.getErrorMessageFromError(error);
         }
 
         return this.showErrorModal(
@@ -1400,7 +1399,7 @@ export class CoreDomUtilsProvider {
      * @returns Same text converted to HTMLCollection.
      */
     toDom(text: string): HTMLCollection {
-        const element = this.convertToElement(text);
+        const element = convertTextToHTMLElement(text);
 
         return element.children;
     }
@@ -1611,18 +1610,22 @@ export class CoreDomUtilsProvider {
      *
      * @param className Class name.
      * @returns Whether the CSS class is set.
+     *
+     * @deprecated since 4.5. Use CoreHTMLClasses.hasModeClass instead.
      */
     hasModeClass(className: string): boolean {
-        return document.documentElement.classList.contains(className);
+        return CoreHTMLClasses.hasModeClass(className);
     }
 
     /**
      * Get active mode CSS classes.
      *
      * @returns Mode classes.
+     *
+     * @deprecated since 4.5. Use CoreHTMLClasses.getModeClasses instead.
      */
     getModeClasses(): string[] {
-        return Array.from(document.documentElement.classList);
+        return CoreHTMLClasses.getModeClasses();
     }
 
     /**
@@ -1630,12 +1633,14 @@ export class CoreDomUtilsProvider {
      *
      * @param className Class name.
      * @param enable Whether to add or remove the class.
+     *
+     * @deprecated since 4.5. Use CoreHTMLClasses.toggleModeClass instead.
      */
     toggleModeClass(
         className: string,
         enable = false,
     ): void {
-        document.documentElement.classList.toggle(className, enable);
+        CoreHTMLClasses.toggleModeClass(className, enable);
     }
 
 }

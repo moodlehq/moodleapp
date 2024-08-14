@@ -19,7 +19,7 @@ import {
     AddonBlockRecentlyAccessedItems,
     AddonBlockRecentlyAccessedItemsItemCalculatedData,
 } from '../../services/recentlyaccesseditems';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreLoadings } from '@services/loadings';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -92,7 +92,7 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
         e.preventDefault();
         e.stopPropagation();
 
-        const url = CoreTextUtils.decodeHTMLEntities(item.viewurl);
+        const url = CoreText.decodeHTMLEntities(item.viewurl);
         const modal = await CoreLoadings.show();
 
         try {

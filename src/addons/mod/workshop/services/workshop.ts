@@ -20,7 +20,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesMenuItem } from '@features/grades/services/grades-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreTextFormat, defaultTextFormat } from '@services/utils/text';
+import { CoreTextFormat, defaultTextFormat } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWS, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';

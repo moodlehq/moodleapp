@@ -19,7 +19,7 @@ import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications
 import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
@@ -522,7 +522,7 @@ export class CoreLocalNotificationsProvider {
         if (!data) {
             return {};
         } else if (typeof data == 'string') {
-            return CoreTextUtils.parseJSON(data, {});
+            return CoreText.parseJSON(data, {});
         } else {
             return data;
         }

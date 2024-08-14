@@ -15,11 +15,12 @@
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
+import { CoreErrorHelper } from '@services/error-helper';
 
 /**
  * Blocked sync error.
@@ -120,7 +121,7 @@ export class CoreSyncBaseProvider<T = void> {
         return Translate.instant('core.warningofflinedatadeleted', {
             component: this.componentTranslate,
             name: name,
-            error: CoreTextUtils.getErrorMessageFromError(error),
+            error: CoreErrorHelper.getErrorMessageFromError(error),
         });
     }
 
@@ -195,7 +196,7 @@ export class CoreSyncBaseProvider<T = void> {
         try {
             const entry = await CoreSync.getSyncRecord(this.component, id, siteId);
 
-            return <string[]> CoreTextUtils.parseJSON(entry.warnings, []);
+            return <string[]> CoreText.parseJSON(entry.warnings, []);
         } catch {
             return [];
         }

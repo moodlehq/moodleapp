@@ -22,7 +22,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { DownloadStatus } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreWSFile } from '@services/ws';
@@ -90,7 +90,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
         this.openButtonLabel = this.defaultIsOpenWithPicker ? 'core.openfile' : 'core.openwith';
 
         if (this.showSize && this.fileSize && this.fileSize >= 0) {
-            this.fileSizeReadable = CoreTextUtils.bytesToSize(this.fileSize, 2);
+            this.fileSizeReadable = CoreText.bytesToSize(this.fileSize, 2);
         }
 
         this.showTime = this.showTime && this.timemodified > 0;

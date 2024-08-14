@@ -20,7 +20,6 @@ import { CoreApp, CoreStoreConfig } from '@services/app';
 import { CoreEvents } from '@singletons/events';
 import { CoreWS } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
@@ -67,6 +66,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { firstValueFrom } from 'rxjs';
 import { CoreHTMLClasses } from '@singletons/html-classes';
 import { CoreSiteErrorDebug } from '@classes/errors/siteerror';
+import { CoreErrorHelper } from './error-helper';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -315,9 +315,9 @@ export class CoreSitesProvider {
                 }
 
                 // Site doesn't exist. Return the error message.
-                if (CoreTextUtils.getErrorMessageFromError(error)) {
+                if (CoreErrorHelper.getErrorMessageFromError(error)) {
                     throw error;
-                } else if (CoreTextUtils.getErrorMessageFromError(secondError)) {
+                } else if (CoreErrorHelper.getErrorMessageFromError(secondError)) {
                     throw secondError;
                 } else {
                     throw new CoreError(Translate.instant('core.sitenotfoundhelp'));
@@ -361,7 +361,7 @@ export class CoreSitesProvider {
                 }
 
                 // App didn't receive a WS response, probably cannot connect. Prioritize first error if it's valid.
-                if (CoreTextUtils.getErrorMessageFromError(error)) {
+                if (CoreErrorHelper.getErrorMessageFromError(error)) {
                     throw error;
                 } else {
                     throw secondError;
@@ -1256,8 +1256,8 @@ export class CoreSitesProvider {
      * @returns Site.
      */
     makeSiteFromSiteListEntry(entry: SiteDBEntry): CoreSite {
-        const info = entry.info ? CoreTextUtils.parseJSON<CoreSiteInfo>(entry.info) : undefined;
-        const config = entry.config ? CoreTextUtils.parseJSON<CoreSiteConfig>(entry.config) : undefined;
+        const info = entry.info ? CoreText.parseJSON<CoreSiteInfo>(entry.info) : undefined;
+        const config = entry.config ? CoreText.parseJSON<CoreSiteConfig>(entry.config) : undefined;
 
         const site = CoreSitesFactory.makeSite(
             entry.id,
@@ -1339,7 +1339,7 @@ export class CoreSitesProvider {
 
         await Promise.all(sites.map(async (site) => {
             if (!ids || ids.indexOf(site.id) > -1) {
-                const siteInfo = site.info ? <CoreSiteInfo> CoreTextUtils.parseJSON(site.info) : undefined;
+                const siteInfo = site.info ? <CoreSiteInfo> CoreText.parseJSON(site.info) : undefined;
                 const siteInstance = CoreSitesFactory.makeSite(site.id, site.siteUrl, site.token, { info: siteInfo });
 
                 const siteName = await siteInstance.getSiteName();
@@ -1377,8 +1377,8 @@ export class CoreSitesProvider {
         // Sort sites by site name, url and then fullname.
         sites.sort((a, b) => {
             // First compare by site name.
-            let textA = CoreTextUtils.cleanTags(a.siteName).toLowerCase().trim();
-            let textB = CoreTextUtils.cleanTags(b.siteName).toLowerCase().trim();
+            let textA = CoreText.cleanTags(a.siteName).toLowerCase().trim();
+            let textB = CoreText.cleanTags(b.siteName).toLowerCase().trim();
 
             let compare = textA.localeCompare(textB);
             if (compare !== 0) {

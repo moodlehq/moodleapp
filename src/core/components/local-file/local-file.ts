@@ -21,7 +21,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
 import { CoreForms } from '@singletons/form';
@@ -78,7 +78,7 @@ export class CoreLocalFileComponent implements OnInit {
         // Get the size and timemodified.
         const metadata = await CoreFile.getMetadata(this.file);
         if (metadata.size >= 0) {
-            this.size = CoreTextUtils.bytesToSize(metadata.size, 2);
+            this.size = CoreText.bytesToSize(metadata.size, 2);
         }
 
         this.timemodified = CoreTimeUtils.userDate(metadata.modificationTime.getTime(), 'core.strftimedatetimeshort');

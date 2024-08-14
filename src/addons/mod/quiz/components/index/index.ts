@@ -22,7 +22,7 @@ import { CoreQuestionBehaviourDelegate } from '@features/question/services/behav
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -192,7 +192,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
         if (warnings?.length) {
             // Show warnings and delete them so they aren't shown again.
-            CoreDomUtils.showErrorModal(CoreTextUtils.buildMessage(warnings));
+            CoreDomUtils.showErrorModal(CoreText.buildMessage(warnings));
 
             await AddonModQuizSync.setSyncWarnings(quiz.id, []);
         }

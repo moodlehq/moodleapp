@@ -24,7 +24,7 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreForms } from '@singletons/form';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModLessonRetakeFinishedInSyncDBRecord } from '../../services/database/lesson';
@@ -550,20 +550,20 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (formattedData.lessonscored) {
             if (formattedData.numofattempts && formattedData.avescore != null) {
-                formattedData.avescore = CoreTextUtils.roundToDecimals(formattedData.avescore, 2);
+                formattedData.avescore = CoreText.roundToDecimals(formattedData.avescore, 2);
             }
             if (formattedData.highscore != null) {
-                formattedData.highscore = CoreTextUtils.roundToDecimals(formattedData.highscore, 2);
+                formattedData.highscore = CoreText.roundToDecimals(formattedData.highscore, 2);
             }
             if (formattedData.lowscore != null) {
-                formattedData.lowscore = CoreTextUtils.roundToDecimals(formattedData.lowscore, 2);
+                formattedData.lowscore = CoreText.roundToDecimals(formattedData.lowscore, 2);
             }
         }
 
         if (formattedData.students) {
             // Get the user data for each student returned.
             await CoreUtils.allPromises(formattedData.students.map(async (student) => {
-                student.bestgrade = CoreTextUtils.roundToDecimals(student.bestgrade, 2);
+                student.bestgrade = CoreText.roundToDecimals(student.bestgrade, 2);
 
                 const user = await CoreUtils.ignoreErrors(CoreUser.getProfile(student.id, this.courseId, true));
                 if (user) {

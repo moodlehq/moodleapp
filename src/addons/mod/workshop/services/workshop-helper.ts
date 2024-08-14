@@ -19,7 +19,7 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFile } from '@services/file';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils, CoreTextFormat } from '@services/utils/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
@@ -564,7 +564,7 @@ export class AddonModWorkshopHelperProvider {
             return '0';
         }
 
-        value = CoreTextUtils.roundToDecimals(max * value / 100, decimals);
+        value = CoreText.roundToDecimals(max * value / 100, decimals);
 
         return CoreUtils.formatFloat(value);
     }

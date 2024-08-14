@@ -19,7 +19,6 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 
-import { CoreTextErrorObject, CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -35,13 +34,14 @@ import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
 import { CoreText } from '@singletons/text';
 import { CoreModals } from '@services/modals';
+import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
 
 /**
  * Result of a resource download.
  */
 export type CoreCourseResourceDownloadResult = {
     failed?: boolean; // Whether the download has failed.
-    error?: string | CoreTextErrorObject; // The error in case it failed.
+    error?: string | CoreErrorObject; // The error in case it failed.
 };
 
 /**
@@ -220,7 +220,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @returns Whether the error is a "module not found" error.
      */
     protected isNotFoundError(error: CoreAnyError): boolean {
-        return CoreTextUtils.getErrorMessageFromError(error) === Translate.instant('core.course.modulenotfound');
+        return CoreErrorHelper.getErrorMessageFromError(error) === Translate.instant('core.course.modulenotfound');
     }
 
     /**
@@ -255,14 +255,14 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @param multiLine Whether to put each message in a different paragraph or in a single line.
      * @returns Error text message.
      */
-    protected getErrorDownloadingSomeFilesMessage(error: string | CoreTextErrorObject, multiLine?: boolean): string {
+    protected getErrorDownloadingSomeFilesMessage(error: string | CoreErrorObject, multiLine?: boolean): string {
         if (multiLine) {
-            return CoreTextUtils.buildSeveralParagraphsMessage([
+            return CoreErrorHelper.buildSeveralParagraphsMessage([
                 Translate.instant('core.errordownloadingsomefiles'),
                 error,
             ]);
         } else {
-            error = CoreTextUtils.getErrorMessageFromError(error) || '';
+            error = CoreErrorHelper.getErrorMessageFromError(error) || '';
 
             return Translate.instant('core.errordownloadingsomefiles') + (error ? ' ' + error : '');
         }
@@ -273,7 +273,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      *
      * @param error The specific error.
      */
-    protected showErrorDownloadingSomeFiles(error: string | CoreTextErrorObject): void {
+    protected showErrorDownloadingSomeFiles(error: string | CoreErrorObject): void {
         CoreDomUtils.showErrorModal(this.getErrorDownloadingSomeFilesMessage(error, true));
     }
 

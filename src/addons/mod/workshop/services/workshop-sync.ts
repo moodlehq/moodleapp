@@ -21,7 +21,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreErrorHelper } from '@services/error-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -373,7 +373,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
             } catch (error) {
                 if (error && CoreUtils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
-                    discardError = CoreTextUtils.getErrorMessageFromError(error);
+                    discardError = CoreErrorHelper.getErrorMessageFromError(error);
                 }
 
                 // Couldn't connect to server, reject.
@@ -472,7 +472,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
         } catch (error) {
             if (error && CoreUtils.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means it cannot be performed. Discard.
-                discardError = CoreTextUtils.getErrorMessageFromError(error);
+                discardError = CoreErrorHelper.getErrorMessageFromError(error);
             } else {
                 // Couldn't connect to server, reject.
                 throw error;
@@ -545,7 +545,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
         } catch (error) {
             if (error && CoreUtils.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means it cannot be performed. Discard.
-                discardError = CoreTextUtils.getErrorMessageFromError(error);
+                discardError = CoreErrorHelper.getErrorMessageFromError(error);
             } else {
                 // Couldn't connect to server, reject.
                 throw error;
@@ -613,7 +613,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
         } catch (error) {
             if (error && CoreUtils.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means it cannot be performed. Discard.
-                discardError = CoreTextUtils.getErrorMessageFromError(error);
+                discardError = CoreErrorHelper.getErrorMessageFromError(error);
             } else {
                 // Couldn't connect to server, reject.
                 throw error;

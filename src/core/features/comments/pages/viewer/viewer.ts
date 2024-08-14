@@ -33,7 +33,7 @@ import { NgZone, Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUser } from '@features/user/services/user';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreError } from '@classes/errors/error';
 import { CoreCommentsOffline } from '@features/comments/services/comments-offline';
 import { CoreCommentsDBRecord } from '@features/comments/services/database/comments';
@@ -274,7 +274,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * @param warnings the warnings
      */
     private showSyncWarnings(warnings: string[]): void {
-        const message = CoreTextUtils.buildMessage(warnings);
+        const message = CoreText.buildMessage(warnings);
         if (message) {
             CoreDomUtils.showAlert(undefined, message);
         }

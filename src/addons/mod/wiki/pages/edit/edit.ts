@@ -21,7 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { Translate } from '@singletons';
@@ -33,6 +33,7 @@ import { AddonModWikiSync } from '../../services/wiki-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_PAGE_CREATED_EVENT, ADDON_MOD_WIKI_RENEW_LOCK_TIME } from '../../constants';
 import { CoreLoadings } from '@services/loadings';
+import { CoreFileHelper } from '@services/file-helper';
 
 /**
  * Page that allows adding or editing a wiki page.
@@ -94,7 +95,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
         this.userId = CoreNavigator.getRouteNumberParam('userId');
 
         const pageTitle = CoreNavigator.getRouteParam<string>('pageTitle');
-        this.originalTitle = pageTitle ? CoreTextUtils.cleanTags(pageTitle.replace(/\+/g, ' '), { singleLine: true }) : '';
+        this.originalTitle = pageTitle ? CoreText.cleanTags(pageTitle.replace(/\+/g, ' '), { singleLine: true }) : '';
 
         this.canEditTitle = !this.originalTitle;
         this.title = this.originalTitle ?
@@ -182,7 +183,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
                 const editContents = await AddonModWiki.getPageForEditing(this.pageId, this.section);
 
                 // Get the original page contents, treating file URLs if needed.
-                const content = CoreTextUtils.replacePluginfileUrls(editContents.content || '', this.subwikiFiles);
+                const content = CoreFileHelper.replacePluginfileUrls(editContents.content || '', this.subwikiFiles);
 
                 this.contentControl.setValue(content);
                 this.originalContent = content;
@@ -365,8 +366,8 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
         const modal = await CoreLoadings.show('core.sending', true);
 
-        text = CoreTextUtils.restorePluginfileUrls(text, this.subwikiFiles);
-        text = CoreTextUtils.formatHtmlLines(text);
+        text = CoreFileHelper.restorePluginfileUrls(text, this.subwikiFiles);
+        text = CoreText.formatHtmlLines(text);
 
         try {
             if (this.editing && this.pageId) {

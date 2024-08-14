@@ -20,7 +20,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -31,6 +31,7 @@ import { CoreUrl } from '@singletons/url';
 import { ContextLevel } from '@/core/constants';
 import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreViewer } from '@features/viewer/services/viewer';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 
 /**
  * Service with some common functions to handle questions.
@@ -131,7 +132,7 @@ export class CoreQuestionHelperProvider {
 
         selector = selector || '.im-controls [type="submit"]';
 
-        const element = CoreDomUtils.convertToElement(question.html);
+        const element = convertTextToHTMLElement(question.html);
 
         // Search the buttons.
         const buttons = <HTMLInputElement[]> Array.from(element.querySelectorAll(selector));
@@ -150,7 +151,7 @@ export class CoreQuestionHelperProvider {
      * @returns Wether the certainty is found.
      */
     extractQbehaviourCBM(question: CoreQuestionQuestion): boolean {
-        const element = CoreDomUtils.convertToElement(question.html);
+        const element = convertTextToHTMLElement(question.html);
 
         const labels = Array.from(element.querySelectorAll('.im-controls .certaintychoices label[for*="certainty"]'));
         question.behaviourCertaintyOptions = [];
@@ -163,7 +164,7 @@ export class CoreQuestionHelperProvider {
                     id: input.id,
                     name: input.name,
                     value: input.value,
-                    text: CoreTextUtils.cleanTags(label.innerHTML),
+                    text: CoreText.cleanTags(label.innerHTML),
                     disabled: input.disabled,
                 });
 
@@ -217,7 +218,7 @@ export class CoreQuestionHelperProvider {
      * @returns Whether the seen input is found.
      */
     extractQbehaviourSeenInput(question: CoreQuestionQuestion): boolean {
-        const element = CoreDomUtils.convertToElement(question.html);
+        const element = convertTextToHTMLElement(question.html);
 
         // Search the "seen" input.
         const seenInput = <HTMLInputElement> element.querySelector('input[type="hidden"][name*=seen]');
@@ -273,7 +274,7 @@ export class CoreQuestionHelperProvider {
      * @param attrName Name of the attribute to store the HTML in.
      */
     protected extractQuestionLastElementNotInContent(question: CoreQuestionQuestion, selector: string, attrName: string): void {
-        const element = CoreDomUtils.convertToElement(question.html);
+        const element = convertTextToHTMLElement(question.html);
         const matches = <HTMLElement[]> Array.from(element.querySelectorAll(selector));
 
         // Get the last element and check it's not in the question contents.
@@ -333,7 +334,7 @@ export class CoreQuestionHelperProvider {
                     initMatch = initMatch.substring(0, initMatch.length - 2);
 
                     // Try to convert it to an object and add it to the question.
-                    question.initObjects = CoreTextUtils.parseJSON(initMatch, null);
+                    question.initObjects = CoreText.parseJSON(initMatch, null);
                 }
             }
 
@@ -344,7 +345,7 @@ export class CoreQuestionHelperProvider {
 
             if (amdMatch) {
                 // Try to convert the arguments to an array and add them to the question.
-                question.amdArgs = CoreTextUtils.parseJSON('[' + amdMatch[1] + ']', null);
+                question.amdArgs = CoreText.parseJSON('[' + amdMatch[1] + ']', null);
             }
         });
     }
@@ -358,7 +359,7 @@ export class CoreQuestionHelperProvider {
      * @returns Object where the keys are the names.
      */
     getAllInputNamesFromHtml(html: string): Record<string, boolean> {
-        const element = CoreDomUtils.convertToElement('<form>' + html + '</form>');
+        const element = convertTextToHTMLElement('<form>' + html + '</form>');
         const form = <HTMLFormElement> element.children[0];
         const answers: Record<string, boolean> = {};
 
@@ -424,7 +425,7 @@ export class CoreQuestionHelperProvider {
      * @returns Attachments.
      */
     getQuestionAttachmentsFromHtml(html: string): CoreWSFile[] {
-        const element = CoreDomUtils.convertToElement(html);
+        const element = convertTextToHTMLElement(html);
 
         // Remove the filemanager (area to attach files to a question).
         CoreDomUtils.removeElement(element, 'div[id*=filemanager]');
@@ -438,7 +439,7 @@ export class CoreQuestionHelperProvider {
 
             // Check anchor is valid.
             if (anchor.href && content) {
-                content = CoreTextUtils.cleanTags(content, { singleLine: true, trim: true });
+                content = CoreText.cleanTags(content, { singleLine: true, trim: true });
                 attachments.push({
                     filename: content,
                     fileurl: anchor.href,
@@ -461,7 +462,7 @@ export class CoreQuestionHelperProvider {
         }
 
         // Search the input holding the sequencecheck.
-        const element = CoreDomUtils.convertToElement(html);
+        const element = convertTextToHTMLElement(html);
         const input = <HTMLInputElement> element.querySelector('input[name*=sequencecheck]');
 
         if (!input || input.name === undefined || input.value === undefined) {
@@ -531,7 +532,7 @@ export class CoreQuestionHelperProvider {
      * @returns Validation error message if present.
      */
     getValidationErrorFromHtml(html: string): string | undefined {
-        const element = CoreDomUtils.convertToElement(html);
+        const element = convertTextToHTMLElement(html);
 
         return CoreDomUtils.getContentsOfElement(element, '.validationerror');
     }
@@ -583,7 +584,7 @@ export class CoreQuestionHelperProvider {
      * @param question Question.
      */
     loadLocalAnswersInHtml(question: CoreQuestionQuestion): void {
-        const element = CoreDomUtils.convertToElement('<form>' + question.html + '</form>');
+        const element = convertTextToHTMLElement('<form>' + question.html + '</form>');
         const form = <HTMLFormElement> element.children[0];
 
         // Search all input elements.
@@ -758,7 +759,7 @@ export class CoreQuestionHelperProvider {
      * @returns Whether the button is found.
      */
     protected searchBehaviourButton(question: CoreQuestionQuestion, htmlProperty: string, selector: string): boolean {
-        const element = CoreDomUtils.convertToElement(question[htmlProperty]);
+        const element = convertTextToHTMLElement(question[htmlProperty]);
 
         const button = element.querySelector<HTMLElement>(selector);
         if (!button) {

@@ -28,7 +28,7 @@ import {
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 
 const assetsPath = 'assets/img/';
@@ -150,7 +150,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             return;
         }
 
-        this.iconUrl.update(value => CoreTextUtils.decodeHTMLEntities(value));
+        this.iconUrl.update(value => CoreText.decodeHTMLEntities(value));
         if (this.brandedClass !== undefined) {
             return;
         }

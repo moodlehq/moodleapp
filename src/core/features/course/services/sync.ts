@@ -19,7 +19,7 @@ import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreSites } from '@services/sites';
 import { CoreNetwork } from '@services/network';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreErrorHelper } from '@services/error-helper';
 import { CoreCourseOffline } from './course-offline';
 import { CoreCourse } from './course';
 import { CoreCourseLogHelper } from './log-helper';
@@ -227,7 +227,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
                     warningcode: 'apperror',
                     message: Translate.instant('core.course.warningofflinemanualcompletiondeleted', {
                         name: courseName || courseId,
-                        error: CoreTextUtils.getErrorMessageFromError(error),
+                        error: CoreErrorHelper.getErrorMessageFromError(error),
                     }),
                 });
             }

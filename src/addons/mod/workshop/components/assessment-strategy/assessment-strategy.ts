@@ -22,7 +22,6 @@ import { CoreFileSession } from '@services/file-session';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -260,7 +259,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
         }
 
         // Compare feedback text.
-        const text = CoreTextUtils.restorePluginfileUrls(this.feedbackText, this.data.assessment?.feedbackcontentfiles || []);
+        const text = CoreFileHelper.restorePluginfileUrls(this.feedbackText, this.data.assessment?.feedbackcontentfiles || []);
         if (this.originalData.text != text) {
             return true;
         }
@@ -334,7 +333,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
                 );
             }
 
-            const text = CoreTextUtils.restorePluginfileUrls(this.feedbackText, this.data.assessment?.feedbackcontentfiles || []);
+            const text = CoreFileHelper.restorePluginfileUrls(this.feedbackText, this.data.assessment?.feedbackcontentfiles || []);
 
             let assessmentData: CoreFormFields<unknown>;
             try {

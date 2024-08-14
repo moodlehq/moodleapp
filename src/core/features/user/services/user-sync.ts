@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreErrorHelper } from '@services/error-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { makeSingleton } from '@singletons';
@@ -91,7 +91,7 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
                 await CoreUser.setUserPreference(preference.name, preference.value, siteId);
             } catch (error) {
                 if (CoreUtils.isWebServiceError(error)) {
-                    const warning = CoreTextUtils.getErrorMessageFromError(error);
+                    const warning = CoreErrorHelper.getErrorMessageFromError(error);
                     if (warning) {
                         warnings.push(warning);
                     }

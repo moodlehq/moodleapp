@@ -17,7 +17,6 @@ import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@an
 import { CoreAnimations } from '@components/animations';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUserWithAvatar } from '@components/user-avatar/user-avatar';
 import { toBoolean } from '@/core/transforms/boolean';
 
@@ -103,7 +102,7 @@ export class CoreMessageComponent implements OnInit {
      * Copy message to clipboard.
      */
     copyMessage(): void {
-        CoreText.copyToClipboard(CoreTextUtils.decodeHTMLEntities(this.text));
+        CoreText.copyToClipboard(CoreText.decodeHTMLEntities(this.text));
     }
 
 }

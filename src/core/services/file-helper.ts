@@ -31,6 +31,8 @@ import { CoreConfig } from './config';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CorePlatform } from './platform';
+import { CorePath } from '@singletons/path';
+import { CoreText } from '@singletons/text';
 
 /**
  * Provider to provide some helper functions regarding files and packages.
@@ -494,6 +496,159 @@ export class CoreFileHelperProvider {
         }
 
         return path.split('\\').pop()?.split('/').pop();
+    }
+
+    /**
+     * Get the pluginfile URL to replace @@PLUGINFILE@@ wildcards.
+     *
+     * @param files Files to extract the URL from. They need to have the URL in a 'url' or 'fileurl' attribute.
+     * @returns Pluginfile URL, undefined if no files found.
+     */
+    getTextPluginfileUrl(files: CoreWSFile[]): string | undefined {
+        if (files?.length) {
+            const url = this.getFileUrl(files[0]);
+
+            // Remove text after last slash (encoded or not).
+            return url?.substring(0, Math.max(url.lastIndexOf('/'), url.lastIndexOf('%2F')));
+        }
+
+        return;
+    }
+
+    /**
+     * Replace draftfile URLs with the equivalent pluginfile URL.
+     *
+     * @param siteUrl URL of the site.
+     * @param text Text to treat, including draftfile URLs.
+     * @param files List of files of the area, using pluginfile URLs.
+     * @returns Treated text and map with the replacements.
+     */
+    replaceDraftfileUrls(
+        siteUrl: string,
+        text: string,
+        files: CoreWSFile[],
+    ): { text: string; replaceMap?: {[url: string]: string} } {
+
+        if (!text || !files || !files.length) {
+            return { text };
+        }
+
+        const draftfileUrl = CorePath.concatenatePaths(siteUrl, 'draftfile.php');
+        const matches = text.match(new RegExp(CoreText.escapeForRegex(draftfileUrl) + '[^\'" ]+', 'ig'));
+
+        if (!matches || !matches.length) {
+            return { text };
+        }
+
+        // Index the pluginfile URLs by file name.
+        const pluginfileMap: {[name: string]: string} = {};
+        files.forEach((file) => {
+            if (!file.filename) {
+                return;
+            }
+            pluginfileMap[file.filename] = CoreFileHelper.getFileUrl(file);
+        });
+
+        // Replace each draftfile with the corresponding pluginfile URL.
+        const replaceMap: {[url: string]: string} = {};
+        matches.forEach((url) => {
+            if (replaceMap[url]) {
+                // URL already treated, same file embedded more than once.
+                return;
+            }
+
+            // Get the filename from the URL.
+            let filename = url.substring(url.lastIndexOf('/') + 1);
+            if (filename.indexOf('?') != -1) {
+                filename = filename.substring(0, filename.indexOf('?'));
+            }
+
+            if (pluginfileMap[filename]) {
+                replaceMap[url] = pluginfileMap[filename];
+                text = text.replace(new RegExp(CoreText.escapeForRegex(url), 'g'), pluginfileMap[filename]);
+            }
+        });
+
+        return {
+            text,
+            replaceMap,
+        };
+    }
+
+    /**
+     * Replace @@PLUGINFILE@@ wildcards with the real URL in a text.
+     *
+     * @param text to treat.
+     * @param files Files to extract the pluginfile URL from. They need to have the URL in a url or fileurl attribute.
+     * @returns Treated text.
+     */
+    replacePluginfileUrls(text: string, files: CoreWSFile[]): string {
+        if (text && typeof text === 'string') {
+            const fileURL = this.getTextPluginfileUrl(files);
+            if (fileURL) {
+                return text.replace(/@@PLUGINFILE@@/g, fileURL);
+            }
+        }
+
+        return text;
+    }
+
+    /**
+     * Restore original draftfile URLs.
+     *
+     * @param siteUrl Site URL.
+     * @param treatedText Treated text with replacements.
+     * @param originalText Original text.
+     * @param files List of files to search and replace.
+     * @returns Treated text.
+     */
+    restoreDraftfileUrls(siteUrl: string, treatedText: string, originalText: string, files: CoreWSFile[]): string {
+        if (!treatedText || !files || !files.length) {
+            return treatedText;
+        }
+
+        const draftfileUrl = CorePath.concatenatePaths(siteUrl, 'draftfile.php');
+        const draftfileUrlRegexPrefix = CoreText.escapeForRegex(draftfileUrl) + '/[^/]+/[^/]+/[^/]+/[^/]+/';
+
+        files.forEach((file) => {
+            if (!file.filename) {
+                return;
+            }
+
+            // Search the draftfile URL in the original text.
+            const matches = originalText.match(
+                new RegExp(draftfileUrlRegexPrefix + CoreText.escapeForRegex(file.filename) + '[^\'" ]*', 'i'),
+            );
+
+            if (!matches || !matches[0]) {
+                return; // Original URL not found, skip.
+            }
+
+            treatedText = treatedText.replace(
+                new RegExp(CoreText.escapeForRegex(CoreFileHelper.getFileUrl(file)), 'g'),
+                matches[0],
+            );
+        });
+
+        return treatedText;
+    }
+
+    /**
+     * Replace pluginfile URLs with @@PLUGINFILE@@ wildcards.
+     *
+     * @param text Text to treat.
+     * @param files Files to extract the pluginfile URL from. They need to have the URL in a url or fileurl attribute.
+     * @returns Treated text.
+     */
+    restorePluginfileUrls(text: string, files: CoreWSFile[]): string {
+        if (text && typeof text == 'string') {
+            const fileURL = this.getTextPluginfileUrl(files);
+            if (fileURL) {
+                return text.replace(new RegExp(CoreText.escapeForRegex(fileURL), 'g'), '@@PLUGINFILE@@');
+            }
+        }
+
+        return text;
     }
 
 }

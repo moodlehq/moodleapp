@@ -21,7 +21,7 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFormFields } from '@singletons/form';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -97,9 +97,9 @@ export class AddonModDataHelperProvider {
 
                         if (offlineContent.subfield) {
                             offlineContents[offlineContent.fieldid][offlineContent.subfield] =
-                                CoreTextUtils.parseJSON(offlineContent.value, '');
+                                CoreText.parseJSON(offlineContent.value, '');
                         } else {
-                            offlineContents[offlineContent.fieldid][''] = CoreTextUtils.parseJSON(offlineContent.value, '');
+                            offlineContents[offlineContent.fieldid][''] = CoreText.parseJSON(offlineContent.value, '');
                         }
                     });
 

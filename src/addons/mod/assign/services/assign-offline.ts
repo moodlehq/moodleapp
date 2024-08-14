@@ -17,7 +17,7 @@ import { CoreError } from '@classes/errors/error';
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton } from '@singletons';
 import { CorePath } from '@singletons/path';
@@ -137,7 +137,7 @@ export class AddonModAssignOfflineProvider {
             assignid: submission.assignid,
             userid: submission.userid,
             courseid: submission.courseid,
-            plugindata: CoreTextUtils.parseJSON<AddonModAssignSavePluginData>(submission.plugindata, {}),
+            plugindata: CoreText.parseJSON<AddonModAssignSavePluginData>(submission.plugindata, {}),
             onlinetimemodified: submission.onlinetimemodified,
             timecreated: submission.timecreated,
             timemodified: submission.timemodified,
@@ -195,8 +195,8 @@ export class AddonModAssignOfflineProvider {
             addattempt: submission.addattempt,
             workflowstate: submission.workflowstate,
             applytoall: submission.applytoall,
-            outcomes: CoreTextUtils.parseJSON<AddonModAssignOutcomes>(submission.outcomes, {}),
-            plugindata: CoreTextUtils.parseJSON<AddonModAssignSavePluginData>(submission.plugindata, {}),
+            outcomes: CoreText.parseJSON<AddonModAssignOutcomes>(submission.outcomes, {}),
+            plugindata: CoreText.parseJSON<AddonModAssignSavePluginData>(submission.plugindata, {}),
             timemodified: submission.timemodified,
         }));
     }

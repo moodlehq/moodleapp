@@ -20,7 +20,6 @@ import { CoreBlockHelper } from '../../services/block-helper';
 import { CoreBlockComponent } from '../block/block';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreDom } from '@singletons/dom';
 import { ContextLevel } from '@/core/constants';
 import { CoreWait } from '@singletons/wait';
@@ -110,7 +109,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
         }
 
         this.blocks = this.blocks.filter(block =>
-            block.name !== 'html' || (block.contents && !CoreTextUtils.htmlIsBlank(block.contents.content)));
+            block.name !== 'html' || (block.contents && !CoreDom.htmlIsBlank(block.contents.content)));
     }
 
     /**

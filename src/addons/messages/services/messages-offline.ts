@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreNetwork } from '@services/network';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import {
     AddonMessagesOfflineConversationMessagesDBRecord,
     AddonMessagesOfflineMessagesDBRecord,
@@ -227,7 +227,7 @@ export class AddonMessagesOfflineProvider {
                 text: message.text,
                 timecreated: message.timecreated,
                 deviceoffline: message.deviceoffline,
-                conversation: message.conversation ? CoreTextUtils.parseJSON(message.conversation, undefined) : undefined,
+                conversation: message.conversation ? CoreText.parseJSON(message.conversation, undefined) : undefined,
                 pending: true,
                 useridfrom: userIdFrom,
             };

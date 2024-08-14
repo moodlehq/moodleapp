@@ -23,7 +23,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/file';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate, Camera, ActionSheetController } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
@@ -140,7 +140,7 @@ export class CoreFileUploaderHelperProvider {
         if (size < 0) {
             return CoreDomUtils.showConfirm(Translate.instant('core.fileuploader.confirmuploadunknownsize'));
         } else if (size >= wifiThreshold || (CoreNetwork.isNetworkAccessLimited() && size >= limitedThreshold)) {
-            const readableSize = CoreTextUtils.bytesToSize(size, 2);
+            const readableSize = CoreText.bytesToSize(size, 2);
 
             return CoreDomUtils.showConfirm(
                 Translate.instant('core.fileuploader.confirmuploadfile', { size: readableSize }),
@@ -247,7 +247,7 @@ export class CoreFileUploaderHelperProvider {
         return new CoreError(Translate.instant('core.fileuploader.maxbytesfile', {
             $a: {
                 file: fileName,
-                size: CoreTextUtils.bytesToSize(maxSize, 2),
+                size: CoreText.bytesToSize(maxSize, 2),
             },
         }));
     }

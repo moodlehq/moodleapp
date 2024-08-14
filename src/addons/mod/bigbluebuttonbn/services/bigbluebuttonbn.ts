@@ -20,7 +20,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -247,7 +247,7 @@ export class AddonModBBBService {
 
         return {
             ...result.tabledata,
-            parsedData: CoreTextUtils.parseJSON(result.tabledata?.data, []),
+            parsedData: CoreText.parseJSON(result.tabledata?.data, []),
         };
     }
 

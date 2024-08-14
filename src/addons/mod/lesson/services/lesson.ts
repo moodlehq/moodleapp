@@ -18,8 +18,8 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -90,7 +90,7 @@ export class AddonModLessonProvider {
         className: string,
     ): string {
         // Add a table row containing the answer.
-        feedback += '<tr><td class="cell c0 lastcol">' + (answerFormat ? answer : CoreTextUtils.cleanTags(answer)) +
+        feedback += '<tr><td class="cell c0 lastcol">' + (answerFormat ? answer : CoreText.cleanTags(answer)) +
                 '</td></tr>';
 
         // If the response exists, add a table row containing the response. If not, add en empty row.
@@ -164,7 +164,7 @@ export class AddonModLessonProvider {
         if (page.answerdata && !this.answerPageIsQuestion(page)) {
             // It isn't a question page, but it can be an end of branch, etc. Check if the first answer has a button.
             if (page.answerdata.answers && page.answerdata.answers[0]) {
-                const element = CoreDomUtils.convertToElement(page.answerdata.answers[0][0]);
+                const element = convertTextToHTMLElement(page.answerdata.answers[0][0]);
 
                 return !!element.querySelector('input[type="button"]');
             }
@@ -301,7 +301,7 @@ export class AddonModLessonProvider {
         }
 
         // Progress calculation as a percent.
-        return CoreTextUtils.roundToDecimals(viewedPagesIds.length / Object.keys(validPages).length, 2) * 100;
+        return CoreText.roundToDecimals(viewedPagesIds.length / Object.keys(validPages).length, 2) * 100;
     }
 
     /**
@@ -482,7 +482,7 @@ export class AddonModLessonProvider {
                 return;
             }
 
-            value = CoreTextUtils.decodeHTML(value);
+            value = CoreText.decodeHTML(value);
             userResponse.push(value);
 
             if (answers[id] !== undefined) {
@@ -747,7 +747,7 @@ export class AddonModLessonProvider {
                 }
             } else {
                 expectedAnswer = expectedAnswer.replace('*', '#####');
-                expectedAnswer = CoreTextUtils.escapeForRegex(expectedAnswer);
+                expectedAnswer = CoreText.escapeForRegex(expectedAnswer);
                 expectedAnswer = expectedAnswer.replace('#####', '.*');
             }
 
@@ -830,7 +830,7 @@ export class AddonModLessonProvider {
         this.checkOtherAnswers(lesson, pageData, result);
 
         result.userresponse = studentAnswer;
-        result.studentanswer = CoreTextUtils.s(studentAnswer); // Clean student answer as it goes to output.
+        result.studentanswer = CoreText.s(studentAnswer); // Clean student answer as it goes to output.
     }
 
     /**
@@ -981,7 +981,7 @@ export class AddonModLessonProvider {
         response.data.forEach((entry) => {
             if (entry.value && typeof entry.value == 'string' && entry.value !== '1') {
                 // It's a JSON encoded object. Try to decode it.
-                entry.value = CoreTextUtils.parseJSON(entry.value);
+                entry.value = CoreText.parseJSON(entry.value);
             }
 
             map[entry.name] = entry;
@@ -1108,7 +1108,7 @@ export class AddonModLessonProvider {
                     }
 
                     if (lesson.grade !== undefined && lesson.grade !== CoreGradeType.NONE) {
-                        entryData.grade = CoreTextUtils.roundToDecimals(gradeInfo.grade * lesson.grade / 100, 1);
+                        entryData.grade = CoreText.roundToDecimals(gradeInfo.grade * lesson.grade / 100, 1);
                         entryData.total = lesson.grade;
                         this.addResultValueEolPage(result, 'yourcurrentgradeisoutof', entryData, true);
                     }
@@ -1904,7 +1904,7 @@ export class AddonModLessonProvider {
 
                         if (lesson.grade !== undefined && lesson.grade !== CoreGradeType.NONE) {
                             this.addMessage(messages, 'addon.mod_lesson.yourcurrentgradeisoutof', { $a: {
-                                grade: CoreTextUtils.roundToDecimals(gradeInfo.grade * lesson.grade / 100, 1),
+                                grade: CoreText.roundToDecimals(gradeInfo.grade * lesson.grade / 100, 1),
                                 total: lesson.grade,
                             } });
                         }
@@ -2920,7 +2920,7 @@ export class AddonModLessonProvider {
         }
 
         if (result.total) { // Not zero.
-            result.grade = CoreTextUtils.roundToDecimals(result.earned * 100 / result.total, 5);
+            result.grade = CoreText.roundToDecimals(result.earned * 100 / result.total, 5);
         }
 
         return result;

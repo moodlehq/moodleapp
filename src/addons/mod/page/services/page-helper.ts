@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreUrl } from '@singletons/url';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreFilepool } from '@services/filepool';
@@ -54,7 +54,7 @@ export class AddonModPageHelperProvider {
                     // Add the folders without the leading slash.
                     key = content.filepath.substring(1) + key;
                 }
-                paths[CoreTextUtils.decodeURIComponent(key)] = url;
+                paths[CoreUrl.decodeURIComponent(key)] = url;
             }
         });
 

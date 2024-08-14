@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreText } from '@singletons/text';
 import { AddonFilterMediaPluginVideoJS } from '@addons/filter/mediaplugin/services/videojs';
 import { Injectable } from '@angular/core';
 
@@ -28,21 +29,17 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
     name = 'AddonFilterMediaPluginHandler';
     filterName = 'mediaplugin';
 
-    protected template = document.createElement('template'); // A template element to convert HTML to element.
-
     /**
      * @inheritdoc
      */
     filter(text: string): string | Promise<string> {
-        this.template.innerHTML = text;
+        return CoreText.processHTML(text, (element) => {
+            const videos = Array.from(element.querySelectorAll('video'));
 
-        const videos = Array.from(this.template.content.querySelectorAll('video'));
-
-        videos.forEach((video) => {
-            AddonFilterMediaPluginVideoJS.treatYoutubeVideos(video);
+            videos.forEach((video) => {
+                AddonFilterMediaPluginVideoJS.treatYoutubeVideos(video);
+            });
         });
-
-        return this.template.innerHTML;
     }
 
     /**

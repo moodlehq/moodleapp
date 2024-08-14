@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { Translate } from '@singletons';
@@ -165,7 +165,7 @@ export class CoreH5PContentValidator {
             text = this.filterXss(text, tags, stylePatterns);
         } else {
             // Filter text to plain text.
-            text = CoreTextUtils.escapeHTML(text, false);
+            text = CoreText.escapeHTML(text, false);
         }
 
         // Check if string is within allowed length.
@@ -271,7 +271,7 @@ export class CoreH5PContentValidator {
                 if (strict && !optional && !options[value]) {
                     delete select[key];
                 } else {
-                    select[key] = CoreTextUtils.escapeHTML(value, false);
+                    select[key] = CoreText.escapeHTML(value, false);
                 }
             }
         } else {
@@ -283,7 +283,7 @@ export class CoreH5PContentValidator {
             if (strict && !optional && !options[select]) {
                 select = (<OptionSemantics> semantics.options![0]).value || '';
             }
-            select = CoreTextUtils.escapeHTML(select, false);
+            select = CoreText.escapeHTML(select, false);
         }
 
         return select;
@@ -363,9 +363,9 @@ export class CoreH5PContentValidator {
         }
 
         // Make sure path and mime does not have any special chars
-        file.path = CoreTextUtils.escapeHTML(file.path, false);
+        file.path = CoreText.escapeHTML(file.path, false);
         if (file.mime) {
-            file.mime = CoreTextUtils.escapeHTML(file.mime, false);
+            file.mime = CoreText.escapeHTML(file.mime, false);
         }
 
         // Remove attributes that should not exist, they may contain JSON escape code.
@@ -386,7 +386,7 @@ export class CoreH5PContentValidator {
         }
 
         if (file.codecs) {
-            file.codecs = CoreTextUtils.escapeHTML(file.codecs, false);
+            file.codecs = CoreText.escapeHTML(file.codecs, false);
         }
 
         if (typeof file.bitrate == 'string') {
@@ -399,7 +399,7 @@ export class CoreH5PContentValidator {
             } else {
                 this.filterParams(file.quality, ['level', 'label']);
                 file.quality.level = Number(file.quality.level);
-                file.quality.label = CoreTextUtils.escapeHTML(file.quality.label, false);
+                file.quality.label = CoreText.escapeHTML(file.quality.label, false);
             }
         }
 
@@ -845,10 +845,10 @@ export class CoreH5PContentValidator {
     filterXssBadProtocol(str: string, decode: boolean = true): string {
         // Get the plain text representation of the attribute value (i.e. its meaning).
         if (decode) {
-            str = CoreTextUtils.decodeHTMLEntities(str);
+            str = CoreText.decodeHTMLEntities(str);
         }
 
-        return CoreTextUtils.escapeHTML(this.stripDangerousProtocols(str), false);
+        return CoreText.escapeHTML(this.stripDangerousProtocols(str), false);
     }
 
     /**

@@ -15,7 +15,7 @@
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input, AfterViewInit, ElementRef } from '@angular/core';
 
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 
 /**
@@ -53,7 +53,7 @@ export class CoreMarkRequiredComponent implements AfterViewInit {
         if (this.coreMarkRequired) {
             // Add the "required" to the aria-label.
             const ariaLabel = this.hostElement.getAttribute('aria-label') ||
-                CoreTextUtils.cleanTags(this.hostElement.innerHTML, { singleLine: true });
+                CoreText.cleanTags(this.hostElement.innerHTML, { singleLine: true });
             if (ariaLabel) {
                 this.hostElement.setAttribute('aria-label', ariaLabel + '. ' + this.requiredLabel);
             }

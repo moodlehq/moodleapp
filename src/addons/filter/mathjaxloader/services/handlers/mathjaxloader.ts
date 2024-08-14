@@ -18,7 +18,7 @@ import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/def
 import { CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEvents } from '@singletons/events';
 import { CoreSite } from '@classes/sites/site';
@@ -189,7 +189,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      * @returns The whole text with the span inserted around the defined substring.
      */
     protected insertSpan(text: string, start: number, end: number): string {
-        return CoreTextUtils.substrReplace(
+        return CoreText.substrReplace(
             text,
             '<span class="nolink">' + text.substring(start, end + 1) + '</span>',
             start,

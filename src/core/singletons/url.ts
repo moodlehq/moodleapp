@@ -17,10 +17,11 @@ import { CorePath } from './path';
 import { CoreText } from './text';
 
 import { CorePlatform } from '@services/platform';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreConstants } from '../constants';
 import { CoreMedia } from './media';
 import { CoreLang, CoreLangFormat } from '@services/lang';
+import { DomSanitizer } from '@singletons';
+import { SafeUrl } from '@angular/platform-browser';
 
 /**
  * Parts contained within a url.
@@ -89,6 +90,23 @@ export class CoreUrl {
     // Avoid creating singleton instances.
     private constructor() {
         // Nothing to do.
+    }
+
+    /**
+     * Given an address as a string, return a URL to open the address in maps.
+     *
+     * @param address The address.
+     * @returns URL to view the address.
+     */
+    static buildAddressURL(address: string): SafeUrl {
+        const parsedUrl = CoreUrl.parse(address);
+        if (parsedUrl?.protocol) {
+            // It's already a URL, don't convert it.
+            return DomSanitizer.bypassSecurityTrustUrl(address);
+        }
+
+        return DomSanitizer.bypassSecurityTrustUrl((CorePlatform.isAndroid() ? 'geo:0,0?q=' : 'http://maps.google.com?q=') +
+                encodeURIComponent(address));
     }
 
     /**
@@ -456,6 +474,38 @@ export class CoreUrl {
     }
 
     /**
+     * Same as Javascript's decodeURI, but if an exception is thrown it will return the original URI.
+     *
+     * @param uri URI to decode.
+     * @returns Decoded URI, or original URI if an exception is thrown.
+     */
+    static decodeURI(uri: string): string {
+        try {
+            return decodeURI(uri);
+        } catch {
+            // Error, use the original URI.
+        }
+
+        return uri;
+    }
+
+    /**
+     * Same as Javascript's decodeURIComponent, but if an exception is thrown it will return the original URI.
+     *
+     * @param uri URI to decode.
+     * @returns Decoded URI, or original URI if an exception is thrown.
+     */
+    static decodeURIComponent(uri: string): string {
+        try {
+            return decodeURIComponent(uri);
+        } catch {
+            // Error, use the original URI.
+        }
+
+        return uri;
+    }
+
+    /**
      * Extracts the parameters from a URL and stores them in an object.
      *
      * @param url URL to treat.
@@ -479,7 +529,7 @@ export class CoreUrl {
         }
 
         urlAndHash[0].replace(regex, (match: string, key: string, value: string): string => {
-            params[key] = value !== undefined ? CoreTextUtils.decodeURIComponent(value) : '';
+            params[key] = value !== undefined ? CoreUrl.decodeURIComponent(value) : '';
 
             if (subParams) {
                 params[key] = params[key].replace(subParamsPlaceholder, subParams);
@@ -525,7 +575,7 @@ export class CoreUrl {
         }
 
         // Check if is a valid URL (contains the pluginfile endpoint) and belongs to the site.
-        if (!CoreUrl.isPluginFileUrl(url) || url.indexOf(CoreTextUtils.addEndingSlash(siteUrl)) !== 0) {
+        if (!CoreUrl.isPluginFileUrl(url) || url.indexOf(CoreText.addEndingSlash(siteUrl)) !== 0) {
             return url;
         }
 
@@ -584,7 +634,7 @@ export class CoreUrl {
         let videoId = '';
         const params: CoreUrlParams = {};
 
-        url = CoreTextUtils.decodeHTML(url);
+        url = CoreText.decodeHTML(url);
 
         // Get the video ID.
         let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
@@ -925,7 +975,7 @@ export class CoreUrl {
         url = url.replace(/&amp;/g, '&');
 
         // It site URL is supplied, check if the URL belongs to the site.
-        if (siteUrl && url.indexOf(CoreTextUtils.addEndingSlash(siteUrl)) !== 0) {
+        if (siteUrl && url.indexOf(CoreText.addEndingSlash(siteUrl)) !== 0) {
             return url;
         }
 

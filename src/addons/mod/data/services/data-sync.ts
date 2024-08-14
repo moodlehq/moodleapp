@@ -25,7 +25,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreErrorHelper } from '@services/error-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -33,6 +33,7 @@ import { AddonModData, AddonModDataData } from './data';
 import { AddonModDataHelper } from './data-helper';
 import { AddonModDataOffline, AddonModDataOfflineAction } from './data-offline';
 import { ADDON_MOD_DATA_AUTO_SYNCED, ADDON_MOD_DATA_COMPONENT, AddonModDataAction } from '../constants';
+import { CoreText } from '@singletons/text';
 
 /**
  * Service to sync databases.
@@ -326,7 +327,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
             } catch (error) {
                 if (error && CoreUtils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
-                    entryResult.discardError = CoreTextUtils.getErrorMessageFromError(error);
+                    entryResult.discardError = CoreErrorHelper.getErrorMessageFromError(error);
                 } else {
                     // Couldn't connect to server, reject.
                     throw error;
@@ -345,7 +346,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
             try {
                 await Promise.all(editAction.fields.map(async (field) => {
                     // Upload Files if asked.
-                    const value = CoreTextUtils.parseJSON<CoreFileUploaderStoreFilesResult | null>(field.value || '', null);
+                    const value = CoreText.parseJSON<CoreFileUploaderStoreFilesResult | null>(field.value || '', null);
                     if (value && (value.online || value.offline)) {
                         let files: CoreFileEntry[] = value.online || [];
 
@@ -384,7 +385,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
             } catch (error) {
                 if (error && CoreUtils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
-                    entryResult.discardError = CoreTextUtils.getErrorMessageFromError(error);
+                    entryResult.discardError = CoreErrorHelper.getErrorMessageFromError(error);
                 } else {
                     // Couldn't connect to server, reject.
                     throw error;
@@ -402,7 +403,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
             } catch (error) {
                 if (error && CoreUtils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
-                    entryResult.discardError = CoreTextUtils.getErrorMessageFromError(error);
+                    entryResult.discardError = CoreErrorHelper.getErrorMessageFromError(error);
                 } else {
                     // Couldn't connect to server, reject.
                     throw error;

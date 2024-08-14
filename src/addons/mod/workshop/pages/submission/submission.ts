@@ -25,7 +25,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
@@ -521,7 +521,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
 
         inputData.grade = Number(inputData.grade) >= 0 ? inputData.grade : '';
         // Add some HTML to the message if needed.
-        inputData.text = CoreTextUtils.formatHtmlLines(inputData.text);
+        inputData.text = CoreText.formatHtmlLines(inputData.text);
 
         // Try to send it to server.
         try {

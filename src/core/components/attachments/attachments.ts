@@ -17,7 +17,7 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFileUploader, CoreFileUploaderTypeList } from '@features/fileuploader/services/fileuploader';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 import { CoreNetwork } from '@services/network';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -74,7 +74,7 @@ export class CoreAttachmentsComponent implements OnInit {
         if (this.maxSize === 0) {
             await this.getMaxSizeOfArea();
         } else if (this.maxSize > 0) {
-            this.maxSizeReadable = CoreTextUtils.bytesToSize(this.maxSize, 2);
+            this.maxSizeReadable = CoreText.bytesToSize(this.maxSize, 2);
         } else if (this.maxSize === -1) {
             this.maxSizeReadable = Translate.instant('core.unlimited');
         } else {
@@ -110,7 +110,7 @@ export class CoreAttachmentsComponent implements OnInit {
 
             if (course?.maxbytes) {
                 this.maxSize = course.maxbytes;
-                this.maxSizeReadable = CoreTextUtils.bytesToSize(this.maxSize, 2);
+                this.maxSizeReadable = CoreText.bytesToSize(this.maxSize, 2);
 
                 return;
             }
@@ -122,7 +122,7 @@ export class CoreAttachmentsComponent implements OnInit {
 
         if (siteInfo?.usermaxuploadfilesize) {
             this.maxSize = siteInfo.usermaxuploadfilesize;
-            this.maxSizeReadable = CoreTextUtils.bytesToSize(this.maxSize, 2);
+            this.maxSizeReadable = CoreText.bytesToSize(this.maxSize, 2);
         } else {
             this.maxSizeReadable = Translate.instant('core.unknown');
         }

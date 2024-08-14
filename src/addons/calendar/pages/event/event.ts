@@ -25,7 +25,7 @@ import { AddonCalendarSync, AddonCalendarSyncEvents, AddonCalendarSyncProvider }
 import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreSites } from '@services/sites';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -45,6 +45,7 @@ import { CoreConfig } from '@services/config';
 import { CoreToasts, ToastDuration } from '@services/toasts';
 import { CorePopovers } from '@services/popovers';
 import { CoreLoadings } from '@services/loadings';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Page that displays a single calendar event.
@@ -288,8 +289,8 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
             if (this.event.location) {
                 // Build a link to open the address in maps.
-                this.event.location = CoreTextUtils.decodeHTML(this.event.location);
-                this.event.encodedLocation = CoreTextUtils.buildAddressURL(this.event.location);
+                this.event.location = CoreText.decodeHTML(this.event.location);
+                this.event.encodedLocation = CoreUrl.buildAddressURL(this.event.location);
             }
 
             // Check if event was deleted in offine.

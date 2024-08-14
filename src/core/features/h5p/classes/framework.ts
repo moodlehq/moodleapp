@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import {
     CoreH5PCore,
@@ -559,7 +559,7 @@ export class CoreH5PFramework {
         };
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const params = CoreTextUtils.parseJSON<any>(contentData.jsoncontent);
+        const params = CoreText.parseJSON<any>(contentData.jsoncontent);
         if (!params.metadata) {
             params.metadata = {};
         }
@@ -695,7 +695,7 @@ export class CoreH5PFramework {
      */
     parseLibAddonData(library: LibraryAddonDBData): CoreH5PLibraryAddonData {
         const parsedLib = <CoreH5PLibraryAddonData> library;
-        parsedLib.addTo = CoreTextUtils.parseJSON<CoreH5PLibraryAddTo | null>(library.addTo, null);
+        parsedLib.addTo = CoreText.parseJSON<CoreH5PLibraryAddTo | null>(library.addTo, null);
 
         return parsedLib;
     }
@@ -708,9 +708,9 @@ export class CoreH5PFramework {
      */
     protected parseLibDBData(library: CoreH5PLibraryDBRecord): CoreH5PLibraryParsedDBRecord {
         return Object.assign(library, {
-            semantics: library.semantics ? CoreTextUtils.parseJSON(library.semantics, null) : null,
-            addto: library.addto ? CoreTextUtils.parseJSON(library.addto, null) : null,
-            metadatasettings: library.metadatasettings ? CoreTextUtils.parseJSON(library.metadatasettings, null) : null,
+            semantics: library.semantics ? CoreText.parseJSON(library.semantics, null) : null,
+            addto: library.addto ? CoreText.parseJSON(library.addto, null) : null,
+            metadatasettings: library.metadatasettings ? CoreText.parseJSON(library.metadatasettings, null) : null,
         });
     }
 
@@ -922,7 +922,7 @@ export class CoreH5PFramework {
         // Add title to 'params' to be able to add it to metadata later.
         if (typeof content.title === 'string') {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const params = CoreTextUtils.parseJSON<any>(content.params || '{}');
+            const params = CoreText.parseJSON<any>(content.params || '{}');
             params.title = content.title;
             content.params = JSON.stringify(params);
         }

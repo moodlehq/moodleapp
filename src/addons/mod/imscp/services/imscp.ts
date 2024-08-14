@@ -21,7 +21,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -48,7 +48,7 @@ export class AddonModImscpProvider {
             return [];
         }
 
-        return CoreTextUtils.parseJSON<AddonModImscpTocItemTree[]>(contents[0].content || '');
+        return CoreText.parseJSON<AddonModImscpTocItemTree[]>(contents[0].content || '');
     }
 
     /**

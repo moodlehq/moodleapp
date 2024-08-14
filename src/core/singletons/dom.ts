@@ -17,6 +17,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver } from '@singletons/events';
 import { CorePlatform } from '@services/platform';
 import { CoreWait } from './wait';
+import { convertTextToHTMLElement } from '../utils/create-html-element';
 
 /**
  * Singleton with helper functions for dom.
@@ -75,6 +76,19 @@ export class CoreDom {
     }
 
     /**
+     * Given some HTML code, return the HTML code inside <body> tags. If there are no body tags, return the whole HTML.
+     *
+     * @param html HTML text.
+     * @returns Body HTML.
+     */
+    static getHTMLBodyContent(html: string): string {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const bodyContent = doc.body.innerHTML;
+
+        return bodyContent ?? html;
+    }
+
+    /**
      * Retrieve the position of a element relative to another element.
      *
      * @param element Element to get the position.
@@ -91,6 +105,22 @@ export class CoreDom {
             x: elementRectangle.x - parentRectangle.x,
             y: elementRectangle.y - parentRectangle.y,
         };
+    }
+
+    /**
+     * Check if HTML content is blank.
+     *
+     * @param content HTML content.
+     * @returns True if the string does not contain actual content: text, images, etc.
+     */
+    static htmlIsBlank(content: string): boolean {
+        if (!content) {
+            return true;
+        }
+
+        const element = convertTextToHTMLElement(content);
+
+        return !CoreDom.elementHasContent(element);
     }
 
     /**

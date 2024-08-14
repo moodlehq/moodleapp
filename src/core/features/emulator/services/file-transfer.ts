@@ -125,7 +125,7 @@ export class FileTransferMock {
 
                 const status = Math.max(xhr.status === 1223 ? 204 : xhr.status, 0);
                 if (status < 200 || status >= 300) {
-                    // Request failed. Try to get the respnse.
+                    // Request failed. Try to get the response.
                     const body = xhr.response ? await this.blobToText(xhr.response) : '';
                     const error = new FileTransferErrorMock(-1, source, target, xhr.status, body, '');
 

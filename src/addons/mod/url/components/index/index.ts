@@ -19,7 +19,7 @@ import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { AddonModUrl, AddonModUrlDisplayOptions, AddonModUrlUrl } from '../../services/url';
 import { AddonModUrlHelper } from '../../services/url-helper';
 import { ADDON_MOD_URL_COMPONENT } from '../../constants';
@@ -90,7 +90,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
             this.dataRetrieved.emit(url);
 
             if (url.displayoptions) {
-                const unserialized = CoreTextUtils.unserialize<AddonModUrlDisplayOptions>(url.displayoptions);
+                const unserialized = CoreText.unserialize<AddonModUrlDisplayOptions>(url.displayoptions);
                 this.displayDescription = unserialized.printintro === undefined || !!unserialized.printintro;
             }
 

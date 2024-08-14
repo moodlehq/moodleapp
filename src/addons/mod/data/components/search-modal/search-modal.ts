@@ -17,7 +17,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreSites } from '@services/sites';
 import { CoreFormFields, CoreForms } from '@singletons/form';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { ModalController } from '@singletons';
 import {
@@ -78,7 +78,7 @@ export class AddonModDataSearchModalComponent implements OnInit {
         this.search.advanced?.forEach((field) => {
             if (field !== undefined) {
                 this.advancedIndexed[field.name] = field.value
-                    ? CoreTextUtils.parseJSON(field.value, '')
+                    ? CoreText.parseJSON(field.value, '')
                     : '';
             }
         });

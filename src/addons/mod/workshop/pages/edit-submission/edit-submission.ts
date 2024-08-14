@@ -24,7 +24,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -45,6 +45,7 @@ import {
     AddonModWorkshopSubmissionType,
 } from '@addons/mod/workshop/constants';
 import { CoreLoadings } from '@services/loadings';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Page that displays the workshop edit submission.
@@ -343,7 +344,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
             throw new CoreError(Translate.instant('addon.mod_workshop.submissionrequiredtitle'));
         }
 
-        const noText = CoreTextUtils.htmlIsBlank(inputData.content);
+        const noText = CoreDom.htmlIsBlank(inputData.content);
         const noFiles = !inputData.attachmentfiles.length;
 
         if ((this.textRequired && noText) || (this.fileRequired && noFiles) || (noText && noFiles)) {
@@ -359,7 +360,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
 
         // Add some HTML to the message if needed.
         if (this.textAvailable) {
-            inputData.content = CoreTextUtils.formatHtmlLines(inputData.content);
+            inputData.content = CoreText.formatHtmlLines(inputData.content);
         }
 
         // Upload attachments first if any.

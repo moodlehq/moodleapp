@@ -18,7 +18,7 @@ import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offlin
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModAssignSubmissionOnlineTextPluginData } from '../services/handler';
 import { ContextLevel } from '@/core/constants';
@@ -102,7 +102,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
 
             // Calculate initial words.
             if (this.wordLimitEnabled) {
-                this.words = CoreTextUtils.countWords(this.text);
+                this.words = CoreText.countWords(this.text);
             }
         } finally {
             this.loaded = true;
@@ -123,7 +123,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
             // Wait before calculating, if the user keeps inputing we won't calculate.
             // This is to prevent slowing down devices, this calculation can be slow if the text is long.
             this.wordCountTimeout = window.setTimeout(() => {
-                this.words = CoreTextUtils.countWords(text);
+                this.words = CoreText.countWords(text);
             }, 1500);
         }
     }

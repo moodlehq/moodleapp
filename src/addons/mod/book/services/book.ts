@@ -22,12 +22,13 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreFilepool } from '@services/filepool';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFile } from '@services/file';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_BOOK_COMPONENT } from '../constants';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Service that provides some features for books.
@@ -177,7 +178,7 @@ export class AddonModBookProvider {
                 key = content.filepath.replace('/' + chapter + '/', '') + content.filename;
             }
 
-            map[chapter].paths[CoreTextUtils.decodeURIComponent(key)] = content.fileurl;
+            map[chapter].paths[CoreUrl.decodeURIComponent(key)] = content.fileurl;
         });
 
         return map;
@@ -224,7 +225,7 @@ export class AddonModBookProvider {
             return [];
         }
 
-        return CoreTextUtils.parseJSON(contents[0].content, []);
+        return CoreText.parseJSON(contents[0].content, []);
     }
 
     /**

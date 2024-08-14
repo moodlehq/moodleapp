@@ -22,12 +22,13 @@ import { CoreQuestionHandler } from '@features/question/services/question-delega
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { CoreFileSession } from '@services/file-session';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
+import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonQtypeEssayComponent } from '../../component/essay';
+import { CoreFileHelper } from '@services/file-helper';
 
 /**
  * Handler to support essay question type.
@@ -89,7 +90,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             };
         }
 
-        const element = CoreDomUtils.convertToElement(question.html);
+        const element = convertTextToHTMLElement(question.html);
 
         return {
             text: !!element.querySelector('textarea[name*=_answer]'),
@@ -115,7 +116,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
      * @inheritdoc
      */
     getPreventSubmitMessage(question: CoreQuestionQuestionParsed): string | undefined {
-        const element = CoreDomUtils.convertToElement(question.html);
+        const element = convertTextToHTMLElement(question.html);
         const uploadFilesSupported = question.responsefileareas !== undefined;
 
         if (!uploadFilesSupported && element.querySelector('div[id*=filemanager]')) {
@@ -177,7 +178,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         }
 
         // Count the number of words in the response string.
-        const count = CoreTextUtils.countWords(answer);
+        const count = CoreText.countWords(answer);
         if (maxWords && count > maxWords) {
             return Translate.instant('addon.qtype_essay.maxwordlimitboundary', { $a: { limit: maxWords, count: count } });
         } else if (count < minWords) {
@@ -292,7 +293,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         siteId?: string,
     ): Promise<void> {
 
-        const element = CoreDomUtils.convertToElement(question.html);
+        const element = convertTextToHTMLElement(question.html);
         const attachmentsInput = <HTMLInputElement> element.querySelector('.attachments input[name*=_attachments]');
 
         // Search the textarea to get its name.
@@ -374,7 +375,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         siteId?: string,
     ): Promise<void> {
 
-        const element = CoreDomUtils.convertToElement(question.html);
+        const element = convertTextToHTMLElement(question.html);
         const attachmentsInput = <HTMLInputElement> element.querySelector('.attachments input[name*=_attachments]');
 
         if (attachmentsInput) {
@@ -386,7 +387,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             return;
         }
 
-        const attachmentsData: CoreFileUploaderStoreFilesResult = CoreTextUtils.parseJSON(
+        const attachmentsData: CoreFileUploaderStoreFilesResult = CoreText.parseJSON(
             <string> answers.attachments_offline,
             {
                 online: [],
@@ -438,7 +439,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             // Restore draftfile URLs.
             const site = await CoreSites.getSite(siteId);
 
-            answers[textarea.name] = CoreTextUtils.restoreDraftfileUrls(
+            answers[textarea.name] = CoreFileHelper.restoreDraftfileUrls(
                 site.getURL(),
                 <string> answers[textarea.name],
                 question.html,
@@ -453,13 +454,13 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             isPlainText = question.parsedSettings.responseformat == 'monospaced' ||
                 question.parsedSettings.responseformat == 'plain';
         } else {
-            const questionEl = CoreDomUtils.convertToElement(question.html);
+            const questionEl = convertTextToHTMLElement(question.html);
             isPlainText = !!questionEl.querySelector('.qtype_essay_monospaced') || !!questionEl.querySelector('.qtype_essay_plain');
         }
 
         if (!isPlainText) {
             // Add some HTML to the text if needed.
-            answers[textarea.name] = CoreTextUtils.formatHtmlLines(<string> answers[textarea.name] || '');
+            answers[textarea.name] = CoreText.formatHtmlLines(<string> answers[textarea.name] || '');
         }
     }
 

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
@@ -338,7 +338,7 @@ export class CoreCourseLogHelperProvider {
      */
     protected async syncLogs(logs: CoreCourseActivityLogDBRecord[], siteId: string): Promise<void> {
         await Promise.all(logs.map(async (log) => {
-            const data = CoreTextUtils.parseJSON<Record<string, unknown>>(log.data || '{}', {});
+            const data = CoreText.parseJSON<Record<string, unknown>>(log.data || '{}', {});
 
             try {
                 await this.logOnline(log.ws, data, siteId);

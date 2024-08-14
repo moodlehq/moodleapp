@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
@@ -239,7 +239,7 @@ export class AddonModWorkshopOfflineProvider {
     protected parseSubmissionRecord(record: AddonModWorkshopSubmissionDBRecord): AddonModWorkshopOfflineSubmission {
         return {
             ...record,
-            attachmentsid: CoreTextUtils.parseJSON(record.attachmentsid),
+            attachmentsid: CoreText.parseJSON(record.attachmentsid),
         };
     }
 
@@ -355,7 +355,7 @@ export class AddonModWorkshopOfflineProvider {
     protected parseAssessmentRecord(record: AddonModWorkshopAssessmentDBRecord): AddonModWorkshopOfflineAssessment {
         return {
             ...record,
-            inputdata: CoreTextUtils.parseJSON(record.inputdata),
+            inputdata: CoreText.parseJSON(record.inputdata),
         };
     }
 
@@ -486,7 +486,7 @@ export class AddonModWorkshopOfflineProvider {
         return {
             ...record,
             published: Boolean(record.published),
-            gradeover: CoreTextUtils.parseJSON(record.gradeover),
+            gradeover: CoreText.parseJSON(record.gradeover),
         };
     }
 
@@ -616,7 +616,7 @@ export class AddonModWorkshopOfflineProvider {
     ): AddonModWorkshopOfflineEvaluateAssessment {
         return {
             ...record,
-            gradinggradeover: CoreTextUtils.parseJSON(record.gradinggradeover),
+            gradinggradeover: CoreText.parseJSON(record.gradinggradeover),
         };
     }
 

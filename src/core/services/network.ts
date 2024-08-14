@@ -17,7 +17,7 @@ import { CorePlatform } from '@services/platform';
 import { Network } from '@awesome-cordova-plugins/network/ngx';
 import { NgZone, makeSingleton } from '@singletons';
 import { Observable, Subject, merge } from 'rxjs';
-import { CoreDomUtils } from './utils/dom';
+import { CoreHTMLClasses } from '@singletons/html-classes';
 
 export enum CoreNetworkConnection {
     UNKNOWN = 'unknown',
@@ -109,24 +109,24 @@ export class CoreNetworkService extends Network {
             NgZone.run(() => {
                 const isOnline = this.isOnline();
 
-                const hadOfflineMessage = CoreDomUtils.hasModeClass('core-offline');
+                const hadOfflineMessage = CoreHTMLClasses.hasModeClass('core-offline');
 
-                CoreDomUtils.toggleModeClass('core-offline', !isOnline);
+                CoreHTMLClasses.toggleModeClass('core-offline', !isOnline);
 
                 if (isOnline && hadOfflineMessage) {
-                    CoreDomUtils.toggleModeClass('core-online', true);
+                    CoreHTMLClasses.toggleModeClass('core-online', true);
 
                     setTimeout(() => {
-                        CoreDomUtils.toggleModeClass('core-online', false);
+                        CoreHTMLClasses.toggleModeClass('core-online', false);
                     }, 3000);
                 } else if (!isOnline) {
-                    CoreDomUtils.toggleModeClass('core-online', false);
+                    CoreHTMLClasses.toggleModeClass('core-online', false);
                 }
             });
         });
 
         const isOnline = this.isOnline();
-        CoreDomUtils.toggleModeClass('core-offline', !isOnline);
+        CoreHTMLClasses.toggleModeClass('core-offline', !isOnline);
     }
 
     /**

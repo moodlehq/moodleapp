@@ -15,7 +15,7 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { AddonModAssign } from '@addons/mod/assign/services/assign';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreFileHelper } from '@services/file-helper';
 import {
     AddonModAssignFeedbackCommentsDraftData,
     AddonModAssignFeedbackCommentsHandler,
@@ -159,7 +159,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
     replacePluginfileUrls(text: string): string {
         const files = this.plugin.fileareas && this.plugin.fileareas[0] && this.plugin.fileareas[0].files;
 
-        return CoreTextUtils.replacePluginfileUrls(text, files || []);
+        return CoreFileHelper.replacePluginfileUrls(text, files || []);
     }
 
 }

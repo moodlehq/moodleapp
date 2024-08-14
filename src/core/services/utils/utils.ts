@@ -20,7 +20,6 @@ import { CoreFile } from '@services/file';
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreWS } from '@services/ws';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton, InAppBrowser, FileOpener, WebIntent, Translate, NgZone } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileEntry } from '@services/file-helper';
@@ -38,6 +37,7 @@ import { CoreArray } from '@singletons/array';
 import { CoreText } from '@singletons/text';
 import { CoreWait, CoreWaitOptions } from '@singletons/wait';
 import { CoreQRScan } from '@services/qrscan';
+import { CoreErrorHelper } from '@services/error-helper';
 
 export type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -65,7 +65,7 @@ export class CoreUtilsProvider {
      * @returns New error message.
      */
     addDataNotDownloadedError(error: Error | string, defaultError?: string): string {
-        const errorMessage = CoreTextUtils.getErrorMessageFromError(error) || defaultError || '';
+        const errorMessage = CoreErrorHelper.getErrorMessageFromError(error) || defaultError || '';
 
         if (this.isWebServiceError(error)) {
             return errorMessage;

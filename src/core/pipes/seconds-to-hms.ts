@@ -14,7 +14,7 @@
 
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreLogger } from '@singletons/logger';
 import { CoreConstants } from '@/core/constants';
 
@@ -63,8 +63,8 @@ export class CoreSecondsToHMSPipe implements PipeTransform {
         seconds -= minutes * CoreConstants.SECONDS_MINUTE;
 
         return showHours
-            ? CoreTextUtils.twoDigits(hours) + ':' + CoreTextUtils.twoDigits(minutes) + ':' + CoreTextUtils.twoDigits(seconds)
-            : CoreTextUtils.twoDigits(minutes) + ':' + CoreTextUtils.twoDigits(seconds);
+            ? CoreText.twoDigits(hours) + ':' + CoreText.twoDigits(minutes) + ':' + CoreText.twoDigits(seconds)
+            : CoreText.twoDigits(minutes) + ':' + CoreText.twoDigits(seconds);
     }
 
 }

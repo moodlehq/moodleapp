@@ -29,7 +29,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CorePath } from '@singletons/path';
 import { AddonModResource, AddonModResourceCustomData } from './resource';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { ADDON_MOD_RESOURCE_COMPONENT } from '../constants';
 import { CoreLoadings } from '@services/loadings';
@@ -235,15 +235,15 @@ export class AddonModResourceHelperProvider {
      */
     protected async getModuleOptions(module: CoreCourseModuleData, courseId: number): Promise<AddonModResourceCustomData> {
         if (module.customdata !== undefined) {
-            const customData: { displayoptions: string } | string = CoreTextUtils.parseJSON(module.customdata);
+            const customData: { displayoptions: string } | string = CoreText.parseJSON(module.customdata);
             const displayOptions = typeof customData === 'object' ? customData.displayoptions : customData;
 
-            return CoreTextUtils.unserialize(displayOptions);
+            return CoreText.unserialize(displayOptions);
         }
 
         // Get the resource data. Legacy version (from 3.5 to 3.6.6)
         const info = await AddonModResource.getResourceData(courseId, module.id);
-        const options: AddonModResourceCustomData = CoreTextUtils.unserialize(info.displayoptions);
+        const options: AddonModResourceCustomData = CoreText.unserialize(info.displayoptions);
 
         if (!module.contents?.[0] || options.filedetails !== undefined) {
             // Contents attribute should be loaded at this point and it's needed to get mainFile.
@@ -303,7 +303,7 @@ export class AddonModResourceHelperProvider {
         const extra: string[] = [];
 
         if (options.showsize && details.size) {
-            extra.push(CoreTextUtils.bytesToSize(details.size, 1));
+            extra.push(CoreText.bytesToSize(details.size, 1));
         }
 
         if (options.showtype) {

@@ -41,7 +41,7 @@ import { Translate } from '@singletons';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { AddonModForumSync } from '../../services/forum-sync';
 import { CoreSync } from '@services/sync';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { AddonModForumHelper } from '../../services/forum-helper';
 import { AddonModForumOffline } from '../../services/forum-offline';
 import { CoreUtils } from '@services/utils/utils';
@@ -370,7 +370,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         const modal = await CoreLoadings.show('core.sending', true);
 
         // Add some HTML to the message if needed.
-        message = CoreTextUtils.formatHtmlLines(message);
+        message = CoreText.formatHtmlLines(message);
 
         // Upload attachments first if any.
         let attachments;

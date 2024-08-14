@@ -14,7 +14,7 @@
 
 import { makeSingleton } from '@singletons';
 import { Injectable } from '@angular/core';
-import { CoreDomUtils } from '@services/utils/dom';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 
 /**
  * Service with helper functions for tags.
@@ -30,7 +30,7 @@ export class CoreTagHelperProvider {
      */
     parseFeedContent(content: string): CoreTagFeedElement[] {
         const items: CoreTagFeedElement[] = [];
-        const element = CoreDomUtils.convertToElement(content);
+        const element = convertTextToHTMLElement(content);
 
         Array.from(element.querySelectorAll('ul.tag_feed > li')).forEach((itemElement) => {
             const item: CoreTagFeedElement = { details: [] };

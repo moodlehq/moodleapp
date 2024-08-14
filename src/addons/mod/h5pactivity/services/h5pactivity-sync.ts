@@ -31,7 +31,7 @@ import {
     AddonModH5PActivityData,
 } from './h5pactivity';
 import { CoreXAPIStateDBRecord, CoreXAPIStatementDBRecord } from '@features/xapi/services/database/xapi';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreErrorHelper } from '@services/error-helper';
 import { CoreXAPIIRI } from '@features/xapi/classes/iri';
 import { CoreXAPIItemAgent } from '@features/xapi/classes/item-agent';
 import { CoreWSError } from '@classes/errors/wserror';
@@ -196,7 +196,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
         } catch (error) {
             if (
                 CoreUtils.isWebServiceError(error) ||
-                CoreTextUtils.getErrorMessageFromError(error) === Translate.instant('core.course.modulenotfound')
+                CoreErrorHelper.getErrorMessageFromError(error) === Translate.instant('core.course.modulenotfound')
             ) {
                 // Activity no longer accessible. Delete the data and finish the sync.
                 await deleteOfflineData();

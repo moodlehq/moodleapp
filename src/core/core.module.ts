@@ -34,6 +34,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreCustomURLSchemesProvider } = await import('@services/urlschemes');
     const { CoreDbProvider } = await import('@services/db');
     const { CoreDomUtilsProvider } = await import('@services/utils/dom');
+    const { CoreErrorHelperService } = await import('@services/error-helper');
     const { CoreToastsService } = await import('@services/toasts');
     const { CoreFileHelperProvider } = await import('@services/file-helper');
     const { CoreFilepoolProvider } = await import('@services/filepool');
@@ -51,6 +52,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreScreenService } = await import('@services/screen');
     const { CoreSitesProvider } = await import('@services/sites');
     const { CoreSyncProvider } = await import('@services/sync');
+    // eslint-disable-next-line deprecation/deprecation
     const { CoreTextUtilsProvider } = await import('@services/utils/text');
     const { CoreTimeUtilsProvider } = await import('@services/utils/time');
     const { CoreUpdateManagerProvider } = await import('@services/update-manager');
@@ -68,6 +70,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
         CoreCustomURLSchemesProvider,
         CoreDbProvider,
         CoreDomUtilsProvider,
+        CoreErrorHelperService,
         CoreFileHelperProvider,
         CoreFilepoolProvider,
         CoreFileProvider,

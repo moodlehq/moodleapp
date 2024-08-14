@@ -27,7 +27,7 @@ import { CoreApp } from './app';
 import { CoreNavigator, CoreRedirectPayload } from './navigator';
 import { CoreSiteCheckResponse, CoreSites } from './sites';
 import { CoreDomUtils } from './utils/dom';
-import { CoreTextErrorObject, CoreTextUtils } from './utils/text';
+import { CoreErrorHelper, CoreErrorObject } from './error-helper';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from './utils/utils';
 import { CoreLoadings } from './loadings';
@@ -102,7 +102,7 @@ export class CoreCustomURLSchemesProvider {
         }
 
         this.lastUrls[url] = Date.now();
-        url = CoreTextUtils.decodeURIComponent(url);
+        url = CoreUrl.decodeURIComponent(url);
 
         // Wait for app to be ready.
         await ApplicationInit.donePromise;
@@ -539,8 +539,8 @@ export class CoreCustomURLSchemesHandleError extends CoreError {
      * @param error The error message or object.
      * @param data Data obtained from the URL (if any).
      */
-    constructor(public error: string | CoreError | CoreTextErrorObject | null, public data?: CoreCustomURLSchemesParams) {
-        super(CoreTextUtils.getErrorMessageFromError(error));
+    constructor(public error: string | CoreError | CoreErrorObject | null, public data?: CoreCustomURLSchemesParams) {
+        super(CoreErrorHelper.getErrorMessageFromError(error));
     }
 
 }

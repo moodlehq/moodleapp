@@ -17,7 +17,7 @@ import { CoreFileHelper } from '@services/file-helper';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreWSFile } from '@services/ws';
 import { CoreIonicColorNames } from '@singletons/colors';
@@ -25,6 +25,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreQuestionBehaviourButton, CoreQuestionHelper, CoreQuestionQuestion } from '../services/question-helper';
 import { ContextLevel } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 
 /**
  * Base class for components to render a question.
@@ -87,7 +88,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 
         this.hostElement.classList.add('core-question-container');
 
-        const questionElement = CoreDomUtils.convertToElement(this.question.html);
+        const questionElement = convertTextToHTMLElement(this.question.html);
 
         // Extract question text.
         this.question.text = CoreDomUtils.getContentsOfElement(questionElement, '.qtext');
@@ -319,10 +320,10 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 
         if (textarea) {
             const input = questionEl.querySelector<HTMLInputElement>('input[type="hidden"][name*=answerformat]');
-            let content = CoreTextUtils.decodeHTML(textarea.innerHTML || '');
+            let content = CoreText.decodeHTML(textarea.innerHTML || '');
 
             if (question.hasDraftFiles && question.responsefileareas) {
-                content = CoreTextUtils.replaceDraftfileUrls(
+                content = CoreFileHelper.replaceDraftfileUrls(
                     CoreSites.getRequiredCurrentSite().getURL(),
                     content,
                     CoreQuestionHelper.getResponseFileAreaFiles(question, 'answer'),
@@ -433,7 +434,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
             return;
         }
 
-        const element = CoreDomUtils.convertToElement(this.question.html);
+        const element = convertTextToHTMLElement(this.question.html);
 
         // Get question content.
         const content = element.querySelector<HTMLElement>(contentSelector);
@@ -590,7 +591,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 
                 const option: AddonModQuizQuestionSelectOption = {
                     value: optionEl.value,
-                    label: CoreTextUtils.decodeHTML(optionEl.innerHTML),
+                    label: CoreText.decodeHTML(optionEl.innerHTML),
                     selected: optionEl.selected,
                 };
 

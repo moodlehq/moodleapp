@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton } from '@singletons';
 import { AddonModFeedbackResponseDBRecord, FEEDBACK_TABLE_NAME } from './database/feedback';
@@ -116,7 +116,7 @@ export class AddonModFeedbackOfflineProvider {
      */
     protected parseResponse(record: AddonModFeedbackResponseDBRecord): AddonModFeedbackOfflineResponse {
         return Object.assign(record, {
-            responses: <Record<string, AddonModFeedbackResponseValue>> CoreTextUtils.parseJSON(record.responses),
+            responses: <Record<string, AddonModFeedbackResponseValue>> CoreText.parseJSON(record.responses),
         });
     }
 

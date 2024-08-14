@@ -22,7 +22,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
@@ -378,7 +378,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
 
         const grade = inputData.grade >= 0 ? String(inputData.grade) : '';
         // Add some HTML to the message if needed.
-        const text = CoreTextUtils.formatHtmlLines(inputData.text);
+        const text = CoreText.formatHtmlLines(inputData.text);
 
         try {
             // Try to send it to server.

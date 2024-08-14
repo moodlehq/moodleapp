@@ -21,7 +21,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFile } from '@services/file';
 import { CorePlatform } from '@services/platform';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
@@ -64,9 +64,9 @@ export class AddonModLtiProvider {
             if (p.name == 'ext_submit') {
                 text += '    <input type="submit"';
             } else {
-                text += '    <input type="hidden" name="' + CoreTextUtils.escapeHTML(p.name) + '"';
+                text += '    <input type="hidden" name="' + CoreText.escapeHTML(p.name) + '"';
             }
-            text += ' value="' + CoreTextUtils.escapeHTML(p.value) + '"/>\n';
+            text += ' value="' + CoreText.escapeHTML(p.value) + '"/>\n';
         });
         text += '</form>\n';
 

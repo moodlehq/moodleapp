@@ -16,7 +16,7 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '@features/user/services/user-profile-field-delegate';
 import { AddonUserProfileFieldTextareaComponent } from '../../component/textarea';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { makeSingleton } from '@singletons';
@@ -60,7 +60,7 @@ export class AddonUserProfileFieldTextareaHandlerService implements CoreUserProf
         if (formValues[name]) {
             let text = <string> formValues[name] || '';
             // Add some HTML to the message in case the user edited with textarea.
-            text = CoreTextUtils.formatHtmlLines(text);
+            text = CoreText.formatHtmlLines(text);
 
             return {
                 type: 'textarea',

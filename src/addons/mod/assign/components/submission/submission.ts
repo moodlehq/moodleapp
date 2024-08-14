@@ -41,7 +41,7 @@ import { CoreMenuItem, CoreUtils } from '@services/utils/utils';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../../services/assign-helper';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreCourse, CoreCourseModuleGradeInfo, CoreCourseModuleGradeOutcome } from '@features/course/services/course';
 import { AddonModAssignOffline } from '../../services/assign-offline';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
@@ -1078,7 +1078,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             if (!grade.outcomeid && !grade.scaleid) {
 
                 // Clean HTML tags, grade can contain an icon.
-                const gradeFormatted = CoreTextUtils.cleanTags(grade.gradeformatted || '');
+                const gradeFormatted = CoreText.cleanTags(grade.gradeformatted || '');
                 // Not using outcomes or scale, get the numeric grade.
                 if (this.grade.scale) {
                     this.grade.gradebookGrade = CoreUtils.formatFloat(
@@ -1099,7 +1099,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 gradeInfo.outcomes?.forEach((outcome) => {
                     if (outcome.id == String(grade.outcomeid)) {
                         // Clean HTML tags, grade can contain an icon.
-                        outcome.selected = CoreTextUtils.cleanTags(grade.gradeformatted || '');
+                        outcome.selected = CoreText.cleanTags(grade.gradeformatted || '');
                         outcome.modified = grade.gradedategraded;
                         if (outcome.options) {
                             outcome.selectedId = CoreGradesHelper.getGradeValueFromLabel(outcome.options, outcome.selected);

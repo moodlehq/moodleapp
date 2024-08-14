@@ -60,7 +60,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreSite } from '@classes/sites/site';
 import { CoreFile } from '@services/file';
 import { CoreUrl } from '@singletons/url';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreNetworkError } from '@classes/errors/network-error';
@@ -1342,7 +1342,7 @@ export class CoreCourseHelperProvider {
 
         // Treat stored size.
         const size = results[0];
-        const sizeReadable = CoreTextUtils.bytesToSize(results[0], 2);
+        const sizeReadable = CoreText.bytesToSize(results[0], 2);
 
         // Treat module status.
         const status = results[1];

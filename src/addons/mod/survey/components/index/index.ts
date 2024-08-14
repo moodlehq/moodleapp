@@ -20,7 +20,7 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { IonContent } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { getPrefetchHandlerInstance } from '../../services/handlers/prefetch';
@@ -156,7 +156,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
 
             if (question.multiArray && !question.multiArray.length && question.parent === 0 && question.type > 0) {
                 // Options shown in a select. Remove all HTML.
-                question.optionsArray = question.optionsArray?.map((option) => CoreTextUtils.cleanTags(option));
+                question.optionsArray = question.optionsArray?.map((option) => CoreText.cleanTags(option));
             }
         });
     }

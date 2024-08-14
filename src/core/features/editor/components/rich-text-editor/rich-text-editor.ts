@@ -45,7 +45,6 @@ import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
 import { ContextLevel } from '@/core/constants';
 import { CoreSwiper } from '@singletons/swiper';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreQRScan } from '@services/qrscan';
@@ -563,7 +562,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             return true;
         }
 
-        this.isEmpty = typeof valueOrEl === 'string' ? CoreTextUtils.htmlIsBlank(valueOrEl) : !CoreDom.elementHasContent(valueOrEl);
+        this.isEmpty = typeof valueOrEl === 'string' ? CoreDom.htmlIsBlank(valueOrEl) : !CoreDom.elementHasContent(valueOrEl);
 
         return this.isEmpty;
     }

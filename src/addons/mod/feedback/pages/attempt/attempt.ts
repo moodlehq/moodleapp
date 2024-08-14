@@ -18,7 +18,7 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreFileHelper } from '@services/file-helper';
 import { AddonModFeedbackAttemptsSource } from '../../classes/feedback-attempts-source';
 import {
     AddonModFeedback,
@@ -140,7 +140,7 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
                 const attemptItem = <AddonModFeedbackAttemptItem> formItem;
 
                 if (item.typ == 'label') {
-                    attemptItem.submittedValue = CoreTextUtils.replacePluginfileUrls(item.presentation, item.itemfiles);
+                    attemptItem.submittedValue = CoreFileHelper.replacePluginfileUrls(item.presentation, item.itemfiles);
                 } else {
                     for (const x in attempt.responses) {
                         if (attempt.responses[x].id == item.id) {

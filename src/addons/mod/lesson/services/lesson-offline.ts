@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreFormFields } from '@singletons/form';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
@@ -454,8 +454,8 @@ export class AddonModLessonOfflineProvider {
     protected parsePageAttempt(attempt: AddonModLessonPageAttemptDBRecord): AddonModLessonPageAttemptRecord {
         return {
             ...attempt,
-            data: attempt.data ? CoreTextUtils.parseJSON(attempt.data) : null,
-            useranswer: attempt.useranswer ? CoreTextUtils.parseJSON(attempt.useranswer) : null,
+            data: attempt.data ? CoreText.parseJSON(attempt.data) : null,
+            useranswer: attempt.useranswer ? CoreText.parseJSON(attempt.useranswer) : null,
         };
     }
 

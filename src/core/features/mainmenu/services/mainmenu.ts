@@ -19,7 +19,7 @@ import { CoreSites } from '@services/sites';
 import { CoreConstants } from '@/core/constants';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from './mainmenu-delegate';
 import { Device, makeSingleton } from '@singletons';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { CoreScreen } from '@services/screen';
 import { CorePlatform } from '@services/platform';
 
@@ -211,7 +211,7 @@ export class CoreMainMenuProvider {
             .filter(item => typeof item.label === 'string' || currentLang in item.label || fallbackLang in item.label)
             .map(item => ({
                 ...item,
-                url: CoreTextUtils.replaceArguments(item.url, replacements, 'uri'),
+                url: CoreText.replaceArguments(item.url, replacements, 'uri'),
                 label: typeof item.label === 'string'
                     ? item.label
                     : item.label[currentLang] ?? item.label[fallbackLang],

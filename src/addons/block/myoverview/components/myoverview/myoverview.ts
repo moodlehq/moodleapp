@@ -29,7 +29,7 @@ import { CoreBlockBaseComponent } from '@features/block/classes/base-block-compo
 import { CoreSite } from '@classes/sites/site';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 import { IonSearchbar } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
@@ -375,7 +375,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.filters.show.custom = config?.displaygroupingcustomfield?.value == '1' && !!config?.customfieldsexport?.value;
 
         this.filters.customFilters = this.filters.show.custom
-            ? CoreTextUtils.parseJSON(config?.customfieldsexport?.value || '[]', [])
+            ? CoreText.parseJSON(config?.customfieldsexport?.value || '[]', [])
             : [];
 
         // Check if any selector is shown and not disabled.

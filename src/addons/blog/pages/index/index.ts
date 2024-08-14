@@ -24,7 +24,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreFileHelper } from '@services/file-helper';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreArray } from '@singletons/array';
@@ -212,7 +212,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
                     entry.contextInstanceId = entry.userid;
                 }
 
-                entry.summary = CoreTextUtils.replacePluginfileUrls(entry.summary, entry.summaryfiles || []);
+                entry.summary = CoreFileHelper.replacePluginfileUrls(entry.summary, entry.summaryfiles || []);
 
                 entry.user = await CoreUtils.ignoreErrors(CoreUser.getProfile(entry.userid, entry.courseid, true));
             });

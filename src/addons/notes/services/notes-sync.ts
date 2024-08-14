@@ -26,7 +26,7 @@ import { AddonNotes, AddonNotesCreateNoteData } from './notes';
 import { AddonNotesOffline } from './notes-offline';
 import { CoreArray } from '@singletons/array';
 import { CoreAnyError } from '@classes/errors/error';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreErrorHelper } from '@services/error-helper';
 
 /**
  * Service to sync notes.
@@ -235,7 +235,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
             result.warnings = errors.map((error) =>
                 Translate.instant('addon.notes.warningnotenotsent', {
                     course: 'fullname' in course ? course.fullname : courseId, // @deprecated since 4.3.
-                    error: CoreTextUtils.getErrorMessageFromError(error),
+                    error: CoreErrorHelper.getErrorMessageFromError(error),
                 }));
         }
 
