@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
+import { CoreCourseBasicData, CoreCourses } from '@features/courses/services/courses';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCoursesLinksHandlerBase } from '@features/courses/services/handlers/base-link-handler';
@@ -66,14 +66,24 @@ export class CoreCoursesSectionLinkHandlerService extends CoreCoursesLinksHandle
      * @param siteId Site id.
      * @returns Course.
      */
-    private async getSectionCourse(sectionId: number | false, siteId: string | false): Promise<CoreEnrolledCourseData | null> {
+    private async getSectionCourse(sectionId: number | false, siteId: string | false): Promise<CoreCourseBasicData | null> {
         if (!siteId || !sectionId) {
             return null;
         }
 
-        // Ideally, we would use a webservice to get this information; but such webservice doesn't exists.
-        // Given that getting all the courses from a user could be very network intensive, all the requests
-        // in this method will only use cache.
+        const site = await CoreSites.getSite(siteId);
+
+        if (site.isVersionGreaterEqualThan('4.5')) {
+            try {
+                return CoreCourses.getCourseByField('sectionid', sectionId, siteId);
+            } catch {
+                // Fallback to searching courses stored in cache.
+            }
+        }
+
+        // In 4.4 and previous versions, the web service does not allow fetching a course by section id.
+        // Given that getting all the courses from a user could be very network intensive, the following
+        // requests will only use cache.
 
         const courses = await CoreUtils.ignoreErrors(
             CoreCourses.getUserCourses(true, siteId, CoreSitesReadingStrategy.ONLY_CACHE),

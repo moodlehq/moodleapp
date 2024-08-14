@@ -413,6 +413,7 @@ export class CoreCoursesProvider {
      *              shortname: course short name.
      *              idnumber: course id number.
      *              category: category id the course belongs to.
+     *              sectionid: section id that belongs to a course, since 4.5.
      * @param value The value to match.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with the first course.
@@ -436,6 +437,7 @@ export class CoreCoursesProvider {
      *              shortname: course short name.
      *              idnumber: course id number.
      *              category: category id the course belongs to.
+     *              sectionid: section id that belongs to a course, since 4.5.
      * @param value The value to match.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with the courses.
@@ -457,6 +459,7 @@ export class CoreCoursesProvider {
      *              shortname: course short name.
      *              idnumber: course id number.
      *              category: category id the course belongs to.
+     *              sectionid: section id that belongs to a course, since 4.5.
      * @param value The value to match.
      * @param options Other options.
      * @returns Observable that returns the courses.
