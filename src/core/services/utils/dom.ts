@@ -55,7 +55,7 @@ import { CorePopovers, OpenPopoverOptions } from '@services/popovers';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/loadings';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
-import { convertTextToHTMLElement, CoreTemplateElement } from '@/core/utils/create-html-element';
+import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreHTMLClasses } from '@singletons/html-classes';
 
 /*
@@ -197,7 +197,7 @@ export class CoreDomUtilsProvider {
      * @param html Text to convert.
      * @returns Element.
      *
-     * @deprecated since 4.5. Use convertToElement directly instead.
+     * @deprecated since 4.5. Use convertTextToHTMLElement directly instead.
      */
     convertToElement(html: string): HTMLElement {
         return convertTextToHTMLElement(html);
@@ -262,24 +262,23 @@ export class CoreDomUtilsProvider {
      * @returns Fixed HTML text.
      */
     fixHtml(html: string): string {
-        CoreTemplateElement.innerHTML = html;
+        return CoreText.processHTML(html, (element) => {
+            // eslint-disable-next-line no-control-regex
+            const attrNameRegExp = /[^\x00-\x20\x7F-\x9F"'>/=]+/;
+            const fixElement = (element: Element): void => {
+                // Remove attributes with an invalid name.
+                Array.from(element.attributes).forEach((attr) => {
+                    if (!attrNameRegExp.test(attr.name)) {
+                        element.removeAttributeNode(attr);
+                    }
+                });
 
-        // eslint-disable-next-line no-control-regex
-        const attrNameRegExp = /[^\x00-\x20\x7F-\x9F"'>/=]+/;
-        const fixElement = (element: Element): void => {
-            // Remove attributes with an invalid name.
-            Array.from(element.attributes).forEach((attr) => {
-                if (!attrNameRegExp.test(attr.name)) {
-                    element.removeAttributeNode(attr);
-                }
-            });
+                Array.from(element.children).forEach(fixElement);
+            };
 
             Array.from(element.children).forEach(fixElement);
-        };
+        });
 
-        Array.from(CoreTemplateElement.content.children).forEach(fixElement);
-
-        return CoreTemplateElement.innerHTML;
     }
 
     /**

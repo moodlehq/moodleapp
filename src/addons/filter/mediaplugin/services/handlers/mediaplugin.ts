@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreTemplateElement } from '@/core/utils/create-html-element';
+import { CoreText } from '@singletons/text';
 import { AddonFilterMediaPluginVideoJS } from '@addons/filter/mediaplugin/services/videojs';
 import { Injectable } from '@angular/core';
 
@@ -33,15 +33,13 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
      * @inheritdoc
      */
     filter(text: string): string | Promise<string> {
-        CoreTemplateElement.innerHTML = text;
+        return CoreText.processHTML(text, (element) => {
+            const videos = Array.from(element.querySelectorAll('video'));
 
-        const videos = Array.from(CoreTemplateElement.content.querySelectorAll('video'));
-
-        videos.forEach((video) => {
-            AddonFilterMediaPluginVideoJS.treatYoutubeVideos(video);
+            videos.forEach((video) => {
+                AddonFilterMediaPluginVideoJS.treatYoutubeVideos(video);
+            });
         });
-
-        return CoreTemplateElement.innerHTML;
     }
 
     /**

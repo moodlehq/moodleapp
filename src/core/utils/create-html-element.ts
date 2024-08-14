@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// A template element to convert HTML to element.
-export const CoreTemplateElement: HTMLTemplateElement = document.createElement('template');
-
 /**
- * Convert some HTML as text into an HTMLElement. This HTML is put inside a div or a body.
+ * Convert some HTML as text into an HTMLElement. This HTML is put inside a div.
  *
  * @param html Text to convert.
  * @returns Element.
  */
 export function convertTextToHTMLElement(html: string): HTMLElement {
-   // Add a div to hold the content, that's the element that will be returned.
-   CoreTemplateElement.innerHTML = '<div>' + html + '</div>';
+    const element = document.createElement('template');
 
-   return <HTMLElement> CoreTemplateElement.content.children[0];
+    // Add a div to hold the content, that's the element that will be returned.
+    element.innerHTML = '<div>' + html + '</div>';
+
+    return <HTMLElement> element.content.children[0];
 }

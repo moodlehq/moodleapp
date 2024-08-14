@@ -17,7 +17,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver } from '@singletons/events';
 import { CorePlatform } from '@services/platform';
 import { CoreWait } from './wait';
-import { CoreTemplateElement } from '../utils/create-html-element';
+import { convertTextToHTMLElement } from '../utils/create-html-element';
 
 /**
  * Singleton with helper functions for dom.
@@ -118,9 +118,9 @@ export class CoreDom {
             return true;
         }
 
-        CoreTemplateElement.innerHTML = content;
+        const element = convertTextToHTMLElement(content);
 
-        return !CoreDom.elementHasContent(CoreTemplateElement.content);
+        return !CoreDom.elementHasContent(element);
     }
 
     /**
