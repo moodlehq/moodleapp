@@ -515,7 +515,32 @@ export class CoreTextUtilsProvider {
             return undefined;
         }
 
-        return error.message || error.error || error.content || error.body;
+        if (error.message || error.error || error.content) {
+            return error.message || error.error || error.content;
+        }
+
+        if (error.body) {
+            return this.getErrorMessageFromHTML(error.body);
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Get the error message from an HTML error page.
+     *
+     * @param body HTML content.
+     * @returns Error message or empty string if not found.
+     */
+    getErrorMessageFromHTML(body: string): string {
+        // THe parser does not throw errors and scripts are not executed.
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(body, 'text/html');
+
+        // Errors are rendered using the "errorbox" and "errormessage" classes since Moodle 2.0.
+        const element = doc.body.querySelector<HTMLElement>('.errorbox .errormessage');
+
+        return element?.innerText.trim() ?? '';
     }
 
     /**

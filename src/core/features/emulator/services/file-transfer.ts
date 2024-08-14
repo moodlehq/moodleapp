@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreFile } from '@services/file';
 
 /**
@@ -117,25 +116,24 @@ export class FileTransferMock {
             };
 
             xhr.onerror = (): void => {
-                const error = new FileTransferErrorMock(-1, source, target, xhr.status, xhr.statusText, '');
+                const error = new FileTransferErrorMock(-1, source, target, xhr.status, '', '');
                 errorCallback(error);
             };
 
             xhr.onload = async (): Promise<void> => {
                 // Finished dowloading the file.
-                let response = xhr.response || xhr.responseText;
 
                 const status = Math.max(xhr.status === 1223 ? 204 : xhr.status, 0);
                 if (status < 200 || status >= 300) {
-                    // Request failed. Try to get the error message.
-                    response = await this.parseResponse(response);
-                    const error = new FileTransferErrorMock(-1, source, target, xhr.status, response || xhr.statusText, '');
+                    // Request failed. Try to get the respnse.
+                    const body = xhr.response ? await this.blobToText(xhr.response) : '';
+                    const error = new FileTransferErrorMock(-1, source, target, xhr.status, body, '');
 
                     return errorCallback(error);
                 }
 
-                if (!response) {
-                    const error = new FileTransferErrorMock(-1, source, target, xhr.status, xhr.statusText, 'No response obtained');
+                if (!xhr.response) {
+                    const error = new FileTransferErrorMock(-1, source, target, xhr.status, '', 'No response obtained');
 
                     return errorCallback(error);
                 }
@@ -143,10 +141,16 @@ export class FileTransferMock {
                 const basePath = CoreFile.getBasePathInstant();
                 target = target.replace(basePath, ''); // Remove basePath from the target.
                 target = target.replace(/%20/g, ' '); // Replace all %20 with spaces.
-                CoreFile.writeFile(target, response)
-                    .then(entry =>
-                        successCallback({ entry: entry as unknown as globalThis.FileEntry, headers: response.headers }))
-                        .catch(error => errorCallback(error));
+
+                try {
+                    const entry = await CoreFile.writeFile(target, xhr.response) ;
+                    successCallback({
+                        entry: entry as unknown as globalThis.FileEntry,
+                        headers: this.getHeadersAsObject(xhr),
+                    });
+                } catch (error) {
+                    errorCallback(error);
+                }
             };
 
             xhr.send();
@@ -212,34 +216,6 @@ export class FileTransferMock {
         const credentials = credentialsPattern.exec(urlString);
 
         return credentials && credentials[1];
-    }
-
-    /**
-     * Parse a response, converting it into text and the into an object if needed.
-     *
-     * @param response The response to parse.
-     * @returns Promise resolved with the parsed response.
-     */
-    protected async parseResponse(response: Blob | ArrayBuffer | string | null): Promise<unknown> {
-        if (!response) {
-            return '';
-
-        }
-
-        let responseText = '';
-
-        if (response instanceof Blob) {
-            responseText = await this.blobToText(response);
-
-        } else if (response instanceof ArrayBuffer) {
-            // Convert the ArrayBuffer into text.
-            responseText = String.fromCharCode.apply(null, new Uint8Array(response));
-
-        } else {
-            responseText = response;
-        }
-
-        return CoreTextUtils.parseJSON(responseText, '');
     }
 
     /**
@@ -336,7 +312,7 @@ export class FileTransferMock {
                 this.errorCallback = errorCallback;
 
                 xhr.onerror = (): void => {
-                    const error = new FileTransferErrorMock(-1, fileUrl, url, xhr.status, xhr.statusText, '');
+                    const error = new FileTransferErrorMock(-1, fileUrl, url, xhr.status, '', '');
                     errorCallback(error);
                 };
 
