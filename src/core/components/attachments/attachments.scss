@@ -1,3 +1,18 @@
-core-loading {
-    --loading-inline-min-height: 60px;
+@use "theme/globals" as *;
+
+:host {
+    core-loading {
+        --loading-inline-min-height: 60px;
+    }
+
+    .core-attachments {
+        @include margin-horizontal(null, var(--mdl-spacing-3));
+
+        &-header {
+            ion-icon {
+                @include margin-horizontal(null, var(--mdl-spacing-3));
+                font-size: var(--mdl-typography-icon-fontSize-sm);
+            }
+        }
+    }
 }
