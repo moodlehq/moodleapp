@@ -73,6 +73,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         '4.2': 2023042400,
         '4.3': 2023100900,
         '4.4': 2024042200,
+        '4.5': 2024081600, // @TODO correct the final release date.
     };
 
     // Possible cache update frequencies.
