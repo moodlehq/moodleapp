@@ -494,18 +494,22 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
             question.input.correctClass = 'core-question-incorrect';
             question.input.correctIcon = 'fas-xmark';
             question.input.correctIconColor = CoreIonicColorNames.DANGER;
+            question.input.correctIconLabel = 'core.question.incorrect';
         } else if (input.classList.contains('correct')) {
             question.input.correctClass = 'core-question-correct';
-            question.input.correctIcon = 'fas-check';
+            question.input.correctIcon = 'fas-check-double';
             question.input.correctIconColor = CoreIonicColorNames.SUCCESS;
+            question.input.correctIconLabel = 'core.question.correct';
         } else if (input.classList.contains('partiallycorrect')) {
             question.input.correctClass = 'core-question-partiallycorrect';
-            question.input.correctIcon = 'fas-square-check';
+            question.input.correctIcon = 'fas-check';
             question.input.correctIconColor = CoreIonicColorNames.WARNING;
+            question.input.correctIconLabel = 'core.question.partiallycorrect';
         } else {
             question.input.correctClass = '';
             question.input.correctIcon = '';
             question.input.correctIconColor = '';
+            question.input.correctIconLabel = '';
         }
 
         if (question.input.isInline) {
@@ -829,6 +833,7 @@ export type AddonModQuizQuestionTextInput = {
     correctClass?: string;
     correctIcon?: string;
     correctIconColor?: string;
+    correctIconLabel?: string;
 };
 
 /**

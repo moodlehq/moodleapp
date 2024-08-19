@@ -96,7 +96,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     groupMessagingEnabled: boolean;
     isGroup = false;
     members: {[id: number]: AddonMessagesConversationMember} = {}; // Members that wrote a message, indexed by ID.
-    favouriteIcon = 'fa-star';
+    favouriteIcon = 'fas-star';
     deleteIcon = 'fas-trash';
     blockIcon = 'fas-user-lock';
     addRemoveIcon = 'fas-user-plus';

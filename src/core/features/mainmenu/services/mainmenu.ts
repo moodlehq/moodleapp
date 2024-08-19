@@ -113,7 +113,7 @@ export class CoreMainMenuProvider {
             const id = url + '#' + type;
             if (!icon) {
                 // Icon not defined, use default one.
-                icon = type == 'embedded' ? 'fa-expand' : 'fa-link'; // @todo Find a better icon for embedded.
+                icon = type == 'embedded' ? 'fas-expand' : 'fas-link'; // @todo Find a better icon for embedded.
             }
 
             if (!map[id]) {

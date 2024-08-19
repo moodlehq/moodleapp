@@ -29,7 +29,7 @@
             </ng-container>
         </div>
         <ion-icon *ngIf="question.input.correctIcon" class="core-correct-icon ion-align-self-center" slot="end"
-            [name]="question.input.correctIcon" [color]="[question.input.correctIconColor]" />
+            [name]="question.input.correctIcon" [color]="[question.input.correctIconColor]" [ariaLabel]="question.input.correctIconLabel" />
     </ion-item>
 
     <!-- Display unit options after the answer input. -->

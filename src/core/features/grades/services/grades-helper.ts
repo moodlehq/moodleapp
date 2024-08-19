@@ -553,7 +553,11 @@ export class CoreGradesHelperProvider {
             row.itemtype = 'agg_sum';
             row.icon = 'moodle-agg-sum';
             row.iconAlt = Translate.instant('core.grades.aggregatesum');
-        } else if (text.indexOf('/outcomes') > -1 || text.indexOf('fa-tasks') > -1 || text.indexOf('fa-list-check') > -1) {
+        } else if (
+            text.indexOf('/outcomes') > -1 ||
+            text.indexOf('fa-tasks') > -1 ||
+            text.indexOf('fa-list-check') > -1
+        ) {
             row.itemtype = 'outcome';
             row.icon = 'fas-list-check';
             row.iconAlt = Translate.instant('core.grades.outcome');
@@ -561,9 +565,14 @@ export class CoreGradesHelperProvider {
             row.itemtype = 'category';
             row.icon = 'fas-folder';
             row.iconAlt = Translate.instant('core.grades.category');
-        } else if (text.indexOf('/manual_item') > -1 || text.indexOf('fa-square-o') > -1) {
+        } else if (
+            text.indexOf('/manual_item') > -1 ||
+            text.indexOf('fa-square-o') > -1 ||
+            text.indexOf('fa-pencil-square-o') > -1 ||
+            text.indexOf('fa-pen-to-square') > -1
+        ) {
             row.itemtype = 'manual';
-            row.icon = 'far-square';
+            row.icon = 'fas-pen-to-square';
             row.iconAlt = Translate.instant('core.grades.manualitem');
         } else if (text.indexOf('/calc') > -1 || text.indexOf('fa-calculator') > -1) {
             row.itemtype = 'calc';
