@@ -487,9 +487,9 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
-     * Opens add entries form.
+     * Opens add entry form.
      */
-    gotoAddEntries(): void {
+    gotoAddEntry(): void {
         const params: Params = {
             title: this.module.name,
             group: this.selectedGroup,

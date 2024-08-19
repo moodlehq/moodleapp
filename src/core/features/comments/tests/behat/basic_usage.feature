@@ -30,7 +30,7 @@ Feature: Test basic usage of comments in app
   Scenario: Add comments & Delete comments (database)
     # Create database entry and comment as a teacher
     Given I entered the data activity "Data" on course "Course 1" as "teacher1" in the app
-    And I press "Add entries" in the app
+    And I press "Add entry" in the app
     And I set the field "Test field name" to "Test" in the app
     And I press "Save" in the app
     And I press "Actions menu" in the app
@@ -69,7 +69,7 @@ Feature: Test basic usage of comments in app
 
   Scenario: Add comments offline & Delete comments offline & Sync comments (database)
     Given I entered the data activity "Data" on course "Course 1" as "teacher1" in the app
-    And I press "Add entries" in the app
+    And I press "Add entry" in the app
     And I set the field "Test field name" to "Test" in the app
     And I press "Save" in the app
     And I press "Actions menu" in the app

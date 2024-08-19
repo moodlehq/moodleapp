@@ -30,7 +30,7 @@ Feature: Users can manage entries in database activities
   Scenario: Create entry
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     Then I should find "No entries yet" in the app
-    When I press "Add entries" in the app
+    When I press "Add entry" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodle.org/ |
       | Description | Moodle community site |
@@ -48,13 +48,13 @@ Feature: Users can manage entries in database activities
     And I entered the data activity "Web links" on course "Course 1" as "student1" in the app
 
     # TODO Create and use a generator for database entries.
-    When I press "Add entries" in the app
+    When I press "Add entry" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodle.org/ |
       | Description | Moodle community site |
     And I press "Save" near "Web links" in the app
     And I entered the data activity "Web links" on course "Course 1" as "student2" in the app
-    And I press "Add entries" in the app
+    And I press "Add entry" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodlecloud.com/ |
       | Description | Moodle Cloud |
@@ -80,7 +80,7 @@ Feature: Users can manage entries in database activities
     And I should find "Moodle Cloud" in the app
 
     Given I entered the data activity "Data with comments" on course "Course 1" as "student1" in the app
-    When I press "Add entries" in the app
+    When I press "Add entry" in the app
     And I set the following fields to these values in the app:
       | Description | Moodle community site |
     And I press "Save" near "Data with comments" in the app
@@ -102,7 +102,7 @@ Feature: Users can manage entries in database activities
 
   Scenario: Students can not edit or delete other user's entries from list and single view in the app
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
-    And I press "Add entries" in the app
+    And I press "Add entry" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodle.org/ |
       | Description | Moodle community site |
@@ -119,7 +119,7 @@ Feature: Users can manage entries in database activities
 
   Scenario: Delete entry (student) & Update entry (student)
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
-    And I press "Add entries" in the app
+    And I press "Add entry" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodle.org/ |
       | Description | Moodle community site |
@@ -150,7 +150,7 @@ Feature: Users can manage entries in database activities
     And I should not find "Moodle Cloud" in the app
 
     # Repeat again with single view.
-    Given I press "Add entries" in the app
+    Given I press "Add entry" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodle.org/ |
       | Description | Moodle community site |
@@ -185,12 +185,12 @@ Feature: Users can manage entries in database activities
 
   Scenario: Delete entry (teacher) & Update entry (teacher)
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
-    And I press "Add entries" in the app
+    And I press "Add entry" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodle.org/ |
       | Description | Moodle community site |
     And I press "Save" near "Web links" in the app
-    And I press "Add entries" in the app
+    And I press "Add entry" in the app
     And I set the following fields to these values in the app:
       | URL | https://telegram.org/ |
       | Description | Telegram |
@@ -261,7 +261,7 @@ Feature: Users can manage entries in database activities
       | database | type   | name   | description  |
       | data2    | number | Number | Number value |
     And I entered the data activity "Number DB" on course "Course 1" as "student1" in the app
-    When I press "Add entries" in the app
+    When I press "Add entry" in the app
     And I press "Save" near "Number DB" in the app
     Then I should find "You did not fill out any fields!" in the app
 
