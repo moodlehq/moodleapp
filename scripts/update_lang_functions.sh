@@ -94,8 +94,12 @@ function load_langpacks {
         pushd "$LANGPACKS_PATH"
 
         git checkout "langpack_$LANGVERSION"
-        git pull
+        if [ $? -ne 0 ]; then
+            echo "Cannot checkout language repository langpack_$LANGVERSION"
+            exit 1
+        fi
 
+        git pull
         if [ $? -ne 0 ]; then
             echo "Cannot update language repository"
             exit 1
