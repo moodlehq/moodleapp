@@ -74,7 +74,9 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
         this.question.items = itemsElements.map(element => {
             // Remove correctness icons from the content.
             const itemContentEl = element.querySelector<HTMLElement>('[data-itemcontent]');
-            itemContentEl?.querySelector('.icon.fa-check, .icon.fa-remove, .icon.fa-check-square')?.remove();
+            itemContentEl?.querySelector(
+                '.icon.fa-check, .icon.fa-remove, .icon.fa-check-square, .icon.fa-check-double, .icon.fa-xmark',
+            )?.remove();
 
             return {
                 id: element.id,

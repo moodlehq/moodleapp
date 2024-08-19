@@ -11,6 +11,6 @@
             [attr.name]="question.input.name" [value]="question.input.value" autocorrect="off" [disabled]="question.input.readOnly"
             [label]="'addon.mod_quiz.answercolon' | translate" />
         <ion-icon *ngIf="question.input.correctIcon" class="core-correct-icon" slot="end" [name]="question.input.correctIcon"
-            [color]="[question.input.correctIconColor]" />
+            [color]="[question.input.correctIconColor]" [ariaLabel]="question.input.correctIconLabel" />
     </ion-item>
 </ion-list>

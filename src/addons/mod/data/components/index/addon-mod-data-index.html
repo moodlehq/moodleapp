@@ -4,8 +4,8 @@
         <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
     </ion-button>
     <core-context-menu>
-        <core-context-menu-item [priority]="500" *ngIf="canAdd" [content]="'addon.mod_data.addentries' | translate" iconAction="fas-plus"
-            (action)="gotoAddEntries()" />
+        <core-context-menu-item [priority]="500" *ngIf="canAdd" [content]="'addon.mod_data.add' | translate" iconAction="fas-plus"
+            (action)="gotoAddEntry()" />
         <core-context-menu-item [priority]="400" *ngIf="firstEntry" [content]="'addon.mod_data.single' | translate" iconAction="fas-file"
             (action)="gotoEntry(firstEntry)" />
     </core-context-menu>
@@ -111,8 +111,8 @@
 
 
 <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canAdd">
-    <ion-fab-button (click)="gotoAddEntries()" [attr.aria-label]="'addon.mod_data.addentries' | translate">
+    <ion-fab-button (click)="gotoAddEntry()" [attr.aria-label]="'addon.mod_data.add' | translate">
         <ion-icon name="fas-plus" aria-hidden="true" />
-        <span class="sr-only">{{ 'addon.mod_data.addentries' | translate }}</span>
+        <span class="sr-only">{{ 'addon.mod_data.add' | translate }}</span>
     </ion-fab-button>
 </ion-fab>

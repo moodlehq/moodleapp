@@ -61,7 +61,7 @@ export class CoreSearchGlobalSearchResultComponent implements OnChanges {
      */
     private computeRenderedIcon(): string | null {
         return this.result.module?.name === 'forum'  && this.result.module.area === 'post'
-            ? 'fa-message'
+            ? 'fas-message'
             : null;
     }
 
