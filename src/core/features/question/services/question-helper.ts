@@ -815,11 +815,15 @@ export class CoreQuestionHelperProvider {
                     color = CoreIonicColorNames.DANGER;
                 }
             } else {
-                if (icon.classList.contains('fa-check-square')) {
-                    iconName = 'square-check';
-                    color = CoreIonicColorNames.WARNING;
-                } else if (icon.classList.contains('fa-check')) {
+                // In LMS 4.4 and older, fa-check means correct. In 4.5+, fa-check means partially correct.
+                if (
+                    icon.classList.contains('fa-check-square') ||
+                    (icon.classList.contains('fa-check') && icon.classList.contains('text-warning'))
+                ) {
                     iconName = 'check';
+                    color = CoreIonicColorNames.WARNING;
+                } else if (icon.classList.contains('fa-check-double') || icon.classList.contains('fa-check')) {
+                    iconName = 'check-double';
                     color = CoreIonicColorNames.SUCCESS;
                 } else if (icon.classList.contains('fa-xmark') || icon.classList.contains('fa-remove')) {
                     iconName = 'xmark';
