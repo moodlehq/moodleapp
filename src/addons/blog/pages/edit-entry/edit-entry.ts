@@ -13,7 +13,7 @@
 // limitations under the License.
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { ADDON_BLOG_ENTRY_UPDATED } from '@addons/blog/constants';
+import { ADDON_BLOG_ENTRY_UPDATED, ADDON_BLOG_SYNC_ID } from '@addons/blog/constants';
 import {
     AddonBlog,
     AddonBlogAddEntryOption,
@@ -22,7 +22,9 @@ import {
     AddonBlogProvider,
     AddonBlogPublishState,
 } from '@addons/blog/services/blog';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AddonBlogOffline } from '@addons/blog/services/blog-offline';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AddonBlogSync } from '@addons/blog/services/blog-sync';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
@@ -30,18 +32,21 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseBasicData } from '@features/courses/services/courses';
 import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
-import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
+import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreTagComponentsModule } from '@features/tag/components/components.module';
 import { CanLeave } from '@guards/can-leave';
 import { CoreLoadings } from '@services/loadings';
 import { CoreNavigator } from '@services/navigator';
+import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreWSFile } from '@services/ws';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
+import { CoreFileEntry } from '@services/file-helper';
+import { CoreTimeUtils } from '@services/utils/time';
 
 @Component({
     selector: 'addon-blog-edit-entry',
@@ -54,7 +59,7 @@ import { CoreForms } from '@singletons/form';
         CoreTagComponentsModule,
     ],
 })
-export class AddonBlogEditEntryPage implements CanLeave, OnInit {
+export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
 
     @ViewChild('editEntryForm') formElement!: ElementRef;
 
@@ -70,11 +75,11 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
         associateWithModule: new FormControl<boolean>(false, { nonNullable: true, validators: [Validators.required] }),
     });
 
-    entry?: AddonBlogPost;
+    entry?: AddonBlogPost | AddonBlogEditEntryFormattedOfflinePost;
     loaded = false;
     maxFiles = 99;
-    initialFiles: CoreWSFile[] = [];
-    files: CoreWSFile[] = [];
+    initialFiles: CoreFileEntry[] = [];
+    files: CoreFileEntry[] = [];
     courseId?: number;
     modId?: number;
     userId?: number;
@@ -88,6 +93,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
     component = AddonBlogProvider.COMPONENT;
     siteHomeId?: number;
     forceLeave = false;
+    isOfflineEntry = false;
 
     /**
      * Gives if the form is not pristine. (only for existing entries)
@@ -130,15 +136,17 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
             return CoreNavigator.back();
         }
 
-        const entryId = CoreNavigator.getRouteNumberParam('id');
+        const entryId = CoreNavigator.getRouteParam('id');
         const lastModified = CoreNavigator.getRouteNumberParam('lastModified');
         const filters: AddonBlogFilter | undefined = CoreNavigator.getRouteParam('filters');
         const courseId = CoreNavigator.getRouteNumberParam('courseId');
         const cmId = CoreNavigator.getRouteNumberParam('cmId');
         this.userId = CoreNavigator.getRouteNumberParam('userId');
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
+        this.isOfflineEntry = entryId?.startsWith('new-') ?? false;
+        const entryIdParsed = Number(entryId);
 
-        if (!entryId) {
+        if (entryIdParsed === 0) {
             this.loaded = true;
 
             try {
@@ -162,11 +170,27 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
         }
 
         try {
-            this.entry = await this.getEntry({ filters, lastModified, entryId });
-            this.files = this.entry.attachmentfiles ?? [];
+            await AddonBlogSync.waitForSync(ADDON_BLOG_SYNC_ID);
+
+            if (!this.isOfflineEntry) {
+                const offlineContent = await this.getFormattedBlogOfflineEntry({ id: entryIdParsed });
+                this.entry = offlineContent ?? await this.getEntry({ filters, lastModified, entryId: entryIdParsed });
+            } else {
+                this.entry = await this.getFormattedBlogOfflineEntry({ created: Number(entryId?.slice(4)) });
+
+                if (!this.entry) {
+                    throw new CoreError('This offline entry no longer exists.');
+                }
+            }
+
+            this.files = [...(this.entry.attachmentfiles ?? [])];
             this.initialFiles = [...this.files];
-            this.courseId = this.courseId || this.entry.courseid;
-            this.modId = CoreNavigator.getRouteNumberParam('cmId') || this.entry.coursemoduleid;
+
+            if (this.entry) {
+                CoreSync.blockOperation(AddonBlogProvider.COMPONENT, this.entry.id ?? this.entry.created);
+                this.courseId = this.courseId || this.entry.courseid;
+                this.modId = CoreNavigator.getRouteNumberParam('cmId') || this.entry.coursemoduleid;
+            }
 
             if (this.courseId) {
                 this.form.controls.associateWithCourse.setValue(true);
@@ -196,6 +220,17 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
 
         this.calculateContext();
         this.loaded = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        if (!this.entry) {
+            return;
+        }
+
+        CoreSync.unblockOperation(AddonBlogProvider.COMPONENT, this.entry.id ?? this.entry.created);
     }
 
     /**
@@ -270,14 +305,27 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
 
         const loading = await CoreLoadings.show('core.sending', true);
 
-        if (this.entry) {
+        if (this.entry?.id) {
             try {
+                if (!CoreNetwork.isOnline()) {
+                    const attachmentsId = await this.uploadOrStoreFiles({ entryId: this.entry.id });
+
+                    return await this.saveEntry({ attachmentsId });
+                }
+
                 if (!CoreFileUploader.areFileListDifferent(this.files, this.initialFiles)) {
-                    return await this.saveEntry();
+                    return await this.saveEntry({});
                 }
 
                 const { attachmentsid } = await AddonBlog.prepareEntryForEdition({ entryid: this.entry.id });
-                const removedFiles = CoreFileUploader.getFilesToDelete(this.initialFiles, this.files);
+
+                const lastModified = CoreNavigator.getRouteNumberParam('lastModified');
+                const filters: AddonBlogFilter | undefined = CoreNavigator.getRouteParam('filters');
+                const entry = this.entry && 'attachment' in this.entry
+                    ? this.entry
+                    : await CoreUtils.ignoreErrors(this.getEntry({ filters, lastModified, entryId: this.entry.id }));
+
+                const removedFiles = CoreFileUploader.getFilesToDelete(entry?.attachmentfiles ?? [], this.files);
 
                 if (removedFiles.length) {
                     await CoreFileUploader.deleteDraftFiles(attachmentsid, removedFiles);
@@ -285,28 +333,63 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
 
                 await CoreFileUploader.uploadFiles(attachmentsid, this.files);
 
-                return await this.saveEntry(attachmentsid);
+                return await this.saveEntry({ attachmentsId: attachmentsid });
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'Error updating entry.');
+                if (CoreUtils.isWebServiceError(error)) {
+                    // It's a WebService error, the user cannot send the message so don't store it.
+                    CoreDomUtils.showErrorModalDefault(error, 'Error updating entry.');
+
+                    return;
+                }
+
+                const attachmentsId = await this.uploadOrStoreFiles({ entryId: this.entry.id, forceStorage: true });
+
+                return await this.saveEntry({ attachmentsId, forceOffline: true });
             } finally {
                 await loading.dismiss();
             }
-
-            return;
         }
+
+        const created = this.entry?.created ?? CoreTimeUtils.timestamp();
 
         try {
             if (!this.files.length) {
-                return await this.saveEntry();
+                return await this.saveEntry({ created });
             }
 
-            const attachmentId = await CoreFileUploader.uploadOrReuploadFiles(this.files, this.component);
-            await this.saveEntry(attachmentId);
+            const attachmentsId = await this.uploadOrStoreFiles({ created });
+            await this.saveEntry({ created, attachmentsId });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error creating entry.');
+            if (CoreUtils.isWebServiceError(error)) {
+                // It's a WebService error, the user cannot send the message so don't store it.
+                CoreDomUtils.showErrorModalDefault(error, 'Error creating entry.');
+
+                return;
+            }
+
+            const attachmentsId = await this.uploadOrStoreFiles({ created, forceStorage: true });
+
+            return await this.saveEntry({ attachmentsId, forceOffline: true });
         } finally {
             await loading.dismiss();
         }
+    }
+
+    /**
+     * Upload or store locally files.
+     *
+     * @param param Folder where files will be located.
+     * @returns folder where files will be located.
+     */
+    async uploadOrStoreFiles(param: AddonBlogEditEntryUploadOrStoreFilesParam): Promise<number | CoreFileUploaderStoreFilesResult> {
+        if (CoreNetwork.isOnline() && !param.forceStorage) {
+            return await CoreFileUploader.uploadOrReuploadFiles(this.files, this.component);
+        }
+
+        const folder = 'entryId' in param ? { id: param.entryId } : { created: param.created };
+        const folderPath = await AddonBlogOffline.getOfflineEntryFilesFolderPath(folder);
+
+        return await CoreFileUploader.storeFilesToUpload(folderPath, this.files);
     }
 
     /**
@@ -337,26 +420,12 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
     }
 
     /**
-     * Add attachment to options list.
-     *
-     * @param attachmentsId Attachment ID.
-     * @param options Options list.
-     */
-    addAttachments(attachmentsId: number | undefined, options: AddonBlogAddEntryOption[]): void {
-        if (attachmentsId === undefined) {
-            return;
-        }
-
-        options.push({ name: 'attachmentsid', value: attachmentsId });
-    }
-
-    /**
      * Create or update entry.
      *
-     * @param attachmentsId Attachments.
+     * @param params Creation date and attachments ID.
      * @returns Promise resolved when done.
      */
-    async saveEntry(attachmentsId?: number): Promise<void> {
+    async saveEntry(params: AddonBlogEditEntrySaveEntryParams): Promise<void> {
         const { summary, subject, publishState } = this.form.value;
 
         if (!summary || !subject || !publishState) {
@@ -369,11 +438,30 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
             { name: 'modassoc', value: this.form.controls.associateWithModule.value && this.modId ? this.modId : 0 },
         ];
 
-        this.addAttachments(attachmentsId, options);
+        if (params.attachmentsId) {
+            options.push({ name: 'attachmentsid', value: params.attachmentsId });
+        }
 
-        this.entry
-            ? await AddonBlog.updateEntry({ subject, summary, summaryformat: 1, options , entryid: this.entry.id })
-            : await AddonBlog.addEntry({ subject, summary, summaryformat: 1, options });
+        if (!this.entry?.id) {
+            await AddonBlog.addEntry({
+                subject,
+                summary,
+                summaryformat: 1,
+                options,
+                created: params.created ?? CoreTimeUtils.timestamp(),
+                forceOffline: params.forceOffline,
+            });
+        } else {
+            await AddonBlog.updateEntry({
+                subject,
+                summary,
+                summaryformat: 1,
+                options,
+                forceOffline: params.forceOffline,
+                entryid: this.entry.id,
+                created: this.entry.created,
+            });
+        }
 
         CoreEvents.trigger(ADDON_BLOG_ENTRY_UPDATED);
         this.forceLeave = true;
@@ -382,10 +470,36 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit {
         return CoreNavigator.back();
     }
 
+    /**
+     * Retrieves a formatted blog offline entry.
+     *
+     * @param params Entry creation date or entry ID.
+     * @returns Formatted entry.
+     */
+    async getFormattedBlogOfflineEntry(
+        params: AddonBlogEditGetFormattedBlogOfflineEntryParams,
+    ): Promise<AddonBlogEditEntryFormattedOfflinePost | undefined> {
+        const entryRecord = await AddonBlogOffline.getOfflineEntry(params);
+
+        return entryRecord ? await AddonBlog.formatOfflineEntry(entryRecord) : undefined;
+    }
+
 }
 
-type AddonBlogEditEntryGetEntryParams = {
-    entryId: number;
-    filters?: AddonBlogFilter;
-    lastModified?: number;
+type AddonBlogEditGetFormattedBlogOfflineEntryParams = { id: number } | { created: number };
+
+type AddonBlogEditEntryUploadOrStoreFilesParam = ({ entryId: number } | { created: number }) & { forceStorage?: boolean };
+
+type AddonBlogEditEntryGetEntryParams = { entryId: number; filters?: AddonBlogFilter; lastModified?: number };
+
+type AddonBlogEditEntryPost = Omit<AddonBlogPost, 'id'> & { id?: number };
+
+type AddonBlogEditEntrySaveEntryParams = {
+    created?: number;
+    attachmentsId?: number | CoreFileUploaderStoreFilesResult;
+    forceOffline?: boolean;
 };
+
+type AddonBlogEditEntryFormattedOfflinePost = Omit<
+    AddonBlogEditEntryPost, | 'attachment' | 'attachmentfiles' | 'rating' | 'format' | 'usermodified' | 'module'
+> & { attachmentfiles?: CoreFileEntry[] };

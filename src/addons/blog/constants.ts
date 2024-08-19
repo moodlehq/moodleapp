@@ -14,3 +14,6 @@
 
 export const ADDON_BLOG_MAINMENU_PAGE_NAME = 'blog';
 export const ADDON_BLOG_ENTRY_UPDATED = 'blog_entry_updated';
+export const ADDON_BLOG_AUTO_SYNCED = 'addon_blog_autom_synced';
+export const ADDON_BLOG_MANUAL_SYNCED = 'addon_blog_manual_synced';
+export const ADDON_BLOG_SYNC_ID = 'blog';

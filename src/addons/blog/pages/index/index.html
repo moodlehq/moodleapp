@@ -7,6 +7,11 @@
             <h1>{{ title | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
+            <core-context-menu>
+                <core-context-menu-item [hidden]="syncHidden()" [priority]="400" [content]="'core.settings.synchronizenow' | translate"
+                    (action)="fetchEntries(true, true, true)" [iconAction]="syncIcon" [closeOnClick]="false" />
+            </core-context-menu>
+
             <core-user-menu-button />
         </ion-buttons>
     </ion-toolbar>
@@ -14,11 +19,11 @@
 
 <ion-content class="limited-width">
 
-    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refresh($event.target)">
+    <ion-refresher slot="fixed" [disabled]="!loaded()" (ionRefresh)="refresh(true, $event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded()">
         @if (showMyEntriesToggle) {
         <ion-item class="ion-text-wrap">
             <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)">
@@ -27,8 +32,17 @@
         </ion-item>
         }
 
-        @for (entry of entries; track entry.id) {
-        <div class="entry ion-padding-start ion-padding-top ion-padding-end" [id]="'entry-' + entry.id">
+        @if (hasOfflineDataToSync()) {
+        <ion-card class="core-warning-card">
+            <ion-item>
+                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                <ion-label>{{ 'core.hasdatatosync' | translate:{ $a: 'addon.blog.blog' | translate } }}</ion-label>
+            </ion-item>
+        </ion-card>
+        }
+
+        @for (entry of entries; track getEntryTemplateId(entry)) {
+        <div class="entry ion-padding-start ion-padding-top ion-padding-end" [id]="getEntryTemplateId(entry)">
             <div class="entry-subject flex ion-text-wrap ion-justify-content-between ion-align-items-center">
                 <h3>
                     <core-format-text [text]="entry.subject" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
@@ -38,12 +52,27 @@
                         <ion-badge color="warning"> {{ 'addon.blog.publishtonoone' | translate }} </ion-badge>
                     </span>
                     }
+
+                    @if (!getEntryId(entry) || entry.updatedOffline) {
+                    <span class="entry-draft">
+                        <ion-badge color="light">
+                            <ion-icon name="fas-clock" [attr.aria-label]="'core.lastmodified' | translate" />
+                            {{ 'core.notsent' | translate }}
+                        </ion-badge>
+                    </span>
+                    }
                 </h3>
 
-                @if (entry.userid === currentUserId && optionsAvailable) {
+                @if (entry.userid === currentUserId && optionsAvailable && !entry.deleted) {
                 <ion-button fill="clear" [ariaLabel]="'core.displayoptions' | translate" (click)="showEntryActionsPopover($event, entry)"
                     class="entry-options">
                     <ion-icon slot="icon-only" aria-hidden="true" name="ellipsis-vertical" />
+                </ion-button>
+                }
+
+                @if (entry.deleted) {
+                <ion-button slot="end" fill="clear" color="danger" (click)="undoDelete(entry)" [ariaLabel]="'core.restore' | translate">
+                    <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
                 </ion-button>
                 }
             </div>
@@ -64,8 +93,8 @@
 
             <div class="entry-summary" [collapsible-item]="64">
                 <div class="ion-margin-bottom">
-                    <core-format-text [text]="entry.summary" [component]="component" [componentId]="entry.id" [contextLevel]="contextLevel"
-                        [contextInstanceId]="contextInstanceId" [courseId]="entry.courseid" />
+                    <core-format-text [text]="entry.summary" [component]="component" [componentId]="getEntryId(entry)"
+                        [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="entry.courseid" />
                 </div>
 
                 @if (tagsEnabled && entry.tags && entry.tags!.length > 0) {
@@ -77,9 +106,7 @@
                 </ion-item>
                 }
 
-                @for (file of entry.attachmentfiles; track $index) {
-                <core-file [file]="file" [component]="this.component" [componentId]="entry.id" />
-                }
+                <core-files [files]="entry.attachmentfiles" [component]="component" [componentId]="getEntryId(entry) ?? entry.created" />
 
                 @if (entry.uniquehash) {
                 <ion-item [href]="entry.uniquehash" core-link [detail]="true" lines="none">
@@ -106,8 +133,8 @@
             </ion-item>
             }
 
-            @if (commentsEnabled) {
-            <core-comments [component]="this.component" [itemId]="entry.id" area="format_blog" [instanceId]="entry.userid"
+            @if (getEntryId(entry) && commentsEnabled) {
+            <core-comments [component]="this.component" [itemId]="getEntryId(entry)" area="format_blog" [instanceId]="entry.userid"
                 contextLevel="user" [showItem]="true" [courseId]="entry.courseid" />
             }
 
@@ -121,12 +148,13 @@
     </core-loading>
 
     <!-- Create a blog entry. -->
-    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end"
-        *ngIf="loaded && optionsAvailable && (!filter.userid || (filter.userid && currentUserId === filter.userid))">
+    @if ((filter.userid === currentUserId || showMyEntriesToggle) && loaded() && optionsAvailable) {
+    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
         <ion-fab-button (click)="createNewEntry()" [attr.aria-label]="'addon.blog.addnewentry' | translate">
             <ion-icon name="fas-pen-to-square" aria-hidden="true" />
             <span class="sr-only">{{ 'addon.blog.addnewentry' | translate }}</span>
         </ion-fab-button>
     </ion-fab>
+    }
 
 </ion-content>

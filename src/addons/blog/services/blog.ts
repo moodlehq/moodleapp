@@ -12,14 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ContextLevel } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreSite } from '@classes/sites/site';
+import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreTagItem } from '@features/tag/services/tag';
+import { CoreUser, CoreUserProfile } from '@features/user/services/user';
+import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
+import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
+import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
+import { AddonBlogOffline, AddonBlogOfflineEntry } from './blog-offline';
 
 const ROOT_CACHE_KEY = 'addonBlog:';
 
@@ -91,10 +98,48 @@ export class AddonBlogProvider {
      * @returns Entry id.
      * @since 4.4
      */
-    async addEntry(params: AddonBlogAddEntryWSParams, siteId?: string): Promise<number> {
+    async addEntry(
+        { created, forceOffline, ...params }: AddonBlogAddEntryWSParams & { created: number; forceOffline?: boolean },
+        siteId?: string,
+    ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        return await site.write<number>('core_blog_add_entry', params);
+        const storeOffline = async (): Promise<void> => {
+            await AddonBlogOffline.addOfflineEntry({
+                ...params,
+                userid: site.getUserId(),
+                lastmodified: created,
+                options: JSON.stringify(params.options),
+                created,
+            });
+        };
+
+        if (forceOffline || !CoreNetwork.isOnline()) {
+            return await storeOffline();
+        }
+
+        try {
+            await this.addEntryOnline(params, siteId);
+        } catch (error) {
+            if (!CoreUtils.isWebServiceError(error)) {
+                // Couldn't connect to server, store in offline.
+                return await storeOffline();
+            }
+
+            // The WebService has thrown an error, reject.
+            throw error;
+        }
+    }
+
+    /**
+     * Add entry online.
+     *
+     * @param wsParams Params expected by the webservice.
+     * @param siteId Site ID.
+     */
+    async addEntryOnline(wsParams: AddonBlogAddEntryWSParams, siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+        await site.write('core_blog_add_entry', wsParams);
     }
 
     /**
@@ -103,10 +148,54 @@ export class AddonBlogProvider {
      * @param params WS Params.
      * @param siteId Site ID of the entry.
      * @since 4.4
+     * @returns void
      */
-    async updateEntry(params: AddonBlogUpdateEntryWSParams, siteId?: string): Promise<void> {
+    async updateEntry(
+        { forceOffline, created, ...params }: AddonBlogUpdateEntryParams,
+        siteId?: string,
+    ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
-        await site.write('core_blog_update_entry', params);
+
+        const storeOffline = async (): Promise<void> => {
+            const content = {
+                subject: params.subject,
+                summary: params.summary,
+                summaryformat: params.summaryformat,
+                userid: site.getUserId(),
+                lastmodified: CoreTimeUtils.timestamp(),
+                options: JSON.stringify(params.options),
+                created,
+            };
+
+            await AddonBlogOffline.addOfflineEntry({ ...content, id: params.entryid });
+        };
+
+        if (forceOffline || !CoreNetwork.isOnline()) {
+            return await storeOffline();
+        }
+
+        try {
+            await this.updateEntryOnline(params, siteId);
+        } catch (error) {
+            if (!CoreUtils.isWebServiceError(error)) {
+                // Couldn't connect to server, store in offline.
+                return await storeOffline();
+            }
+
+            // The WebService has thrown an error, reject.
+            throw error;
+        }
+    }
+
+    /**
+     * Update entry online.
+     *
+     * @param wsParams Params expected by the webservice.
+     * @param siteId Site ID.
+     */
+    async updateEntryOnline(wsParams: AddonBlogUpdateEntryWSParams, siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+        await site.write('core_blog_update_entry', wsParams);
     }
 
     /**
@@ -134,10 +223,33 @@ export class AddonBlogProvider {
      * @returns Entry deleted successfully or not.
      * @since 4.4
      */
-    async deleteEntry(params: AddonBlogDeleteEntryWSParams, siteId?: string): Promise<AddonBlogDeleteEntryWSResponse> {
-        const site = await CoreSites.getSite(siteId);
+    async deleteEntry({ subject, ...params }: AddonBlogDeleteEntryWSParams & { subject: string }, siteId?: string): Promise<void> {
+        try {
+            if (!CoreNetwork.isOnline()) {
+                return await AddonBlogOffline.markEntryAsRemoved({ id: params.entryid, subject }, siteId);
+            }
 
-        return await site.write('core_blog_delete_entry', params);
+            await this.deleteEntryOnline(params, siteId);
+            await CoreUtils.ignoreErrors(AddonBlogOffline.unmarkEntryAsRemoved(params.entryid));
+        } catch (error) {
+            if (!CoreUtils.isWebServiceError(error)) {
+                // Couldn't connect to server, store in offline.
+                return await AddonBlogOffline.markEntryAsRemoved({ id: params.entryid, subject }, siteId);
+            }
+
+            throw error;
+        }
+    }
+
+    /**
+     * Delete entry online.
+     *
+     * @param wsParams Params expected by the webservice.
+     * @param siteId Site ID.
+     */
+    async deleteEntryOnline(wsParams: AddonBlogDeleteEntryWSParams, siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+        await site.write('core_blog_delete_entry', wsParams);
     }
 
     /**
@@ -183,6 +295,113 @@ export class AddonBlogProvider {
         return site.write('core_blog_view_entries', data);
     }
 
+    /**
+     * Format local stored entries to required data structure.
+     *
+     * @param offlineEntry Offline entry data.
+     * @param entry Entry.
+     * @returns Formatted entry.
+     */
+    async formatOfflineEntry(
+        offlineEntry: AddonBlogOfflineEntry,
+        entry?: AddonBlogPostFormatted,
+    ): Promise<AddonBlogOfflinePostFormatted> {
+        const options: AddonBlogAddEntryOption[] = JSON.parse(offlineEntry.options);
+        const moduleId = options?.find(option => option.name === 'modassoc')?.value as number | undefined;
+        const courseId = options?.find(option => option.name === 'courseassoc')?.value as number | undefined;
+        const tags = options?.find(option => option.name === 'tags')?.value as string | undefined;
+        const publishState = options?.find(option => option.name === 'publishstate')?.value as AddonBlogPublishState
+            ?? AddonBlogPublishState.draft;
+        const user = await CoreUtils.ignoreErrors(CoreUser.getProfile(offlineEntry.userid, courseId, true));
+        const folder = 'id' in offlineEntry && offlineEntry.id ? { id: offlineEntry.id } : { created: offlineEntry.created };
+        const offlineFiles = await AddonBlogOffline.getOfflineFiles(folder);
+        const optionsFiles = this.getAttachmentFilesFromOptions(options);
+        const attachmentFiles = [...optionsFiles.online, ...offlineFiles];
+
+        return {
+            ...offlineEntry,
+            publishstate: publishState,
+            publishTranslated: this.getPublishTranslated(publishState),
+            user,
+            tags: tags?.length ? JSON.parse(tags) : [],
+            coursemoduleid: moduleId ?? 0,
+            courseid: courseId ?? 0,
+            attachmentfiles: attachmentFiles,
+            userid: user?.id ?? 0,
+            moduleid: moduleId ?? 0,
+            summaryfiles: [],
+            uniquehash: '',
+            module: entry?.module,
+            groupid: 0,
+            content: offlineEntry.summary,
+            updatedOffline: true,
+        };
+    }
+
+    /**
+     * Retrieves publish state translated.
+     *
+     * @param state Publish state.
+     * @returns Translated state.
+     */
+    getPublishTranslated(state?: string): string {
+        switch (state) {
+            case 'draft':
+                return 'publishtonoone';
+            case 'site':
+                return 'publishtosite';
+            case 'public':
+                return 'publishtoworld';
+            default:
+                return 'privacy:unknown';
+        }
+    }
+
+    /**
+     * Format provided entry to AddonBlogPostFormatted.
+     */
+    async formatEntry(entry: AddonBlogPostFormatted): Promise<void> {
+        entry.publishTranslated = this.getPublishTranslated(entry.publishstate);
+
+        // Calculate the context. This code was inspired by calendar events, Moodle doesn't do this for blogs.
+        if (entry.moduleid || entry.coursemoduleid) {
+            entry.contextLevel = ContextLevel.MODULE;
+            entry.contextInstanceId = entry.moduleid || entry.coursemoduleid;
+        } else if (entry.courseid) {
+            entry.contextLevel = ContextLevel.COURSE;
+            entry.contextInstanceId = entry.courseid;
+        } else {
+            entry.contextLevel = ContextLevel.USER;
+            entry.contextInstanceId = entry.userid;
+        }
+
+        entry.summary = CoreFileHelper.replacePluginfileUrls(entry.summary, entry.summaryfiles || []);
+        entry.user = await CoreUtils.ignoreErrors(CoreUser.getProfile(entry.userid, entry.courseid, true));
+    }
+
+    /**
+     * Get attachments files from options object.
+     *
+     * @param options Entry options.
+     * @returns attachmentsId.
+     */
+    getAttachmentFilesFromOptions(options: AddonBlogAddEntryOption[]): CoreFileUploaderStoreFilesResult {
+        const attachmentsId = options.find(option => option.name === 'attachmentsid');
+
+        if (!attachmentsId) {
+            return { online: [], offline: 0 };
+        }
+
+        switch(typeof attachmentsId.value) {
+            case 'object':
+                return attachmentsId.value;
+            case 'string':
+                return JSON.parse(attachmentsId.value);
+            default:
+                return { online: [], offline: 0 };
+        }
+    }
+
 }
 export const AddonBlog = makeSingleton(AddonBlogProvider);
 
@@ -218,7 +437,7 @@ export type CoreBlogGetEntriesWSResponse = {
 /**
  * Data returned by blog's post_exporter.
  */
-export type AddonBlogPost = {
+export interface AddonBlogPost {
     id: number; // Post/entry id.
     module: string; // Where it was published the post (blog, blog_external...).
     userid: number; // Post author.
@@ -241,7 +460,7 @@ export type AddonBlogPost = {
     summaryfiles: CoreWSExternalFile[]; // Summaryfiles.
     attachmentfiles?: CoreWSExternalFile[]; // Attachmentfiles.
     tags?: CoreTagItem[]; // @since 3.7. Tags.
-};
+}
 
 /**
  * Params of core_blog_view_entries WS.
@@ -282,14 +501,14 @@ export type AddonBlogAddEntryWSParams = {
     options: AddonBlogAddEntryOption[];
 };
 
-export type AddonBlogUpdateEntryWSParams = AddonBlogAddEntryWSParams & { entryid: number };
+export type AddonBlogUpdateEntryWSParams = AddonBlogAddEntryWSParams & ({ entryid: number });
 
 /**
  * Add entry options.
  */
 export type AddonBlogAddEntryOption = {
     name: 'inlineattachmentsid' | 'attachmentsid' | 'publishstate' | 'courseassoc' | 'modassoc' | 'tags';
-    value: string | number;
+    value: string | number | CoreFileUploaderStoreFilesResult;
 };
 
 /**
@@ -335,6 +554,33 @@ export type AddonBlogGetEntriesOptions = CoreSitesCommonWSOptions & {
     page?: number;
 };
 
+export type AddonBlogUndoDelete = { created: number } | { id: number };
+
 export const AddonBlogPublishState = { draft: 'draft', site: 'site', public: 'public' } as const;
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export type AddonBlogPublishState = typeof AddonBlogPublishState[keyof typeof AddonBlogPublishState];
+
+/**
+ * Blog post with some calculated data.
+ */
+export type AddonBlogPostFormatted = Omit<
+    AddonBlogPost, 'attachment' | 'attachmentfiles' | 'usermodified' | 'format' | 'rating' | 'module'
+> & {
+    publishTranslated?: string; // Calculated in the app. Key of the string to translate the publish state of the post.
+    user?: CoreUserProfile; // Calculated in the app. Data of the user that wrote the post.
+    contextLevel?: ContextLevel; // Calculated in the app. The context level of the entry.
+    contextInstanceId?: number; // Calculated in the app. The context instance id.
+    coursemoduleid: number; // Course module id where the post was created.
+    attachmentfiles?: CoreFileEntry[]; // Attachmentfiles.
+    module?: string;
+    deleted?: boolean;
+    updatedOffline?: boolean;
+};
+
+export type AddonBlogOfflinePostFormatted = Omit<AddonBlogPostFormatted, 'id'>;
+
+export type AddonBlogUpdateEntryParams = AddonBlogUpdateEntryWSParams & {
+    attachments?: string;
+    forceOffline?: boolean;
+    created: number;
+};

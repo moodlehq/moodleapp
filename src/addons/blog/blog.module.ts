@@ -29,6 +29,10 @@ import { AddonBlogMainMenuHandler } from './services/handlers/mainmenu';
 import { AddonBlogTagAreaHandler } from './services/handlers/tag-area';
 import { AddonBlogUserHandler } from './services/handlers/user';
 import { ADDON_BLOG_MAINMENU_PAGE_NAME } from './constants';
+import { CORE_SITE_SCHEMAS } from '@services/sites';
+import { BLOG_OFFLINE_SITE_SCHEMA } from './services/database/blog';
+import { CoreCronDelegate } from '@services/cron';
+import { AddonBlogSyncCronHandler } from './services/handlers/sync-cron';
 
 const routes: Routes = [
     {
@@ -45,6 +49,11 @@ const routes: Routes = [
     ],
     providers: [
         {
+            provide: CORE_SITE_SCHEMAS,
+            useValue: [BLOG_OFFLINE_SITE_SCHEMA],
+            multi: true,
+        },
+        {
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
@@ -54,6 +63,7 @@ const routes: Routes = [
                 CoreUserDelegate.registerHandler(AddonBlogUserHandler.instance);
                 CoreTagAreaDelegate.registerHandler(AddonBlogTagAreaHandler.instance);
                 CoreCourseOptionsDelegate.registerHandler(AddonBlogCourseOptionHandler.instance);
+                CoreCronDelegate.register(AddonBlogSyncCronHandler.instance);
             },
         },
     ],
