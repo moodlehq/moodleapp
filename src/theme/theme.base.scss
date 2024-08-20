@@ -207,9 +207,7 @@ img[core-external-content]:not([src]) {
     border-radius: var(--mdl-shape-borderRadius-lg);
 }
 
-ion-list.core-course-module-list-wrapper,
 .list-item-limited-width,
-.core-course-module-list-wrapper,
 ion-content.limited-width > :not([slot]) {
     max-width: var(--list-item-max-width);
     margin-left: auto !important;

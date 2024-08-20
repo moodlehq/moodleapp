@@ -8,9 +8,37 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="dataLoaded">
-        <ion-list class="core-course-module-list-wrapper">
+        <ion-list class="list-item-limited-width">
             <!-- Site home main contents. -->
-            <ng-container *ngIf="section && section.hasContent">
+            <section *ngIf="section && section.hasContent" class="core-course-module-list-wrapper">
+                <ion-item-divider class="course-section ion-text-wrap"
+                    [class.item-dimmed]="section.visible === 0 || section.uservisible === false">
+                    <ion-label>
+                        <h2 *ngIf="section.name" class="big" [id]="'core-section-name-' + section.id">
+                            <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="siteHomeId" />
+                        </h2>
+                        <div *ngIf="section.visible === 0 && section.uservisible !== false">
+                            <ion-badge color="warning">
+                                {{ 'core.course.hiddenfromstudents' | translate }}
+                            </ion-badge>
+                        </div>
+                        <div *ngIf="section.visible === 0 && section.uservisible === false">
+                            <ion-badge color="warning">
+                                {{ 'core.notavailable' | translate }}
+                            </ion-badge>
+                        </div>
+                        <div *ngIf="section.availabilityinfo">
+                            <ion-chip class="clickable">
+                                <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate" />
+                                <ion-label>
+                                    <core-format-text [text]=" section.availabilityinfo" contextLevel="course"
+                                        [contextInstanceId]="siteHomeId" />
+                                </ion-label>
+                            </ion-chip>
+                        </div>
+                    </ion-label>
+                </ion-item-divider>
+
                 <ion-item class="ion-text-wrap section-summary" *ngIf="section.summary">
                     <ion-label>
                         <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="siteHomeId" />
@@ -18,11 +46,10 @@
                 </ion-item>
 
                 <core-course-module *ngFor="let module of section.modules" [module]="module" [section]="section" />
-            </ng-container>
+            </section>
 
             <!-- Site home items: news, categories, courses, etc. -->
             <ng-container *ngIf="items.length > 0">
-                <core-spacer *ngIf="section && section!.hasContent" />
                 <ng-container *ngFor="let item of items">
                     <ng-container [ngSwitch]="item">
                         <ng-container *ngSwitchCase="'LIST_OF_COURSE'">

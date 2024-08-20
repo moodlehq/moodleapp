@@ -8,7 +8,7 @@
     <core-loading [hideUntil]="loaded">
 
         <!-- Single section. -->
-        <div *ngIf="selectedSection && selectedSection.id !== allSectionsId">
+        <div *ngIf="selectedSection && selectedSection.id !== allSectionsId" class="single-section list-item-limited-width">
             <core-dynamic-component [component]="singleSectionComponent" [data]="data">
                 <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: selectedSection}" />
                 <core-empty-box *ngIf="!selectedSection.hasContent" icon="fas-table-cells-large"
@@ -17,7 +17,7 @@
         </div>
 
         <!-- Multiple sections. -->
-        <div *ngIf="selectedSection && selectedSection.id === allSectionsId">
+        <div *ngIf="selectedSection && selectedSection.id === allSectionsId" class="multiple-sections list-item-limited-width">
             <core-dynamic-component [component]="allSectionsComponent" [data]="data">
                 <ng-container *ngFor="let section of sections; index as i">
                     <ng-container *ngIf="i <= lastShownSectionIndex">

@@ -8,7 +8,7 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshData($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
@@ -18,7 +18,7 @@
 
         <ion-list class="core-course-module-list-wrapper">
             <ng-container *ngFor="let section of sections; index as i">
-                <ng-container *ngIf="i <= lastShownSectionIndex">
+                <ion-card *ngIf="i <= lastShownSectionIndex">
                     <ion-item-divider class="course-section ion-text-wrap" *ngIf="section.name">
                         <ion-label>
                             <h2>
@@ -30,7 +30,7 @@
                         <core-course-module [module]="module" [section]="section" [showActivityDates]="false" [showAvailability]="false"
                             [showExtra]="false" [showDownloadStatus]="false" [showCompletion]="false" [showIndentation]="false" />
                     </ng-container>
-                </ng-container>
+                </ion-card>
             </ng-container>
         </ion-list>
         <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)" />

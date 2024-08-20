@@ -4,13 +4,15 @@
     --horizontal-margin: 12px;
     --vertical-margin: 12px;
     --card-padding: 16px;
+    --card-border-width: 0px;
+    --card-radius: 0px;
+    --card-background: transparent;
 
     ion-card {
         margin: var(--vertical-margin) var(--horizontal-margin);
-
-        &.activityinline {
-            border: 0px;
-        }
+        --ion-card-border-width: var(--card-border-width);
+        --ion-card-radius: var(--card-radius);
+        --ion-card-background: var(--card-background);
     }
 
     ion-item {
@@ -125,6 +127,7 @@
     }
 
     .activity-extrabadges {
+        font: var(--mdl-typography-body-font-md);
         color: var(--medium);
     }
 
@@ -182,13 +185,11 @@
     }
 
     &.indented ion-card {
-        border: none;
-        --ion-card-radius: 0;
         @include margin-horizontal(calc(var(--horizontal-margin) + 1rem), null);
     }
 
-    &.indented + ::ng-deep core-course-module.indented ion-card {
-        border-top: 1px solid var(--border-color);
+    & + ::ng-deep core-course-module ion-card {
+        border-top: 1px solid var(--ion-card-border-color);
     }
 
     // Hide download folder icon meanwhile MOBILE-4147 is not solved

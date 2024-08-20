@@ -66,7 +66,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     prefetchStatusIcon$ = new BehaviorSubject<string>(''); // Module prefetch status icon.
     prefetchStatusText$ = new BehaviorSubject<string>(''); // Module prefetch status text.
     moduleHasView = true;
-    activityInline = false;
 
     protected prefetchHandler?: CoreCourseModulePrefetchHandler;
 
@@ -102,18 +101,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
         this.module.handlerData.a11yTitle = this.module.handlerData.a11yTitle ?? this.module.handlerData.title;
         this.moduleHasView = CoreCourse.moduleHasView(this.module);
-
-        if (
-            this.module.handlerData.hasCustomCmListItem &&
-            (!this.showAvailability || !this.module.availabilityinfo) &&
-            (!this.showCompletion || !this.hasCompletion) &&
-            (!this.showActivityDates || !this.module.dates?.length) &&
-            !this.module.groupmode &&
-            !(this.module.visible === 0) &&
-            !(this.module.visible !== 0 && this.module.isStealth)
-        ) {
-            this.activityInline = true;
-        }
 
         if (this.showDownloadStatus && this.module.handlerData.showDownloadButton) {
             const status = await CoreCourseModulePrefetchDelegate.getDownloadedModuleStatus(this.module, this.module.course);
