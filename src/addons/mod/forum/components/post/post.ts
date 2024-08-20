@@ -35,6 +35,7 @@ import {
     AddonModForumDiscussion,
     AddonModForumPost,
     AddonModForumPostFormData,
+    AddonModForumPrepareDraftAreaForPostWSResponse,
 } from '../../services/forum';
 import { CoreTag } from '@features/tag/services/tag';
 import { Translate } from '@singletons';
@@ -47,7 +48,7 @@ import { AddonModForumOffline } from '../../services/forum-offline';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreForms } from '@singletons/form';
-import { CoreFileEntry } from '@services/file-helper';
+import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { AddonModForumSharedPostFormData } from '../../pages/discussion/discussion';
 import { CoreDom } from '@singletons/dom';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -94,6 +95,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     tagsEnabled!: boolean;
     displaySubject = true;
     optionsMenuEnabled = false;
+
+    protected preparePostData?: AddonModForumPrepareDraftAreaForPostWSResponse;
 
     constructor(
         protected elementRef: ElementRef,
@@ -226,6 +229,10 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
         // Show advanced fields if any of them has not the default value.
         this.advanced = this.formData.files.length > 0;
+
+        if (!isEditing || !postId || postId <= 0) {
+            this.preparePostData = undefined;
+        }
     }
 
     /**
@@ -314,6 +321,28 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         // Ask confirm if there is unsaved data.
         try {
             await this.confirmDiscard();
+        } catch {
+            // Cancelled.
+            return;
+        }
+
+        const modal = await CoreLoadings.show();
+
+        try {
+            let message = this.post.message;
+
+            if (this.post.id > 0) {
+                // Call prepare post for edition to retrieve the message without any added content (like filters and plagiarism).
+                this.preparePostData = await AddonModForum.preparePostForEdition(this.post.id, 'post');
+
+                const { text } = CoreFileHelper.replaceDraftfileUrls(
+                    CoreSites.getRequiredCurrentSite().getURL(),
+                    this.preparePostData.messagetext,
+                    this.post.messageinlinefiles?.length ? this.post.messageinlinefiles : (this.preparePostData.files ?? []),
+                );
+
+                message = text;
+            }
 
             this.formData.syncId = AddonModForumSync.getDiscussionSyncId(this.discussionId);
             CoreSync.blockOperation(ADDON_MOD_FORUM_COMPONENT, this.formData.syncId);
@@ -322,7 +351,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                 this.post.parentid,
                 true,
                 this.post.subject,
-                this.post.message,
+                message,
                 this.post.attachments,
                 this.post.isprivatereply,
                 this.post.id > 0 ? this.post.id : undefined,
@@ -331,8 +360,10 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             this.scrollToForm();
 
             this.analyticsLogEvent('mod_forum_update_discussion_post', `/mod/forum/post.php?edit=${this.post.id}`);
-        } catch {
-            // Cancelled.
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_forum.errorgetpost', true);
+        } finally {
+            modal.dismiss();
         }
     }
 
@@ -369,6 +400,16 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         const isEditOnline = this.formData.id && this.formData.id > 0;
         const modal = await CoreLoadings.show('core.sending', true);
 
+        if (isEditOnline && this.preparePostData) {
+            // Restore the draft file URLs, otherwise the treated URLs would be saved in the content, which can cause problems.
+            message = CoreFileHelper.restoreDraftfileUrls(
+                CoreSites.getRequiredCurrentSite().getURL(),
+                message,
+                this.preparePostData.messagetext,
+                this.post.messageinlinefiles?.length ? this.post.messageinlinefiles : (this.preparePostData.files ?? []),
+            );
+        }
+
         // Add some HTML to the message if needed.
         message = CoreText.formatHtmlLines(message);
 
@@ -401,6 +442,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             if (isEditOnline) {
                 sent = await AddonModForum.updatePost(this.formData.id!, subject, message, {
                     attachmentsid: attachments,
+                    inlineattachmentsid: this.preparePostData?.draftitemid,
                 });
             } else if (saveOffline) {
                 // Save post in offline.
