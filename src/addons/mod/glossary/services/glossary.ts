@@ -626,6 +626,7 @@ export class AddonModGlossaryProvider {
      *
      * @param siteId Site id.
      * @returns Whether the site can update entries.
+     * @since 3.10
      */
     async canUpdateEntries(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -1097,6 +1098,26 @@ export class AddonModGlossaryProvider {
         await site.getDb().insertRecord(ENTRIES_TABLE_NAME, entry);
     }
 
+    /**
+     * Prepare entry for edition.
+     *
+     * @param entryId Entry ID.
+     * @param siteId Site ID.
+     * @returns Data of prepared area.
+     */
+    async prepareEntryForEdition(
+        entryId: number,
+        siteId?: string,
+    ): Promise<AddonModGlossaryPrepareEntryForEditionWSResponse> {
+        const site = await CoreSites.getSite(siteId);
+
+        const params: AddonModGlossaryPrepareEntryForEditionWSParams = {
+            entryid: entryId,
+        };
+
+        return await site.write('mod_glossary_prepare_entry_for_edition', params);
+    }
+
 }
 
 export const AddonModGlossary = makeSingleton(AddonModGlossaryProvider);
@@ -1433,6 +1454,31 @@ export type AddonModGlossaryViewGlossaryWSParams = {
  */
 export type AddonModGlossaryViewEntryWSParams = {
     id: number; // Glossary entry ID.
+};
+
+/**
+ * Params of mod_glossary_prepare_entry_for_edition WS.
+ */
+type AddonModGlossaryPrepareEntryForEditionWSParams = {
+    entryid: number; // Glossary entry id to update.
+};
+
+/**
+ * Data returned by mod_glossary_prepare_entry_for_edition WS.
+ */
+export type AddonModGlossaryPrepareEntryForEditionWSResponse = {
+    inlineattachmentsid: number; // Draft item id for the text editor.
+    attachmentsid: number; // Draft item id for the file manager.
+    areas: { // File areas including options.
+        area: string; // File area name.
+        options: { // Draft file area options.
+            name: string; // Name of option.
+            value: string; // Value of option.
+        }[];
+    }[];
+    aliases: string[];
+    categories: number[];
+    warnings?: CoreWSExternalWarning[];
 };
 
 /**
