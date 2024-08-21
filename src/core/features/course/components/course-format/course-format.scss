@@ -25,7 +25,15 @@
         --ion-card-background: transparent;
     }
 
-    ion-item-divider {
+    ion-item.divider.course-section {
         --background: transparent;
+    }
+}
+
+.single-section ::ng-deep {
+    ion-item.divider.course-section {
+        ion-icon.ion-accordion-toggle-icon {
+            display: none;
+        }
     }
 }

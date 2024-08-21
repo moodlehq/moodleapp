@@ -113,6 +113,13 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
     }
 
     /**
+     * Fire the infinite scroll load more action if needed.
+     */
+    async fireInfiniteScrollIfNeeded(): Promise<void> {
+        this.checkScrollDistance();
+    }
+
+    /**
      * Complete loading.
      */
     async complete(): Promise<void> {
