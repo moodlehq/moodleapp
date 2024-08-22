@@ -71,6 +71,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     protected loginSuccessful = false;
     protected username = '';
     protected alwaysShowLoginFormObserver?: CoreEventObserver;
+    protected loginObserver?: CoreEventObserver;
 
     constructor(
         protected fb: FormBuilder,
@@ -80,6 +81,11 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
         this.isLoggedOut = !currentSite || currentSite.isLoggedOut();
         this.credForm = fb.group({
             password: ['', Validators.required],
+        });
+
+        // Listen to LOGIN event to determine if login was successful, since the login can be done using QR, biometric, etc.
+        this.loginObserver = CoreEvents.on(CoreEvents.LOGIN, () => {
+            this.loginSuccessful = true;
         });
     }
 
@@ -156,6 +162,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.siteId,
         );
         this.alwaysShowLoginFormObserver?.off();
+        this.loginObserver?.off();
     }
 
     /**
@@ -262,8 +269,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.credForm.controls['password'].reset();
 
             // Go to the site initial page.
-            this.loginSuccessful = true;
-
             await CoreNavigator.navigateToSiteHome({
                 params: this.redirectData,
             });

@@ -1443,7 +1443,7 @@ export class CoreSitesProvider {
     async login(siteId: string): Promise<void> {
         await CoreConfig.set(CORE_SITE_CURRENT_SITE_ID_CONFIG, siteId);
 
-        CoreEvents.trigger(CoreEvents.LOGIN, {}, siteId);
+        CoreEvents.trigger(CoreEvents.LOGIN, { siteId }, siteId);
     }
 
     /**
