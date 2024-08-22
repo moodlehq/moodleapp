@@ -369,9 +369,8 @@ export class TestingBehatDomUtilsService {
      * @param containerName Whether to search inside the a container name.
      * @returns Found top container elements.
      */
-    protected getCurrentTopContainerElements(containerName: string): HTMLElement[] {
-        const topContainers: HTMLElement[] = [];
-        let containers = Array.from(document.querySelectorAll<HTMLElement>([
+    protected getCurrentTopContainerElements(containerName?: string): HTMLElement[] {
+        let containers = Array.from(document.body.querySelectorAll<HTMLElement>([
             'ion-alert.hydrated',
             'ion-popover.hydrated',
             'ion-action-sheet.hydrated',
@@ -395,13 +394,15 @@ export class TestingBehatDomUtilsService {
                     return container.style.pointerEvents !== 'none';
                 }
 
-                // Ignore pages that are inside other visible pages.
-                return container.tagName !== 'ION-PAGE' || !container.closest('.ion-page.ion-page-hidden');
+                return true;
             })
             // Sort them by z-index.
             .sort((a, b) =>  Number(getComputedStyle(b).zIndex) - Number(getComputedStyle(a).zIndex));
 
         if (containerName === 'split-view content') {
+
+            let splitViewContainer: HTMLElement | null = null;
+
             // Find non hidden pages inside the containers.
             containers.some(container => {
                 if (!container.classList.contains('ion-page')) {
@@ -409,18 +410,20 @@ export class TestingBehatDomUtilsService {
                 }
 
                 const pageContainers = Array.from(container.querySelectorAll<HTMLElement>('.ion-page:not(.ion-page-hidden)'));
-                let topContainer = pageContainers.find((page) => !page.closest('.ion-page.ion-page-hidden')) ?? null;
+                const topContainer = pageContainers.find((page) => !page.closest('.ion-page.ion-page-hidden')) ?? null;
 
-                topContainer = (topContainer || container).querySelector<HTMLElement>('core-split-view ion-router-outlet');
-                topContainer && topContainers.push(topContainer);
+                splitViewContainer = (topContainer || container).querySelector<HTMLElement>(
+                    'core-split-view ion-router-outlet',
+                );
 
-                return !!topContainer;
+                return !!splitViewContainer;
             });
 
-            return topContainers;
+            return splitViewContainer ? [splitViewContainer] : [];
         }
 
         // Get containers until one blocks other views.
+        const topContainers: HTMLElement[] = [];
         containers.some(container => {
             if (container.tagName === 'ION-TOAST') {
                 container = container.shadowRoot?.querySelector('.toast-container') || container;
@@ -446,7 +449,7 @@ export class TestingBehatDomUtilsService {
 
         let input = this.findElementBasedOnText(
             { text: field, selector },
-            { onlyClickable: false, containerName: '' },
+            { onlyClickable: false },
         );
 
         if (input?.tagName === 'CORE-RICH-TEXT-EDITOR') {
@@ -459,7 +462,7 @@ export class TestingBehatDomUtilsService {
 
         const label = this.findElementBasedOnText(
             { text: field, selector: 'label' },
-            { onlyClickable: false, containerName: '' },
+            { onlyClickable: false },
         );
 
         if (label) {
@@ -473,7 +476,7 @@ export class TestingBehatDomUtilsService {
 
                 // Search the ion-datetime associated with the button.
                 const datetimeId = (<HTMLIonDatetimeButtonElement> element).datetime;
-                const datetime = document.querySelector<HTMLElement>(`ion-datetime#${datetimeId}`);
+                const datetime = document.body.querySelector<HTMLElement>(`ion-datetime#${datetimeId}`);
 
                 return datetime || undefined;
             }
@@ -539,7 +542,7 @@ export class TestingBehatDomUtilsService {
         timeout: number = 2000,
         retryFrequency: number = 100,
     ): Promise<T> {
-        const element = document.querySelector<T>(selector);
+        const element = document.body.querySelector<T>(selector);
 
         if (!element) {
             if (timeout < retryFrequency) {
@@ -565,15 +568,14 @@ export class TestingBehatDomUtilsService {
         locator: TestingBehatElementLocator,
         options: TestingBehatFindOptions,
     ): HTMLElement[] {
-        const topContainers = this.getCurrentTopContainerElements(options.containerName ?? '');
+        const topContainers = this.getCurrentTopContainerElements(options.containerName);
         let elements: HTMLElement[] = [];
 
-        for (let i = 0; i < topContainers.length; i++) {
-            elements = elements.concat(this.findElementsBasedOnTextInContainer(locator, topContainers[i], options));
-            if (elements.length) {
-                break;
-            }
-        }
+        topContainers.some((container) => {
+            elements = this.findElementsBasedOnTextInContainer(locator, container, options);
+
+            return elements.length > 0;
+        });
 
         return elements;
     }

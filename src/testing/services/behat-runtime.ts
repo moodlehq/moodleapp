@@ -188,7 +188,6 @@ export class TestingBehatRuntimeService {
         let foundButton: HTMLElement | undefined;
         const options: TestingBehatFindOptions = {
             onlyClickable: true,
-            containerName: '',
         };
 
         switch (button) {
@@ -235,11 +234,11 @@ export class TestingBehatRuntimeService {
 
         const backdrops = [
             ...Array
-                .from(document.querySelectorAll('ion-popover, ion-modal'))
+                .from(document.body.querySelectorAll('ion-popover, ion-modal'))
                 .map(popover => popover.shadowRoot?.querySelector('ion-backdrop'))
                 .filter(backdrop => !!backdrop),
             ...Array
-                .from(document.querySelectorAll('ion-backdrop'))
+                .from(document.body.querySelectorAll('ion-backdrop'))
                 .filter(backdrop => !!backdrop.offsetParent),
         ];
 
@@ -272,7 +271,6 @@ export class TestingBehatRuntimeService {
         try {
             const element = TestingBehatDomUtils.findElementBasedOnText(locator, {
                 onlyClickable: false,
-                containerName: '',
                 ...options,
             });
 
@@ -298,7 +296,7 @@ export class TestingBehatRuntimeService {
         this.log('Action - scrollTo', { locator });
 
         try {
-            let element = TestingBehatDomUtils.findElementBasedOnText(locator, { onlyClickable: false, containerName: '' });
+            let element = TestingBehatDomUtils.findElementBasedOnText(locator, { onlyClickable: false });
 
             if (!element) {
                 return 'ERROR: No element matches element to scroll to.';
@@ -365,7 +363,7 @@ export class TestingBehatRuntimeService {
 
         try {
             const infiniteLoading = Array
-                .from(document.querySelectorAll<HTMLElement>('core-infinite-loading'))
+                .from(document.body.querySelectorAll<HTMLElement>('core-infinite-loading'))
                 .find(element => !element.closest('.ion-page-hidden'));
 
             if (!infiniteLoading) {
@@ -411,7 +409,7 @@ export class TestingBehatRuntimeService {
         this.log('Action - Is Selected', locator);
 
         try {
-            const element = TestingBehatDomUtils.findElementBasedOnText(locator, { onlyClickable: false, containerName: '' });
+            const element = TestingBehatDomUtils.findElementBasedOnText(locator, { onlyClickable: false });
 
             if (!element) {
                 return 'ERROR: No element matches locator to find.';
@@ -441,7 +439,7 @@ export class TestingBehatRuntimeService {
         this.log('Action - Press', locator);
 
         try {
-            const found = TestingBehatDomUtils.findElementBasedOnText(locator, { onlyClickable: true, containerName: '' });
+            const found = TestingBehatDomUtils.findElementBasedOnText(locator, { onlyClickable: true });
 
             if (!found) {
                 return 'ERROR: No element matches locator to press.';
@@ -523,7 +521,7 @@ export class TestingBehatRuntimeService {
     getHeader(): string {
         this.log('Action - Get header');
 
-        const getBySelector = (selector: string ) =>  Array.from(document.querySelectorAll<HTMLElement>(selector))
+        const getBySelector = (selector: string ) =>  Array.from(document.body.querySelectorAll<HTMLElement>(selector))
             .filter((title) => TestingBehatDomUtils.isElementVisible(title, document.body))
             .map((title) => title.innerText.trim())
             .filter((title) => title.length > 0);
@@ -650,7 +648,6 @@ export class TestingBehatRuntimeService {
         if (referenceLocator) {
             startingElement = TestingBehatDomUtils.findElementBasedOnText(referenceLocator, {
                 onlyClickable: false,
-                containerName: '',
             });
 
             if (!startingElement) {
