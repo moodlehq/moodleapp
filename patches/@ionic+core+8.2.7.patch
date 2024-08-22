@@ -1,5 +1,5 @@
 diff --git a/node_modules/@ionic/core/components/popover.js b/node_modules/@ionic/core/components/popover.js
-index 19b79c4..67289f4 100644
+index ec31d43..6be0b28 100644
 --- a/node_modules/@ionic/core/components/popover.js
 +++ b/node_modules/@ionic/core/components/popover.js
 @@ -763,8 +763,10 @@ const iosEnterAnimation = (baseEl, opts) => {
@@ -29,7 +29,7 @@ index 19b79c4..67289f4 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js b/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
-index 2dcf484..54aeac9 100644
+index 2e169dc..ddd9daa 100644
 --- a/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
 +++ b/node_modules/@ionic/core/dist/cjs/ion-popover.cjs.entry.js
 @@ -769,8 +769,10 @@ const iosEnterAnimation = (baseEl, opts) => {
@@ -93,7 +93,7 @@ index 603923a..ff10a25 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/dist/esm/ion-popover.entry.js b/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
-index 8ca76cf..c5b990a 100644
+index a88d216..bc09959 100644
 --- a/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
 +++ b/node_modules/@ionic/core/dist/esm/ion-popover.entry.js
 @@ -765,8 +765,10 @@ const iosEnterAnimation = (baseEl, opts) => {
@@ -123,10 +123,10 @@ index 8ca76cf..c5b990a 100644
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
 diff --git a/node_modules/@ionic/core/hydrate/index.js b/node_modules/@ionic/core/hydrate/index.js
-index 5a50b98..884e2ce 100644
+index 06501b6..a6ee24e 100644
 --- a/node_modules/@ionic/core/hydrate/index.js
 +++ b/node_modules/@ionic/core/hydrate/index.js
-@@ -23702,8 +23702,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
+@@ -23747,8 +23747,10 @@ const iosEnterAnimation$1 = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';
@@ -139,7 +139,7 @@ index 5a50b98..884e2ce 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const arrowEl = root.querySelector('.popover-arrow');
-@@ -23823,8 +23825,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
+@@ -23868,8 +23870,10 @@ const mdEnterAnimation$1 = (baseEl, opts) => {
      const { event: ev, size, trigger, reference, side, align } = opts;
      const doc = baseEl.ownerDocument;
      const isRTL = doc.dir === 'rtl';

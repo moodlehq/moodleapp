@@ -13,6 +13,6 @@ module.exports = {
         '!src/core/initializers/index.ts',
         '!src/core/features/emulators/services/zip.ts',
     ],
-    transformIgnorePatterns: ['node_modules/(?!@stencil|@angular|@ionic|@moodlehq|@ngx-translate|@awesome-cordova-plugins|swiper|jest-preset-angular)'],
+    transformIgnorePatterns: ['node_modules/(?!@stencil|@angular|@ionic|@moodlehq|@ngx-translate|@awesome-cordova-plugins|swiper)'],
     moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src/' }),
 };
