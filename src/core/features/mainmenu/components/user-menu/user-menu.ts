@@ -99,7 +99,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
         this.subscription = CoreUserDelegate.getProfileHandlersFor(this.user, CoreUserDelegateContext.USER_MENU)
             .subscribe((handlers) => {
-                if (!handlers.length || !this.user) {
+                if (!this.user) {
                     return;
                 }
 
