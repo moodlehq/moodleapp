@@ -24,4 +24,4 @@ Feature: Contact the privacy officer
   Scenario: Contacting the privacy officer when not enabled
     When I entered the app as "student1"
     And I press the user menu button in the app
-    Then I should not find ""Data privacy" in the app
+    Then I should not find "Data privacy" in the app

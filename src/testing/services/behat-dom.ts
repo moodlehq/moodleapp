@@ -44,7 +44,25 @@ export class TestingBehatDomUtilsService {
      * @returns Whether the element is visible or not.
      */
     isElementVisible(element: HTMLElement, container?: HTMLElement): boolean {
-        if (element.getAttribute('aria-hidden') === 'true' || getComputedStyle(element).display === 'none') {
+        if (element.getAttribute('aria-hidden') === 'true') {
+            if (
+                element === document.body.querySelector('ion-app > ion-router-outlet') &&
+                (document.body.querySelector('ion-toast.hydrated:not(.overlay-hidden)') ||
+                !document.body.querySelector(
+                    'ion-action-sheet.hydrated:not(.overlay-hidden), ion-alert.hydrated:not(.overlay-hidden)\
+                    ion-loading.hydrated:not(.overlay-hidden), ion-modal.hydrated:not(.overlay-hidden),\
+                    ion-picker.hydrated:not(.overlay-hidden), ion-popover.hydrated:not(.overlay-hidden)',
+                ))
+            ) {
+                // Main ion-router-outlet is aria-hidden when a toast is open but the UI is not blocked...
+                // It also may be hidden due to an error in Ionic. See fixOverlayAriaHidden function.
+                return true;
+            }
+
+            return false;
+        }
+
+        if (getComputedStyle(element).display === 'none') {
             return false;
         }
 
@@ -371,22 +389,20 @@ export class TestingBehatDomUtilsService {
      */
     protected getCurrentTopContainerElements(containerName?: string): HTMLElement[] {
         let containers = Array.from(document.body.querySelectorAll<HTMLElement>([
-            'ion-alert.hydrated',
-            'ion-popover.hydrated',
-            'ion-action-sheet.hydrated',
-            'ion-modal.hydrated',
+            'ion-alert.hydrated:not(.overlay-hidden)',
+            'ion-popover.hydrated:not(.overlay-hidden)',
+            'ion-action-sheet.hydrated:not(.overlay-hidden)',
+            'ion-modal.hydrated:not(.overlay-hidden)',
             'core-user-tours-user-tour.is-active',
-            'ion-toast.hydrated',
-            'page-core-mainmenu',
-            'ion-app',
+            'ion-toast.hydrated:not(.overlay-hidden)',
+            'page-core-mainmenu > ion-tabs:not(.tabshidden) > .mainmenu-tabs',
+            'page-core-mainmenu > .core-network-message',
+            '.ion-page:not(.ion-page-hidden)',
         ].join(', ')));
+        const ionApp = document.querySelector<HTMLElement>('ion-app') ?? undefined;
 
         containers = containers
             .filter(container => {
-                if (!this.isElementVisible(container)) {
-                    // Ignore containers not visible.
-                    return false;
-                }
 
                 if (container.tagName === 'ION-ALERT') {
                     // For some reason, in Behat sometimes alerts aren't removed from DOM, the close animation doesn't finish.
@@ -394,7 +410,13 @@ export class TestingBehatDomUtilsService {
                     return container.style.pointerEvents !== 'none';
                 }
 
-                return true;
+                // Avoid searching in the whole app.
+                if (container.tagName === 'ION-APP' || container.tagName === 'PAGE-CORE-MAINMENU') {
+                    return false;
+                }
+
+                // Ignore not visible containers.
+                return this.isElementVisible(container, ionApp);
             })
             // Sort them by z-index.
             .sort((a, b) =>  Number(getComputedStyle(b).zIndex) - Number(getComputedStyle(a).zIndex));

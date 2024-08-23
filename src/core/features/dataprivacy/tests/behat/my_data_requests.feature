@@ -19,6 +19,6 @@ Feature: Manage my own data requests
     And I set the field "Message" to "Hello DPO!" in the app
     And I press "Send" in the app
     Then I should find "Your request has been submitted to the privacy officer" in the app
-    When I press "Cancel" near "Hello DPO!" in the app
+    When I press "Cancel request" near "Hello DPO!" in the app
     And I press "Cancel request" "button" in the app
     Then I should find "Cancelled" near "Hello DPO!" in the app

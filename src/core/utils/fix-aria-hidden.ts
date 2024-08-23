@@ -45,6 +45,6 @@ export async function fixOverlayAriaHidden(
     ]);
 
     if (!overlays.find(overlay => overlay !== undefined)) {
-        document.querySelector('ion-router-outlet')?.removeAttribute('aria-hidden');
+        document.body.querySelector('ion-router-outlet')?.removeAttribute('aria-hidden');
     }
 }
