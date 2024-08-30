@@ -809,7 +809,7 @@ export type TestingBehatFindOptions = {
 };
 
 export type TestingBehatElementLocator = {
-    text: string;
+    text: string | string[];
     within?: TestingBehatElementLocator;
     near?: TestingBehatElementLocator;
     selector?: string;
