@@ -27,6 +27,8 @@ function isIOS() {
     || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
 }
 
+let useFakeFullScreen = false;
+
 // Detect if we support fullscreen, and what prefix to use.
 if (document.documentElement.requestFullscreen) {
   /**
@@ -57,6 +59,7 @@ else if (document.documentElement.msRequestFullscreen) {
   // This code has been added to allow a "fake" full screen in Moodle app.
   H5P.fullScreenBrowserPrefix = 'webkit';
   H5P.safariBrowser = 0;
+  useFakeFullScreen = true;
 }
 
 /**
@@ -174,7 +177,7 @@ H5P.init = function (target) {
         })
       ;
 
-      if (isIOS()) {
+      if (useFakeFullScreen) {
         // Register message listener to enter fullscreen.
         window.addEventListener('message', function receiveMessage(event) {
           if (event.data == 'enterFullScreen') {
@@ -699,7 +702,7 @@ H5P.fullScreen = function ($element, instance, exitCallback, body, forceSemiFull
       var method = (H5P.fullScreenBrowserPrefix === 'ms' ? 'msRequestFullscreen' : H5P.fullScreenBrowserPrefix + 'RequestFullScreen');
       var params = (H5P.fullScreenBrowserPrefix === 'webkit' && H5P.safariBrowser === 0 ? Element.ALLOW_KEYBOARD_INPUT : undefined);
 
-      if (isIOS()) {
+      if (useFakeFullScreen) {
         before('h5p-fullscreen-ios');
         window.parent.postMessage('enterFullScreen', '*');
       } else {
@@ -718,7 +721,7 @@ H5P.fullScreen = function ($element, instance, exitCallback, body, forceSemiFull
       else {
         done('h5p-fullscreen');
         document[H5P.fullScreenBrowserPrefix + 'ExitFullscreen'] && document[H5P.fullScreenBrowserPrefix + 'ExitFullscreen']();
-        if (isIOS()) {
+        if (useFakeFullScreen) {
           done('h5p-fullscreen-ios');
           window.parent.postMessage('exitFullScreen', '*');
         }
@@ -727,7 +730,7 @@ H5P.fullScreen = function ($element, instance, exitCallback, body, forceSemiFull
   }
 };
 
-if (isIOS()) {
+if (useFakeFullScreen) {
   // Pass fullscreen messages to child iframes.
   window.addEventListener('message', function receiveMessage(event) {
     if (event.data === 'enterFullScreen' || event.data === 'exitFullScreen') {

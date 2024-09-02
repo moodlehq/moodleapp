@@ -7,3 +7,4 @@ Changes:
 2. The h5p.js file has been modified to simulate a fake full screen in iOS. The H5P file now sends post messages to the app, and also listens to messages sent by the app to enter/exit full screen.
 3. The embed.js file has been modified to remove optional chaining because it isn't supported in some old devices.
 4. The h5p.js has been modified to include a call to contentUserDataAjax (this change was done in LMS too).
+5. The h5p.js has been modified so the fake sull screen (point 2) is only used if native full screen is not available (iOS 16 or older).
