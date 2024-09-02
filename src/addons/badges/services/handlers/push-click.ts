@@ -20,6 +20,7 @@ import { AddonBadges } from '../badges';
 import { makeSingleton } from '@singletons';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CoreNavigator } from '@services/navigator';
+import { AddonBadgesHelper } from '../badges-helper';
 
 /**
  * Handler for badges push notifications clicks.
@@ -42,6 +43,10 @@ export class AddonBadgesPushClickHandlerService implements CorePushNotifications
 
         if (CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'moodle' &&
                 (notification.name == 'badgerecipientnotice' || (notification.name == 'badgecreatornotice' && data.hash))) {
+            if (notification.customdata?.hash) {
+                return await AddonBadgesHelper.canOpenBadge(String(notification.customdata?.hash), notification.site);
+            }
+
             return AddonBadges.isPluginEnabled(notification.site);
         }
 
@@ -59,7 +64,7 @@ export class AddonBadgesPushClickHandlerService implements CorePushNotifications
 
         if (data.hash) {
             // We have the hash, open the badge directly.
-            await CoreNavigator.navigateToSitePath(`/badges/${data.hash}`, {
+            await CoreNavigator.navigateToSitePath(`/badge/${data.hash}`, {
                 siteId: notification.site,
             });
 

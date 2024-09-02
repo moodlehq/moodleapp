@@ -31,6 +31,7 @@ const mobileRoutes: Routes = [
     {
         path: ':badgeHash',
         component: AddonBadgesIssuedBadgePage,
+        data: { usesSwipeNavigation: true },
     },
 ];
 
@@ -42,6 +43,7 @@ const tabletRoutes: Routes = [
             {
                 path: ':badgeHash',
                 component: AddonBadgesIssuedBadgePage,
+                data: { usesSwipeNavigation: true },
             },
         ],
     },
@@ -59,7 +61,6 @@ const routes: Routes = [
     ],
     declarations: [
         AddonBadgesUserBadgesPage,
-        AddonBadgesIssuedBadgePage,
     ],
 })
 export class AddonBadgesLazyModule {}

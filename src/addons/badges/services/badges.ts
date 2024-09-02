@@ -106,6 +106,58 @@ export class AddonBadgesProvider {
         await site.invalidateWsCacheForKey(this.getBadgesCacheKey(courseId, userId));
     }
 
+    /**
+     * Get the cache key for the get badge by hash WS call.
+     *
+     * @param hash Badge issued hash.
+     * @returns Cache key.
+     */
+    protected getUserBadgeByHashCacheKey(hash: string): string {
+        return ROOT_CACHE_KEY + 'badge:' + hash;
+    }
+
+    /**
+     * Get issued badge by hash.
+     *
+     * @param hash Badge issued hash.
+     * @returns Promise to be resolved when the badge is retrieved.
+     * @since 4.5 with the recpient name, 4.3 without the recipient name.
+     */
+    async getUserBadgeByHash(hash: string, siteId?: string): Promise<AddonBadgesUserBadge> {
+        const site = await CoreSites.getSite(siteId);
+        const data: AddonBadgesGetUserBadgeByHashWSParams = {
+            hash,
+        };
+        const preSets = {
+            cacheKey: this.getUserBadgeByHashCacheKey(hash),
+            updateFrequency: CoreSite.FREQUENCY_RARELY,
+        };
+
+        const response = await site.read<AddonBadgesGetUserBadgeByHashWSResponse>(
+            'core_badges_get_user_badge_by_hash',
+            data,
+            preSets,
+        );
+        if (!response || !response.badge?.[0]) {
+            throw new CoreError('Invalid badge response');
+        }
+
+        return response.badge[0];
+    }
+
+    /**
+     * Invalidate get badge by hash WS call.
+     *
+     * @param hash Badge issued hash.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when data is invalidated.
+     */
+    async invalidateUserBadgeByHash(hash: string, siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+
+        await site.invalidateWsCacheForKey(this.getUserBadgeByHashCacheKey(hash));
+    }
+
 }
 
 export const AddonBadges = makeSingleton(AddonBadgesProvider);
@@ -167,6 +219,8 @@ export type AddonBadgesUserBadge = {
     dateissued: number; // Date issued.
     dateexpire: number; // Date expire.
     visible?: number; // Visible.
+    recipientid?: number; // @since 4.5. Id of the awarded user.
+    recipientfullname?: string; // @since 4.5. Full name of the awarded user.
     email?: string; // @since 3.6. User email.
     version?: string; // @since 3.6. Version.
     language?: string; // @since 3.6. Language.
@@ -210,4 +264,19 @@ export type AddonBadgesUserBadge = {
         language?: string; // Language.
         type?: number; // Type.
     }[];
+};
+
+/**
+ * Params of core_badges_get_user_badge_by_hash WS.
+ */
+type AddonBadgesGetUserBadgeByHashWSParams = {
+    hash: string; // Badge issued hash.
+};
+
+/**
+ * Data returned by core_badges_get_user_badge_by_hash WS.
+ */
+type AddonBadgesGetUserBadgeByHashWSResponse = {
+    badge: AddonBadgesUserBadge[];
+    warnings?: CoreWSExternalWarning[];
 };
