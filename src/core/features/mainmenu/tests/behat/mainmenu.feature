@@ -34,7 +34,7 @@ Feature: Main Menu opens the right page
     Given the following config values are set as admin:
       | defaulthomepage | 3 |
     And I entered the app as "student"
-    Then "My courses" near "Home" should be selected in the app
+    Then "My courses" "ion-tab-button" should be selected in the app
     And I should find "Course 1" in the app
     And "My courses" "text" should appear before "Home" "text" in the ".mainmenu-tabs" "css_element"
 
