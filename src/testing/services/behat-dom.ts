@@ -124,9 +124,13 @@ export class TestingBehatDomUtilsService {
      */
     protected findElementsBasedOnTextWithinWithExact(
         container: HTMLElement,
-        text: string,
+        text: string | string[],
         options: TestingBehatFindOptions,
     ): ElementsWithExact[] {
+        if (Array.isArray(text)) {
+            return text.map((text) => this.findElementsBasedOnTextWithinWithExact(container, text, options)).flat();
+        }
+
         // Escape double quotes to prevent breaking the query selector.
         const escapedText = text.replace(/"/g, '\\"');
         const attributesSelector = `[aria-label*="${escapedText}"], a[title*="${escapedText}"], ` +
@@ -266,7 +270,7 @@ export class TestingBehatDomUtilsService {
      */
     protected findElementsBasedOnTextWithin(
         container: HTMLElement,
-        text: string,
+        text: string | string[],
         options: TestingBehatFindOptions,
     ): HTMLElement[] {
         const elements = this.findElementsBasedOnTextWithinWithExact(container, text, options);
@@ -495,6 +499,17 @@ export class TestingBehatDomUtilsService {
         locator: TestingBehatElementLocator,
         options: TestingBehatFindOptions = {},
     ): HTMLElement | undefined {
+        if (Array.isArray(locator.text)) {
+            for (const text of locator.text) {
+                const element = this.findElementBasedOnText({ ...locator, text });
+                if (element) {
+                    return element;
+                }
+            }
+
+            return undefined;
+        }
+
         // Remove extra spaces.
         const treatedText = locator.text.trim().replace(/\s\s+/g, ' ');
         if (treatedText !== locator.text) {

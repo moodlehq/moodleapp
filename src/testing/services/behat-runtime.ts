@@ -219,6 +219,9 @@ export class TestingBehatRuntimeService {
         // Click button
         await TestingBehatDomUtils.pressElement(foundButton);
 
+        // Block Behat for at least 500ms, WS calls or DOM changes might not begin immediately.
+        TestingBehatBlocking.wait(500);
+
         return 'OK';
     }
 
@@ -445,6 +448,9 @@ export class TestingBehatRuntimeService {
             }
 
             await TestingBehatDomUtils.pressElement(found);
+
+            // Block Behat for at least 500ms, WS calls or DOM changes might not begin immediately.
+            TestingBehatBlocking.wait(500);
 
             return 'OK';
         } catch (error) {
@@ -803,7 +809,7 @@ export type TestingBehatFindOptions = {
 };
 
 export type TestingBehatElementLocator = {
-    text: string;
+    text: string | string[];
     within?: TestingBehatElementLocator;
     near?: TestingBehatElementLocator;
     selector?: string;

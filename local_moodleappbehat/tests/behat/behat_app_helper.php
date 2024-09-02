@@ -738,25 +738,36 @@ EOF;
      * This function is similar to the arg_time_to_string transformation, but it allows the time to be a sub-text of the string.
      *
      * @param string $text
-     * @return string Transformed text.
+     * @return string|string[] Transformed text.
      */
-    protected function transform_time_to_string(string $text): string {
+    protected function transform_time_to_string(string $text): string|array {
         if (!preg_match('/##(.*)##/', $text, $matches)) {
             // No time found, return the original text.
             return $text;
         }
 
         $timepassed = explode('##', $matches[1]);
+        $basetime = time();
 
         // If not a valid time string, then just return what was passed.
-        if ((($timestamp = strtotime($timepassed[0])) === false)) {
+        if ((($timestamp = strtotime($timepassed[0], $basetime)) === false)) {
             return $text;
         }
 
         $count = count($timepassed);
         if ($count === 2) {
             // If timestamp with specified strftime format, then return formatted date string.
-            return str_replace($matches[0], userdate($timestamp, $timepassed[1]), $text);
+            $result = [str_replace($matches[0], userdate($timestamp, $timepassed[1]), $text)];
+
+            // If it's a relative date, allow a difference of 1 minute for the base time used to calculate the timestampt.
+            if ($timestamp !== strtotime($timepassed[0], 0)) {
+                $timestamp = strtotime($timepassed[0], $basetime - 60);
+                $result[] = str_replace($matches[0], userdate($timestamp, $timepassed[1]), $text);
+            }
+
+            $result = array_unique($result);
+
+            return count($result) == 1 ? $result[0] : $result;
         } else if ($count === 1) {
             return str_replace($matches[0], $timestamp, $text);
         } else {

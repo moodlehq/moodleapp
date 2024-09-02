@@ -140,6 +140,18 @@ export class TestingBehatBlockingService {
     }
 
     /**
+     * Adds a pending key to the array, and remove it after some time.
+     *
+     * @param milliseconds Number of milliseconds to wait before the key is removed.
+     * @returns Promise resolved after the time has passed.
+     */
+    async wait(milliseconds: number): Promise<void> {
+        const key = this.block();
+        await CoreWait.wait(milliseconds);
+        this.unblock(key);
+    }
+
+    /**
      * It would be really beautiful if you could detect CSS transitions and animations, that would
      * cover almost everything, but sadly there is no way to do this because the transitionstart
      * and animationcancel events are not implemented in Chrome, so we cannot detect either of
