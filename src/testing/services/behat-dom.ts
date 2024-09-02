@@ -375,11 +375,12 @@ export class TestingBehatDomUtilsService {
             return element;
         }
 
-        if (element === container || !element.parentElement) {
+        const parent = this.getParentElement(element);
+        if (element === container || !parent) {
             return null;
         }
 
-        return this.getClosestMatching(element.parentElement, selector, container);
+        return this.getClosestMatching(parent, selector, container);
     }
 
     /**
