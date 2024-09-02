@@ -172,6 +172,33 @@ export class TestingBehatRuntimeService {
             const promises = coreLoadingsPromises.concat(ionLoadingsPromises);
 
             await Promise.all(promises);
+
+            // Wait for ion-spinner to be removed from the DOM after loadings because loadings can contain spinners.
+            const ionSpinnerPromises: Promise<unknown>[] =
+            Array.from(document.body.querySelectorAll<HTMLIonSpinnerElement>('ion-spinner'))
+                .filter((element) => CoreDom.isElementVisible(element))
+                .map((element) =>
+                    // Wait to the spinner to be removed from the DOM.
+                    new Promise<void>((resolve) => {
+                        const parentElement = element.parentElement;
+
+                        if (!parentElement) {
+                            resolve();
+
+                            return;
+                        }
+
+                        const observer = new MutationObserver(() => {
+                            if (!parentElement.contains(element)) {
+                                observer.disconnect();
+                                resolve();
+                            }
+                        });
+
+                        observer.observe(parentElement, { childList: true });
+                }));
+
+            await Promise.all(ionSpinnerPromises);
         });
     }
 
