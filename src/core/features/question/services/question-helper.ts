@@ -796,6 +796,36 @@ export class CoreQuestionHelperProvider {
     }
 
     /**
+     * Returns correct icon based on the LMS version.
+     * In LMS 4.4 and older, fa-check means correct. In 4.5+, fa-check means partially correct.
+     *
+     * @param withPrefix Whether to include the prefix in the icon name.
+     * @returns Icon name.
+     */
+    getCorrectIcon(withPrefix = true): string {
+        const icon = CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.5')
+            ? 'check-double'
+            : 'check';
+
+        return withPrefix ? `fas-${icon}` : icon;
+    }
+
+    /**
+     * Returns partially correct icon based on the LMS version.
+     * In LMS 4.4 and older, fa-check means correct. In 4.5+, fa-check means partially correct.
+     *
+     * @param withPrefix Whether to include the prefix in the icon name.
+     * @returns Icon name.
+     */
+    getPartiallyCorrectIcon(withPrefix = true): string {
+        const icon = CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.5')
+            ? 'check'
+            : 'square-check';
+
+        return withPrefix ? `fas-${icon}` : icon;
+    }
+
+    /**
      * Treat correctness icons, replacing them with local icons and setting click events to show the feedback if needed.
      *
      * @param element DOM element.
@@ -806,24 +836,22 @@ export class CoreQuestionHelperProvider {
             let iconName: string | undefined;
             let color: string | undefined;
 
+            const correctIcon = this.getCorrectIcon(false);
+            const partiallyCorrectIcon = this.getCorrectIcon(false);
             if ('src' in icon) {
                 if ((icon as HTMLImageElement).src.indexOf('correct') >= 0) {
-                    iconName = 'check';
+                    iconName = correctIcon;
                     color = CoreIonicColorNames.SUCCESS;
                 } else if ((icon as HTMLImageElement).src.indexOf('incorrect') >= 0 ) {
                     iconName = 'xmark';
                     color = CoreIonicColorNames.DANGER;
                 }
             } else {
-                // In LMS 4.4 and older, fa-check means correct. In 4.5+, fa-check means partially correct.
-                if (
-                    icon.classList.contains('fa-check-square') ||
-                    (icon.classList.contains('fa-check') && icon.classList.contains('text-warning'))
-                ) {
-                    iconName = 'check';
+                if (icon.classList.contains(`fa-${partiallyCorrectIcon}`)) {
+                    iconName = partiallyCorrectIcon;
                     color = CoreIonicColorNames.WARNING;
-                } else if (icon.classList.contains('fa-check-double') || icon.classList.contains('fa-check')) {
-                    iconName = 'check-double';
+                } else if (icon.classList.contains(`fa-${correctIcon}`)) {
+                    iconName = correctIcon;
                     color = CoreIonicColorNames.SUCCESS;
                 } else if (icon.classList.contains('fa-xmark') || icon.classList.contains('fa-remove')) {
                     iconName = 'xmark';

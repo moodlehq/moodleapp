@@ -497,12 +497,12 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
             question.input.correctIconLabel = 'core.question.incorrect';
         } else if (input.classList.contains('correct')) {
             question.input.correctClass = 'core-question-correct';
-            question.input.correctIcon = 'fas-check-double';
+            question.input.correctIcon = CoreQuestionHelper.getCorrectIcon();
             question.input.correctIconColor = CoreIonicColorNames.SUCCESS;
             question.input.correctIconLabel = 'core.question.correct';
         } else if (input.classList.contains('partiallycorrect')) {
             question.input.correctClass = 'core-question-partiallycorrect';
-            question.input.correctIcon = 'fas-check';
+            question.input.correctIcon = CoreQuestionHelper.getPartiallyCorrectIcon();
             question.input.correctIconColor = CoreIonicColorNames.WARNING;
             question.input.correctIconLabel = 'core.question.partiallycorrect';
         } else {
