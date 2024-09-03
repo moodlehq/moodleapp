@@ -72,7 +72,7 @@ describe('CoreSitesProvider', () => {
             getCurrentSiteId: () => '42',
         });
 
-        CoreEvents.trigger(CoreEvents.LOGIN, {}, '42');
+        CoreEvents.trigger(CoreEvents.LOGIN, { siteId: '42' }, '42');
         // Wait the event to be processed.
         await CoreWait.nextTick();
 

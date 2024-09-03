@@ -80,10 +80,16 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     protected urlToOpen?: string;
     protected valueChangeSubscription?: Subscription;
     protected alwaysShowLoginFormObserver?: CoreEventObserver;
+    protected loginObserver?: CoreEventObserver;
 
     constructor(
         protected fb: FormBuilder,
-    ) {}
+    ) {
+        // Listen to LOGIN event to determine if login was successful, since the login can be done using QR, SSO, etc.
+        this.loginObserver = CoreEvents.on(CoreEvents.LOGIN, ({ siteId }) => {
+            this.siteId = siteId;
+        });
+    }
 
     /**
      * @inheritdoc
@@ -297,13 +303,11 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         try {
             const data = await CoreSites.getUserToken(siteUrl, username, password);
 
-            const id = await CoreSites.newSite(data.siteUrl, data.token, data.privateToken);
+            await CoreSites.newSite(data.siteUrl, data.token, data.privateToken);
 
             // Reset fields so the data is not in the view anymore.
             this.credForm.controls['username'].reset();
             this.credForm.controls['password'].reset();
-
-            this.siteId = id;
 
             await CoreNavigator.navigateToSiteHome({ params: { urlToOpen: this.urlToOpen } });
         } catch (error) {
@@ -379,6 +383,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         );
         this.valueChangeSubscription?.unsubscribe();
         this.alwaysShowLoginFormObserver?.off();
+        this.loginObserver?.off();
     }
 
 }

@@ -56,6 +56,7 @@ export interface CoreEventsData {
     [CoreEvents.IAB_LOAD_START]: InAppBrowserEvent;
     [CoreEvents.IAB_LOAD_STOP]: InAppBrowserEvent;
     [CoreEvents.IAB_MESSAGE]: Record<string, unknown>;
+    [CoreEvents.LOGIN]: { siteId: string };
     [CoreEvents.LOGIN_SITE_CHECKED]: CoreEventLoginSiteCheckedData;
     [CoreEvents.LOGIN_SITE_UNCHECKED]: CoreEventLoginSiteUncheckedData;
     [CoreEvents.SEND_ON_ENTER_CHANGED]: CoreEventSendOnEnterChangedData;
@@ -428,6 +429,7 @@ export type CoreEventActivityDataSentData = {
  */
 export type CoreEventLoginSiteCheckedData = {
     config: CoreSitePublicConfigResponse;
+    siteId?: string;
 };
 
 /**
@@ -436,6 +438,7 @@ export type CoreEventLoginSiteCheckedData = {
 export type CoreEventLoginSiteUncheckedData = {
     config?: CoreSitePublicConfigResponse;
     loginSuccessful: boolean;
+    siteId?: string;
 };
 
 /**
