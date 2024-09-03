@@ -21,10 +21,10 @@ import { CoreTagCloud, CoreTagCollection, CoreTagCloudTag, CoreTag } from '@feat
 import { Translate } from '@singletons';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreNavigator } from '@services/navigator';
-import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreSites } from '@services/sites';
 
 /**
  * Page that displays most used tags and allows searching.
@@ -65,8 +65,7 @@ export class CoreTagSearchPage implements OnInit {
         this.collectionId = CoreNavigator.getRouteNumberParam('collectionId') || 0;
         this.query = CoreNavigator.getRouteParam('query') || '';
 
-        const deepLinkManager = new CoreMainMenuDeepLinkManager();
-        deepLinkManager.treatLink();
+        CoreSites.loginNavigationFinished();
 
         this.fetchData().finally(() => {
             this.loaded = true;

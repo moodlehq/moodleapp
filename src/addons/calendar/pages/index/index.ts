@@ -30,7 +30,6 @@ import { AddonCalendarCalendarComponent } from '../../components/calendar/calend
 import { AddonCalendarUpcomingEventsComponent } from '../../components/upcoming-events/upcoming-events';
 import { CoreNavigator } from '@services/navigator';
 import { CoreConstants } from '@/core/constants';
-import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreModals } from '@services/modals';
 
 /**
@@ -178,8 +177,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             }
         });
 
-        const deepLinkManager = new CoreMainMenuDeepLinkManager();
-        deepLinkManager.treatLink();
+        CoreSites.loginNavigationFinished();
     }
 
     /**

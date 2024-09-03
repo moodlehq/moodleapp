@@ -21,7 +21,6 @@ import { CoreTabsOutletComponent, CoreTabsOutletTab } from '@components/tabs-out
 import { CoreMainMenuHomeDelegate, CoreMainMenuHomeHandlerToDisplay } from '../../services/home-delegate';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
-import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 
 /**
  * Page that displays the Home.
@@ -40,14 +39,11 @@ export class CoreMainMenuHomePage implements OnInit {
 
     protected subscription?: Subscription;
     protected updateSiteObserver?: CoreEventObserver;
-    protected deepLinkManager?: CoreMainMenuDeepLinkManager;
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.deepLinkManager = new CoreMainMenuDeepLinkManager();
-
         await this.loadSiteName();
 
         this.subscription = CoreMainMenuHomeDelegate.getHandlersObservable().subscribe((handlers) => {
@@ -108,7 +104,7 @@ export class CoreMainMenuHomePage implements OnInit {
      * Tab was selected.
      */
     tabSelected(): void {
-        this.deepLinkManager?.treatLink();
+        CoreSites.loginNavigationFinished();
     }
 
     /**
