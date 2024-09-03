@@ -39,6 +39,9 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
         value: '',
     };
 
+    correctIcon = '';
+    partialCorrectIcon = '';
+
     constructor(elementRef: ElementRef) {
         super('AddonQtypeOrderingComponent', elementRef);
     }
@@ -55,6 +58,9 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
         if (!questionElement) {
             return;
         }
+
+        this.correctIcon = CoreQuestionHelper.getCorrectIcon();
+        this.partialCorrectIcon = CoreQuestionHelper.getPartiallyCorrectIcon();
 
         // Replace Moodle's feedback classes with our own.
         CoreQuestionHelper.replaceFeedbackClasses(questionElement);

@@ -19,11 +19,12 @@
 
                 @if (dragDisabled) {
                 @if (item.correctClass === 'correct') {
-                <ion-icon name="fas-check-double" slot="start" [ariaLabel]="'core.question.correct' | translate" color="success" />
+                <ion-icon [name]="correctIcon" slot="start" [ariaLabel]="'core.question.correct' | translate" color="success" />
                 } @else if (item.correctClass === 'incorrect') {
                 <ion-icon name="fas-xmark" slot="start" [ariaLabel]="'core.question.incorrect' | translate" color="danger" />
                 } @else if (item.correctClass.startsWith('partial')) {
-                <ion-icon name="fas-check" slot="start" [ariaLabel]="'core.question.partiallycorrect' | translate" color="warning" />
+                <ion-icon [name]="partialCorrectIcon" slot="start" [ariaLabel]="'core.question.partiallycorrect' | translate"
+                    color="warning" />
                 }
                 }
 
