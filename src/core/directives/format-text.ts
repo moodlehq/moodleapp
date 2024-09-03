@@ -221,6 +221,10 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
      * @param img Image to adapt.
      */
     protected adaptImage(img: HTMLElement): void {
+        if (img.classList.contains('texrender')) {
+            return;
+        }
+
         // Element to wrap the image.
         const container = document.createElement('span');
         const originalWidth = img.attributes.getNamedItem('width');
