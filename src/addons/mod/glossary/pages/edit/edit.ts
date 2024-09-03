@@ -286,9 +286,9 @@ abstract class AddonModGlossaryFormHandler {
      * Upload attachments online.
      *
      * @param glossary Glossary.
-     * @returns Uploaded attachments item id.
+     * @returns Uploaded attachments item id, undefined if nothing to upload or change.
      */
-    protected async uploadAttachments(glossary: AddonModGlossaryGlossary): Promise<number> {
+    protected async uploadAttachments(glossary: AddonModGlossaryGlossary): Promise<number | undefined> {
         const data = this.page.data;
         const itemId = await CoreFileUploader.uploadOrReuploadFiles(
             data.attachments,
@@ -643,10 +643,7 @@ class AddonModGlossaryOnlineFormHandler extends AddonModGlossaryFormHandler {
             data.fullmatch = this.entry.fullmatch;
         }
 
-        // Treat offline attachments if any.
-        if (this.entry.attachments) {
-            data.attachments = this.entry.attachments;
-        }
+        data.attachments = (this.entry.attachments ?? []).slice();
 
         this.page.originalData = {
             concept: data.concept,
@@ -677,11 +674,7 @@ class AddonModGlossaryOnlineFormHandler extends AddonModGlossaryFormHandler {
         const definition = CoreText.formatHtmlLines(data.definition);
 
         // Upload attachments, if any.
-        let attachmentsId: number | undefined = undefined;
-
-        if (data.attachments.length) {
-            attachmentsId = await this.uploadAttachments(glossary);
-        }
+        const attachmentsId = await this.uploadAttachments();
 
         // Save entry data.
         await AddonModGlossary.updateEntry(glossary.id, this.entry.id, data.concept, definition, options, attachmentsId);
@@ -692,6 +685,31 @@ class AddonModGlossaryOnlineFormHandler extends AddonModGlossaryFormHandler {
         CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'glossary' });
 
         return true;
+    }
+
+    /**
+     * Upload attachments online.
+     *
+     * @returns Uploaded attachments item id, undefined if nothing to upload or change.
+     */
+    protected async uploadAttachments(): Promise<number | undefined> {
+        const data = this.page.data;
+
+        if (!CoreFileUploader.areFileListDifferent(data.attachments, this.entry.attachments ?? [])) {
+            return;
+        }
+
+        const { attachmentsid: attachmentsId } = await AddonModGlossary.prepareEntryForEdition(this.entry.id);
+
+        const removedFiles = CoreFileUploader.getFilesToDelete(this.entry.attachments ?? [], data.attachments);
+
+        if (removedFiles.length) {
+            await CoreFileUploader.deleteDraftFiles(attachmentsId, removedFiles);
+        }
+
+        await CoreFileUploader.uploadFiles(attachmentsId, data.attachments);
+
+        return attachmentsId;
     }
 
 }

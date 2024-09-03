@@ -35,10 +35,11 @@ import {
     AddonModForumDiscussion,
     AddonModForumPost,
     AddonModForumPostFormData,
+    AddonModForumPrepareDraftAreaForPostWSResponse,
 } from '../../services/forum';
 import { CoreTag } from '@features/tag/services/tag';
 import { Translate } from '@singletons';
-import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
+import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { AddonModForumSync } from '../../services/forum-sync';
 import { CoreSync } from '@services/sync';
 import { CoreText } from '@singletons/text';
@@ -47,7 +48,7 @@ import { AddonModForumOffline } from '../../services/forum-offline';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreForms } from '@singletons/form';
-import { CoreFileEntry } from '@services/file-helper';
+import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { AddonModForumSharedPostFormData } from '../../pages/discussion/discussion';
 import { CoreDom } from '@singletons/dom';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -56,6 +57,7 @@ import { CoreToasts } from '@services/toasts';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CorePopovers } from '@services/popovers';
 import { CoreLoadings } from '@services/loadings';
+import { CoreWSFile } from '@services/ws';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -94,6 +96,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     tagsEnabled!: boolean;
     displaySubject = true;
     optionsMenuEnabled = false;
+
+    protected preparePostData?: AddonModForumPrepareDraftAreaForPostWSResponse;
 
     constructor(
         protected elementRef: ElementRef,
@@ -211,7 +215,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         this.formData.isEditing = !!isEditing;
         this.formData.subject = subject || this.defaultReplySubject || '';
         this.formData.message = message || null;
-        this.formData.files = files || [];
+        this.formData.files = (files ?? []).slice(); // Make a copy to avoid modifying the original array.
         this.formData.isprivatereply = !!isPrivate;
         this.formData.id = postId;
 
@@ -226,6 +230,10 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
         // Show advanced fields if any of them has not the default value.
         this.advanced = this.formData.files.length > 0;
+
+        if (!isEditing || !postId || postId <= 0) {
+            this.preparePostData = undefined;
+        }
     }
 
     /**
@@ -314,6 +322,28 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         // Ask confirm if there is unsaved data.
         try {
             await this.confirmDiscard();
+        } catch {
+            // Cancelled.
+            return;
+        }
+
+        const modal = await CoreLoadings.show();
+
+        try {
+            let message = this.post.message;
+
+            if (this.post.id > 0) {
+                // Call prepare post for edition to retrieve the message without any added content (like filters and plagiarism).
+                this.preparePostData = await AddonModForum.preparePostForEdition(this.post.id, 'post');
+
+                const { text } = CoreFileHelper.replaceDraftfileUrls(
+                    CoreSites.getRequiredCurrentSite().getURL(),
+                    this.preparePostData.messagetext,
+                    this.post.messageinlinefiles?.length ? this.post.messageinlinefiles : (this.preparePostData.files ?? []),
+                );
+
+                message = text;
+            }
 
             this.formData.syncId = AddonModForumSync.getDiscussionSyncId(this.discussionId);
             CoreSync.blockOperation(ADDON_MOD_FORUM_COMPONENT, this.formData.syncId);
@@ -322,7 +352,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                 this.post.parentid,
                 true,
                 this.post.subject,
-                this.post.message,
+                message,
                 this.post.attachments,
                 this.post.isprivatereply,
                 this.post.id > 0 ? this.post.id : undefined,
@@ -331,8 +361,10 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             this.scrollToForm();
 
             this.analyticsLogEvent('mod_forum_update_discussion_post', `/mod/forum/post.php?edit=${this.post.id}`);
-        } catch {
-            // Cancelled.
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_forum.errorgetpost', true);
+        } finally {
+            modal.dismiss();
         }
     }
 
@@ -361,83 +393,76 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             return;
         }
 
-        let saveOffline = false;
         let message = this.formData.message;
         const subject = this.formData.subject;
-        const replyingTo = this.formData.replyingTo!;
+        const replyingTo = this.formData.replyingTo ?? 0;
         const files = this.formData.files || [];
         const isEditOnline = this.formData.id && this.formData.id > 0;
         const modal = await CoreLoadings.show('core.sending', true);
 
+        if (isEditOnline && this.preparePostData) {
+            // Restore the draft file URLs, otherwise the treated URLs would be saved in the content, which can cause problems.
+            message = CoreFileHelper.restoreDraftfileUrls(
+                CoreSites.getRequiredCurrentSite().getURL(),
+                message,
+                this.preparePostData.messagetext,
+                this.post.messageinlinefiles?.length ? this.post.messageinlinefiles : (this.preparePostData.files ?? []),
+            );
+        }
+
         // Add some HTML to the message if needed.
         message = CoreText.formatHtmlLines(message);
 
-        // Upload attachments first if any.
-        let attachments;
-
         try {
-            if (files.length) {
-                try {
-                    attachments = await AddonModForumHelper.uploadOrStoreReplyFiles(
-                        this.forum.id,
-                        isEditOnline ? this.formData.id! : replyingTo,
-                        files,
-                        false,
-                    );
-                } catch (error) {
-                    // Cannot upload them in online, save them in offline.
-                    if (!this.forum.id || isEditOnline || CoreUtils.isWebServiceError(error)) {
-                        // Cannot store them in offline. Reject.
-                        throw error;
-                    }
-
-                    saveOffline = true;
-                    attachments = await AddonModForumHelper.uploadOrStoreReplyFiles(this.forum.id, replyingTo, files, true);
-                }
-            }
-
             let sent = false;
 
-            if (isEditOnline) {
-                sent = await AddonModForum.updatePost(this.formData.id!, subject, message, {
-                    attachmentsid: attachments,
-                });
-            } else if (saveOffline) {
-                // Save post in offline.
-                await AddonModForumOffline.replyPost(
-                    replyingTo,
-                    this.discussionId,
-                    this.forum.id,
-                    this.forum.name,
-                    this.courseId,
-                    subject,
-                    message,
-                    {
-                        attachmentsid: attachments,
-                        private: !!this.formData.isprivatereply,
-                    },
-                );
+            if (this.formData.id && this.formData.id > 0) {
+                const attachments = await this.uploadAttachmentsForEditOnline(this.formData.id);
 
-                // Set sent to false since it wasn't sent to server.
-                sent = false;
+                sent = await AddonModForum.updatePost(this.formData.id, subject, message, {
+                    attachmentsid: attachments,
+                    inlineattachmentsid: this.preparePostData?.draftitemid,
+                });
             } else {
-                // Try to send it to server.
-                // Don't allow offline if there are attachments since they were uploaded fine.
-                sent = await AddonModForum.replyPost(
-                    replyingTo,
-                    this.discussionId,
-                    this.forum.id,
-                    this.forum.name,
-                    this.courseId,
-                    subject,
-                    message,
-                    {
-                        attachmentsid: attachments,
-                        private: !!this.formData.isprivatereply,
-                    },
-                    undefined,
-                    !files.length,
-                );
+                const { attachments, saveOffline } = await this.uploadAttachmentsForReply(replyingTo);
+
+                if (saveOffline) {
+                    // Save post in offline.
+                    await AddonModForumOffline.replyPost(
+                        replyingTo,
+                        this.discussionId,
+                        this.forum.id,
+                        this.forum.name,
+                        this.courseId,
+                        subject,
+                        message,
+                        {
+                            attachmentsid: attachments,
+                            private: !!this.formData.isprivatereply,
+                        },
+                    );
+
+                    // Set sent to false since it wasn't sent to server.
+                    sent = false;
+                } else {
+                    // Try to send it to server.
+                    // Don't allow offline if there are attachments since they were uploaded fine.
+                    sent = await AddonModForum.replyPost(
+                        replyingTo,
+                        this.discussionId,
+                        this.forum.id,
+                        this.forum.name,
+                        this.courseId,
+                        subject,
+                        message,
+                        {
+                            attachmentsid: attachments,
+                            private: !!this.formData.isprivatereply,
+                        },
+                        undefined,
+                        !files.length,
+                    );
+                }
             }
 
             if (sent && this.forum.id) {
@@ -461,6 +486,81 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             );
         } finally {
             modal.dismiss();
+        }
+    }
+
+    /**
+     * Upload attachments when editing an online post.
+     *
+     * @param postId Post ID being edited.
+     * @returns Draft area id (if any attachment has changed).
+     */
+    protected async uploadAttachmentsForEditOnline(postId: number): Promise<number | undefined> {
+        const files = this.formData.files || [];
+        const previousAttachments = (this.post.attachments ?? []) as CoreWSFile[];
+
+        if (!CoreFileUploader.areFileListDifferent(files, previousAttachments)) {
+            return;
+        }
+
+        // Use prepare post for edition to avoid re-uploading all files.
+        let filesToKeep = files.filter((file): file is CoreWSFile => !CoreUtils.isFileEntry(file));
+        let removedFiles: { filepath: string; filename: string }[] | undefined;
+
+        if (previousAttachments.length && !filesToKeep.length) {
+            // Post had attachments but they were all removed. We cannot use the filesToKeep option because it doesn't allow
+            // removing all files. In this case we'll just keep 1 file and remove it later.
+            filesToKeep = [previousAttachments[0]];
+            removedFiles = [{
+                filename: previousAttachments[0].filename ?? '',
+                filepath: previousAttachments[0].filepath ?? '',
+            }];
+        }
+
+        const preparePostData = await AddonModForum.preparePostForEdition(postId, 'attachment', { filesToKeep });
+
+        if (removedFiles?.length) {
+            await CoreFileUploader.deleteDraftFiles(preparePostData.draftitemid, removedFiles);
+        }
+
+        await CoreFileUploader.uploadFiles(preparePostData.draftitemid, files);
+
+        return preparePostData.draftitemid;
+    }
+
+    /**
+     * Upload attachments for a reply that isn't an online post being edited.
+     *
+     * @param replyingTo Replying to post ID.
+     * @returns Draft area id (if any attachment was uploaded) and whether data should be saved offline.
+     */
+    async uploadAttachmentsForReply(
+        replyingTo: number,
+    ): Promise<{ attachments: CoreFileUploaderStoreFilesResult | number | undefined; saveOffline: boolean }> {
+        const files = this.formData.files || [];
+        if (!files.length) {
+            return { attachments: undefined, saveOffline: false };
+        }
+
+        try {
+            const attachments = await AddonModForumHelper.uploadOrStoreReplyFiles(
+                this.forum.id,
+                replyingTo,
+                files,
+                false,
+            );
+
+            return { attachments, saveOffline: false };
+        } catch (error) {
+            // Cannot upload them in online, save them in offline.
+            if (!this.forum.id || CoreUtils.isWebServiceError(error)) {
+                // Cannot store them in offline. Reject.
+                throw error;
+            }
+
+            const attachments = await AddonModForumHelper.uploadOrStoreReplyFiles(this.forum.id, replyingTo, files, true);
+
+            return { attachments, saveOffline: true };
         }
     }
 
