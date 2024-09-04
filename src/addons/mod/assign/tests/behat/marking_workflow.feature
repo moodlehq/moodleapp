@@ -45,7 +45,8 @@ Feature: Test marking workflow in assignment activity in app
     And I am on the "Group Assign" "assign activity" page logged in as teacher1
     And I navigate to "Submissions" in current page administration
     And I change window size to "large"
-    And I click on "Grade" "link" in the "Student1" "table_row"
+    And I go to "Student1" "Group Assign" activity advanced grading page
+
     And I set the field "Grade out of 100" to "50"
     And I set the field "Marking workflow state" to "In review"
     And I set the field "Feedback comments" to "Great job! Lol, not really."
@@ -53,7 +54,7 @@ Feature: Test marking workflow in assignment activity in app
     And I press "Save changes"
     And I am on the "Group Assign" "assign activity" page
     And I navigate to "Submissions" in current page administration
-    And I click on "Grade" "link" in the "Student3" "table_row"
+    And I go to "Student3" "Group Assign" activity advanced grading page
     And I set the field "Grade out of 100" to "30"
     And I set the field "Marking workflow state" to "Released"
     And I set the field "Feedback comments" to "Needs to be improved."
