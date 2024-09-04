@@ -23,7 +23,7 @@ import { CoreText } from '@singletons/text';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
-import { makeSingleton, NgZone, Translate, LocalNotifications } from '@singletons';
+import { makeSingleton, NgZone, Translate, LocalNotifications, ApplicationInit } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
     APP_SCHEMA,
@@ -42,6 +42,9 @@ import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { CoreDomUtils } from './utils/dom';
+import { CoreSites } from './sites';
+import { CoreNavigator } from './navigator';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Service to handle local notifications.
@@ -87,7 +90,28 @@ export class CoreLocalNotificationsProvider {
             this.handleEvent('trigger', notification);
         });
 
-        this.clickSubscription = LocalNotifications.on('click').subscribe((notification: ILocalNotification) => {
+        this.clickSubscription = LocalNotifications.on('click').subscribe(async (notification: ILocalNotification) => {
+            await ApplicationInit.donePromise;
+
+            // This code is also done when clicking push notifications. If it's modified, it should be modified in there too.
+            if (CoreSites.isLoggedIn()) {
+                CoreSites.runAfterLoginNavigation({
+                    priority: 0, // Use a low priority because the execution of this process doesn't block the next ones.
+                    callback: async () => {
+                        this.handleEvent('click', notification);
+                    },
+                });
+
+                return;
+            }
+
+            // User not logged in, wait for the path to be a "valid" path (not a parent path used when starting the app).
+            await CoreWait.waitFor(() => {
+                const currentPath = CoreNavigator.getCurrentPath();
+
+                return currentPath !== '/' && currentPath !== '/login';
+            }, { timeout: 400 });
+
             this.handleEvent('click', notification);
         });
 

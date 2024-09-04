@@ -444,6 +444,7 @@ export class CorePushNotificationsProvider {
     async notificationClicked(data: CorePushNotificationsNotificationBasicData): Promise<void> {
         await ApplicationInit.donePromise;
 
+        // This code is also done when clicking local notifications. If it's modified, it should be modified in there too.
         if (CoreSites.isLoggedIn()) {
             CoreSites.runAfterLoginNavigation({
                 priority: 600,
