@@ -269,6 +269,8 @@ export class TestingBehatRuntimeService {
 
         do {
             success = await this.goBack();
+
+            await TestingBehatBlocking.waitForPending();
         } while (success);
 
         return 'OK';
@@ -289,6 +291,8 @@ export class TestingBehatRuntimeService {
             if (!success) {
                 return 'ERROR: Back button not found';
             }
+
+            await TestingBehatBlocking.waitForPending();
         }
 
         return 'OK';
