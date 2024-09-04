@@ -108,7 +108,7 @@ export class CorePushNotificationsDelegateService {
         handlers = handlers.sort((a, b) => (a.priority || 0) <= (b.priority || 0) ? 1 : -1);
 
         // Execute the first one.
-        handlers[0]?.handleClick(notification);
+        await handlers[0]?.handleClick(notification);
     }
 
     /**

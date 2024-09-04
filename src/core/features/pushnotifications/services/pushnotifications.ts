@@ -54,6 +54,8 @@ import { CorePlatform } from '@services/platform';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { Push } from '@features/native/plugins';
+import { CoreNavigator } from '@services/navigator';
+import { CoreWait } from '@singletons/wait';
 
 /**
  * Service to handle push notifications.
@@ -442,7 +444,26 @@ export class CorePushNotificationsProvider {
     async notificationClicked(data: CorePushNotificationsNotificationBasicData): Promise<void> {
         await ApplicationInit.donePromise;
 
-        CorePushNotificationsDelegate.clicked(data);
+        if (CoreSites.isLoggedIn()) {
+            CoreSites.runAfterLoginNavigation({
+                priority: 600,
+                callback: async () => {
+                    await CorePushNotificationsDelegate.clicked(data);
+                },
+            });
+
+            return;
+        }
+
+        // User not logged in, wait for the path to be a "valid" path (not a parent path used when starting the app).
+        await CoreWait.waitFor(() => {
+            const currentPath = CoreNavigator.getCurrentPath();
+
+            return currentPath !== '/' && currentPath !== '/login';
+        }, { timeout: 400 });
+
+        await CorePushNotificationsDelegate.clicked(data);
+
     }
 
     /**
