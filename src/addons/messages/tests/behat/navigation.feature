@@ -37,6 +37,5 @@ Feature: Test messages navigation in the app
     Then I should not find "User info" in the app
 
     When I close the popup in the app
-    And I press the back button in the app
-    And I press the back button in the app
+    And I go back 2 times in the app
     Then I should find "Hi there" in the app

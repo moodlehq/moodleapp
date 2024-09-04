@@ -84,7 +84,7 @@ Feature: Test marking workflow in assignment activity in app
     And the field "Grade out of 100" matches value "50" in the app
     And I should not find "Graded by" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Student3" in the app
     And I press "Grade" in the app
     Then I should find "Submitted for grading" in the app
@@ -109,7 +109,7 @@ Feature: Test marking workflow in assignment activity in app
     And I should find "In review" within "Marking workflow state" "ion-item" in the app
     And the field "Grade out of 100" matches value "60" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Student3" in the app
     And I press "Grade" in the app
     When I set the field "Grade out of 100" to "80" in the app

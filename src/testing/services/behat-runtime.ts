@@ -184,6 +184,16 @@ export class TestingBehatRuntimeService {
     async pressStandard(button: string): Promise<string> {
         this.log('Action - Click standard button: ' + button);
 
+        // @deprecated usage, use goBack instead.
+        if (button === 'back') {
+            const success = await this.goBack();
+            if (success) {
+                return 'OK';
+            } else {
+                return 'ERROR: Back button not found';
+            }
+        }
+
         // Find button
         let foundButton: HTMLElement | undefined;
         const options: TestingBehatFindOptions = {
@@ -191,10 +201,6 @@ export class TestingBehatRuntimeService {
         };
 
         switch (button) {
-            case 'back':
-                foundButton = TestingBehatDomUtils.findElementBasedOnText({ text: 'Back' }, options);
-                break;
-            case 'main menu': // Deprecated name.
             case 'more menu':
                 foundButton = TestingBehatDomUtils.findElementBasedOnText({
                     text: 'More',
@@ -222,6 +228,72 @@ export class TestingBehatRuntimeService {
         TestingBehatBlocking.wait(500);
 
         return 'OK';
+    }
+
+    /**
+     * Function to go back the maximum number of times possible.
+     *
+     * @returns OK if successful, or ERROR: followed by message.
+     */
+    async goBackToRoot(): Promise<string> {
+        this.log('Action - Go back to root');
+
+        let success = true;
+
+        do {
+            success = await this.goBack();
+        } while (success);
+
+        return 'OK';
+    }
+
+    /**
+     * Function to go back many times in the app.
+     *
+     * @param times How many times to go back.
+     * @returns OK if successful, or ERROR: followed by message.
+     */
+    async goBackTimes(times = 1): Promise<string> {
+        this.log(`Action - Go back ${times} times`);
+
+        for (let i = 0; i < times; i++) {
+            const success = await this.goBack();
+
+            if (!success) {
+                return 'ERROR: Back button not found';
+            }
+        }
+
+        return 'OK';
+    }
+
+    /**
+     * Function to go back in the app.
+     *
+     * @returns Whether the action is successful or not.
+     */
+    protected async goBack(): Promise<boolean> {
+        const options: TestingBehatFindOptions = {
+            onlyClickable: true,
+            containerName: '',
+        };
+
+        const foundButton = TestingBehatDomUtils.findElementBasedOnText({
+            text: 'Back',
+            selector: 'ion-back-button',
+        }, options);
+
+        if (!foundButton) {
+            return false;
+        }
+
+        // Click button
+        await TestingBehatDomUtils.pressElement(foundButton);
+
+        // Block Behat for at least 500ms, WS calls or DOM changes might not begin immediately.
+        TestingBehatBlocking.wait(500);
+
+        return true;
     }
 
     /**

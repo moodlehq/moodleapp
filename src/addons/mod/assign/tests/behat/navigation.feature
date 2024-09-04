@@ -72,8 +72,7 @@ Feature: Test assignments navigation
     And I should not find "Second Student" in the app
 
     # Drafts
-    When I press the back button in the app
-    And I press the back button in the app
+    When I go back 2 times in the app
     And I press "Drafts" in the app
     Then I should find "First Student" in the app
     And I should find "Third Student" in the app
@@ -97,8 +96,7 @@ Feature: Test assignments navigation
     And I should not find "Second Student" in the app
 
     # Filter groups in assignment page
-    When I press the back button in the app
-    And I press the back button in the app
+    When I go back 2 times in the app
     And I press "Separate groups" in the app
     And I press "Group 1" in the app
     Then I should find "2" near "Participants" in the app
@@ -126,7 +124,7 @@ Feature: Test assignments navigation
     And I should not find "Third Student" in the app
 
     # Filter groups in submissions page
-    When I press the back button in the app
+    When I go back in the app
     And I press "Separate groups" in the app
     And I press "Group 2" in the app
     Then I should find "Second Student" in the app
@@ -176,7 +174,7 @@ Feature: Test assignments navigation
     And I should not find "Third Student" inside the split-view content in the app
 
     # Drafts
-    When I press the back button in the app
+    When I go back in the app
     And I press "Drafts" in the app
     Then I should find "First Student" in the app
     And I should find "Third Student" in the app
@@ -193,7 +191,7 @@ Feature: Test assignments navigation
     And I should not find "Second Student" in the app
 
     # Filter groups in assignment page
-    When I press the back button in the app
+    When I go back in the app
     And I press "Separate groups" in the app
     And I press "Group 1" in the app
     Then I should find "2" near "Participants" in the app

@@ -42,14 +42,14 @@ Feature: Test attempts and grading settings of SCORM activity in app
     And I press "Next" in the app
     And I press "Next" in the app
     And I press "Next" in the app
-    And I press the back button in the app
+    And I go back in the app
 
     Then I should find "1" within "Number of attempts you have made" "ion-item" in the app
     And I should find "You have reached the maximum number of attempts." in the app
     And I should not be able to press "Enter" in the app
     And I should not be able to press "Preview" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "SCORM 1 att no lock" in the app
     And I press "Enter" in the app
     And I press "Disable fullscreen" in the app
@@ -61,7 +61,7 @@ Feature: Test attempts and grading settings of SCORM activity in app
     And I press "Next" in the app
     And I press "Next" in the app
     And I press "Next" in the app
-    And I press the back button in the app
+    And I go back in the app
     Then I should find "1" within "Number of attempts you have made" "ion-item" in the app
     And I should find "You have reached the maximum number of attempts." in the app
     And I should not find "Start a new attempt" in the app
@@ -74,10 +74,10 @@ Feature: Test attempts and grading settings of SCORM activity in app
     # Then I should find "Review mode" in the app
 
     When I press "Close" in the app
-    And I press the back button in the app
+    And I go back in the app
     Then I should find "1" within "Number of attempts you have made" "ion-item" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "SCORM 2 attempts" in the app
     And I press "Enter" in the app
     And I press "Disable fullscreen" in the app
@@ -89,7 +89,7 @@ Feature: Test attempts and grading settings of SCORM activity in app
     And I press "Next" in the app
     And I press "Next" in the app
     And I press "Next" in the app
-    And I press the back button in the app
+    And I go back in the app
     Then I should find "1" within "Number of attempts you have made" "ion-item" in the app
     And I should not find "You have reached the maximum number of attempts." in the app
 
@@ -104,12 +104,12 @@ Feature: Test attempts and grading settings of SCORM activity in app
     # And I press "Next" in the app
     # And I press "Next" in the app
     # And I press "Next" in the app
-    # And I press the back button in the app
+    # And I go back in the app
     # Then I should find "2" within "Number of attempts you have made" "ion-item" in the app
     # And I should find "You have reached the maximum number of attempts." in the app
     # And I should not find "Start a new attempt" in the app
 
-    # When I press the back button in the app
+    # When I go back in the app
     # And I press "SCORM unlimited" in the app
     # Then I should find "Unlimited" within "Number of attempts allowed" "ion-item" in the app
 
@@ -131,7 +131,7 @@ Feature: Test attempts and grading settings of SCORM activity in app
     And I press "Next" in the app
     And I press "Next" in the app
     And I press "Next" in the app
-    And I press the back button in the app
+    And I go back in the app
     Then I should find "1" within "Number of attempts you have made" "ion-item" in the app
     # And I should find "Start a new attempt" in the app
 
@@ -141,7 +141,7 @@ Feature: Test attempts and grading settings of SCORM activity in app
     # Then I should find "Review mode" in the app
 
     When I press "Close" in the app
-    And I press the back button in the app
+    And I go back in the app
     Then I should find "1" within "Number of attempts you have made" "ion-item" in the app
 
     # When I press "Start a new attempt" in the app
@@ -151,11 +151,11 @@ Feature: Test attempts and grading settings of SCORM activity in app
     # Then I should not find "Review mode" in the app
 
     # When I press "Close" in the app
-    # And I press the back button in the app
+    # And I go back in the app
     # Then I should find "2" within "Number of attempts you have made" "ion-item" in the app
     # And I should not find "Start a new attempt" in the app
 
-    # When I press the back button in the app
+    # When I go back in the app
     # When I press "SCORM when completed" in the app
     # And I press "Enter" in the app
     # And I press "Disable fullscreen" in the app
@@ -167,7 +167,7 @@ Feature: Test attempts and grading settings of SCORM activity in app
     # And I press "Next" in the app
     # And I press "Next" in the app
     # And I press "Next" in the app
-    # And I press the back button in the app
+    # And I go back in the app
     # Then I should find "1" within "Number of attempts you have made" "ion-item" in the app
     # And I should not find "Start a new attempt" in the app
 
@@ -177,23 +177,23 @@ Feature: Test attempts and grading settings of SCORM activity in app
     # Then I should not find "Review mode" in the app
 
     # When I press "Close" in the app
-    # And I press the back button in the app
+    # And I go back in the app
     # Then I should find "2" within "Number of attempts you have made" "ion-item" in the app
     # And I should not find "Start a new attempt" in the app
 
-    # When I press the back button in the app
+    # When I go back in the app
     # When I press "SCORM always force" in the app
     # And I press "Enter" in the app
     # And I press "Disable fullscreen" in the app
     # And I press "Next" in the app
-    # And I press the back button in the app
+    # And I go back in the app
     # Then I should find "1" within "Number of attempts you have made" "ion-item" in the app
     # And I should not find "Start a new attempt" in the app
 
     # When I press "Enter" in the app
     # And I press "Disable fullscreen" in the app
     # And I press "Next" in the app
-    # And I press the back button in the app
+    # And I go back in the app
     # Then I should find "2" within "Number of attempts you have made" "ion-item" in the app
     # And I should not find "Start a new attempt" in the app
 
@@ -293,12 +293,12 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I should find "Completed" within "SCO with prerequisite (first and secon SCO)" "ion-item" in the app
 
 #     When I press "Close" in the app
-#     And I press the back button in the app
+#     And I go back in the app
 #     Then I should find "5" within "Grade reported" "ion-item" in the app
 #     And I should find "Score: 8" within "The first content (one SCO)" "ion-item" in the app
 
 #     # Case 2: SCORM with highest grade as grading method
-#     When I press the back button in the app
+#     When I go back in the app
 #     And I press "SCORM highest" in the app
 #     And I press "Enter" in the app
 #     And I press "Disable fullscreen" in the app
@@ -372,11 +372,11 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I click on "#ui-id-25" "css_element"
 #     And I press "Commit changes"
 #     And I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     Then I should find "10" within "Grade reported" "ion-item" in the app
 
 #     # Case 3: SCORM with average grade as grading method
-#     When I press the back button in the app
+#     When I go back in the app
 #     And I press "SCORM average" in the app
 #     And I press "Enter" in the app
 #     And I press "Disable fullscreen" in the app
@@ -450,11 +450,11 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I click on "#ui-id-25" "css_element"
 #     And I press "Commit changes"
 #     And I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     Then I should find "6.17%" within "Grade reported" "ion-item" in the app
 
 #     # Case 4: SCORM with sum grade as grading method and a max grade of 100
-#     When I press the back button in the app
+#     When I go back in the app
 #     And I press "SCORM sum 100" in the app
 #     And I press "Enter" in the app
 #     And I press "Disable fullscreen" in the app
@@ -528,11 +528,11 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I click on "#ui-id-25" "css_element"
 #     And I press "Commit changes"
 #     And I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     Then I should find "37%" within "Grade reported" "ion-item" in the app
 
 #     # Case 5: SCORM with sum grade as grading method and a max grade of 50
-#     When I press the back button in the app
+#     When I go back in the app
 #     And I press "SCORM sum 50" in the app
 #     And I press "Enter" in the app
 #     And I press "Disable fullscreen" in the app
@@ -606,7 +606,7 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I click on "#ui-id-25" "css_element"
 #     And I press "Commit changes"
 #     And I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     Then I should find "74%" within "Grade reported" "ion-item" in the app
 
 #   Scenario: SCORM grade is calculated right based on 'Attempts grading' setting
@@ -653,7 +653,7 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I switch to "scorm_object" iframe
 #     And I press "Exit"
 #     And I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     And I press "Grades" in the app
 #     Then I should find "27%" within "Grade reported" "ion-item" in the app
 #     And I should find "27%" within "Grade for attempt 1" "ion-item" in the app
@@ -691,7 +691,7 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I switch to "scorm_object" iframe
 #     And I press "Exit"
 #     And I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     Then I should find "40%" within "Grade reported" "ion-item" in the app
 #     And I should find "27%" within "Grade for attempt 1" "ion-item" in the app
 #     And I should find "40%" within "Grade for attempt 2" "ion-item" in the app
@@ -726,14 +726,14 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I switch to "scorm_object" iframe
 #     And I press "Exit"
 #     And I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     Then I should find "40%" within "Grade reported" "ion-item" in the app
 #     And I should find "27%" within "Grade for attempt 1" "ion-item" in the app
 #     And I should find "40%" within "Grade for attempt 2" "ion-item" in the app
 #     And I should find "20%" within "Grade for attempt 3" "ion-item" in the app
 
 #     # Case 2: perform 2 attempts in 'SCORM average' and check the average grade is used.
-#     When I press the back button in the app
+#     When I go back in the app
 #     And I press "SCORM average" in the app
 #     Then I should find "Average attempts" within "Grading method" "ion-item" in the app
 #     And I should find "Grade couldn't be calculated" within "Grade reported" "ion-item" in the app
@@ -767,7 +767,7 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I switch to "scorm_object" iframe
 #     And I press "Exit"
 #     And I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     And I press "Grades" in the app
 #     Then I should find "20%" within "Grade reported" "ion-item" in the app
 #     And I should find "20%" within "Grade for attempt 1" "ion-item" in the app
@@ -805,13 +805,13 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I switch to "scorm_object" iframe
 #     And I press "Exit"
 #     And I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     Then I should find "30%" within "Grade reported" "ion-item" in the app
 #     And I should find "20%" within "Grade for attempt 1" "ion-item" in the app
 #     And I should find "40%" within "Grade for attempt 2" "ion-item" in the app
 
 #     # Case 3: perform 2 attempts in 'SCORM first' and check the first attempt is used.
-#     When I press the back button in the app
+#     When I go back in the app
 #     And I press "SCORM first" in the app
 #     Then I should find "First attempt" within "Grading method" "ion-item" in the app
 #     And I should find "Grade couldn't be calculated" within "Grade reported" "ion-item" in the app
@@ -846,7 +846,7 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I switch to "scorm_object" iframe
 #     And I press "Exit"
 #     And I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     And I press "Grades" in the app
 #     Then I should find "27%" within "Grade reported" "ion-item" in the app
 #     And I should find "27%" within "Grade for attempt 1" "ion-item" in the app
@@ -884,13 +884,13 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I switch to "scorm_object" iframe
 #     And I press "Exit"
 #     And I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     Then I should find "27%" within "Grade reported" "ion-item" in the app
 #     And I should find "27%" within "Grade for attempt 1" "ion-item" in the app
 #     And I should find "40%" within "Grade for attempt 2" "ion-item" in the app
 
 #     # Case 4: perform 3 attempts in 'SCORM last' and check the last completed attempt is used.
-#     When I press the back button in the app
+#     When I go back in the app
 #     And I press "SCORM last" in the app
 #     Then I should find "Last completed attempt" within "Grading method" "ion-item" in the app
 #     And I should find "Grade couldn't be calculated" within "Grade reported" "ion-item" in the app
@@ -935,7 +935,7 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I switch to "scorm_object" iframe
 #     And I press "Exit"
 #     And I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     And I press "Grades" in the app
 #     Then I should find "87%" within "Grade reported" "ion-item" in the app
 #     And I should find "87%" within "Grade for attempt 1" "ion-item" in the app
@@ -971,7 +971,7 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I switch to "scorm_object" iframe
 #     And I press "Exit"
 #     And I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     # Grade reported belongs to attempt 1 because the second attempt's only SCO is failed.
 #     Then I should find "87%" within "Grade reported" "ion-item" in the app
 #     And I should find "87%" within "Grade for attempt 1" "ion-item" in the app
@@ -1016,7 +1016,7 @@ Feature: Test attempts and grading settings of SCORM activity in app
 #     And I switch to "scorm_object" iframe
 #     And I press "Exit"
 #     And I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     Then I should find "73%" within "Grade reported" "ion-item" in the app
 #     And I should find "87%" within "Grade for attempt 1" "ion-item" in the app
 #     And I should find "27%" within "Grade for attempt 2" "ion-item" in the app

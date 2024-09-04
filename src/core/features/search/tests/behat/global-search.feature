@@ -75,7 +75,7 @@ Feature: Test Global Search
     When I press "Test page 01" in the app
     Then I should find "Test page content" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And global search expects the query "forum" and will return:
       | type     | idnumber  |
       | activity | forum     |
@@ -87,7 +87,7 @@ Feature: Test Global Search
     When I press "Test forum" in the app
     Then I should find "Test forum intro" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Clear search" in the app
     Then I should find "What are you searching for?" in the app
     But I should not find "Test forum" in the app

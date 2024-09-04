@@ -83,14 +83,13 @@ Feature: Grades navigation
     Then I should find "Blog entries" in the app
     And I should find "Grades" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Student second" in the app
     Then I should find "Blog entries" in the app
     But I should not find "Grades" in the app
 
     # User grades
-    When I press the back button in the app
-    And I press the back button in the app
+    When I go back to the root page in the app
     And I press the user menu button in the app
     And I press "Grades" in the app
     Then the header should be "Grades" in the app
@@ -148,7 +147,7 @@ Feature: Grades navigation
     Then I should find "Course 1" in the app
     But I should not find "Course 2" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "Course 1" in the app
     And I should find "Course 2" in the app
     And the following events should have been logged for "student1" in the app:
@@ -212,7 +211,7 @@ Feature: Grades navigation
     And I should not find "Percentage" in the app
 
     # Profile grades
-    When I press the back button in the app
+    When I go back in the app
     And I press "Participants" in the app
     And I press "Student first" in the app
     And I press "Grades" in the app

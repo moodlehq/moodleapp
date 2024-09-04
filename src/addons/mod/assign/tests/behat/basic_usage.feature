@@ -131,7 +131,7 @@ Feature: Test basic usage of assignment activity in app
     Then I should find "This Assignment has offline data to be synchronised." in the app
 
     When I switch network connection to wifi
-    And I press the back button in the app
+    And I go back in the app
     And I press "assignment1" in the app
     And I press "Information" in the app
     And I press "Refresh" in the app
@@ -159,7 +159,7 @@ Feature: Test basic usage of assignment activity in app
     Then I should find "This Assignment has offline data to be synchronised." in the app
 
     When I switch network connection to wifi
-    And I press the back button in the app
+    And I go back in the app
     And I press "assignment1" in the app
     Then I should find "Submitted for grading" in the app
     And I should find "Submission test edited offline" in the app

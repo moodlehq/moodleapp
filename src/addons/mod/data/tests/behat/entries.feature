@@ -75,7 +75,7 @@ Feature: Users can manage entries in database activities
     Then I should find "Moodle community site" in the app
     But I should not find "Moodle Cloud" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I should find "Moodle community site" in the app
     And I should find "Moodle Cloud" in the app
 

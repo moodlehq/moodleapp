@@ -153,7 +153,7 @@ Feature: Test accepting pending policies on signup
     But I should not find "Accepted" in the app
 
     # Test tablet view now.
-    When I press the back button in the app
+    When I go back in the app
     And I change viewport size to "1200x640" in the app
     And I press "User account" in the app
     And I press "Policies and agreements" in the app

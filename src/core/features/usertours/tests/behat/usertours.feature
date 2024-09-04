@@ -42,6 +42,6 @@ Feature: User Tours work properly.
     When I press "Got it" in the app
     Then I should not find "Swipe left and right to navigate around" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Student First" in the app
     Then I should not find "Swipe left and right to navigate around" in the app

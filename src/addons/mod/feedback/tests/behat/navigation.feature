@@ -282,7 +282,7 @@ Feature: Test feedback navigation
     Then I should find "Anonymous" within "Mode" "ion-item" in the app
 
     # Analysis
-    When I press the back button in the app
+    When I go back in the app
     And I press "Analysis" in the app
     Then I should find "student01 response" in the app
     And I should find "student75 response" in the app
@@ -325,14 +325,13 @@ Feature: Test feedback navigation
     When I swipe to the left in the app
     Then I should find "student03 response" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Student 21" in the app
     And I swipe to the left in the app
     Then I should find "student22 response" in the app
 
     # By group
-    When I press the back button in the app
-    And I press the back button in the app
+    When I go back 2 times in the app
     And I press "Separate groups" in the app
     And I press "Group 1" in the app
     Then I should find "22" near "Submitted answers" in the app
@@ -369,7 +368,7 @@ Feature: Test feedback navigation
     Then I should find "student31 response" in the app
 
     # Reset group
-    When I press the back button in the app
+    When I go back in the app
     When I press "Group 1" in the app
     And I press "All participants" in the app
     Then I should find "Non anonymous entries (21)" in the app
@@ -392,7 +391,7 @@ Feature: Test feedback navigation
     Then I should find "Anonymous" within "Mode" "ion-item" in the app
 
     # Analysis
-    When I press the back button in the app
+    When I go back in the app
     And I press "Analysis" in the app
     Then I should find "student01 response" in the app
     And I should find "student75 response" in the app
@@ -434,7 +433,7 @@ Feature: Test feedback navigation
     And I should find "student22 response" inside the split-view content in the app
 
     # By group
-    When I press the back button in the app
+    When I go back in the app
     And I press "Separate groups" in the app
     And I press "Group 1" in the app
     Then I should find "22" near "Submitted answers" in the app

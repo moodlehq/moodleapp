@@ -45,7 +45,7 @@ Feature: It navigates properly in pages with a split-view component.
     And I should find "40" near "Range" in the app
 
     # Go back to grades page
-    When I press the back button in the app
+    When I go back in the app
     Then the header should be "Grades" in the app
     And I should find "Course 1" in the app
     And I should find "Course 2" in the app
@@ -61,13 +61,13 @@ Feature: It navigates properly in pages with a split-view component.
     And I should find "80" near "Range" in the app
 
     # Go back to grades page
-    When I press the back button in the app
+    When I go back in the app
     Then the header should be "Grades" in the app
     And I should find "Course 1" in the app
     And I should find "Course 2" in the app
 
     # Go back to main page
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "Acceptance test site" in the app
     And I should find "User account" in the app
     But I should not find "Back" in the app
@@ -106,7 +106,7 @@ Feature: It navigates properly in pages with a split-view component.
     And I should find "80" near "Range" in the app
 
     # Go back to main page
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "Acceptance test site" in the app
     And I should find "User account" in the app
     But I should not find "Back" in the app

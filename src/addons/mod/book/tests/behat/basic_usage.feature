@@ -86,7 +86,7 @@ Feature: Test basic usage of book activity in app
     And the UI should match the snapshot
     But I should not find "This is the second chapter" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Chapt 2" in the app
     Then I should find "Chapt 2" in the app
     And I should find "This is the second chapter" in the app
@@ -265,8 +265,7 @@ Feature: Test basic usage of book activity in app
     And I should find "3. Chapt 3" in the app
 
     When I press "Close" in the app
-    And I press the back button in the app
-    And I press the back button in the app
+    And I go back 2 times in the app
     And I press "Bull book" in the app
     Then I should find "• Chapt 1" in the app
     But I should not find "1. Chapt 1" in the app
@@ -277,8 +276,7 @@ Feature: Test basic usage of book activity in app
     But I should not find "1. Chapt 1" in the app
 
     When I press "Close" in the app
-    And I press the back button in the app
-    And I press the back button in the app
+    And I go back 2 times in the app
     And I press "Ind book" in the app
     Then I should find "Chapt 1" in the app
     But I should not find "• Chapt 1" in the app
@@ -291,8 +289,7 @@ Feature: Test basic usage of book activity in app
     And I should not find "1. Chapt 1" in the app
 
     When I press "Close" in the app
-    And I press the back button in the app
-    And I press the back button in the app
+    And I go back 2 times in the app
     And I press "None book" in the app
     Then I should find "Chapt 1" in the app
     But I should not find "• Chapt 1" in the app

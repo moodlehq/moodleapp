@@ -119,11 +119,11 @@ Feature: Test basic usage of one course in app
     When I press "Test forum name" in the app
     Then the header should be "Test forum name" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Test wiki name" in the app
     Then the header should be "Test wiki name" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Course index" in the app
     And I press "Topic 1" in the app
     Then I should find "Choice course 1" in the app
@@ -144,19 +144,19 @@ Feature: Test basic usage of one course in app
     When I press "Choice course 1" in the app
     Then the header should be "Choice course 1" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "assignment" in the app
     Then the header should be "assignment" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Test external name" in the app
     Then the header should be "Test external name" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Test survey name" in the app
     Then the header should be "Test survey name" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Course index" in the app
     And I press "Topic 2" in the app
     Then I should find "Quiz 1" in the app
@@ -177,15 +177,15 @@ Feature: Test basic usage of one course in app
     When I press "Test chat name" in the app
     Then the header should be "Test chat name" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Quiz 1" in the app
     Then the header should be "Quiz 1" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Test scorm name" in the app
     Then the header should be "Test scorm name" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Course index" in the app
     And I press "Topic 3" in the app
     Then I should find "Test feedback name" in the app
@@ -207,15 +207,15 @@ Feature: Test basic usage of one course in app
     And I press "OK" in the app
     Then the header should be "Test feedback name" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Test lesson name" in the app
     Then the header should be "Test lesson name" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Test workshop name" in the app
     Then the header should be "Test workshop name" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Course index" in the app
     And I press "Topic 4" in the app
     Then I should find "Web links" in the app
@@ -236,7 +236,7 @@ Feature: Test basic usage of one course in app
     When I press "Web links" in the app
     Then the header should be "Web links" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Course index" in the app
     And I press "Topic 5" in the app
     Then I should find "Test glossary" in the app

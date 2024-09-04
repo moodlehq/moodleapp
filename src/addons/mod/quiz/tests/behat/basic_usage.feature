@@ -150,7 +150,7 @@ Feature: Attempt a quiz in app
       | \mod_quiz\event\attempt_reviewed       | quiz     | Quiz 1       | Course 1 |              |
       | \mod_quiz\event\attempt_summary_viewed | quiz     | Quiz 1       | Course 1 |              |
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Attempt 1" in the app
     Then I should find "1" within "Attempt" "ion-item" in the app
     And I should find "Finished" within "Status" "ion-item" in the app

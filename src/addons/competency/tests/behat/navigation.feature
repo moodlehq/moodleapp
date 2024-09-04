@@ -115,9 +115,7 @@ Feature: Test competency navigation
     But I should not find "Cakes" in the app
 
     # Learning plans
-    When I press the back button in the app
-    And I press the back button in the app
-    And I press the back button in the app
+    When I go back to the root page in the app
     And I press the user menu button in the app
     And I press "Learning plans" in the app
     Then I should find "Cookery" in the app
@@ -236,9 +234,7 @@ Feature: Test competency navigation
     But I should not find "Cakes" in the app
 
     # User learning plans
-    When I press the back button in the app
-    And I press the back button in the app
-    And I press the back button in the app
+    When I go back to the root page in the app
     And I press "Messages" in the app
     And I press "Search people and messages" in the app
     And I set the field "Search" to "student" in the app
@@ -482,7 +478,7 @@ Feature: Test competency navigation
     When I entered the course "Course 1" as "student1" in the app
     Then I should not find "Competencies" in the app
 
-    When I press the back button in the app
+    When I go back to the root page in the app
     And I press the user menu button in the app
 
     Then I should not find "Learning plans" in the app

@@ -81,13 +81,12 @@ Feature: Test basic usage of courses in app
     Then I should find "Test choice description" in the app
     And the header should be "Choice course 1" in the app
 
-    When I press the back button in the app
-    And I press the back button in the app
+    When I go back to the root page in the app
     And I press "Course 2" in the app
     Then I should find "Choice course 2" in the app
     And the header should be "Course 2" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Course 3" in the app
     Then I should find "Choice course 3" in the app
     And the header should be "Course 3" in the app
@@ -108,7 +107,7 @@ Feature: Test basic usage of courses in app
     Then I should find "Course 4" in the app
     And I should find "Course summary" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I set the field "Search" to "Course" in the app
     And I press "Search" "button" in the app
     Then I should find "Course 1" in the app
@@ -128,8 +127,7 @@ Feature: Test basic usage of courses in app
     When I press "Add submission" in the app
     Then I should find "Online text submissions" in the app
 
-    When I press the back button in the app
-    And I press the back button in the app
+    When I go back 2 times in the app
     And I press "Add submission" in the app
     Then I should find "Online text submissions" in the app
 

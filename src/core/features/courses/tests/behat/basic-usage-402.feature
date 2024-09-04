@@ -54,13 +54,12 @@ Feature: Test basic usage of courses in app
     Then I should find "Test choice description" in the app
     And the header should be "Choice course 1" in the app
 
-    When I press the back button in the app
-    And I press the back button in the app
+    When I go back to the root page in the app
     And I press "Course 2" in the app
     Then I should find "Choice course 2" in the app
     And the header should be "Course 2" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Course 3" in the app
     Then I should find "Choice course 3" in the app
     And the header should be "Course 3" in the app

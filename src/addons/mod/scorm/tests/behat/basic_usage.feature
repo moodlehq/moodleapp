@@ -40,7 +40,7 @@ Feature: Test basic usage of SCORM activity in app
 #     And I should see "Scoring"
 
 #     When I switch to the main frame
-#     And I press the back button in the app
+#     And I go back in the app
 #     Then I should find "1" within "Number of attempts you have made" "ion-item" in the app
 #     And I should find "3" within "Grade reported" "ion-item" in the app
 
@@ -103,7 +103,7 @@ Feature: Test basic usage of SCORM activity in app
     # And I should find "Not attempted" within "Having Fun Quiz" "ion-item" in the app
 
     # When I press "Close" in the app
-    # And I press the back button in the app
+    # And I go back in the app
     # Then I should find "Completed" within "How to Play" "ion-item" in the app
     # And I should find "Completed" within "Par?" "ion-item" in the app
     # And I should find "Not attempted" within "Keeping Score" "ion-item" in the app
@@ -143,7 +143,7 @@ Feature: Test basic usage of SCORM activity in app
     And I press "Next" in the app
     Then I should find "11 / 11" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "1" within "Number of attempts you have made" "ion-item" in the app
     # And I should find "9" within "Grade reported" "ion-item" in the app
 
@@ -156,7 +156,7 @@ Feature: Test basic usage of SCORM activity in app
     # And I should find "Complete" within "Having Fun Quiz" "ion-item" in the app
 
     # When I press "Close" in the app
-    # And I press the back button in the app
+    # And I go back in the app
     # Then I should find "1" within "Number of attempts you have made" "ion-item" in the app
 
   Scenario: Unsupported SCORM

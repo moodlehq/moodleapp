@@ -29,7 +29,7 @@ Feature: It opens files properly.
     Then I should see "Test resource A txt.txt file"
 
     When I close the browser tab opened by the app
-    And I press the back button in the app
+    And I go back in the app
     And I press "Test RTF" in the app
     And I press "Open" in the app
     Then I should find "This file may not work as expected on this device" in the app
@@ -48,7 +48,7 @@ Feature: It opens files properly.
     Then I should not find "This file may not work as expected on this device" in the app
     And the app should have opened url "^blob:" with contents "Test resource A rtf.rtf file" 3 times
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Test DOC" in the app
     And I press "Open" in the app
     Then I should find "This file may not work as expected on this device" in the app
@@ -73,7 +73,7 @@ Feature: It opens files properly.
     Then the app should have opened a browser tab with url "dummy.pdf"
 
     When I close the browser tab opened by the app
-    And I press the back button in the app
+    And I go back in the app
     And I press "Page with embedded web" in the app
     And I press "Open in browser" in the app
     And I press "OK" in the app
@@ -85,16 +85,15 @@ Feature: It opens files properly.
     Then I should find "There was a problem connecting to the site. Please check your connection and try again." in the app
 
     When I press "OK" in the app
-    And I press the back button in the app
+    And I go back in the app
     And I press "Page with embedded PDF" in the app
     And I press "Open PDF file" in the app
     Then the app should have opened a browser tab with url "^blob"
 
     When I close the browser tab opened by the app
     When I switch network connection to wifi
-    And I press the back button in the app
-    And I press the back button in the app
-    And I press "More" in the app
+    And I go back to the root page in the app
+    And I press the more menu button in the app
     And I press "PDF item" in the app
     And I press "Open PDF file" in the app
     Then the app should have opened a browser tab with url "dummy.pdf"
