@@ -72,12 +72,12 @@
         "student": {
             "url": "https://school.moodledemo.net",
             "username": "student",
-            "password": "moodle"
+            "password": "moodle2024"
         },
         "teacher": {
             "url": "https://school.moodledemo.net",
             "username": "teacher",
-            "password": "moodle"
+            "password": "moodle2024"
         }
     },
     "defaultZoomLevel": "none",
