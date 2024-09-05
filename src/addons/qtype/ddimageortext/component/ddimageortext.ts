@@ -18,6 +18,7 @@ import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@featu
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { AddonQtypeDdImageOrTextQuestion } from '../classes/ddimageortext';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreText } from '@singletons/text';
 
 /**
  * Component to render a drag-and-drop onto image question.
@@ -88,8 +89,14 @@ export class AddonQtypeDdImageOrTextComponent
             if (this.question.amdArgs[1] !== undefined) {
                 this.question.readOnly = !!this.question.amdArgs[1];
             }
-            if (this.question.amdArgs[2] !== undefined) {
-                this.drops = <unknown[]> this.question.amdArgs[2];
+
+            // Try to get drop info from data attribute (Moodle 5.1+). If not found, fallback to old way of retrieving it.
+            const dropZones = ddArea.querySelector<HTMLElement>('.dropzones');
+            const placeInfo = dropZones?.dataset.placeInfo ?
+                CoreText.parseJSON(dropZones.dataset.placeInfo, null) :
+                this.question.amdArgs[2];
+            if (placeInfo) {
+                this.drops = <unknown[]> placeInfo;
             }
         }
 
