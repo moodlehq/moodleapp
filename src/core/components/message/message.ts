@@ -46,11 +46,9 @@ export class CoreMessageComponent implements OnInit {
 
     protected deleted = false; // Needed to fix animation to void in Behat tests.
 
-    // @TODO Recover the animation using native css or wait for Angular 13.1
-    // where the bug https://github.com/angular/angular/issues/30693 is solved.
-    // @HostBinding('@coreSlideInOut') get animation(): string {
-    //     return this.isMine ? '' : 'fromLeft';
-    // }
+    @HostBinding('@coreSlideInOut') get animation(): string {
+        return this.isMine ? '' : 'fromLeft';
+    }
 
     @HostBinding('class.is-mine') isMine = false;
 
