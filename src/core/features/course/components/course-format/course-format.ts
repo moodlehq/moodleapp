@@ -11,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 import {
     Component,
     Input,
@@ -31,7 +30,6 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import {
     CoreCourse,
-    CoreCourseModuleCompletionStatus,
     CoreCourseProvider,
 } from '@features/course/services/course';
 import {
@@ -56,12 +54,12 @@ import { ContextLevel } from '@/core/constants';
 import { CoreModals } from '@services/modals';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockComponentsModule } from '@features/block/components/components.module';
-import { CoreCourseComponentsModule } from '../components.module';
 import { CoreSites } from '@services/sites';
 import { COURSE_ALL_SECTIONS_PREFERRED_PREFIX, COURSE_EXPANDED_SECTIONS_PREFIX } from '@features/course/constants';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infinite-loading';
 import { CoreSite } from '@classes/sites/site';
+import { CoreCourseSectionComponent, CoreCourseSectionToDisplay } from '../course-section/course-section';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -76,12 +74,12 @@ import { CoreSite } from '@classes/sites/site';
 @Component({
     selector: 'core-course-format',
     templateUrl: 'course-format.html',
-    styleUrls: ['course-format.scss'],
+    styleUrl: 'course-format.scss',
     standalone: true,
     imports: [
         CoreSharedModule,
+        CoreCourseSectionComponent,
         CoreBlockComponentsModule,
-        CoreCourseComponentsModule,
     ],
 })
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
@@ -129,13 +127,11 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     selectedSection?: CoreCourseSectionToDisplay;
     previousSection?: CoreCourseSectionToDisplay;
     nextSection?: CoreCourseSectionToDisplay;
-    allSectionsId: number = CoreCourseProvider.ALL_SECTIONS_ID;
-    stealthModulesSectionId: number = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
+    allSectionsId = CoreCourseProvider.ALL_SECTIONS_ID;
+    stealthModulesSectionId = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
     loaded = false;
-    highlighted?: string;
     lastModuleViewed?: CoreCourseViewedModulesDBRecord;
     viewedModules: Record<number, boolean> = {};
-    completionStatusIncomplete = CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE;
 
     communicationRoomUrl?: string;
 
@@ -256,7 +252,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         // Format has changed or it's the first time, load all the components.
         this.lastCourseFormat = this.course.format;
 
-        this.highlighted = CoreCourseFormatDelegate.getSectionHightlightedName(this.course);
         const currentSectionData = await CoreCourseFormatDelegate.getCurrentSection(this.course, this.sections);
         currentSectionData.section.highlighted = true;
 
@@ -301,8 +296,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param sections Sections to treat.
      */
     protected async treatSections(sections: CoreCourseSectionToDisplay[]): Promise<void> {
-        const hasAllSections = sections[0].id == CoreCourseProvider.ALL_SECTIONS_ID;
-        const hasSeveralSections = sections.length > 2 || (sections.length == 2 && !hasAllSections);
+        const hasAllSections = sections[0].id === CoreCourseProvider.ALL_SECTIONS_ID;
+        const hasSeveralSections = sections.length > 2 || (sections.length === 2 && !hasAllSections);
 
         await this.initializeViewedModules();
         if (this.selectedSection) {
@@ -820,8 +815,3 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
 }
-
-type CoreCourseSectionToDisplay = CoreCourseSection & {
-    highlighted?: boolean;
-    expanded?: boolean; // The aim of this property is to avoid DOM overloading.
-};
