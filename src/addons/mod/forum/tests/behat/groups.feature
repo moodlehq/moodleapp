@@ -46,7 +46,7 @@ Feature: Test usage of forum activity with groups in app
     And I should not find "Group 2" in the app
 
     When I press "Group 1" in the app
-    And I press the back button in the app
+    And I go back in the app
     And I press "Visible groups forum" in the app
     And I press "Visible groups" in the app
     Then I should find "All participants" in the app
@@ -88,7 +88,7 @@ Feature: Test usage of forum activity with groups in app
     And I should find "Disc sep ALL" in the app
     But I should not find "Disc sep G1" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Visible groups forum" in the app
     And I press "Visible groups" in the app
     Then I should find "All participants" in the app
@@ -125,7 +125,7 @@ Feature: Test usage of forum activity with groups in app
     Then I should find "Your post was successfully added" in the app
     And I should find "My happy subject" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Visible groups forum" in the app
     And I press "Visible groups" in the app
     And I press "All participants" in the app
@@ -221,7 +221,7 @@ Feature: Test usage of forum activity with groups in app
     And I press "Group 2" in the app
     Then I should find "My third subject" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Visible groups forum" in the app
     And I press "Visible groups" in the app
     And I press "All participants" in the app
@@ -300,7 +300,7 @@ Feature: Test usage of forum activity with groups in app
     And I press "Group 2" in the app
     Then I should find "My happy subject" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Visible groups forum" in the app
     And I press "Visible groups" in the app
     And I press "Group 1" in the app
@@ -346,7 +346,7 @@ Feature: Test usage of forum activity with groups in app
     Then I should find "Downloaded" within "Separate groups" "ion-item" in the app
     And I should find "Downloaded" within "Visible groups" "ion-item" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I switch offline mode to "true"
     And I press "Separate groups forum" in the app
     Then I should find "Disc sep G1" in the app
@@ -356,8 +356,7 @@ Feature: Test usage of forum activity with groups in app
     Then I should find "Disc sep G1" in the app
     And I should find "Disc sep G1 content" in the app
 
-    When I press the back button in the app
-    And I press the back button in the app
+    When I go back 2 times in the app
     And I press "Visible groups forum" in the app
     Then I should find "Disc vis ALL" in the app
     And I should find "Disc vis G1" in the app

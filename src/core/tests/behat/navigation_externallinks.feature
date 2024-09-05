@@ -30,7 +30,7 @@ Feature: It opens external links properly.
     Then the app should have opened a browser tab with url "moodle.org"
 
     When I close the browser tab opened by the app
-    And I press the back button in the app
+    And I go back in the app
     And I press "Information" in the app
     And I press "Open in browser" in the app
     Then the app should have opened a browser tab

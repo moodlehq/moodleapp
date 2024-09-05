@@ -23,8 +23,8 @@ Feature: It navigates properly within activities.
     And I press "Go to label" in the app
     Then I should find "Label description" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "Go to label" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "Label description" in the app

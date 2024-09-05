@@ -245,7 +245,7 @@ Feature: Test basic usage of survey activity in app
     Then I should see "This Survey has offline data to be synchronised."
 
     When I switch network connection to wifi
-    And I press the back button in the app
+    And I go back in the app
     And I press "Test survey critical incidents" in the app
     And I press "Information" in the app
     And I press "Refresh" in the app
@@ -260,13 +260,13 @@ Feature: Test basic usage of survey activity in app
     Given I entered the course "Course 1" as "student1" in the app
     And I press "Course downloads" in the app
     And I press "Download" within "Test survey critical incidents" "ion-item" in the app
-    And I press the back button in the app
+    And I go back in the app
     And I switch network connection to offline
     And I press "Test survey name" in the app
     Then I should see "There was a problem connecting to the site. Please check your connection and try again."
 
     When I press "OK" in the app
-    And I press the back button in the app
+    And I go back in the app
     And I press "Test survey critical incidents" in the app
     And I press "Submit" in the app
     And I press "OK" in the app

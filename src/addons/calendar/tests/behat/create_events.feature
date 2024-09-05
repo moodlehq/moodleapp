@@ -23,7 +23,7 @@ Feature: Test creation of calendar events in app
   # This test is flaky due to timestamp.
   Scenario: Create user event as student from monthly view
     Given I entered the app as "student1"
-    When I press "More" in the app
+    When I press the more menu button in the app
     And I press "Calendar" in the app
     And I press "New event" in the app
     # Flaky step, sometimes it fails due to minute change when checking.

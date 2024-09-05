@@ -102,7 +102,7 @@ Feature: Test decimal separators in lesson
     When I press "Review lesson" in the app
     Then the field "Your answer" matches value "2,87" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Start" in the app
     And I set the field "Your answer" to "2.87" in the app
     And I press "Submit" in the app
@@ -131,7 +131,7 @@ Feature: Test decimal separators in lesson
     And I press "Download" within "Offline lesson" "ion-item" in the app
     Then I should find "Downloaded" within "Offline lesson" "ion-item" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Offline lesson" in the app
     And I switch network connection to offline
     And I press "Start" in the app
@@ -153,7 +153,7 @@ Feature: Test decimal separators in lesson
     And I should find "Your score is 1 (out of 1)." in the app
 
     When I switch network connection to wifi
-    And I press the back button in the app
+    And I go back in the app
     Then I should find "An offline attempt was synchronised" in the app
 
   Scenario: Attempt an offline lesson successfully as a student (custom separator)
@@ -167,7 +167,7 @@ Feature: Test decimal separators in lesson
     And I press "Download" within "Offline lesson" "ion-item" in the app
     Then I should find "Downloaded" within "Offline lesson" "ion-item" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Offline lesson" in the app
     And I switch network connection to offline
     And I press "Start" in the app
@@ -184,7 +184,7 @@ Feature: Test decimal separators in lesson
     And I should find "Your score is 1 (out of 1)." in the app
 
     When I switch network connection to wifi
-    And I press the back button in the app
+    And I go back in the app
     Then I should find "An offline attempt was synchronised" in the app
 
     When I switch network connection to offline

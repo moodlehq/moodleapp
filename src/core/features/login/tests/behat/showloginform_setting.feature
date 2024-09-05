@@ -36,10 +36,7 @@ Feature: Test showloginform setting in the app
     And I press "Moodle Mobile" in the app
     And I press "Developer options" in the app
     And I press "Always show login form" in the app
-    And I press the back button in the app
-    And I press the back button in the app
-    And I press the back button in the app
-    And I press the back button in the app
+    And I go back 4 times in the app
     Then the header should be "Log in" in the app
     And I should find "Log in" "ion-button" in the app
 
@@ -51,10 +48,7 @@ Feature: Test showloginform setting in the app
     And I press "Moodle Mobile" in the app
     And I press "Developer options" in the app
     And I press "Always show login form" in the app
-    And I press the back button in the app
-    And I press the back button in the app
-    And I press the back button in the app
-    And I press the back button in the app
+    And I go back 4 times in the app
     And I press "david student" in the app
     Then the header should be "Reconnect" in the app
     And I should find "Log in" "ion-button" in the app

@@ -59,12 +59,12 @@ Feature: Notifications
     Then I should find "Push 01" in the app
 
     # Open notification detail
-    When I press the back button in the app
+    When I go back in the app
     And I press "Test 30" in the app
     Then I should find "Test 30 description" in the app
 
     # Go back and open other notification
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "Test 10" in the app
     When I press "Test 10" in the app
     Then I should find "Test 10 description" in the app

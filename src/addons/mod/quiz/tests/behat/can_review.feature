@@ -53,35 +53,33 @@ Feature: Users can only review attempts that are allowed to be reviewed
     And I press "Attempt 1" in the app
     Then I should not be able to press "Review" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Quiz review only immed" in the app
     And I press "Attempt 1" in the app
     And I press "Review" in the app
     Then I should find "Question 1" in the app
 
     # Wait the "immediate after" time and check that now the behaviour is the opposite.
-    When I press the back button in the app
-    And I press the back button in the app
+    When I go back 2 times in the app
     And I wait "120" seconds
     And I press "Quiz review only immed" in the app
     And I press "Attempt 1" in the app
     Then I should find "You are not allowed to review this attempt" in the app
     And I should not be able to press "Review" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Quiz review after immed" in the app
     And I press "Attempt 1" in the app
     And I press "Review" in the app
     Then I should find "Question 1" in the app
 
-    When I press the back button in the app
-    And I press the back button in the app
+    When I go back 2 times in the app
     And I press "Quiz never review" in the app
     And I press "Attempt 1" in the app
     Then I should find "You are not allowed to review this attempt" in the app
     And I should not be able to press "Review" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Quiz review when closed" in the app
     And I press "Attempt 1" in the app
     Then I should find "Available 31/12/35, 23:59" in the app

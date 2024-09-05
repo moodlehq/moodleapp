@@ -103,8 +103,7 @@ Feature: Test basic usage of user features
     Then I should find "Europe/Madrid" in the app
     And I should not find "Asia/Shanghai" in the app
 
-    When I press the back button in the app
-    And I press the back button in the app
+    When I go back 2 times in the app
     And I press "John Smith" in the app
     And I press "Details" in the app
     Then I should find "Asia/Shanghai" in the app

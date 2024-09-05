@@ -134,5 +134,5 @@ Feature: Test basic usage of workshop activity in app
     When I press "Information" in the app
     And I press "Download" in the app
     And I press "Close" in the app
-    And I press the back button in the app
+    And I go back in the app
     Then I should find "Downloaded" in the app

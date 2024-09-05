@@ -26,7 +26,7 @@ Feature: Test chat navigation
     And I press "Send" in the app
     Then I should find "Test message" in the app
     # Confirm leave the page
-    And I press the back button in the app
+    And I go back in the app
     And I press "OK" in the app
 
   Scenario: Tablet navigation on chat

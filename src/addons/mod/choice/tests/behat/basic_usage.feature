@@ -33,7 +33,7 @@ Feature: Test basic usage of choice activity in app
     And I should find "Option 3: 0" in the app
     But I should not find "Remove my choice" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Test single choice name" in the app
     Then I should find "Option 1: 0" in the app
     And I should find "Option 2: 1" in the app
@@ -82,7 +82,7 @@ Feature: Test basic usage of choice activity in app
     Then I should find "Are you sure" in the app
 
     When I press "OK" in the app
-    And I press the back button in the app
+    And I go back in the app
     And I press "Test single choice name" in the app
     Then I should find "This Choice has offline data to be synchronised." in the app
     But I should not find "Option 1: 0" in the app
@@ -90,7 +90,7 @@ Feature: Test basic usage of choice activity in app
     And I should not find "Option 3: 0" in the app
 
     When I switch network connection to wifi
-    And I press the back button in the app
+    And I go back in the app
     And I press "Test single choice name" in the app
     Then I should find "Test single choice description" in the app
 
@@ -135,21 +135,21 @@ Feature: Test basic usage of choice activity in app
     When I press "Course downloads" in the app
     When I press "Download" within "Test single choice name" "ion-item" in the app
     Then I should find "Downloaded" within "Test single choice name" "ion-item" in the app
-    And I press the back button in the app
+    And I go back in the app
 
     When I switch network connection to offline
     And I press "Test multi choice name" in the app
     Then I should find "There was a problem connecting to the site. Please check your connection and try again." in the app
 
     When I press "OK" in the app
-    And I press the back button in the app
+    And I go back in the app
     And I press "Test single choice name" in the app
     And I select "Option 2" in the app
     And I press "Save my choice" in the app
     Then I should find "Are you sure" in the app
 
     When I press "OK" in the app
-    And I press the back button in the app
+    And I go back in the app
     And I press "Test single choice name" in the app
     Then I should find "This Choice has offline data to be synchronised." in the app
     But I should not find "Option 1: 0" in the app
@@ -157,7 +157,7 @@ Feature: Test basic usage of choice activity in app
     And I should not find "Option 3: 0" in the app
 
     When I switch network connection to wifi
-    And I press the back button in the app
+    And I go back in the app
     And I press "Test single choice name" in the app
     Then I should find "Option 1: 0" in the app
     And I should find "Option 2: 1" in the app

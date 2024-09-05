@@ -42,7 +42,7 @@ Feature: It navigates properly using deep links.
     And I should find "Forum message" in the app
     But I should not find "Site home" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "Site home" in the app
     But I should not find "Forum topic" in the app
     And I should not find "Forum message" in the app
@@ -58,7 +58,7 @@ Feature: It navigates properly using deep links.
     And I should find "Forum message" in the app
     But I should not find "Site home" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "Site home" in the app
     But I should not find "Forum topic" in the app
     And I should not find "Forum message" in the app
@@ -75,6 +75,6 @@ Feature: It navigates properly using deep links.
     And I press "Log in" in the app
     Then I should find "Test forum" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "Site home" in the app
     But I should not find "Test forum" in the app

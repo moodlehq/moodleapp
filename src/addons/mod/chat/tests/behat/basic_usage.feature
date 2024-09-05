@@ -37,7 +37,7 @@ Feature: Test basic usage of chat in app
     Then I should find "Hi!" in the app
     And I should find "I am David" in the app
     # Confirm leave the page
-    And I press the back button in the app
+    And I go back in the app
     And I press "OK" in the app
 
     # Read messages, view connected users, send beep and reply as student2
@@ -76,7 +76,7 @@ Feature: Test basic usage of chat in app
     And I press "Send" in the app
     Then I should find "I am David" in the app
     # Confirm leave the page
-    And I press the back button in the app
+    And I go back in the app
     And I press "OK" in the app
 
     # Read messages from past sessions as student2

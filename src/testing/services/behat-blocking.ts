@@ -14,8 +14,18 @@
 
 import { Injectable } from '@angular/core';
 import { CoreWait } from '@singletons/wait';
-import { makeSingleton, NgZone } from '@singletons';
+import { makeSingleton, NgZone, Router } from '@singletons';
 import { BehatTestsWindow, TestingBehatRuntime } from './behat-runtime';
+import {
+    GuardsCheckEnd,
+    GuardsCheckStart,
+    NavigationCancel,
+    NavigationEnd,
+    NavigationError,
+    NavigationStart,
+} from '@angular/router';
+import { Subscription, filter } from 'rxjs';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Behat block JS manager.
@@ -24,10 +34,12 @@ import { BehatTestsWindow, TestingBehatRuntime } from './behat-runtime';
 export class TestingBehatBlockingService {
 
     protected waitingBlocked = false;
+    protected waitingGuardEnd = false;
     protected recentMutation = false;
     protected lastMutation = 0;
     protected initialized = false;
     protected keyIndex = 0;
+    protected navSubscription?: Subscription;
 
     /**
      * Listen to mutations and override XML Requests.
@@ -47,6 +59,47 @@ export class TestingBehatBlockingService {
         win.M = win.M ?? {};
         win.M.util = win.M.util ?? {};
         win.M.util.pending_js = win.M.util.pending_js ?? [];
+
+        this.navSubscription = Router.events
+            .pipe(filter(event =>
+                event instanceof NavigationStart ||
+                event instanceof NavigationEnd ||
+                event instanceof NavigationError ||
+                event instanceof NavigationCancel ||
+                event instanceof GuardsCheckStart ||
+                event instanceof GuardsCheckEnd))
+            .subscribe(async (event) => {
+                if (!('id' in event)) {
+                    return;
+                }
+
+                const blockName = `navigation-${event.id}`;
+                if (event instanceof NavigationStart) {
+                    this.block(blockName);
+                } else if (event instanceof GuardsCheckStart) {
+                    // This event is triggered before the guards are checked, so we need to wait for the end.
+                    this.waitingGuardEnd = CoreNavigator.currentRouteCanBlockLeave();
+
+                    // No deactivation needed.
+                    if (!this.waitingGuardEnd) {
+                        return;
+                    }
+
+                    await CoreWait.wait(500);
+
+                    if (this.waitingGuardEnd) {
+                        // The guard is still running (this case can unexpetedly unblock the tests)
+                        // or a user confirmation is shown. Unblock.
+                        this.waitingGuardEnd = false;
+                        this.unblock(blockName);
+                    }
+                } else if (event instanceof GuardsCheckEnd) {
+                    // Guards check ended.
+                    this.waitingGuardEnd = false;
+                } else {
+                    this.unblock(blockName);
+                }
+            });
 
         TestingBehatRuntime.log('Initialized!');
     }
@@ -280,6 +333,13 @@ export class TestingBehatBlockingService {
                 }
             });
         };
+    }
+
+    /**
+     * Wait for pending list to be empty.
+     */
+    async waitForPending(): Promise<void> {
+        await CoreWait.waitFor(() => this.pendingList.length === 0);
     }
 
 }

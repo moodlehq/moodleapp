@@ -53,13 +53,13 @@ Feature: View grades
     Then I should find "80" within "Gradebook" "ion-list" in the app
 
     When I press "Close" in the app
-    And I press the back button in the app
+    And I go back in the app
     And I press "Assignment 2" in the app
     And I press "Information" in the app
     Then I should find "35" within "Gradebook" "ion-list" in the app
 
     When I press "Close" in the app
-    And I press the back button in the app
+    And I go back in the app
     And I press "Grades" in the app
     Then I should find "Category 1" in the app
     And I should find "70" within "Item 1.1" "tr" in the app

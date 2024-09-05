@@ -48,7 +48,7 @@ export class CoreModalsService {
         // eslint-disable-next-line max-len
         // See https://github.com/ionic-team/ionic-framework/blob/a9b12a5aa4c150a1f8a80a826dda0df350bc0092/core/src/utils/overlays.ts#L39
 
-        const overlays = document.querySelectorAll<HTMLElement>(
+        const overlays = document.body.querySelectorAll<HTMLElement>(
             'ion-action-sheet, ion-alert, ion-loading, ion-modal, ion-picker, ion-popover, ion-toast',
         );
 

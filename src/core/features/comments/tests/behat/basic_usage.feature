@@ -41,7 +41,7 @@ Feature: Test basic usage of comments in app
     Then I should find "Comment created" in the app
     And I should find "comment test teacher" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I should find "Comments (1)" in the app
 
     # Create and delete comments as a student
@@ -55,7 +55,7 @@ Feature: Test basic usage of comments in app
     And I should find "comment test teacher" in the app
     And I should find "comment test student" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Comments (2)" in the app
     And I press "Toggle delete buttons" in the app
     And I press "Delete" near "comment test student" in the app
@@ -64,7 +64,7 @@ Feature: Test basic usage of comments in app
     And I should find "comment test teacher" in the app
     But I should not see "comment test student"
 
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "Comments (1)" in the app
 
   Scenario: Add comments offline & Delete comments offline & Sync comments (database)
@@ -82,7 +82,7 @@ Feature: Test basic usage of comments in app
     And I should find "There are offline comments to be synchronised." in the app
     And I should find "comment test" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Comments (0)" in the app
     And I switch network connection to wifi
     And I press "Display options" in the app
@@ -91,7 +91,7 @@ Feature: Test basic usage of comments in app
     Then I should find "comment test" in the app
     But I should not see "There are offline comments to be synchronised."
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Comments (1)" in the app
     And I switch network connection to offline
     And I press "Toggle delete buttons" in the app
@@ -102,7 +102,7 @@ Feature: Test basic usage of comments in app
     And I should find "Deleted offline" in the app
     And I should find "comment test" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Comments (1)" in the app
     And I switch network connection to wifi
     And I press "Display options" in the app
@@ -111,7 +111,7 @@ Feature: Test basic usage of comments in app
     Then I should not see "There are offline comments to be synchronised."
     And I should not see "comment test"
 
-    When I press the back button in the app
+    When I go back in the app
     And I should find "Comments (0)" in the app
 
   Scenario: Add comments & delete comments (glossary)
@@ -128,7 +128,7 @@ Feature: Test basic usage of comments in app
     And I press "Send" in the app
     Then I should find "Comment created" in the app
     And I should find "comment test teacher" in the app
-    And I press the back button in the app
+    And I go back in the app
     And I should find "Comments (1)" in the app
 
     # Create and delete comments as a student
@@ -142,7 +142,7 @@ Feature: Test basic usage of comments in app
     And I should find "comment test teacher" in the app
     And I should find "comment test student" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Comments (2)" in the app
     And I press "Toggle delete buttons" in the app
     And I press "Delete" near "comment test student" in the app
@@ -151,7 +151,7 @@ Feature: Test basic usage of comments in app
     And I should find "comment test teacher" in the app
     But I should not see "comment test student"
 
-    When I press the back button in the app
+    When I go back in the app
     And I should find "Comments (1)" in the app
 
   Scenario: Add comments offline & Delete comments offline & Sync comments (glossary)
@@ -170,7 +170,7 @@ Feature: Test basic usage of comments in app
     And I should find "There are offline comments to be synchronised." in the app
     And I should find "comment test" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Comments (0)" in the app
     And I switch network connection to wifi
     And I press "Display options" in the app
@@ -179,7 +179,7 @@ Feature: Test basic usage of comments in app
     Then I should find "comment test" in the app
     But I should not see "There are offline comments to be synchronised."
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Comments (1)" in the app
     And I switch network connection to offline
     And I press "Toggle delete buttons" in the app
@@ -190,7 +190,7 @@ Feature: Test basic usage of comments in app
     And I should find "Deleted offline" in the app
     And I should find "comment test" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Comments (1)" in the app
     And I switch network connection to wifi
     And I press "Display options" in the app
@@ -199,7 +199,7 @@ Feature: Test basic usage of comments in app
     Then I should not see "There are offline comments to be synchronised."
     And I should not see "comment test"
 
-    When I press the back button in the app
+    When I go back in the app
     And I should find "Comments (0)" in the app
 
   Scenario: Add comments & Delete comments (blogs)
@@ -221,7 +221,7 @@ Feature: Test basic usage of comments in app
     Then I should find "Comment created" in the app
     And I should find "comment test" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Comments (1)" in the app
     And I press "Toggle delete buttons" in the app
     And I press "Delete" in the app
@@ -229,7 +229,7 @@ Feature: Test basic usage of comments in app
     Then I should find "Comment deleted" in the app
     But I should not see "comment test"
 
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "Comments (0)" in the app
 
   Scenario: Add comments offline & Delete comments offline & Sync comments (blogs)
@@ -253,7 +253,7 @@ Feature: Test basic usage of comments in app
     And I should find "There are offline comments to be synchronised." in the app
     And I should find "comment test" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Comments (0)" in the app
     And I switch network connection to wifi
     And I press "Display options" in the app
@@ -262,7 +262,7 @@ Feature: Test basic usage of comments in app
     Then I should find "comment test" in the app
     But I should not see "There are offline comments to be synchronised."
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Comments (1)" in the app
     And I switch network connection to offline
     And I press "Toggle delete buttons" in the app
@@ -273,7 +273,7 @@ Feature: Test basic usage of comments in app
     And I should find "Deleted offline" in the app
     And I should find "comment test" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Comments (1)" in the app
     And I switch network connection to wifi
     And I press "Display options" in the app
@@ -282,5 +282,5 @@ Feature: Test basic usage of comments in app
     Then I should not see "There are offline comments to be synchronised."
     And I should not see "comment test"
 
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "Comments (0)" in the app

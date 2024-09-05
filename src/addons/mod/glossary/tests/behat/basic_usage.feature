@@ -59,7 +59,7 @@ Feature: Test basic usage of glossary in app
     And I should find "Potato" in the app
     And I should find "Raddish" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Test forum name" in the app
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Testing auto-link glossary"
@@ -72,7 +72,7 @@ Feature: Test basic usage of glossary in app
     Then the header should be "Raddish" in the app
     And I should find "Raphanus sativus" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     And I press "Potato" in the app
     Then the header should be "Potato" in the app
     And I should find "To make chips" in the app
@@ -115,7 +115,7 @@ Feature: Test basic usage of glossary in app
     Given I entered the course "Course 1" as "student1" in the app
     When I press "Course downloads" in the app
     When I press "Download" within "Test glossary" "ion-item" in the app
-    And I press the back button in the app
+    And I go back in the app
     And I switch network connection to offline
     And I press "Test glossary" in the app
     Then the header should be "Test glossary" in the app
@@ -201,7 +201,7 @@ Feature: Test basic usage of glossary in app
     And I should find "stub3.txt" in the app
     But I should not find "stub2.txt" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "Coconut" in the app
     And I should find "Potato" in the app
     But I should not find "Cucumber" in the app
@@ -257,7 +257,7 @@ Feature: Test basic usage of glossary in app
     But I should not find "stub2.txt" in the app
     And I should not find "Brassica oleracea var. italica" in the app
 
-    When I press the back button in the app
+    When I go back in the app
     Then I should find "Pickle" in the app
     And I should find "Potato" in the app
     But I should not find "Broccoli" in the app
@@ -369,7 +369,7 @@ Feature: Test basic usage of glossary in app
     And I should find "Average of ratings: 1" in the app
 
     When I switch network connection to wifi
-    And I press the back button in the app
+    And I go back in the app
     Then I should find "This Glossary has offline data to be synchronised." in the app
 
     When I press "Information" in the app

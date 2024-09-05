@@ -467,7 +467,7 @@ class behat_app extends behat_app_helper {
     /**
      * Presses standard buttons in the app.
      *
-     * @When /^I press the (back|more menu|page menu|user menu|main menu) button in the app$/
+     * @When /^I press the (back|more menu|page menu|user menu) button in the app$/
      * @param string $button Button type
      * @throws DriverException If the button push doesn't work
      */
@@ -477,6 +477,51 @@ class behat_app extends behat_app_helper {
 
             if ($result !== 'OK') {
                 throw new DriverException('Error pressing standard button - ' . $result);
+            }
+
+            return true;
+        });
+
+        $this->wait_for_pending_js();
+    }
+
+    /**
+     * Presses go back repeatedly in the app.
+     *
+     * @When /^I go back( (\d+) times)? in the app$/
+     * @param int $times
+     * @throws DriverException If the navigation doesn't work
+     */
+    public function i_go_back_x_times_in_the_app(?string $unused = null, ?int $times = 1) {
+        if ($times < 1) {
+            return;
+        }
+
+        $this->spin(function() use ($times) {
+            $result = $this->runtime_js("goBackTimes($times)");
+
+            if ($result !== 'OK') {
+                throw new DriverException('Error navigating back - ' . $result);
+            }
+
+            return true;
+        });
+
+        $this->wait_for_pending_js();
+    }
+
+    /**
+     * Presses go back repeatedly until the app is in the main menu.
+     *
+     * @When /^I go back to the root page in the app$/
+     * @throws DriverException If the navigation doesn't work
+     */
+    public function i_go_back_to_root_in_the_app() {
+        $this->spin(function() {
+            $result = $this->runtime_js("goBackToRoot()");
+
+            if ($result !== 'OK') {
+                throw new DriverException('Error navigating to root - ' . $result);
             }
 
             return true;

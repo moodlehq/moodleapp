@@ -53,7 +53,7 @@ Feature: Test basic usage of assignment activity in app
     Then I should find "Student student" in the app
     And I should find "Not graded" in the app
 
-    When I press "Student student" near "assignment1" in the app
+    When I press "Student student" in the app
     Then I should find "Online text submissions" in the app
     And I should find "Submission test edited" in the app
     And the following events should have been logged for "student1" in the app:
@@ -87,7 +87,7 @@ Feature: Test basic usage of assignment activity in app
     # Allow more attempts as a teacher
     Given I entered the assign activity "assignment1" on course "Course 1" as "teacher1" in the app
     When I press "Participants" in the app
-    And I press "Student student" near "assignment1" in the app
+    And I press "Student student" in the app
     And I press "Grade" in the app
     And I press "Allow another attempt" in the app
     And I press "Done" in the app
@@ -116,7 +116,7 @@ Feature: Test basic usage of assignment activity in app
     Given I entered the assign activity "assignment1" on course "Course 1" as "teacher1" in the app
     When I press "Participants" in the app
     And I pull to refresh in the app
-    And I press "Student student" near "assignment1" in the app
+    And I press "Student student" in the app
     Then I should find "Online text submissions" in the app
     And I should find "Submission test 2nd attempt" in the app
 
@@ -131,7 +131,7 @@ Feature: Test basic usage of assignment activity in app
     Then I should find "This Assignment has offline data to be synchronised." in the app
 
     When I switch network connection to wifi
-    And I press the back button in the app
+    And I go back in the app
     And I press "assignment1" in the app
     And I press "Information" in the app
     And I press "Refresh" in the app
@@ -159,7 +159,7 @@ Feature: Test basic usage of assignment activity in app
     Then I should find "This Assignment has offline data to be synchronised." in the app
 
     When I switch network connection to wifi
-    And I press the back button in the app
+    And I go back in the app
     And I press "assignment1" in the app
     Then I should find "Submitted for grading" in the app
     And I should find "Submission test edited offline" in the app
