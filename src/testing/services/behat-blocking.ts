@@ -24,7 +24,7 @@ import {
     NavigationError,
     NavigationStart,
 } from '@angular/router';
-import { Subscription, filter } from 'rxjs';
+import { filter } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
 
 /**
@@ -39,7 +39,6 @@ export class TestingBehatBlockingService {
     protected lastMutation = 0;
     protected initialized = false;
     protected keyIndex = 0;
-    protected navSubscription?: Subscription;
 
     /**
      * Listen to mutations and override XML Requests.
@@ -60,7 +59,7 @@ export class TestingBehatBlockingService {
         win.M.util = win.M.util ?? {};
         win.M.util.pending_js = win.M.util.pending_js ?? [];
 
-        this.navSubscription = Router.events
+        Router.events
             .pipe(filter(event =>
                 event instanceof NavigationStart ||
                 event instanceof NavigationEnd ||
