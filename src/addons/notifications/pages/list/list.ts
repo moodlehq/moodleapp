@@ -26,7 +26,6 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreTimeUtils } from '@services/utils/time';
 import { AddonNotificationsNotificationsSource } from '@addons/notifications/classes/notifications-source';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
@@ -130,8 +129,7 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
             this.loadMarkAllAsReadButton();
         });
 
-        const deepLinkManager = new CoreMainMenuDeepLinkManager();
-        deepLinkManager.treatLink();
+        CoreSites.loginNavigationFinished();
     }
 
     /**

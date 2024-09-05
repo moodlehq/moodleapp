@@ -29,7 +29,6 @@ import { AddonBlogOffline, AddonBlogOfflineEntry } from '@addons/blog/services/b
 import { AddonBlogSync } from '@addons/blog/services/blog-sync';
 import { Component, computed, OnDestroy, OnInit, signal } from '@angular/core';
 import { CoreComments } from '@features/comments/services/comments';
-import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
@@ -202,8 +201,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
         this.commentsEnabled = CoreComments.areCommentsEnabledInSite();
         this.tagsEnabled = CoreTag.areTagsAvailableInSite();
 
-        const deepLinkManager = new CoreMainMenuDeepLinkManager();
-        deepLinkManager.treatLink();
+        CoreSites.loginNavigationFinished();
 
         await this.fetchEntries(false, false, true);
         this.optionsAvailable = await AddonBlog.isEditingEnabled();

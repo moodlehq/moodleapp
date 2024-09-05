@@ -67,6 +67,7 @@ import { firstValueFrom } from 'rxjs';
 import { CoreHTMLClasses } from '@singletons/html-classes';
 import { CoreSiteErrorDebug } from '@classes/errors/siteerror';
 import { CoreErrorHelper } from './error-helper';
+import { CoreQueueRunner } from '@classes/queue-runner';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -95,6 +96,11 @@ export class CoreSitesProvider {
     protected siteTables: Record<string, Record<string, CorePromisedValue<CoreDatabaseTable>>> = {};
     protected schemasTables: Record<string, AsyncInstance<CoreDatabaseTable<SchemaVersionsDBEntry, 'name', never>>> = {};
     protected sitesTable = asyncInstance<CoreDatabaseTable<SiteDBEntry>>();
+
+    // Variables to run code after login navigation.
+    protected isLoginNavigationFinished = false;
+    protected afterLoginNavigationQueue: CoreSitesAfterLoginNavigationProcess[] = [];
+    protected afterLoginNavigationQueueRunner = new CoreQueueRunner(1, true);
 
     constructor(@Optional() @Inject(CORE_SITE_SCHEMAS) siteSchemas: CoreSiteSchema[][] | null) {
         this.logger = CoreLogger.getInstance('CoreSitesProvider');
@@ -1462,6 +1468,8 @@ export class CoreSitesProvider {
         const siteId = this.currentSite.getId();
 
         this.currentSite = undefined;
+        this.isLoginNavigationFinished = false;
+        this.afterLoginNavigationQueue = [];
 
         if (options.forceLogout || (siteConfig && siteConfig.tool_mobile_forcelogout == '1')) {
             promises.push(this.setSiteLoggedOut(siteId));
@@ -2168,6 +2176,47 @@ export class CoreSitesProvider {
         );
     }
 
+    /**
+     * Run some code when the login navigation is finished. Login navigation finishes when the proper main menu page
+     * has loaded.
+     * If not logged in or the login navigation is already finished, the callback will run immediately (waiting for currently
+     * running processes to finish).
+     * Otherwise, the process will be added to a queue and will run once the login navigation is finished.
+     *
+     * @param data Process data.
+     */
+    runAfterLoginNavigation(data: CoreSitesAfterLoginNavigationProcess): void {
+        if (!this.isLoggedIn() || this.isLoginNavigationFinished) {
+            this.afterLoginNavigationQueueRunner.run(data.callback, { priority: data.priority });
+
+            return;
+        }
+
+        this.afterLoginNavigationQueue.push(data);
+
+        // Sort the list by priority. The queue runner also uses priority, but the first run is always executed immediately
+        // so it's important to always pass the highest priority process first.
+        this.afterLoginNavigationQueue.sort((a, b) => b.priority - a.priority);
+    }
+
+    /**
+     * Notify that the login navigation is finished. This function should only be used by main menu pages.
+     */
+    loginNavigationFinished(): void {
+        if (this.isLoginNavigationFinished) {
+            // Already finished, nothing else to do.
+            return;
+        }
+
+        this.isLoginNavigationFinished = true;
+
+        // Run the processes in the queue.
+        this.afterLoginNavigationQueue.forEach(data => {
+            this.afterLoginNavigationQueueRunner.run(data.callback, { priority: data.priority });
+        });
+        this.afterLoginNavigationQueue = [];
+    }
+
 }
 
 export const CoreSites = makeSingleton(CoreSitesProvider);
@@ -2391,4 +2440,12 @@ export type CoreSitesLoginTokenResponse = {
 export type CoreSitesLogoutOptions = {
     forceLogout?: boolean; // If true, site will be marked as logged out, no matter the value tool_mobile_forcelogout.
     removeAccount?: boolean; // If true, site will be removed too after logout.
+};
+
+/**
+ * Process to run after login navigation finishes.
+ */
+export type CoreSitesAfterLoginNavigationProcess = {
+    priority: number;
+    callback: () => Promise<void>;
 };

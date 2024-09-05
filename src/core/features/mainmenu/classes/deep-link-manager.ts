@@ -50,18 +50,18 @@ export class CoreMainMenuDeepLinkManager {
     /**
      * Treat a deep link if there's any to treat.
      */
-    treatLink(): void {
-        if (!this.pendingRedirect) {
+    async treatLink(): Promise<void> {
+        const pendingRedirect = this.pendingRedirect;
+        if (!pendingRedirect) {
             return;
         }
 
-        if (this.pendingRedirect.redirectPath) {
-            this.treatPath(this.pendingRedirect.redirectPath, this.pendingRedirect.redirectOptions);
-        } else if (this.pendingRedirect.urlToOpen) {
-            this.treatUrlToOpen(this.pendingRedirect.urlToOpen);
-        }
-
         delete this.pendingRedirect;
+        if (pendingRedirect.redirectPath) {
+            await this.treatPath(pendingRedirect.redirectPath, pendingRedirect.redirectOptions);
+        } else if (pendingRedirect.urlToOpen) {
+            await this.treatUrlToOpen(pendingRedirect.urlToOpen);
+        }
     }
 
     /**
@@ -70,18 +70,18 @@ export class CoreMainMenuDeepLinkManager {
      * @param path Path.
      * @param navOptions Navigation options.
      */
-    protected treatPath(path: string, navOptions: CoreNavigationOptions = {}): void {
+    protected async treatPath(path: string, navOptions: CoreNavigationOptions = {}): Promise<void> {
         const params = navOptions.params;
         const coursePathMatches = path.match(/^course\/(\d+)\/?$/);
 
         if (coursePathMatches) {
             if (!params?.course) {
-                CoreCourseHelper.getAndOpenCourse(Number(coursePathMatches[1]), params);
+                await CoreCourseHelper.getAndOpenCourse(Number(coursePathMatches[1]), params);
             } else {
-                CoreCourse.openCourse(params.course, navOptions);
+                await CoreCourse.openCourse(params.course, navOptions);
             }
         } else {
-            CoreNavigator.navigateToSitePath(path, {
+            await CoreNavigator.navigateToSitePath(path, {
                 ...navOptions,
                 preferCurrentTab: false,
             });
@@ -96,7 +96,7 @@ export class CoreMainMenuDeepLinkManager {
     protected async treatUrlToOpen(url: string): Promise<void> {
         const action = await CoreContentLinksHelper.getFirstValidActionFor(url);
         if (action?.sites?.[0]) {
-            action.action(action.sites[0]);
+            await action.action(action.sites[0]);
         }
     }
 

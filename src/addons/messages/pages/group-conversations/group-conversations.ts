@@ -38,7 +38,6 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
-import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CorePlatform } from '@services/platform';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
@@ -312,8 +311,6 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             }
         });
 
-        const deepLinkManager = new CoreMainMenuDeepLinkManager();
-
         await this.fetchData();
 
         if (!this.selectedConversationId && !this.selectedUserId && CoreScreen.isTablet) {
@@ -326,8 +323,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             }
         }
 
-        // Treat deep link now that the conversation route has been loaded if needed.
-        deepLinkManager.treatLink();
+        // Mark login navigation finished now that the conversation route has been loaded if needed.
+        CoreSites.loginNavigationFinished();
     }
 
     /**

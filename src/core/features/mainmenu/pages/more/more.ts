@@ -22,7 +22,6 @@ import { CoreMainMenu, CoreMainMenuCustomItem } from '../../services/mainmenu';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
 import { Translate } from '@singletons';
-import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreDom } from '@singletons/dom';
 import { CoreViewer } from '@features/viewer/services/viewer';
 
@@ -75,8 +74,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
             this.initHandlers();
         });
 
-        const deepLinkManager = new CoreMainMenuDeepLinkManager();
-        deepLinkManager.treatLink();
+        CoreSites.loginNavigationFinished();
     }
 
     /**
