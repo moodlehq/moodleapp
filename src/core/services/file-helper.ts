@@ -562,6 +562,7 @@ export class CoreFileHelperProvider {
             if (filename.indexOf('?') != -1) {
                 filename = filename.substring(0, filename.indexOf('?'));
             }
+            filename = CoreUrl.decodeURIComponent(filename);
 
             if (pluginfileMap[filename]) {
                 replaceMap[url] = pluginfileMap[filename];
@@ -611,23 +612,24 @@ export class CoreFileHelperProvider {
         const draftfileUrlRegexPrefix = CoreText.escapeForRegex(draftfileUrl) + '/[^/]+/[^/]+/[^/]+/[^/]+/';
 
         files.forEach((file) => {
-            if (!file.filename) {
-                return;
+            // Get the file name from the URL instead of using file.filename because the URL can have encoded characters.
+            // encodeURIComponent doesn't encode parenthesis, so it's better to rely on the name from the URL.
+            const url = CoreFileHelper.getFileUrl(file);
+            let filename = url.substring(url.lastIndexOf('/') + 1);
+            if (filename.indexOf('?') != -1) {
+                filename = filename.substring(0, filename.indexOf('?'));
             }
 
             // Search the draftfile URL in the original text.
             const matches = originalText.match(
-                new RegExp(draftfileUrlRegexPrefix + CoreText.escapeForRegex(file.filename) + '[^\'" ]*', 'i'),
+                new RegExp(draftfileUrlRegexPrefix + CoreText.escapeForRegex(filename) + '[^\'" ]*', 'i'),
             );
 
             if (!matches || !matches[0]) {
                 return; // Original URL not found, skip.
             }
 
-            treatedText = treatedText.replace(
-                new RegExp(CoreText.escapeForRegex(CoreFileHelper.getFileUrl(file)), 'g'),
-                matches[0],
-            );
+            treatedText = treatedText.replace(new RegExp(CoreText.escapeForRegex(url), 'g'), matches[0]);
         });
 
         return treatedText;
