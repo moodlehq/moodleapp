@@ -136,7 +136,7 @@ export class CoreContentLinksHelperProvider {
 
                 if (data.site) {
                     // URL is the root of the site.
-                    this.handleRootURL(data.site, openBrowserRoot);
+                    await this.handleRootURL(data.site, openBrowserRoot);
 
                     return true;
                 }
@@ -150,19 +150,19 @@ export class CoreContentLinksHelperProvider {
             if (!CoreSites.isLoggedIn()) {
                 // No current site. Perform the action if only 1 site found, choose the site otherwise.
                 if (action.sites?.length == 1) {
-                    action.action(action.sites[0]);
+                    await action.action(action.sites[0]);
                 } else {
                     this.goToChooseSite(url);
                 }
             } else if (action.sites?.length == 1 && action.sites[0] == CoreSites.getCurrentSiteId()) {
                 // Current site.
-                action.action(action.sites[0]);
+                await action.action(action.sites[0]);
             } else {
                 try {
                     // Not current site or more than one site. Ask for confirmation.
                     await CoreDomUtils.showConfirm(Translate.instant('core.contentlinks.confirmurlothersite'));
                     if (action.sites?.length == 1) {
-                        action.action(action.sites[0]);
+                        await action.action(action.sites[0]);
                     } else {
                         this.goToChooseSite(url);
                     }

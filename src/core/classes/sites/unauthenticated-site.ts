@@ -445,6 +445,7 @@ export type CoreSiteInfoResponse = {
     userquota?: number; // User quota (bytes). 0 means user can ignore the quota.
     usermaxuploadfilesize?: number; // User max upload file size (bytes). -1 means the user can ignore the upload file size.
     userhomepage?: CoreSiteInfoUserHomepage; // The default home page for the user.
+    userhomepageurl?: string; // @since 4.5. The URL of the custom user home page when using HOMEPAGE_URL.
     userprivateaccesskey?: string; // Private user access key for fetching files.
     siteid?: number; // Site course ID.
     sitecalendartype?: string; // Calendar type set in the site.
@@ -475,6 +476,7 @@ export enum CoreSiteInfoUserHomepage {
     HOMEPAGE_SITE = 0, // Site home.
     HOMEPAGE_MY = 1, // Dashboard.
     HOMEPAGE_MYCOURSES = 3, // My courses.
+    HOMEPAGE_URL = 4, // A custom URL.
 }
 
 /**

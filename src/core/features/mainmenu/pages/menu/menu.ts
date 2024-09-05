@@ -33,6 +33,8 @@ import { CoreLogger } from '@singletons/logger';
 import { CorePlatform } from '@services/platform';
 import { CoreWait } from '@singletons/wait';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
+import { CoreSiteInfoUserHomepage } from '@classes/sites/unauthenticated-site';
+import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 
 const ANIMATION_DURATION = 500;
 
@@ -110,15 +112,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         this.showTabs = true;
 
-        const deepLinkManager = new CoreMainMenuDeepLinkManager();
-
-        // Treat the deep link (if any) when the login navigation finishes.
-        CoreSites.runAfterLoginNavigation({
-            priority: 800,
-            callback: async () => {
-                await deepLinkManager.treatLink();
-            },
-        });
+        this.initAfterLoginNavigations();
 
         this.isMainScreen = !this.mainTabs?.outlet.canGoBack();
         this.updateVisibility();
@@ -221,6 +215,38 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
                 params: tabPageParams,
             });
         }
+    }
+
+    /**
+     * Set up the code to run after the login navigation finishes.
+     */
+    protected initAfterLoginNavigations(): void {
+        // Treat custom home page and deep link (if any) when the login navigation finishes.
+        const deepLinkManager = new CoreMainMenuDeepLinkManager();
+
+        CoreSites.runAfterLoginNavigation({
+            priority: 800,
+            callback: async () => {
+                await deepLinkManager.treatLink();
+            },
+        });
+
+        CoreSites.runAfterLoginNavigation({
+            priority: 1000,
+            callback: async () => {
+                const userHomePage = CoreSites.getCurrentSite()?.getInfo()?.userhomepage;
+                if (userHomePage !== CoreSiteInfoUserHomepage.HOMEPAGE_URL) {
+                    return;
+                }
+
+                const url = CoreSites.getCurrentSite()?.getInfo()?.userhomepageurl;
+                if (!url) {
+                    return;
+                }
+
+                await CoreContentLinksHelper.handleLink(url);
+            },
+        });
     }
 
     /**
