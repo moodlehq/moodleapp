@@ -417,6 +417,12 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
      * @param entryToRemove Entry.
      */
     async deleteEntry(entryToRemove: AddonBlogOfflinePostFormatted | AddonBlogPostFormatted): Promise<void> {
+        try {
+            await CoreDomUtils.showDeleteConfirm('addon.blog.blogdeleteconfirm', { $a: entryToRemove.subject });
+        } catch {
+            return;
+        }
+
         const loading = await CoreLoadings.show();
 
         try {

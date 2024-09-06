@@ -30,5 +30,7 @@ Feature: Blog entries
     Then I should find "Blog post one" in the app
     When I press "Display options" near "Blog post one" in the app
     And I press "Delete" in the app
+    Then I should find "Delete the blog entry" in the app
+    And I press "Delete" in the app
     And I pull to refresh in the app
     And I should not find "Blog post one" in the app
