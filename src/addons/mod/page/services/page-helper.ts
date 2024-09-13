@@ -38,28 +38,26 @@ export class AddonModPageHelperProvider {
      * @returns The HTML of the page.
      */
     async getPageHtml(contents: CoreCourseModuleContentFile[], moduleId: number): Promise<string> {
-        let indexUrl: string | undefined;
+        let indexFile: CoreCourseModuleContentFile | undefined;
         const paths: Record<string, string> = {};
 
         // Extract the information about paths from the module contents.
         contents.forEach((content) => {
-            const url = content.fileurl;
-
             if (this.isMainPage(content)) {
                 // This seems to be the most reliable way to spot the index page.
-                indexUrl = url;
+                indexFile = content;
             } else {
                 let key = content.filename;
                 if (content.filepath !== '/') {
                     // Add the folders without the leading slash.
                     key = content.filepath.substring(1) + key;
                 }
-                paths[CoreUrl.decodeURIComponent(key)] = url;
+                paths[CoreUrl.decodeURIComponent(key)] = content.fileurl;
             }
         });
 
         // Promise handling when we are in a browser.
-        if (!indexUrl) {
+        if (!indexFile) {
             // If ever that happens.
             throw new CoreError('Could not locate the index page');
         }
@@ -69,14 +67,15 @@ export class AddonModPageHelperProvider {
             // The file system is available.
             url = await CoreFilepool.downloadUrl(
                 CoreSites.getCurrentSiteId(),
-                indexUrl,
+                indexFile.fileurl,
                 false,
                 ADDON_MOD_PAGE_COMPONENT,
                 moduleId,
+                indexFile.timemodified,
             );
         } else {
             // We return the live URL.
-            url = await CoreSites.getCurrentSite()?.checkAndFixPluginfileURL(indexUrl) || '';
+            url = await CoreSites.getCurrentSite()?.checkAndFixPluginfileURL(indexFile.fileurl) || '';
         }
 
         const content = await CoreWS.getText(url);
