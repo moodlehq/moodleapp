@@ -106,7 +106,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
                 this.tabSelected(tab, tabIndex);
             }
 
-            this.showHideNavBarButtons(stackEvent.enteringView.element.tagName);
+            this.showHideNavBarButtons();
         }));
         this.subscriptions.push(this.ionTabs.outlet.activateEvents.subscribe(() => {
             this.lastActiveComponent = this.ionTabs.outlet.component;
@@ -206,17 +206,15 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
      * Get all child core-navbar-buttons and show or hide depending on the page state.
      * We need to use querySelectorAll because ContentChildren doesn't work with ng-template.
      * https://github.com/angular/angular/issues/14842
-     *
-     * @param activatedPageName Activated page name.
      */
-    protected showHideNavBarButtons(activatedPageName: string): void {
+    protected showHideNavBarButtons(): void {
         const elements = this.ionTabs.outlet.nativeEl.querySelectorAll('core-navbar-buttons');
         elements.forEach((element) => {
             const instance = CoreDirectivesRegistry.resolve(element, CoreNavBarButtonsComponent);
 
             if (instance) {
-                const pagetagName = element.closest('.ion-page')?.tagName;
-                instance.forceHide(activatedPageName != pagetagName);
+                const pageTabId = element.closest('.ion-page')?.id;
+                instance.forceHide(this.selected !== pageTabId);
             }
         });
     }
