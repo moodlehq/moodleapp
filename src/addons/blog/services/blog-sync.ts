@@ -95,10 +95,9 @@ import { AddonBlogOfflineEntryDBRecord } from './database/blog';
      * @returns Syncronization result.
      */
     async performEntriesSync(siteId: string): Promise<AddonBlogSyncResult> {
-        const result: AddonBlogSyncResult = { updated: false, warnings: [] };
-        const entriesToSync = await this.syncEntriesToRemove(siteId);
+        const { entries, result } = await this.syncEntriesToRemove(siteId);
 
-        for (const entry of entriesToSync.entries) {
+        for (const entry of entries) {
             if (CoreSync.isBlocked(AddonBlogProvider.COMPONENT, entry.id ?? entry.created, siteId)) {
                 this.logger.debug('Cannot sync entry ' + entry.created + ' because it is blocked.');
 
@@ -206,7 +205,7 @@ import { AddonBlogOfflineEntryDBRecord } from './database/blog';
      * Sync entries to remove.
      *
      * @param siteId Site ID.
-     * @returns Entries to remove and result.
+     * @returns Entries to sync avoiding removed entries and the result of the entries to remove syncronization.
      */
     protected async syncEntriesToRemove(siteId?: string): Promise<AddonBlogSyncGetPendingToSyncEntries> {
         let entriesToSync = await AddonBlogOffline.getOfflineEntries(undefined, siteId);
@@ -216,10 +215,11 @@ import { AddonBlogOfflineEntryDBRecord } from './database/blog';
         await Promise.all(entriesToBeRemoved.map(async (entry) => {
             try {
                 await AddonBlog.deleteEntryOnline({ entryid: entry.id }, siteId);
+                await AddonBlogOffline.deleteOfflineEntryRecord({ id: entry.id }, siteId);
+                await AddonBlogOffline.unmarkEntryAsRemoved(entry.id, siteId);
                 const entriesPendingToSync = entriesToSync.filter(entryToSync => entryToSync.id !== entry.id);
 
                 if (entriesPendingToSync.length !== entriesToSync.length) {
-                    await AddonBlogOffline.deleteOfflineEntryRecord({ id: entry.id }, siteId);
                     entriesToSync = entriesPendingToSync;
                 }
             } catch (error) {

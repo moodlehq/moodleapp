@@ -91,6 +91,7 @@
   "addon.blog.associations": "blog",
   "addon.blog.blog": "blog",
   "addon.blog.blogentries": "blog",
+  "addon.blog.blogdeleteconfirm": "blog",
   "addon.blog.entrybody": "blog",
   "addon.blog.entrytitle": "blog",
   "addon.blog.errorloadentries": "local_moodlemobileapp",
