@@ -51,7 +51,7 @@ export class AddonModSubsectionIndexLinkHandlerService extends CoreContentLinksM
                     // Get the module.
                     const module = await CoreCourse.getModule(moduleId, courseId, undefined, true, false, siteId);
 
-                    await AddonModSubsection.openSubsection(module, module.course, siteId);
+                    await AddonModSubsection.openSubsection(module.section, module.course, siteId);
                 } catch (error) {
                     CoreDomUtils.showErrorModalDefault(error, 'Error opening link.');
                 } finally {

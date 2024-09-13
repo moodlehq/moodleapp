@@ -88,7 +88,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     @Input({ required: true }) course!: CoreCourseAnyCourseData; // The course to render.
     @Input() sections: CoreCourseSectionToDisplay[] = []; // List of course sections.
-    @Input() subSections: CoreCourseSectionToDisplay[] = []; // List of course subsections.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() initialBlockInstanceId?: number; // The instance to focus.
@@ -125,6 +124,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     displayCourseIndex = false;
     displayBlocks = false;
     hasBlocks = false;
+    subSections: CoreCourseSectionToDisplay[] = []; // List of course subsections.
     selectedSection?: CoreCourseSectionToDisplay;
     previousSection?: CoreCourseSectionToDisplay;
     nextSection?: CoreCourseSectionToDisplay;
@@ -326,6 +326,26 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.loaded = true;
             this.sectionChanged(sections[0]);
         } else if (this.initialSectionId || this.initialSectionNumber !== undefined) {
+            const subSection = this.subSections.find((section) => section.id === this.initialSectionId ||
+                (section.section !== undefined && section.section === this.initialSectionNumber));
+            if (subSection) {
+                // The section is a subsection, load the parent section.
+                this.sections.some((section) => {
+                    const module = section.modules.find((module) =>
+                        subSection.itemid === module.instance && module.modname === 'subsection');
+                    if (module) {
+                        this.initialSectionId = module.section;
+                        this.initialSectionNumber = undefined;
+
+                        return true;
+                    }
+
+                    return false;
+                });
+
+                this.setInputData();
+            }
+
             // We have an input indicating the section ID to load. Search the section.
             const section = sections.find((section) =>
                 section.id === this.initialSectionId ||

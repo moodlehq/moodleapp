@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreCourseModuleData, CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 
@@ -26,14 +26,15 @@ export class AddonModSubsectionProvider {
 
     /**
      * Open a subsection.
+     *
+     * @param sectionId Section ID.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when done.
      */
-    async openSubsection(module: CoreCourseModuleData , courseId?: number, siteId?: string): Promise<void> {
-        if (!courseId) {
-            courseId = module.course;
-        }
-
+    async openSubsection(sectionId: number, courseId: number, siteId?: string): Promise<void> {
         const pageParams = {
-            sectionId: module.section,
+            sectionId,
         };
 
         if (

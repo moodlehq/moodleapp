@@ -14,7 +14,7 @@
                     [value]="accordionMultipleValue">
                     <core-course-section *ngIf="!selectedSection.hiddenbynumsections && selectedSection.id !== stealthModulesSectionId &&
                         !selectedSection.component" [course]="course" [section]="selectedSection" [lastModuleViewed]="lastModuleViewed"
-                        [viewedModules]="viewedModules" [collapsible]="false" [sections]="subSections" />
+                        [viewedModules]="viewedModules" [collapsible]="false" [subSections]="subSections" />
                 </ion-accordion-group>
                 <core-empty-box *ngIf="!selectedSection.hasContent" icon="fas-table-cells-large"
                     [message]="'core.course.nocontentavailable' | translate" />
@@ -31,7 +31,7 @@
                             section.id !== stealthModulesSectionId && !section.component) {
                             <core-course-section
                                 [course]="course" [section]="section" [lastModuleViewed]="lastModuleViewed" [viewedModules]="viewedModules"
-                                [collapsible]="true" [sections]="subSections" />
+                                [collapsible]="true" [subSections]="subSections" />
                         }
                     }
                 </ion-accordion-group>

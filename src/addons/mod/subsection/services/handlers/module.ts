@@ -59,9 +59,9 @@ export class AddonModSubsectionModuleHandlerService extends CoreModuleHandlerBas
             a11yTitle: '',
             class: 'addon-mod-subsection-handler',
             hasCustomCmListItem: true,
-            action: async(event, module, courseId) => {
+            action: async(event, module) => {
                 try {
-                    await AddonModSubsection.openSubsection(module, courseId);
+                    await AddonModSubsection.openSubsection(module.section, module.course);
                 } catch (error) {
                     CoreDomUtils.showErrorModalDefault(error, 'Error opening subsection.');
                 }

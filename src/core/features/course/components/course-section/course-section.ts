@@ -15,9 +15,12 @@ import {
     Component,
     HostBinding,
     Input,
+    OnChanges,
     OnInit,
+    SimpleChange,
 } from '@angular/core';
 import {
+    CoreCourseModuleData,
     CoreCourseSection,
 } from '@features/course/services/course-helper';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -41,10 +44,11 @@ import { CoreCourseFormatDelegate } from '@features/course/services/format-deleg
         CoreCourseComponentsModule,
     ],
 })
-export class CoreCourseSectionComponent implements OnInit {
+export class CoreCourseSectionComponent implements OnInit, OnChanges {
 
     @Input({ required: true }) course!: CoreCourseAnyCourseData; // The course to render.
     @Input({ required: true }) section!: CoreCourseSectionToDisplay;
+    @Input() subSections: CoreCourseSectionToDisplay[] = []; // List of subsections in the course.
     @Input({ transform: toBoolean }) collapsible = true; // Whether the section can be collapsed.
     @Input() lastModuleViewed?: CoreCourseViewedModulesDBRecord;
     @Input() viewedModules: Record<number, boolean> = {};
@@ -54,6 +58,7 @@ export class CoreCourseSectionComponent implements OnInit {
             return this.collapsible ? 'collapsible' : 'non-collapsible';
         }
 
+    modules: CoreCourseModuleToDisplay[] = [];
     completionStatusIncomplete = CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE;
     highlightedName?: string; // Name to highlight.
 
@@ -66,7 +71,27 @@ export class CoreCourseSectionComponent implements OnInit {
             : undefined;
     }
 
+    /**
+     * @inheritdoc
+     */
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
+        if (changes.section && this.section) {
+            this.modules = this.section.modules;
+
+            this.modules.forEach((module) => {
+                if (module.modname === 'subsection') {
+                    module.subSection = this.subSections.find((section) =>
+                        section.component === 'mod_subsection' && section.itemid === module.instance);
+                }
+            });
+        }
+    }
+
 }
+
+type CoreCourseModuleToDisplay = CoreCourseModuleData & {
+    subSection?: CoreCourseSectionToDisplay;
+};
 
 export type CoreCourseSectionToDisplay = CoreCourseSection & {
     highlighted?: boolean;
