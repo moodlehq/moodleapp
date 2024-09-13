@@ -316,12 +316,12 @@ describe('CoreUrl singleton', () => {
             .toEqual(['6', 'mod_foo', 'content', '14', 'foo.txt']);
         expect(CoreUrl.getPluginFileArgs('http://mysite.com/webservice/pluginfile.php/6/mod_foo/content/14/foo.txt'))
             .toEqual(['6', 'mod_foo', 'content', '14', 'foo.txt']);
+        expect(CoreUrl.getPluginFileArgs('http://mysite.com/tokenpluginfile.php/abcdef123456/6/mod_foo/content/14/foo.txt'))
+        .toEqual(['6', 'mod_foo', 'content', '14', 'foo.txt']);
 
-        // It doesn't work with tokenpluginfile or other URLs, and also when pluginfile doesn't have enough params.
+        // It doesn't work with other URLs, and also when pluginfile doesn't have enough params.
         expect(CoreUrl.getPluginFileArgs('http://mysite.com')).toEqual(undefined);
         expect(CoreUrl.getPluginFileArgs('http://mysite.com/pluginfile.php/6/')).toEqual(undefined);
-        expect(CoreUrl.getPluginFileArgs('http://mysite.com/tokenpluginfile.php/abcdef123456/6/mod_foo/content/14/foo.txt'))
-            .toEqual(undefined);
     });
 
 });

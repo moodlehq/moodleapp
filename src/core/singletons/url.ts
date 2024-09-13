@@ -693,19 +693,22 @@ export class CoreUrl {
     }
 
     /**
-     * Return the array of arguments of the pluginfile url.
+     * Return the array of arguments of the pluginfile or tokenpluginfile url.
      *
      * @param url URL to get the args.
      * @returns The args found, undefined if not a pluginfile.
      */
     static getPluginFileArgs(url: string): string[] | undefined {
-        if (!CoreUrl.isPluginFileUrl(url)) {
-            // Not pluginfile, return.
-            return;
-        }
+        let args: string[] = [];
 
-        const relativePath = url.substring(url.indexOf('/pluginfile.php') + 16);
-        const args = relativePath.split('/');
+        if (CoreUrl.isPluginFileUrl(url)) {
+            const relativePath = url.substring(url.indexOf('/pluginfile.php') + 16);
+            args = relativePath.split('/');
+        } else if (CoreUrl.isTokenPluginFileUrl(url)) {
+            const relativePath = url.substring(url.indexOf('/tokenpluginfile.php') + 21);
+            args = relativePath.split('/');
+            args.shift(); // Remove the token.
+        }
 
         if (args.length < 3) {
             // To be a plugin file it should have at least contextId, Component and Filearea.
