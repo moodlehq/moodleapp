@@ -10,10 +10,11 @@
         <!-- Single section. -->
         <div *ngIf="selectedSection && selectedSection.id !== allSectionsId" class="list-item-limited-width">
             <core-dynamic-component [component]="singleSectionComponent" [data]="data">
-                <ion-accordion-group [readonly]="true" value="non-collapsible">
-                    <core-course-section *ngIf="!selectedSection.hiddenbynumsections && selectedSection.id !== allSectionsId &&
-                        selectedSection.id !== stealthModulesSectionId" [course]="course" [section]="selectedSection"
-                        [lastModuleViewed]="lastModuleViewed" [viewedModules]="viewedModules" [collapsible]="false" />
+                <ion-accordion-group [multiple]="true" (ionChange)="accordionMultipleChange($event.detail)"
+                    [value]="accordionMultipleValue">
+                    <core-course-section *ngIf="!selectedSection.hiddenbynumsections && selectedSection.id !== stealthModulesSectionId &&
+                        !selectedSection.component" [course]="course" [section]="selectedSection" [lastModuleViewed]="lastModuleViewed"
+                        [viewedModules]="viewedModules" [collapsible]="false" [sections]="subSections" />
                 </ion-accordion-group>
                 <core-empty-box *ngIf="!selectedSection.hasContent" icon="fas-table-cells-large"
                     [message]="'core.course.nocontentavailable' | translate" />
@@ -23,14 +24,14 @@
         <!-- Multiple sections. -->
         <div *ngIf="selectedSection && selectedSection.id === allSectionsId" class="list-item-limited-width">
             <core-dynamic-component [component]="allSectionsComponent" [data]="data">
-                <ion-accordion-group [multiple]="true" (ionChange)="accordionMultipleChange($event.detail)" [value]="accordionMultipleValue"
-                    #accordionMultiple>
+                <ion-accordion-group [multiple]="true" (ionChange)="accordionMultipleChange($event.detail)"
+                    [value]="accordionMultipleValue">
                     @for (section of sections; track section.id) {
-                        @if ($index <= lastShownSectionIndex) {
+                        @if ($index <= lastShownSectionIndex && !section.hiddenbynumsections && section.id !== allSectionsId &&
+                            section.id !== stealthModulesSectionId && !section.component) {
                             <core-course-section
-                            *ngIf="!section.hiddenbynumsections && section.id !== allSectionsId && section.id !== stealthModulesSectionId"
-                            [course]="course" [section]="section" [lastModuleViewed]="lastModuleViewed" [viewedModules]="viewedModules"
-                            [collapsible]="true" />
+                                [course]="course" [section]="section" [lastModuleViewed]="lastModuleViewed" [viewedModules]="viewedModules"
+                                [collapsible]="true" [sections]="subSections" />
                         }
                     }
                 </ion-accordion-group>

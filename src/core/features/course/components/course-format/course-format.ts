@@ -88,6 +88,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     @Input({ required: true }) course!: CoreCourseAnyCourseData; // The course to render.
     @Input() sections: CoreCourseSectionToDisplay[] = []; // List of course sections.
+    @Input() subSections: CoreCourseSectionToDisplay[] = []; // List of course subsections.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() initialBlockInstanceId?: number; // The instance to focus.
@@ -225,6 +226,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (changes.sections && this.sections) {
+            this.subSections = this.sections.filter((section) => section.component === 'mod_subsection');
+            this.sections = this.sections.filter((section) => section.component !== 'mod_subsection');
+
             this.treatSections(this.sections);
         }
         this.changeDetectorRef.markForCheck();
@@ -746,9 +750,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Save expanded sections for the course.
      */
     protected async saveExpandedSections(): Promise<void> {
-        const expandedSections = this.sections.filter((section) => section.expanded).map((section) => section.id).join(',');
+        let expandedSections = this.sections.filter((section) => section.expanded && section.id > 0).map((section) => section.id);
+        expandedSections =
+            expandedSections.concat(this.subSections.filter((section) => section.expanded).map((section) => section.id));
 
-        await this.currentSite?.setLocalSiteConfig(`${COURSE_EXPANDED_SECTIONS_PREFIX}${this.course.id}`, expandedSections);
+        await this.currentSite?.setLocalSiteConfig(
+            `${COURSE_EXPANDED_SECTIONS_PREFIX}${this.course.id}`,
+            expandedSections.join(','),
+        );
     }
 
     /**
@@ -766,12 +775,21 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 this.accordionMultipleValue.push(section.id.toString());
             });
 
+            this.subSections.forEach((section) => {
+                section.expanded = true;
+                this.accordionMultipleValue.push(section.id.toString());
+            });
+
             return;
         }
 
         this.accordionMultipleValue = expandedSections.split(',');
 
         this.sections.forEach((section) => {
+            section.expanded = this.accordionMultipleValue.includes(section.id.toString());
+        });
+
+        this.subSections.forEach((section) => {
             section.expanded = this.accordionMultipleValue.includes(section.id.toString());
         });
     }
@@ -787,9 +805,17 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             section.expanded = false;
         });
 
+        this.subSections.forEach((section) => {
+            section.expanded = false;
+        });
+
         sectionIds?.forEach((sectionId) => {
             const sId = Number(sectionId);
-            const section = this.sections.find((section) => section.id === sId);
+            let section = this.sections.find((section) => section.id === sId);
+            if (!section) {
+                section = this.subSections.find((section) => section.id === sId);
+            }
+
             if (section) {
                 section.expanded = true;
             }

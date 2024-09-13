@@ -19,12 +19,4 @@
             }
         }
     }
-
-    &.non-collapsible ::ng-deep {
-        ion-item.divider.course-section {
-            ion-icon.ion-accordion-toggle-icon {
-                display: none;
-            }
-        }
-    }
 }
