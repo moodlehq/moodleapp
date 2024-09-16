@@ -177,7 +177,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
     ): Promise<void> {
         await this.waitForReady();
 
-        this.window.M!.filter_mathjaxloader!.typeset(container);
+        await this.window.M!.filter_mathjaxloader!.typeset(container);
     }
 
     /**
@@ -234,24 +234,32 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
                 }
             },
             // Called by the filter when an equation is found while rendering the page.
-            typeset: function (container: HTMLElement): void {
+            typeset: async function (container: HTMLElement): Promise<void> {
                 if (!this._configured) {
                     this._setLocale();
                 }
 
-                if (that.window.MathJax !== undefined) {
-                    const processDelay = that.window.MathJax.Hub.processSectionDelay;
-                    // Set the process section delay to 0 when updating the formula.
-                    that.window.MathJax.Hub.processSectionDelay = 0;
-
-                    const equations = Array.from(container.querySelectorAll('.filter_mathjaxloader_equation'));
-                    equations.forEach((node) => {
-                        that.window.MathJax.Hub.Queue(['Typeset', that.window.MathJax.Hub, node], [that.fixUseUrls, node]);
-                    });
-
-                    // Set the delay back to normal after processing.
-                    that.window.MathJax.Hub.processSectionDelay = processDelay;
+                if (that.window.MathJax === undefined) {
+                    return;
                 }
+
+                const processDelay = that.window.MathJax.Hub.processSectionDelay;
+                // Set the process section delay to 0 when updating the formula.
+                that.window.MathJax.Hub.processSectionDelay = 0;
+
+                const equations = Array.from(container.querySelectorAll('.filter_mathjaxloader_equation'));
+                const promises = equations.map((node) => new Promise<void>((resolve) => {
+                    that.window.MathJax.Hub.Queue(
+                        ['Typeset', that.window.MathJax.Hub, node],
+                        [that.fixUseUrls, node],
+                        [resolve],
+                    );
+                }));
+
+                // Set the delay back to normal after processing.
+                that.window.MathJax.Hub.processSectionDelay = processDelay;
+
+                await Promise.all(promises);
             },
         };
     }

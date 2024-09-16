@@ -18,6 +18,6 @@
     <div class="fake-ion-item ion-text-wrap" [hidden]="!question.loaded">
         <core-format-text *ngIf="question.ddArea" [adaptImg]="false" [component]="component" [componentId]="componentId"
             [text]="question.ddArea" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"
-            (afterRender)="ddAreaRendered()" />
+            (filterContentRenderingComplete)="ddAreaRendered()" />
     </div>
 </div>

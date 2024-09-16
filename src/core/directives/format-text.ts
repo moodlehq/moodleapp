@@ -94,7 +94,8 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     @Input({ transform: toBoolean }) hideIfEmpty = false; // If true, the tag will contain nothing if text is empty.
     @Input({ transform: toBoolean }) disabled = false; // If disabled, autoplay elements will be disabled.
 
-    @Output() afterRender: EventEmitter<void>; // Called when the data is rendered.
+    @Output() afterRender = new EventEmitter<void>(); // Called when the data is rendered.
+    @Output() filterContentRenderingComplete = new EventEmitter<void>(); // Called when the filters have finished rendering content.
     @Output() onClick: EventEmitter<void> = new EventEmitter(); // Called when clicked.
 
     protected element: HTMLElement;
@@ -116,8 +117,6 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
         this.emptyText = this.hideIfEmpty ? '' : '&nbsp;';
         this.element.innerHTML = this.emptyText;
-
-        this.afterRender = new EventEmitter<void>();
 
         this.element.addEventListener('click', (event) => this.elementClicked(event));
 
@@ -340,8 +339,10 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
     /**
      * Finish the rendering, displaying the element again and calling afterRender.
+     *
+     * @param triggerFilterRender Whether to emit the filterContentRenderingComplete output too.
      */
-    protected async finishRender(): Promise<void> {
+    protected async finishRender(triggerFilterRender = true): Promise<void> {
         // Show the element again.
         this.element.classList.remove('core-loading');
 
@@ -349,6 +350,9 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
         // Emit the afterRender output.
         this.afterRender.emit();
+        if (triggerFilterRender) {
+            this.filterContentRenderingComplete.emit();
+        }
     }
 
     /**
@@ -402,11 +406,13 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
                 this.component,
                 this.componentId,
                 result.siteId,
-            );
+            ).finally(() => {
+                this.filterContentRenderingComplete.emit();
+            });
         }
 
         this.element.classList.remove('core-disable-media-adapt');
-        await this.finishRender();
+        await this.finishRender(!result.options.filter);
     }
 
     /**

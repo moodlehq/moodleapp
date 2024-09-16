@@ -18,6 +18,7 @@ import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@featu
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { CoreDomUtils } from '@services/utils/dom';
 import { AddonQtypeDdwtosQuestion } from '../classes/ddwtos';
+import { CoreText } from '@singletons/text';
 
 /**
  * Component to render a drag-and-drop words into sentences question.
@@ -69,6 +70,13 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonMo
         }
 
         this.question.readOnly = answerContainer.classList.contains('readonly');
+
+        // Decode content of drag homes. This must be done before filters are applied, otherwise some things don't work as expected.
+        const groupItems = Array.from(answerContainer.querySelectorAll<HTMLElement>('span.draghome'));
+        groupItems.forEach((item) => {
+            item.innerHTML = CoreText.decodeHTML(item.innerHTML);
+        });
+
         // Add the drags container inside the answers so it's rendered inside core-format-text,
         // otherwise some styles could be different between the drag homes and the draggables.
         this.question.answers = answerContainer.outerHTML + '<div class="drags"></div>';
