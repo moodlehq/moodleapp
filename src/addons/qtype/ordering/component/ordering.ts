@@ -39,9 +39,6 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
         value: '',
     };
 
-    correctIcon = '';
-    partialCorrectIcon = '';
-
     constructor(elementRef: ElementRef) {
         super('AddonQtypeOrderingComponent', elementRef);
     }
@@ -58,9 +55,6 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
         if (!questionElement) {
             return;
         }
-
-        this.correctIcon = CoreQuestionHelper.getCorrectIcon();
-        this.partialCorrectIcon = CoreQuestionHelper.getPartiallyCorrectIcon();
 
         // Replace Moodle's feedback classes with our own.
         CoreQuestionHelper.replaceFeedbackClasses(questionElement);
@@ -81,7 +75,8 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
             // Remove correctness icons from the content.
             const itemContentEl = element.querySelector<HTMLElement>('[data-itemcontent]');
             itemContentEl?.querySelector(
-                '.icon.fa-check, .icon.fa-remove, .icon.fa-check-square, .icon.fa-check-double, .icon.fa-xmark',
+                '.icon.fa-check, .icon.fa-remove, .icon.fa-check-square, .icon.fa-circle-check, .icon.fa-xmark, ' +
+                '.icon.fa-circle-xmark, .icon.fa-square-check, .icon.circle-half-stroke',
             )?.remove();
 
             return {

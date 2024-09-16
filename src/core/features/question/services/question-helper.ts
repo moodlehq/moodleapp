@@ -799,30 +799,71 @@ export class CoreQuestionHelperProvider {
      * Returns correct icon based on the LMS version.
      * In LMS 4.4 and older, fa-check means correct. In 4.5+, fa-check means partially correct.
      *
-     * @param withPrefix Whether to include the prefix in the icon name.
-     * @returns Icon name.
+     * @returns Icon data.
      */
-    getCorrectIcon(withPrefix = true): string {
-        const icon = CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.5')
-            ? 'check-double'
-            : 'check';
+    getCorrectIcon(): IconData {
+        if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.5')) {
+            return {
+                name: 'circle-check',
+                prefix: 'far',
+                library: 'regular',
+                fullName: 'far-circle-check',
+            };
+        } else {
+            return {
+                name: 'check',
+                prefix: 'fas',
+                library: 'solid',
+                fullName: 'fas-check',
+            };
+        }
+    }
 
-        return withPrefix ? `fas-${icon}` : icon;
+    /**
+     * Returns incorrect correct icon based on the LMS version.
+     *
+     * @returns Icon data.
+     */
+    getIncorrectIcon(): IconData {
+        if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.5')) {
+            return {
+                name: 'circle-xmark',
+                prefix: 'far',
+                library: 'regular',
+                fullName: 'far-circle-xmark',
+            };
+        } else {
+            return {
+                name: 'xmark',
+                prefix: 'fas',
+                library: 'solid',
+                fullName: 'fas-xmark',
+            };
+        }
     }
 
     /**
      * Returns partially correct icon based on the LMS version.
      * In LMS 4.4 and older, fa-check means correct. In 4.5+, fa-check means partially correct.
      *
-     * @param withPrefix Whether to include the prefix in the icon name.
-     * @returns Icon name.
+     * @returns Icon data.
      */
-    getPartiallyCorrectIcon(withPrefix = true): string {
-        const icon = CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.5')
-            ? 'check'
-            : 'square-check';
-
-        return withPrefix ? `fas-${icon}` : icon;
+    getPartiallyCorrectIcon(): IconData {
+        if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.5')) {
+            return {
+                name: 'circle-half-stroke',
+                prefix: 'fas',
+                library: 'solid',
+                fullName: 'fas-circle-half-stroke',
+            };
+        } else {
+            return {
+                name: 'square-check',
+                prefix: 'fas',
+                library: 'solid',
+                fullName: 'fas-square-check',
+            };
+        }
     }
 
     /**
@@ -833,41 +874,42 @@ export class CoreQuestionHelperProvider {
     treatCorrectnessIcons(element: HTMLElement): void {
         const icons = <HTMLElement[]> Array.from(element.querySelectorAll('img.icon, img.questioncorrectnessicon, i.icon'));
         icons.forEach((icon) => {
-            let iconName: string | undefined;
+            let iconData: IconData | undefined;
             let color: string | undefined;
 
-            const correctIcon = this.getCorrectIcon(false);
-            const partiallyCorrectIcon = this.getCorrectIcon(false);
+            const correctIcon = this.getCorrectIcon();
+            const incorrectIcon = this.getIncorrectIcon();
+            const partiallyCorrectIcon = this.getPartiallyCorrectIcon();
             if ('src' in icon) {
                 if ((icon as HTMLImageElement).src.indexOf('correct') >= 0) {
-                    iconName = correctIcon;
+                    iconData = correctIcon;
                     color = CoreIonicColorNames.SUCCESS;
                 } else if ((icon as HTMLImageElement).src.indexOf('incorrect') >= 0 ) {
-                    iconName = 'xmark';
+                    iconData = incorrectIcon;
                     color = CoreIonicColorNames.DANGER;
                 }
             } else {
-                if (icon.classList.contains(`fa-${partiallyCorrectIcon}`)) {
-                    iconName = partiallyCorrectIcon;
+                if (icon.classList.contains(`fa-${partiallyCorrectIcon.name}`)) {
+                    iconData = partiallyCorrectIcon;
                     color = CoreIonicColorNames.WARNING;
-                } else if (icon.classList.contains(`fa-${correctIcon}`)) {
-                    iconName = correctIcon;
+                } else if (icon.classList.contains(`fa-${correctIcon.name}`)) {
+                    iconData = correctIcon;
                     color = CoreIonicColorNames.SUCCESS;
-                } else if (icon.classList.contains('fa-xmark') || icon.classList.contains('fa-remove')) {
-                    iconName = 'xmark';
+                } else if (icon.classList.contains(`fa-${incorrectIcon.name}`) || icon.classList.contains('fa-remove')) {
+                    iconData = incorrectIcon;
                     color = CoreIonicColorNames.DANGER;
                 }
             }
 
-            if (!iconName) {
+            if (!iconData) {
                 return;
             }
 
             // Replace the icon with the font version.
             const newIcon: HTMLIonIconElement = document.createElement('ion-icon');
 
-            newIcon.setAttribute('name', `fas-${iconName}`);
-            newIcon.setAttribute('src', CoreIcons.getIconSrc('font-awesome', 'solid', iconName));
+            newIcon.setAttribute('name', iconData.fullName);
+            newIcon.setAttribute('src', CoreIcons.getIconSrc('font-awesome', iconData.library, iconData.name));
             newIcon.className = `core-correct-icon ion-color ion-color-${color} questioncorrectnessicon`;
             newIcon.title = icon.title;
             newIcon.setAttribute('aria-label', icon.title);
@@ -996,4 +1038,14 @@ export type CoreQuestionBehaviourButton = {
  */
 export type CoreQuestionBehaviourCertaintyOption = CoreQuestionBehaviourButton & {
     text: string;
+};
+
+/**
+ * Data about a font-awesome icon.
+ */
+type IconData = {
+    name: string;
+    prefix: string;
+    library: string;
+    fullName: string;
 };

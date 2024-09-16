@@ -25,9 +25,9 @@
                                 [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
                         </div>
                     </div>
-                    <ion-icon *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success"
+                    <ion-icon *ngIf="option.isCorrect === 1" class="core-correct-icon" [name]="correctIcon" color="success"
                         [attr.aria-label]="'core.question.correct' | translate" />
-                    <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fas-xmark" color="danger"
+                    <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" [name]="incorrectIcon" color="danger"
                         [attr.aria-label]="'core.question.incorrect' | translate" />
                 </ion-checkbox>
                 <div *ngIf="option.feedback" class="specificfeedback">
@@ -53,9 +53,9 @@
                                 [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
                         </div>
                     </div>
-                    <ion-icon *ngIf="option.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success"
+                    <ion-icon *ngIf="option.isCorrect === 1" class="core-correct-icon" [name]="correctIcon" color="success"
                         [attr.aria-label]="'core.question.correct' | translate" />
-                    <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fas-xmark" color="danger"
+                    <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" [name]="incorrectIcon" color="danger"
                         [attr.aria-label]="'core.question.incorrect' | translate" />
                 </ion-radio>
 
