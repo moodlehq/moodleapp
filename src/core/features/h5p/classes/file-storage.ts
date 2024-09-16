@@ -449,4 +449,43 @@ export class CoreH5PFileStorage {
         }
     }
 
+    /**
+     * Check that library is fully saved to the file system.
+     *
+     * @param libraryData Library data.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved with true if all library files are present.
+     */
+    async checkLibrary(libraryData: CoreH5PLibraryBeingSaved, siteId?: string): Promise<boolean> {
+        const getFileNames = async (baseDir: string, dirName = ''): Promise<string[]> => {
+            const entries = await CoreFile.getDirectoryContents( baseDir + dirName);
+            const fileNames: string[] = [];
+
+            for (const entry of entries) {
+                const name = dirName + '/' + entry.name;
+                if (entry.isDirectory) {
+                    fileNames.push(...(await getFileNames(baseDir, name)));
+                } else  {
+                    fileNames.push(name);
+                }
+            }
+
+            return fileNames;
+        };
+
+        if (!libraryData.uploadDirectory) {
+            return true;
+        }
+
+        siteId = siteId || CoreSites.getCurrentSiteId();
+        const folderPath = this.getLibraryFolderPath(libraryData, siteId);
+
+        const [sourceFiles, destFiles] = await Promise.all([
+            getFileNames(libraryData.uploadDirectory),
+            getFileNames(folderPath).catch(() => ([])).then(files => new Set(files)),
+        ]);
+
+        return sourceFiles.every(name => destFiles.has(name));
+    }
+
 }
