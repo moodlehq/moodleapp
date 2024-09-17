@@ -81,7 +81,7 @@
                         contextLevel="module" [contextInstanceId]="module.id" [courseId]="module.course" />
 
                     <!-- Availability info -->
-                    <div *ngIf="showAvailability && module.availabilityinfo" class="core-module-availabilityinfo">
+                    <div *ngIf="showAvailability && module.availabilityinfo" class="core-module-availabilityinfo colored-box-with-icon">
                         <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate" />
                         <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
                             [courseId]="module.course" />
@@ -94,7 +94,7 @@
 
         </ion-item>
 
-        <div class="core-course-last-module-viewed" *ngIf="isLastViewed">
+        <div class="core-course-last-module-viewed colored-box-with-icon" *ngIf="isLastViewed">
             <ion-icon name="fas-eye" aria-hidden="true" />
             {{ 'core.course.lastaccessedactivity' | translate }}
         </div>
