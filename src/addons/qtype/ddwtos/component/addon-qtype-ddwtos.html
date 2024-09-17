@@ -16,7 +16,7 @@
 
             <core-format-text *ngIf="question.answers" [component]="component" [componentId]="componentId" [text]="question.answers"
                 [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"
-                (afterRender)="answersRendered()" />
+                (filterContentRenderingComplete)="answersRendered()" />
         </div>
     </div>
 </div>
