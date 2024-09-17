@@ -111,11 +111,11 @@
                         <p>{{ badge.imagecaption }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="course">
+                <ion-item class="ion-text-wrap" *ngIf="badge.coursefullname">
                     <ion-label>
                         <p class="item-heading">{{ 'core.course' | translate}}</p>
                         <p>
-                            <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="courseId" />
+                            <core-format-text [text]="badge.coursefullname" contextLevel="course" [contextInstanceId]="badge.courseid" />
                         </p>
                     </ion-label>
                 </ion-item>

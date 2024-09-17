@@ -19,7 +19,7 @@ import { CoreSites } from '@services/sites';
 import { CoreUser } from '@features/user/services/user';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
+import { CoreCourses } from '@features/courses/services/courses';
 import { CoreNavigator } from '@services/navigator';
 import { ActivatedRoute } from '@angular/router';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
@@ -30,7 +30,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
- * Page that displays the list of calendar events.
+ * Page that displays an issued badge.
  */
 @Component({
     selector: 'page-addon-badges-issued-badge',
@@ -47,7 +47,6 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
     protected logView: (badge: AddonBadgesUserBadge) => void;
 
     courseId = 0;
-    course?: CoreEnrolledCourseData;
     badge?: AddonBadgesUserBadge;
     badges?: CoreSwipeNavigationItemsManager;
     badgeLoaded = false;
@@ -128,15 +127,17 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
                 }
             }
 
-            this.badge = badge;
-            if (badge.courseid) {
+            // Try to get course full name if not returned by the WS.
+            if (badge.courseid && !badge.coursefullname) {
                 try {
-                    this.course = await CoreCourses.getUserCourse(badge.courseid, true);
+                    const course = await CoreCourses.getUserCourse(badge.courseid, true);
+                    badge.coursefullname = course.fullname;
                 } catch {
-                    // Maybe an old deleted course.
-                    this.course = undefined;
+                    // User is not enrolled in the course.
                 }
             }
+
+            this.badge = badge;
 
             this.logView(badge);
         } catch (message) {

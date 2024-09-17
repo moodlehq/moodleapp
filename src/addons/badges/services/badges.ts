@@ -215,6 +215,7 @@ export type AddonBadgesUserBadge = {
     expireperiod?: number; // Expire period.
     type?: number; // Type.
     courseid?: number; // Course id.
+    coursefullname?: string; // Full name of the course.
     message?: string; // Message.
     messagesubject?: string; // Message subject.
     attachment?: number; // Attachment.
