@@ -10,6 +10,21 @@ ion-item ion-icon {
     @include margin-horizontal(null, var(--margin-end));
 }
 
-core-spacer {
-    --spacer-horizontal: 10px;
+section.core-course-module-list-wrapper {
+    border: var(--ion-card-border-width) solid var(--ion-card-border-color);
+    border-radius: var(--ion-card-radius);
+    margin: 12px;
+
+    ion-card {
+        --ion-card-background: transparent;
+    }
+
+    ion-item-divider {
+        --background: transparent;
+    }
+}
+
+core-course-module.core-sitehome-news {
+    --card-border-width: var(--ion-card-border-width);
+    --card-radius: var(--ion-card-radius);
 }
