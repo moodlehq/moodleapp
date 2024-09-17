@@ -78,15 +78,18 @@ export class AddonBadgesProvider {
             throw new CoreError('Invalid badges response');
         }
 
-        // In 3.7, competencies was renamed to alignment. Rename the property in 3.6 too.
         response.badges.forEach((badge) => {
+            // In 3.7, competencies was renamed to alignment.
+            if (!badge.alignment && badge.competencies) {
+                badge.alignment = badge.competencies.map((competency) => ({
+                    targetName: competency.targetname,
+                    targetUrl: competency.targeturl,
+                }));
+            }
             badge.alignment = badge.alignment || badge.competencies;
 
-            // Check that the alignment is valid, they were broken in 3.7.
-            if (badge.alignment && badge.alignment[0] && badge.alignment[0].targetname === undefined) {
-                // If any badge lacks targetname it means they are affected by the Moodle bug, don't display them.
-                delete badge.alignment;
-            }
+            // Exclude alignments without targetName, we can't display them.
+            badge.alignment = badge.alignment?.filter((alignment) => alignment.targetName);
         });
 
         return response.badges;
@@ -138,11 +141,15 @@ export class AddonBadgesProvider {
             data,
             preSets,
         );
-        if (!response || !response.badge?.[0]) {
+        const badge = response?.badge?.[0];
+        if (!badge) {
             throw new CoreError('Invalid badge response');
         }
 
-        return response.badge[0];
+        // Exclude alignments without targetName, we can't display them.
+        badge.alignment = badge.alignment?.filter((alignment) => alignment.targetName);
+
+        return badge;
     }
 
     /**
@@ -242,11 +249,11 @@ export type AddonBadgesUserBadge = {
     alignment?: { // @since 3.7. Calculated by the app for 3.6 sites. Badge alignments.
         id?: number; // Alignment id.
         badgeid?: number; // Badge id.
-        targetname?: string; // Target name.
-        targeturl?: string; // Target URL.
-        targetdescription?: string; // Target description.
-        targetframework?: string; // Target framework.
-        targetcode?: string; // Target code.
+        targetName?: string; // Target name.
+        targetUrl?: string; // Target URL.
+        targetDescription?: string; // Target description.
+        targetFramework?: string; // Target framework.
+        targetCode?: string; // Target code.
     }[];
     competencies?: { // @deprecatedonmoodle since 3.7. @since 3.6. In 3.7 it was renamed to alignment.
         id?: number; // Alignment id.
