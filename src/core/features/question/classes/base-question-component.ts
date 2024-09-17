@@ -48,6 +48,10 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
     @Output() buttonClicked = new EventEmitter<CoreQuestionBehaviourButton>(); // Will emit when a behaviour button is clicked.
     @Output() onAbort = new EventEmitter<void>(); // Should emit an event if the question should be aborted.
 
+    correctIcon = '';
+    incorrectIcon = '';
+    partialCorrectIcon = '';
+
     protected logger: CoreLogger;
     protected hostElement: HTMLElement;
 
@@ -60,6 +64,10 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
      * @inheritdoc
      */
     ngOnInit(): void {
+        this.correctIcon = CoreQuestionHelper.getCorrectIcon().fullName;
+        this.incorrectIcon = CoreQuestionHelper.getIncorrectIcon().fullName;
+        this.partialCorrectIcon = CoreQuestionHelper.getPartiallyCorrectIcon().fullName;
+
         if (!this.question) {
             this.logger.warn('Aborting because of no question received.');
 
@@ -492,17 +500,17 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
         // Check if question is marked as correct.
         if (input.classList.contains('incorrect')) {
             question.input.correctClass = 'core-question-incorrect';
-            question.input.correctIcon = 'fas-xmark';
+            question.input.correctIcon = this.incorrectIcon;
             question.input.correctIconColor = CoreIonicColorNames.DANGER;
             question.input.correctIconLabel = 'core.question.incorrect';
         } else if (input.classList.contains('correct')) {
             question.input.correctClass = 'core-question-correct';
-            question.input.correctIcon = CoreQuestionHelper.getCorrectIcon();
+            question.input.correctIcon = this.correctIcon;
             question.input.correctIconColor = CoreIonicColorNames.SUCCESS;
             question.input.correctIconLabel = 'core.question.correct';
         } else if (input.classList.contains('partiallycorrect')) {
             question.input.correctClass = 'core-question-partiallycorrect';
-            question.input.correctIcon = CoreQuestionHelper.getPartiallyCorrectIcon();
+            question.input.correctIcon = this.partialCorrectIcon;
             question.input.correctIconColor = CoreIonicColorNames.WARNING;
             question.input.correctIconLabel = 'core.question.partiallycorrect';
         } else {

@@ -19,9 +19,9 @@
                     {{ row.accessibilityLabel }}
                 </label>
             </div>
-            <ion-icon *ngIf="row.isCorrect === 1" class="core-correct-icon" name="fas-check" color="success" slot="start"
+            <ion-icon *ngIf="row.isCorrect === 1" class="core-correct-icon" [name]="correctIcon" color="success" slot="start"
                 [attr.aria-label]="'core.question.correct' | translate" />
-            <ion-icon *ngIf="row.isCorrect === 0" class="core-correct-icon" name="fas-xmark" color="danger" slot="start"
+            <ion-icon *ngIf="row.isCorrect === 0" class="core-correct-icon" [name]="incorrectIcon" color="danger" slot="start"
                 [attr.aria-label]="'core.question.incorrect' | translate" />
             <ion-select-option *ngFor="let option of row.options" [value]="option.value">
                 {{option.label}}
