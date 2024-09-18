@@ -1,6 +1,23 @@
-<ion-accordion *ngIf="collapsible" class="core-course-module-list-wrapper" [id]="section.id"
+@if (collapsible) {
+<ion-accordion class="core-course-module-list-wrapper" [id]="section.id"
     [attr.aria-labelledby]="section.name ? 'core-section-name-' + section.id : null" [value]="section.id" toggleIconSlot="start">
+    <ng-container *ngTemplateOutlet="sectionHeader" />
 
+    <div slot="content">
+        <ng-container *ngIf="section.expanded">
+            <ng-container *ngTemplateOutlet="sectionContent" />
+        </ng-container>
+    </div>
+</ion-accordion>
+} @else {
+<div class="core-course-module-list-wrapper" [id]="section.id"
+    [attr.aria-labelledby]="section.name ? 'core-section-name-' + section.id : null">
+    <ng-container *ngTemplateOutlet="sectionHeader" />
+    <ng-container *ngTemplateOutlet="sectionContent" />
+</div>
+}
+
+<ng-template #sectionHeader>
     <ion-item class="course-section divider" [class.item-dimmed]="section.visible === 0 || section.uservisible === false" slot="header">
         <ion-label class="ion-text-wrap">
             <h2 *ngIf="section.name" class="big" [id]="'core-section-name-' + section.id">
@@ -27,62 +44,9 @@
         </ion-label>
         <ion-badge *ngIf="section.highlighted && highlightedName" slot="end">{{highlightedName}}</ion-badge>
     </ion-item>
+</ng-template>
 
-    <div slot="content">
-        <ng-container *ngIf="section.expanded">
-            <ion-item class="ion-text-wrap section-summary" *ngIf="section.summary">
-                <ion-label>
-                    <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="course.id" />
-                </ion-label>
-            </ion-item>
-
-            <ng-container *ngFor="let module of modules">
-                @if (module.subsection) {
-                <core-course-section [course]="course" [section]="module.subsection" [lastModuleViewed]="lastModuleViewed"
-                    [viewedModules]="viewedModules" [collapsible]="true" />
-                } @else {
-                <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [section]="section"
-                    [showActivityDates]="course.showactivitydates" [showCompletionConditions]="course.showcompletionconditions"
-                    [isLastViewed]="lastModuleViewed && lastModuleViewed.cmId === module.id" [class.core-course-module-not-viewed]="
-                        !viewedModules[module.id] &&
-                        (!module.completiondata || module.completiondata.state === completionStatusIncomplete)" />
-                }
-            </ng-container>
-        </ng-container>
-    </div>
-</ion-accordion>
-
-
-<div *ngIf="!collapsible" class="core-course-module-list-wrapper" [id]="section.id"
-    [attr.aria-labelledby]="section.name ? 'core-section-name-' + section.id : null">
-
-    <ion-item class="course-section divider" [class.item-dimmed]="section.visible === 0 || section.uservisible === false">
-        <ion-label class="ion-text-wrap">
-            <h2 *ngIf="section.name" class="big" [id]="'core-section-name-' + section.id">
-                <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="course.id" />
-            </h2>
-            <div *ngIf="section.visible === 0 && section.uservisible !== false">
-                <ion-badge color="warning">
-                    {{ 'core.course.hiddenfromstudents' | translate }}
-                </ion-badge>
-            </div>
-            <div *ngIf="section.visible === 0 && section.uservisible === false">
-                <ion-badge color="warning">
-                    {{ 'core.notavailable' | translate }}
-                </ion-badge>
-            </div>
-            <div *ngIf="section.availabilityinfo">
-                <ion-chip class="clickable">
-                    <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate" />
-                    <ion-label>
-                        <core-format-text [text]=" section.availabilityinfo" contextLevel="course" [contextInstanceId]="course.id" />
-                    </ion-label>
-                </ion-chip>
-            </div>
-        </ion-label>
-        <ion-badge *ngIf="section.highlighted && highlightedName" slot="end">{{highlightedName}}</ion-badge>
-    </ion-item>
-
+<ng-template #sectionContent>
     <ion-item class="ion-text-wrap section-summary" *ngIf="section.summary">
         <ion-label>
             <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="course.id" />
@@ -101,4 +65,4 @@
                     (!module.completiondata || module.completiondata.state === completionStatusIncomplete)" />
         }
     </ng-container>
-</div>
+</ng-template>

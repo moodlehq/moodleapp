@@ -1,6 +1,6 @@
 @use "theme/globals" as *;
 core-progress-bar {
-    --bar-margin: 8px 0 4px 0;
+    --bar-margin: 8px 0px 4px 0px;
     --line-height: 20px;
     --background: var(--contrast-background);
 }
@@ -19,7 +19,7 @@ ion-item.item {
     &.item-current {
         --background: var(--primary-tint);
         --color: var(--gray-900);
-        border: 0;
+        border: 0px;
     }
 
     &.item-hightlighted {
@@ -56,7 +56,7 @@ ion-item.item {
 
     &.module {
         &::part(native) {
-            --padding-start: 0;
+            --padding-start: 0px;
         }
 
         &.item-hightlighted ion-icon.completioninfo {
@@ -70,7 +70,7 @@ ion-item.item {
     }
 
     ion-icon {
-        margin: 0;
+        margin: 0px;
         padding: 12px 16px;
 
         &.completioninfo {
@@ -86,4 +86,8 @@ ion-item.item {
             min-width: auto;
         }
     }
+}
+
+div.core-course-index-subsection {
+    @include padding-horizontal(16px, null);
 }

@@ -488,6 +488,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             componentProps: {
                 course: this.course,
                 sections: this.sections,
+                subSections: this.subSections,
                 selectedId: selectedId,
             },
         });
@@ -495,11 +496,24 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (!data) {
             return;
         }
-        const section = this.sections.find((section) => section.id === data.sectionId);
+        let section = this.sections.find((section) => section.id === data.sectionId);
         if (!section) {
             return;
         }
         this.sectionChanged(section);
+
+        if (data.subSectionId) {
+            section = this.subSections.find((section) => section.id === data.subSectionId);
+            if (!section) {
+                return;
+            }
+
+            // Use this section to find the module.
+            this.setSectionExpanded(section);
+
+            // Scroll to the subsection (later it may be scrolled to the module).
+            this.scrollInCourse(section.id, true);
+        }
 
         if (!data.moduleId) {
             return;
@@ -515,7 +529,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (CoreCourseHelper.canUserViewModule(module, section)) {
-            this.scrollToModule(module.id);
+            this.scrollInCourse(module.id);
 
             module.handlerData?.action?.(data.event, module, module.course);
         }
@@ -585,7 +599,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         // Scroll to module if needed. Give more priority to the input.
         const moduleIdToScroll = this.moduleId && previousValue === undefined ? this.moduleId : moduleId;
         if (moduleIdToScroll) {
-            this.scrollToModule(moduleIdToScroll);
+            this.scrollInCourse(moduleIdToScroll);
         }
 
         if (!previousValue || previousValue.id !== newSection.id) {
@@ -600,16 +614,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Scroll to a certain module.
+     * Scroll to a certain module or section.
      *
-     * @param moduleId Module ID.
+     * @param id ID of the module or section to scroll to.
+     * @param isSection Whether to scroll to a module or a subsection.
      */
-    protected scrollToModule(moduleId: number): void {
-        CoreDom.scrollToElement(
-            this.elementRef.nativeElement,
-            '#core-course-module-' + moduleId,
-            { addYAxis: -10 },
-        );
+    protected scrollInCourse(id: number, isSection = false): void {
+        const elementId = isSection ? `#core-section-name-${id}` : `#core-course-module-${id}`;
+        CoreDom.scrollToElement(this.elementRef.nativeElement, elementId,{ addYAxis: -10 });
     }
 
     /**
