@@ -111,11 +111,11 @@
                         <p>{{ badge.imagecaption }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="course">
+                <ion-item class="ion-text-wrap" *ngIf="badge.coursefullname">
                     <ion-label>
                         <p class="item-heading">{{ 'core.course' | translate}}</p>
                         <p>
-                            <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="courseId" />
+                            <core-format-text [text]="badge.coursefullname" contextLevel="course" [contextInstanceId]="badge.courseid" />
                         </p>
                     </ion-label>
                 </ion-item>
@@ -217,21 +217,16 @@
             </ion-item-group>
 
             <!-- Competencies alignment -->
-            <ion-item-group *ngIf="badge.alignment">
+            <ion-item-group *ngIf="badge.alignment?.length">
                 <ion-item-divider>
                     <ion-label>
                         <h2>{{ 'addon.badges.alignment' | translate}}</h2>
                     </ion-label>
                 </ion-item-divider>
-                <ion-item class="ion-text-wrap" *ngFor="let alignment of badge.alignment" [href]="alignment.targeturl" core-link
+                <ion-item class="ion-text-wrap" *ngFor="let alignment of badge.alignment" [href]="alignment.targetUrl" core-link
                     [autoLogin]="false">
                     <ion-label>
-                        <p class="item-heading">{{ alignment.targetname }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="badge.alignment.length === 0">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.badges.noalignment' | translate}}</p>
+                        <p class="item-heading">{{ alignment.targetName }}</p>
                     </ion-label>
                 </ion-item>
             </ion-item-group>

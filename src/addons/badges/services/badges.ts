@@ -78,15 +78,18 @@ export class AddonBadgesProvider {
             throw new CoreError('Invalid badges response');
         }
 
-        // In 3.7, competencies was renamed to alignment. Rename the property in 3.6 too.
         response.badges.forEach((badge) => {
+            // In 3.7, competencies was renamed to alignment.
+            if (!badge.alignment && badge.competencies) {
+                badge.alignment = badge.competencies.map((competency) => ({
+                    targetName: competency.targetname,
+                    targetUrl: competency.targeturl,
+                }));
+            }
             badge.alignment = badge.alignment || badge.competencies;
 
-            // Check that the alignment is valid, they were broken in 3.7.
-            if (badge.alignment && badge.alignment[0] && badge.alignment[0].targetname === undefined) {
-                // If any badge lacks targetname it means they are affected by the Moodle bug, don't display them.
-                delete badge.alignment;
-            }
+            // Exclude alignments without targetName, we can't display them.
+            badge.alignment = badge.alignment?.filter((alignment) => alignment.targetName);
         });
 
         return response.badges;
@@ -138,11 +141,15 @@ export class AddonBadgesProvider {
             data,
             preSets,
         );
-        if (!response || !response.badge?.[0]) {
+        const badge = response?.badge?.[0];
+        if (!badge) {
             throw new CoreError('Invalid badge response');
         }
 
-        return response.badge[0];
+        // Exclude alignments without targetName, we can't display them.
+        badge.alignment = badge.alignment?.filter((alignment) => alignment.targetName);
+
+        return badge;
     }
 
     /**
@@ -156,6 +163,76 @@ export class AddonBadgesProvider {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getUserBadgeByHashCacheKey(hash));
+    }
+
+    /**
+     * Get the cache key for the get badge class WS call.
+     *
+     * @param id Badge ID.
+     * @returns Cache key.
+     */
+    protected getBadgeClassCacheKey(id: number): string {
+        return ROOT_CACHE_KEY + 'badgeclass:' + id;
+    }
+
+    /**
+     * Get badge class.
+     *
+     * @param id Badge ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise to be resolved when the badge is retrieved.
+     * @since 4.5
+     */
+    async getBadgeClass(id: number, siteId?: string): Promise<AddonBadgesBadgeClass> {
+        const site = await CoreSites.getSite(siteId);
+        const data: AddonBadgesGetBadgeClassWSParams = {
+            id,
+        };
+        const preSets = {
+            cacheKey: this.getBadgeClassCacheKey(id),
+            updateFrequency: CoreSite.FREQUENCY_RARELY,
+        };
+
+        const response = await site.read<AddonBadgesGetBadgeClassWSResponse>(
+            'core_badges_get_badge',
+            data,
+            preSets,
+        );
+        const badge = response?.badge;
+        if (!badge) {
+            throw new CoreError('Invalid badge response');
+        }
+
+        // Exclude alignments without targetName, we can't display them.
+        badge.alignment = badge.alignment?.filter((alignment) => alignment.targetName);
+
+        return badge;
+    }
+
+    /**
+     * Invalidate get badge class WS call.
+     *
+     * @param id Badge ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when data is invalidated.ç
+     * @since 4.5
+     */
+    async invalidateBadgeClass(id: number, siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+
+        await site.invalidateWsCacheForKey(this.getBadgeClassCacheKey(id));
+    }
+
+    /**
+     * Returns whether get badge class WS is available.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @returns If WS is available.
+     */
+    async isGetBadgeClassAvailable(siteId?: string): Promise<boolean> {
+        const site = await CoreSites.getSite(siteId);
+
+        return site.wsAvailable('core_badges_get_badge');
     }
 
 }
@@ -208,6 +285,7 @@ export type AddonBadgesUserBadge = {
     expireperiod?: number; // Expire period.
     type?: number; // Type.
     courseid?: number; // Course id.
+    coursefullname?: string; // Full name of the course.
     message?: string; // Message.
     messagesubject?: string; // Message subject.
     attachment?: number; // Attachment.
@@ -242,11 +320,11 @@ export type AddonBadgesUserBadge = {
     alignment?: { // @since 3.7. Calculated by the app for 3.6 sites. Badge alignments.
         id?: number; // Alignment id.
         badgeid?: number; // Badge id.
-        targetname?: string; // Target name.
-        targeturl?: string; // Target URL.
-        targetdescription?: string; // Target description.
-        targetframework?: string; // Target framework.
-        targetcode?: string; // Target code.
+        targetName?: string; // Target name.
+        targetUrl?: string; // Target URL.
+        targetDescription?: string; // Target description.
+        targetFramework?: string; // Target framework.
+        targetCode?: string; // Target code.
     }[];
     competencies?: { // @deprecatedonmoodle since 3.7. @since 3.6. In 3.7 it was renamed to alignment.
         id?: number; // Alignment id.
@@ -279,4 +357,45 @@ type AddonBadgesGetUserBadgeByHashWSParams = {
 type AddonBadgesGetUserBadgeByHashWSResponse = {
     badge: AddonBadgesUserBadge[];
     warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Params of core_badges_get_badge WS.
+ */
+type AddonBadgesGetBadgeClassWSParams = {
+    id: number; // Badge ID.
+};
+
+/**
+ * Data returned by core_badges_get_badge WS.
+ */
+type AddonBadgesGetBadgeClassWSResponse = {
+    badge: AddonBadgesBadgeClass;
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Badge data returned by core_badges_get_badge WS.
+ */
+export type AddonBadgesBadgeClass = {
+    type: string; // BadgeClass.
+    id: string; // Unique identifier for this badgeclass (URL).
+    issuer?: string; // Issuer for this badgeclass.
+    name: string; // Name of the badgeclass.
+    image: string; // URL to the image.
+    description: string; // Description of the badge class.
+    hostedUrl?: string; // Identifier of the open badge for this assertion.
+    courseid?: number; // Course ID.
+    coursefullname?: string; // Full name of the course.
+    alignment?: { // Badge alignments.
+        id?: number; // Alignment id.
+        badgeid?: number; // Badge id.
+        targetName?: string; // Target name.
+        targetUrl?: string; // Target URL.
+        targetDescription?: string; // Target description.
+        targetFramework?: string; // Target framework.
+        targetCode?: string; // Target code.
+    }[];
+    criteriaUrl?: string; // Criteria URL.
+    criteriaNarrative?: string; // Criteria narrative.
 };
