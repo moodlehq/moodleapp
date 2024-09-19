@@ -990,7 +990,7 @@ export class CoreCourseProvider {
                 map(sections => {
                     const siteHomeId = site.getSiteHomeId();
                     let showSections = true;
-                    if (courseId == siteHomeId) {
+                    if (courseId === siteHomeId) {
                         const storedNumSections = site.getStoredConfig('numsections');
                         showSections = storedNumSections !== undefined && !!storedNumSections;
                     }
@@ -1770,6 +1770,8 @@ type CoreCourseGetContentsWSSection = {
     uservisible?: boolean; // Is the section visible for the user?.
     availabilityinfo?: string; // Availability information.
     modules: CoreCourseGetContentsWSModule[]; // List of module.
+    component?: string; // @since 4.5 The delegate component of this section if any.
+    itemid?: number; // @since 4.5 The optional item id delegate component can use to identify its instance.
 };
 
 /**

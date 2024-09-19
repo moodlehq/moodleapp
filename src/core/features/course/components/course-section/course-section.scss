@@ -1,0 +1,36 @@
+:host {
+    .course-section {
+        --inner-padding-end: var(--mdl-spacing-3);
+    }
+
+    &.collapsible {
+        .core-course-module-list-wrapper {
+            border: var(--ion-card-border-width) solid var(--ion-card-border-color);
+            border-radius: var(--ion-card-radius);
+            margin: var(--mdl-spacing-4);
+            width: calc(100% - var(--mdl-spacing-8));
+
+            ion-card {
+                --ion-card-background: transparent;
+            }
+
+            ion-item.divider.course-section {
+                --background: transparent;
+            }
+        }
+    }
+
+    core-course-module:has( + core-course-section) {
+        --activity-border: 0px;
+        --card-padding-bottom: 0px;
+    }
+
+    core-course-module:last-child {
+        --activity-border: 0px;
+        --card-padding-bottom: 0px;
+    }
+
+    core-course-module:first-child ::ng-deep ion-card {
+        margin-top: 0px;
+    }
+}

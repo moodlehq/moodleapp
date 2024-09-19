@@ -310,15 +310,15 @@
     display: block;
 
     ion-card {
-        --vertical-margin: 10px;
-        --horizontal-margin: 10px;
+        --vertical-spacing: 10px;
+        --horizontal-spacing: 10px;
 
-        width: calc(100% - var(--horizontal-margin) - var(--horizontal-margin));
-        height: calc(100% - var(--vertical-margin) - var(--vertical-margin));
-        margin: var(--vertical-margin) var(--horizontal-margin);
+        width: calc(100% - var(--horizontal-spacing) - var(--horizontal-spacing));
+        height: calc(100% - var(--vertical-spacing) - var(--vertical-spacing));
+        margin: var(--vertical-spacing) var(--horizontal-spacing);
 
         @media (max-width: 360px) {
-            --horizontal-margin: 6px;
+            --horizontal-spacing: 6px;
         }
     }
 }

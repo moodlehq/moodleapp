@@ -1,5 +1,16 @@
 ion-accordion {
     .ion-accordion-toggle-icon[slot="start"] {
-        @include margin-horizontal(null, var(--mdl-spacing-4));
+        @include margin-horizontal(null, var(--mdl-spacing-2));
+        background-color: var(--gray-100);
+        border-radius: 50%;
+        padding: var(--mdl-spacing-1);
+    }
+}
+
+:root.dark {
+    ion-accordion {
+        .ion-accordion-toggle-icon[slot="start"] {
+            background-color: var(--gray-800);
+        }
     }
 }

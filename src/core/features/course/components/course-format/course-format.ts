@@ -11,7 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 import {
     Component,
     Input,
@@ -31,7 +30,6 @@ import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-comp
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import {
     CoreCourse,
-    CoreCourseModuleCompletionStatus,
     CoreCourseProvider,
 } from '@features/course/services/course';
 import {
@@ -56,12 +54,12 @@ import { ContextLevel } from '@/core/constants';
 import { CoreModals } from '@services/modals';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockComponentsModule } from '@features/block/components/components.module';
-import { CoreCourseComponentsModule } from '../components.module';
 import { CoreSites } from '@services/sites';
 import { COURSE_ALL_SECTIONS_PREFERRED_PREFIX, COURSE_EXPANDED_SECTIONS_PREFIX } from '@features/course/constants';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infinite-loading';
 import { CoreSite } from '@classes/sites/site';
+import { CoreCourseSectionComponent, CoreCourseSectionToDisplay } from '../course-section/course-section';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -76,12 +74,12 @@ import { CoreSite } from '@classes/sites/site';
 @Component({
     selector: 'core-course-format',
     templateUrl: 'course-format.html',
-    styleUrls: ['course-format.scss'],
+    styleUrl: 'course-format.scss',
     standalone: true,
     imports: [
         CoreSharedModule,
+        CoreCourseSectionComponent,
         CoreBlockComponentsModule,
-        CoreCourseComponentsModule,
     ],
 })
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
@@ -126,16 +124,15 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     displayCourseIndex = false;
     displayBlocks = false;
     hasBlocks = false;
+    subSections: CoreCourseSectionToDisplay[] = []; // List of course subsections.
     selectedSection?: CoreCourseSectionToDisplay;
     previousSection?: CoreCourseSectionToDisplay;
     nextSection?: CoreCourseSectionToDisplay;
-    allSectionsId: number = CoreCourseProvider.ALL_SECTIONS_ID;
-    stealthModulesSectionId: number = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
+    allSectionsId = CoreCourseProvider.ALL_SECTIONS_ID;
+    stealthModulesSectionId = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
     loaded = false;
-    highlighted?: string;
     lastModuleViewed?: CoreCourseViewedModulesDBRecord;
     viewedModules: Record<number, boolean> = {};
-    completionStatusIncomplete = CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE;
 
     communicationRoomUrl?: string;
 
@@ -229,6 +226,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (changes.sections && this.sections) {
+            this.subSections = this.sections.filter((section) => section.component === 'mod_subsection');
+            this.sections = this.sections.filter((section) => section.component !== 'mod_subsection');
+
             this.treatSections(this.sections);
         }
         this.changeDetectorRef.markForCheck();
@@ -256,7 +256,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         // Format has changed or it's the first time, load all the components.
         this.lastCourseFormat = this.course.format;
 
-        this.highlighted = CoreCourseFormatDelegate.getSectionHightlightedName(this.course);
         const currentSectionData = await CoreCourseFormatDelegate.getCurrentSection(this.course, this.sections);
         currentSectionData.section.highlighted = true;
 
@@ -301,8 +300,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param sections Sections to treat.
      */
     protected async treatSections(sections: CoreCourseSectionToDisplay[]): Promise<void> {
-        const hasAllSections = sections[0].id == CoreCourseProvider.ALL_SECTIONS_ID;
-        const hasSeveralSections = sections.length > 2 || (sections.length == 2 && !hasAllSections);
+        const hasAllSections = sections[0].id === CoreCourseProvider.ALL_SECTIONS_ID;
+        const hasSeveralSections = sections.length > 2 || (sections.length === 2 && !hasAllSections);
 
         await this.initializeViewedModules();
         if (this.selectedSection) {
@@ -327,6 +326,26 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.loaded = true;
             this.sectionChanged(sections[0]);
         } else if (this.initialSectionId || this.initialSectionNumber !== undefined) {
+            const subSection = this.subSections.find((section) => section.id === this.initialSectionId ||
+                (section.section !== undefined && section.section === this.initialSectionNumber));
+            if (subSection) {
+                // The section is a subsection, load the parent section.
+                this.sections.some((section) => {
+                    const module = section.modules.find((module) =>
+                        subSection.itemid === module.instance && module.modname === 'subsection');
+                    if (module) {
+                        this.initialSectionId = module.section;
+                        this.initialSectionNumber = undefined;
+
+                        return true;
+                    }
+
+                    return false;
+                });
+
+                this.setInputData();
+            }
+
             // We have an input indicating the section ID to load. Search the section.
             const section = sections.find((section) =>
                 section.id === this.initialSectionId ||
@@ -469,6 +488,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             componentProps: {
                 course: this.course,
                 sections: this.sections,
+                subSections: this.subSections,
                 selectedId: selectedId,
             },
         });
@@ -476,11 +496,24 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (!data) {
             return;
         }
-        const section = this.sections.find((section) => section.id === data.sectionId);
+        let section = this.sections.find((section) => section.id === data.sectionId);
         if (!section) {
             return;
         }
         this.sectionChanged(section);
+
+        if (data.subSectionId) {
+            section = this.subSections.find((section) => section.id === data.subSectionId);
+            if (!section) {
+                return;
+            }
+
+            // Use this section to find the module.
+            this.setSectionExpanded(section);
+
+            // Scroll to the subsection (later it may be scrolled to the module).
+            this.scrollInCourse(section.id, true);
+        }
 
         if (!data.moduleId) {
             return;
@@ -496,7 +529,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (CoreCourseHelper.canUserViewModule(module, section)) {
-            this.scrollToModule(module.id);
+            this.scrollInCourse(module.id);
 
             module.handlerData?.action?.(data.event, module, module.course);
         }
@@ -566,7 +599,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         // Scroll to module if needed. Give more priority to the input.
         const moduleIdToScroll = this.moduleId && previousValue === undefined ? this.moduleId : moduleId;
         if (moduleIdToScroll) {
-            this.scrollToModule(moduleIdToScroll);
+            this.scrollInCourse(moduleIdToScroll);
         }
 
         if (!previousValue || previousValue.id !== newSection.id) {
@@ -581,16 +614,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Scroll to a certain module.
+     * Scroll to a certain module or section.
      *
-     * @param moduleId Module ID.
+     * @param id ID of the module or section to scroll to.
+     * @param isSection Whether to scroll to a module or a subsection.
      */
-    protected scrollToModule(moduleId: number): void {
-        CoreDom.scrollToElement(
-            this.elementRef.nativeElement,
-            '#core-course-module-' + moduleId,
-            { addYAxis: -10 },
-        );
+    protected scrollInCourse(id: number, isSection = false): void {
+        const elementId = isSection ? `#core-section-name-${id}` : `#core-course-module-${id}`;
+        CoreDom.scrollToElement(this.elementRef.nativeElement, elementId,{ addYAxis: -10 });
     }
 
     /**
@@ -751,9 +782,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Save expanded sections for the course.
      */
     protected async saveExpandedSections(): Promise<void> {
-        const expandedSections = this.sections.filter((section) => section.expanded).map((section) => section.id).join(',');
+        let expandedSections = this.sections.filter((section) => section.expanded && section.id > 0).map((section) => section.id);
+        expandedSections =
+            expandedSections.concat(this.subSections.filter((section) => section.expanded).map((section) => section.id));
 
-        await this.currentSite?.setLocalSiteConfig(`${COURSE_EXPANDED_SECTIONS_PREFIX}${this.course.id}`, expandedSections);
+        await this.currentSite?.setLocalSiteConfig(
+            `${COURSE_EXPANDED_SECTIONS_PREFIX}${this.course.id}`,
+            expandedSections.join(','),
+        );
     }
 
     /**
@@ -771,12 +807,21 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 this.accordionMultipleValue.push(section.id.toString());
             });
 
+            this.subSections.forEach((section) => {
+                section.expanded = true;
+                this.accordionMultipleValue.push(section.id.toString());
+            });
+
             return;
         }
 
         this.accordionMultipleValue = expandedSections.split(',');
 
         this.sections.forEach((section) => {
+            section.expanded = this.accordionMultipleValue.includes(section.id.toString());
+        });
+
+        this.subSections.forEach((section) => {
             section.expanded = this.accordionMultipleValue.includes(section.id.toString());
         });
     }
@@ -792,9 +837,17 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             section.expanded = false;
         });
 
+        this.subSections.forEach((section) => {
+            section.expanded = false;
+        });
+
         sectionIds?.forEach((sectionId) => {
             const sId = Number(sectionId);
-            const section = this.sections.find((section) => section.id === sId);
+            let section = this.sections.find((section) => section.id === sId);
+            if (!section) {
+                section = this.subSections.find((section) => section.id === sId);
+            }
+
             if (section) {
                 section.expanded = true;
             }
@@ -820,8 +873,3 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
 }
-
-type CoreCourseSectionToDisplay = CoreCourseSection & {
-    highlighted?: boolean;
-    expanded?: boolean; // The aim of this property is to avoid DOM overloading.
-};

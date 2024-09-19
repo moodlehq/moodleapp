@@ -1,29 +1,32 @@
 @use "theme/globals" as *;
 
 :host {
-    --horizontal-margin: 12px;
-    --vertical-margin: 12px;
-    --card-padding: 16px;
+    --horizontal-spacing: var(--mdl-spacing-4);
+    --vertical-spacing: var(--mdl-spacing-2);
+    --colored-box-padding: var(--mdl-spacing-2);
     --card-border-width: 0px;
     --card-radius: 0px;
     --card-background: transparent;
+    --activity-border: 2px solid var(--stroke);
+    --card-padding-bottom: var(--vertical-spacing);
 
     ion-card {
-        margin: var(--vertical-margin) var(--horizontal-margin);
+        margin: var(--vertical-spacing) var(--horizontal-spacing);
+        padding: 0px;
         --ion-card-border-width: var(--card-border-width);
         --ion-card-radius: var(--card-radius);
         --ion-card-background: var(--card-background);
+        padding-bottom: var(--card-padding-bottom);
+        border-bottom: var(--activity-border);
     }
 
     ion-item {
-        --padding-start: var(--card-padding);
-        --inner-padding-end: var(--card-padding);
+        --padding-start: 0px;
+        --inner-padding-end: 0px;
+        --background: transparent;
         ion-label {
-            margin-top: var(--card-padding);
-            margin-bottom: var(--card-padding);
-            &>:last-child {
-                margin-bottom: 0px;
-            }
+            margin-top: 0px;
+            margin-bottom: 0px;
         }
     }
 
@@ -33,8 +36,6 @@
         flex-direction: row;
 
         core-mod-icon {
-            margin-top: 0px;
-            margin-bottom: 0px;
             --module-icon-padding: 0px;
             --module-legacy-icon-padding: 4px;
             --module-icon-radius: var(--mdl-shape-borderRadius-xs);
@@ -46,7 +47,7 @@
         .activity-title {
             flex-grow: 1;
             align-self: center;
-            @include margin-horizontal(null, var(--card-padding));
+            @include margin-horizontal(null, var(--horizontal-spacing));
 
             .item-heading ion-icon {
                 @include margin-horizontal(8px, null);
@@ -56,7 +57,6 @@
 
         .core-module-buttons {
             align-self: self-start;
-            margin: 0;
 
             display: flex;
             flex-flow: row;
@@ -86,6 +86,13 @@
             }
         }
 
+        core-mod-icon,
+        .activity-title,
+        .core-module-buttons {
+            margin-top: var(--vertical-spacing);
+            margin-bottom: var(--vertical-spacing);
+        }
+
         .core-module-additional-info {
             display: flex;
             align-items: center;
@@ -106,7 +113,7 @@
     }
 
     core-course-module-completion {
-        --margin: 8px 0px;
+        --margin: var(--vertical-spacing) 0px;
     }
 
     .activity-dates {
@@ -121,9 +128,14 @@
 
     .activity-description-availabilityinfo,
     .activity-extrabadges {
-        margin-top: 8px;
-        padding-top: 8px;
+        margin-top: var(--vertical-spacing);
+        margin-bottom: var(--vertical-spacing);
+    }
+
+    .activity-extrabadges,
+    .core-module-description {
         border-top: 1px solid var(--stroke);
+        display: block;
     }
 
     .activity-extrabadges {
@@ -131,26 +143,16 @@
         color: var(--medium);
     }
 
-    .activity-description-availabilityinfo {
-        .core-module-availabilityinfo {
-            background: var(--gray-300);
-            border-radius: var(--mdl-shape-borderRadius-sm);
+    .activity-description-availabilityinfo .core-module-availabilityinfo {
+        background: var(--gray-300);
+        font: var(--mdl-typography-label-font-lg);
+
+        ::ng-deep ul {
             margin-top: 8px;
-            padding: 8px;
-            font-size: var(--mdl-typography-body-fontSize-md);
-            line-height: 120%;
+            margin-bottom: 0px;
 
-            ::ng-deep ul {
-                margin-top: 8px;
-                margin-bottom: 0px;
-
-                li {
-                    margin-bottom: 4px;
-                }
-            }
-
-            ion-icon {
-                @include margin-horizontal(null, 8px);
+            li {
+                margin-bottom: 4px;
             }
         }
     }
@@ -162,13 +164,25 @@
         clear: both;
     }
 
-    .core-course-last-module-viewed {
-        padding: 8px 12px;
-        color: var(--subdued-text-color);
-        border-top: 1px solid var(--stroke);
+    .colored-box-with-icon {
+        margin-top: var(--vertical-spacing);
+        margin-bottom: var(--vertical-spacing);
+
+        border: 0px;
+        padding: var(--colored-box-padding);
+        border-radius: var(--mdl-shape-borderRadius-sm);
 
         ion-icon {
-            margin-right: 4px;
+            @include margin-horizontal(null, var(--mdl-spacing-2));
+            margin-top: auto;
+            margin-bottom: auto;
+        }
+
+        &.core-course-last-module-viewed {
+            display: flex;
+            background-color: var(--info-tint);
+            color: var(--info-shade);
+            font: var(--mdl-typography-label-font-md);
         }
     }
 
@@ -185,17 +199,14 @@
     }
 
     &.indented ion-card {
-        @include margin-horizontal(calc(var(--horizontal-margin) + 1rem), null);
-    }
-
-    & + ::ng-deep core-course-module ion-card {
-        border-top: 1px solid var(--ion-card-border-color);
+        @include margin-horizontal(calc(var(--horizontal-spacing) + 1rem), null);
     }
 
     // Hide download folder icon meanwhile MOBILE-4147 is not solved
     core-format-text.core-module-description ::ng-deep .description-inner .navitem {
         display: none;
     }
+
 }
 
 

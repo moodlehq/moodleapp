@@ -33,6 +33,7 @@ import { AddonModPageModule } from './page/page.module';
 import { AddonModQuizModule } from './quiz/quiz.module';
 import { AddonModResourceModule } from './resource/resource.module';
 import { AddonModScormModule } from './scorm/scorm.module';
+import { AddonModSubsectionModule } from './subsection/subsection.module';
 import { AddonModSurveyModule } from './survey/survey.module';
 import { AddonModUrlModule } from './url/url.module';
 import { AddonModWikiModule } from './wiki/wiki.module';
@@ -59,6 +60,7 @@ import { AddonModWorkshopModule } from './workshop/workshop.module';
         AddonModQuizModule,
         AddonModResourceModule,
         AddonModScormModule,
+        AddonModSubsectionModule,
         AddonModSurveyModule,
         AddonModUrlModule,
         AddonModWikiModule,

@@ -10,30 +10,3 @@
         margin-right: 4px;
     }
 }
-
-.course-section {
-    --inner-padding-end: 12px;
-}
-
-.multiple-sections .core-course-module-list-wrapper {
-    border: var(--ion-card-border-width) solid var(--ion-card-border-color);
-    border-radius: var(--ion-card-radius);
-    margin: 8px 4px;
-    width: calc(100% - 8px);
-
-    ion-card {
-        --ion-card-background: transparent;
-    }
-
-    ion-item.divider.course-section {
-        --background: transparent;
-    }
-}
-
-.single-section ::ng-deep {
-    ion-item.divider.course-section {
-        ion-icon.ion-accordion-toggle-icon {
-            display: none;
-        }
-    }
-}
