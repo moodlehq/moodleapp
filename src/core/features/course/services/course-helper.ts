@@ -1600,7 +1600,7 @@ export class CoreCourseHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the download finishes.
      */
-    async prefetchCourse(
+    protected async prefetchCourse(
         course: CoreCourseAnyCourseData,
         sections: CoreCourseWSSection[],
         courseHandlers: CoreCourseOptionsHandlerToDisplay[],
