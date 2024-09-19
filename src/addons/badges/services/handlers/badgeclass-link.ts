@@ -18,16 +18,16 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { AddonBadgesHelper } from '../badges-helper';
+import { AddonBadges } from '../badges';
 
 /**
- * Handler to treat links to issued badges.
+ * Handler to treat links to badge classes.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonBadgesBadgeLinkHandlerService extends CoreContentLinksHandlerBase {
+export class AddonBadgesBadgeClassLinkHandlerService extends CoreContentLinksHandlerBase {
 
-    name = 'AddonBadgesBadgeLinkHandler';
-    pattern = /\/badges\/badge\.php.*([?&]hash=)/;
+    name = 'AddonBadgesBadgeClassLinkHandler';
+    pattern = /\/badges\/badgeclass\.php.*([?&]id=)/;
 
     /**
      * @inheritdoc
@@ -36,7 +36,7 @@ export class AddonBadgesBadgeLinkHandlerService extends CoreContentLinksHandlerB
 
         return [{
             action: async (siteId: string): Promise<void> => {
-                await CoreNavigator.navigateToSitePath(`/badge/${params.hash}`, { siteId });
+                await CoreNavigator.navigateToSitePath(`/badgeclass/${params.id}`, { siteId });
             },
         }];
     }
@@ -44,10 +44,13 @@ export class AddonBadgesBadgeLinkHandlerService extends CoreContentLinksHandlerB
     /**
      * @inheritdoc
      */
-    async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        return AddonBadgesHelper.canOpenBadge(params.hash, siteId);
+    async isEnabled(siteId: string): Promise<boolean> {
+        const pluginEnabled = await AddonBadges.isPluginEnabled(siteId);
+        const wsAvailable = await AddonBadges.isGetBadgeClassAvailable(siteId);
+
+        return pluginEnabled && wsAvailable;
     }
 
 }
 
-export const AddonBadgesBadgeLinkHandler = makeSingleton(AddonBadgesBadgeLinkHandlerService);
+export const AddonBadgesBadgeClassLinkHandler = makeSingleton(AddonBadgesBadgeClassLinkHandlerService);

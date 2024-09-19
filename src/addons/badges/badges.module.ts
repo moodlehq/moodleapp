@@ -17,6 +17,7 @@ import { Routes } from '@angular/router';
 
 import { AddonBadgesMyBadgesLinkHandler } from './services/handlers/mybadges-link';
 import { AddonBadgesBadgeLinkHandler } from './services/handlers/badge-link';
+import { AddonBadgesBadgeClassLinkHandler } from './services/handlers/badgeclass-link';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { AddonBadgesUserHandler } from './services/handlers/user';
@@ -48,6 +49,10 @@ const mainMenuRoutes: Routes = [
         path: 'badges',
         loadChildren: () => import('./badges-lazy.module').then(m => m.AddonBadgesLazyModule),
     },
+    {
+        path: 'badgeclass',
+        loadChildren: () => import('./badgeclass-lazy.module').then(m => m.AddonBadgeClassLazyModule),
+    },
 ];
 
 @NgModule({
@@ -61,6 +66,7 @@ const mainMenuRoutes: Routes = [
             useValue: () => {
                 CoreContentLinksDelegate.registerHandler(AddonBadgesMyBadgesLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonBadgesBadgeLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonBadgesBadgeClassLinkHandler.instance);
                 CoreUserDelegate.registerHandler(AddonBadgesUserHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonBadgesPushClickHandler.instance);
                 CoreTagAreaDelegate.registerHandler(AddonBadgesTagAreaHandler.instance);
