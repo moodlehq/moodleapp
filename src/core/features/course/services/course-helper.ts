@@ -1584,7 +1584,7 @@ export class CoreCourseHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the download finishes.
      */
-    async prefetchCourse(
+    protected async prefetchCourse(
         course: CoreCourseAnyCourseData,
         sections: CoreCourseWSSection[],
         courseHandlers: CoreCourseOptionsHandlerToDisplay[],
@@ -2112,6 +2112,79 @@ export class CoreCourseHelperProvider {
         return completion.state;
     }
 
+    /**
+     * Find a section by id.
+     *
+     * @param sections List of sections with subsections included.
+     * @param sectionId Section id.
+     * @returns Section object, if found.
+     */
+    findSectionById<T extends CoreCourseSectionWithSubsections>(sections: T[], sectionId: number): T | undefined {
+        let sectionFound: T | undefined;
+
+        sections.some(section => {
+            if (section.id === sectionId) {
+                sectionFound = section;
+
+                return true;
+            }
+
+            const module = section.modules.find((module) => module.subSection?.id ===  sectionId);
+            if (module) {
+                sectionFound = module.subSection as T;
+
+                return true;
+            }
+
+            return false;
+        });
+
+        return sectionFound;
+    }
+
+    /**
+     * Finds the section and if it's a subsection, returns the parent section.
+     *
+     * @param sections List of sections with subsections included.
+     * @param sectionId Section Iºd.
+     * @returns Section object and the parent section, if found.
+     */
+    findSectionWithSubsection<T extends CoreCourseSectionWithSubsections>(
+        sections: T[],
+        sectionId: number,
+    ): { section: T; subSection?: T } | undefined {
+        let sectionFound: T | undefined;
+        let subSectionFound: T | undefined;
+        let parentSectionId: number | undefined;
+
+        sections.some(section => {
+            if (section.id === sectionId) {
+                // It's not a subsection.
+                sectionFound = section;
+
+                return true;
+            }
+
+            const module = section.modules.find((module) => module.subSection?.id ===  sectionId);
+            if (module) {
+                subSectionFound = module.subSection as T;
+                parentSectionId = module.section;
+
+                return true;
+            }
+
+            return false;
+        });
+
+        // Find parent.
+        if (parentSectionId && ! sectionFound) {
+            sectionFound = sections.find(section => section.id === parentSectionId);
+        }
+
+        return sectionFound ? { section: sectionFound, subSection: subSectionFound } : undefined;
+
+    }
+
 }
 
 export const CoreCourseHelper = makeSingleton(CoreCourseHelperProvider);
@@ -2121,6 +2194,17 @@ export const CoreCourseHelper = makeSingleton(CoreCourseHelperProvider);
  */
 export type CoreCourseSection = CoreCourseWSSection & {
     hasContent?: boolean;
+};
+
+export type CoreCourseSectionWithSubsections = {
+    id: number;
+    modules: CoreCourseModuleDataWithSubsection[];
+};
+
+export type CoreCourseModuleDataWithSubsection = {
+    id: number;
+    section: number;
+    subSection?: CoreCourseSectionWithSubsections;
 };
 
 /**

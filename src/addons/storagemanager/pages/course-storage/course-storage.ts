@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants, DownloadStatus } from '@/core/constants';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import {
     CoreCourseHelper,
@@ -25,7 +25,7 @@ import {
     CoreCourseModulePrefetchDelegate,
     CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourseAnyCourseData, CoreCourses } from '@features/courses/services/courses';
-import { AccordionGroupChangeEventDetail, IonAccordionGroup } from '@ionic/angular';
+import { AccordionGroupChangeEventDetail } from '@ionic/angular';
 import { CoreLoadings } from '@services/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -47,14 +47,13 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 })
 export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
-    @ViewChild('accordionGroup', { static: true }) accordionGroup!: IonAccordionGroup;
-
     courseId!: number;
     title = '';
     loaded = false;
     sections: AddonStorageManagerCourseSection[] = [];
     totalSize = 0;
     calculatingSize = true;
+    accordionMultipleValue: string[] = [];
 
     downloadEnabled = false;
     downloadCourseEnabled = false;
@@ -116,7 +115,8 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         const sections = (await CoreCourse.getSections(this.courseId, false, true))
             .filter((section) => !CoreCourseHelper.isSectionStealth(section));
-        this.sections = (await CoreCourseHelper.addHandlerDataForModules(sections, this.courseId)).sections
+
+        const sectionsToRender = (await CoreCourseHelper.addHandlerDataForModules(sections, this.courseId)).sections
             .map(section => ({
                 ...section,
                 totalSize: 0,
@@ -128,15 +128,29 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                 })),
             }));
 
+        const subSections = sectionsToRender.filter((section) => section.component === 'mod_subsection');
+
+        this.sections = sectionsToRender.filter((section) => section.component !== 'mod_subsection');
+        this.sections.forEach((section) => {
+            section.modules.forEach((module) => {
+                if (module.modname === 'subsection') {
+                    module.subSection = subSections.find((section) =>
+                        section.component === 'mod_subsection' && section.itemid === module.instance);
+                }
+            });
+        });
+
         this.loaded = true;
 
-        this.accordionGroup.value = String(initialSectionId);
+        if (initialSectionId !== undefined) {
+            this.accordionMultipleValue.push(initialSectionId.toString());
 
-        CoreDom.scrollToElement(
-            this.elementRef.nativeElement,
-            '.accordion-expanded',
-            { addYAxis: -10 },
-        );
+            CoreDom.scrollToElement(
+                this.elementRef.nativeElement,
+                `#addons-course-storage-${initialSectionId}`,
+                { addYAxis: -10 },
+            );
+        }
 
         await Promise.all([
             this.initSizes(),
@@ -158,7 +172,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         // Listen for changes in course status.
         this.courseStatusObserver = CoreEvents.on(CoreEvents.COURSE_STATUS_CHANGED, (data) => {
-            if (data.courseId == this.courseId || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
+            if (data.courseId === this.courseId || data.courseId === CoreCourseProvider.ALL_COURSES_CLEARED) {
                 this.updateCourseStatus(data.status);
             }
         }, CoreSites.getCurrentSiteId());
@@ -213,17 +227,20 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                 }
 
                 // Get the affected section.
-                const section = this.sections.find(section => section.id == data.sectionId);
-                if (!section) {
+                const sectionFinder = CoreCourseHelper.findSectionWithSubsection(this.sections, data.sectionId);
+                if (!sectionFinder?.section) {
                     return;
                 }
 
                 // Recalculate the status.
-                await CoreCourseHelper.calculateSectionStatus(section, this.courseId, false);
+                await CoreCourseHelper.calculateSectionStatus(sectionFinder.section, this.courseId, false);
+                if (sectionFinder.subSection) {
+                    await CoreCourseHelper.calculateSectionStatus(sectionFinder.subSection, this.courseId, false);
+                }
 
-                if (section.isDownloading && !CoreCourseModulePrefetchDelegate.isBeingDownloaded(downloadId)) {
+                if (sectionFinder.section.isDownloading && !CoreCourseModulePrefetchDelegate.isBeingDownloaded(downloadId)) {
                     // All the modules are now downloading, set a download all promise.
-                    this.prefecthSection(section);
+                    this.prefecthSection(sectionFinder.section);
                 }
             },
             CoreSites.getCurrentSiteId(),
@@ -233,36 +250,46 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         CoreCourseHelper.calculateSectionsStatus(this.sections, this.courseId, false, false);
 
         this.sections.forEach((section) => {
-            section.modules.forEach((module) => {
-                if (module.handlerData?.showDownloadButton) {
-
-                    module.spinner = true;
-                    // Listen for changes on this module status, even if download isn't enabled.
-                    module.prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module.modname);
-                    this.calculateModuleStatus(module);
-                }
-            });
+            this.calculateModulesStatusOnSection(section);
         });
 
         this.moduleStatusObserver = CoreEvents.on(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
-            let module: AddonStorageManagerModule | undefined;
+            let moduleFound: AddonStorageManagerModule | undefined;
 
-            this.sections.some((section) => {
-                module = section.modules.find((module) =>
-                    module.id == data.componentId && module.prefetchHandler && data.component == module.prefetchHandler?.component);
+            this.sections.some((section) =>
+                section.modules.some((module) => {
+                    if (module.subSection) {
+                        return module.subSection.modules.some((module) => {
+                            if (module.id === data.componentId &&
+                                module.prefetchHandler &&
+                                data.component === module.prefetchHandler?.component) {
+                                moduleFound = module;
 
-                return !!module;
-            });
+                                return true;
+                            }
+                        });
+                    } else {
+                        if (module.id === data.componentId &&
+                            module.prefetchHandler &&
+                            data.component === module.prefetchHandler?.component) {
+                            moduleFound = module;
 
-            if (!module) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+            }));
+
+            if (!moduleFound) {
                 return;
             }
 
             // Call determineModuleStatus to get the right status to display.
-            const status = CoreCourseModulePrefetchDelegate.determineModuleStatus(module, data.status);
+            const status = CoreCourseModulePrefetchDelegate.determineModuleStatus(moduleFound, data.status);
 
             // Update the status.
-            this.updateModuleStatus(module, status);
+            this.updateModuleStatus(moduleFound, status);
         }, CoreSites.getCurrentSiteId());
     }
 
@@ -270,50 +297,24 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      * Init section, course and modules sizes.
      */
     protected async initSizes(): Promise<void> {
-        await Promise.all(this.sections.map(async (section) => {
-            await Promise.all(section.modules.map(async (module) => {
-                // Note: This function only gets the size for modules which are downloadable.
-                // For other modules it always returns 0, even if they have downloaded some files.
-                // However there is no 100% reliable way to actually track the files in this case.
-                // You can maybe guess it based on the component and componentid.
-                // But these aren't necessarily consistent, for example mod_frog vs mmaModFrog.
-                // There is nothing enforcing correct values.
-                // Most modules which have large files are downloadable, so I think this is sufficient.
-                const size = await CoreCourseModulePrefetchDelegate.getModuleStoredSize(module, this.courseId);
-
-                // There are some cases where the return from this is not a valid number.
-                if (!isNaN(size)) {
-                    module.totalSize = Number(size);
-                    section.totalSize += size;
-                    this.totalSize += size;
-                }
-
-                module.calculatingSize = false;
-            }));
-
-            section.calculatingSize = false;
+        const modules = this.getAllModulesList();
+        await Promise.all(modules.map(async (module) => {
+            await this.calculateModuleSize(module);
         }));
 
-        this.calculatingSize = false;
-
-        // Mark course as not downloaded if course size is 0.
-        if (this.totalSize == 0) {
-            this.markCourseAsNotDownloaded();
-        }
+        await this.updateModulesSizes(modules);
     }
 
     /**
      * Update the sizes of some modules.
      *
      * @param modules Modules.
-     * @param section Section the modules belong to.
      * @returns Promise resolved when done.
      */
-    protected async updateModulesSizes(
-        modules: AddonStorageManagerModule[],
-        section?: AddonStorageManagerCourseSection,
-    ): Promise<void> {
+    protected async updateModulesSizes(modules: AddonStorageManagerModule[]): Promise<void> {
         this.calculatingSize = true;
+        let section: AddonStorageManagerCourseSection | undefined;
+        let subSection: AddonStorageManagerCourseSection | undefined;
 
         await Promise.all(modules.map(async (module) => {
             if (module.calculatingSize) {
@@ -321,38 +322,59 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             }
 
             module.calculatingSize = true;
+
+            const sectionFinder = CoreCourseHelper.findSectionWithSubsection(this.sections, module.section);
+            section = sectionFinder?.section;
+            if (section) {
+                section.calculatingSize = true;
+
+                subSection = sectionFinder?.subSection;
+                if (subSection) {
+                    subSection.calculatingSize = true;
+                }
+            }
             this.changeDetectorRef.markForCheck();
 
-            if (!section) {
-                section = this.sections.find((section) => section.modules.some((mod) => mod.id === module.id));
-                if (section) {
-                    section.calculatingSize = true;
-                    this.changeDetectorRef.markForCheck();
-                }
-            }
-
-            try {
-                const size = await CoreCourseModulePrefetchDelegate.getModuleStoredSize(module, this.courseId);
-
-                const diff = (isNaN(size) ? 0 : size) - (module.totalSize ?? 0);
-
-                module.totalSize = Number(size);
-                this.totalSize += diff;
-                if (section) {
-                    section.totalSize += diff;
-                }
-            } catch {
-                // Ignore errors, it shouldn't happen.
-            } finally {
-                module.calculatingSize = false;
-                this.changeDetectorRef.markForCheck();
-            }
+            await this.calculateModuleSize(module);
         }));
 
-        this.calculatingSize = false;
-        if (section) {
+        // Update section and total sizes.
+        this.totalSize = 0;
+        this.sections.forEach((section) => {
+            section.totalSize = 0;
+            section.modules.forEach((module) => {
+                if (module.subSection) {
+                    const subSection = module.subSection;
+
+                    subSection.totalSize = 0;
+                    subSection.modules.forEach((module) => {
+                        if (module.totalSize && module.totalSize > 0) {
+                            subSection.totalSize += module.totalSize;
+                        }
+                    });
+                    subSection.calculatingSize = false;
+
+                    section.totalSize += module.subSection.totalSize;
+
+                    return;
+                }
+
+                if (module.totalSize && module.totalSize > 0) {
+                    section.totalSize += module.totalSize;
+                }
+            });
+
             section.calculatingSize = false;
+            this.totalSize += section.totalSize;
+        });
+
+        this.calculatingSize = false;
+
+        // Mark course as not downloaded if course size is 0.
+        if (this.totalSize === 0) {
+            this.markCourseAsNotDownloaded();
         }
+
         this.changeDetectorRef.markForCheck();
     }
 
@@ -380,16 +402,9 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             return;
         }
 
-        const modules: AddonStorageManagerModule[] = [];
-        this.sections.forEach((section) => {
-            section.modules.forEach((module) => {
-                if (module.totalSize && module.totalSize > 0) {
-                    modules.push(module);
-                }
-            });
-        });
+        const modules = this.getAllModulesList().filter((module) => module.totalSize && module.totalSize > 0);
 
-        this.deleteModules(modules);
+        await this.deleteModules(modules);
     }
 
     /**
@@ -419,12 +434,22 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         const modules: AddonStorageManagerModule[] = [];
         section.modules.forEach((module) => {
+            if (module.subSection) {
+                module.subSection.modules.forEach((module) => {
+                    if (module.totalSize && module.totalSize > 0) {
+                        modules.push(module);
+                    }
+                });
+
+                return;
+            }
+
             if (module.totalSize && module.totalSize > 0) {
                 modules.push(module);
             }
         });
 
-        this.deleteModules(modules, section);
+        await this.deleteModules(modules);
     }
 
     /**
@@ -432,12 +457,10 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      *
      * @param event Event object.
      * @param module Module details
-     * @param section Section the module belongs to.
      */
     async deleteForModule(
         event: Event,
         module: AddonStorageManagerModule,
-        section: AddonStorageManagerCourseSection,
     ): Promise<void> {
         event.stopPropagation();
         event.preventDefault();
@@ -459,35 +482,23 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             return;
         }
 
-        this.deleteModules([module], section);
+        await this.deleteModules([module]);
     }
 
     /**
      * Deletes the specified modules, showing the loading overlay while it happens.
      *
      * @param modules Modules to delete
-     * @param section Section the modules belong to.
      * @returns Promise<void> Once deleting has finished
      */
-    protected async deleteModules(modules: AddonStorageManagerModule[], section?: AddonStorageManagerCourseSection): Promise<void> {
+    protected async deleteModules(modules: AddonStorageManagerModule[]): Promise<void> {
         const modal = await CoreLoadings.show('core.deleting', true);
 
-        const promises: Promise<void>[] = [];
-        modules.forEach((module) => {
+        const promises = modules.map(async (module) => {
             // Remove the files.
-            const promise = CoreCourseHelper.removeModuleStoredData(module, this.courseId).then(() => {
-                const moduleSize = module.totalSize || 0;
-                // When the files and cache are removed, update the size.
-                if (section) {
-                    section.totalSize -= moduleSize;
-                }
-                this.totalSize -= moduleSize;
-                module.totalSize = 0;
+            await CoreCourseHelper.removeModuleStoredData(module, this.courseId);
 
-                return;
-            });
-
-            promises.push(promise);
+            module.totalSize = 0;
         });
 
         try {
@@ -497,13 +508,9 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         } finally {
             modal.dismiss();
 
-            await this.updateModulesSizes(modules, section);
+            await this.updateModulesSizes(modules);
             CoreCourseHelper.calculateSectionsStatus(this.sections, this.courseId, false, false);
 
-            // For delete all, reset all section sizes so icons are updated.
-            if (this.totalSize === 0) {
-                this.sections.map(section => section.totalSize = 0);
-            }
             this.changeDetectorRef.markForCheck();
         }
     }
@@ -551,8 +558,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                     CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingsection', true);
                 }
             } finally {
-                await this.updateModulesSizes(section.modules, section);
-                this.changeDetectorRef.markForCheck();
+                await this.updateModulesSizes(section.modules);
             }
         } catch (error) {
             // User cancelled or there was an error calculating the size.
@@ -602,7 +608,6 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             module.spinner = false;
 
             await this.updateModulesSizes([module]);
-
         }
     }
 
@@ -622,6 +627,24 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         module.handlerData?.updateStatus?.(status);
         this.changeDetectorRef.markForCheck();
+    }
+
+    /**
+     * Calculate all modules status on a section.
+     *
+     * @param section Section to check.
+     */
+    protected async calculateModulesStatusOnSection(section: AddonStorageManagerCourseSection): Promise<void> {
+        await Promise.all(section.modules.map(async (module) => {
+            if (module.subSection) {
+                await this.calculateModulesStatusOnSection(module.subSection);
+            } else if (module.handlerData?.showDownloadButton) {
+                module.spinner = true;
+                // Listen for changes on this module status, even if download isn't enabled.
+                module.prefetchHandler = CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor(module.modname);
+                await this.calculateModuleStatus(module);
+            }
+        }));
     }
 
     /**
@@ -664,6 +687,12 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         this.changeDetectorRef.markForCheck();
     }
 
+    /**
+     * Get the course object.
+     *
+     * @param courseId Course ID.
+     * @returns Promise resolved with the course object if found.
+     */
     protected async getCourse(courseId: number): Promise<CoreCourseAnyCourseData | undefined> {
         try {
             // Check if user is enrolled. If enrolled, no guest access.
@@ -709,8 +738,9 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                     isGuest: this.isGuest,
                 },
             );
-            await Promise.all(this.sections.map(section => this.updateModulesSizes(section.modules, section)));
-            this.changeDetectorRef.markForCheck();
+
+            const modules = this.getAllModulesList();
+            await this.updateModulesSizes(modules);
         } catch (error) {
             if (this.isDestroyed) {
                 return;
@@ -721,18 +751,75 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     }
 
     /**
+     * Get all modules list.
+     *
+     * @returns All modules list.
+     */
+    protected getAllModulesList(): AddonStorageManagerModule[] {
+        const modules: AddonStorageManagerModule[] = [];
+        this.sections.forEach((section) => {
+            section.modules.forEach((module) => {
+                if (module.subSection) {
+                    module.subSection.modules.forEach((module) => {
+                        modules.push(module);
+                    });
+
+                    return;
+                }
+
+                modules.push(module);
+            });
+        });
+
+        return modules;
+    }
+
+    /**
+     * Calculate the size of a module.
+     *
+     * @param module Module to calculate.
+     */
+    protected async calculateModuleSize(module: AddonStorageManagerModule): Promise<void> {
+        module.calculatingSize = true;
+
+        // Note: This function only gets the size for modules which are downloadable.
+        // For other modules it always returns 0, even if they have downloaded some files.
+        // However there is no 100% reliable way to actually track the files in this case.
+        // You can maybe guess it based on the component and componentid.
+        // But these aren't necessarily consistent, for example mod_frog vs mmaModFrog.
+        // There is nothing enforcing correct values.
+        // Most modules which have large files are downloadable, so I think this is sufficient.
+        const size = await CoreUtils.ignoreErrors(CoreCourseModulePrefetchDelegate.getModuleStoredSize(module, this.courseId));
+
+        if (size !== undefined) {
+            // There are some cases where the return from this is not a valid number.
+            module.totalSize = !isNaN(size) ? Number(size) : 0;
+        }
+
+        this.changeDetectorRef.markForCheck();
+        module.calculatingSize = false;
+    }
+
+    /**
      * Toggle expand status.
      *
      * @param event Event object.
      */
     accordionGroupChange(event: AccordionGroupChangeEventDetail): void {
+        const sectionIds = event.value as string[] | [];
         this.sections.forEach((section) => {
             section.expanded = false;
+            section.modules.forEach((section) => {
+                if (section.subSection) {
+                    section.subSection.expanded = false;
+                }
+            });
         });
-        event.value.forEach((sectionId) => {
-            const section = this.sections.find((section) => section.id === Number(sectionId));
-            if (section) {
-                section.expanded = true;
+
+        sectionIds.forEach((sectionId) => {
+            const sectionToExpand = CoreCourseHelper.findSectionById(this.sections, Number(sectionId));
+            if (sectionToExpand) {
+                sectionToExpand.expanded = true;
             }
         });
     }
@@ -748,6 +835,10 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         this.sections.forEach((section) => {
             section.modules.forEach((module) => {
+                module.subSection?.modules.forEach((module) => {
+                    module.handlerData?.onDestroy?.();
+                });
+
                 module.handlerData?.onDestroy?.();
             });
         });
@@ -769,4 +860,5 @@ type AddonStorageManagerModule = CoreCourseModuleData & {
     prefetchHandler?: CoreCourseModulePrefetchHandler;
     spinner?: boolean;
     downloadStatus?: DownloadStatus;
+    subSection?: AddonStorageManagerCourseSection;
 };
