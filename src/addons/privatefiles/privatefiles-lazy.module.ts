@@ -18,6 +18,7 @@ import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { AddonPrivateFilesFileComponent } from './components/file/file';
 
 /**
  * Build module routes.
@@ -45,6 +46,7 @@ function buildRoutes(injector: Injector): Routes {
 @NgModule({
     imports: [
         CoreSharedModule,
+        AddonPrivateFilesFileComponent,
     ],
     declarations: [
         AddonPrivateFilesIndexPage,
