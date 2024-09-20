@@ -54,8 +54,8 @@
     </ion-item>
 
     <ng-container *ngFor="let module of modules">
-        @if (module.subsection) {
-        <core-course-section [course]="course" [section]="module.subsection" [lastModuleViewed]="lastModuleViewed"
+        @if (module.subSection) {
+        <core-course-section [course]="course" [section]="module.subSection" [lastModuleViewed]="lastModuleViewed"
             [viewedModules]="viewedModules" [collapsible]="true" />
         } @else {
         <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [section]="section"
