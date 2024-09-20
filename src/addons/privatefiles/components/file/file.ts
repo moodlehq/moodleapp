@@ -40,6 +40,9 @@ export class AddonPrivateFilesFileComponent extends CoreFileComponent implements
         this.onOpenMenuClick = new EventEmitter<CoreFileComponent>();
     }
 
+    /**
+     * Emits onOpenMenuClick event with the current instance.
+     */
     openMenuClick(): void {
         this.onOpenMenuClick.emit(this);
     }
