@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="ca.umontreal.studium" ios-CFBundleVersion="4.2.0.0" version="4.2.0" versionCode="42000" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="44100" id="ca.umontreal.studium" ios-CFBundleVersion="4.4.1.0" version="4.4.1" versionCode="44100" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>StudiUM mobile</name>
     <description>StudiUM mobile se connecte aux plateformes d'apprentissage en ligne StudiUM et StudiUM FC de l'Université de Montréal.</description>
     <author email="studium-soutien@umontreal.ca" href="https://studium.umontreal.ca">Université de Montréal – Montréal</author>
@@ -18,6 +18,8 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
+    <hook src="scripts/cordova-hooks/before_plugin_add.sh" type="before_plugin_add" />
+    <hook src="scripts/studiumios.sh" type="after_platform_add" />
     <preference name="permissions" value="none" />
     <preference name="orientation" value="default" />
     <preference name="target-device" value="universal" />
@@ -36,44 +38,40 @@
     <preference name="LoadUrlTimeoutValue" value="60000" />
     <preference name="load-url-timeout" value="60000" />
     <preference name="AutoHideSplashScreen" value="false" />
-    <preference name="android-minSdkVersion" value="22" />
-    <preference name="android-targetSdkVersion" value="33" />
+    <preference name="android-minSdkVersion" value="24" />
+    <preference name="android-targetSdkVersion" value="34" />
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
     <preference name="AndroidInsecureFileModeEnabled" value="true" />
     <preference name="CustomURLSchemePluginClearsAndroidIntent" value="true" />
+    <preference name="deployment-target" value="13.0" />
     <preference name="iosPersistentFileLocation" value="Compatibility" />
     <preference name="iosScheme" value="studiumappfs" />
     <preference name="WKWebViewOnly" value="true" />
     <preference name="WKFullScreenEnabled" value="false" />
     <preference name="AndroidXEnabled" value="true" />
     <preference name="GradlePluginGoogleServicesEnabled" value="true" />
-    <preference name="GradlePluginGoogleServicesVersion" value="4.3.10" />
+    <preference name="GradlePluginGoogleServicesVersion" value="4.3.15" />
+    <preference name="GradlePluginKotlinVersion" value="1.7.21" />
     <preference name="StatusBarOverlaysWebView" value="false" />
+    <preference name="StatusBarBackgroundColor" value="#FFFFFF" />
+    <preference name="NavigationBarBackgroundColor" value="#FFFFFF" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
     <platform name="ios">
+        <hook src="scripts/studiumios.sh" type="after_platform_add" />
         <resource-file src="GoogleService-Info.plist" />
-        <edit-config file="*-Info.plist" mode="merge" target="NSLocationWhenInUseUsageDescription">
-            <string>We need your location so you can attach it as part of your submissions.</string>
-        </edit-config>
-        <edit-config file="*-Info.plist" mode="merge" target="NSLocationAlwaysUsageDescription">
-            <string>We need your location so you can attach it as part of your submissions.</string>
-        </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="NSCameraUsageDescription">
-            <string>We need camera access to take pictures so you can attach them as part of your submissions.</string>
-        </edit-config>
-        <edit-config file="*-Info.plist" mode="merge" target="NSMicrophoneUsageDescription">
-            <string>We need microphone access to record sounds so you can attach them as part of your submissions.</string>
+            <string>We need camera access to take pictures so you can use them for changing your profile picture, attach them in your tasks submission and share them with the teachers.</string>
         </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="NSPhotoLibraryUsageDescription">
-            <string>We need photo library access to get pictures from there so you can attach them as part of your submissions.</string>
+            <string>We need photo library access to get pictures from there so you can use them for changing your profile picture, attach them in your tasks submission and share them with the teachers.</string>
         </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="UISupportsDocumentBrowser">
             <true />
         </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="CFBundleShortVersionString">
-            <string>4.2.0</string>
+            <string>4.4.1</string>
         </edit-config>
         <edit-config file="*-Info.plist" mode="overwrite" target="CFBundleLocalizations">
             <array>
