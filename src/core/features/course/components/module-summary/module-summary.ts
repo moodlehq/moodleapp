@@ -142,11 +142,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                const moduleSize = await CoreCourseModulePrefetchDelegate.getModuleStoredSize(this.module, this.courseId);
-
-                if (moduleSize) {
-                    this.size = moduleSize;
-                }
+                this.size = await CoreCourseModulePrefetchDelegate.getModuleStoredSize(this.module, this.courseId);
             }, 1000);
 
             this.fileStatusObserver = CoreEvents.on(
