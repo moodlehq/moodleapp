@@ -17,7 +17,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreSettingsHelper, CoreSiteSpaceUsage } from '@features/settings/services/settings-helper';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
@@ -241,14 +240,8 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
     private async calculateDownloadedCourseSize(courseId: number): Promise<number> {
         const sections = await CoreCourse.getSections(courseId);
         const modules = CoreCourseHelper.getSectionsModules(sections);
-        const promisedModuleSizes = modules.map(async (module) => {
-            const size = await CoreCourseModulePrefetchDelegate.getModuleStoredSize(module, courseId);
 
-            return isNaN(size) ? 0 : size;
-        });
-        const moduleSizes = await Promise.all(promisedModuleSizes);
-
-        return moduleSizes.reduce((totalSize, moduleSize) => totalSize + moduleSize, 0);
+        return CoreCourseHelper.getModulesDownloadedSize(modules, courseId);
     }
 
     /**

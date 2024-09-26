@@ -81,7 +81,7 @@
                 <div class="storage-buttons" slot="end" *ngIf="(!section.calculatingSize && section.totalSize > 0) || downloadEnabled">
                     <div *ngIf="downloadEnabled" slot="end" class="core-button-spinner">
                         <core-download-refresh *ngIf="!section.isDownloading && section.downloadStatus !== statusDownloaded"
-                            [status]="section.downloadStatus" [enabled]="true" (action)="prefecthSection(section)"
+                            [status]="section.downloadStatus" [enabled]="true" (action)="prefetchSection(section)"
                             [loading]="section.isDownloading || section.isCalculating" [canTrustDownload]="true"
                             [statusesTranslatable]="{notdownloaded: 'addon.storagemanager.downloaddatafrom' }"
                             [statusSubject]="section.name" />

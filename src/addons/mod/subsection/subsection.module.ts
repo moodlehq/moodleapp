@@ -15,6 +15,8 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { AddonModSubsectionIndexLinkHandler } from './services/handlers/index-link';
+import { AddonModSubsectionPrefetchHandler } from './services/handlers/prefetch';
+import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 
 @NgModule({
     providers: [
@@ -23,6 +25,7 @@ import { AddonModSubsectionIndexLinkHandler } from './services/handlers/index-li
             multi: true,
             useValue: () => {
                 CoreContentLinksDelegate.registerHandler(AddonModSubsectionIndexLinkHandler.instance);
+                CoreCourseModulePrefetchDelegate.registerHandler(AddonModSubsectionPrefetchHandler.instance);
             },
         },
     ],
