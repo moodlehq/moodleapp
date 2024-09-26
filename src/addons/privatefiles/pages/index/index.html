@@ -1,11 +1,24 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
+            @if (selectFilesEnabled()) {
+            <ion-button fill="clear" [ariaLabel]="'core.close' | translate" (click)="cancelFileSelection()">
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true" />
+            </ion-button>
+            } @else {
             <ion-back-button [text]="'core.back' | translate" />
+            }
         </ion-buttons>
         <ion-title>
-            <h1>{{ title }}</h1>
+            <h1>{{ selectFilesEnabled() ? (selectedFiles.length + ' ' + title) : title }}</h1>
         </ion-title>
+        <ion-buttons slot="end">
+            @if (selectFilesEnabled()) {
+            <ion-button fill="clear" (click)="deleteSelectedFiles(true)" [ariaLabel]="'core.delete' | translate" color="danger">
+                <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true" />
+            </ion-button>
+            }
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content class="limited-width">
@@ -28,6 +41,7 @@
         <!-- Display info about space used and space left. -->
         <ion-card class="core-info-card" *ngIf="userQuota && filesInfo && filesInfo.filecount > 0">
             <ion-item>
+                <ion-icon slot="start" aria-label="hidden" name="fas-cloud" />
                 <ion-label>
                     {{ 'core.quotausage' | translate:{$a: {used: spaceUsed, total: userQuotaReadable} } }}
                 </ion-label>
@@ -42,7 +56,15 @@
                     <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate" />
                     <ion-label>{{file.filename}}</ion-label>
                 </ion-item>
-                <core-file *ngIf="!file.isdir" [file]="file" [component]="component" [componentId]="file.contextid" />
+
+                @if (!file.isdir) {
+                <addon-privatefiles-file [file]="file" [component]="component" [componentId]="file.contextid"
+                    (onOpenMenuClick)="root === 'my' && openManagementFileMenu($event, file)"
+                    (longPress)="canDeleteFiles && root === 'my' && enableMultipleSelection(file)"
+                    [showCheckbox]="canDeleteFiles && root === 'my' && selectFilesEnabled()"
+                    (onSelectedFileChange)="root === 'my' && selectedFileValueChanged($event, file)" showDownloadStatus="true"
+                    [selected]="file.selected" [canDelete]="canDeleteFiles && root === 'my'" />
+                }
             </ng-container>
         </ion-list>
 
@@ -51,10 +73,20 @@
     </core-loading>
 
     <!-- Upload a private file. -->
-    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="showUpload && root !== 'site' && !path">
+    @if (showUpload && root !== 'site' && !path && !selectFilesEnabled()) {
+    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
         <ion-fab-button (click)="uploadFile()" [attr.aria-label]="'core.fileuploader.uploadafile' | translate">
             <ion-icon name="fas-plus" aria-hidden="true" />
             <span class="sr-only">{{ 'core.fileuploader.uploadafile' | translate }}</span>
         </ion-fab-button>
     </ion-fab>
+    }
 </ion-content>
+
+@if (selectFilesEnabled()) {
+<div class="ion-padding addons-privatefiles-index-select-all">
+    <ion-checkbox labelPlacement="end" [(ngModel)]="selectAll" (ngModelChange)="onSelectAllChanges($event)">
+        {{ 'core.selectall' | translate }}
+    </ion-checkbox>
+</div>
+}

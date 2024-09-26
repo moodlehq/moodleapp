@@ -67,15 +67,22 @@ export class CoreModalsService {
      * Open a sheet modal component.
      *
      * @param component Component to render inside the modal.
+     * @param componentProps Component to render inside the modal.
+     * @param backdropDismiss Dismiss on backdrop click.
+     *
      * @returns Modal result once it's been closed.
      */
-    async openSheet<T>(component: Constructor<CoreModalComponent<T>>): Promise<T> {
+    async openSheet<T>(
+        component: Constructor<CoreModalComponent<T>>,
+        componentProps: Record<string, unknown> = {},
+        backdropDismiss = false,
+    ): Promise<T> {
         const container = document.querySelector('ion-app') ?? document.body;
         const viewContainer = container.querySelector('ion-router-outlet, ion-nav, #ion-view-container-root');
         const element = await AngularFrameworkDelegate.attachViewToDom(
             container,
             CoreSheetModalComponent,
-            { component },
+            { component, componentProps },
         );
         const sheetModal = CoreDirectivesRegistry.require<CoreSheetModalComponent<CoreModalComponent<T>>>(
             element,
@@ -84,6 +91,11 @@ export class CoreModalsService {
         const modal = await sheetModal.show();
 
         viewContainer?.setAttribute('aria-hidden', 'true');
+
+        if (backdropDismiss) {
+            const backdrop = element.querySelector('ion-backdrop');
+            backdrop?.addEventListener('ionBackdropTap', () => modal.close(new Error('Backdrop clicked')), { once: true });
+        }
 
         modal.result.finally(async () => {
             await sheetModal.hide();

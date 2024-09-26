@@ -1,0 +1,10 @@
+
+
+:host {
+    --addons-privatefiles-index-select-all-shadow: 0px 8px 10px 0px #282828;
+
+    .addons-privatefiles-index-select-all {
+        box-shadow: var(--addons-privatefiles-index-select-all-shadow);
+        z-index: 3;
+    }
+}

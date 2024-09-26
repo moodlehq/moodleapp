@@ -1,0 +1,14 @@
+:host {
+    ion-checkbox {
+        flex: none;
+        width: 3rem;
+    }
+
+    ion-item.item.item-file {
+        &.file-selected {
+            --ion-item-background: var(--primary-tint);
+        }
+
+        --inner-border-width: 0 !important;
+    }
+}

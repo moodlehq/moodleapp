@@ -685,9 +685,13 @@ export class FileMock extends File {
     async removeFile(path: string, fileName: string): Promise<RemoveResult> {
         const parentDir = await this.resolveDirectoryUrl(path);
 
-        const fileEntry = await this.getFile(parentDir, fileName, { create: false });
+        try {
+            const fileEntry = await this.getFile(parentDir, fileName, { create: false });
 
-        return this.removeMock(fileEntry);
+            return this.removeMock(fileEntry);
+        } catch {
+            throw { code: 1, message: 'NOT_FOUND_ERR' };
+        }
     }
 
     /**
