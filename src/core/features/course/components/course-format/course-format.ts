@@ -541,14 +541,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Open course downloads page.
      */
     async gotoCourseDownloads(): Promise<void> {
-        const selectedId = await this.getSelectedSectionId();
+        const sectionId = this.selectedSection?.id !== this.allSectionsId ? this.selectedSection?.id : undefined;
 
         CoreNavigator.navigateToSitePath(
             `storage/${this.course.id}`,
             {
                 params: {
                     title: this.course.fullname,
-                    sectionId: selectedId,
+                    sectionId,
                     isGuest: this.isGuest,
                 },
             },

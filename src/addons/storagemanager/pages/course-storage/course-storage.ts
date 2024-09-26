@@ -142,7 +142,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         this.loaded = true;
 
-        if (initialSectionId !== undefined) {
+        if (initialSectionId !== undefined && initialSectionId > 0) {
             this.accordionMultipleValue.push(initialSectionId.toString());
 
             CoreDom.scrollToElement(
