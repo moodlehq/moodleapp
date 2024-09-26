@@ -33,7 +33,7 @@ export class CoreH5PCore {
 
     static readonly API_VERSION = {
         majorVersion: 1,
-        minorVersion: 26,
+        minorVersion: 27,
     };
 
     static readonly STYLES = [
@@ -41,6 +41,7 @@ export class CoreH5PCore {
         'styles/h5p-confirmation-dialog.css',
         'styles/h5p-core-button.css',
         'styles/h5p-tooltip.css',
+        'styles/h5p-table.css',
     ];
 
     static readonly SCRIPTS = [
@@ -817,6 +818,11 @@ export class CoreH5PCore {
             someKeywordsExits: Translate.instant('core.h5p.someKeywordsExits'),
             width: Translate.instant('core.h5p.width'),
             height: Translate.instant('core.h5p.height'),
+            rotateLeft: Translate.instant('core.h5p.rotateLeft'),
+            rotateRight: Translate.instant('core.h5p.rotateRight'),
+            cropImage: Translate.instant('core.h5p.cropImage'),
+            confirmCrop: Translate.instant('core.h5p.confirmCrop'),
+            cancelCrop: Translate.instant('core.h5p.cancelCrop'),
         };
     }
 
