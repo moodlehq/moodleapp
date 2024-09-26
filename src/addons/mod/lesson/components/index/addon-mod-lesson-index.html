@@ -193,9 +193,11 @@
         </core-tab>
     </core-tabs>
 
-    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+    <div collapsible-footer *ngIf="!showLoading" slot="fixed" [ngClass]="{ 'ion-margin-bottom': showSpinner }">
         <div class="list-item-limited-width" *ngIf="!canViewReports && ((lesson && !preventReasons.length) || retakeToReview)">
-            <ng-container *ngTemplateOutlet="buttons" />
+            <core-loading [hideUntil]="!showSpinner">
+                <ng-container *ngTemplateOutlet="buttons" />
+            </core-loading>
         </div>
 
         <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
