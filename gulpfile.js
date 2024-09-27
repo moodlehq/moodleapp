@@ -17,6 +17,7 @@ const BuildBehatPluginTask = require('./gulp/task-build-behat-plugin');
 const BuildEnvTask = require('./gulp/task-build-env');
 const BuildIconsJsonTask = require('./gulp/task-build-icons-json');
 const OverrideLangTask = require('./gulp/task-override-lang');
+const FreezeDependenciesTask = require('./gulp/task-freeze-dependencies');
 const gulp = require('gulp');
 
 const paths = {
@@ -46,6 +47,10 @@ gulp.task('env', (done) => {
 
 gulp.task('icons', (done) => {
     new BuildIconsJsonTask().run(done);
+});
+
+gulp.task('freeze-dependencies', (done) => {
+    new FreezeDependenciesTask().run(done);
 });
 
 // Build a Moodle plugin to run Behat tests.
