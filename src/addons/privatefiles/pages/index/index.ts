@@ -298,9 +298,18 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
      * Delete private files.
      */
     async deleteSelectedFiles(showConfirmation = false): Promise<void> {
+        if (this.selectedFiles.length === 0) {
+            return;
+        }
+
         if (showConfirmation) {
             try {
-                await CoreDomUtils.showDeleteConfirm('core.confirmremoveselectedfiles');
+                this.selectedFiles.length === 1
+                ? await CoreDomUtils.showDeleteConfirm(
+                    'core.confirmremoveselectedfile',
+                    { filename: this.selectedFiles[0].filename },
+                )
+                : await CoreDomUtils.showDeleteConfirm('core.confirmremoveselectedfiles');
             } catch {
                 return;
             }
@@ -360,6 +369,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
     cancelFileSelection(): void {
         this.selectFilesEnabled.set(false);
         this.selectedFiles = [];
+        this.files = this.files?.map(file => ({ ...file, selected: false }));
     }
 
     /**

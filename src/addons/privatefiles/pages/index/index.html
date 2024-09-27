@@ -13,7 +13,7 @@
             <h1>{{ selectFilesEnabled() ? (selectedFiles.length + ' ' + title) : title }}</h1>
         </ion-title>
         <ion-buttons slot="end">
-            @if (selectFilesEnabled()) {
+            @if (selectFilesEnabled() && selectedFiles.length > 0) {
             <ion-button fill="clear" (click)="deleteSelectedFiles(true)" [ariaLabel]="'core.delete' | translate" color="danger">
                 <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true" />
             </ion-button>
@@ -76,7 +76,7 @@
     @if (showUpload && root !== 'site' && !path && !selectFilesEnabled()) {
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
         <ion-fab-button (click)="uploadFile()" [attr.aria-label]="'core.fileuploader.uploadafile' | translate">
-            <ion-icon name="fas-plus" aria-hidden="true" />
+            <ion-icon name="fas-arrow-up-from-bracket" aria-hidden="true" />
             <span class="sr-only">{{ 'core.fileuploader.uploadafile' | translate }}</span>
         </ion-fab-button>
     </ion-fab>
