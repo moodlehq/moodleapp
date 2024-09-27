@@ -212,7 +212,7 @@ H5P.init = function (target) {
         instance.triggerXAPI('accessed-reuse');
       });
       actionBar.on('copyrights', function () {
-        var dialog = new H5P.Dialog('copyrights', H5P.t('copyrightInformation'), copyrights, $container, $actions.find('.h5p-copyrights')[0]);
+        var dialog = new H5P.Dialog('copyrights', H5P.t('copyrightInformation'), copyrights, $container);
         dialog.open(true);
         instance.triggerXAPI('accessed-copyright');
       });
@@ -1093,6 +1093,7 @@ H5P.t = function (key, vars, ns) {
 H5P.Dialog = function (name, title, content, $element, $returnElement) {
   /** @alias H5P.Dialog# */
   var self = this;
+  this.activeElement = document.activeElement;
   var $dialog = H5P.jQuery('<div class="h5p-popup-dialog h5p-' + name + '-dialog" aria-labelledby="' + name + '-dialog-header" aria-modal="true" role="dialog" tabindex="-1">\
                               <div class="h5p-inner">\
                                 <h2 id="' + name + '-dialog-header">' + title + '</h2>\
@@ -1156,6 +1157,9 @@ H5P.Dialog = function (name, title, content, $element, $returnElement) {
       $element.attr('tabindex', '-1');
       if ($returnElement) {
         $returnElement.focus();
+      }
+      else if(self.activeElement) {
+        self.activeElement.focus();
       }
       else {
         $element.focus();

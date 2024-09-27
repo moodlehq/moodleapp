@@ -19,7 +19,7 @@ import { Translate } from '@singletons';
 import { CoreH5PCore, CoreH5PLibraryData, CoreH5PLibraryAddonData, CoreH5PContentDepsTreeDependency } from './core';
 import { CoreArray } from '@singletons/array';
 
-const ALLOWED_STYLEABLE_TAGS = ['span', 'p', 'div', 'h1', 'h2', 'h3', 'td'];
+const ALLOWED_STYLEABLE_TAGS = ['span', 'p', 'div', 'h1', 'h2', 'h3', 'table', 'col', 'figure', 'td', 'th', 'li'];
 
 /**
  * Equivalent to H5P's H5PContentValidator, but without some of the validations.
@@ -117,7 +117,7 @@ export class CoreH5PContentValidator {
 
             // Add related tags for table etc.
             if (tags.indexOf('table') != -1) {
-                tags = tags.concat(['tr', 'td', 'th', 'colgroup', 'thead', 'tbody', 'tfoot']);
+                tags = tags.concat(['tr', 'td', 'th', 'colgroup', 'col', 'thead', 'tbody', 'tfoot', 'figure', 'figcaption']);
             }
             if (tags.indexOf('b') != -1) {
                 tags.push('strong');
@@ -142,13 +142,15 @@ export class CoreH5PContentValidator {
                     stylePatterns.push(/^font-size: *[0-9.]+(em|px|%) *;?$/i);
                 }
                 if (semantics.font.family) {
-                    stylePatterns.push(/^font-family: *[-a-z0-9," ]+;?$/i);
+                    stylePatterns.push(/^font-family: *[-a-z0-9,'&; ]+;?$/i);
                 }
                 if (semantics.font.color) {
-                    stylePatterns.push(/^color: *(#[a-f0-9]{3}[a-f0-9]{3}?|rgba?\([0-9, ]+\)) *;?$/i);
+                    stylePatterns.push(/^color: *(#[a-f0-9]{3}[a-f0-9]{3}?|rgba?\([0-9, ]+\)|hsla?\([0-9,.% ]+\)) *;?$/i);
                 }
                 if (semantics.font.background) {
-                    stylePatterns.push(/^background-color: *(#[a-f0-9]{3}[a-f0-9]{3}?|rgba?\([0-9, ]+\)) *;?$/i);
+                    stylePatterns.push(
+                        /^background-color: *(#[a-f0-9]{3}[a-f0-9]{3}?|rgba?\([0-9, ]+\)|hsla?\([0-9,.% ]+\)) *;?$/i,
+                    );
                 }
                 if (semantics.font.spacing) {
                     stylePatterns.push(/^letter-spacing: *[0-9.]+(em|px|%) *;?$/i);
@@ -157,6 +159,26 @@ export class CoreH5PContentValidator {
                     stylePatterns.push(/^line-height: *[0-9.]+(em|px|%|) *;?$/i);
                 }
             }
+
+            // Allow styling of tables if they are allowed
+            if (semantics.tags?.indexOf('table') != -1) {
+                // CKEditor outputs border as width style color
+                // eslint-disable-next-line max-len
+                stylePatterns.push(/^border: *[0-9.]+(em|px|%|) *(none|solid|dotted|dashed|double|groove|ridge|inset|outset) *(#[a-f0-9]{3}[a-f0-9]{3}?|rgba?\([0-9, ]+\)|hsla?\([0-9,.% ]+\)) *;?$/i);
+                stylePatterns.push(/^border-style: *(none|solid|dotted|dashed|double|groove|ridge|inset|outset) *;?$/i);
+                stylePatterns.push(/^border-width: *[0-9.]+(em|px|%|) *;?$/i);
+                stylePatterns.push(/^border-color: *(#[a-f0-9]{3}[a-f0-9]{3}?|rgba?\([0-9, ]+\)|hsla?\([0-9,.% ]+\)) *;?$/i);
+                stylePatterns.push(/^vertical-align: *(middle|top|bottom);?$/i);
+                stylePatterns.push(/^padding: *[0-9.]+(em|px|%|) *;?$/i);
+                stylePatterns.push(/^width: *[0-9.]+(em|px|%|) *;?$/i);
+                stylePatterns.push(/^height: *[0-9.]+(em|px|%|) *;?$/i);
+                stylePatterns.push(/^float: *(right|left|none) *;?$/i);
+                // Needed for backwards compatibility
+                stylePatterns.push(/^border-collapse: *collapse *;?$/i);
+                // Table can have background color when font bgcolor is disabled
+                // Double entry of bgcolor in stylePatterns shouldn't matter
+                stylePatterns.push(/^background-color: *(#[a-f0-9]{3}[a-f0-9]{3}?|rgba?\([0-9, ]+\)|hsla?\([0-9,.% ]+\)) *;?$/i);
+              }
 
             // Alignment is allowed for all wysiwyg texts
             stylePatterns.push(/^text-align: *(center|left|right);?$/i);
@@ -770,13 +792,26 @@ export class CoreH5PContentValidator {
                     if (matches && matches.length > 1) {
                         if (allowedStyles && attrName === 'style') {
                             // Allow certain styles.
+
+                            // Prevent font family from getting split wrong because of the ; in &quot;
+                            if (matches[1].includes('font-family')) {
+                                matches[1] = matches[1].replace(/&quot;/g, '\'');
+                            }
+
+                            const validatedStyles: string[] = [];
+                            const styles = matches[1].split(';');
+
                             for (const pattern of allowedStyles) {
-                                if (matches[1].match(pattern)) {
-                                    // All patterns are start to end patterns, and CKEditor adds one span per style.
-                                    attrArray.push('style="' + matches[1] + '"');
-                                    break;
+                                for (let style of styles) {
+                                    style = style.trim();
+                                    if (style.match(pattern)) {
+                                        validatedStyles.push(style);
+                                        break;
+                                    }
                                 }
                             }
+
+                            attrArray.push('style="' + validatedStyles.join(';') + ';"');
                             break;
                         }
 
