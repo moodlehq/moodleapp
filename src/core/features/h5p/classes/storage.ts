@@ -130,9 +130,7 @@ export class CoreH5PStorage {
             if (libraryData.dynamicDependencies !== undefined) {
                 promises.push(this.h5pFramework.saveLibraryDependencies(libraryData, libraryData.dynamicDependencies, 'dynamic'));
             }
-            if (libraryData.editorDependencies !== undefined) {
-                promises.push(this.h5pFramework.saveLibraryDependencies(libraryData, libraryData.editorDependencies, 'editor'));
-            }
+            // Don't save editor dependencies, they are not used in the app.
 
             await Promise.all(promises);
         }));

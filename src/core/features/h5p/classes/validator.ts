@@ -30,6 +30,73 @@ export class CoreH5PValidator {
     }
 
     /**
+     * Get all editor dependencies of the package.
+     *
+     * @param mainJsonData Contents of h5p.json file.
+     * @param librariesJsonData JSON data about each library.
+     * @returns Set with the editor dependencies names.
+     */
+    protected getAllEditorDependencies(
+        mainJsonData: CoreH5PMainJSONData,
+        librariesJsonData: CoreH5PLibrariesJsonData,
+    ): Set<string> {
+        const editorDependencies = new Set<string>();
+
+        // Function to add or remove an editor dependency to the Set.
+        const addOrRemoveEditorDependency = (library: CoreH5PLibraryBasicData, add = true) => {
+            const libString = CoreH5PCore.libraryToString(library);
+            if ((add && editorDependencies.has(libString)) || (!add && !editorDependencies.has(libString))) {
+                // Already treated, ignore.
+                return;
+            }
+
+            if (add) {
+                editorDependencies.add(libString);
+            } else {
+                editorDependencies.delete(libString);
+            }
+
+            const libraryData = librariesJsonData[libString];
+            (libraryData?.preloadedDependencies ?? []).concat(libraryData?.dynamicDependencies ?? []).forEach((dependency) => {
+                if (!add) {
+                    // Remove all dependencies too.
+                    addOrRemoveEditorDependency(dependency, add);
+                } else if (dependency.machineName.startsWith('H5PEditor.')) {
+                    // Consider all dependencies that begin with H5PEditor as editor dependencies.
+                    // It might be safe to consider all dependencies of an editor dependency as editor dependency too,
+                    // but for now we decided to take a less aggressive approach.
+                    addOrRemoveEditorDependency(dependency, add);
+                }
+            });
+        };
+
+        // First add all editor dependencies and some of their dependencies to the list.
+        Object.values(librariesJsonData).forEach((libraryData) => {
+            libraryData.editorDependencies?.forEach(library => {
+                addOrRemoveEditorDependency(library, true);
+            });
+        });
+
+        // Now remove from the Set all the libraries that are listed as a preloaded/dynamic dependency of a non-editor library.
+        mainJsonData.preloadedDependencies?.forEach((dependency) => {
+            addOrRemoveEditorDependency(dependency, false);
+        });
+
+        Object.keys(librariesJsonData).forEach((libString) => {
+            if (editorDependencies.has(libString)) {
+                return;
+            }
+
+            const libraryData = librariesJsonData[libString];
+            (libraryData?.preloadedDependencies ?? []).concat(libraryData?.dynamicDependencies ?? []).forEach((dependency) => {
+                addOrRemoveEditorDependency(dependency, false);
+            });
+        });
+
+        return editorDependencies;
+    }
+
+    /**
      * Get library data.
      * This function won't validate most things because it should've been done by the server already.
      *
@@ -71,9 +138,7 @@ export class CoreH5PValidator {
             if (library.dynamicDependencies !== undefined) {
                 Object.assign(missing, this.getMissingDependencies(library.dynamicDependencies, library, libraries));
             }
-            if (library.editorDependencies !== undefined) {
-                Object.assign(missing, this.getMissingDependencies(library.editorDependencies, library, libraries));
-            }
+            // No need to check editorDependencies, they are not used in the app.
         });
 
         return missing;
@@ -173,14 +238,20 @@ export class CoreH5PValidator {
     ): Promise<CoreH5PMainJSONFilesData> {
 
         // Read the needed files.
-        const results = await Promise.all([
+        const [mainJsonData, contentJsonData, librariesJsonData] = await Promise.all([
             this.readH5PJsonFile(packagePath),
             this.readH5PContentJsonFile(packagePath),
             this.getPackageLibrariesData(packagePath, entries),
         ]);
 
+        // Remove editor dependencies from the list of libraries to install.
+        const editorDependencies = this.getAllEditorDependencies(mainJsonData, librariesJsonData);
+        editorDependencies.forEach((libString) => {
+            delete librariesJsonData[libString];
+        });
+
         // Check if there are missing libraries.
-        const missingLibraries = this.getMissingLibraries(results[2]);
+        const missingLibraries = this.getMissingLibraries(librariesJsonData);
 
         // Check if the missing libraries are already installed in the app.
         await Promise.all(Object.keys(missingLibraries).map(async (libString) => {
@@ -204,11 +275,7 @@ export class CoreH5PValidator {
             } }));
         }
 
-        return {
-            librariesJsonData: results[2],
-            mainJsonData: results[0],
-            contentJsonData: results[1],
-        };
+        return { librariesJsonData, mainJsonData, contentJsonData };
 
     }
 
