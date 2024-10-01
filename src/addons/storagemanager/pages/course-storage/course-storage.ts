@@ -145,12 +145,16 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         if (initialSectionId !== undefined && initialSectionId > 0) {
             this.accordionMultipleValue.push(initialSectionId.toString());
+            this.accordionGroupChange();
 
             CoreDom.scrollToElement(
                 this.elementRef.nativeElement,
                 `#addons-course-storage-${initialSectionId}`,
                 { addYAxis: -10 },
             );
+        } else {
+            this.accordionMultipleValue.push(this.sections[0].id.toString());
+            this.accordionGroupChange();
         }
 
         await Promise.all([
@@ -762,10 +766,10 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     /**
      * Toggle expand status.
      *
-     * @param event Event object.
+     * @param event Event object. If not defined, use the current value.
      */
-    accordionGroupChange(event: AccordionGroupChangeEventDetail): void {
-        const sectionIds = event.value as string[] | [];
+    accordionGroupChange(event?: AccordionGroupChangeEventDetail): void {
+        const sectionIds = event?.value as string[] ?? this.accordionMultipleValue;
         this.sections.forEach((section) => {
             section.expanded = false;
             section.modules.forEach((section) => {
