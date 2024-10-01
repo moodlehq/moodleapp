@@ -184,27 +184,25 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             }
         });
 
-        this.modViewedObserver = CoreEvents.on(CoreEvents.COURSE_MODULE_VIEWED, (data) => {
-            if (data.courseId !== this.course.id) {
+        this.modViewedObserver = CoreEvents.on(CoreEvents.COURSE_MODULE_VIEWED, (lastModuleViewed) => {
+            if (lastModuleViewed.courseId !== this.course.id) {
                 return;
             }
 
-            this.viewedModules[data.cmId] = true;
-            if (!this.lastModuleViewed || data.timeaccess > this.lastModuleViewed.timeaccess) {
-                this.lastModuleViewed = data;
+            this.viewedModules[lastModuleViewed.cmId] = true;
+            if (!this.lastModuleViewed || lastModuleViewed.timeaccess > this.lastModuleViewed.timeaccess) {
+                this.lastModuleViewed = lastModuleViewed;
 
                 if (this.selectedSection && this.selectedSection.id !== this.allSectionsId) {
                     // Change section to display the one with the last viewed module
-                    const lastViewedSection = this.getViewedModuleSection(this.sections, data);
+                    const lastViewedSection = this.getViewedModuleSection();
                     if (lastViewedSection && lastViewedSection.id !== this.selectedSection?.id) {
-                        this.sectionChanged(lastViewedSection, data.cmId);
+                        this.sectionChanged(lastViewedSection, this.lastModuleViewed.cmId);
                     }
                 }
             }
             this.changeDetectorRef.markForCheck();
         });
-
-        this.initializeExpandedSections();
     }
 
     /**
@@ -228,8 +226,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (changes.sections && this.sections) {
             this.subSections = this.sections.filter((section) => section.component === 'mod_subsection');
             this.sections = this.sections.filter((section) => section.component !== 'mod_subsection');
+            await this.initializeExpandedSections();
 
-            this.treatSections(this.sections);
+            await this.treatSections(this.sections);
         }
         this.changeDetectorRef.markForCheck();
     }
@@ -249,7 +248,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Get the components classes.
      */
     protected async getComponents(): Promise<void> {
-        if (!this.course || this.course.format == this.lastCourseFormat) {
+        if (!this.course || this.course.format === this.lastCourseFormat) {
             return;
         }
 
@@ -374,21 +373,19 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             // No section specified, not found or not visible, load current section or the section with last module viewed.
             const currentSectionData = await CoreCourseFormatDelegate.getCurrentSection(this.course, sections);
 
-            const lastModuleViewed = this.lastModuleViewed;
             let section = currentSectionData.section;
             let moduleId: number | undefined;
 
             // If all sections is not preferred, load the last viewed module section.
-            if (!allSectionsPreferred && lastModuleViewed) {
+            if (!allSectionsPreferred && this.lastModuleViewed) {
                 if (!currentSectionData.forceSelected) {
                     // Search the section with the last module viewed.
-                    const lastModuleSection = this.getViewedModuleSection(sections, lastModuleViewed);
-
+                    const lastModuleSection = this.getViewedModuleSection();
                     section = lastModuleSection || section;
-                    moduleId = lastModuleSection ? lastModuleViewed?.cmId : undefined;
-                } else if (currentSectionData.section.modules.some(module => module.id === lastModuleViewed.cmId)) {
+                    moduleId = lastModuleSection ? this.lastModuleViewed.cmId : undefined;
+                } else if (currentSectionData.section.modules.some(module => module.id === this.lastModuleViewed?.cmId)) {
                     // Last module viewed is inside the highlighted section.
-                    moduleId = lastModuleViewed.cmId;
+                    moduleId = this.lastModuleViewed.cmId;
                 }
             }
 
@@ -413,37 +410,48 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.viewedModules[entry.cmId] = true;
         });
 
-        if (this.lastModuleViewed) {
-            const section = this.getViewedModuleSection(this.sections, this.lastModuleViewed);
-            if (section) {
-                this.setSectionExpanded(section);
-            }
+        const lastViewedSection = this.getViewedModuleSection();
+        if (lastViewedSection) {
+            this.setSectionExpanded(lastViewedSection);
         }
     }
 
     /**
      * Get the section of a viewed module.
      *
-     * @param sections List of sections.
-     * @param viewedModule Viewed module.
      * @returns Section, undefined if not found.
      */
-    protected getViewedModuleSection(
-        sections: CoreCourseSection[],
-        viewedModule: CoreCourseViewedModulesDBRecord,
-    ): CoreCourseSection | undefined {
-        let lastModuleSection: CoreCourseSection | undefined;
-
-        if (viewedModule.sectionId) {
-            lastModuleSection = sections.find(section => section.id === viewedModule.sectionId);
+    protected getViewedModuleSection(): CoreCourseSection | undefined {
+        if (!this.lastModuleViewed) {
+            return;
         }
+        const sectionId = this.lastModuleViewed.sectionId;
+        const cmId = this.lastModuleViewed.cmId;
 
-        if (!lastModuleSection) {
+        const sectionsAndSubsections = this.sections.concat(this.subSections);
+
+        // Gets the PARENT section of the last module viewed.
+        let lastModuleSection = sectionsAndSubsections.find(section => {
+            if (section.id === sectionId) {
+                return true;
+            }
+
             // No sectionId or section not found. Search the module.
-            lastModuleSection = sections.find(section => section.modules.some(module => module.id === viewedModule.cmId));
+            return section.modules.some(module => {
+                if (module.id === cmId) {
+                    return true;
+                }
+            });
+        });
+
+        if (lastModuleSection?.component === 'mod_subsection') {
+            // Get the parent section.
+            lastModuleSection = this.sections.find(section =>
+                section.modules.some(module =>
+                    module.modname === 'subsection' && module.instance === lastModuleSection?.itemid));
         }
 
-        return lastModuleSection && lastModuleSection.id !== this.stealthModulesSectionId ? lastModuleSection : undefined;
+        return lastModuleSection?.id !== this.stealthModulesSectionId ? lastModuleSection : undefined;
     }
 
     /**
@@ -800,8 +808,10 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.currentSite?.getLocalSiteConfig<string>(`${COURSE_EXPANDED_SECTIONS_PREFIX}${this.course.id}`),
         );
 
-        // Expand all sections if not defined.
         if (expandedSections === undefined) {
+            this.accordionMultipleValue = [];
+
+            // Expand all sections if not defined.
             this.sections.forEach((section) => {
                 section.expanded = true;
                 this.accordionMultipleValue.push(section.id.toString());

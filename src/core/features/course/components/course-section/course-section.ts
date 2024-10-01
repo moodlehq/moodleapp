@@ -93,7 +93,8 @@ type CoreCourseModuleToDisplay = CoreCourseModuleData & {
     subSection?: CoreCourseSectionToDisplay;
 };
 
-export type CoreCourseSectionToDisplay = CoreCourseSection & {
+export type CoreCourseSectionToDisplay = Omit<CoreCourseSection, 'modules'> & {
+    modules: CoreCourseModuleToDisplay[];
     highlighted?: boolean;
     expanded?: boolean; // The aim of this property is to avoid DOM overloading.
 };
