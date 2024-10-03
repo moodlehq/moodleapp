@@ -12,6 +12,8 @@
             </ion-label>
         </ion-item>
 
-        <core-course-module *ngFor="let module of mainMenuBlock.modules" [module]="module" [section]="mainMenuBlock" />
+        <ng-container *ngFor="let modOrSubsection of mainMenuBlock.contents">
+            <core-course-module *ngIf="isModule(modOrSubsection)" [module]="modOrSubsection" [section]="mainMenuBlock" />
+        </ng-container>
     </ion-list>
 </core-loading>

@@ -42,8 +42,6 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
 
     nextModule?: CoreCourseModuleData;
     previousModule?: CoreCourseModuleData;
-    nextModuleSection?: CoreCourseWSSection;
-    previousModuleSection?: CoreCourseWSSection;
     loaded = false;
     element: HTMLElement;
 
@@ -104,46 +102,23 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
 
         const sections = await CoreCourse.getSections(this.courseId, false, true, preSets);
 
-        // Search the next module.
-        let currentModuleIndex = -1;
-
-        const currentSectionIndex = sections.findIndex((section) => {
-            if (!this.isSectionAvailable(section)) {
-                // User cannot view the section, skip it.
-                return false;
-            }
-
-            currentModuleIndex = section.modules.findIndex((module: CoreCourseModuleData) => module.id == this.currentModuleId);
-
-            return currentModuleIndex >= 0;
+        const modules = await CoreCourseHelper.getSectionsModules(sections, {
+            ignoreSection: (section) => !this.isSectionAvailable(section),
         });
 
-        if (currentSectionIndex < 0) {
-            // Nothing found. Return.
-
+        const currentModuleIndex = modules.findIndex((module) => module.id === this.currentModuleId);
+        if (currentModuleIndex < 0) {
+            // Current module found. Return.
             return;
         }
 
         if (checkNext) {
             // Find next Module.
             this.nextModule = undefined;
-            for (let i = currentSectionIndex; i < sections.length && this.nextModule == undefined; i++) {
-                const section = sections[i];
-
-                if (!this.isSectionAvailable(section)) {
-                    // User cannot view the section, skip it.
-                    continue;
-                }
-
-                const startModule = i == currentSectionIndex ? currentModuleIndex + 1 : 0;
-                for (let j = startModule; j < section.modules.length && this.nextModule == undefined; j++) {
-                    const module = section.modules[j];
-
-                    const found = await this.isModuleAvailable(module);
-                    if (found) {
-                        this.nextModule = module;
-                        this.nextModuleSection = section;
-                    }
+            for (let i = currentModuleIndex + 1; i < modules.length && this.nextModule == undefined; i++) {
+                const module = modules[i];
+                if (this.isModuleAvailable(module)) {
+                    this.nextModule = module;
                 }
             }
         }
@@ -151,23 +126,10 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
         if (checkPrevious) {
             // Find previous Module.
             this.previousModule = undefined;
-            for (let i = currentSectionIndex; i >= 0 && this.previousModule == undefined; i--) {
-                const section = sections[i];
-
-                if (!this.isSectionAvailable(section)) {
-                    // User cannot view the section, skip it.
-                    continue;
-                }
-
-                const startModule = i == currentSectionIndex ? currentModuleIndex - 1 : section.modules.length - 1;
-                for (let j = startModule; j >= 0 && this.previousModule == undefined; j--) {
-                    const module = section.modules[j];
-
-                    const found = await this.isModuleAvailable(module);
-                    if (found) {
-                        this.previousModule = module;
-                        this.previousModuleSection = section;
-                    }
+            for (let i = currentModuleIndex - 1; i >= 0 && this.previousModule == undefined; i--) {
+                const module = modules[i];
+                if (this.isModuleAvailable(module)) {
+                    this.previousModule = module;
                 }
             }
         }
@@ -181,8 +143,8 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
      * @param module Module to check.
      * @returns Wether the module is available to the user or not.
      */
-    protected async isModuleAvailable(module: CoreCourseModuleData): Promise<boolean> {
-        return !CoreCourseHelper.isModuleStealth(module) && CoreCourse.instance.moduleHasView(module);
+    protected isModuleAvailable(module: CoreCourseModuleData): boolean {
+        return !CoreCourseHelper.isModuleStealth(module) && CoreCourse.moduleHasView(module);
     }
 
     /**
@@ -229,10 +191,8 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
         };
 
         if (!CoreCourseHelper.canUserViewModule(module)) {
-            const section = next ? this.nextModuleSection : this.previousModuleSection;
             options.params = {
                 module,
-                section,
             };
             CoreNavigator.navigateToSitePath('course/' + this.courseId + '/' + module.id +'/module-preview', options);
         } else {

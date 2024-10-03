@@ -18,6 +18,7 @@ import {
     CoreCourse,
     CoreCourseModuleCompletionStatus,
     CoreCourseProvider,
+    sectionContentIsModule,
 } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatCurrentSectionData, CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
@@ -43,7 +44,6 @@ import { CoreDom } from '@singletons/dom';
 export class CoreCourseCourseIndexComponent implements OnInit {
 
     @Input() sections: CoreCourseSection[] = [];
-    @Input() subSections: CoreCourseSection[] = [];
     @Input() selectedId?: number;
     @Input() course?: CoreCourseAnyCourseData;
 
@@ -51,6 +51,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
     highlighted?: string;
     sectionsToRender: CourseIndexSection[] = [];
     loaded = false;
+    isModule = sectionContentIsModule;
 
     constructor(
         protected elementRef: ElementRef,
@@ -88,7 +89,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
         const enableIndentation = await CoreCourse.isCourseIndentationEnabled(site, this.course.id);
 
         this.sectionsToRender = this.sections
-            .filter((section) => section.component !== 'mod_subsection' && !CoreCourseHelper.isSectionStealth(section))
+            .filter((section) => !CoreCourseHelper.isSectionStealth(section))
             .map((section) => this.mapSectionToRender(section, completionEnabled, enableIndentation, currentSectionData));
 
         this.highlighted = CoreCourseFormatDelegate.getSectionHightlightedName(this.course);
@@ -134,26 +135,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
      * @param moduleId Selected module id, if any.
      */
     selectSectionOrModule(event: Event, sectionId: number, moduleId?: number): void {
-        let subSectionId: number | undefined;
-        this.sectionsToRender.some((section) => {
-            if (section.id === sectionId) {
-                return true;
-            }
-
-            return section.modules.some((module) => {
-                if (module.subSection?.id === sectionId) {
-                    // Always use the parent section.
-                    subSectionId = sectionId;
-                    sectionId = section.id;
-
-                    return true;
-                }
-
-                return false;
-            });
-        });
-
-        ModalController.dismiss({ event, sectionId, subSectionId, moduleId });
+        ModalController.dismiss(<CoreCourseIndexSectionWithModule> { event, sectionId, moduleId });
     }
 
     /**
@@ -192,37 +174,26 @@ export class CoreCourseCourseIndexComponent implements OnInit {
         enableIndentation: boolean,
         currentSectionData?: CoreCourseFormatCurrentSectionData<CoreCourseSection>,
     ): CourseIndexSection {
-        const modules = section.modules
-            .filter((module) => module.modname === 'subsection' || this.renderModule(section, module))
-            .map((module) => {
-                if (module.modname === 'subsection') {
-                    const subSectionFound = this.subSections.find((subSection) => subSection.itemid === module.instance);
-                    const subSection = subSectionFound
-                        ? this.mapSectionToRender(subSectionFound, completionEnabled, enableIndentation)
-                        : undefined;
-
-                    return {
-                        id: module.id,
-                        name: module.name,
-                        course: module.course,
-                        visible: !!module.visible,
-                        uservisible: CoreCourseHelper.canUserViewModule(module, section),
-                        indented: true,
-                        subSection,
-                    };
+        const contents = section.contents
+            .filter((modOrSubsection) =>
+                !sectionContentIsModule(modOrSubsection) || this.renderModule(section, modOrSubsection))
+            .map((modOrSubsection) => {
+                if (!sectionContentIsModule(modOrSubsection)) {
+                    return this.mapSectionToRender(modOrSubsection, completionEnabled, enableIndentation);
                 }
 
                 const completionStatus = completionEnabled
-                    ? CoreCourseHelper.getCompletionStatus(module.completiondata)
+                    ? CoreCourseHelper.getCompletionStatus(modOrSubsection.completiondata)
                     : undefined;
 
                 return {
-                    id: module.id,
-                    name: module.name,
-                    course: module.course,
-                    visible: !!module.visible,
-                    uservisible: CoreCourseHelper.canUserViewModule(module, section),
-                    indented: enableIndentation && module.indent > 0,
+                    id: modOrSubsection.id,
+                    name: modOrSubsection.name,
+                    modname: modOrSubsection.modname,
+                    course: modOrSubsection.course,
+                    visible: !!modOrSubsection.visible,
+                    uservisible: CoreCourseHelper.canUserViewModule(modOrSubsection, section),
+                    indented: enableIndentation && modOrSubsection.indent > 0,
                     completionStatus,
                 };
             });
@@ -235,8 +206,8 @@ export class CoreCourseCourseIndexComponent implements OnInit {
             uservisible: CoreCourseHelper.canUserViewSection(section),
             expanded: section.id === this.selectedId,
             highlighted: currentSectionData?.section.id === section.id,
-            hasVisibleModules: modules.length > 0,
-            modules,
+            hasVisibleModules: contents.length > 0,
+            contents,
         };
     }
 
@@ -251,20 +222,21 @@ type CourseIndexSection = {
     availabilityinfo: boolean;
     visible: boolean;
     uservisible: boolean;
-    modules: {
-        id: number;
-        course: number;
-        visible: boolean;
-        indented: boolean;
-        uservisible: boolean;
-        completionStatus?: CoreCourseModuleCompletionStatus;
-        subSection?: CourseIndexSection;
-    }[];
+    contents: (CourseIndexSection | CourseIndexModule)[];
+};
+
+type CourseIndexModule = {
+    id: number;
+    modname: string;
+    course: number;
+    visible: boolean;
+    indented: boolean;
+    uservisible: boolean;
+    completionStatus?: CoreCourseModuleCompletionStatus;
 };
 
 export type CoreCourseIndexSectionWithModule = {
     event: Event;
     sectionId: number;
-    subSectionId?: number;
     moduleId?: number;
 };

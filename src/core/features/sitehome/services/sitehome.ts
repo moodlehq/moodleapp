@@ -99,7 +99,7 @@ export class CoreSiteHomeProvider {
                     throw Error('No sections found');
                 }
 
-                const hasContent = sections.some((section) => section.summary || (section.modules && section.modules.length));
+                const hasContent = sections.some((section) => section.summary || section.contents.length);
                 const hasCourseBlocks = await CoreBlockHelper.hasCourseBlocks(siteHomeId);
 
                 if (hasContent || hasCourseBlocks) {

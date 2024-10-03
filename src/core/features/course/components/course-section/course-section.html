@@ -53,16 +53,16 @@
         </ion-label>
     </ion-item>
 
-    <ng-container *ngFor="let module of modules">
-        @if (module.subSection) {
-        <core-course-section [course]="course" [section]="module.subSection" [lastModuleViewed]="lastModuleViewed"
+    <ng-container *ngFor="let modOrSubsection of section.contents">
+        @if (!isModule(modOrSubsection)) {
+        <core-course-section [course]="course" [section]="modOrSubsection" [lastModuleViewed]="lastModuleViewed"
             [viewedModules]="viewedModules" [collapsible]="true" />
         } @else {
-        <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [section]="section"
+        <core-course-module *ngIf="modOrSubsection.visibleoncoursepage !== 0" [module]="modOrSubsection" [section]="section"
             [showActivityDates]="course.showactivitydates" [showCompletionConditions]="course.showcompletionconditions"
-            [isLastViewed]="lastModuleViewed && lastModuleViewed.cmId === module.id" [class.core-course-module-not-viewed]="
-                    !viewedModules[module.id] &&
-                    (!module.completiondata || module.completiondata.state === completionStatusIncomplete)" />
+            [isLastViewed]="lastModuleViewed && lastModuleViewed.cmId === modOrSubsection.id" [class.core-course-module-not-viewed]="
+                    !viewedModules[modOrSubsection.id] &&
+                    (!modOrSubsection.completiondata || modOrSubsection.completiondata.state === completionStatusIncomplete)" />
         }
     </ng-container>
 </ng-template>

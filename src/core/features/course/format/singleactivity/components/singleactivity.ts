@@ -18,7 +18,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseUnsupportedModuleComponent } from '@features/course/components/unsupported-module/unsupported-module';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreCourseModuleCompletionData, CoreCourseSection } from '@features/course/services/course-helper';
+import { CoreCourseModuleCompletionData, CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourse } from '@features/course/services/course';
 import type { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 
@@ -59,7 +59,7 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
         }
 
         // In single activity the module should only have 1 section and 1 module. Get the module.
-        const module = this.sections?.[0].modules?.[0];
+        const module = this.sections?.[0].contents?.[0] as (CoreCourseModuleData | undefined);
 
         this.data.courseId = this.course.id;
         this.data.module = module;

@@ -45,7 +45,9 @@
                     </ion-label>
                 </ion-item>
 
-                <core-course-module *ngFor="let module of section.modules" [module]="module" [section]="section" />
+                <ng-container *ngFor="let modOrSubsection of section.contents">
+                    <core-course-module *ngIf="isModule(modOrSubsection)" [module]="modOrSubsection" [section]="section" />
+                </ng-container>
             </section>
 
             <!-- Site home items: news, categories, courses, etc. -->

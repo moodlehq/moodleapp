@@ -31,9 +31,11 @@ import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import {
     CoreCourse,
     CoreCourseProvider,
+    sectionContentIsModule,
 } from '@features/course/services/course';
 import {
     CoreCourseHelper,
+    CoreCourseModuleData,
     CoreCourseSection,
 } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
@@ -124,7 +126,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     displayCourseIndex = false;
     displayBlocks = false;
     hasBlocks = false;
-    subSections: CoreCourseSectionToDisplay[] = []; // List of course subsections.
     selectedSection?: CoreCourseSectionToDisplay;
     previousSection?: CoreCourseSectionToDisplay;
     nextSection?: CoreCourseSectionToDisplay;
@@ -226,9 +227,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (changes.sections && this.sections) {
-            this.subSections = this.sections.filter((section) => section.component === 'mod_subsection');
-            this.sections = this.sections.filter((section) => section.component !== 'mod_subsection');
-
             this.treatSections(this.sections);
         }
         this.changeDetectorRef.markForCheck();
@@ -326,35 +324,25 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.loaded = true;
             this.sectionChanged(sections[0]);
         } else if (this.initialSectionId || this.initialSectionNumber !== undefined) {
-            const subSection = this.subSections.find((section) => section.id === this.initialSectionId ||
-                (section.section !== undefined && section.section === this.initialSectionNumber));
-            if (subSection) {
-                // The section is a subsection, load the parent section.
-                this.sections.some((section) => {
-                    const module = section.modules.find((module) =>
-                        subSection.itemid === module.instance && module.modname === 'subsection');
-                    if (module) {
-                        this.initialSectionId = module.section;
-                        this.initialSectionNumber = undefined;
+            // We have an input indicating the section ID to load. Search the section.
+            const { section, parents } = CoreCourseHelper.findSection(this.sections, {
+                id: this.initialSectionId,
+                num: this.initialSectionNumber,
+            });
 
-                        return true;
-                    }
-
-                    return false;
-                });
+            if (parents.length) {
+                // The section is a subsection, load the root section.
+                this.initialSectionId = parents[0].id;
+                this.initialSectionNumber = undefined;
 
                 this.setInputData();
             }
 
-            // We have an input indicating the section ID to load. Search the section.
-            const section = sections.find((section) =>
-                section.id === this.initialSectionId ||
-                    (section.section !== undefined && section.section === this.initialSectionNumber));
-
             // Don't load the section if it cannot be viewed by the user.
-            if (section && this.canViewSection(section)) {
+            const sectionToLoad = parents[0] ?? section;
+            if (sectionToLoad && this.canViewSection(sectionToLoad)) {
                 this.loaded = true;
-                this.sectionChanged(section);
+                this.sectionChanged(sectionToLoad);
             }
         } else if (this.initialBlockInstanceId && this.displayBlocks && this.hasBlocks) {
             const { CoreBlockSideBlocksComponent } = await import('@features/block/components/side-blocks/side-blocks');
@@ -386,9 +374,12 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
                     section = lastModuleSection || section;
                     moduleId = lastModuleSection ? lastModuleViewed?.cmId : undefined;
-                } else if (currentSectionData.section.modules.some(module => module.id === lastModuleViewed.cmId)) {
-                    // Last module viewed is inside the highlighted section.
-                    moduleId = lastModuleViewed.cmId;
+                } else {
+                    const modules = CoreCourseHelper.getSectionsModules([currentSectionData.section]);
+                    if (modules.some(module => module.id === lastModuleViewed.cmId)) {
+                        // Last module viewed is inside the highlighted section.
+                        moduleId = lastModuleViewed.cmId;
+                    }
                 }
             }
 
@@ -422,7 +413,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Get the section of a viewed module.
+     * Get the section of a viewed module. If the module is in a subsection, returns the root section.
      *
      * @param sections List of sections.
      * @param viewedModule Viewed module.
@@ -432,16 +423,11 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         sections: CoreCourseSection[],
         viewedModule: CoreCourseViewedModulesDBRecord,
     ): CoreCourseSection | undefined {
-        let lastModuleSection: CoreCourseSection | undefined;
-
-        if (viewedModule.sectionId) {
-            lastModuleSection = sections.find(section => section.id === viewedModule.sectionId);
-        }
-
-        if (!lastModuleSection) {
-            // No sectionId or section not found. Search the module.
-            lastModuleSection = sections.find(section => section.modules.some(module => module.id === viewedModule.cmId));
-        }
+        const { section, parents } = CoreCourseHelper.findSection(sections, {
+            id: viewedModule.sectionId,
+            moduleId: viewedModule.cmId,
+        });
+        const lastModuleSection: CoreCourseSection | undefined = parents[0] ?? section;
 
         return lastModuleSection && lastModuleSection.id !== this.stealthModulesSectionId ? lastModuleSection : undefined;
     }
@@ -488,7 +474,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             componentProps: {
                 course: this.course,
                 sections: this.sections,
-                subSections: this.subSections,
                 selectedId: selectedId,
             },
         });
@@ -496,29 +481,32 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (!data) {
             return;
         }
-        let section = this.sections.find((section) => section.id === data.sectionId);
-        if (!section) {
-            return;
-        }
-        this.sectionChanged(section);
 
-        if (data.subSectionId) {
-            section = this.subSections.find((section) => section.id === data.subSectionId);
-            if (!section) {
-                return;
+        const { section, parents } = CoreCourseHelper.findSection(this.sections, {
+            moduleId: data.moduleId,
+            id: data.moduleId === undefined ? data.sectionId : undefined,
+        });
+
+        // Select the root section.
+        this.sectionChanged(parents[0] ?? section);
+
+        if (parents.length && section) {
+            // It's a subsection. Expand all the parents and the subsection.
+            for (let i = 1; i < parents.length; i++) {
+                this.setSectionExpanded(parents[i]);
             }
 
-            // Use this section to find the module.
             this.setSectionExpanded(section);
 
             // Scroll to the subsection (later it may be scrolled to the module).
             this.scrollInCourse(section.id, true);
         }
 
-        if (!data.moduleId) {
+        if (!data.moduleId || !section) {
             return;
         }
-        const module = section.modules.find((module) => module.id === data.moduleId);
+        const module = <CoreCourseModuleData | undefined>
+            section.contents.find((module) => sectionContentIsModule(module) && module.id === data.moduleId);
         if (!module) {
             return;
         }
@@ -676,12 +664,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
             // Skip sections without content, with stealth modules or collapsed.
             if (!this.sections[this.lastShownSectionIndex].hasContent ||
-                !this.sections[this.lastShownSectionIndex].modules ||
+                !this.sections[this.lastShownSectionIndex].contents ||
                 !this.sections[this.lastShownSectionIndex].expanded) {
                 continue;
             }
 
-            modulesLoaded += this.sections[this.lastShownSectionIndex].modules.reduce((total, module) =>
+            const sectionModules = CoreCourseHelper.getSectionsModules([this.sections[this.lastShownSectionIndex]]);
+
+            modulesLoaded += sectionModules.reduce((total, module) =>
                 !CoreCourseHelper.isModuleStealth(module, this.sections[this.lastShownSectionIndex]) ? total + 1 : total, 0);
         }
 
@@ -782,9 +772,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Save expanded sections for the course.
      */
     protected async saveExpandedSections(): Promise<void> {
-        let expandedSections = this.sections.filter((section) => section.expanded && section.id > 0).map((section) => section.id);
-        expandedSections =
-            expandedSections.concat(this.subSections.filter((section) => section.expanded).map((section) => section.id));
+        const expandedSections = CoreCourseHelper.flattenSections(this.sections)
+            .filter((section) => section.expanded && section.id > 0).map((section) => section.id);
 
         await this.currentSite?.setLocalSiteConfig(
             `${COURSE_EXPANDED_SECTIONS_PREFIX}${this.course.id}`,
@@ -802,12 +791,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         // Expand all sections if not defined.
         if (expandedSections === undefined) {
-            this.sections.forEach((section) => {
-                section.expanded = true;
-                this.accordionMultipleValue.push(section.id.toString());
-            });
-
-            this.subSections.forEach((section) => {
+            CoreCourseHelper.flattenSections(this.sections).forEach((section) => {
                 section.expanded = true;
                 this.accordionMultipleValue.push(section.id.toString());
             });
@@ -817,11 +801,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         this.accordionMultipleValue = expandedSections.split(',');
 
-        this.sections.forEach((section) => {
-            section.expanded = this.accordionMultipleValue.includes(section.id.toString());
-        });
-
-        this.subSections.forEach((section) => {
+        CoreCourseHelper.flattenSections(this.sections).forEach((section) => {
             section.expanded = this.accordionMultipleValue.includes(section.id.toString());
         });
     }
@@ -833,20 +813,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     accordionMultipleChange(ev: AccordionGroupChangeEventDetail): void {
         const sectionIds = ev.value as string[] | undefined;
-        this.sections.forEach((section) => {
-            section.expanded = false;
-        });
-
-        this.subSections.forEach((section) => {
+        const allSections = CoreCourseHelper.flattenSections(this.sections);
+        allSections.forEach((section) => {
             section.expanded = false;
         });
 
         sectionIds?.forEach((sectionId) => {
             const sId = Number(sectionId);
-            let section = this.sections.find((section) => section.id === sId);
-            if (!section) {
-                section = this.subSections.find((section) => section.id === sId);
-            }
+            const section = allSections.find((section) => section.id === sId);
 
             if (section) {
                 section.expanded = true;

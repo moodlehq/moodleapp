@@ -55,8 +55,8 @@ export class CoreCourseFormatSingleActivityHandlerService implements CoreCourseF
      * @inheritdoc
      */
     getCourseTitle(course: CoreCourseAnyCourseData, sections?: CoreCourseWSSection[]): string {
-        if (sections?.[0]?.modules?.[0]) {
-            return sections[0].modules[0].name;
+        if (sections?.[0]?.contents?.[0]) {
+            return sections[0].contents[0].name;
         }
 
         return course.fullname || '';
@@ -73,8 +73,8 @@ export class CoreCourseFormatSingleActivityHandlerService implements CoreCourseF
      * @inheritdoc
      */
     displayRefresher(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): boolean {
-        if (sections?.[0]?.modules?.[0]) {
-            return CoreCourseModuleDelegate.displayRefresherInSingleActivity(sections[0].modules[0].modname);
+        if (sections?.[0]?.contents?.[0] && 'modname' in sections[0].contents[0]) {
+            return CoreCourseModuleDelegate.displayRefresherInSingleActivity(sections[0].contents[0].modname);
         } else {
             return true;
         }

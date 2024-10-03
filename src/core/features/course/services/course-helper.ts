@@ -27,6 +27,7 @@ import {
     CoreCourseModuleCompletionTracking,
     CoreCourseModuleCompletionStatus,
     CoreCourseGetContentsWSModule,
+    sectionContentIsModule,
 } from './course';
 import { CoreConstants, DownloadStatus, ContextLevel } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
@@ -76,6 +77,7 @@ import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enr
 import { LazyRoutesModule } from '@/app/app-routing.module';
 import { CoreModals } from '@services/modals';
 import { CoreLoadings } from '@services/loadings';
+import { ArrayElement } from '@/core/utils/types';
 
 /**
  * Prefetch info of a module.
@@ -166,50 +168,56 @@ export class CoreCourseHelperProvider {
 
         let hasContent = false;
 
-        const formattedSections = await Promise.all(
-            sections.map<Promise<CoreCourseSection>>(async (courseSection) => {
-                const section = {
-                    ...courseSection,
-                    hasContent: this.sectionHasContent(courseSection),
-                };
+        const treatSection = async (sectionToTreat: CoreCourseWSSection): Promise<CoreCourseSection> => {
+            const section = {
+                ...sectionToTreat,
+                hasContent: this.sectionHasContent(sectionToTreat),
+            };
 
-                if (!section.hasContent) {
-                    return section;
+            if (!section.hasContent) {
+                return section;
+            }
+
+            hasContent = true;
+
+            section.contents = await Promise.all(section.contents.map(async (module) => {
+                if (!sectionContentIsModule(module)) {
+                    return await treatSection(module);
                 }
 
-                hasContent = true;
+                module.handlerData = await CoreCourseModuleDelegate.getModuleDataFor(
+                    module.modname,
+                    module,
+                    courseId,
+                    section.id,
+                    forCoursePage,
+                );
 
-                await Promise.all(section.modules.map(async (module) => {
-                    module.handlerData = await CoreCourseModuleDelegate.getModuleDataFor(
-                        module.modname,
-                        module,
+                if (!module.completiondata && completionStatus && completionStatus[module.id] !== undefined) {
+                    // Should not happen on > 3.6. Check if activity has completions and if it's marked.
+                    const activityStatus = completionStatus[module.id];
+
+                    module.completiondata = {
+                        state: activityStatus.state,
+                        timecompleted: activityStatus.timecompleted,
+                        overrideby: activityStatus.overrideby || 0,
+                        valueused: activityStatus.valueused,
+                        tracking: activityStatus.tracking,
                         courseId,
-                        section.id,
-                        forCoursePage,
-                    );
+                        cmid: module.id,
+                    };
+                }
 
-                    if (!module.completiondata && completionStatus && completionStatus[module.id] !== undefined) {
-                        // Should not happen on > 3.6. Check if activity has completions and if it's marked.
-                        const activityStatus = completionStatus[module.id];
+                // Check if the module is stealth.
+                module.isStealth = CoreCourseHelper.isModuleStealth(module, section);
 
-                        module.completiondata = {
-                            state: activityStatus.state,
-                            timecompleted: activityStatus.timecompleted,
-                            overrideby: activityStatus.overrideby || 0,
-                            valueused: activityStatus.valueused,
-                            tracking: activityStatus.tracking,
-                            courseId,
-                            cmid: module.id,
-                        };
-                    }
+                return module;
+            }));
 
-                    // Check if the module is stealth.
-                    module.isStealth = CoreCourseHelper.isModuleStealth(module, section);
-                }));
+            return section;
+        };
 
-                return section;
-            }),
-        );
+        const formattedSections = await Promise.all(sections.map((courseSection) => treatSection(courseSection)));
 
         return { hasContent, sections: formattedSections };
     }
@@ -218,7 +226,8 @@ export class CoreCourseHelperProvider {
      * Module is stealth.
      *
      * @param module Module to check.
-     * @param section Section to check.
+     * @param section Section to check. If the module belongs to a subsection, you can pass either the subsection or the parent
+     *               section. Subsections inherit the visibility from their parent section.
      * @returns Wether the module is stealth.
      */
     isModuleStealth(module: CoreCourseModuleData, section?: CoreCourseWSSection): boolean {
@@ -230,7 +239,8 @@ export class CoreCourseHelperProvider {
      * Module is visible by the user.
      *
      * @param module Module to check.
-     * @param section Section to check. Omitted if not defined.
+     * @param section Section to check. Omitted if not defined. If the module belongs to a subsection, you can pass either the
+     *                subsection or the parent section. Subsections inherit the visibility from their parent section.
      * @returns Wether the section is visible by the user.
      */
     canUserViewModule(module: CoreCourseModuleData, section?: CoreCourseWSSection): boolean {
@@ -281,7 +291,7 @@ export class CoreCourseHelperProvider {
 
         // Get the status of this section.
         const result = await CoreCourseModulePrefetchDelegate.getModulesStatus(
-            section.modules,
+            section.contents,
             courseId,
             section.id,
             refresh,
@@ -517,7 +527,7 @@ export class CoreCourseHelperProvider {
 
         // Calculate the size of the download.
         if (section && section.id != CoreCourseProvider.ALL_SECTIONS_ID) {
-            sizeSum = await CoreCourseModulePrefetchDelegate.getDownloadSize(section.modules, courseId);
+            sizeSum = await CoreCourseModulePrefetchDelegate.getDownloadSize(section.contents, courseId);
 
             // Check if the section has embedded files in the description.
             hasEmbeddedFiles = CoreFilepool.extractDownloadableFilesFromHtml(section.summary).length > 0;
@@ -527,7 +537,7 @@ export class CoreCourseHelperProvider {
                     return;
                 }
 
-                const sectionSize = await CoreCourseModulePrefetchDelegate.getDownloadSize(section.modules, courseId);
+                const sectionSize = await CoreCourseModulePrefetchDelegate.getDownloadSize(section.contents, courseId);
 
                 sizeSum.total = sizeSum.total && sectionSize.total;
                 sizeSum.size += sectionSize.size;
@@ -624,6 +634,7 @@ export class CoreCourseHelperProvider {
             summary: '',
             summaryformat: 1,
             modules: [],
+            contents: [],
         };
     }
 
@@ -1121,31 +1132,36 @@ export class CoreCourseHelperProvider {
         const totalOffline = offlineCompletions.length;
         let loaded = 0;
         const offlineCompletionsMap = CoreUtils.arrayToObject(offlineCompletions, 'cmid');
-        // Load the offline data in the modules.
-        for (let i = 0; i < sections.length; i++) {
-            const section = sections[i];
-            if (!section.modules || !section.modules.length) {
-                // Section has no modules, ignore it.
-                continue;
+
+        const loadSectionOfflineCompletion = (section: CoreCourseWSSection): void => {
+            if (!section.contents || !section.contents.length) {
+                return;
             }
 
-            for (let j = 0; j < section.modules.length; j++) {
-                const module = section.modules[j];
-                const offlineCompletion = offlineCompletionsMap[module.id];
+            for (let j = 0; j < section.contents.length && loaded < totalOffline; j++) {
+                const modOrSubsection = section.contents[j];
+                if (!sectionContentIsModule(modOrSubsection)) {
+                    loadSectionOfflineCompletion(modOrSubsection);
 
-                if (offlineCompletion && module.completiondata !== undefined &&
-                    offlineCompletion.timecompleted >= module.completiondata.timecompleted * 1000) {
+                    continue;
+                }
+
+                const offlineCompletion = offlineCompletionsMap[modOrSubsection.id];
+
+                if (offlineCompletion && modOrSubsection.completiondata !== undefined &&
+                    offlineCompletion.timecompleted >= modOrSubsection.completiondata.timecompleted * 1000) {
                     // The module has offline completion. Load it.
-                    module.completiondata.state = offlineCompletion.completed;
-                    module.completiondata.offline = true;
+                    modOrSubsection.completiondata.state = offlineCompletion.completed;
+                    modOrSubsection.completiondata.offline = true;
 
-                    // If all completions have been loaded, stop.
                     loaded++;
-                    if (loaded == totalOffline) {
-                        break;
-                    }
                 }
             }
+        };
+
+        // Load the offline data in the modules.
+        for (let i = 0; i < sections.length && loaded < totalOffline; i++) {
+            loadSectionOfflineCompletion(sections[i]);
         }
     }
 
@@ -1631,8 +1647,8 @@ export class CoreCourseHelperProvider {
             // Prefetch other data needed to render the course.
             promises.push(CoreCourses.getCoursesByField('id', course.id));
 
-            const sectionWithModules = sections.find((section) => section.modules && section.modules.length > 0);
-            if (!sectionWithModules || sectionWithModules.modules[0].completion === undefined) {
+            const modules = this.getSectionsModules(sections);
+            if (!modules.length || modules[0].completion === undefined) {
                 promises.push(CoreCourse.getActivitiesCompletionStatus(course.id));
             }
 
@@ -1787,10 +1803,10 @@ export class CoreCourseHelperProvider {
      */
     protected async syncModulesAndPrefetchSection(section: CoreCourseSectionWithStatus, courseId: number): Promise<void> {
         // Sync the modules first.
-        await CoreCourseModulePrefetchDelegate.syncModules(section.modules, courseId);
+        await CoreCourseModulePrefetchDelegate.syncModules(section.contents, courseId);
 
         // Validate the section needs to be downloaded and calculate amount of modules that need to be downloaded.
-        const result = await CoreCourseModulePrefetchDelegate.getModulesStatus(section.modules, courseId, section.id);
+        const result = await CoreCourseModulePrefetchDelegate.getModulesStatus(section.contents, courseId, section.id);
 
         if (result.status === DownloadStatus.DOWNLOADED || result.status === DownloadStatus.NOT_DOWNLOADABLE) {
             // Section is downloaded or not downloadable, nothing to do.
@@ -1844,16 +1860,12 @@ export class CoreCourseHelperProvider {
      * @returns Whether the section has content.
      */
     sectionHasContent(section: CoreCourseWSSection): boolean {
-        if (!section.modules) {
-            return false;
-        }
-
         if (section.hiddenbynumsections) {
             return false;
         }
 
         return (section.availabilityinfo !== undefined && section.availabilityinfo != '') ||
-            section.summary != '' || (section.modules && section.modules.length > 0);
+            section.summary != '' || section.contents.length > 0;
     }
 
     /**
@@ -1914,7 +1926,7 @@ export class CoreCourseHelperProvider {
     async deleteCourseFiles(courseId: number): Promise<void> {
         const siteId = CoreSites.getCurrentSiteId();
         const sections = await CoreCourse.getSections(courseId);
-        const modules = sections.map((section) => section.modules).flat();
+        const modules = this.getSectionsModules(sections);
 
         await Promise.all([
             ...modules.map((module) => this.removeModuleStoredData(module, courseId)),
@@ -2112,6 +2124,127 @@ export class CoreCourseHelperProvider {
         return completion.state;
     }
 
+    /**
+     * Find a section by id.
+     *
+     * @param sections List of sections, with subsections included in the contents.
+     * @param searchValue Value to search. If moduleId, returns the section that contains the module.
+     * @returns Section object, list of parents (if any) from top to bottom.
+     */
+    findSection<T extends CoreCourseWSSection>(
+        sections: T[],
+        searchValue: { id?: number; num?: number; moduleId?: number},
+    ): {section: T | undefined; parents: T[]} {
+        if (searchValue.id === undefined && searchValue.num === undefined && searchValue.moduleId === undefined) {
+            return { section: undefined, parents: [] };
+        }
+
+        let foundSection: T | undefined;
+        const parents: T[] = [];
+
+        const findInSection = (section: T): T | undefined => {
+            if (section.id === searchValue.id || (section.section !== undefined && section.section === searchValue.num)) {
+                return section;
+            }
+
+            let foundSection: T | undefined;
+
+            section.contents.some(modOrSubsection => {
+                if (sectionContentIsModule(modOrSubsection)) {
+                    if (searchValue.moduleId !== undefined && modOrSubsection.id === searchValue.moduleId) {
+                        foundSection = section;
+
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                foundSection = findInSection(modOrSubsection as T);
+                if (!foundSection) {
+                    return false;
+                }
+
+                parents.push(section);
+
+                return true;
+            });
+
+            return foundSection;
+        };
+
+        sections.some(section => {
+            foundSection = findInSection(section);
+
+            return !!foundSection;
+        });
+
+        return { section: foundSection, parents: parents.reverse() };
+    }
+
+    /**
+     * Given a list of sections, returns the list of modules in the sections.
+     * The modules are ordered in the order of appearance in the course.
+     *
+     * @param sections Sections.
+     * @param options Other options.
+     * @returns Modules.
+     */
+    getSectionsModules<
+        Section extends CoreCourseWSSection,
+        Module = Extract<ArrayElement<Section['contents']>, CoreCourseModuleData>
+    >(
+        sections: Section[],
+        options: CoreCourseGetSectionsModulesOptions<Section, Module> = {},
+    ): Module[] {
+        let modules: Module[] = [];
+
+        sections.forEach((section) => {
+            if (options.ignoreSection && options.ignoreSection(section)) {
+                return;
+            }
+
+            section.contents.forEach((modOrSubsection) => {
+                if (sectionContentIsModule(modOrSubsection)) {
+                    if (options.ignoreModule && options.ignoreModule(modOrSubsection as Module)) {
+                        return;
+                    }
+
+                    modules.push(modOrSubsection as Module);
+                } else {
+                    modules = modules.concat(this.getSectionsModules([modOrSubsection], options));
+                }
+            });
+        });
+
+        return modules;
+    }
+
+    /**
+     * Given a list of sections, returns the list of sections and subsections.
+     *
+     * @param sections Sections.
+     * @returns All sections, including subsections.
+     */
+    flattenSections<T extends CoreCourseWSSection>(sections: T[]): T[] {
+        const subsections: T[] = [];
+
+        const getSubsections = (section: T): void => {
+            section.contents.forEach((modOrSubsection) => {
+                if (!sectionContentIsModule(modOrSubsection)) {
+                    subsections.push(modOrSubsection as T);
+                    getSubsections(modOrSubsection as T);
+                }
+            });
+        };
+
+        sections.forEach((section) => {
+            getSubsections(section);
+        });
+
+        return sections.concat(subsections);
+    }
+
 }
 
 export const CoreCourseHelper = makeSingleton(CoreCourseHelperProvider);
@@ -2119,8 +2252,9 @@ export const CoreCourseHelper = makeSingleton(CoreCourseHelperProvider);
 /**
  * Section with calculated data.
  */
-export type CoreCourseSection = CoreCourseWSSection & {
+export type CoreCourseSection = Omit<CoreCourseWSSection, 'contents'> & {
     hasContent?: boolean;
+    contents: (CoreCourseModuleData | CoreCourseSection)[];
 };
 
 /**
@@ -2215,4 +2349,12 @@ export type CoreCourseGuestAccessInfo = {
      * @deprecated since 4.3. Use requiresUserInput instead.
      */
     passwordRequired?: boolean;
+};
+
+/**
+ * Options for get sections modules.
+ */
+export type CoreCourseGetSectionsModulesOptions<Section, Module> = {
+    ignoreSection?: (section: Section) => boolean; // Function to filter sections. Return true to ignore it, false to use it.
+    ignoreModule?: (module: Module) => boolean; // Function to filter module. Return true to ignore it, false to use it.
 };
