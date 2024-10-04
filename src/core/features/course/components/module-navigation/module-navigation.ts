@@ -102,7 +102,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
 
         const sections = await CoreCourse.getSections(this.courseId, false, true, preSets);
 
-        const modules = await CoreCourseHelper.getSectionsModules(sections, {
+        const modules = await CoreCourse.getSectionsModules(sections, {
             ignoreSection: (section) => !this.isSectionAvailable(section),
         });
 
@@ -115,7 +115,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
         if (checkNext) {
             // Find next Module.
             this.nextModule = undefined;
-            for (let i = currentModuleIndex + 1; i < modules.length && this.nextModule == undefined; i++) {
+            for (let i = currentModuleIndex + 1; i < modules.length && this.nextModule === undefined; i++) {
                 const module = modules[i];
                 if (this.isModuleAvailable(module)) {
                     this.nextModule = module;
@@ -126,7 +126,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
         if (checkPrevious) {
             // Find previous Module.
             this.previousModule = undefined;
-            for (let i = currentModuleIndex - 1; i >= 0 && this.previousModule == undefined; i--) {
+            for (let i = currentModuleIndex - 1; i >= 0 && this.previousModule === undefined; i--) {
                 const module = modules[i];
                 if (this.isModuleAvailable(module)) {
                     this.previousModule = module;

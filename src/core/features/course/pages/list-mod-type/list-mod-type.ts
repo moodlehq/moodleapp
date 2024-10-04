@@ -175,7 +175,7 @@ export class CoreCourseListModTypePage implements OnInit {
         while (this.lastShownSectionIndex < this.sections.length - 1 && modulesLoaded < CoreCourseListModTypePage.PAGE_LENGTH) {
             this.lastShownSectionIndex++;
 
-            const sectionModules = CoreCourseHelper.getSectionsModules([this.sections[this.lastShownSectionIndex]]);
+            const sectionModules = CoreCourse.getSectionsModules([this.sections[this.lastShownSectionIndex]]);
             modulesLoaded += sectionModules.length;
         }
 

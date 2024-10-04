@@ -239,7 +239,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
      */
     private async calculateDownloadedCourseSize(courseId: number): Promise<number> {
         const sections = await CoreCourse.getSections(courseId);
-        const modules = CoreCourseHelper.getSectionsModules(sections);
+        const modules = CoreCourse.getSectionsModules(sections);
 
         return CoreCourseHelper.getModulesDownloadedSize(modules, courseId);
     }

@@ -70,7 +70,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
         let modFullNames: Record<string, string> = {};
         const brandedIcons: Record<string, boolean|undefined> = {};
 
-        const modules = CoreCourseHelper.getSectionsModules(sections, {
+        const modules = CoreCourse.getSectionsModules(sections, {
             ignoreSection: section => !CoreCourseHelper.canUserViewSection(section),
             ignoreModule: module => !CoreCourseHelper.canUserViewModule(module) || !CoreCourse.moduleHasView(module),
         });

@@ -27,6 +27,7 @@ import {
 import {
     CoreCourseHelper,
     CoreCourseModuleCompletionData,
+    CoreCourseModuleData,
     CoreCourseSection,
 } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
@@ -215,10 +216,11 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
     protected async loadSections(refresh?: boolean): Promise<void> {
         // Get all the sections.
         const sections = await CoreCourse.getSections(this.course.id, false, true);
+        let modules: CoreCourseModuleData[] | undefined;
 
         if (refresh) {
             // Invalidate the recently downloaded module list. To ensure info can be prefetched.
-            const modules = CoreCourseHelper.getSectionsModules(sections);
+            modules = CoreCourse.getSectionsModules(sections);
 
             await CoreCourseModulePrefetchDelegate.invalidateModules(modules, this.course.id);
         }
@@ -227,7 +229,9 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
 
         // Get the completion status.
         if (CoreCoursesHelper.isCompletionEnabledInCourse(this.course)) {
-            const modules = CoreCourseHelper.getSectionsModules(sections);
+            if (!modules) {
+                modules = CoreCourse.getSectionsModules(sections);
+            }
 
             if (modules[0]?.completion !== undefined) {
                 // The module already has completion (3.6 onwards). Load the offline completion.
@@ -334,7 +338,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
 
             if (this.sections) {
                 // If the completion value is not used, the page won't be reloaded, so update the progress bar.
-                const completionModules = CoreCourseHelper.getSectionsModules(this.sections)
+                const completionModules = CoreCourse.getSectionsModules(this.sections)
                     .map((module) => module.completion && module.completion > 0 ? 1 : module.completion)
                     .reduce((accumulator, currentValue) => (accumulator || 0) + (currentValue || 0), 0);
 

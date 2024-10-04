@@ -64,6 +64,7 @@ import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-si
 import { CoreLoadings } from '@services/loadings';
 import { CoreArray } from '@singletons/array';
 import { CoreText } from '@singletons/text';
+import { ArrayElement } from '@/core/utils/types';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -1074,13 +1075,40 @@ export class CoreCourseProvider {
 
     /**
      * Given a list of sections, returns the list of modules in the sections.
+     * The modules are ordered in the order of appearance in the course.
      *
      * @param sections Sections.
+     * @param options Other options.
      * @returns Modules.
-     * @deprecated since 4.5. Use CoreCourseHelper.getSectionsModules instead.
      */
-    getSectionsModules(sections: CoreCourseWSSection[]): CoreCourseModuleData[] {
-        return CoreCourseHelper.getSectionsModules(sections);
+    getSectionsModules<
+        Section extends CoreCourseWSSection,
+        Module = Extract<ArrayElement<Section['contents']>, CoreCourseModuleData>
+    >(
+        sections: Section[],
+        options: CoreCourseGetSectionsModulesOptions<Section, Module> = {},
+    ): Module[] {
+        let modules: Module[] = [];
+
+        sections.forEach((section) => {
+            if (options.ignoreSection && options.ignoreSection(section)) {
+                return;
+            }
+
+            section.contents.forEach((modOrSubsection) => {
+                if (sectionContentIsModule(modOrSubsection)) {
+                    if (options.ignoreModule && options.ignoreModule(modOrSubsection as Module)) {
+                        return;
+                    }
+
+                    modules.push(modOrSubsection as Module);
+                } else {
+                    modules = modules.concat(this.getSectionsModules([modOrSubsection], options));
+                }
+            });
+        });
+
+        return modules;
     }
 
     /**
@@ -1635,6 +1663,31 @@ export class CoreCourseProvider {
         return CoreDomUtils.removeElementFromHtml(availabilityInfo, 'li[data-action="showmore"]');
     }
 
+    /**
+     * Given section contents, classify them into modules and sections.
+     *
+     * @param contents Contents.
+     * @returns Classified contents.
+     */
+    classifyContents<
+        Contents extends CoreCourseModuleOrSection,
+        Module = Extract<Contents, CoreCourseModuleData>,
+        Section = Extract<Contents, CoreCourseWSSection>,
+    >(contents: Contents[]): { modules: Module[]; subsections: Section[] } {
+        const modules: Module[] = [];
+        const subsections: Section[] = [];
+
+        contents.forEach((content) => {
+            if (sectionContentIsModule(content)) {
+                modules.push(content as Module);
+            } else {
+                subsections.push(content as unknown as Section);
+            }
+        });
+
+        return { modules, subsections };
+    }
+
 }
 
 export const CoreCourse = makeSingleton(CoreCourseProvider);
@@ -2068,4 +2121,12 @@ export type CoreCourseGetSectionsOptions = CoreSitesCommonWSOptions & {
     excludeContents?: boolean;
     includeStealthModules?: boolean; // Defaults to true.
     preSets?: CoreSiteWSPreSets;
+};
+
+/**
+ * Options for get sections modules.
+ */
+export type CoreCourseGetSectionsModulesOptions<Section, Module> = {
+    ignoreSection?: (section: Section) => boolean; // Function to filter sections. Return true to ignore it, false to use it.
+    ignoreModule?: (module: Module) => boolean; // Function to filter module. Return true to ignore it, false to use it.
 };

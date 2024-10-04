@@ -78,7 +78,6 @@ import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enr
 import { LazyRoutesModule } from '@/app/app-routing.module';
 import { CoreModals } from '@services/modals';
 import { CoreLoadings } from '@services/loadings';
-import { ArrayElement } from '@/core/utils/types';
 
 /**
  * Prefetch info of a module.
@@ -288,11 +287,11 @@ export class CoreCourseHelperProvider {
             throw new CoreError('Invalid section');
         }
 
-        const sectionWithStatus = <CoreCourseSectionWithStatus> section;
+        // Get the status of this section based on their modules.
+        const { modules, subsections } = CoreCourse.classifyContents(section.contents);
 
-        // Get the status of this section.
         const statusData = await CoreCourseModulePrefetchDelegate.getModulesStatus(
-            section.contents,
+            modules,
             courseId,
             section.id,
             refresh,
@@ -300,12 +299,20 @@ export class CoreCourseHelperProvider {
             checkUpdates,
         );
 
+        // Now calculate status of subsections, and add them to the status data. Each subsection counts as 1 item in the section.
+        await Promise.all(subsections.map(async (subsection) => {
+            const subsectionStatus = await this.calculateSectionStatus(subsection, courseId, refresh, checkUpdates);
+            statusData.total++;
+            statusData.status = CoreFilepool.determinePackagesStatus(statusData.status, subsectionStatus.statusData.status);
+        }));
+
         // Check if it's being downloaded.
         const downloadId = this.getSectionDownloadId(section);
         if (CoreCourseModulePrefetchDelegate.isBeingDownloaded(downloadId)) {
             statusData.status = DownloadStatus.DOWNLOADING;
         }
 
+        const sectionWithStatus = <CoreCourseSectionWithStatus> section;
         sectionWithStatus.downloadStatus = statusData.status;
 
         // Set this section data.
@@ -404,42 +411,28 @@ export class CoreCourseHelperProvider {
         let count = 0;
 
         const promises = courses.map(async (course) => {
-            const subPromises: Promise<void>[] = [];
-            let sections: CoreCourseWSSection[];
-            let handlers: CoreCourseOptionsHandlerToDisplay[] = [];
-            let menuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
             let success = true;
 
             // Get the sections and the handlers.
-            subPromises.push(CoreCourse.getSections(course.id, false, true).then((courseSections) => {
-                sections = courseSections;
+            const [sections, handlers, menuHandlers] = await Promise.all([
+                CoreCourse.getSections(course.id, false, true),
+                CoreCourseOptionsDelegate.getHandlersToDisplay(course, false),
+                CoreCourseOptionsDelegate.getMenuHandlersToDisplay(course, false),
+            ]);
 
-                return;
-            }));
+            try {
+                await this.prefetchCourse(course, sections, handlers, menuHandlers, siteId);
+            } catch (error) {
+                success = false;
 
-            subPromises.push(CoreCourseOptionsDelegate.getHandlersToDisplay(course, false).then((cHandlers) => {
-                handlers = cHandlers;
-
-                return;
-            }));
-            subPromises.push(CoreCourseOptionsDelegate.getMenuHandlersToDisplay(course, false).then((mHandlers) => {
-                menuHandlers = mHandlers;
-
-                return;
-            }));
-
-            return Promise.all(subPromises).then(() => this.prefetchCourse(course, sections, handlers, menuHandlers, siteId))
-                .catch((error) => {
-                    success = false;
-
-                    throw error;
-                }).finally(() => {
+                throw error;
+            } finally {
                 // Course downloaded or failed, notify the progress.
-                    count++;
-                    if (options.onProgress) {
-                        options.onProgress({ count: count, total: total, courseId: course.id, success: success });
-                    }
-                });
+                count++;
+                if (options.onProgress) {
+                    options.onProgress({ count: count, total: total, courseId: course.id, success: success });
+                }
+            }
         });
 
         if (options.onProgress) {
@@ -469,20 +462,31 @@ export class CoreCourseHelperProvider {
             total: true,
         };
 
-        await Promise.all(sections.map(async (section) => {
+        const getSectionSize = async (section: CoreCourseWSSection): Promise<CoreFileSizeSum> => {
             if (section.id === CoreCourseProvider.ALL_SECTIONS_ID) {
-                return;
+                return { size: 0, total: true };
             }
 
-            const sectionSize = await CoreCourseModulePrefetchDelegate.getDownloadSize(section.modules, courseId);
+            const { modules, subsections } = CoreCourse.classifyContents(section.contents);
 
-            sizeSum.total = sizeSum.total && sectionSize.total;
-            sizeSum.size += sectionSize.size;
+            const [modulesSize, subsectionsSizes] = await Promise.all([
+                CoreCourseModulePrefetchDelegate.getDownloadSize(modules, courseId),
+                Promise.all(subsections.map((modOrSubsection) => getSectionSize(modOrSubsection))),
+            ]);
 
             // Check if the section has embedded files in the description.
             if (!hasEmbeddedFiles && CoreFilepool.extractDownloadableFilesFromHtml(section.summary).length > 0) {
                 hasEmbeddedFiles = true;
             }
+
+            return subsectionsSizes.concat(modulesSize).reduce((sizeSum, contentSize) => ({
+                size: sizeSum.size + contentSize.size,
+                total: sizeSum.total && contentSize.total,
+            }), { size: 0, total: true });
+        };
+
+        await Promise.all(sections.map(async (section) => {
+            await getSectionSize(section);
         }));
 
         if (hasEmbeddedFiles) {
@@ -1586,7 +1590,7 @@ export class CoreCourseHelperProvider {
             // Prefetch other data needed to render the course.
             promises.push(CoreCourses.getCoursesByField('id', course.id));
 
-            const modules = this.getSectionsModules(sections);
+            const modules = CoreCourse.getSectionsModules(sections);
             if (!modules.length || modules[0].completion === undefined) {
                 promises.push(CoreCourse.getActivitiesCompletionStatus(course.id));
             }
@@ -1646,7 +1650,7 @@ export class CoreCourseHelperProvider {
      * @param updateAllSections Update all sections status
      */
     async prefetchSections(
-        sections: (CoreCourseSectionWithStatus & CoreCourseSectionWithSubsections)[],
+        sections: CoreCourseSectionWithStatus[],
         courseId: number,
         updateAllSections = false,
     ): Promise<void> {
@@ -1736,18 +1740,27 @@ export class CoreCourseHelperProvider {
      * @returns Promise resolved when the section is prefetched.
      */
     protected async syncModulesAndPrefetchSection(section: CoreCourseSectionWithStatus, courseId: number): Promise<void> {
-        // Sync the modules first.
-        await CoreCourseModulePrefetchDelegate.syncModules(section.contents, courseId);
+        const { modules, subsections } = CoreCourse.classifyContents(section.contents);
 
-        // Validate the section needs to be downloaded and calculate amount of modules that need to be downloaded.
-        const result = await CoreCourseModulePrefetchDelegate.getModulesStatus(section.contents, courseId, section.id);
+        const syncAndPrefetchModules = async () => {
+            // Sync the modules first.
+            await CoreCourseModulePrefetchDelegate.syncModules(modules, courseId);
 
-        if (result.status === DownloadStatus.DOWNLOADED || result.status === DownloadStatus.NOT_DOWNLOADABLE) {
-            // Section is downloaded or not downloadable, nothing to do.
-            return ;
-        }
+            // Validate the section needs to be downloaded and calculate amount of modules that need to be downloaded.
+            const result = await CoreCourseModulePrefetchDelegate.getModulesStatus(modules, courseId, section.id);
 
-        await this.prefetchSingleSection(section, result, courseId);
+            if (result.status === DownloadStatus.DOWNLOADED || result.status === DownloadStatus.NOT_DOWNLOADABLE) {
+                // Section is downloaded or not downloadable, nothing to do.
+                return ;
+            }
+
+            await this.prefetchSingleSection(section, result, courseId);
+        };
+
+        await Promise.all([
+            syncAndPrefetchModules(),
+            Promise.all(subsections.map(subsection => this.prefetchSingleSectionIfNeeded(subsection, courseId))),
+        ]);
     }
 
     /**
@@ -1860,7 +1873,7 @@ export class CoreCourseHelperProvider {
     async deleteCourseFiles(courseId: number): Promise<void> {
         const siteId = CoreSites.getCurrentSiteId();
         const sections = await CoreCourse.getSections(courseId);
-        const modules = this.getSectionsModules(sections);
+        const modules = CoreCourse.getSectionsModules(sections);
 
         await Promise.all([
             ...modules.map((module) => this.removeModuleStoredData(module, courseId)),
@@ -2117,44 +2130,6 @@ export class CoreCourseHelperProvider {
     }
 
     /**
-     * Given a list of sections, returns the list of modules in the sections.
-     * The modules are ordered in the order of appearance in the course.
-     *
-     * @param sections Sections.
-     * @param options Other options.
-     * @returns Modules.
-     */
-    getSectionsModules<
-        Section extends CoreCourseWSSection,
-        Module = Extract<ArrayElement<Section['contents']>, CoreCourseModuleData>
-    >(
-        sections: Section[],
-        options: CoreCourseGetSectionsModulesOptions<Section, Module> = {},
-    ): Module[] {
-        let modules: Module[] = [];
-
-        sections.forEach((section) => {
-            if (options.ignoreSection && options.ignoreSection(section)) {
-                return;
-            }
-
-            section.contents.forEach((modOrSubsection) => {
-                if (sectionContentIsModule(modOrSubsection)) {
-                    if (options.ignoreModule && options.ignoreModule(modOrSubsection as Module)) {
-                        return;
-                    }
-
-                    modules.push(modOrSubsection as Module);
-                } else {
-                    modules = modules.concat(this.getSectionsModules([modOrSubsection], options));
-                }
-            });
-        });
-
-        return modules;
-    }
-
-    /**
      * Given a list of sections, returns the list of sections and subsections.
      *
      * @param sections Sections.
@@ -2283,12 +2258,4 @@ export type CoreCourseGuestAccessInfo = {
      * @deprecated since 4.3. Use requiresUserInput instead.
      */
     passwordRequired?: boolean;
-};
-
-/**
- * Options for get sections modules.
- */
-export type CoreCourseGetSectionsModulesOptions<Section, Module> = {
-    ignoreSection?: (section: Section) => boolean; // Function to filter sections. Return true to ignore it, false to use it.
-    ignoreModule?: (module: Module) => boolean; // Function to filter module. Return true to ignore it, false to use it.
 };

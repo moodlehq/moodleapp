@@ -374,7 +374,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                     section = lastModuleSection || section;
                     moduleId = lastModuleSection ? this.lastModuleViewed.cmId : undefined;
                 } else {
-                    const modules = CoreCourseHelper.getSectionsModules([currentSectionData.section]);
+                    const modules = CoreCourse.getSectionsModules([currentSectionData.section]);
                     if (modules.some(module => module.id === this.lastModuleViewed?.cmId)) {
                         // Last module viewed is inside the highlighted section.
                         moduleId = this.lastModuleViewed.cmId;
@@ -665,7 +665,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 continue;
             }
 
-            const sectionModules = CoreCourseHelper.getSectionsModules([this.sections[this.lastShownSectionIndex]]);
+            const sectionModules = CoreCourse.getSectionsModules([this.sections[this.lastShownSectionIndex]]);
 
             modulesLoaded += sectionModules.reduce((total, module) =>
                 !CoreCourseHelper.isModuleStealth(module, this.sections[this.lastShownSectionIndex]) ? total + 1 : total, 0);
@@ -817,9 +817,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         });
 
         sectionIds?.forEach((sectionId) => {
-            const sId = Number(sectionId);
-            const section = allSections.find((section) => section.id === sId);
-
+            const section = allSections.find((section) => section.id === Number(sectionId));
             if (section) {
                 section.expanded = true;
             }
