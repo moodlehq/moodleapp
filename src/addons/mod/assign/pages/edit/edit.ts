@@ -231,15 +231,8 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
                 this.timeLimitEndTime = 0;
             }
 
-            try {
-                // Check if there's any offline data for this submission.
-                const offlineData = await AddonModAssignOffline.getSubmission(this.assign.id, this.userId);
-
-                this.hasOffline = offlineData?.plugindata && Object.keys(offlineData.plugindata).length > 0;
-            } catch {
-                // No offline data found.
-                this.hasOffline = false;
-            }
+            // Check if there's any offline data for this submission.
+            this.hasOffline = await CoreUtils.promiseWorks(AddonModAssignOffline.getSubmission(this.assign.id, this.userId));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM,
@@ -396,6 +389,10 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 
         if (this.submissionStatement && (!inputData.submissionstatement || inputData.submissionstatement === 'false')) {
             throw Translate.instant('addon.mod_assign.acceptsubmissionstatement');
+        }
+
+        if (AddonModAssignHelper.isSubmissionEmptyForEdit(this.assign!, this.userSubmission!, inputData)) {
+            throw Translate.instant('addon.mod_assign.submissionempty');
         }
 
         let modal = await CoreLoadings.show();

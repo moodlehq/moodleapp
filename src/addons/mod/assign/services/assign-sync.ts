@@ -331,27 +331,29 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
         }
 
         try {
-            if (submission?.plugins) {
-                // Prepare plugins data.
-                await Promise.all(submission.plugins.map((plugin) =>
-                    AddonModAssignSubmissionDelegate.preparePluginSyncData(
-                        assign,
-                        submission,
-                        plugin,
-                        offlineData,
-                        pluginData,
-                        siteId,
-                    )));
-            }
+            if (Object.keys(offlineData.plugindata).length == 0) {
+                await AddonModAssign.removeSubmissionOnline(assign.id, offlineData.userid, siteId);
+            } else {
+                if (submission?.plugins) {
+                    // Prepare plugins data.
+                    await Promise.all(submission.plugins.map((plugin) =>
+                        AddonModAssignSubmissionDelegate.preparePluginSyncData(
+                            assign,
+                            submission,
+                            plugin,
+                            offlineData,
+                            pluginData,
+                            siteId,
+                        )));
+                }
 
-            // Now save the submission.
-            if (Object.keys(pluginData).length > 0) {
+                // Now save the submission.
                 await AddonModAssign.saveSubmissionOnline(assign.id, pluginData, siteId);
-            }
 
-            if (assign.submissiondrafts && offlineData.submitted) {
-                // The user submitted the assign manually. Submit it for grading.
-                await AddonModAssign.submitForGradingOnline(assign.id, !!offlineData.submissionstatement, siteId);
+                if (assign.submissiondrafts && offlineData.submitted) {
+                    // The user submitted the assign manually. Submit it for grading.
+                    await AddonModAssign.submitForGradingOnline(assign.id, !!offlineData.submissionstatement, siteId);
+                }
             }
 
             // Submission data sent, update cached data. No need to block the user for this.

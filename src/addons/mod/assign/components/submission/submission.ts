@@ -64,6 +64,7 @@ import {
     ADDON_MOD_ASSIGN_GRADED_EVENT,
     ADDON_MOD_ASSIGN_MANUAL_SYNCED,
     ADDON_MOD_ASSIGN_PAGE_NAME,
+    ADDON_MOD_ASSIGN_SUBMISSION_REMOVED_EVENT,
     ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
     ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS,
 } from '../../constants';
@@ -96,8 +97,9 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     isSubmittedForGrading = false; // Whether the submission has been submitted for grading.
     acceptStatement = false; // Statement accepted (for grading).
     feedback?: AddonModAssignSubmissionFeedbackFormatted; // The feedback.
-    hasOffline = false; // Whether there is offline data.
+    editedOffline = false; // Whether the submission was added or edited in offline.
     submittedOffline = false; // Whether it was submitted in offline.
+    removedOffline = false; // Whether the submission was removed in offline.
     fromDate?: string; // Readable date when the assign started accepting submissions.
     currentAttempt = 0; // The current attempt number.
     maxAttemptsText: string; // The text for maximum attempts.
@@ -108,6 +110,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     membersToSubmitBlind: number[] = []; // Team members that need to submit the assignment (blindmarking).
     canSubmit = false; // Whether the user can submit for grading.
     canEdit = false; // Whether the user can edit the submission.
+    isRemoveAvailable = false; // Whether WS to remove submission is available.
     submissionStatement?: string; // The submission statement.
     showErrorStatementEdit = false; // Whether to show an error in edit due to submission statement.
     showErrorStatementSubmit = false; // Whether to show an error in submit due to submission statement.
@@ -407,6 +410,47 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     }
 
     /**
+     * Remove submisson.
+     */
+    async remove(): Promise<void> {
+        if (!this.assign || !this.userSubmission) {
+            return;
+        }
+        const message = this.assign?.timelimit ?
+            'addon.mod_assign.removesubmissionconfirmwithtimelimit' :
+            'addon.mod_assign.removesubmissionconfirm';
+        try {
+            await CoreDomUtils.showDeleteConfirm(message);
+        } catch {
+            return;
+        }
+
+        const modal = await CoreLoadings.show('core.sending', true);
+
+        try {
+            const sent = await AddonModAssign.removeSubmission(this.assign, this.userSubmission);
+
+            if (sent) {
+                CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'assign' });
+            }
+
+            CoreEvents.trigger(
+                ADDON_MOD_ASSIGN_SUBMISSION_REMOVED_EVENT,
+                {
+                    assignmentId: this.assign.id,
+                    submissionId: this.userSubmission.id,
+                    userId: this.currentUserId,
+                },
+                CoreSites.getCurrentSiteId(),
+            );
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'Error removing submission.');
+        } finally {
+            modal.dismiss();
+        }
+    }
+
+    /**
      * Check if there's data to save (grade).
      *
      * @param isSubmit Whether the user is about to submit the grade.
@@ -633,13 +677,14 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         try {
             const submission = await AddonModAssignOffline.getSubmission(this.assign.id, this.submitId);
 
-            this.hasOffline = submission && submission.plugindata && Object.keys(submission.plugindata).length > 0;
-
-            this.submittedOffline = !!submission?.submitted;
+            this.removedOffline = submission && Object.keys(submission.plugindata).length == 0;
+            this.editedOffline = submission && !this.removedOffline;
+            this.submittedOffline = !!submission?.submitted && !this.removedOffline;
         } catch (error) {
             // No offline data found.
-            this.hasOffline = false;
+            this.editedOffline = false;
             this.submittedOffline = false;
+            this.removedOffline = false;
         }
     }
 
@@ -821,14 +866,14 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             return;
         }
 
-        if (this.hasOffline || this.submittedOffline) {
-            // Offline data.
+        if (this.editedOffline || this.submittedOffline) {
+            // Added, edited or submitted offline.
             this.statusTranslated = Translate.instant('core.notsent');
             this.statusColor = CoreIonicColorNames.WARNING;
         } else if (!this.assign.teamsubmission) {
 
             // Single submission.
-            if (this.userSubmission && this.userSubmission.status != this.statusNew) {
+            if (this.userSubmission && this.userSubmission.status != this.statusNew && !this.removedOffline) {
                 this.statusTranslated = Translate.instant('addon.mod_assign.submissionstatus_' + this.userSubmission.status);
                 this.statusColor = AddonModAssign.getSubmissionStatusColor(this.userSubmission.status);
             } else {
@@ -844,10 +889,10 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         } else {
 
             // Team submission.
-            if (!status.lastattempt?.submissiongroup && this.assign.preventsubmissionnotingroup) {
+            if (!status.lastattempt?.submissiongroup && this.assign.preventsubmissionnotingroup && !this.removedOffline) {
                 this.statusTranslated = Translate.instant('addon.mod_assign.nosubmission');
                 this.statusColor = AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_SUBMISSION);
-            } else if (this.userSubmission && this.userSubmission.status != this.statusNew) {
+            } else if (this.userSubmission && this.userSubmission.status != this.statusNew && !this.removedOffline) {
                 this.statusTranslated = Translate.instant('addon.mod_assign.submissionstatus_' + this.userSubmission.status);
                 this.statusColor = AddonModAssign.getSubmissionStatusColor(this.userSubmission.status);
             } else {
@@ -907,7 +952,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                     this.courseId,
                     acceptStatement,
                     this.userSubmission.timemodified,
-                    this.hasOffline,
+                    this.editedOffline,
                 );
 
                 // Submitted, trigger event.
@@ -1142,11 +1187,12 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             this.assign.requiresubmissionstatement = 0;
         }
 
-        this.canSubmit = !this.isSubmittedForGrading && !this.submittedOffline && (lastAttempt.cansubmit ||
-            (this.hasOffline && AddonModAssign.canSubmitOffline(this.assign, submissionStatus)));
+        this.canSubmit = !this.isSubmittedForGrading && !this.submittedOffline && !this.removedOffline &&
+            (lastAttempt.cansubmit || (this.editedOffline && AddonModAssign.canSubmitOffline(this.assign, submissionStatus)));
 
         this.canEdit = !this.isSubmittedForGrading && lastAttempt.canedit &&
             (!this.submittedOffline || !this.assign.submissiondrafts);
+        this.isRemoveAvailable = AddonModAssign.isRemoveSubmissionAvailable();
 
         // Get submission statement if needed.
         if (this.assign.requiresubmissionstatement && this.assign.submissiondrafts && this.submitId == this.currentUserId) {
