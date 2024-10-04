@@ -81,6 +81,12 @@ export class AddonModAssignHelperProvider {
             return true;
         }
 
+        if (await CoreUtils.promiseWorks(AddonModAssignOffline.getSubmission(assign.id, submission.userid))) {
+            // Submission was saved or deleted offline, allow editing it or creating a new one.
+            return true;
+        }
+
+        // Submission was created online, check if plugins allow editing it.
         let canEdit = true;
 
         const promises = submission.plugins
@@ -492,7 +498,7 @@ export class AddonModAssignHelperProvider {
             submission.manyGroups = !!participant.groups && participant.groups.length > 1;
             submission.noGroups = !!participant.groups && participant.groups.length == 0;
             if (participant.groupname) {
-                submission.groupid = participant.groupid;
+                submission.groupid = participant.groupid ?? 0;
                 submission.groupname = participant.groupname;
             }
 
@@ -749,18 +755,15 @@ export const AddonModAssignHelper = makeSingleton(AddonModAssignHelperProvider);
 /**
  * Assign submission with some calculated data.
  */
-export type AddonModAssignSubmissionFormatted =
-    Omit<AddonModAssignSubmission, 'userid'|'groupid'> & {
-        userid?: number; // Student id.
-        groupid?: number; // Group id.
-        blindid?: number; // Calculated in the app. Blindid of the user that did the submission.
-        submitid?: number; // Calculated in the app. Userid or blindid of the user that did the submission.
-        userfullname?: string; // Calculated in the app. Full name of the user that did the submission.
-        userprofileimageurl?: string; // Calculated in the app. Avatar of the user that did the submission.
-        manyGroups?: boolean; // Calculated in the app. Whether the user belongs to more than 1 group.
-        noGroups?: boolean; // Calculated in the app. Whether the user doesn't belong to any group.
-        groupname?: string; // Calculated in the app. Name of the group the submission belongs to.
-    };
+export interface AddonModAssignSubmissionFormatted extends AddonModAssignSubmission {
+    blindid?: number; // Calculated in the app. Blindid of the user that did the submission.
+    submitid?: number; // Calculated in the app. Userid or blindid of the user that did the submission.
+    userfullname?: string; // Calculated in the app. Full name of the user that did the submission.
+    userprofileimageurl?: string; // Calculated in the app. Avatar of the user that did the submission.
+    manyGroups?: boolean; // Calculated in the app. Whether the user belongs to more than 1 group.
+    noGroups?: boolean; // Calculated in the app. Whether the user doesn't belong to any group.
+    groupname?: string; // Calculated in the app. Name of the group the submission belongs to.
+}
 
 /**
  * Assignment plugin config.

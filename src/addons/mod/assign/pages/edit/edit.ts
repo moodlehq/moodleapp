@@ -231,15 +231,8 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
                 this.timeLimitEndTime = 0;
             }
 
-            try {
-                // Check if there's any offline data for this submission.
-                const offlineData = await AddonModAssignOffline.getSubmission(this.assign.id, this.userId);
-
-                this.hasOffline = offlineData?.plugindata && Object.keys(offlineData.plugindata).length > 0;
-            } catch {
-                // No offline data found.
-                this.hasOffline = false;
-            }
+            // Check if there's any offline data for this submission.
+            this.hasOffline = await CoreUtils.promiseWorks(AddonModAssignOffline.getSubmission(this.assign.id, this.userId));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM,

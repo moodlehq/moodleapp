@@ -25,6 +25,7 @@ export const ADDON_MOD_ASSIGN_WARN_GROUPS_OPTIONAL = 'warnoptional';
 
 // Events.
 export const ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT = 'addon_mod_assign_submission_saved';
+export const ADDON_MOD_ASSIGN_SUBMISSION_REMOVED_EVENT = 'addon_mod_assign_submission_removed';
 export const ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT = 'addon_mod_assign_submitted_for_grading';
 export const ADDON_MOD_ASSIGN_GRADED_EVENT = 'addon_mod_assign_graded';
 export const ADDON_MOD_ASSIGN_STARTED_EVENT = 'addon_mod_assign_started';

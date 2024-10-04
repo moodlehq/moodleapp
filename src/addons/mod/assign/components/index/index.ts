@@ -47,6 +47,7 @@ import {
     ADDON_MOD_ASSIGN_GRADED_EVENT,
     ADDON_MOD_ASSIGN_PAGE_NAME,
     ADDON_MOD_ASSIGN_STARTED_EVENT,
+    ADDON_MOD_ASSIGN_SUBMISSION_REMOVED_EVENT,
     ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT,
     ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
     ADDON_MOD_ASSIGN_WARN_GROUPS_OPTIONAL,
@@ -120,6 +121,17 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             (data) => {
                 if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
                     // Assignment submission saved, refresh data.
+                    this.showLoadingAndRefresh(true, false);
+                }
+            },
+            this.siteId,
+        );
+
+        this.savedObserver = CoreEvents.on(
+            ADDON_MOD_ASSIGN_SUBMISSION_REMOVED_EVENT,
+            (data) => {
+                if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
+                    // Assignment submission removed, refresh data.
                     this.showLoadingAndRefresh(true, false);
                 }
             },
