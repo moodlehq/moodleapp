@@ -24,6 +24,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';
 import { CoreWait } from '@singletons/wait';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Handler to support the MathJax filter.
@@ -176,6 +177,10 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
         siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<void> {
         await this.waitForReady();
+
+        // Make sure the element is in DOM, otherwise some equations don't work.
+        // Automatically timeout the promise after a certain time, we don't want to wait forever.
+        await CoreUtils.ignoreErrors(CoreUtils.timeoutPromise(CoreDom.waitToBeInDOM(container), 15000));
 
         await this.window.M!.filter_mathjaxloader!.typeset(container);
     }
