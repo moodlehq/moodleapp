@@ -318,13 +318,12 @@ export class CoreCourseHelperProvider {
         // Set this section data.
         if (statusData.status !== DownloadStatus.DOWNLOADING) {
             sectionWithStatus.isDownloading = false;
-            sectionWithStatus.total = 0;
+            this.resetSectionDownloadCount(section);
         } else {
             // Section is being downloaded.
             sectionWithStatus.isDownloading = true;
             CoreCourseModulePrefetchDelegate.setOnProgress(downloadId, (data) => {
-                sectionWithStatus.count = data.count;
-                sectionWithStatus.total = data.total;
+                this.setSectionDownloadCount(sectionWithStatus, data.count, data.total);
             });
         }
 
@@ -1757,9 +1756,15 @@ export class CoreCourseHelperProvider {
             await this.prefetchSingleSection(section, result, courseId);
         };
 
+        this.setSectionDownloadCount(section, 0, subsections.length, true);
+
         await Promise.all([
             syncAndPrefetchModules(),
-            Promise.all(subsections.map(subsection => this.prefetchSingleSectionIfNeeded(subsection, courseId))),
+            Promise.all(subsections.map(async (subsection) => {
+                await this.prefetchSingleSectionIfNeeded(subsection, courseId);
+
+                this.setSectionDownloadCount(section, (section.subsectionCount ?? 0) + 1, subsections.length, true);
+            })),
         ]);
     }
 
@@ -1781,7 +1786,7 @@ export class CoreCourseHelperProvider {
             return;
         }
 
-        if (section.total && section.total > 0) {
+        if (section.moduleTotal && section.moduleTotal > 0) {
             // Already being downloaded.
             return ;
         }
@@ -1795,8 +1800,7 @@ export class CoreCourseHelperProvider {
 
         // Prefetch all modules to prevent incoeherences in download count and to download stale data not marked as outdated.
         await CoreCourseModulePrefetchDelegate.prefetchModules(downloadId, modules, courseId, (data) => {
-            section.count = data.count;
-            section.total = data.total;
+            this.setSectionDownloadCount(section, data.count, data.total);
         });
     }
 
@@ -2154,6 +2158,47 @@ export class CoreCourseHelperProvider {
         return sections.concat(subsections);
     }
 
+    /**
+     * Reset download counts of a section.
+     *
+     * @param section Section.
+     */
+    protected resetSectionDownloadCount(section: CoreCourseSectionWithStatus): void {
+        section.moduleTotal = undefined;
+        section.subsectionTotal = undefined;
+        section.moduleCount = undefined;
+        section.subsectionCount = undefined;
+        section.total = undefined;
+    }
+
+    /**
+     * Set download counts of a section.
+     *
+     * @param section Section.
+     * @param count Count value.
+     * @param total Total value.
+     * @param isSubsectionCount True to set subsection count, false to set module count.
+     */
+    protected setSectionDownloadCount(
+        section: CoreCourseSectionWithStatus,
+        count: number,
+        total: number,
+        isSubsectionCount = false,
+    ): void {
+        if (isSubsectionCount) {
+            section.subsectionCount = count;
+            section.subsectionTotal = total;
+        } else {
+            section.moduleCount = count;
+            section.moduleTotal = total;
+        }
+
+        section.count = section.moduleCount !== undefined && section.subsectionCount !== undefined ?
+            section.moduleCount + section.subsectionCount : undefined;
+        section.total = section.moduleTotal !== undefined && section.subsectionTotal !== undefined ?
+            section.moduleTotal + section.subsectionTotal : undefined;
+    }
+
 }
 
 export const CoreCourseHelper = makeSingleton(CoreCourseHelperProvider);
@@ -2172,8 +2217,12 @@ export type CoreCourseSection = Omit<CoreCourseWSSection, 'contents'> & {
 export type CoreCourseSectionWithStatus = CoreCourseSection & {
     downloadStatus?: DownloadStatus; // Section status.
     isDownloading?: boolean; // Whether section is being downloaded.
-    total?: number; // Total of modules being downloaded.
-    count?: number; // Number of downloaded modules.
+    total?: number; // Total of modules and subsections being downloaded.
+    count?: number; // Number of downloaded modules and subsections.
+    moduleTotal?: number; // Total of modules being downloaded.
+    moduleCount?: number; // Number of downloaded modules.
+    subsectionTotal?: number; // Total of subsections being downloaded.
+    subsectionCount?: number; // Number of downloaded subsections.
     isCalculating?: boolean; // Whether status is being calculated.
 };
 

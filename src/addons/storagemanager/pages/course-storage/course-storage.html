@@ -74,7 +74,8 @@
                     </ion-badge>
                     <!-- Download progress. -->
                     <p *ngIf="downloadEnabled && section.isDownloading">
-                        <core-progress-bar [progress]="section.total === 0 ? -1 : (section.count / section.total) * 100" />
+                        <core-progress-bar
+                            [progress]="section.total === undefined || section.total === 0 ? -1 : (section.count / section.total) * 100" />
                     </p>
                 </ion-label>
                 <div class="storage-buttons" slot="end" *ngIf="(!section.calculatingSize && section.totalSize > 0) || downloadEnabled">
@@ -86,7 +87,7 @@
                             [statusSubject]="section.name" />
 
                         <ion-badge class="core-course-download-section-progress"
-                            *ngIf="section.isDownloading && section.count < section.total" role="progressbar"
+                            *ngIf="section.isDownloading && section.total !== undefined && section.count < section.total" role="progressbar"
                             [attr.aria-valuemax]="section.total" [attr.aria-valuenow]="section.count"
                             [attr.aria-valuetext]="'core.course.downloadsectionprogressdescription' | translate:section">
                             {{section.count}} / {{section.total}}
