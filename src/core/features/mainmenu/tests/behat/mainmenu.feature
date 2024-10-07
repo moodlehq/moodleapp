@@ -41,7 +41,7 @@ Feature: Main Menu opens the right page
   @lms_from4.5
   Scenario: Opens right main menu tab when defaulthomepage is set to a custom URL that belongs to a tab
     Given the following config values are set as admin:
-      | defaulthomepage | #wwwroot#/message/index.php |
+      | defaulthomepage | /message/index.php |
     And I entered the app as "student"
     Then "Messages" "ion-tab-button" should be selected in the app
     And I should find "Contacts" in the app
@@ -49,7 +49,7 @@ Feature: Main Menu opens the right page
   @lms_from4.5
   Scenario: Opens new page when defaulthomepage is set to a custom URL
     Given the following config values are set as admin:
-      | defaulthomepage | #wwwroot#/badges/mybadges.php |
+      | defaulthomepage | /badges/mybadges.php |
     And I entered the app as "student"
     Then I should find "Badges" in the app
     And I should find "There are currently no badges" in the app
@@ -61,7 +61,7 @@ Feature: Main Menu opens the right page
   @lms_from4.5
   Scenario: defaulthomepage ignored if it's set to a custom URL not supported by the app
     Given the following config values are set as admin:
-      | defaulthomepage | #wwwroot#/foo/bar.php |
+      | defaulthomepage | /foo/bar.php |
     And I entered the app as "student"
     Then "My courses" "ion-tab-button" should be selected in the app
     And I should find "Course 1" in the app

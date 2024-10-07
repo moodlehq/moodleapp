@@ -26,7 +26,7 @@ import {
     CoreFilterStateValue,
     CoreFilterAllStates,
 } from './filter';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourse, sectionContentIsModule } from '@features/course/services/course';
 import { CoreCourses } from '@features/courses/services/courses';
 import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
@@ -180,16 +180,18 @@ export class CoreFilterHelperProvider {
         const contexts: CoreFiltersGetAvailableInContextWSParamContext[] = [];
 
         sections.forEach((section) => {
-            if (section.modules) {
-                section.modules.forEach((module) => {
-                    if (CoreCourseHelper.canUserViewModule(module, section)) {
-                        contexts.push({
-                            contextlevel: ContextLevel.MODULE,
-                            instanceid: module.id,
-                        });
-                    }
-                });
-            }
+            section.contents.forEach((modOrSubsection) => {
+                if (!sectionContentIsModule(modOrSubsection)) {
+                    return;
+                }
+
+                if (CoreCourseHelper.canUserViewModule(modOrSubsection, section)) {
+                    contexts.push({
+                        contextlevel: ContextLevel.MODULE,
+                        instanceid: modOrSubsection.id,
+                    });
+                }
+            });
         });
 
         return contexts;

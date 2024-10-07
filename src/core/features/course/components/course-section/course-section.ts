@@ -15,12 +15,9 @@ import {
     Component,
     HostBinding,
     Input,
-    OnChanges,
     OnInit,
-    SimpleChange,
 } from '@angular/core';
 import {
-    CoreCourseModuleData,
     CoreCourseSection,
 } from '@features/course/services/course-helper';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -28,7 +25,7 @@ import { CoreCourseComponentsModule } from '../components.module';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreCourseViewedModulesDBRecord } from '@features/course/services/database/course';
-import { CoreCourseModuleCompletionStatus } from '@features/course/services/course';
+import { CoreCourseModuleCompletionStatus, sectionContentIsModule } from '@features/course/services/course';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 
 /**
@@ -44,11 +41,10 @@ import { CoreCourseFormatDelegate } from '@features/course/services/format-deleg
         CoreCourseComponentsModule,
     ],
 })
-export class CoreCourseSectionComponent implements OnInit, OnChanges {
+export class CoreCourseSectionComponent implements OnInit {
 
     @Input({ required: true }) course!: CoreCourseAnyCourseData; // The course to render.
     @Input({ required: true }) section!: CoreCourseSectionToDisplay;
-    @Input() subSections: CoreCourseSectionToDisplay[] = []; // List of subsections in the course.
     @Input({ transform: toBoolean }) collapsible = true; // Whether the section can be collapsed.
     @Input() lastModuleViewed?: CoreCourseViewedModulesDBRecord;
     @Input() viewedModules: Record<number, boolean> = {};
@@ -58,9 +54,9 @@ export class CoreCourseSectionComponent implements OnInit, OnChanges {
             return this.collapsible ? 'collapsible' : 'non-collapsible';
         }
 
-    modules: CoreCourseModuleToDisplay[] = [];
     completionStatusIncomplete = CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE;
     highlightedName?: string; // Name to highlight.
+    isModule = sectionContentIsModule;
 
     /**
      * @inheritdoc
@@ -71,27 +67,7 @@ export class CoreCourseSectionComponent implements OnInit, OnChanges {
             : undefined;
     }
 
-    /**
-     * @inheritdoc
-     */
-    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        if (changes.section && this.section) {
-            this.modules = this.section.modules;
-
-            this.modules.forEach((module) => {
-                if (module.modname === 'subsection') {
-                    module.subSection = this.subSections.find((section) =>
-                        section.component === 'mod_subsection' && section.itemid === module.instance);
-                }
-            });
-        }
-    }
-
 }
-
-type CoreCourseModuleToDisplay = CoreCourseModuleData & {
-    subSection?: CoreCourseSectionToDisplay;
-};
 
 export type CoreCourseSectionToDisplay = CoreCourseSection & {
     highlighted?: boolean;

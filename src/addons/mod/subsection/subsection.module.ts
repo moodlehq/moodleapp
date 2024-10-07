@@ -14,9 +14,7 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { AddonModSubsectionIndexLinkHandler } from './services/handlers/index-link';
-import { AddonModSubsectionModuleHandler } from './services/handlers/module';
 
 @NgModule({
     providers: [
@@ -24,7 +22,6 @@ import { AddonModSubsectionModuleHandler } from './services/handlers/module';
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModSubsectionModuleHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModSubsectionIndexLinkHandler.instance);
             },
         },

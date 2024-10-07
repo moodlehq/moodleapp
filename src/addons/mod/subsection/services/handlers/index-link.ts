@@ -19,7 +19,8 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreLoadings } from '@services/loadings';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { AddonModSubsection } from '../subsection';
+import { CoreSites } from '@services/sites';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 
 /**
  * Handler to treat links to subsection.
@@ -31,6 +32,29 @@ export class AddonModSubsectionIndexLinkHandlerService extends CoreContentLinksM
 
     constructor() {
         super('AddonModSubsection', 'subsection', 'id');
+    }
+
+    /**
+     * Open a subsection.
+     *
+     * @param sectionId Section ID.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when done.
+     */
+    async openSubsection(sectionId: number, courseId: number, siteId?: string): Promise<void> {
+        const pageParams = {
+            sectionId,
+        };
+
+        if (
+            (!siteId || siteId === CoreSites.getCurrentSiteId()) &&
+            CoreCourse.currentViewIsCourse(courseId)
+        ) {
+            CoreCourse.selectCourseTab('', pageParams);
+        } else {
+            await CoreCourseHelper.getAndOpenCourse(courseId, pageParams, siteId);
+        }
     }
 
     /**
@@ -51,7 +75,7 @@ export class AddonModSubsectionIndexLinkHandlerService extends CoreContentLinksM
                     // Get the module.
                     const module = await CoreCourse.getModule(moduleId, courseId, undefined, true, false, siteId);
 
-                    await AddonModSubsection.openSubsection(module.section, module.course, siteId);
+                    await this.openSubsection(module.section, module.course, siteId);
                 } catch (error) {
                     CoreDomUtils.showErrorModalDefault(error, 'Error opening link.');
                 } finally {

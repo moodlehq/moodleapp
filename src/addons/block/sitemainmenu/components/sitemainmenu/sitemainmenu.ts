@@ -14,7 +14,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourse, sectionContentIsModule } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreSiteHome, FrontPageItemNames } from '@features/sitehome/services/sitehome';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
@@ -39,6 +39,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
     component = 'AddonBlockSiteMainMenu';
     mainMenuBlock?: CoreCourseSection;
     siteHomeId = 1;
+    isModule = sectionContentIsModule;
 
     protected fetchContentDefaultError = 'Error getting main menu data.';
 
@@ -66,9 +67,12 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
         promises.push(CoreCourse.invalidateSections(this.siteHomeId));
         promises.push(CoreSiteHome.invalidateNewsForum(this.siteHomeId));
 
-        if (this.mainMenuBlock && this.mainMenuBlock.modules) {
+        if (this.mainMenuBlock?.contents.length) {
             // Invalidate modules prefetch data.
-            promises.push(CoreCourseModulePrefetchDelegate.invalidateModules(this.mainMenuBlock.modules, this.siteHomeId));
+            promises.push(CoreCourseModulePrefetchDelegate.invalidateModules(
+                CoreCourse.getSectionsModules([this.mainMenuBlock]),
+                this.siteHomeId,
+            ));
         }
 
         await Promise.all(promises);
@@ -114,11 +118,11 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
         try {
             const forum = await CoreSiteHome.getNewsForum(this.siteHomeId);
             // Search the module that belongs to site news.
-            const forumIndex =
-                this.mainMenuBlock.modules.findIndex((mod) => mod.modname == 'forum' && mod.instance == forum.id);
+            const forumIndex = this.mainMenuBlock.contents.findIndex((mod) =>
+                sectionContentIsModule(mod) && mod.modname == 'forum' && mod.instance == forum.id);
 
             if (forumIndex >= 0) {
-                this.mainMenuBlock.modules.splice(forumIndex, 1);
+                this.mainMenuBlock.contents.splice(forumIndex, 1);
             }
         } catch {
             // Ignore errors.

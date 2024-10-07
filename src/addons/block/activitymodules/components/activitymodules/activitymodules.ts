@@ -70,44 +70,41 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
         let modFullNames: Record<string, string> = {};
         const brandedIcons: Record<string, boolean|undefined> = {};
 
-        sections.forEach((section) => {
-            if (!section.modules) {
+        const modules = CoreCourse.getSectionsModules(sections, {
+            ignoreSection: section => !CoreCourseHelper.canUserViewSection(section),
+            ignoreModule: module => !CoreCourseHelper.canUserViewModule(module) || !CoreCourse.moduleHasView(module),
+        });
+
+        modules.forEach((mod) => {
+            if (archetypes[mod.modname] !== undefined) {
                 return;
             }
 
-            section.modules.forEach((mod) => {
-                if (archetypes[mod.modname] !== undefined ||
-                    !CoreCourseHelper.canUserViewModule(mod, section) ||
-                    !CoreCourse.moduleHasView(mod)) {
-                    // Ignore this module.
-                    return;
+            // Get the archetype of the module type.
+            archetypes[mod.modname] = CoreCourseModuleDelegate.supportsFeature<number>(
+                mod.modname,
+                CoreConstants.FEATURE_MOD_ARCHETYPE,
+                CoreConstants.MOD_ARCHETYPE_OTHER,
+            );
+
+            // Get the full name of the module type.
+            if (archetypes[mod.modname] === CoreConstants.MOD_ARCHETYPE_RESOURCE) {
+                // All resources are gathered in a single "Resources" option.
+                if (!modFullNames['resources']) {
+                    modFullNames['resources'] = Translate.instant('core.resources');
                 }
+            } else {
+                modFullNames[mod.modname] = mod.modplural;
+            }
 
-                // Get the archetype of the module type.
-                archetypes[mod.modname] = CoreCourseModuleDelegate.supportsFeature<number>(
-                    mod.modname,
-                    CoreConstants.FEATURE_MOD_ARCHETYPE,
-                    CoreConstants.MOD_ARCHETYPE_OTHER,
-                );
+            brandedIcons[mod.modname] = mod.branded;
 
-                // Get the full name of the module type.
-                if (archetypes[mod.modname] === CoreConstants.MOD_ARCHETYPE_RESOURCE) {
-                    // All resources are gathered in a single "Resources" option.
-                    if (!modFullNames['resources']) {
-                        modFullNames['resources'] = Translate.instant('core.resources');
-                    }
-                } else {
-                    modFullNames[mod.modname] = mod.modplural;
-                }
-
-                brandedIcons[mod.modname] = mod.branded;
-
-                // If this is not a theme image, leave it undefined to avoid having specific activity icons.
-                if (CoreUrl.isThemeImageUrl(mod.modicon)) {
-                    modIcons[mod.modname] = mod.modicon;
-                }
-            });
+            // If this is not a theme image, leave it undefined to avoid having specific activity icons.
+            if (CoreUrl.isThemeImageUrl(mod.modicon)) {
+                modIcons[mod.modname] = mod.modicon;
+            }
         });
+
         // Sort the modnames alphabetically.
         modFullNames = CoreUtils.sortValues(modFullNames);
         for (const modName in modFullNames) {

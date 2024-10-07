@@ -15,7 +15,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourse, CoreCourseWSSection, sectionContentIsModule } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreNavigator } from '@services/navigator';
@@ -30,6 +30,10 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 @Component({
     selector: 'page-core-course-list-mod-type',
     templateUrl: 'list-mod-type.html',
+    styles: `core-course-module:last-child {
+        --activity-border: 0px;
+        --card-padding-bottom: 0px;
+    }`,
 })
 export class CoreCourseListModTypePage implements OnInit {
 
@@ -41,6 +45,7 @@ export class CoreCourseListModTypePage implements OnInit {
     courseId = 0;
     canLoadMore = false;
     lastShownSectionIndex = -1;
+    isModule = sectionContentIsModule;
 
     protected modName?: string;
     protected archetypes: Record<string, number> = {}; // To speed up the check of modules.
@@ -97,40 +102,7 @@ export class CoreCourseListModTypePage implements OnInit {
             // Get all the modules in the course.
             let sections = await CoreCourse.getSections(this.courseId, false, true);
 
-            sections = sections.filter((section) => {
-                if (!section.modules.length || section.hiddenbynumsections) {
-                    return false;
-                }
-
-                section.modules = section.modules.filter((mod) => {
-                    if (!CoreCourseHelper.canUserViewModule(mod, section) ||
-                        !CoreCourse.moduleHasView(mod) ||
-                        mod.visibleoncoursepage === 0) {
-                        // Ignore this module.
-                        return false;
-                    }
-
-                    if (this.modName === 'resources') {
-                        // Check that the module is a resource.
-                        if (this.archetypes[mod.modname] === undefined) {
-                            this.archetypes[mod.modname] = CoreCourseModuleDelegate.supportsFeature<number>(
-                                mod.modname,
-                                CoreConstants.FEATURE_MOD_ARCHETYPE,
-                                CoreConstants.MOD_ARCHETYPE_OTHER,
-                            );
-                        }
-
-                        if (this.archetypes[mod.modname] === CoreConstants.MOD_ARCHETYPE_RESOURCE) {
-                            return true;
-                        }
-
-                    } else if (mod.modname === this.modName) {
-                        return true;
-                    }
-                });
-
-                return section.modules.length > 0;
-            });
+            sections = this.filterSectionsAndContents(sections);
 
             const result = await CoreCourseHelper.addHandlerDataForModules(sections, this.courseId);
 
@@ -144,6 +116,56 @@ export class CoreCourseListModTypePage implements OnInit {
     }
 
     /**
+     * Given a list of sections, return only those with contents to display. Also filter the contents to only include
+     * the ones that should be displayed.
+     *
+     * @param sections Sections.
+     * @returns Filtered sections.
+     */
+    protected filterSectionsAndContents(sections: CoreCourseWSSection[]): CoreCourseWSSection[] {
+        return sections.filter((section) => {
+            if (!section.contents.length || section.hiddenbynumsections) {
+                return false;
+            }
+
+            section.contents = section.contents.filter((modOrSubsection) => {
+                if (!sectionContentIsModule(modOrSubsection)) {
+                    const formattedSections = this.filterSectionsAndContents([modOrSubsection]);
+
+                    return !!formattedSections.length;
+                }
+
+                if (!CoreCourseHelper.canUserViewModule(modOrSubsection, section) ||
+                    !CoreCourse.moduleHasView(modOrSubsection) ||
+                    modOrSubsection.visibleoncoursepage === 0) {
+                    // Ignore this module.
+                    return false;
+                }
+
+                if (this.modName === 'resources') {
+                    // Check that the module is a resource.
+                    if (this.archetypes[modOrSubsection.modname] === undefined) {
+                        this.archetypes[modOrSubsection.modname] = CoreCourseModuleDelegate.supportsFeature<number>(
+                            modOrSubsection.modname,
+                            CoreConstants.FEATURE_MOD_ARCHETYPE,
+                            CoreConstants.MOD_ARCHETYPE_OTHER,
+                        );
+                    }
+
+                    if (this.archetypes[modOrSubsection.modname] === CoreConstants.MOD_ARCHETYPE_RESOURCE) {
+                        return true;
+                    }
+
+                } else if (modOrSubsection.modname === this.modName) {
+                    return true;
+                }
+            });
+
+            return section.contents.length > 0;
+        });
+    }
+
+    /**
      * Show more activities.
      *
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
@@ -153,7 +175,8 @@ export class CoreCourseListModTypePage implements OnInit {
         while (this.lastShownSectionIndex < this.sections.length - 1 && modulesLoaded < CoreCourseListModTypePage.PAGE_LENGTH) {
             this.lastShownSectionIndex++;
 
-            modulesLoaded += this.sections[this.lastShownSectionIndex].modules.length;
+            const sectionModules = CoreCourse.getSectionsModules([this.sections[this.lastShownSectionIndex]]);
+            modulesLoaded += sectionModules.length;
         }
 
         this.canLoadMore = this.lastShownSectionIndex < this.sections.length - 1;

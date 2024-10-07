@@ -62,6 +62,9 @@ import { firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreLoadings } from '@services/loadings';
+import { CoreArray } from '@singletons/array';
+import { CoreText } from '@singletons/text';
+import { ArrayElement } from '@/core/utils/types';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -639,9 +642,9 @@ export class CoreCourseProvider {
             sectionId = module.section;
         }
 
+        const site = await CoreSites.getSite(siteId);
         let sections: CoreCourseGetContentsWSSection[];
         try {
-            const site = await CoreSites.getSite(siteId);
             // We have courseId, we can use core_course_get_contents for compatibility.
             this.logger.debug(`Getting module ${moduleId} in course ${courseId}`);
 
@@ -657,7 +660,11 @@ export class CoreCourseProvider {
                 preSets.emergencyCache = false;
             }
 
-            sections = await this.getSections(courseId, false, false, preSets, siteId);
+            sections = await firstValueFrom(this.callGetSectionsWS(site, courseId, {
+                excludeModules: false,
+                excludeContents: false,
+                preSets,
+            }));
         }
 
         let foundModule: CoreCourseGetContentsWSModule | undefined;
@@ -953,40 +960,10 @@ export class CoreCourseProvider {
         courseId: number,
         options: CoreCourseGetSectionsOptions = {},
     ): WSObservable<CoreCourseWSSection[]> {
-        options.includeStealthModules = options.includeStealthModules ?? true;
-
         return asyncObservable(async () => {
             const site = await CoreSites.getSite(options.siteId);
 
-            const preSets: CoreSiteWSPreSets = {
-                ...options.preSets,
-                cacheKey: this.getSectionsCacheKey(courseId),
-                updateFrequency: CoreSite.FREQUENCY_RARELY,
-                ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
-            };
-
-            const params: CoreCourseGetContentsParams = {
-                courseid: courseId,
-            };
-            params.options = [
-                {
-                    name: 'excludemodules',
-                    value: !!options.excludeModules,
-                },
-                {
-                    name: 'excludecontents',
-                    value: !!options.excludeContents,
-                },
-            ];
-
-            if (this.canRequestStealthModules(site)) {
-                params.options.push({
-                    name: 'includestealthmodules',
-                    value: !!options.includeStealthModules,
-                });
-            }
-
-            return site.readObservable<CoreCourseGetContentsWSSection[]>('core_course_get_contents', params, preSets).pipe(
+            return this.callGetSectionsWS(site, courseId, options).pipe(
                 map(sections => {
                     const siteHomeId = site.getSiteHomeId();
                     let showSections = true;
@@ -1000,15 +977,90 @@ export class CoreCourseProvider {
                         sections.pop();
                     }
 
-                    // Add course to all modules.
-                    return sections.map((section) => ({
+                    // First format all the sections and their modules.
+                    const formattedSections: CoreCourseWSSection[] = sections.map((section) => ({
                         ...section,
                         availabilityinfo: this.treatAvailablityInfo(section.availabilityinfo),
                         modules: section.modules.map((module) => this.addAdditionalModuleData(module, courseId, section.id)),
+                        contents: [],
                     }));
+
+                    // Only return the root sections, subsections are included in section contents.
+                    return this.addSectionsContents(formattedSections).filter((section) => !section.component);
                 }),
             );
         });
+    }
+
+    /**
+     * Call the WS to get the course sections.
+     *
+     * @param site Site.
+     * @param courseId The course ID.
+     * @param options Options.
+     * @returns Observable that returns the sections.
+     */
+    protected callGetSectionsWS(
+        site: CoreSite,
+        courseId: number,
+        options: CoreCourseGetSectionsOptions = {},
+    ): WSObservable<CoreCourseGetContentsWSSection[]> {
+        const preSets: CoreSiteWSPreSets = {
+            ...options.preSets,
+            cacheKey: this.getSectionsCacheKey(courseId),
+            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+        };
+
+        const params: CoreCourseGetContentsParams = {
+            courseid: courseId,
+        };
+        params.options = [
+            {
+                name: 'excludemodules',
+                value: !!options.excludeModules,
+            },
+            {
+                name: 'excludecontents',
+                value: !!options.excludeContents,
+            },
+        ];
+
+        if (this.canRequestStealthModules(site)) {
+            params.options.push({
+                name: 'includestealthmodules',
+                value: !!(options.includeStealthModules ?? true),
+            });
+        }
+
+        return site.readObservable<CoreCourseGetContentsWSSection[]>('core_course_get_contents', params, preSets);
+    }
+
+    /**
+     * Calculate and add the section contents. Section contents include modules and subsections.
+     *
+     * @param sections Sections to calculate.
+     * @returns Sections with contents.
+     */
+    protected addSectionsContents(sections: CoreCourseWSSection[]): CoreCourseWSSection[] {
+        const subsections = sections.filter((section) => !!section.component);
+        const subsectionsComponents = CoreArray.unique(subsections.map(section => (section.component ?? '').replace('mod_', '')));
+
+        sections.forEach(section => {
+            // eslint-disable-next-line deprecation/deprecation
+            section.contents = section.modules.map(module => {
+                if (!subsectionsComponents.includes(module.modname)) {
+                    return module;
+                }
+
+                // Replace the module with the subsection. If subsection not found, the module will be removed from the list.
+                const customData = CoreText.parseJSON<{ sectionid?: string | number }>(module.customdata ?? '{}', {});
+
+                return subsections.find(subsection => subsection.id === Number(customData.sectionid));
+            }).filter((content): content is (CoreCourseWSSection | CoreCourseModuleData) => content !== undefined);
+        });
+
+        return sections;
     }
 
     /**
@@ -1023,16 +1075,40 @@ export class CoreCourseProvider {
 
     /**
      * Given a list of sections, returns the list of modules in the sections.
+     * The modules are ordered in the order of appearance in the course.
      *
      * @param sections Sections.
+     * @param options Other options.
      * @returns Modules.
      */
-    getSectionsModules(sections: CoreCourseWSSection[]): CoreCourseModuleData[] {
-        if (!sections || !sections.length) {
-            return [];
-        }
+    getSectionsModules<
+        Section extends CoreCourseWSSection,
+        Module = Extract<ArrayElement<Section['contents']>, CoreCourseModuleData>
+    >(
+        sections: Section[],
+        options: CoreCourseGetSectionsModulesOptions<Section, Module> = {},
+    ): Module[] {
+        let modules: Module[] = [];
 
-        return sections.reduce((previous: CoreCourseModuleData[], section) => previous.concat(section.modules || []), []);
+        sections.forEach((section) => {
+            if (options.ignoreSection && options.ignoreSection(section)) {
+                return;
+            }
+
+            section.contents.forEach((modOrSubsection) => {
+                if (sectionContentIsModule(modOrSubsection)) {
+                    if (options.ignoreModule && options.ignoreModule(modOrSubsection as Module)) {
+                        return;
+                    }
+
+                    modules.push(modOrSubsection as Module);
+                } else {
+                    modules = modules.concat(this.getSectionsModules([modOrSubsection], options));
+                }
+            });
+        });
+
+        return modules;
     }
 
     /**
@@ -1587,9 +1663,46 @@ export class CoreCourseProvider {
         return CoreDomUtils.removeElementFromHtml(availabilityInfo, 'li[data-action="showmore"]');
     }
 
+    /**
+     * Given section contents, classify them into modules and sections.
+     *
+     * @param contents Contents.
+     * @returns Classified contents.
+     */
+    classifyContents<
+        Contents extends CoreCourseModuleOrSection,
+        Module = Extract<Contents, CoreCourseModuleData>,
+        Section = Extract<Contents, CoreCourseWSSection>,
+    >(contents: Contents[]): { modules: Module[]; subsections: Section[] } {
+        const modules: Module[] = [];
+        const subsections: Section[] = [];
+
+        contents.forEach((content) => {
+            if (sectionContentIsModule(content)) {
+                modules.push(content as Module);
+            } else {
+                subsections.push(content as unknown as Section);
+            }
+        });
+
+        return { modules, subsections };
+    }
+
 }
 
 export const CoreCourse = makeSingleton(CoreCourseProvider);
+
+/**
+ * Type guard to detect if a section content (module or subsection) is a module.
+ *
+ * @param content Section module or subsection.
+ * @returns Whether section content is a module.
+ */
+export function sectionContentIsModule<Section extends CoreCourseWSSection, Module extends CoreCourseModuleData>(
+    content: Module | Section,
+): content is Module {
+    return 'modname' in content;
+}
 
 /**
  * Common options used by modules when calling a WS through CoreSite.
@@ -1821,8 +1934,20 @@ export type CoreCourseGetContentsWSModule = {
  * Data returned by core_course_get_contents WS.
  */
 export type CoreCourseWSSection = Omit<CoreCourseGetContentsWSSection, 'modules'> & {
-    modules: CoreCourseModuleData[]; // List of module.
+    contents: CoreCourseModuleOrSection[]; // List of modules and subsections.
+
+    /**
+     * List of modules
+     *
+     * @deprecated since 4.5. Use contents instead.
+     */
+    modules: CoreCourseModuleData[];
 };
+
+/**
+ * Module or subsection.
+ */
+export type CoreCourseModuleOrSection = CoreCourseModuleData | CoreCourseWSSection;
 
 /**
  * Params of core_course_get_course_module WS.
@@ -1996,4 +2121,12 @@ export type CoreCourseGetSectionsOptions = CoreSitesCommonWSOptions & {
     excludeContents?: boolean;
     includeStealthModules?: boolean; // Defaults to true.
     preSets?: CoreSiteWSPreSets;
+};
+
+/**
+ * Options for get sections modules.
+ */
+export type CoreCourseGetSectionsModulesOptions<Section, Module> = {
+    ignoreSection?: (section: Section) => boolean; // Function to filter sections. Return true to ignore it, false to use it.
+    ignoreModule?: (module: Module) => boolean; // Function to filter module. Return true to ignore it, false to use it.
 };

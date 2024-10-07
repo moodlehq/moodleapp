@@ -148,3 +148,15 @@ export function safeNumber(value?: unknown): SafeNumber | undefined {
 
     return value;
 }
+
+/**
+ * Helper type to extract the type of each item of an array.
+ *
+ * @example
+ * ```
+ *  type Result = ArrayElement<(A|B)[]>;
+ *  //      ^? type Result = A|B;
+ * ```
+ */
+export type ArrayElement<ArrayType extends readonly unknown[]> = ArrayType extends readonly (infer ElementType)[] ?
+    ElementType : never;
