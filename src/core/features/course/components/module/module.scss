@@ -7,7 +7,7 @@
     --card-border-width: 0px;
     --card-radius: 0px;
     --card-background: transparent;
-    --activity-border: 2px solid var(--stroke);
+    --activity-border: 1px solid var(--stroke);
     --card-padding-bottom: var(--vertical-spacing);
 
     ion-card {
@@ -132,15 +132,16 @@
         margin-bottom: var(--vertical-spacing);
     }
 
-    .activity-extrabadges,
     .core-module-description {
-        border-top: 1px solid var(--stroke);
         display: block;
     }
 
     .activity-extrabadges {
         font: var(--mdl-typography-body-font-md);
         color: var(--medium);
+        border: 1px solid var(--stroke);
+        border-radius: var(--mdl-shape-borderRadius-sm);
+        padding: var(--mdl-spacing-2) var(--mdl-spacing-3) var(--mdl-spacing-2) var(--mdl-spacing-3);
     }
 
     .activity-description-availabilityinfo .core-module-availabilityinfo {
