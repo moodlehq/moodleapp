@@ -559,7 +559,7 @@ export class CoreIframeUtilsProvider {
      */
     injectiOSScripts(userScriptWindow: WKUserScriptWindow): void {
         const wwwPath = CoreFile.getWWWAbsolutePath();
-        const linksPath = CorePath.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js');
+        const linksPath = CorePath.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js').replace(/%20/g, ' ');
 
         userScriptWindow.WKUserScript?.addScript({ id: 'CoreIframeUtilsLinksScript', file: linksPath });
 
