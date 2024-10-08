@@ -48,12 +48,13 @@
     }
 
     @if (quiz.showAttemptsMarks && readableMark && attempt?.sumgrades !== null) {
-        <ion-item class="ion-text-wrap addon-mod_quiz-attempt-mark">
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_quiz.marks' | translate }}</p>
-                <p>{{ readableMark }}</p>
-            </ion-label>
-        </ion-item>
+    <ion-item class="ion-text-wrap addon-mod_quiz-attempt-mark">
+        <ion-label>
+            <p class="item-heading">{{ 'addon.mod_quiz.marks' | translate }}</p>
+            <p>{{ readableMark }}</p>
+            <p *ngIf="attempt.attemptsectionsmarks" [innerHTML]="attempt.attemptsectionsmarks"></p>
+        </ion-label>
+    </ion-item>
     }
 
     @if (readableGrade) {
