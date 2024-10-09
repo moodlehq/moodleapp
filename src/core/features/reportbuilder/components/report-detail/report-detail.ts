@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import {
     CoreReportBuilder,
@@ -37,7 +37,6 @@ import { map } from 'rxjs/operators';
     selector: 'core-report-builder-report-detail',
     templateUrl: './report-detail.html',
     styleUrls: ['./report-detail.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoreReportBuilderReportDetailComponent implements OnInit {
 
