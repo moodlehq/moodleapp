@@ -162,25 +162,34 @@
                         </ng-container>
                     </ng-container>
 
-                    <!-- Add or edit submission. -->
+                    <!-- Edit and remove buttons. -->
+                    <div *ngIf="loaded && !isSubmittedForGrading && canEdit && !unsupportedEditPlugins.length &&
+                            !showErrorStatementEdit && (editedOffline || (!removedOffline && userSubmission?.status &&
+                                userSubmission?.status !== statusNew && userSubmission?.status !== statusReopened))"
+                        class="list-item-limited-width">
+                        <div class="adaptable-buttons-row">
+                            <ion-button expand="block" fill="outline" class="ion-margin ion-text-wrap" (click)="goToEdit()">
+                                <ion-icon name="fas-pen" slot="start" aria-hidden="true" />
+                                {{ 'addon.mod_assign.editsubmission' | translate }}
+                            </ion-button>
+                            <ion-button *ngIf="isRemoveAvailable" fill="outline" expand="block" class="ion-margin ion-text-wrap"
+                                (click)="remove()">
+                                <ion-icon name="fas-trash" color="danger" slot="start" aria-hidden="true" />
+                                {{ 'addon.mod_assign.removesubmission' | translate }}
+                            </ion-button>
+                        </div>
+                    </div>
+
+                    <!-- Add and submit buttons. -->
                     <div collapsible-footer *ngIf="loaded && !isSubmittedForGrading" [hidden]="selectedTab !== 'submission'" slot="fixed">
                         <div class="list-item-limited-width" *ngIf="canEdit || canSubmit">
                             <ng-container *ngIf="canEdit">
-                                <ng-container *ngIf=" !unsupportedEditPlugins.length && !showErrorStatementEdit">
-                                    <!-- If has offline data, show edit and remove. -->
-                                    <div *ngIf="editedOffline" class="adaptable-buttons-row">
-                                        <ion-button expand="block" class="ion-margin ion-text-wrap" (click)="goToEdit()">
-                                            {{ 'addon.mod_assign.editsubmission' | translate }}
-                                        </ion-button>
-                                        <ion-button *ngIf="isRemoveAvailable" expand="block" class="ion-margin ion-text-wrap"
-                                            (click)="remove()">
-                                            {{ 'addon.mod_assign.removesubmission' | translate }}
-                                        </ion-button>
-                                    </div>
+                                <div *ngIf="!unsupportedEditPlugins.length && !showErrorStatementEdit" class="adaptable-buttons-row">
                                     <!-- If no submission or is new, show add submission. -->
-                                    <ion-button expand="block" class="ion-text-wrap" (click)="goToEdit()" *ngIf="!editedOffline &&
-                                            (removedOffline || !userSubmission || !userSubmission!.status ||
-                                            userSubmission!.status === statusNew)">
+                                    <ion-button expand="block" class="ion-margin ion-text-wrap" (click)="goToEdit()" *ngIf="
+                                            !editedOffline &&
+                                                (removedOffline || !userSubmission || !userSubmission!.status ||
+                                                userSubmission!.status === statusNew)">
                                         <ng-container *ngIf="!assign?.timelimit || userSubmission?.timestarted">
                                             {{ 'addon.mod_assign.addsubmission' | translate }}
                                         </ng-container>
@@ -190,27 +199,15 @@
                                     </ion-button>
                                     <!-- If reopened, show addfromprevious and addnewattempt. -->
                                     <ng-container *ngIf="!editedOffline && !removedOffline && userSubmission?.status === statusReopened">
-                                        <ion-button *ngIf="!isPreviousAttemptEmpty" expand="block" class="ion-text-wrap"
+                                        <ion-button *ngIf="!isPreviousAttemptEmpty" expand="block" class="ion-margin ion-text-wrap"
                                             (click)="copyPrevious()">
                                             {{ 'addon.mod_assign.addnewattemptfromprevious' | translate }}
                                         </ion-button>
-                                        <ion-button expand="block" class="ion-text-wrap" (click)="goToEdit()">
+                                        <ion-button expand="block" class="ion-margin ion-text-wrap" (click)="goToEdit()">
                                             {{ 'addon.mod_assign.addnewattempt' | translate }}
                                         </ion-button>
                                     </ng-container>
-                                    <!-- Else show editsubmission and removesubmission. -->
-                                    <div *ngIf="!editedOffline && !removedOffline && userSubmission && userSubmission!.status
-                                         && userSubmission!.status !== statusNew && userSubmission!.status !== statusReopened"
-                                        class="adaptable-buttons-row">
-                                        <ion-button expand="block" class="ion-margin ion-text-wrap" (click)="goToEdit()">
-                                            {{ 'addon.mod_assign.editsubmission' | translate }}
-                                        </ion-button>
-                                        <ion-button *ngIf="isRemoveAvailable" expand="block" class="ion-margin ion-text-wrap"
-                                            (click)="remove()">
-                                            {{ 'addon.mod_assign.removesubmission' | translate }}
-                                        </ion-button>
-                                    </div>
-                                </ng-container>
+                                </div>
                                 <ion-item class="core-danger-item ion-text-wrap"
                                     *ngIf="(unsupportedEditPlugins.length && !showErrorStatementEdit)|| showErrorStatementEdit">
                                     <ion-label>
@@ -246,10 +243,14 @@
                                 <!-- Submit button. -->
                                 <ion-item class="ion-text-wrap" *ngIf="!showErrorStatementSubmit">
                                     <ion-label>
-                                        <ion-button expand="block" class="ion-text-wrap" (click)="submitForGrading(acceptStatement)">
+                                        <ion-button expand="block" class="ion-text-wrap ion-no-margin ion-margin-bottom"
+                                            (click)="submitForGrading(acceptStatement)">
                                             {{ 'addon.mod_assign.submitassignment' | translate }}
                                         </ion-button>
-                                        <p>{{ 'addon.mod_assign.submitassignment_help' | translate }}</p>
+                                        <p>
+                                            <ion-icon name="fas-circle-info" color="info" aria-hidden=" true" />
+                                            {{ 'addon.mod_assign.submitassignment_help' | translate }}
+                                        </p>
                                     </ion-label>
                                 </ion-item>
                                 <!-- Error because we lack submissions statement. -->
