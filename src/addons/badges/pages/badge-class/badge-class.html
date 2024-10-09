@@ -30,7 +30,9 @@
                 <ion-item class="ion-text-wrap" *ngIf="badge.issuer">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.badges.issuername' | translate}}</p>
-                        <p>{{ badge.issuer }}</p>
+                        <p>
+                            <core-format-text [text]="badge.issuer" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true" />
+                        </p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="badge.coursefullname">
