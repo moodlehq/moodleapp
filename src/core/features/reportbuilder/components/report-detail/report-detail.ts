@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import {
     CoreReportBuilder,
@@ -37,7 +37,6 @@ import { map } from 'rxjs/operators';
     selector: 'core-report-builder-report-detail',
     templateUrl: './report-detail.html',
     styleUrls: ['./report-detail.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoreReportBuilderReportDetailComponent implements OnInit {
 
@@ -55,7 +54,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
         new BehaviorSubject<CoreReportBuilderReportDetailState>({
             report: null,
             loaded: false,
-            canLoadMoreRows: true,
+            canLoadMoreRows: false,
             errorLoadingRows: false,
             cardviewShowFirstTitle: false,
             cardVisibleColumns: 1,
@@ -126,6 +125,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
                 report,
                 cardVisibleColumns: report.details.settingsdata.cardviewVisibleColumns,
                 cardviewShowFirstTitle: report.details.settingsdata.cardviewShowFirstTitle,
+                canLoadMoreRows: report.data.totalrowcount > report.data.rows.length,
             });
 
             this.logView(report);
@@ -175,7 +175,6 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
         this.updateState({ page: 0, canLoadMoreRows: false });
         await CoreUtils.ignoreErrors(this.getReport());
         await ionRefresher?.complete();
-        this.updateState({ canLoadMoreRows: true });
     }
 
     /**
@@ -225,12 +224,12 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
                         ],
                     },
                 },
+                canLoadMoreRows: newReport.data.totalrowcount > report.data.rows.length + newReport.data.rows.length,
             });
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading more reports');
 
-            this.updateState({ canLoadMoreRows: false });
-            this.updateState({ errorLoadingRows: true });
+            this.updateState({ canLoadMoreRows: false, errorLoadingRows: true });
         }
 
         complete();
