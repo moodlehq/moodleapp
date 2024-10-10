@@ -483,12 +483,15 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             id: data.moduleId === undefined ? data.sectionId : undefined,
         });
 
-        // Select the root section.
-        this.sectionChanged(parents[0] ?? section);
+        // If a section is selected (no moduleId), or all sections are not displayed. Change section.
+        if (!data.moduleId || !this.selectedSection || this.selectedSection.id !== this.allSectionsId) {
+            // Select the root section.
+            this.sectionChanged(parents[0] ?? section);
+        }
 
-        if (parents.length && section) {
-            // It's a subsection. Expand all the parents and the subsection.
-            for (let i = 1; i < parents.length; i++) {
+        if (section) {
+            // It's a subsection. Expand its parents too.
+            for (let i = 0; i < parents.length; i++) {
                 this.setSectionExpanded(parents[i]);
             }
 
@@ -811,6 +814,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     accordionMultipleChange(ev: AccordionGroupChangeEventDetail): void {
         const sectionIds = ev.value as string[] | undefined;
+
+        this.accordionMultipleValue = ev.value;
+
         const allSections = CoreCourseHelper.flattenSections(this.sections);
         allSections.forEach((section) => {
             section.expanded = false;
@@ -836,8 +842,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     protected setSectionExpanded(section: CoreCourseSectionToDisplay): void {
         section.expanded = true;
+
         if (!this.accordionMultipleValue.includes(section.id.toString())) {
-            this.accordionMultipleValue.push(section.id.toString());
+            // Force detect changes to update the view.
+            this.accordionMultipleValue = [
+                ...this.accordionMultipleValue,
+                section.id.toString(),
+            ];
+
             this.saveExpandedSections();
         }
     }
