@@ -3,13 +3,27 @@
 // Bootstrap 4 Styles
 // -------------------------
 
-@import "reboot";
-@import "forms";
+@import "functions";
+@import "variables";
+@import "mixins";
 
+@import "reboot";
+
+@import "grid";
+@import "forms";
 @import "buttons";
+@import "card";
+@import "badge";
 @import "alert";
 @import "media";
+@import "close";
+
 @import "utilities";
+
+// Bootstrap 5 Styles
+// -------------------------
+@import "bs5-bridge";
+
 
 // Deprecated styles.
 .label {
