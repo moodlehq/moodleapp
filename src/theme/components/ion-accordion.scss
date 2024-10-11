@@ -17,6 +17,9 @@ ion-accordion {
     &.accordion-collapsing > [slot="header"] .ion-accordion-toggle-icon,
     &.accordion-collapsed > [slot="header"] .ion-accordion-toggle-icon {
         transform: rotate(-90deg);
+        @include rtl() {
+            transform: rotate(90deg);
+        }
     }
 }
 
