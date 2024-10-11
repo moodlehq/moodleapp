@@ -14,9 +14,10 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 import { CoreQuestionQuestionParsed } from '@features/question/services/question';
+import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { ModalController } from '@singletons';
 
 /**
@@ -30,7 +31,7 @@ import { ModalController } from '@singletons';
         CoreSharedModule,
     ],
 })
-export class AddonModQuizNavigationModalComponent {
+export class AddonModQuizNavigationModalComponent implements OnInit {
 
     @Input() navigation?: AddonModQuizNavigationQuestion[]; // Whether the user is reviewing the attempt.
     @Input({ transform: toBoolean }) summaryShown = false; // Whether summary is currently being shown.
@@ -38,6 +39,19 @@ export class AddonModQuizNavigationModalComponent {
     @Input() currentPage?: number; // Current page.
     @Input({ transform: toBoolean }) isReview = false; // Whether the user is reviewing the attempt.
     @Input({ transform: toBoolean }) isSequential = false; // Whether quiz navigation is sequential.
+
+    correctIcon = '';
+    incorrectIcon = '';
+    partialCorrectIcon = '';
+
+    /**
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        this.correctIcon = CoreQuestionHelper.getCorrectIcon().fullName;
+        this.incorrectIcon = CoreQuestionHelper.getIncorrectIcon().fullName;
+        this.partialCorrectIcon = CoreQuestionHelper.getPartiallyCorrectIcon().fullName;
+    }
 
     /**
      * Close modal.
