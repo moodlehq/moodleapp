@@ -2444,7 +2444,7 @@
   "core.selectacategory": "moodle",
   "core.selectacourse": "moodle",
   "core.selectagroup": "moodle",
-  "core.selectall": "local_moodlemobileapp",
+  "core.selectall": "moodle",
   "core.send": "message",
   "core.sending": "chat",
   "core.serverconnection": "local_moodlemobileapp",
