@@ -19,6 +19,7 @@ import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
+import { CoreObject } from '@singletons/object';
 import { CorePath } from '@singletons/path';
 import { AddonBlogFilter } from './blog';
 import {
@@ -126,9 +127,13 @@ export class AddonBlogOfflineService {
      *
      * @returns Offline entries.
      */
-    async getOfflineEntries(filters?: AddonBlogFilter, siteId?: string): Promise<AddonBlogOfflineEntry[]> {
+    async getOfflineEntries(filters: AddonBlogFilter = {}, siteId?: string): Promise<AddonBlogOfflineEntry[]> {
+        const { entryid: id, userid } = filters;
         const site = await CoreSites.getSite(siteId);
-        const records = await site.getDb().getRecords<AddonBlogOfflineEntry>(OFFLINE_BLOG_ENTRIES_TABLE_NAME, filters);
+        const records = await site.getDb().getRecords<AddonBlogOfflineEntry>(
+            OFFLINE_BLOG_ENTRIES_TABLE_NAME,
+            CoreObject.withoutUndefined({ id, userid }),
+        );
 
         return records.map(record => {
             if ('id' in record && record.id && record.id < 0) {
