@@ -30,14 +30,14 @@
                 <ion-icon *ngIf="question.type === 'description' || !question.questionnumber" name="fas-circle-info" slot="end"
                     aria-hidden="true" />
                 <ion-icon *ngIf="question.stateClass === 'core-question-requiresgrading'" name="fas-circle-question"
-                    [attr.aria-label]="question.status" slot="end" />
-                <ion-icon *ngIf="question.stateClass === 'core-question-correct'" name="fas-check" color="success"
-                    [attr.aria-label]="question.status" slot="end" />
-                <ion-icon *ngIf="question.stateClass === 'core-question-partiallycorrect'" name="fas-square-check" color="warning"
-                    [attr.aria-label]="question.status" slot="end" />
+                    [title]="question.status" slot="end" />
+                <ion-icon *ngIf="question.stateClass === 'core-question-correct'" [name]="correctIcon" color="success"
+                    [title]="question.status" slot="end" />
+                <ion-icon *ngIf="question.stateClass === 'core-question-partiallycorrect'" [name]="partialCorrectIcon" color="warning"
+                    [title]="question.status" slot="end" />
                 <ion-icon *ngIf="question.stateClass === 'core-question-incorrect' ||
-                    question.stateClass === 'core-question-notanswered'" name="fas-xmark" color="danger"
-                    [attr.aria-label]="question.status" slot="end" />
+                    question.stateClass === 'core-question-notanswered'" [name]="incorrectIcon" color="danger" [title]="question.status"
+                    slot="end" />
             </ion-item>
         </ion-list>
     </nav>
