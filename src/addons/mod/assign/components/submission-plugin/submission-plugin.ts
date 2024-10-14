@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, Type, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, Type, ViewChild  } from '@angular/core';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import {
     AddonModAssignAssign,
@@ -34,7 +34,7 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'addon-mod-assign-submission-plugin',
     templateUrl: 'addon-mod-assign-submission-plugin.html',
 })
-export class AddonModAssignSubmissionPluginComponent implements OnInit {
+export class AddonModAssignSubmissionPluginComponent implements OnChanges {
 
     @ViewChild(CoreDynamicComponent) dynamicComponent!: CoreDynamicComponent<AddonModAssignSubmissionPluginBaseComponent>;
 
@@ -57,7 +57,7 @@ export class AddonModAssignSubmissionPluginComponent implements OnInit {
     /**
      * @inheritdoc
      */
-    async ngOnInit(): Promise<void> {
+    async ngOnChanges(changes: SimpleChanges): Promise<void> {
         if (!this.plugin) {
             this.pluginLoaded = true;
 
@@ -73,8 +73,19 @@ export class AddonModAssignSubmissionPluginComponent implements OnInit {
         }
         this.plugin.name = name;
 
-        // Check if the plugin has defined its own component to render itself.
-        this.pluginComponent = await AddonModAssignSubmissionDelegate.getComponentForPlugin(this.plugin, this.edit);
+        if (changes.plugin || changes.edit) {
+            // Check if the plugin has defined its own component to render itself.
+            this.pluginComponent = await AddonModAssignSubmissionDelegate.getComponentForPlugin(this.plugin, this.edit);
+
+            this.pluginLoaded = !this.pluginComponent;
+
+            if (!this.pluginComponent) {
+                // Data to render the plugin.
+                this.text = AddonModAssign.getSubmissionPluginText(this.plugin);
+                this.files = AddonModAssign.getSubmissionPluginAttachments(this.plugin);
+                this.notSupported = AddonModAssignSubmissionDelegate.isPluginSupported(this.plugin.type);
+            }
+        }
 
         if (this.pluginComponent) {
             // Prepare the data to pass to the component.
@@ -86,12 +97,6 @@ export class AddonModAssignSubmissionPluginComponent implements OnInit {
                 edit: this.edit,
                 allowOffline: this.allowOffline,
             };
-        } else {
-            // Data to render the plugin.
-            this.text = AddonModAssign.getSubmissionPluginText(this.plugin);
-            this.files = AddonModAssign.getSubmissionPluginAttachments(this.plugin);
-            this.notSupported = AddonModAssignSubmissionDelegate.isPluginSupported(this.plugin.type);
-            this.pluginLoaded = true;
         }
     }
 
