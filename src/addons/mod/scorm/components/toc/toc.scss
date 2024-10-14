@@ -1,0 +1,5 @@
+@use "theme/globals" as *;
+
+.addon-mod_scorm-toc ion-icon {
+    @include margin(4px, 8px, null, null);
+}

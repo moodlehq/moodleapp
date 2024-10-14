@@ -180,6 +180,8 @@ core-split-view.menu-and-content {
 [aria-current="page"],
 .item.item-current {
     @include safe-area-border-start(var(--selected-item-border-width), solid,  var(--selected-item-color));
+    --padding-start: calc(16px - var(--selected-item-border-width));
+
     > * {
         --ion-safe-area-left: 0px;
     }
@@ -278,7 +280,7 @@ mark, .matchtext {
 // Different levels of padding.
 @for $i from 0 through 15 {
     .core-padding-#{$i} {
-        @include padding(null, null, null, 15px * $i + 16px);
+        @include padding(null, null, null, 16px * $i);
     }
 }
 
