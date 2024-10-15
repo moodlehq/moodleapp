@@ -42,7 +42,6 @@ import { CoreNetwork } from '@services/network';
 import moment from 'moment-timezone';
 import { Subscription } from 'rxjs';
 import { CoreAnimations } from '@components/animations';
-import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreToasts, ToastDuration } from '@services/toasts';
 import { CoreLoadings } from '@services/loadings';
 
@@ -311,7 +310,6 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * @param text Comment text to add.
      */
     async addComment(text: string): Promise<void> {
-        CoreKeyboard.close();
         const loadingModal = await CoreLoadings.show('core.sending', true);
         // Freeze the add comment button.
         this.sending = true;
@@ -364,6 +362,10 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
 
             // New comments.
             this.scrollToBottom();
+
+            if (document.activeElement instanceof HTMLElement) {
+                document.activeElement.blur();
+            }
         }
     }
 
