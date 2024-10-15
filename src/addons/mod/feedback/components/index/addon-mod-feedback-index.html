@@ -20,20 +20,13 @@
         [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()" />
 
     <core-tabs [hideUntil]="tabsReady" [selectedIndex]="firstSelectedTab">
-        <core-tab [title]="'addon.mod_feedback.overview' | translate" id="overview" (ionSelect)="tabChanged('overview')">
+        <core-tab [title]="tabs.overview.label | translate" [id]="tabs.overview.name" (ionSelect)="tabChanged(tabs.overview.name)">
             <ng-template>
                 <ng-container *ngTemplateOutlet="tabOverview" />
             </ng-template>
         </core-tab>
-        <core-tab *ngIf="showAnalysis && access && access.canviewreports" id="analysis" [title]="'addon.mod_feedback.analysis' | translate"
-            (ionSelect)="tabChanged('analysis')">
-            <ng-template>
-                <ng-container *ngTemplateOutlet="tabAnalysis" />
-            </ng-template>
-        </core-tab>
-
-        <core-tab *ngIf="showAnalysis && access && !access.canviewreports" id="analysis"
-            [title]="'addon.mod_feedback.completed_feedbacks' | translate" (ionSelect)="tabChanged('analysis')">
+        <core-tab *ngIf="showAnalysis && access" [id]="tabs.analysis.name" [title]="tabs.analysis.label | translate"
+            (ionSelect)="tabChanged(tabs.analysis.name)">
             <ng-template>
                 <ng-container *ngTemplateOutlet="tabAnalysis" />
             </ng-template>
@@ -101,7 +94,7 @@
 
 <!-- Template to render the overview. -->
 <ng-template #tabOverview>
-    <core-loading [hideUntil]="tabsLoaded.overview">
+    <core-loading [hideUntil]="tabs.overview.loaded">
         <ng-container *ngTemplateOutlet="basicInfo" />
 
         <ion-card class="core-info-card" *ngIf="access && access.cancomplete && !access.isopen">
@@ -153,7 +146,7 @@
 
 <!-- Template to render the analysis. -->
 <ng-template #tabAnalysis>
-    <core-loading [hideUntil]="tabsLoaded.analysis">
+    <core-loading [hideUntil]="tabs.analysis.loaded">
         <ng-container *ngTemplateOutlet="basicInfo" />
 
         <ng-container *ngIf="access && (access.canedititems || !access.isempty)">

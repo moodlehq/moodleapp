@@ -16,6 +16,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModFeedbackIndexComponent } from '../../components/index/index';
+import { AddonModFeedbackIndexTabName } from '../../constants';
 
 /**
  * Page that displays a feedback.
@@ -28,7 +29,7 @@ export class AddonModFeedbackIndexPage extends CoreCourseModuleMainActivityPage<
 
     @ViewChild(AddonModFeedbackIndexComponent) activityComponent?: AddonModFeedbackIndexComponent;
 
-    selectedTab?: string;
+    selectedTab?: AddonModFeedbackIndexTabName;
     selectedGroup?: number;
 
     /**

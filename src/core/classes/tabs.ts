@@ -221,7 +221,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
         this.swiper.update();
         await CoreWait.nextTick();
 
-        if (!this.hasSliddenToInitial && this.selectedIndex && this.selectedIndex >= this.swiper.slidesPerViewDynamic()) {
+        if (!this.hasSliddenToInitial && this.selectedIndex >= this.swiper.slidesPerViewDynamic()) {
             this.hasSliddenToInitial = true;
             this.shouldSlideToInitial = true;
 
@@ -233,7 +233,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
             }, 400);
 
             return;
-        } else if (this.selectedIndex) {
+        } else {
             this.hasSliddenToInitial = true;
         }
 
@@ -301,21 +301,21 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
      * @returns Initial tab, undefined if no valid tab found.
      */
     protected calculateInitialTab(): T | undefined {
-        const selectedTab: T | undefined = this.tabs[this.selectedIndex || 0] || undefined;
+        const selectedTab: T | undefined = this.tabs[this.selectedIndex] || undefined;
 
-        if (selectedTab && selectedTab.enabled) {
+        if (selectedTab?.enabled) {
             return selectedTab;
         }
 
         // The tab is not enabled or not shown. Get the first tab that is enabled.
-        return this.tabs.find((tab) => tab.enabled) || undefined;
+        return this.tabs.find((tab) => tab.enabled);
     }
 
     /**
      * Method executed when the slides are changed.
      */
     slideChanged(): void {
-        if (!this.swiper) {
+        if (!this.swiper || this.swiper.destroyed) {
             return;
         }
 
@@ -340,7 +340,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
      * Calculate the number of slides that can fit on the screen.
      */
     protected async calculateMaxSlides(): Promise<void> {
-        if (!this.swiper) {
+        if (!this.swiper || this.swiper.destroyed) {
             return;
         }
 
@@ -456,7 +456,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
             return;
         }
 
-        if (this.selected && this.swiper) {
+        if (this.selected && this.swiper && !this.swiper.destroyed) {
             // Check if we need to slide to the tab because it's not visible.
             const firstVisibleTab = this.swiper.activeIndex;
             const lastVisibleTab = firstVisibleTab + this.swiper.slidesPerViewDynamic() - 1;

@@ -34,6 +34,7 @@ import {
     ADDON_MOD_FEEDBACK_MULTICHOICE_TYPE_SEP,
     ADDON_MOD_FEEDBACK_MULTICHOICERATED_VALUE_SEP,
     ADDON_MOD_FEEDBACK_PER_PAGE,
+    AddonModFeedbackIndexTabName,
 } from '../constants';
 
 /**
@@ -1263,7 +1264,7 @@ declare module '@singletons/events' {
  */
 export type AddonModFeedbackFormSubmittedData = {
     feedbackId: number;
-    tab: string;
+    tab: AddonModFeedbackIndexTabName;
     offline: boolean;
 };
 

@@ -24,3 +24,11 @@ export const ADDON_MOD_FEEDBACK_MULTICHOICE_HIDENOSELECT = 'h';
 export const ADDON_MOD_FEEDBACK_MULTICHOICERATED_VALUE_SEP = '####';
 
 export const ADDON_MOD_FEEDBACK_PER_PAGE = 20;
+
+/**
+ * Index Tabs.
+ */
+export enum AddonModFeedbackIndexTabName {
+    OVERVIEW = 'overview',
+    ANALYSIS = 'analysis',
+}
