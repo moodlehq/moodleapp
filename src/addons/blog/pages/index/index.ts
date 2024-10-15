@@ -408,7 +408,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
      * Redirect to entry creation form.
      */
     createNewEntry(): void {
-        CoreNavigator.navigateToSitePath('blog/edit/0', { params: { cmId: this.filter.cmid } });
+        CoreNavigator.navigateToSitePath('blog/edit/0', { params: { cmId: this.filter.cmid, courseId: this.filter.courseid } });
     }
 
     /**
