@@ -140,7 +140,7 @@
                         <p>{{ currentOrganization.title }}</p>
                         <div *ngFor="let sco of toc" class="core-padding-{{sco.level}} addon-mod_scorm-type-{{sco.scormtype}}">
                             <p *ngIf="sco.isvisible">
-                                <ion-icon *ngIf="sco.icon" [name]="sco.icon.icon" [attr.aria-label]="sco.icon.description" slot="start" />
+                                <ion-icon *ngIf="sco.icon" [name]="sco.icon.icon" [attr.aria-label]="sco.icon.description" />
                                 <button class="as-link" *ngIf="sco.prereq && sco.launch" (click)="open($event, false, sco.id)">
                                     <core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="module.id"
                                         [courseId]="courseId" />

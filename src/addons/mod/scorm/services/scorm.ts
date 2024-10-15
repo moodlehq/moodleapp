@@ -63,20 +63,14 @@ const STATUSES = {
     'n': 'notattempted',
 };
 const STATUS_TO_ICON = {
-    assetc: 'far-file-zipper',
-    asset: 'far-file-zipper',
+    asset: '', // Empty to show an space.
     browsed: 'fas-book',
-    completed: 'far-square-check',
+    completed: 'fas-check',
     failed: 'fas-xmark',
-    incomplete: 'far-pen-to-square',
-    minus: 'fas-minus',
+    incomplete: 'fas-pen-to-square',
     notattempted: 'far-square',
-    passed: 'fas-check',
-    plus: 'fas-plus',
-    popdown: 'far-rectangle-xmark',
-    popup: 'fas-window-restore',
+    passed: 'fas-check-double',
     suspend: 'fas-pause',
-    wait: 'far-clock',
 };
 
 /**
@@ -1022,7 +1016,7 @@ export class AddonModScormProvider {
 
         if (sco.isvisible) {
             if (VALID_STATUSES.indexOf(status) >= 0) {
-                if (sco.scormtype == 'sco') {
+                if (sco.scormtype === 'sco') {
                     imageName = status;
                     descName = status;
                 } else {
@@ -1042,7 +1036,7 @@ export class AddonModScormProvider {
             } else {
                 incomplete = true;
 
-                if (sco.scormtype == 'sco') {
+                if (sco.scormtype === 'sco') {
                     // Status empty or not valid, use 'notattempted'.
                     imageName = 'notattempted';
                 } else {
