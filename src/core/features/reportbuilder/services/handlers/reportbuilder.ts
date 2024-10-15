@@ -17,6 +17,7 @@ import {
     CoreUserProfileHandlerType,
     CoreUserProfileHandler,
     CoreUserProfileHandlerData,
+    CoreUserDelegateContext,
 } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
@@ -40,6 +41,18 @@ export class CoreReportBuilderHandlerService implements CoreUserProfileHandler {
      */
     async isEnabled(): Promise<boolean> {
         return await CoreReportBuilder.isEnabled();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabledForContext(context: CoreUserDelegateContext): Promise<boolean> {
+        // Custom reports only available in user menu.
+        if (context !== CoreUserDelegateContext.USER_MENU) {
+            return false;
+        }
+
+        return this.isEnabled();
     }
 
     /**
