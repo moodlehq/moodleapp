@@ -16,6 +16,6 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 
-    <addon-mod-feedback-index [module]="module" [courseId]="courseId" [group]="selectedGroup" [tab]="selectedTab"
+    <addon-mod-feedback-index [module]="module" [courseId]="courseId" [group]="selectedGroup" [selectedTab]="selectedTab"
         (dataRetrieved)="updateData($event)" />
 </ion-content>

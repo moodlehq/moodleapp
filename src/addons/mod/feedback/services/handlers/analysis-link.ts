@@ -19,7 +19,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_FEEDBACK_PAGE_NAME, AddonModFeedbackIndexTabName } from '../../constants';
 import { CoreLoadings } from '@services/loadings';
 
 /**
@@ -59,7 +59,7 @@ export class AddonModFeedbackAnalysisLinkHandlerService extends CoreContentLinks
                         {
                             params: {
                                 module,
-                                tab: 'analysis',
+                                tab: AddonModFeedbackIndexTabName.ANALYSIS,
                             },
                             siteId,
                         },
