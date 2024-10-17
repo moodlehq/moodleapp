@@ -47,6 +47,7 @@ import {
     ADDON_MOD_FORUM_PREFERENCE_SORTORDER,
     ADDON_MOD_FORUM_REPLY_DISCUSSION_EVENT,
     AddonModForumSortorder,
+    AddonModForumType,
 } from '../constants';
 
 declare module '@singletons/events' {
@@ -417,7 +418,10 @@ export class AddonModForumProvider {
      * @param options Other options.
      * @returns Promise resolved when the forums are retrieved.
      */
-    async getCourseForums(courseId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModForumData[]> {
+    async getCourseForums(
+        courseId: number,
+        options: CoreSitesCommonWSOptions = {},
+    ): Promise<AddonModForumGetForumsByCoursesWSResponse> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModForumGetForumsByCoursesWSParams = {
@@ -483,8 +487,7 @@ export class AddonModForumProvider {
      */
     async getForum(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModForumData> {
         const forums = await this.getCourseForums(courseId, options);
-
-        const forum = forums.find(forum => forum.cmid == cmId);
+        const forum = forums.find(forum => forum.cmid === cmId);
 
         if (!forum) {
             throw new CoreError(Translate.instant('core.course.modulenotfound'));
@@ -1385,7 +1388,7 @@ type AddonModForumGetForumsByCoursesWSParams = {
 export type AddonModForumData = {
     id: number; // Forum id.
     course: number; // Course id.
-    type: string; // The forum type.
+    type: AddonModForumType; // The forum type.
     name: string; // Forum name.
     intro: string; // The forum intro.
     introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
@@ -1420,6 +1423,11 @@ export type AddonModForumData = {
     istracked?: boolean; // If the user is tracking the forum.
     unreadpostscount?: number; // The number of unread posts for tracked forums.
 };
+
+/**
+ * Data returned by mod_forum_get_forums_by_courses WS.
+ */
+type AddonModForumGetForumsByCoursesWSResponse = AddonModForumData[];
 
 /**
  * Forum discussion.
@@ -1750,11 +1758,6 @@ export type AddonModForumGetForumDiscussionsPaginatedWSResponse = {
     discussions: AddonModForumDiscussion[];
     warnings?: CoreWSExternalWarning[];
 };
-
-/**
- * Data returned by mod_forum_get_forums_by_courses WS.
- */
-export type AddonModForumGetForumsByCoursesWSResponse = AddonModForumData[];
 
 /**
  * Array options of mod_forum_add_discussion WS.
