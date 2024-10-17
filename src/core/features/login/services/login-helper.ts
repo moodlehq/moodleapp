@@ -860,11 +860,11 @@ export class CoreLoginHelperProvider {
         const params: Record<string, string> = {};
 
         if (username) {
-            params.username = username;
+            params.username = username.trim();
         }
 
         if (email) {
-            params.email = email;
+            params.email = email.trim();
         }
 
         return CoreWS.callAjax('core_auth_request_password_reset', params, { siteUrl });
