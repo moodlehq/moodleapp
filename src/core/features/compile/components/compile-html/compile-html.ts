@@ -91,6 +91,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     protected differ: KeyValueDiffer<unknown, unknown>; // To detect changes in the jsData input.
     protected creatingComponent = false;
     protected pendingCalls = {};
+    protected componentStyles = '';
 
     constructor(
         protected changeDetector: ChangeDetectorRef,
@@ -152,7 +153,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                     componentClass,
                     this.container,
                     this.extraImports,
-                    this.cssCode,
+                    this.componentStyles,
                 );
 
                 this.element.addEventListener('submit', (event) => {
@@ -185,7 +186,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     protected async loadCSSCode(): Promise<void> {
         // Do not allow (yet) to load CSS code to a component that doesn't have text.
         if (!this.text) {
-            this.cssCode = '';
+            this.componentStyles = '';
 
             return;
         }
@@ -196,10 +197,12 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
         // Prepend all CSS rules with :host to avoid conflicts.
         if (!this.cssCode || this.cssCode.includes(':host')) {
+            this.componentStyles = this.cssCode ?? '';
+
             return;
         }
 
-        this.cssCode =  CoreDom.prefixCSS(this.cssCode, ':host ::ng-deep', ':host');
+        this.componentStyles = CoreDom.prefixCSS(this.cssCode, ':host ::ng-deep', ':host');
     }
 
     /**
