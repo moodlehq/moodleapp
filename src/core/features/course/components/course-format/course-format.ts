@@ -403,10 +403,23 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.viewedModules[entry.cmId] = true;
         });
 
-        const lastViewedSection = this.getViewedModuleSection();
-        if (lastViewedSection) {
-            this.setSectionExpanded(lastViewedSection);
+        if (!this.lastModuleViewed) {
+            return;
         }
+
+        // Expand section and subsection of the last viewed module.
+        const { section, parents } = CoreCourseHelper.findSection(this.sections, {
+            id: this.lastModuleViewed.sectionId,
+            moduleId: this.lastModuleViewed.cmId,
+        });
+
+        if (section) {
+            parents.push(section);
+        }
+        parents.filter(section => section.id !== this.stealthModulesSectionId)
+            .forEach(section => {
+                this.setSectionExpanded(section);
+            });
     }
 
     /**
