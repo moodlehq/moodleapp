@@ -262,23 +262,27 @@ export class CoreDomUtilsProvider {
      * @returns Fixed HTML text.
      */
     fixHtml(html: string): string {
-        return CoreText.processHTML(html, (element) => {
-            // eslint-disable-next-line no-control-regex
-            const attrNameRegExp = /[^\x00-\x20\x7F-\x9F"'>/=]+/;
-            const fixElement = (element: Element): void => {
-                // Remove attributes with an invalid name.
-                Array.from(element.attributes).forEach((attr) => {
-                    if (!attrNameRegExp.test(attr.name)) {
-                        element.removeAttributeNode(attr);
-                    }
-                });
+        // We can't use CoreText.processHTML because it removes elements that
+        // are not allowed as a child of <div>, like <li> or <tr>.
+        const template = document.createElement('template');
+        template.innerHTML = html;
 
-                Array.from(element.children).forEach(fixElement);
-            };
+        // eslint-disable-next-line no-control-regex
+        const attrNameRegExp = /[^\x00-\x20\x7F-\x9F"'>/=]+/;
+        const fixElement = (element: Element): void => {
+            // Remove attributes with an invalid name.
+            Array.from(element.attributes).forEach((attr) => {
+                if (!attrNameRegExp.test(attr.name)) {
+                    element.removeAttributeNode(attr);
+                }
+            });
 
             Array.from(element.children).forEach(fixElement);
-        });
+        };
 
+         Array.from(template.content.children).forEach(fixElement);
+
+         return template.innerHTML;
     }
 
     /**

@@ -418,6 +418,7 @@ export class CoreText {
 
     /**
      * Process HTML string.
+     * Warning: Top-level elements that are not allowed as a child of <div> (like <tr> or <li>) will be removed.
      *
      * @param text HTML string.
      * @param process Method to process the HTML.
