@@ -57,6 +57,7 @@ import {
     ADDON_MOD_FORUM_MANUAL_SYNCED,
     ADDON_MOD_FORUM_MARK_READ_EVENT,
     ADDON_MOD_FORUM_REPLY_DISCUSSION_EVENT,
+    AddonModForumType,
 } from '../../constants';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreToasts } from '@services/toasts';
@@ -512,7 +513,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
                             // Show Q&A message if user hasn't posted.
                             const currentUserId = CoreSites.getCurrentSiteUserId();
-                            this.showQAMessage = forum.type === 'qanda' && !accessInfo.canviewqandawithoutposting &&
+                            this.showQAMessage = forum.type === AddonModForumType.QANDA && !accessInfo.canviewqandawithoutposting &&
                                 !posts.some(post => post.author.id === currentUserId);
 
                             return;
@@ -534,7 +535,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                 throw new Error('Invalid forum discussion.');
             }
 
-            if (this.startingPost && this.startingPost.author && this.forum.type == 'single') {
+            if (this.startingPost && this.startingPost.author && this.forum.type === AddonModForumType.SINGLE) {
                 // Hide author and groups for first post and type single.
                 delete this.startingPost.author.fullname;
                 delete this.startingPost.author.groups;

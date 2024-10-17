@@ -25,7 +25,8 @@ import {
     AddonModForumSortOrder,
 } from '../services/forum';
 import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '../services/forum-offline';
-import { ADDON_MOD_FORUM_DISCUSSIONS_PER_PAGE } from '../constants';
+import { ADDON_MOD_FORUM_DISCUSSIONS_PER_PAGE, AddonModForumType } from '../constants';
+import { CoreSites } from '@services/sites';
 
 export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource<AddonModForumDiscussionItem> {
 
@@ -168,8 +169,6 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
 
     /**
      * Load some specific data for current group.
-     *
-     * @returns Promise resolved when done.
      */
     async loadSelectedGroupData(): Promise<void> {
         if (!this.usesGroups) {
@@ -202,6 +201,15 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
         const { discussions: onlineDiscussions, canLoadMore } = await this.loadOnlineDiscussions(page);
 
         discussions.push(...onlineDiscussions);
+
+        // If the user has already posted in a Each user posts a single discussion forum, don't allow to post again.
+        // This check is only needed in offline mode.
+        if (this.canAddDiscussionToGroup && this.forum?.type === AddonModForumType.EACHUSER) {
+            const userId = CoreSites.getCurrentSiteUserId();
+
+            this.canAddDiscussionToGroup = !discussions.some((discussion) =>
+                this.isOfflineDiscussion(discussion) || !this.isNewDiscussionForm(discussion) && discussion.userid === userId);
+        }
 
         return {
             items: discussions,
@@ -250,7 +258,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
         }
 
         // Hide author for first post and type single.
-        if (this.forum.type === 'single') {
+        if (this.forum.type === AddonModForumType.SINGLE) {
             for (const discussion of discussions) {
                 if (discussion.userfullname && discussion.parent === 0) {
                     discussion.userfullname = false;
@@ -297,7 +305,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
         const promises = offlineDiscussions.map(async (offlineDiscussion) => {
             const discussion = offlineDiscussion as unknown as AddonModForumDiscussion;
 
-            if (discussion.parent === 0 || forum.type === 'single') {
+            if (discussion.parent === 0 || forum.type === AddonModForumType.SINGLE) {
                 // Do not show author for first post and type single.
                 return;
             }
@@ -322,8 +330,6 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
 
     /**
      * Invalidate cache data.
-     *
-     * @returns Promise resolved when done.
      */
     async invalidateCache(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -341,8 +347,6 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
 
     /**
      * Invalidate list cache data.
-     *
-     * @returns Promise resolved when done.
      */
     async invalidateList(): Promise<void> {
         if (this.forum) {

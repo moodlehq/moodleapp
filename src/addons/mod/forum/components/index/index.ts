@@ -62,6 +62,7 @@ import {
     ADDON_MOD_FORUM_PREFERENCE_SORTORDER,
     ADDON_MOD_FORUM_REPLY_DISCUSSION_EVENT,
     ADDON_MOD_FORUM_SEARCH_PAGE_NAME,
+    AddonModForumType,
 } from '@addons/mod/forum/constants';
 import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
 import { CoreToasts } from '@services/toasts';
@@ -411,11 +412,11 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.dataRetrieved.emit(forum);
 
         switch (forum.type) {
-            case 'news':
-            case 'blog':
+            case AddonModForumType.NEWS:
+            case AddonModForumType.BLOG:
                 this.addDiscussionText = Translate.instant('addon.mod_forum.addanewtopic');
                 break;
-            case 'qanda':
+            case AddonModForumType.QANDA:
                 this.addDiscussionText = Translate.instant('addon.mod_forum.addanewquestion');
                 break;
             default:
@@ -451,7 +452,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                     const cutoffDateReached = AddonModForumHelper.isCutoffDateReached(forum)
                                     && !accessInfo.cancanoverridecutoff;
                     this.canAddDiscussion = !!forum.cancreatediscussions && !cutoffDateReached;
-                    this.showQAMessage = forum.type === 'qanda' && !accessInfo.canviewqandawithoutposting;
+                    this.showQAMessage = forum.type === AddonModForumType.QANDA && !accessInfo.canviewqandawithoutposting;
 
                     return;
                 }),

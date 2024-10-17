@@ -37,5 +37,15 @@ export const enum AddonModForumSortorder {
     REPLIES_ASC = 6,
 }
 
+export const enum AddonModForumType {
+    NEWS = 'news',
+    SOCIAL = 'social',
+    GENERAL = 'general',
+    EACHUSER = 'eachuser',
+    SINGLE = 'single',
+    QANDA = 'qanda',
+    BLOG = 'blog',
+}
+
 export const ADDON_MOD_FORUM_ALL_PARTICIPANTS = -1;
 export const ADDON_MOD_FORUM_ALL_GROUPS = -2;
