@@ -14,6 +14,7 @@
 
 /**
  * Convert some HTML as text into an HTMLElement. This HTML is put inside a div.
+ * Warning: Top-level elements that are not allowed as a child of <div> (like <tr> or <li>) will be removed.
  *
  * @param html Text to convert.
  * @returns Element.
