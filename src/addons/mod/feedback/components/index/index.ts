@@ -20,6 +20,7 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
@@ -202,6 +203,8 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
         try {
             this.feedback = await AddonModFeedback.getFeedback(this.courseId, this.module.id);
 
+            await this.fixPageAfterSubmitFileUrls();
+
             this.description = this.feedback.intro;
             this.dataRetrieved.emit(this.feedback);
 
@@ -241,6 +244,29 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
                 // Make sure the right tab is selected.
                 this.tabsComponent?.selectTab(this.selectedTab ?? AddonModFeedbackIndexTabName.OVERVIEW);
             }
+        }
+    }
+
+    /**
+     * Fix incorrect file URLs in page after submit text.
+     *
+     * See bug MDL-83474.
+     */
+    protected async fixPageAfterSubmitFileUrls(): Promise<void> {
+        const site = await CoreSites.getSite(this.siteId);
+
+        if (!site.isVersionGreaterEqualThan('4.2')
+                || !this.feedback?.page_after_submit
+                || !this.feedback.pageaftersubmitfiles) {
+            return;
+        }
+
+        // Replace file URLs that do not have the /0/ in the path.
+        // Subdirectories are not allowed in this file area, so the sets of correct and incorrect URLs will never overlap.
+        for (const file of this.feedback.pageaftersubmitfiles) {
+            const incorrectUrl = file.fileurl.replace('/page_after_submit/0/', '/page_after_submit/');
+            const incorrectUrlRegex = new RegExp(CoreText.escapeForRegex(incorrectUrl), 'g');
+            this.feedback.page_after_submit = this.feedback.page_after_submit.replace(incorrectUrlRegex, file.fileurl);
         }
     }
 
