@@ -27,7 +27,7 @@ import { makeSingleton } from '@singletons';
 export class CoreSearchGlobalSearchLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'CoreSearchSearchLinkHandler';
-    pattern = /\/search\/index\.php.*/;
+    pattern = /\/search/;
 
     /**
      * @inheritdoc
