@@ -21,7 +21,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
-import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
+import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreGradesFormattedRow, CoreGradesFormattedTableRow, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
@@ -73,7 +73,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
     grades?: CoreGradesFormattedRow[];
     blog = false; // If blog is available.
     isOnline = false; // If the app is online or not.
-    course?: CoreEnrolledCourseData;
+    course?: CoreCourseAnyCourseData;
     modicon = '';
     moduleNameTranslated = '';
     isTeacher = false;
@@ -272,12 +272,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
      * Fetch course.
      */
     protected async fetchCourse(): Promise<void> {
-        try {
-            this.course = await CoreCourses.getUserCourse(this.courseId, true);
-        } catch {
-            // The user is not enrolled in the course. Use getCourses to see if it's an admin/manager and can see the course.
-            this.course = await CoreCourses.getCourse(this.courseId);
-        }
+        this.course = await CoreCourseHelper.getCourseInfo(this.courseId);
 
         this.isTeacher = await CoreUtils.ignoreErrors(CoreCourseHelper.guessIsTeacher(this.courseId, this.course), false);
     }
