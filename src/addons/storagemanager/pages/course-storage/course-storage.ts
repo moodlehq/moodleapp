@@ -25,7 +25,7 @@ import {
 import {
     CoreCourseModulePrefetchDelegate,
     CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
-import { CoreCourseAnyCourseData, CoreCourses } from '@features/courses/services/courses';
+import { CoreCourses } from '@features/courses/services/courses';
 import { AccordionGroupChangeEventDetail } from '@ionic/angular';
 import { CoreLoadings } from '@services/loadings';
 import { CoreNavigator } from '@services/navigator';
@@ -613,31 +613,6 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     }
 
     /**
-     * Get the course object.
-     *
-     * @param courseId Course ID.
-     * @returns Promise resolved with the course object if found.
-     */
-    protected async getCourse(courseId: number): Promise<CoreCourseAnyCourseData | undefined> {
-        try {
-            // Check if user is enrolled. If enrolled, no guest access.
-            return await CoreCourses.getUserCourse(courseId, true);
-        } catch {
-            // Ignore errors.
-        }
-
-        try {
-            // The user is not enrolled in the course. Use getCourses to see if it's an admin/manager and can see the course.
-            return await CoreCourses.getCourse(courseId);
-        } catch {
-            // Ignore errors.
-        }
-
-        return await CoreCourses.getCourseByField('id', this.courseId);
-
-    }
-
-    /**
      * Prefetch the whole course.
      *
      * @param event Event object.
@@ -646,7 +621,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         event.stopPropagation();
         event.preventDefault();
 
-        const course = await this.getCourse(this.courseId);
+        const course = await CoreCourseHelper.getCourseInfo(this.courseId);
         if (!course) {
             CoreDomUtils.showErrorModal('core.course.errordownloadingcourse', true);
 

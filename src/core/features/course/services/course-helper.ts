@@ -2053,6 +2053,30 @@ export class CoreCourseHelperProvider {
     }
 
     /**
+     * Get the course object whatever the user is enrolled or not..
+     *
+     * @param courseId Course ID.
+     * @returns Promise resolved with the course object if found.
+     */
+    async getCourseInfo(courseId: number): Promise<CoreCourseAnyCourseData | undefined> {
+        try {
+            // Check if user is enrolled. If enrolled, no guest access.
+            return await CoreCourses.getUserCourse(courseId, true);
+        } catch {
+            // Ignore errors.
+        }
+
+        try {
+            // The user is not enrolled in the course. Use getCourses to see if it's an admin/manager and can see the course.
+            return await CoreCourses.getCourse(courseId);
+        } catch {
+            // Ignore errors.
+        }
+
+        return await CoreCourses.getCourseByField('id', courseId);
+    }
+
+    /**
      * Get the completion status of a module.
      *
      * @param completion Completion data.
