@@ -63,3 +63,206 @@
         display: none;
     }
 }
+
+/*
+ * Studium fc custom code
+ *
+ */
+ html.studiumfc page-core-sitehome-index .core-course-module-list-wrapper {
+    max-width: 100%;
+    margin-left: unset !important;
+    margin-right: unset !important;
+ }
+html .item ion-chip.ion-color ion-label {
+    color: var(--ion-color-primary-contrast);
+ }
+.catalog .catalog-flex-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    flex-flow: row wrap;
+    -webkit-box-pack: start;
+    -webkit-justify-content: flex-start;
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+}
+
+.catalog .catalog-flex-container:after {
+    content: "";
+    -webkit-box-flex: 1;
+    -webkit-flex: auto;
+    -ms-flex: auto;
+    flex: auto;
+}
+
+.catalog .catalog-flex-container .catalog-flex-item {
+    width: 23%;
+    text-align: left;
+    position: relative;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-bottom: 2rem;
+}
+
+.catalog .catalog-flex-container .catalog-flex-item>div {
+    background-color: #e5f0f8;
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+.catalog .catalog-flex-container .catalog-flex-item img.img-catalog {
+    width: 100%;
+}
+
+.catalog .catalog-flex-container .catalog-flex-item h3 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.catalog .catalog-flex-container .catalog-flex-item .text-holder {
+    margin: auto;
+    height: 230px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: start;
+    -webkit-justify-content: left;
+    -ms-flex-pack: justify;
+    justify-content: left;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    align-content: left;
+    align-items: left;
+}
+
+.catalog .catalog-flex-container .catalog-flex-item .text-holder a {
+    -webkit-align-self: flex-end;
+    -ms-flex-item-align: end;
+    align-self: flex-end;
+}
+
+.catalog .catalog-flex-container .catalog-flex-item .text-holder h3 {
+    font-size: 1.4rem;
+    margin-bottom: 1.3rem;
+    font-weight: 700;
+    min-height: 3rem;
+    margin-top: 1rem;
+    color: #0b113a;
+}
+
+.title-catalog-container h2 {
+    font-size: 1.6rem;
+    color: #368558;
+    margin-bottom: 1.5rem !important;
+    padding-right: 1rem;
+}
+.title-catalog-container {
+    padding-left: 1rem;
+}
+
+@media (min-width: 1801px) {
+    .catalog .catalog-flex-container .catalog-flex-item {
+        width: 18%;
+    }
+    .catalog .catalog-flex-container .catalog-flex-item .text-holder {
+        height: 180px;
+    }
+}
+
+@media (max-width: 1800px) and (min-width: 1300px) {
+    .catalog .catalog-flex-container .catalog-flex-item {
+        width: 33%;
+    }
+    .catalog .catalog-flex-container .catalog-flex-item .text-holder {
+        height: 180px;
+    }
+}
+
+@media (max-width: 1299px) and (min-width: 1000px) {
+    .catalog .catalog-flex-container {
+        padding-right: 1rem;
+        padding-left: 1rem;
+    }
+    .catalog .catalog-flex-container .catalog-flex-item {
+        width: 45%;
+    }
+    .catalog .catalog-flex-container .catalog-flex-item .text-holder {
+        height: 190px;
+    }
+}
+
+@media (max-width: 999px) and (min-width: 700px) {
+    .catalog .catalog-flex-container {
+        padding-right: 0.3rem;
+        padding-left: 0.3rem;
+    }
+    .catalog .catalog-flex-container .catalog-flex-item {
+        width: 50%;
+    }
+    .catalog .catalog-flex-container .catalog-flex-item .text-holder {
+        height: 180px;
+    }
+    .catalog .catalog-flex-container .catalog-flex-item .text-holder h3 {
+        margin-bottom: 0.5rem;
+        margin-top: 0.8rem;
+    }
+}
+
+@media (max-width: 699px) {
+    .catalog .catalog-flex-container .catalog-flex-item {
+        width: 100%;
+    }
+    .catalog .catalog-flex-container .catalog-flex-item .text-holder {
+        height: auto;
+        margin-bottom: 1rem;
+    }
+}
+
+ion-app.app-root core-format-text .catalog-flex-item p {
+    line-height: 1.5;
+    color: #0b113a;
+}
+
+.headerfrontpage,
+.mobileappcontainer,
+.catalog-flex-item .seemore,
+.catalog-flex-item p .dots,
+.hidden,
+.studiummobilehidden {
+    display: none;
+}
+
+.title-catalog-container h2 {
+    margin-bottom: 1.5rem;
+    color: #368558;
+}
+
+@media (min-width: 699px) {
+    .catalog-flex-item p {
+        min-height: 85px;
+    }
+    .catalog .catalog-flex-container .catalog-flex-item .text-holder a {
+        min-height: 28px;
+    }
+}
+
+body.scheme-dark .catalog .catalog-flex-container .catalog-flex-item .text-holder h3,
+body.scheme-dark .catalog .catalog-flex-container .catalog-flex-item .text-holder p,
+body.scheme-dark .title-catalog-container h2,
+body.dark .catalog .catalog-flex-container .catalog-flex-item .text-holder h3,
+body.dark .catalog .catalog-flex-container .catalog-flex-item .text-holder p,
+body.dark .title-catalog-container h2 {
+    color: #ffffff;
+}
+
+body.scheme-dark .catalog .catalog-flex-container .catalog-flex-item>div,
+body.dark .catalog .catalog-flex-container .catalog-flex-item>div {
+    background-color: #9e9e9e;
+}

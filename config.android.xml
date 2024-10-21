@@ -77,17 +77,12 @@
             <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
             <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
         </config-file>
-        <icon background="resources/android/icon/ldpi-background.png" density="ldpi" foreground="resources/android/icon/ldpi-foreground.png" />
-        <icon background="resources/android/icon/mdpi-background.png" density="mdpi" foreground="resources/android/icon/mdpi-foreground.png" />
-        <icon background="resources/android/icon/hdpi-background.png" density="hdpi" foreground="resources/android/icon/hdpi-foreground.png" />
-        <icon background="resources/android/icon/xhdpi-background.png" density="xhdpi" foreground="resources/android/icon/xhdpi-foreground.png" />
-        <icon background="resources/android/icon/xxhdpi-background.png" density="xxhdpi" foreground="resources/android/icon/xxhdpi-foreground.png" />
-        <icon background="resources/android/icon/xxxhdpi-background.png" density="xxxhdpi" foreground="resources/android/icon/xxxhdpi-foreground.png" />
-        <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
-        <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
-        <icon density="hdpi" src="resources/android/icon/drawable-hdpi-icon.png" />
-        <icon density="xhdpi" src="resources/android/icon/drawable-xhdpi-icon.png" />
-        <icon density="xxhdpi" src="resources/android/icon/drawable-xxhdpi-icon.png" />
-        <icon density="xxxhdpi" src="resources/android/icon/drawable-xxxhdpi-icon.png" />
+        <resource-file src="resources/values/colors.xml" target="/app/src/main/res/values/colors.xml" />
+        <icon background="@color/background" density="ldpi" foreground="resources/android/xml/ldpi-foreground.xml"  src="resources/android/icon/ldpi-foreground.png" />
+        <icon background="@color/background" density="mdpi" foreground="resources/android/xml/mdpi-foreground.xml" src="resources/android/icon/mdpi-foreground.png" />
+        <icon background="@color/background" density="hdpi" foreground="resources/android/xml/hdpi-foreground.xml" src="resources/android/icon/hdpi-foreground.png" />
+        <icon background="@color/background" density="xhdpi" foreground="resources/android/xml/xhdpi-foreground.xml" src="resources/android/icon/xhdpi-foreground.png" />
+        <icon background="@color/background" density="xxhdpi" foreground="resources/android/xml/xxhdpi-foreground.xml" src="resources/android/icon/xxhdpi-foreground.png" />
+        <icon background="@color/background" density="xxxhdpi" foreground="resources/android/xml/xxxhdpi-foreground.xml" src="resources/android/icon/xxxhdpi-foreground.png" />
     </platform>
 </widget>

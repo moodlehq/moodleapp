@@ -1,5 +1,5 @@
 {
-    "app_id": "ca.umontreal.studiumprod",
+    "app_id": "ca.umontreal.studium",
     "appname": "StudiUM Mobile",
     "versioncode": 50003,
     "versionname": "5.0.0",
@@ -20,10 +20,11 @@
         "high": 120
     },
     "customurlscheme": "studiummobile",
-    "sites": [{"name": "StudiUM", "url": "https://studium.umontreal.ca/"}, {"name": "StudiUM formation continue", "url": "https://studiumfc.umontreal.ca/"}],
+    "sites": [{"name": "StudiUM PP", "url": "https://studium-pre-prod.ena.umontreal.ca/"}, {"name": "StudiUM formation continue PP", "url": "https://studiumfc-pre-prod.ena.umontreal.ca/"}],
     "multisitesdisplay": "radio",
     "sitefindersettings": {},
     "onlyallowlistedsites": false,
+    "skipssoconfirmation": false,
     "forcedefaultlanguage": false,
     "privacypolicy": "https:\/\/studium.umontreal.ca\/admin\/tool\/policy\/viewall.php?returnurl=https%3A%2F%2Fstudium.umontreal.ca%2Fmy%2Findex.php",
     "notificoncolor": "#006bb6",
