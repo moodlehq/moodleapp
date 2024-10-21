@@ -329,6 +329,8 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                 message: commentsResponse ? 'core.comments.eventcommentcreated' : 'core.datastoredoffline',
                 translateMessage: true,
                 duration: ToastDuration.LONG,
+                position: 'bottom',
+                positionAnchor: 'viewer-footer',
             });
 
             if (commentsResponse) {

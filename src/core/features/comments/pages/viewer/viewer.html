@@ -58,7 +58,7 @@
 
     </core-loading>
 </ion-content>
-<ion-footer class="footer-adjustable" *ngIf="commentsLoaded && canAddComments">
+<ion-footer class="footer-adjustable" id="viewer-footer" *ngIf="commentsLoaded && canAddComments">
     <ion-toolbar>
         <core-send-message-form [sendDisabled]="sending" [message]="newComment" (onSubmit)="addComment($event)"
             [placeholder]="'core.comments.addcomment' | translate" />
