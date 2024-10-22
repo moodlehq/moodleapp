@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { HttpResponse, HttpParams, HttpErrorResponse } from '@angular/common/http';
 
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { HTTPResponse as NativeHttpResponse } from '@awesome-cordova-plugins/http';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Observable, firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
@@ -255,26 +256,33 @@ export class CoreWSProvider {
             // Create the tmp file as an empty file.
             const fileEntry = await CoreFile.createFile(tmpPath);
 
-            const transfer = new window.FileTransfer();
+            let fileDownloaded: { entry: globalThis.FileEntry; headers: Record<string, string> | undefined};
+            let redirectUrl: string | undefined;
+            let maxRedirects = 5;
+            do {
+                const transfer = new window.FileTransfer();
+                if (onProgress) {
+                    transfer.onprogress = onProgress;
+                }
 
-            if (onProgress) {
-                transfer.onprogress = onProgress;
-            }
+                // Download the file in the tmp file.
+                fileDownloaded = await new Promise((resolve, reject) => {
+                    transfer.download(
+                        redirectUrl ?? url,
+                        CoreFile.getFileEntryURL(fileEntry),
+                        (result) => resolve(result),
+                        (error: FileTransferError) => reject(error),
+                        true,
+                        { headers: { 'User-Agent': navigator.userAgent } },
+                    );
+                });
 
-            // Download the file in the tmp file.
-            const fileDownloaded = await new Promise<{
-                entry: globalThis.FileEntry;
-                headers: Record<string, string> | undefined;
-            }>((resolve, reject) => {
-                transfer.download(
-                    url,
-                    CoreFile.getFileEntryURL(fileEntry),
-                    (result) => resolve(result),
-                    (error: FileTransferError) => reject(error),
-                    true,
-                    { headers: { 'User-Agent': navigator.userAgent } },
-                );
-            });
+                // Redirections should have been handled by the platform,
+                // but Android does not follow redirections between HTTP and HTTPS.
+                // See: https://developer.android.com/reference/java/net/HttpURLConnection#response-handling
+                redirectUrl = fileDownloaded.headers?.['location'];
+                maxRedirects--;
+            } while (redirectUrl && maxRedirects >= 0);
 
             let extension = '';
 
@@ -1185,7 +1193,29 @@ export class CoreWSProvider {
                 });
             }
 
-            return NativeHttp.sendRequest(url, options).then((response) => new CoreNativeToAngularHttpResponse(response));
+            let response: NativeHttpResponse;
+            let redirectUrl: string | undefined;
+            let maxRedirects = 5;
+            do {
+                try {
+                    response = await NativeHttp.sendRequest(redirectUrl ?? url, options);
+                    redirectUrl = undefined;
+                } catch (error) {
+                    // Error is a response object.
+                    response = error as NativeHttpResponse;
+
+                    // Redirections should have been handled by the platform,
+                    // but Android does not follow redirections between HTTP and HTTPS.
+                    // See: https://developer.android.com/reference/java/net/HttpURLConnection#response-handling
+                    redirectUrl = response.headers['location'];
+                    maxRedirects--;
+                    if (!redirectUrl || maxRedirects < 0) {
+                        throw error;
+                    }
+                }
+            } while (redirectUrl);
+
+            return new CoreNativeToAngularHttpResponse(response);
         } else {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let observable: Observable<HttpResponse<any>>;
