@@ -1,6 +1,17 @@
+@use "theme/globals" as *;
+
 :host {
     .course-section {
         --inner-padding-end: var(--mdl-spacing-3);
+
+        ion-badge {
+            @include margin-horizontal(null, 4px);
+            font: var(--mdl-typography-body-font-sm);
+        }
+
+        h2 ion-icon {
+            @include margin-horizontal(4px, null);
+        }
     }
 
     &.collapsible {
