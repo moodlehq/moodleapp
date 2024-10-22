@@ -202,7 +202,15 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
             return;
         }
 
-        this.componentStyles = CoreDom.prefixCSS(this.cssCode, ':host ::ng-deep', ':host');
+        // Prefix all CSS rules with the host attribute and [compiled-component-id].
+        // We need [compiled-component-id] to increase the specificity of the prefix to 0,2,0.
+        // This way rules added by the parent component using a class has the same base
+        // specificity and do not override the added rules.
+        this.componentStyles = CoreDom.prefixCSS(
+            this.cssCode,
+            ':host([compiled-component-id]) ::ng-deep',
+            ':host([compiled-component-id])',
+        );
     }
 
     /**
