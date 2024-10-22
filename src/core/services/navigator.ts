@@ -726,7 +726,13 @@ export class CoreNavigatorService {
      * @returns Whether the current route page can block leaving the route.
      */
     currentRouteCanBlockLeave(): boolean {
-        return !!this.getCurrentRoute().snapshot?.routeConfig?.canDeactivate?.length;
+        const canDeactivate = this.getCurrentRoute().snapshot?.routeConfig?.canDeactivate;
+
+        if (!canDeactivate?.length) {
+            return true;
+        }
+
+        return canDeactivate.every(method => typeof method === 'function' && method());
     }
 
     /**

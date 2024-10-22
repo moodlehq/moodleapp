@@ -208,7 +208,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event
      */
     async logout(event: Event): Promise<void> {
-        if (CoreNavigator.currentRouteCanBlockLeave()) {
+        if (!CoreNavigator.currentRouteCanBlockLeave()) {
             await CoreDomUtils.showAlert(undefined, Translate.instant('core.cannotlogoutpageblocks'));
 
             return;
@@ -242,7 +242,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event
      */
     async switchAccounts(event: Event): Promise<void> {
-        if (CoreNavigator.currentRouteCanBlockLeave()) {
+        if (!CoreNavigator.currentRouteCanBlockLeave()) {
             await CoreDomUtils.showAlert(undefined, Translate.instant('core.cannotlogoutpageblocks'));
 
             return;
