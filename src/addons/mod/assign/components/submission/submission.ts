@@ -242,7 +242,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         if (this.userSubmission && this.userSubmission.status === AddonModAssignSubmissionStatusValues.SUBMITTED) {
             // Submitted, display the relevant early/late message.
             const lateCalculation = this.userSubmission.timemodified -
-                (timeLimitEnabledBeforeDueDate ? this.userSubmission.timecreated : 0);
+                (timeLimitEnabledBeforeDueDate ? this.userSubmission.timestarted ?? 0 : 0);
             const lateThreshold = timeLimitEnabledBeforeDueDate ? this.assign.timelimit || 0 : duedate;
             const earlyString = timeLimitEnabledBeforeDueDate ? 'submittedundertime' : 'submittedearly';
             const lateString = timeLimitEnabledBeforeDueDate ? 'submittedovertime' : 'submittedlate';
