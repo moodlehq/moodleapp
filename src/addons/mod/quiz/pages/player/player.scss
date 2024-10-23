@@ -17,4 +17,11 @@ $quiz-timer-iterations: 15 !default;
             }
         }
     }
+
+    ion-item.core-question-blocked,
+    ion-item.core-question-complete,
+    ion-item.core-question-answersaved,
+    ion-item.core-question-requiresgrading {
+        --background: var(--gray-300);
+    }
 }

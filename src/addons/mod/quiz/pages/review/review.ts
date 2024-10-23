@@ -210,7 +210,7 @@ export class AddonModQuizReviewPage implements OnInit {
         this.navigation = data.questions;
 
         this.navigation.forEach((question) => {
-            question.stateClass = CoreQuestionHelper.getQuestionStateClass(question.state || '');
+            CoreQuestionHelper.populateQuestionStateClass(question);
         });
 
         const lastQuestion = data.questions[data.questions.length - 1];

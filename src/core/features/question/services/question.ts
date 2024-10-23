@@ -42,7 +42,6 @@ const QUESTION_PREFIX_REGEX = /q\d+:(\d+)_/;
 const STATES: Record<string, CoreQuestionState> = {
     todo: {
         name: 'todo',
-        class: 'core-question-notyetanswered',
         status: 'notyetanswered',
         stateclass: 'notyetanswered',
         active: true,
@@ -50,7 +49,6 @@ const STATES: Record<string, CoreQuestionState> = {
     },
     invalid: {
         name: 'invalid',
-        class: 'core-question-invalidanswer',
         status: 'invalidanswer',
         stateclass: 'invalidanswer',
         active: true,
@@ -58,7 +56,6 @@ const STATES: Record<string, CoreQuestionState> = {
     },
     complete: {
         name: 'complete',
-        class: 'core-question-answersaved',
         status: 'answersaved',
         stateclass: 'answersaved',
         active: true,
@@ -66,7 +63,6 @@ const STATES: Record<string, CoreQuestionState> = {
     },
     needsgrading: {
         name: 'needsgrading',
-        class: 'core-question-requiresgrading',
         status: 'requiresgrading',
         stateclass: 'requiresgrading',
         active: false,
@@ -74,7 +70,6 @@ const STATES: Record<string, CoreQuestionState> = {
     },
     finished: {
         name: 'finished',
-        class: 'core-question-complete',
         status: 'complete',
         stateclass: 'complete',
         active: false,
@@ -82,7 +77,6 @@ const STATES: Record<string, CoreQuestionState> = {
     },
     gaveup: {
         name: 'gaveup',
-        class: 'core-question-notanswered',
         status: 'notanswered',
         stateclass: 'notanswered',
         active: false,
@@ -90,7 +84,6 @@ const STATES: Record<string, CoreQuestionState> = {
     },
     gradedwrong: {
         name: 'gradedwrong',
-        class: 'core-question-incorrect',
         status: 'incorrect',
         stateclass: 'incorrect',
         active: false,
@@ -98,7 +91,6 @@ const STATES: Record<string, CoreQuestionState> = {
     },
     gradedpartial: {
         name: 'gradedpartial',
-        class: 'core-question-partiallycorrect',
         status: 'partiallycorrect',
         stateclass: 'partiallycorrect',
         active: false,
@@ -106,7 +98,6 @@ const STATES: Record<string, CoreQuestionState> = {
     },
     gradedright: {
         name: 'gradedright',
-        class: 'core-question-correct',
         status: 'correct',
         stateclass: 'correct',
         active: false,
@@ -114,7 +105,6 @@ const STATES: Record<string, CoreQuestionState> = {
     },
     mangrwrong: {
         name: 'mangrwrong',
-        class: 'core-question-incorrect',
         status: 'incorrect',
         stateclass: 'incorrect',
         active: false,
@@ -122,7 +112,6 @@ const STATES: Record<string, CoreQuestionState> = {
     },
     mangrpartial: {
         name: 'mangrpartial',
-        class: 'core-question-partiallycorrect',
         status: 'partiallycorrect',
         stateclass: 'partiallycorrect',
         active: false,
@@ -130,7 +119,6 @@ const STATES: Record<string, CoreQuestionState> = {
     },
     mangrright: {
         name: 'mangrright',
-        class: 'core-question-correct',
         status: 'correct',
         stateclass: 'correct',
         active: false,
@@ -138,7 +126,6 @@ const STATES: Record<string, CoreQuestionState> = {
     },
     cannotdeterminestatus: { // Special state for Mobile, sometimes we won't have enough data to detemrine the state.
         name: 'cannotdeterminestatus',
-        class: 'core-question-unknown',
         status: 'cannotdeterminestatus',
         stateclass: undefined,
         active: true,
@@ -594,7 +581,6 @@ export const CoreQuestion = makeSingleton(CoreQuestionProvider);
  */
 export type CoreQuestionState = {
     name: string; // Name of the state.
-    class: string; // Class to style the state.
     status: string; // The string key to translate the state.
     stateclass: // A machine-readable class name for the state that this question attempt is in.
         typeof QUESTION_TODO_STATE_CLASSES[number] |

@@ -19,24 +19,24 @@
                 [detail]="false">
 
                 <ion-label class="ion-text-wrap">
-                    <span *ngIf="question.type !== 'description' && question.questionnumber">
+                    <p class="item-heading" *ngIf="question.type !== 'description' && question.questionnumber">
                         {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
-                    </span>
-                    <span *ngIf="question.type === 'description' || !question.questionnumber">
+                    </p>
+                    <p class="item-heading" *ngIf="question.type === 'description' || !question.questionnumber">
                         {{ 'core.question.information' | translate }}
-                    </span>
+                    </p>
+                    <p>{{ question.status }}</p>
                 </ion-label>
 
                 <ion-icon *ngIf="question.type === 'description' || !question.questionnumber" name="fas-circle-info" slot="end"
                     aria-hidden="true" />
-                <ion-icon *ngIf="question.stateClass === 'core-question-requiresgrading'" name="fas-circle-question"
-                    [title]="question.status" slot="end" />
-                <ion-icon *ngIf="question.stateClass === 'core-question-correct'" [name]="correctIcon" color="success"
-                    [title]="question.status" slot="end" />
-                <ion-icon *ngIf="question.stateClass === 'core-question-partiallycorrect'" [name]="partialCorrectIcon" color="warning"
-                    [title]="question.status" slot="end" />
-                <ion-icon *ngIf="question.stateClass === 'core-question-incorrect' ||
-                    question.stateClass === 'core-question-notanswered'" [name]="incorrectIcon" color="danger" [title]="question.status"
+                <ion-icon *ngIf="question.stateclass === 'requiresgrading'" name="fas-circle-question" aria-hidden="true" slot="end" />
+                <ion-icon *ngIf="question.stateclass === 'correct'" [name]="correctIcon" color="success" aria-hidden="true" slot="end" />
+                <ion-icon *ngIf="question.stateclass === 'partiallycorrect'" [name]="partialCorrectIcon" color="warning" aria-hidden="true"
+                    slot="end" />
+                <ion-icon *ngIf="question.stateclass === 'incorrect' || question.stateclass === 'notanswered'" [name]="incorrectIcon"
+                    color="danger" aria-hidden="true" slot="end" />
+                <ion-icon *ngIf="question.stateclass === 'invalidanswer'" name="fas-triangle-exclamation" color="danger" aria-hidden="true"
                     slot="end" />
             </ion-item>
         </ion-list>
