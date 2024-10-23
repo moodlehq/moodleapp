@@ -15,7 +15,8 @@
                 (click)="showConnectionError($event)" [ariaLabel]="'addon.mod_quiz.connectionerror' | translate" aria-haspopup="dialog">
                 <ion-icon name="fas-circle-exclamation" slot="icon-only" aria-hidden="true" />
             </ion-button>
-            <ion-button *ngIf="navigation.length" [ariaLabel]="'addon.mod_quiz.opentoc' | translate" (click)="openNavigation()">
+            <ion-button *ngIf="navigation.length && !showSummary" [ariaLabel]="'addon.mod_quiz.opentoc' | translate"
+                (click)="openNavigation()">
                 <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
@@ -72,11 +73,24 @@
             <ng-container *ngFor="let question of summaryQuestions">
                 <ion-item *ngIf="question.type !== 'description' && question.questionnumber"
                     (click)="!isSequential && canReturn && changePage(question.page, false, question.slot)"
-                    [detail]="!isSequential && canReturn" [button]="!isSequential && canReturn" class="ion-text-wrap">
-                    <ion-label>
-                        <span [attr.aria-label]="'core.question.questionno' | translate:{$a: question.questionnumber}">
-                            {{ question.questionnumber }}.</span> {{ question.status }}
+                    [detail]="!isSequential && canReturn" [button]="!isSequential && canReturn"
+                    [class]="'ion-text-wrap ' + question.stateClass">
+                    <ion-label class="ion-text-wrap">
+                        <p class="item-heading">
+                            {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
+                        </p>
+                        <p>{{ question.status }}</p>
                     </ion-label>
+
+                    <ion-icon *ngIf="question.stateclass === 'requiresgrading'" name="fas-circle-question" aria-hidden="true" slot="end" />
+                    <ion-icon *ngIf="question.stateclass === 'correct'" [name]="correctIcon" color="success" aria-hidden="true"
+                        slot="end" />
+                    <ion-icon *ngIf="question.stateclass === 'partiallycorrect'" [name]="partialCorrectIcon" color="warning"
+                        aria-hidden="true" slot="end" />
+                    <ion-icon *ngIf="question.stateclass === 'incorrect' || question.stateclass === 'notanswered'" [name]="incorrectIcon"
+                        color="danger" aria-hidden="true" slot="end" />
+                    <ion-icon *ngIf="question.stateclass === 'invalidanswer'" name="fas-triangle-exclamation" color="danger"
+                        aria-hidden="true" slot="end" />
                 </ion-item>
             </ng-container>
 

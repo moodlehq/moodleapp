@@ -32,6 +32,7 @@ import { ContextLevel } from '@/core/constants';
 import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
+import { AddonModQuizNavigationQuestion } from '@addons/mod/quiz/components/navigation-modal/navigation-modal';
 
 /**
  * Service with some common functions to handle questions.
@@ -476,15 +477,18 @@ export class CoreQuestionHelperProvider {
     }
 
     /**
-     * Get the CSS class for a question based on its state.
+     * Populates the CSS class for a question based on its state.
      *
-     * @param name Question's state name.
-     * @returns State class.
+     * @param question Question.
      */
-    getQuestionStateClass(name: string): string {
-        const state = CoreQuestion.getState(name);
+    populateQuestionStateClass(question: AddonModQuizNavigationQuestion): void {
+        if (!question.stateclass) {
+            const state = CoreQuestion.getState(question.state);
 
-        return state ? state.class : '';
+            question.stateclass = state.stateclass;
+        }
+
+        question.stateClass = 'core-question-' + (question.stateclass ?? 'unknown');
     }
 
     /**

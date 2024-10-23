@@ -63,7 +63,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-addon-mod-quiz-player',
     templateUrl: 'player.html',
-    styleUrls: ['player.scss'],
+    styleUrl: 'player.scss',
 })
 export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
@@ -93,6 +93,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     dueDateWarning?: string; // Warning about due date.
     courseId!: number; // The course ID the quiz belongs to.
     cmId!: number; // Course module ID.
+    correctIcon = '';
+    incorrectIcon = '';
+    partialCorrectIcon = '';
 
     protected preflightData: Record<string, string> = {}; // Preflight data to attempt the quiz.
     protected quizAccessInfo?: AddonModQuizGetQuizAccessInformationWSResponse; // Quiz access information.
@@ -672,12 +675,22 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
+        if (!this.correctIcon) {
+            this.correctIcon = CoreQuestionHelper.getCorrectIcon().fullName;
+            this.incorrectIcon = CoreQuestionHelper.getIncorrectIcon().fullName;
+            this.partialCorrectIcon = CoreQuestionHelper.getPartiallyCorrectIcon().fullName;
+        }
+
         this.summaryQuestions = [];
 
         this.summaryQuestions = await AddonModQuiz.getAttemptSummary(this.attempt.id, this.preflightData, {
             cmId: this.quiz.coursemodule,
             loadLocal: this.offline,
             readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
+        });
+
+        this.summaryQuestions.forEach((question) => {
+            CoreQuestionHelper.populateQuestionStateClass(question);
         });
 
         this.showSummary = true;
@@ -707,7 +720,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         });
 
         this.navigation.forEach((question) => {
-            question.stateClass = CoreQuestionHelper.getQuestionStateClass(question.state || '');
+            CoreQuestionHelper.populateQuestionStateClass(question);
         });
     }
 
