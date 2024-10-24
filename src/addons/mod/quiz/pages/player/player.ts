@@ -20,7 +20,6 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreQuestionComponent } from '@features/question/components/question/question';
 import {
     CoreQuestionQuestionForView,
-    CoreQuestionQuestionParsed,
     CoreQuestionsAnswers,
 } from '@features/question/services/question';
 import { CoreQuestionBehaviourButton, CoreQuestionHelper } from '@features/question/services/question-helper';
@@ -78,12 +77,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     loaded = false; // Whether data has been loaded.
     quizAborted = false; // Whether the quiz was aborted due to an error.
     offline = false; // Whether the quiz is being attempted in offline mode.
-    navigation: AddonModQuizNavigationQuestion[] = []; // List of questions to navigate them.
+    attemptSummary: AddonModQuizNavigationQuestion[] = []; // Attempt summary: list of questions to navigate.
     questions: CoreQuestionQuestionForView[] = []; // Questions of the current page.
     nextPage = -2; // Next page.
     previousPage = -1; // Previous page.
     showSummary = false; // Whether the attempt summary should be displayed.
-    summaryQuestions: CoreQuestionQuestionParsed[] = []; // The questions to display in the summary.
     canReturn = false; // Whether the user can return to a page after seeing the summary.
     preventSubmitMessages: string[] = []; // List of messages explaining why the quiz cannot be submitted.
     endTime?: number; // The time when the attempt must be finished.
@@ -265,7 +263,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @param page Page to load. -1 means summary.
      * @param fromModal Whether the page was selected using the navigation modal.
      * @param slot Slot of the question to scroll to.
-     * @returns Promise resolved when done.
      */
     async changePage(page: number, fromModal?: boolean, slot?: number): Promise<void> {
         if (!this.attempt) {
@@ -343,8 +340,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
     /**
      * Convenience function to get the quiz data.
-     *
-     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         this.quiz = await AddonModQuiz.getQuiz(this.courseId, this.cmId);
@@ -402,7 +397,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      *
      * @param userFinish Whether the user clicked to finish the attempt.
      * @param timeUp Whether the quiz time is up.
-     * @returns Promise resolved when done.
      */
     async finishAttempt(userFinish?: boolean, timeUp?: boolean): Promise<void> {
         if (!this.quiz || !this.attempt) {
@@ -416,7 +410,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             if (!timeUp && this.attempt.state === AddonModQuizAttemptStates.IN_PROGRESS) {
                 let message = Translate.instant('addon.mod_quiz.confirmclose');
 
-                const unansweredCount = this.summaryQuestions
+                const unansweredCount = this.attemptSummary
                     .filter(question => AddonModQuiz.isQuestionUnanswered(question))
                     .length;
 
@@ -488,8 +482,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
     /**
      * Fix sequence checks of current page.
-     *
-     * @returns Promise resolved when done.
      */
     protected async fixSequenceChecks(): Promise<void> {
         if (!this.attempt) {
@@ -666,8 +658,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
     /**
      * Load attempt summary.
-     *
-     * @returns Promise resolved when done.
      */
     protected async loadSummary(): Promise<void> {
         if (!this.quiz || !this.attempt) {
@@ -680,21 +670,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             this.partialCorrectIcon = CoreQuestionHelper.getPartiallyCorrectIcon().fullName;
         }
 
-        this.summaryQuestions = [];
-
-        this.summaryQuestions = await AddonModQuiz.getAttemptSummary(this.attempt.id, this.preflightData, {
-            cmId: this.quiz.coursemodule,
-            loadLocal: this.offline,
-            readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
-        });
-
-        this.summaryQuestions.forEach((question) => {
-            CoreQuestionHelper.populateQuestionStateClass(question);
-        });
+        await this.loadAttemptSummary();
 
         this.showSummary = true;
         this.canReturn = this.attempt.state === AddonModQuizAttemptStates.IN_PROGRESS && !this.attempt.finishedOffline;
-        this.preventSubmitMessages = AddonModQuiz.getPreventSubmitMessages(this.summaryQuestions);
+        this.preventSubmitMessages = AddonModQuiz.getPreventSubmitMessages(this.attemptSummary);
 
         this.dueDateWarning = AddonModQuiz.getAttemptDueDateWarning(this.quiz, this.attempt);
 
@@ -702,31 +682,27 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     }
 
     /**
-     * Load data to navigate the questions using the navigation modal.
-     *
-     * @returns Promise resolved when done.
+     * Load attempt summary data.
      */
-    protected async loadNavigation(): Promise<void> {
-        if (!this.attempt) {
+    protected async loadAttemptSummary(): Promise<void> {
+        if (!this.quiz || !this.attempt) {
             return;
         }
 
         // We use the attempt summary to build the navigation because it contains all the questions.
-        this.navigation = await AddonModQuiz.getAttemptSummary(this.attempt.id, this.preflightData, {
-            cmId: this.quiz?.coursemodule,
+        this.attemptSummary = await AddonModQuiz.getAttemptSummary(this.attempt.id, this.preflightData, {
+            cmId: this.quiz.coursemodule,
             loadLocal: this.offline,
             readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
         });
 
-        this.navigation.forEach((question) => {
+        this.attemptSummary.forEach((question) => {
             CoreQuestionHelper.populateQuestionStateClass(question);
         });
     }
 
     /**
      * Open the navigation modal.
-     *
-     * @returns Promise resolved when done.
      */
     async openNavigation(): Promise<void> {
 
@@ -734,7 +710,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             // Some data has changed, reload the navigation.
             const modal = await CoreLoadings.show();
 
-            await CorePromiseUtils.ignoreErrors(this.loadNavigation());
+            await CorePromiseUtils.ignoreErrors(this.loadAttemptSummary());
 
             modal.dismiss();
             this.reloadNavigation = false;
@@ -746,7 +722,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         const modalData = await CoreModals.openSideModal<AddonModQuizNavigationModalReturn>({
             component: AddonModQuizNavigationModalComponent,
             componentProps: {
-                navigation: this.navigation,
+                navigation: this.attemptSummary,
                 summaryShown: this.showSummary,
                 currentPage: this.attempt?.currentpage,
                 nextPage: this.nextPage,
@@ -784,7 +760,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @param userFinish Whether the user clicked to finish the attempt.
      * @param timeUp Whether the quiz time is up.
      * @param retrying Whether we're retrying the change.
-     * @returns Promise resolved when done.
      */
     protected async processAttempt(userFinish?: boolean, timeUp?: boolean, retrying?: boolean): Promise<void> {
         if (!this.quiz || !this.attempt) {
@@ -827,7 +802,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             }
 
             // Sequence checks updated, try to send the data again.
-            return this.processAttempt(userFinish, timeUp, true);
+            await this.processAttempt(userFinish, timeUp, true);
+
+            return;
         }
 
         // Answers saved, cancel auto save.
@@ -838,7 +815,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             CoreForms.triggerFormSubmittedEvent(this.formElement, !this.offline, CoreSites.getCurrentSiteId());
         }
 
-        return CoreQuestionHelper.clearTmpData(this.questions, this.component, this.quiz.coursemodule);
+        await CoreQuestionHelper.clearTmpData(this.questions, this.component, this.quiz.coursemodule);
     }
 
     /**
@@ -889,8 +866,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
     /**
      * Start or continue an attempt.
-     *
-     * @returns Promise resolved when done.
      */
     protected async startOrContinueAttempt(): Promise<void> {
         if (!this.quiz || !this.quizAccessInfo) {
@@ -920,7 +895,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         this.attempt = attempt;
 
-        await this.loadNavigation();
+        await this.loadAttemptSummary();
 
         if (this.attempt.state !== AddonModQuizAttemptStates.OVERDUE && !this.attempt.finishedOffline) {
             // Attempt not overdue and not finished in offline, load page.
