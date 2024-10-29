@@ -38,4 +38,4 @@ const routes: Routes = [
         CoreSiteHomeIndexPage,
     ],
 })
-export class CoreSiteHomeLazyModule {}
+export default class CoreSiteHomeLazyModule {}

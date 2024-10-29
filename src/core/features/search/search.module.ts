@@ -44,7 +44,7 @@ export async function getSearchServices(): Promise<Type<unknown>[]> {
 const mainMenuChildrenRoutes: Routes = [
     {
         path: CORE_SEARCH_PAGE_NAME,
-        loadChildren: () => import('./search-lazy.module').then(m => m.CoreSearchLazyModule),
+        loadChildren: () => import('./search-lazy.module'),
     },
 ];
 

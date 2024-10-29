@@ -35,4 +35,4 @@ const routes: Routes = [
         CoreCourseSummaryPageModule,
     ],
 })
-export class CoreCourseSummaryLazyModule {}
+export default class CoreCourseSummaryLazyModule {}

@@ -46,12 +46,12 @@ const appRoutes: Routes = [
     },
     {
         path: 'main',
-        loadChildren: () => import('./mainmenu-lazy.module').then(m => m.CoreMainMenuLazyModule),
+        loadChildren: () => import('./mainmenu-lazy.module'),
         canActivate: [authGuard],
     },
     {
         path: 'reload',
-        loadChildren: () => import('./mainmenu-reload-lazy.module').then( m => m.CoreMainMenuReloadLazyModule),
+        loadChildren: () => import('./mainmenu-reload-lazy.module'),
     },
 ];
 

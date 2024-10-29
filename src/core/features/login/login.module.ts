@@ -38,7 +38,7 @@ export async function getLoginServices(): Promise<Type<unknown>[]> {
 const appRoutes: Routes = [
     {
         path: 'login',
-        loadChildren: () => import('./login-lazy.module').then(m => m.CoreLoginLazyModule),
+        loadChildren: () => import('./login-lazy.module'),
         canActivate: [redirectGuard],
     },
 ];

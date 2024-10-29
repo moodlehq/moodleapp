@@ -117,7 +117,7 @@ function buildRoutes(injector: Injector): Routes {
         ...discussionRoutes,
         {
             path: 'message-settings',
-            loadChildren: () => import('./messages-settings-lazy.module').then(m => m.AddonMessagesSettingsLazyModule),
+            loadChildren: () => import('./messages-settings-lazy.module'),
         },
         ...buildTabMainRoutes(injector, {
             canActivate: [messagesIndexGuard],
@@ -148,4 +148,4 @@ function buildRoutes(injector: Injector): Routes {
         },
     ],
 })
-export class AddonMessagesLazyModule {}
+export default class AddonMessagesLazyModule {}

@@ -38,7 +38,7 @@ export async function getPrivateFilesServices(): Promise<Type<unknown>[]> {
 const routes: Routes = [
     {
         path: AddonPrivateFilesUserHandlerService.PAGE_NAME,
-        loadChildren: () => import('@addons/privatefiles/privatefiles-lazy.module').then(m => m.AddonPrivateFilesLazyModule),
+        loadChildren: () => import('@addons/privatefiles/privatefiles-lazy.module'),
     },
 ];
 

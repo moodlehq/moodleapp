@@ -60,4 +60,4 @@ function buildRoutes(injector: Injector): Routes {
         },
     ],
 })
-export class AddonPrivateFilesLazyModule {}
+export default class AddonPrivateFilesLazyModule {}

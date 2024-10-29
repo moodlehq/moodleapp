@@ -33,4 +33,4 @@ const routes: Routes = [
         AddonBadgesBadgeClassPage,
     ],
 })
-export class AddonBadgeClassLazyModule {}
+export default class AddonBadgeClassLazyModule {}

@@ -37,7 +37,7 @@ export async function getSiteHomeServices(): Promise<Type<unknown>[]> {
 const mainMenuHomeRoutes: Routes = [
     {
         path: CoreSiteHomeHomeHandlerService.PAGE_NAME,
-        loadChildren: () => import('./sitehome-lazy.module').then(m => m.CoreSiteHomeLazyModule),
+        loadChildren: () => import('./sitehome-lazy.module'),
     },
 ];
 

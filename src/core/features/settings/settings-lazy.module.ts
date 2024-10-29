@@ -45,7 +45,7 @@ const sectionRoutes: Routes = [
     },
     {
         path: SHAREDFILES_PAGE_NAME,
-        loadChildren: () => import('@features/sharedfiles/sharedfiles-lazy.module').then(m => m.CoreSharedFilesLazyModule),
+        loadChildren: () => import('@features/sharedfiles/sharedfiles-lazy.module'),
     },
     {
         path: 'about',
@@ -114,4 +114,4 @@ const routes: Routes = [
         CoreSettingsErrorLogPage,
     ],
 })
-export class CoreSettingsLazyModule {}
+export default class CoreSettingsLazyModule {}

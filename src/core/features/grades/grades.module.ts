@@ -49,17 +49,17 @@ export async function getGradesServices(): Promise<Type<unknown>[]> {
 const mainMenuChildrenRoutes: Routes = [
     {
         path: GRADES_PAGE_NAME,
-        loadChildren: () => import('./grades-courses-lazy.module').then(m => m.CoreGradesCoursesLazyModule),
+        loadChildren: () => import('./grades-courses-lazy.module'),
         data: { swipeManagerSource: 'courses' },
     },
     {
         path: `${COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${GRADES_PAGE_NAME}`,
-        loadChildren: () => import('./grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
+        loadChildren: () => import('./grades-course-lazy.module'),
     },
     ...conditionalRoutes([
         {
             path: `${COURSE_PAGE_NAME}/${COURSE_INDEX_PATH}/${GRADES_PARTICIPANTS_PAGE_NAME}/:userId`,
-            loadChildren: () => import('./grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
+            loadChildren: () => import('./grades-course-lazy.module'),
             data: { swipeManagerSource: 'participants' },
         },
     ], () => CoreScreen.isMobile),
@@ -68,11 +68,11 @@ const mainMenuChildrenRoutes: Routes = [
 const courseIndexRoutes: Routes = [
     {
         path: GRADES_PAGE_NAME,
-        loadChildren: () => import('./grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
+        loadChildren: () => import('./grades-course-lazy.module'),
     },
     {
         path: GRADES_PARTICIPANTS_PAGE_NAME,
-        loadChildren: () => import('./grades-course-participants-lazy.module').then(m => m.CoreGradesCourseParticipantsLazyModule),
+        loadChildren: () => import('./grades-course-participants-lazy.module'),
     },
 ];
 

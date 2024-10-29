@@ -39,4 +39,4 @@ const routes: Routes = [
         CoreCoursesMyPage,
     ],
 })
-export class CoreCoursesMyLazyModule {}
+export default class CoreCoursesMyLazyModule {}
