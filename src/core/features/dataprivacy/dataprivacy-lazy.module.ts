@@ -35,4 +35,4 @@ const routes: Routes = [
         CoreDataPrivacyMainPage,
     ],
 })
-export class CoreDataPrivacyLazyModule {}
+export default class CoreDataPrivacyLazyModule {}

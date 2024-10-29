@@ -43,15 +43,15 @@ export async function getBadgesServices(): Promise<Type<unknown>[]> {
 const mainMenuRoutes: Routes = [
     {
         path: 'badge',
-        loadChildren: () => import('./badge-lazy.module').then(m => m.AddonBadgeLazyModule),
+        loadChildren: () => import('./badge-lazy.module'),
     },
     {
         path: 'badges',
-        loadChildren: () => import('./badges-lazy.module').then(m => m.AddonBadgesLazyModule),
+        loadChildren: () => import('./badges-lazy.module'),
     },
     {
         path: 'badgeclass',
-        loadChildren: () => import('./badgeclass-lazy.module').then(m => m.AddonBadgeClassLazyModule),
+        loadChildren: () => import('./badgeclass-lazy.module'),
     },
 ];
 

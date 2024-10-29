@@ -43,7 +43,7 @@ export async function getTagServices(): Promise<Type<unknown>[]> {
 const routes: Routes = [
     {
         path: CoreTagMainMenuHandlerService.PAGE_NAME,
-        loadChildren: () => import('./tag-lazy.module').then(m => m.CoreTagLazyModule),
+        loadChildren: () => import('./tag-lazy.module'),
     },
 ];
 

@@ -26,7 +26,7 @@ const routes: Routes = [
     },
     {
         path: 'profile',
-        loadChildren: () => import('./user-profile-lazy.module').then( m => m.CoreUserProfileLazyModule),
+        loadChildren: () => import('./user-profile-lazy.module'),
     },
     {
         path: 'about',
@@ -44,4 +44,4 @@ const routes: Routes = [
         CoreUserAboutPage,
     ],
 })
-export class CoreUserLazyModule {}
+export default class CoreUserLazyModule {}

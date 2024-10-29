@@ -49,22 +49,22 @@ export async function getCompetencyServices(): Promise<Type<unknown>[]> {
 const mainMenuChildrenRoutes: Routes = [
     {
         path: ADDON_COMPETENCY_LEARNING_PLANS_PAGE,
-        loadChildren: () => import('./competency-learning-plans-lazy.module').then(m => m.AddonCompetencyLearningPlansLazyModule),
+        loadChildren: () => import('./competency-learning-plans-lazy.module'),
     },
     {
         path: `${COURSE_PAGE_NAME}/:courseId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
-        loadChildren: () => import('./competency-course-details-lazy.module').then(m => m.AddonCompetencyCourseDetailsLazyModule),
+        loadChildren: () => import('./competency-course-details-lazy.module'),
     },
     {
         path: `${COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
-        loadChildren: () => import('./competency-course-details-lazy.module').then(m => m.AddonCompetencyCourseDetailsLazyModule),
+        loadChildren: () => import('./competency-course-details-lazy.module'),
     },
 ];
 
 const courseIndexRoutes: Routes = [
     {
         path: ADDON_COMPETENCY_COMPETENCIES_PAGE,
-        loadChildren: () => import('./competency-course-contents-lazy.module').then(m => m.AddonCompetencyCourseContentsLazyModule),
+        loadChildren: () => import('./competency-course-contents-lazy.module'),
     },
 ];
 

@@ -41,4 +41,4 @@ const routes: Routes = [
         CorePolicyAcceptancesPage,
     ],
 })
-export class CorePolicyLazyModule {}
+export default class CorePolicyLazyModule {}

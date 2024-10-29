@@ -53,4 +53,4 @@ function buildRoutes(injector: Injector): Routes {
         CoreMainMenuMorePage,
     ],
 })
-export class CoreMainMenuMoreLazyModule {}
+export default class CoreMainMenuMoreLazyModule {}

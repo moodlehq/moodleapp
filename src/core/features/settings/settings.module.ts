@@ -37,18 +37,18 @@ export async function getSettingsServices(): Promise<Type<unknown>[]> {
 const appRoutes: Routes = [
     {
         path: 'settings',
-        loadChildren: () => import('./settings-lazy.module').then(m => m.CoreSettingsLazyModule),
+        loadChildren: () => import('./settings-lazy.module'),
     },
 ];
 
 const mainMenuMoreRoutes: Routes = [
     {
         path: 'settings',
-        loadChildren: () => import('./settings-lazy.module').then(m => m.CoreSettingsLazyModule),
+        loadChildren: () => import('./settings-lazy.module'),
     },
     {
         path: 'preferences',
-        loadChildren: () => import('./settings-site-lazy.module').then(m => m.CoreettingsSiteLazyModule),
+        loadChildren: () => import('./settings-site-lazy.module'),
     },
 ];
 

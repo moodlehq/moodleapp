@@ -39,7 +39,7 @@ export async function getCourseCompletionServices(): Promise<Type<unknown>[]> {
 const routes: Routes = [
     {
         path: 'coursecompletion',
-        loadChildren: () => import('./coursecompletion-lazy.module').then(m => m.AddonCourseCompletionLazyModule),
+        loadChildren: () => import('./coursecompletion-lazy.module'),
     },
 ];
 

@@ -52,7 +52,7 @@ export async function getCalendarServices(): Promise<Type<unknown>[]> {
 const mainMenuChildrenRoutes: Routes = [
     {
         path: AddonCalendarMainMenuHandlerService.PAGE_NAME,
-        loadChildren: () => import('./calendar-lazy.module').then(m => m.AddonCalendarLazyModule),
+        loadChildren: () => import('./calendar-lazy.module'),
     },
 ];
 

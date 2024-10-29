@@ -38,11 +38,11 @@ function buildRoutes(injector: Injector): Routes {
             children: [
                 {
                     path: CoreMainMenuHomeHandlerService.PAGE_NAME,
-                    loadChildren: () => import('./mainmenu-home-lazy.module').then(m => m.CoreMainMenuHomeLazyModule),
+                    loadChildren: () => import('./mainmenu-home-lazy.module'),
                 },
                 {
                     path: CoreMainMenuProvider.MORE_PAGE_NAME,
-                    loadChildren: () => import('./mainmenu-more-lazy.module').then(m => m.CoreMainMenuMoreLazyModule),
+                    loadChildren: () => import('./mainmenu-more-lazy.module'),
                 },
                 ...mainMenuRoutes.children,
             ],
@@ -63,4 +63,4 @@ function buildRoutes(injector: Injector): Routes {
         { provide: ROUTES, multi: true, useFactory: buildRoutes, deps: [Injector] },
     ],
 })
-export class CoreMainMenuLazyModule {}
+export default class CoreMainMenuLazyModule {}

@@ -86,4 +86,4 @@ function buildRoutes(injector: Injector): Routes {
         },
     ],
 })
-export class AddonCalendarLazyModule {}
+export default class AddonCalendarLazyModule {}

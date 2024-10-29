@@ -48,13 +48,13 @@ export async function getNotificationsServices(): Promise<Type<unknown>[]> {
 const routes: Routes = [
     {
         path: AddonNotificationsMainMenuHandlerService.PAGE_NAME,
-        loadChildren: () => import('./notifications-lazy.module').then(m => m.AddonNotificationsLazyModule),
+        loadChildren: () => import('./notifications-lazy.module'),
     },
 ];
 const preferencesRoutes: Routes = [
     {
         path: AddonNotificationsSettingsHandlerService.PAGE_NAME,
-        loadChildren: () => import('./notifications-settings-lazy.module').then(m => m.AddonNotificationsSettingsLazyModule),
+        loadChildren: () => import('./notifications-settings-lazy.module'),
     },
 ];
 

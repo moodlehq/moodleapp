@@ -27,7 +27,7 @@ const routes: Routes = [
         children: conditionalRoutes([
             {
                 path: ':userId',
-                loadChildren: () => import('./grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
+                loadChildren: () => import('./grades-course-lazy.module'),
                 data: { swipeManagerSource: 'participants' },
             },
         ], () => CoreScreen.isTablet),
@@ -40,4 +40,4 @@ const routes: Routes = [
         CoreUserParticipantsPageModule,
     ],
 })
-export class CoreGradesCourseParticipantsLazyModule {}
+export default class CoreGradesCourseParticipantsLazyModule {}

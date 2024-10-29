@@ -53,4 +53,4 @@ function buildRoutes(injector: Injector): Routes {
         CoreCourseContentsPage,
     ],
 })
-export class CoreCourseContentsLazyModule {}
+export default class CoreCourseContentsLazyModule {}

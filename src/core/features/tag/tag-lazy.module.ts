@@ -95,4 +95,4 @@ function buildRoutes(injector: Injector): Routes {
         },
     ],
 })
-export class CoreTagLazyModule {}
+export default class CoreTagLazyModule {}

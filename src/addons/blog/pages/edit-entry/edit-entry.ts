@@ -59,7 +59,7 @@ import { CoreTimeUtils } from '@services/utils/time';
         CoreTagComponentsModule,
     ],
 })
-export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
+export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
 
     @ViewChild('editEntryForm') formElement!: ElementRef;
 

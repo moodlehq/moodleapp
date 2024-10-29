@@ -112,14 +112,14 @@ export async function getCourseStandaloneComponents(): Promise<Type<unknown>[]> 
 const routes: Routes = [
     {
         matcher: buildRegExpUrlMatcher(new RegExp(`^${COURSE_PAGE_NAME}(/deep)*`)),
-        loadChildren: () => import('@features/course/course-lazy.module').then(m => m.CoreCourseLazyModule),
+        loadChildren: () => import('@features/course/course-lazy.module'),
     },
 ];
 
 const courseIndexRoutes: Routes = [
     {
         path: CONTENTS_PAGE_NAME,
-        loadChildren: () => import('@features/course/course-contents-lazy.module').then(m => m.CoreCourseContentsLazyModule),
+        loadChildren: () => import('@features/course/course-contents-lazy.module'),
     },
 ];
 

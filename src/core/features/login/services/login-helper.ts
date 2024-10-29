@@ -1451,8 +1451,8 @@ export class CoreLoginHelperProvider {
      *
      * @returns Reconnect page route module.
      */
-    async getReconnectRouteModule(): Promise<LazyRoutesModule> {
-        return import('@features/login/login-reconnect-lazy.module').then(m => m.CoreLoginReconnectLazyModule);
+    getReconnectRouteModule(): LazyRoutesModule {
+        return import('@features/login/login-reconnect-lazy.module');
     }
 
     /**
@@ -1460,8 +1460,8 @@ export class CoreLoginHelperProvider {
      *
      * @returns Credentials page route module.
      */
-    async getCredentialsRouteModule(): Promise<LazyRoutesModule> {
-        return import('@features/login/login-credentials-lazy.module').then(m => m.CoreLoginCredentialsLazyModule);
+    getCredentialsRouteModule(): LazyRoutesModule {
+        return import('@features/login/login-credentials-lazy.module');
     }
 
     /**

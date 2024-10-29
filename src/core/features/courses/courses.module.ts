@@ -60,14 +60,14 @@ export async function getCoursesServices(): Promise<Type<unknown>[]> {
 const mainMenuHomeChildrenRoutes: Routes = [
     {
         path: CoreDashboardHomeHandlerService.PAGE_NAME,
-        loadChildren: () => import('./courses-dashboard-lazy.module').then(m => m.CoreCoursesDashboardLazyModule),
+        loadChildren: () => import('./courses-dashboard-lazy.module'),
     },
 ];
 
 const routes: Routes = [
     {
         path: CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME,
-        loadChildren: () => import('./courses-lazy.module').then(m => m.CoreCoursesLazyModule),
+        loadChildren: () => import('./courses-lazy.module'),
     },
 ];
 

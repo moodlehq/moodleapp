@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InjectionToken, Injector, ModuleWithProviders, NgModule, Type } from '@angular/core';
+import { InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactory, Type } from '@angular/core';
 import {
     RouterModule,
     Route,
@@ -22,7 +22,9 @@ import {
     UrlMatchResult,
     UrlSegment,
     UrlSegmentGroup,
+    DefaultExport,
 } from '@angular/router';
+import { Observable } from 'rxjs';
 
 const modulesRoutes: WeakMap<InjectionToken<unknown>, ModuleRoutes> = new WeakMap();
 
@@ -97,10 +99,18 @@ function buildConditionalUrlMatcher(pathOrMatcher: string | UrlMatcher, conditio
 }
 
 /**
- * Type to declare lazy route modules.
+ * Type to declare lazy route modules. Extracted from Angular's LoadChildrenCallback type.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type LazyRoutesModule = Type<any>;
+export type LazyRoutesModule = Type<any> |
+    NgModuleFactory<any> | // eslint-disable-line deprecation/deprecation, @typescript-eslint/no-explicit-any
+    Routes |
+    Observable<Type<any> | // eslint-disable-line @typescript-eslint/no-explicit-any
+    Routes |
+    DefaultExport<Type<any>> | // eslint-disable-line @typescript-eslint/no-explicit-any
+    DefaultExport<Routes>> |
+    // eslint-disable-next-line deprecation/deprecation, @typescript-eslint/no-explicit-any
+    Promise<NgModuleFactory<any> | Type<any> | Routes | DefaultExport<Type<any>> |DefaultExport<Routes>>;
 
 /**
  * Build url matcher using a regular expression.

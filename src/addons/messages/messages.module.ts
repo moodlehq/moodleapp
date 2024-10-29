@@ -58,13 +58,13 @@ export async function getMessagesServices(): Promise<Type<unknown>[]> {
 const mainMenuChildrenRoutes: Routes = [
     {
         path: AddonMessagesMainMenuHandlerService.PAGE_NAME,
-        loadChildren: () => import('./messages-lazy.module').then(m => m.AddonMessagesLazyModule),
+        loadChildren: () => import('./messages-lazy.module'),
     },
 ];
 const preferencesRoutes: Routes = [
     {
         path: AddonMessagesSettingsHandlerService.PAGE_NAME,
-        loadChildren: () => import('./messages-settings-lazy.module').then(m => m.AddonMessagesSettingsLazyModule),
+        loadChildren: () => import('./messages-settings-lazy.module'),
     },
 ];
 
