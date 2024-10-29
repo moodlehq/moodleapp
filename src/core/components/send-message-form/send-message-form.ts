@@ -35,7 +35,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-send-message-form',
     templateUrl: 'core-send-message-form.html',
-    styleUrls: ['send-message-form.scss'],
+    styleUrl: 'send-message-form.scss',
 })
 export class CoreSendMessageFormComponent {
 

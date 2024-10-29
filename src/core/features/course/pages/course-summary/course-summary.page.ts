@@ -49,7 +49,7 @@ import { CoreEnrol, CoreEnrolEnrolmentMethod } from '@features/enrol/services/en
 @Component({
     selector: 'page-core-course-summary',
     templateUrl: 'course-summary.html',
-    styleUrls: ['course-summary.scss'],
+    styleUrl: 'course-summary.scss',
 })
 export class CoreCourseSummaryPage implements OnInit, OnDestroy {
 

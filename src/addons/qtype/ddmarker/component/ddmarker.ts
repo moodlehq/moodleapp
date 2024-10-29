@@ -27,7 +27,7 @@ import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
 @Component({
     selector: 'addon-qtype-ddmarker',
     templateUrl: 'addon-qtype-ddmarker.html',
-    styleUrls: ['ddmarker.scss'],
+    styleUrl: 'ddmarker.scss',
 })
 export class AddonQtypeDdMarkerComponent
     extends CoreQuestionBaseComponent<AddonQtypeDdMarkerQuestionData>

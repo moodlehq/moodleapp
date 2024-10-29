@@ -22,7 +22,7 @@ import { AddonModQuizMultichoiceQuestion, CoreQuestionBaseComponent } from '@fea
 @Component({
     selector: 'addon-qtype-multichoice',
     templateUrl: 'addon-qtype-multichoice.html',
-    styleUrls: ['multichoice.scss'],
+    styleUrl: 'multichoice.scss',
 })
 export class AddonQtypeMultichoiceComponent extends CoreQuestionBaseComponent<AddonModQuizMultichoiceQuestion> {
 

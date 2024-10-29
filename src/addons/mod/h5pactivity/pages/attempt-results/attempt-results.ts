@@ -33,7 +33,7 @@ import { ADDON_MOD_H5PACTIVITY_COMPONENT } from '../../constants';
 @Component({
     selector: 'page-addon-mod-h5pactivity-attempt-results',
     templateUrl: 'attempt-results.html',
-    styleUrls: ['attempt-results.scss'],
+    styleUrl: 'attempt-results.scss',
 })
 export class AddonModH5PActivityAttemptResultsPage implements OnInit {
 

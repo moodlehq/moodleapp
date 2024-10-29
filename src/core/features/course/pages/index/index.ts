@@ -38,7 +38,7 @@ import { CoreWait } from '@singletons/wait';
 @Component({
     selector: 'page-core-course-index',
     templateUrl: 'index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class CoreCourseIndexPage implements OnInit, OnDestroy {
 

@@ -19,7 +19,7 @@ import { CoreUserSupport } from '@features/user/services/support';
 @Component({
     selector: 'core-login-exceeded-attempts',
     templateUrl: 'exceeded-attempts.html',
-    styleUrls: ['./exceeded-attempts.scss'],
+    styleUrl: './exceeded-attempts.scss',
 })
 export class CoreLoginExceededAttemptsComponent implements OnInit {
 

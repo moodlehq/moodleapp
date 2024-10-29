@@ -41,7 +41,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'core-courses-course-list-item',
     templateUrl: 'core-courses-course-list-item.html',
-    styleUrls: ['course-list-item.scss'],
+    styleUrl: 'course-list-item.scss',
 })
 export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, OnChanges {
 

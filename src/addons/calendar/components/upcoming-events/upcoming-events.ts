@@ -36,7 +36,7 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'addon-calendar-upcoming-events',
     templateUrl: 'addon-calendar-upcoming-events.html',
-    styleUrls: ['../../calendar-common.scss'],
+    styleUrl: '../../calendar-common.scss',
 })
 export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, OnDestroy {
 

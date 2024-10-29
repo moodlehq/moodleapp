@@ -41,7 +41,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-core-login-reconnect',
     templateUrl: 'reconnect.html',
-    styleUrls: ['../../login.scss'],
+    styleUrl: '../../login.scss',
 })
 export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 

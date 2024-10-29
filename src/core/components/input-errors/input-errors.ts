@@ -36,7 +36,7 @@ import { FormControl } from '@angular/forms';
 @Component({
     selector: 'core-input-errors',
     templateUrl: 'core-input-errors.html',
-    styleUrls: ['input-errors.scss'],
+    styleUrl: 'input-errors.scss',
 })
 export class CoreInputErrorsComponent implements OnInit, OnChanges {
 

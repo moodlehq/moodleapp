@@ -23,7 +23,7 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
 @Component({
     selector: 'addon-qtype-gapselect',
     templateUrl: 'addon-qtype-gapselect.html',
-    styleUrls: ['gapselect.scss'],
+    styleUrl: 'gapselect.scss',
 })
 export class AddonQtypeGapSelectComponent extends CoreQuestionBaseComponent {
 

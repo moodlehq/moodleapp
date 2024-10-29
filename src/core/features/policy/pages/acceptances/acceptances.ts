@@ -35,7 +35,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-core-policy-acceptances',
     templateUrl: 'acceptances.html',
-    styleUrls: ['acceptances.scss'],
+    styleUrl: 'acceptances.scss',
 })
 export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
 

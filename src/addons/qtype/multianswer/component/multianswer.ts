@@ -22,7 +22,7 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
 @Component({
     selector: 'addon-qtype-multianswer',
     templateUrl: 'addon-qtype-multianswer.html',
-    styleUrls: ['multianswer.scss'],
+    styleUrl: 'multianswer.scss',
 })
 export class AddonQtypeMultiAnswerComponent extends CoreQuestionBaseComponent {
 

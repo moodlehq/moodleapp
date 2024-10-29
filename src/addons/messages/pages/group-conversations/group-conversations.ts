@@ -53,7 +53,7 @@ const enum AddonMessagesGroupConversationOptionNames {
 @Component({
     selector: 'page-addon-messages-group-conversations',
     templateUrl: 'group-conversations.html',
-    styleUrls: ['../../messages-common.scss'],
+    styleUrl: '../../messages-common.scss',
 })
 export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 

@@ -27,7 +27,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 @Component({
     selector: 'core-timer',
     templateUrl: 'core-timer.html',
-    styleUrls: ['timer.scss'],
+    styleUrl: 'timer.scss',
 })
 export class CoreTimerComponent implements OnInit, OnDestroy {
 

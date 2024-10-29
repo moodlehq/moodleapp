@@ -61,7 +61,7 @@ const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 @Component({
     selector: 'addon-mod-data-index',
     templateUrl: 'addon-mod-data-index.html',
-    styleUrls: ['../../data.scss'],
+    styleUrl: '../../data.scss',
 })
 export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

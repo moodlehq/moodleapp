@@ -66,7 +66,7 @@ import { CorePopovers } from '@services/popovers';
 @Component({
     selector: 'addon-mod-glossary-index',
     templateUrl: 'addon-mod-glossary-index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivityComponent
     implements OnInit, AfterViewInit, OnDestroy {

@@ -49,7 +49,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-core-login-credentials',
     templateUrl: 'credentials.html',
-    styleUrls: ['../../login.scss'],
+    styleUrl: '../../login.scss',
 })
 export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 

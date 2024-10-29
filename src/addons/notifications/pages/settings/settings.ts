@@ -48,7 +48,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-addon-notifications-settings',
     templateUrl: 'settings.html',
-    styleUrls: ['settings.scss'],
+    styleUrl: 'settings.scss',
 })
 export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
 

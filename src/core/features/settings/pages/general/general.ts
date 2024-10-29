@@ -35,7 +35,7 @@ import { CoreNative } from '@features/native/services/native';
 @Component({
     selector: 'page-core-app-settings-general',
     templateUrl: 'general.html',
-    styleUrls: ['general.scss'],
+    styleUrl: 'general.scss',
 })
 export class CoreSettingsGeneralPage {
 

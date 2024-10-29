@@ -70,7 +70,7 @@ type NewDiscussionData = {
 @Component({
     selector: 'page-addon-mod-forum-new-discussion',
     templateUrl: 'new-discussion.html',
-    styleUrls: ['new-discussion.scss'],
+    styleUrl: 'new-discussion.scss',
 })
 export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLeave {
 

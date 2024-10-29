@@ -36,7 +36,7 @@ import { CoreKeyboard } from '@singletons/keyboard';
 @Component({
     selector: 'addon-messages-contacts',
     templateUrl: 'contacts.html',
-    styleUrls: ['../../messages-common.scss'],
+    styleUrl: '../../messages-common.scss',
 })
 export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 

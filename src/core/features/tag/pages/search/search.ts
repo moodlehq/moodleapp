@@ -32,7 +32,7 @@ import { CoreSites } from '@services/sites';
 @Component({
     selector: 'page-core-tag-search',
     templateUrl: 'search.html',
-    styleUrls: ['search.scss'],
+    styleUrl: 'search.scss',
 })
 export class CoreTagSearchPage implements OnInit {
 

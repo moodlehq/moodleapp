@@ -22,7 +22,7 @@ import { CoreNavigator } from '@services/navigator';
 @Component({
     selector: 'core-block-only-title',
     templateUrl: 'core-block-only-title.html',
-    styleUrls: ['only-title-block.scss'],
+    styleUrl: 'only-title-block.scss',
 })
 export class CoreBlockOnlyTitleComponent extends CoreBlockBaseComponent implements OnInit {
 

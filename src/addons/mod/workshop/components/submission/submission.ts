@@ -38,7 +38,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'addon-mod-workshop-submission',
     templateUrl: 'addon-mod-workshop-submission.html',
-    styleUrls: ['submission.scss'],
+    styleUrl: 'submission.scss',
 })
 export class AddonModWorkshopSubmissionComponent implements OnInit {
 

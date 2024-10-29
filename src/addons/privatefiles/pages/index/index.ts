@@ -45,7 +45,7 @@ import { AddonPrivateFilesFileComponent } from '@addons/privatefiles/components/
 @Component({
     selector: 'page-addon-privatefiles-index',
     templateUrl: 'index.html',
-    styleUrls: ['./index.scss'],
+    styleUrl: './index.scss',
 })
 export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 

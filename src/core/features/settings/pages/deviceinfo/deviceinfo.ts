@@ -69,7 +69,7 @@ interface CoreSettingsDeviceInfo {
 @Component({
     selector: 'page-core-app-settings-deviceinfo',
     templateUrl: 'deviceinfo.html',
-    styleUrls: ['deviceinfo.scss'],
+    styleUrl: 'deviceinfo.scss',
 })
 export class CoreSettingsDeviceInfoPage implements OnDestroy {
 

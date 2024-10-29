@@ -50,7 +50,7 @@ import {
 @Component({
     selector: 'page-addon-mod-data-entry',
     templateUrl: 'entry.html',
-    styleUrls: ['../../data.scss'],
+    styleUrl: '../../data.scss',
 })
 export class AddonModDataEntryPage implements OnInit, OnDestroy {
 

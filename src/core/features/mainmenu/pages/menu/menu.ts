@@ -63,7 +63,7 @@ const ANIMATION_DURATION = 500;
                 animate(`${ANIMATION_DURATION}ms ease-in-out`, style({ transform: 'translateY(0)' })),
             ]),
         ])],
-    styleUrls: ['menu.scss'],
+    styleUrl: 'menu.scss',
 })
 export class CoreMainMenuPage implements OnInit, OnDestroy {
 

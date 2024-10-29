@@ -32,7 +32,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-user-menu-button',
     templateUrl: 'user-menu-button.html',
-    styleUrls: ['user-menu-button.scss'],
+    styleUrl: 'user-menu-button.scss',
 })
 export class CoreMainMenuUserButtonComponent implements OnInit {
 

@@ -36,7 +36,7 @@ import { map } from 'rxjs/operators';
 @Component({
     selector: 'core-report-builder-report-detail',
     templateUrl: './report-detail.html',
-    styleUrls: ['./report-detail.scss'],
+    styleUrl: './report-detail.scss',
 })
 export class CoreReportBuilderReportDetailComponent implements OnInit {
 

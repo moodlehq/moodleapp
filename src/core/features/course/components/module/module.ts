@@ -42,7 +42,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-course-module',
     templateUrl: 'core-course-module.html',
-    styleUrls: ['module.scss'],
+    styleUrl: 'module.scss',
 })
 export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 

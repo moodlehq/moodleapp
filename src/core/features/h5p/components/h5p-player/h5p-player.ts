@@ -34,7 +34,7 @@ import { BehaviorSubject } from 'rxjs';
 @Component({
     selector: 'core-h5p-player',
     templateUrl: 'core-h5p-player.html',
-    styleUrls: ['h5p-player.scss'],
+    styleUrl: 'h5p-player.scss',
 })
 export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 

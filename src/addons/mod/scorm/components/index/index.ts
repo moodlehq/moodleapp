@@ -57,7 +57,7 @@ import { CoreWait } from '@singletons/wait';
 @Component({
     selector: 'addon-mod-scorm-index',
     templateUrl: 'addon-mod-scorm-index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 

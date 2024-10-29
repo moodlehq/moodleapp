@@ -51,7 +51,7 @@ import { CoreError } from '@classes/errors/error';
 @Component({
     selector: 'page-addon-mod-feedback-form',
     templateUrl: 'form.html',
-    styleUrls: ['form.scss'],
+    styleUrl: 'form.scss',
 })
 export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 

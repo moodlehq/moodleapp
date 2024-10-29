@@ -22,7 +22,7 @@ import { AddonModQuizTextQuestion, CoreQuestionBaseComponent } from '@features/q
 @Component({
     selector: 'addon-qtype-shortanswer',
     templateUrl: 'addon-qtype-shortanswer.html',
-    styleUrls: ['shortanswer.scss'],
+    styleUrl: 'shortanswer.scss',
 })
 export class AddonQtypeShortAnswerComponent extends CoreQuestionBaseComponent<AddonModQuizTextQuestion> {
 

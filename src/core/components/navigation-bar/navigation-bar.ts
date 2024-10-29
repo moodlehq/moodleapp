@@ -28,7 +28,7 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'core-navigation-bar',
     templateUrl: 'core-navigation-bar.html',
-    styleUrls: ['navigation-bar.scss'],
+    styleUrl: 'navigation-bar.scss',
 })
 export class CoreNavigationBarComponent implements OnChanges {
 

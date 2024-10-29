@@ -33,7 +33,7 @@ import { AddonModH5PActivityGradeMethod } from '../../constants';
 @Component({
     selector: 'page-addon-mod-h5pactivity-users-attempts',
     templateUrl: 'users-attempts.html',
-    styleUrls: ['users-attempts.scss'],
+    styleUrl: 'users-attempts.scss',
 })
 export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
 

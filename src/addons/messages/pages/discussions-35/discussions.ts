@@ -40,7 +40,7 @@ import { CoreKeyboard } from '@singletons/keyboard';
 @Component({
     selector: 'addon-messages-discussions',
     templateUrl: 'discussions.html',
-    styleUrls: ['../../messages-common.scss'],
+    styleUrl: '../../messages-common.scss',
 })
 export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
 

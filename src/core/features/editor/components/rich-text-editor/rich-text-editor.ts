@@ -60,7 +60,7 @@ import { CoreQRScan } from '@services/qrscan';
 @Component({
     selector: 'core-rich-text-editor',
     templateUrl: 'core-editor-rich-text-editor.html',
-    styleUrls: ['rich-text-editor.scss'],
+    styleUrl: 'rich-text-editor.scss',
 })
 export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 

@@ -53,7 +53,7 @@ const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
 @Component({
     selector: 'core-navbar-buttons',
     template: '<ng-content/><template #contextMenuContainer>-</template>',
-    styleUrls: ['navbar-buttons.scss'],
+    styleUrl: 'navbar-buttons.scss',
 })
 export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
 

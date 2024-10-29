@@ -27,7 +27,7 @@ import { ADDON_MOD_IMSCP_COMPONENT, ADDON_MOD_IMSCP_PAGE_NAME } from '../../cons
 @Component({
     selector: 'addon-mod-imscp-index',
     templateUrl: 'addon-mod-imscp-index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
