@@ -54,7 +54,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-addon-mod-assign-edit',
     templateUrl: 'edit.html',
-    styleUrls: ['edit.scss'],
+    styleUrl: 'edit.scss',
 })
 export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 

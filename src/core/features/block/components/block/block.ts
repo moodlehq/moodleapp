@@ -26,7 +26,7 @@ import { ContextLevel } from '@/core/constants';
 @Component({
     selector: 'core-block',
     templateUrl: 'core-block.html',
-    styleUrls: ['block.scss'],
+    styleUrl: 'block.scss',
 })
 export class CoreBlockComponent implements OnChanges, OnDestroy {
 

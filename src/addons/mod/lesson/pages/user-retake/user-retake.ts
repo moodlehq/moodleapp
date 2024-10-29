@@ -42,7 +42,7 @@ import { ADDON_MOD_LESSON_COMPONENT } from '../../constants';
 @Component({
     selector: 'page-addon-mod-lesson-user-retake',
     templateUrl: 'user-retake.html',
-    styleUrls: ['user-retake.scss'],
+    styleUrl: 'user-retake.scss',
 })
 export class AddonModLessonUserRetakePage implements OnInit {
 

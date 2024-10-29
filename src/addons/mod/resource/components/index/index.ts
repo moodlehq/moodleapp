@@ -42,7 +42,7 @@ import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
 @Component({
     selector: 'addon-mod-resource-index',
     templateUrl: 'addon-mod-resource-index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 

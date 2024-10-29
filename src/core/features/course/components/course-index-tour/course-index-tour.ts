@@ -21,7 +21,7 @@ import { CoreUserTours } from '@features/usertours/services/user-tours';
 @Component({
     selector: 'core-course-course-index-tour',
     templateUrl: 'course-index-tour.html',
-    styleUrls: ['course-index-tour.scss'],
+    styleUrl: 'course-index-tour.scss',
 })
 export class CoreCourseCourseIndexTourComponent {
 

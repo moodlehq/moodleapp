@@ -40,7 +40,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-core-policy-site-policy',
     templateUrl: 'site-policy.html',
-    styleUrls: ['site-policy.scss'],
+    styleUrl: 'site-policy.scss',
 })
 export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 

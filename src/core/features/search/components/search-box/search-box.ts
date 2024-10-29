@@ -34,7 +34,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-search-box',
     templateUrl: 'core-search-box.html',
-    styleUrls: ['search-box.scss'],
+    styleUrl: 'search-box.scss',
 })
 export class CoreSearchBoxComponent implements OnInit {
 

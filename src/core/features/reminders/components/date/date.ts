@@ -24,7 +24,7 @@ import { CoreTime } from '@singletons/time';
 @Component({
     selector: 'core-reminders-date',
     templateUrl: 'date.html',
-    styleUrls: ['date.scss'],
+    styleUrl: 'date.scss',
 })
 export class CoreRemindersDateComponent implements OnInit {
 

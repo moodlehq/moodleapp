@@ -62,7 +62,7 @@ import { CoreModals } from '@services/modals';
 @Component({
     selector: 'page-addon-mod-lesson-player',
     templateUrl: 'player.html',
-    styleUrls: ['player.scss'],
+    styleUrl: 'player.scss',
 })
 export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 

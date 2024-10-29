@@ -41,7 +41,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-core-user-about',
     templateUrl: 'about.html',
-    styleUrls: ['about.scss'],
+    styleUrl: 'about.scss',
 })
 export class CoreUserAboutPage implements OnInit, OnDestroy {
 

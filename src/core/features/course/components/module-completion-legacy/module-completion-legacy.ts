@@ -39,7 +39,7 @@ import { ContextLevel } from '@/core/constants';
 @Component({
     selector: 'core-course-module-completion-legacy',
     templateUrl: 'core-course-module-completion-legacy.html',
-    styleUrls: ['module-completion-legacy.scss'],
+    styleUrl: 'module-completion-legacy.scss',
 })
 export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleCompletionBaseComponent
     implements OnInit, OnDestroy {

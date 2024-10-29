@@ -46,7 +46,7 @@ const enum IconVersion {
 @Component({
     selector: 'core-mod-icon',
     templateUrl: 'mod-icon.html',
-    styleUrls: ['mod-icon.scss'],
+    styleUrl: 'mod-icon.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoreModIconComponent implements OnInit, OnChanges {

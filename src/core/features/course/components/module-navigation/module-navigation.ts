@@ -33,7 +33,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 @Component({
     selector: 'core-course-module-navigation',
     templateUrl: 'core-course-module-navigation.html',
-    styleUrls: ['module-navigation.scss'],
+    styleUrl: 'module-navigation.scss',
 })
 export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
 

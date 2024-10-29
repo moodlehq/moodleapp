@@ -58,7 +58,7 @@ import { QuestionDisplayOptionsMarks } from '@features/question/constants';
 @Component({
     selector: 'addon-mod-quiz-index',
     templateUrl: 'addon-mod-quiz-index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

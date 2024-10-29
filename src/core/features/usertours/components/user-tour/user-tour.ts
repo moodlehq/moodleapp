@@ -48,7 +48,7 @@ const BACKDROP_DISMISS_SAFETY_TRESHOLD = 1000;
 @Component({
     selector: 'core-user-tours-user-tour',
     templateUrl: 'core-user-tours-user-tour.html',
-    styleUrls: ['user-tour.scss'],
+    styleUrl: 'user-tour.scss',
 })
 export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy {
 

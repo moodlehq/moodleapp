@@ -34,7 +34,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 @Component({
     selector: 'page-addon-storagemanager-courses-storage',
     templateUrl: 'courses-storage.html',
-    styleUrls: ['courses-storage.scss'],
+    styleUrl: 'courses-storage.scss',
 })
 export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy {
 

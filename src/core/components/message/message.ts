@@ -26,7 +26,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-message',
     templateUrl: 'message.html',
-    styleUrls: ['message.scss'],
+    styleUrl: 'message.scss',
     animations: [CoreAnimations.SLIDE_IN_OUT],
 })
 export class CoreMessageComponent implements OnInit {

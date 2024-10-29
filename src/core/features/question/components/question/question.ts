@@ -33,7 +33,7 @@ import { CoreLogger } from '@singletons/logger';
 @Component({
     selector: 'core-question',
     templateUrl: 'core-question.html',
-    styleUrls: ['../../question.scss'],
+    styleUrl: '../../question.scss',
 })
 export class CoreQuestionComponent implements OnInit, AsyncDirective {
 

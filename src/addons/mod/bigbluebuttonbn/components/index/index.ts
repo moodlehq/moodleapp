@@ -41,7 +41,7 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 @Component({
     selector: 'addon-mod-bbb-index',
     templateUrl: 'index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 

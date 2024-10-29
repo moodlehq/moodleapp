@@ -31,9 +31,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 @Component({
     selector: 'page-addon-messages-contacts',
     templateUrl: 'contacts.html',
-    styleUrls: [
-        '../../messages-common.scss',
-    ],
+    styleUrl: '../../messages-common.scss',
 })
 export class AddonMessagesContactsPage implements OnInit, OnDestroy {
 

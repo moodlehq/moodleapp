@@ -25,7 +25,7 @@ const enum ScrollPosition {
 @Component({
     selector: 'core-horizontal-scroll-controls',
     templateUrl: 'core-horizontal-scroll-controls.html',
-    styleUrls: ['./horizontal-scroll-controls.scss'],
+    styleUrl: './horizontal-scroll-controls.scss',
 })
 export class CoreHorizontalScrollControlsComponent {
 

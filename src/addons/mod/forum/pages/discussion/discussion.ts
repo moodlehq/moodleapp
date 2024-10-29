@@ -73,7 +73,7 @@ type Post = AddonModForumPost & { children?: Post[] };
 @Component({
     selector: 'page-addon-mod-forum-discussion',
     templateUrl: 'discussion.html',
-    styleUrls: ['discussion.scss'],
+    styleUrl: 'discussion.scss',
 })
 export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDestroy, CanLeave {
 

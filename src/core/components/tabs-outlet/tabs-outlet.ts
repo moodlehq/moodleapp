@@ -49,7 +49,7 @@ import { CorePath } from '@singletons/path';
 @Component({
     selector: 'core-tabs-outlet',
     templateUrl: 'core-tabs-outlet.html',
-    styleUrls: ['../tabs/tabs.scss'],
+    styleUrl: '../tabs/tabs.scss',
 })
 export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutletTab>
     implements AfterViewInit, OnChanges, OnDestroy {

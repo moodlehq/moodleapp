@@ -39,7 +39,7 @@ import { CoreModals } from '@services/modals';
 @Component({
     selector: 'page-core-sitehome-index',
     templateUrl: 'index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 

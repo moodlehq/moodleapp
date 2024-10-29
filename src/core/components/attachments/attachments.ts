@@ -43,7 +43,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-attachments',
     templateUrl: 'core-attachments.html',
-    styleUrls: ['attachments.scss'],
+    styleUrl: 'attachments.scss',
 })
 export class CoreAttachmentsComponent implements OnInit {
 

@@ -45,7 +45,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-core-login-email-signup',
     templateUrl: 'email-signup.html',
-    styleUrls: ['../../login.scss'],
+    styleUrl: '../../login.scss',
 })
 export class CoreLoginEmailSignupPage implements OnInit {
 

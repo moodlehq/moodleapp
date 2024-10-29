@@ -23,7 +23,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 @Component({
     selector: 'core-course-unsupported-module',
     templateUrl: 'core-course-unsupported-module.html',
-    styleUrls: ['unsupported-module.scss'],
+    styleUrl: 'unsupported-module.scss',
 })
 export class CoreCourseUnsupportedModuleComponent implements OnInit {
 

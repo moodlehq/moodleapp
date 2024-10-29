@@ -23,7 +23,7 @@ import { CoreNavigator } from '@services/navigator';
 @Component({
     selector: 'core-tag-list',
     templateUrl: 'core-tag-list.html',
-    styleUrls: ['list.scss'],
+    styleUrl: 'list.scss',
 })
 export class CoreTagListComponent {
 

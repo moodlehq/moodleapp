@@ -61,7 +61,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'addon-calendar-calendar',
     templateUrl: 'addon-calendar-calendar.html',
-    styleUrls: ['calendar.scss'],
+    styleUrl: 'calendar.scss',
 })
 export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestroy {
 

@@ -21,7 +21,7 @@ import { CoreUserTours } from '@features/usertours/services/user-tours';
 @Component({
     selector: 'core-block-side-blocks-tour',
     templateUrl: 'side-blocks-tour.html',
-    styleUrls: ['side-blocks-tour.scss'],
+    styleUrl: 'side-blocks-tour.scss',
 })
 export class CoreBlockSideBlocksTourComponent {
 

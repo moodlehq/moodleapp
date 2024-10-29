@@ -41,7 +41,7 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'page-core-user-profile',
     templateUrl: 'profile.html',
-    styleUrls: ['profile.scss'],
+    styleUrl: 'profile.scss',
 })
 export class CoreUserProfilePage implements OnInit, OnDestroy {
 

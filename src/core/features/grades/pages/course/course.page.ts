@@ -43,7 +43,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 @Component({
     selector: 'page-core-grades-course',
     templateUrl: 'course.html',
-    styleUrls: ['course.scss'],
+    styleUrl: 'course.scss',
 })
 export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 

@@ -34,7 +34,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 @Component({
     selector: 'page-addon-mod-h5pactivity-user-attempts',
     templateUrl: 'user-attempts.html',
-    styleUrls: ['user-attempts.scss'],
+    styleUrl: 'user-attempts.scss',
 })
 export class AddonModH5PActivityUserAttemptsPage implements OnInit {
 

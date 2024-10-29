@@ -22,7 +22,7 @@ import { AddonModQuizCalculatedQuestion, CoreQuestionBaseComponent } from '@feat
 @Component({
     selector: 'addon-qtype-calculated',
     templateUrl: 'addon-qtype-calculated.html',
-    styleUrls: ['calculated.scss'],
+    styleUrl: 'calculated.scss',
 })
 export class AddonQtypeCalculatedComponent extends CoreQuestionBaseComponent<AddonModQuizCalculatedQuestion> {
 

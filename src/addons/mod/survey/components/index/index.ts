@@ -46,7 +46,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'addon-mod-survey-index',
     templateUrl: 'addon-mod-survey-index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 

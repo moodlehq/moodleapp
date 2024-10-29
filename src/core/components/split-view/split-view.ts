@@ -29,7 +29,7 @@ const disabledScrollClass = 'disable-scroll-y';
 @Component({
     selector: 'core-split-view',
     templateUrl: 'split-view.html',
-    styleUrls: ['split-view.scss'],
+    styleUrl: 'split-view.scss',
 })
 export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
 

@@ -38,7 +38,7 @@ import { CoreWait } from '@singletons/wait';
 @Component({
     selector: 'page-core-courses-my',
     templateUrl: 'my.html',
-    styleUrls: ['my.scss'],
+    styleUrl: 'my.scss',
     providers: [{
         provide: PageLoadsManager,
         useClass: PageLoadsManager,

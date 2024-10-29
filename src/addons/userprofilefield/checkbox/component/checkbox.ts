@@ -25,7 +25,7 @@ import { CoreUtils } from '@services/utils/utils';
 @Component({
     selector: 'addon-user-profile-field-checkbox',
     templateUrl: 'addon-user-profile-field-checkbox.html',
-    styleUrls: ['./checkbox.scss'],
+    styleUrl: './checkbox.scss',
 })
 export class AddonUserProfileFieldCheckboxComponent extends CoreUserProfileFieldBaseComponent<boolean> {
 

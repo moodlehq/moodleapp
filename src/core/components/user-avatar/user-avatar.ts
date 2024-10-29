@@ -33,7 +33,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-user-avatar',
     templateUrl: 'core-user-avatar.html',
-    styleUrls: ['user-avatar.scss'],
+    styleUrl: 'user-avatar.scss',
 })
 export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
 

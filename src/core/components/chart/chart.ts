@@ -30,7 +30,7 @@ import { ChartLegendLabelItem, ChartLegendOptions } from 'chart.js';
 @Component({
     selector: 'core-chart',
     templateUrl: 'core-chart.html',
-    styleUrls: ['chart.scss'],
+    styleUrl: 'chart.scss',
 })
 export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
 

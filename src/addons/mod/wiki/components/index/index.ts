@@ -67,7 +67,7 @@ import { CorePopovers } from '@services/popovers';
 @Component({
     selector: 'addon-mod-wiki-index',
     templateUrl: 'addon-mod-wiki-index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

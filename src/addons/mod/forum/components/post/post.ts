@@ -65,7 +65,7 @@ import { CoreWSFile } from '@services/ws';
 @Component({
     selector: 'addon-mod-forum-post',
     templateUrl: 'post.html',
-    styleUrls: ['post.scss'],
+    styleUrl: 'post.scss',
 })
 export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges {
 

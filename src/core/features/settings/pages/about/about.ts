@@ -25,7 +25,7 @@ import { CoreSite } from '@classes/sites/site';
 @Component({
     selector: 'page-core-app-settings-about',
     templateUrl: 'about.html',
-    styleUrls: ['about.scss'],
+    styleUrl: 'about.scss',
 })
 export class CoreSettingsAboutPage {
 

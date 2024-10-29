@@ -19,7 +19,7 @@ import { CoreReportBuilder } from '@features/reportbuilder/services/reportbuilde
 @Component({
     selector: 'core-report-builder-report-column',
     templateUrl: './report-column.html',
-    styleUrls: ['./report-column.scss'],
+    styleUrl: './report-column.scss',
 })
 export class CoreReportBuilderReportColumnComponent {
 
