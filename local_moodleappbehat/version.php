@@ -7,7 +7,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 $plugin->version = {{ pluginVersion }};
-$plugin->requires = 2016052300;
+$plugin->requires = 2018051700;
 $plugin->maturity = MATURITY_STABLE;
 $plugin->release = '{{ appVersion }}';
 $plugin->component = 'local_moodleappbehat';
