@@ -68,15 +68,11 @@ export class AddonEnrolGuestService {
      *
      * @param instanceId Guest instance ID.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateGuestEnrolmentInfo(instanceId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await Promise.all([
-            site.invalidateWsCacheForKey(this.getGuestEnrolmentInfoCacheKey(instanceId)),
-            site.invalidateWsCacheForKey(`mmCourses:guestinfo:${instanceId}`), // @todo Remove after 4.3 release.
-        ]);
+        await site.invalidateWsCacheForKey(this.getGuestEnrolmentInfoCacheKey(instanceId));
     }
 
     /**
