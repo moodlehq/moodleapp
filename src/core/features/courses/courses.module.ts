@@ -57,6 +57,37 @@ export async function getCoursesServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get courses exported objects.
+ *
+ * @returns Courses exported objects.
+ */
+export async function getCoursesExportedObjects(): Promise<Record<string, unknown>> {
+    const {
+        CORE_COURSES_ENROL_INVALID_KEY,
+        CORE_COURSES_MY_COURSES_CHANGED_EVENT,
+        CORE_COURSES_MY_COURSES_UPDATED_EVENT,
+        CORE_COURSES_MY_COURSES_REFRESHED_EVENT,
+        CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT,
+        CoreCoursesMyCoursesUpdatedEventAction,
+        CORE_COURSES_STATE_HIDDEN,
+        CORE_COURSES_STATE_FAVOURITE,
+    } = await import('@features/courses/constants');
+
+    /* eslint-disable @typescript-eslint/naming-convention */
+    return {
+        CORE_COURSES_ENROL_INVALID_KEY,
+        CORE_COURSES_MY_COURSES_CHANGED_EVENT,
+        CORE_COURSES_MY_COURSES_UPDATED_EVENT,
+        CORE_COURSES_MY_COURSES_REFRESHED_EVENT,
+        CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT,
+        CoreCoursesMyCoursesUpdatedEventAction,
+        CORE_COURSES_STATE_HIDDEN,
+        CORE_COURSES_STATE_FAVOURITE,
+    };
+    /* eslint-enable @typescript-eslint/naming-convention */
+}
+
 const mainMenuHomeChildrenRoutes: Routes = [
     {
         path: CoreDashboardHomeHandlerService.PAGE_NAME,

@@ -21,13 +21,13 @@ import {
     CoreCourseAnyCourseData,
     CoreCourseAnyCourseDataWithOptions,
     CoreCourses,
-    CoreCoursesProvider,
     CoreCourseUserAdminOrNavOptionIndexed,
 } from '@features/courses/services/courses';
 import { CoreCourseAccessDataType } from './course';
 import { Params } from '@angular/router';
 import { makeSingleton } from '@singletons';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CORE_COURSES_MY_COURSES_REFRESHED_EVENT } from '@features/courses/constants';
 
 /**
  * Interface that all course options handlers must implement.
@@ -280,7 +280,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
     async clearAndInvalidateCoursesOptions(courseId?: number): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED);
+        CoreEvents.trigger(CORE_COURSES_MY_COURSES_REFRESHED_EVENT);
 
         // Invalidate course enabled data for the handlers that are enabled at site level.
         if (courseId) {

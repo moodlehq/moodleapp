@@ -15,7 +15,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData, CoreCourses } from '@features/courses/services/courses';
+import { CoreCoursesMyCoursesUpdatedEventData, CoreCourses } from '@features/courses/services/courses';
 import {
     CoreCourseSearchedDataWithExtraInfoAndOptions,
     CoreEnrolledCourseDataWithOptions,
@@ -28,6 +28,11 @@ import { CoreSite } from '@classes/sites/site';
 import { AddonBlockStarredCourse, AddonBlockStarredCourses } from '../../services/starredcourses';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
+import {
+    CORE_COURSES_MY_COURSES_UPDATED_EVENT,
+    CoreCoursesMyCoursesUpdatedEventAction,
+    CORE_COURSES_STATE_FAVOURITE,
+} from '@features/courses/constants';
 
 /**
  * Component to render a starred courses block.
@@ -68,7 +73,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
         this.scrollElementId = `addon-block-starredcourses-scroll-${scrollId}`;
 
         this.coursesObserver = CoreEvents.on(
-            CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
+            CORE_COURSES_MY_COURSES_UPDATED_EVENT,
             (data) => {
                 this.refreshCourseList(data);
             },
@@ -157,19 +162,19 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     }
 
     /**
-     * Refresh course list based on a EVENT_MY_COURSES_UPDATED event.
+     * Refresh course list based on a CORE_COURSES_MY_COURSES_UPDATED_EVENT event.
      *
      * @param data Event data.
      * @returns Promise resolved when done.
      */
     protected async refreshCourseList(data: CoreCoursesMyCoursesUpdatedEventData): Promise<void> {
-        if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.ENROL) {
             // Always update if user enrolled in a course.
             // New courses shouldn't be favourite by default, but just in case.
             return this.refreshContent();
         }
 
-        if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED && data.state == CoreCoursesProvider.STATE_FAVOURITE) {
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED && data.state == CORE_COURSES_STATE_FAVOURITE) {
             const courseIndex = this.courses.findIndex((course) => course.id == data.courseId);
             if (courseIndex < 0) {
                 // Not found, use WS update. Usually new favourite.

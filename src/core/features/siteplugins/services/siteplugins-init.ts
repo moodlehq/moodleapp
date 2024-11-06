@@ -27,7 +27,6 @@ import { CoreCourseOptionsDelegate } from '@features/course/services/course-opti
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
-import { CoreCoursesProvider } from '@features/courses/services/courses';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
@@ -89,6 +88,7 @@ import { CorePath } from '@singletons/path';
 import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 import { CoreSitePluginsEnrolHandler } from '../classes/handlers/enrol-handler';
 import { CORE_SITE_PLUGINS_COMPONENT } from '../constants';
+import { CORE_COURSES_MY_COURSES_CHANGED_EVENT } from '@features/courses/constants';
 
 /**
  * Helper service to provide functionalities regarding site plugins. It basically has the features to load and register site
@@ -140,7 +140,7 @@ export class CoreSitePluginsInitService {
         });
 
         // Re-load plugins restricted for courses when the list of user courses changes.
-        CoreEvents.on(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, (data) => {
+        CoreEvents.on(CORE_COURSES_MY_COURSES_CHANGED_EVENT, (data) => {
             if (data.siteId && data.siteId === CoreSites.getCurrentSiteId() && data.added.length) {
                 this.reloadCourseRestrictHandlers();
             }

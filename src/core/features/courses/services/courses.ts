@@ -27,6 +27,16 @@ import { AddonEnrolSelf } from '@addons/enrol/self/services/self';
 import { CoreEnrol, CoreEnrolEnrolmentInfo, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import {
+    CORE_COURSES_ENROL_INVALID_KEY,
+    CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT,
+    CORE_COURSES_MY_COURSES_CHANGED_EVENT,
+    CORE_COURSES_MY_COURSES_REFRESHED_EVENT,
+    CORE_COURSES_MY_COURSES_UPDATED_EVENT,
+    CoreCoursesMyCoursesUpdatedEventAction,
+    CORE_COURSES_STATE_FAVOURITE,
+    CORE_COURSES_STATE_HIDDEN,
+} from '../constants';
 
 declare module '@singletons/events' {
 
@@ -36,9 +46,9 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [CoreCoursesProvider.EVENT_MY_COURSES_CHANGED]: CoreCoursesMyCoursesChangedEventData;
-        [CoreCoursesProvider.EVENT_MY_COURSES_UPDATED]: CoreCoursesMyCoursesUpdatedEventData;
-        [CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED]: CoreCoursesDashboardDownloadEnabledChangedEventData;
+        [CORE_COURSES_MY_COURSES_CHANGED_EVENT]: CoreCoursesMyCoursesChangedEventData;
+        [CORE_COURSES_MY_COURSES_UPDATED_EVENT]: CoreCoursesMyCoursesUpdatedEventData;
+        [CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT]: CoreCoursesDashboardDownloadEnabledChangedEventData;
     }
 
 }
@@ -51,23 +61,51 @@ export class CoreCoursesProvider {
 
     protected static readonly ROOT_CACHE_KEY = 'mmCourses:';
 
-    static readonly SEARCH_PER_PAGE = 20;
-    static readonly RECENT_PER_PAGE = 10;
-    static readonly ENROL_INVALID_KEY = 'CoreCoursesEnrolInvalidKey';
-    static readonly EVENT_MY_COURSES_CHANGED = 'courses_my_courses_changed'; // User course list changed while app is running.
-    // A course was hidden/favourite, or user enroled in a course.
-    static readonly EVENT_MY_COURSES_UPDATED = 'courses_my_courses_updated';
-    static readonly EVENT_MY_COURSES_REFRESHED = 'courses_my_courses_refreshed';
-    static readonly EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED = 'dashboard_download_enabled_changed';
+    protected static readonly SEARCH_PER_PAGE = 20;
+    protected static readonly RECENT_PER_PAGE = 10;
 
-    // Actions for event EVENT_MY_COURSES_UPDATED.
-    static readonly ACTION_ENROL = 'enrol'; // User enrolled in a course.
-    static readonly ACTION_STATE_CHANGED = 'state_changed'; // Course state changed (hidden, favourite).
-    static readonly ACTION_VIEW = 'view'; // Course viewed.
+    /**
+     * @deprecated since 5.0. Use CORE_COURSES_ENROL_INVALID_KEY instead.
+     */
+    static readonly ENROL_INVALID_KEY = CORE_COURSES_ENROL_INVALID_KEY;
+    /**
+     * @deprecated since 5.0. Use CORE_COURSES_MY_COURSES_CHANGED_EVENT instead.
+     */
+    static readonly EVENT_MY_COURSES_CHANGED = CORE_COURSES_MY_COURSES_CHANGED_EVENT;
+    /**
+     * @deprecated since 5.0. Use CORE_COURSES_MY_COURSES_UPDATED_EVENT instead.
+     */
+    static readonly EVENT_MY_COURSES_UPDATED = CORE_COURSES_MY_COURSES_UPDATED_EVENT;
+    /**
+     * @deprecated since 5.0. Use CORE_COURSES_MY_COURSES_REFRESHED_EVENT instead.
+     */
+    static readonly EVENT_MY_COURSES_REFRESHED = CORE_COURSES_MY_COURSES_REFRESHED_EVENT;
+    /**
+     * @deprecated since 5.0. Use CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT instead.
+     */
+    static readonly EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED = CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT;
 
-    // Possible states changed.
-    static readonly STATE_HIDDEN = 'hidden';
-    static readonly STATE_FAVOURITE = 'favourite';
+    /**
+     * @deprecated since 5.0. Use CoreCoursesMyCoursesUpdatedEventAction.ENROL instead.
+     */
+    static readonly ACTION_ENROL = CoreCoursesMyCoursesUpdatedEventAction.ENROL;
+    /**
+     * @deprecated since 5.0. Use CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED instead.
+     */
+    static readonly ACTION_STATE_CHANGED = CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED;
+    /**
+     * @deprecated since 5.0. Use CoreCoursesMyCoursesUpdatedEventAction.VIEW instead.
+     */
+    static readonly ACTION_VIEW = CoreCoursesMyCoursesUpdatedEventAction.VIEW;
+
+    /**
+     * @deprecated since 5.0. Use CORE_COURSES_STATE_HIDDEN instead.
+     */
+    static readonly STATE_HIDDEN = CORE_COURSES_STATE_HIDDEN;
+    /**
+     * @deprecated since 5.0. Use CORE_COURSES_STATE_FAVOURITE instead.
+     */
+    static readonly STATE_FAVOURITE = CORE_COURSES_STATE_FAVOURITE;
 
     protected userCoursesIds?: Set<number>;
     protected downloadOptionsEnabled = false;
@@ -958,7 +996,7 @@ export class CoreCoursesProvider {
 
                     if (added.length || removed.length) {
                         // At least 1 course was added or removed, trigger the event.
-                        CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, {
+                        CoreEvents.trigger(CORE_COURSES_MY_COURSES_CHANGED_EVENT, {
                             added: added,
                             removed: removed,
                         }, site.getId());
@@ -1232,7 +1270,7 @@ export class CoreCoursesProvider {
      * @param instanceId Enrol instance ID.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved if the user is enrolled. If the password is invalid, the promise is rejected
-     *         with an object with errorcode = CoreCoursesProvider.ENROL_INVALID_KEY.
+     *         with an object with errorcode = CORE_COURSES_ENROL_INVALID_KEY.
      * @deprecated since 4.3 use CoreEnrolDelegate.enrol instead.
      */
     async selfEnrol(courseId: number, password: string = '', instanceId?: number, siteId?: string): Promise<boolean> {
@@ -1282,7 +1320,7 @@ export class CoreCoursesProvider {
         }
 
         this.downloadOptionsEnabled = enable;
-        CoreEvents.trigger(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, { enabled: enable });
+        CoreEvents.trigger(CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT, { enabled: enable });
     }
 
 }
@@ -1290,10 +1328,10 @@ export class CoreCoursesProvider {
 export const CoreCourses = makeSingleton(CoreCoursesProvider);
 
 /**
- * Data sent to the EVENT_MY_COURSES_UPDATED.
+ * Data sent to the CORE_COURSES_MY_COURSES_UPDATED_EVENT.
  */
 export type CoreCoursesMyCoursesUpdatedEventData = {
-    action: string; // Action performed.
+    action: CoreCoursesMyCoursesUpdatedEventAction; // Action performed.
     courseId?: number; // Course ID affected (if any).
     course?: CoreCourseAnyCourseData; // Course affected (if any).
     state?: string; // Only for ACTION_STATE_CHANGED. The state that changed (hidden, favourite).
@@ -1301,7 +1339,7 @@ export type CoreCoursesMyCoursesUpdatedEventData = {
 };
 
 /**
- * Data sent to the EVENT_MY_COURSES_CHANGED.
+ * Data sent to the CORE_COURSES_MY_COURSES_CHANGED_EVENT.
  */
 export type CoreCoursesMyCoursesChangedEventData = {
     added: number[];
@@ -1309,7 +1347,7 @@ export type CoreCoursesMyCoursesChangedEventData = {
 };
 
 /**
- * Data sent to the EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED.
+ * Data sent to the CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT.
  */
 export type CoreCoursesDashboardDownloadEnabledChangedEventData = {
     enabled: boolean;

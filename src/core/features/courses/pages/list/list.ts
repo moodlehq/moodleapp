@@ -18,10 +18,15 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreCourseBasicSearchedData, CoreCourses, CoreCoursesProvider } from '../../services/courses';
+import { CoreCourseBasicSearchedData, CoreCourses } from '../../services/courses';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
+import {
+    CORE_COURSES_MY_COURSES_UPDATED_EVENT,
+    CoreCoursesMyCoursesUpdatedEventAction,
+    CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT,
+} from '@features/courses/constants';
 
 type CoreCoursesListMode = 'search' | 'all' | 'my';
 
@@ -73,10 +78,10 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
         // Update list if user enrols in a course.
         this.myCoursesObserver = CoreEvents.on(
-            CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
+            CORE_COURSES_MY_COURSES_UPDATED_EVENT,
             (data) => {
 
-                if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+                if (data.action == CoreCoursesMyCoursesUpdatedEventAction.ENROL) {
                     this.fetchCourses();
                 }
             },
@@ -98,7 +103,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
             }
         }, this.currentSiteId);
 
-        this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
+        this.downloadEnabledObserver = CoreEvents.on(CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT, (data) => {
             this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && data.enabled;
         });
 

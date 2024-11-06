@@ -17,7 +17,6 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import {
-    CoreCoursesProvider,
     CoreCourses,
     CoreCoursesMyCoursesUpdatedEventData,
     CoreCourseSummaryData,
@@ -38,6 +37,12 @@ import { PageLoadsManager } from '@classes/page-loads-manager';
 import { DownloadStatus } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
+import {
+    CORE_COURSES_MY_COURSES_UPDATED_EVENT,
+    CoreCoursesMyCoursesUpdatedEventAction,
+    CORE_COURSES_STATE_FAVOURITE,
+    CORE_COURSES_STATE_HIDDEN,
+} from '@features/courses/constants';
 
 const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
     ['all', 'inprogress', 'future', 'past', 'favourite', 'allincludinghidden', 'hidden'];
@@ -137,7 +142,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         }, CoreSites.getCurrentSiteId());
 
         this.coursesObserver = CoreEvents.on(
-            CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
+            CORE_COURSES_MY_COURSES_UPDATED_EVENT,
             (data) => {
                 this.refreshCourseList(data);
             },
@@ -428,29 +433,29 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
-     * Refresh course list based on a EVENT_MY_COURSES_UPDATED event.
+     * Refresh course list based on a CORE_COURSES_MY_COURSES_UPDATED_EVENT event.
      *
      * @param data Event data.
      * @returns Promise resolved when done.
      */
     protected async refreshCourseList(data: CoreCoursesMyCoursesUpdatedEventData): Promise<void> {
-        if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.ENROL) {
             // Always update if user enrolled in a course.
             return this.refreshContent(true);
         }
 
         const course = this.allCourses.find((course) => course.id == data.courseId);
-        if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED) {
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED) {
             if (!course) {
                 // Not found, use WS update.
                 return this.refreshContent(true);
             }
 
-            if (data.state == CoreCoursesProvider.STATE_FAVOURITE) {
+            if (data.state === CORE_COURSES_STATE_FAVOURITE) {
                 course.isfavourite = !!data.value;
             }
 
-            if (data.state == CoreCoursesProvider.STATE_HIDDEN) {
+            if (data.state === CORE_COURSES_STATE_HIDDEN) {
                 course.hidden = !!data.value;
             }
 
@@ -458,7 +463,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             await this.filterCourses();
         }
 
-        if (data.action == CoreCoursesProvider.ACTION_VIEW && data.courseId != CoreSites.getCurrentSiteHomeId()) {
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.VIEW && data.courseId != CoreSites.getCurrentSiteHomeId()) {
             if (!course) {
                 // Not found, use WS update.
                 return this.refreshContent(true);
