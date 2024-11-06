@@ -14,7 +14,7 @@
 
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import {
-    AddonMessagesProvider, AddonMessagesMessagePreferences,
+    AddonMessagesMessagePreferences,
     AddonMessagesMessagePreferencesNotification,
     AddonMessagesMessagePreferencesNotificationProcessor,
     AddonMessages,
@@ -29,6 +29,7 @@ import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons
 import { CorePlatform } from '@services/platform';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreLoadings } from '@services/loadings';
+import { ADDON_MESSAGES_NOTIFICATION_PREFERENCES_KEY, AddonMessagesMessagePrivacy } from '@addons/messages/constants';
 
 /**
  * Page that displays the messages settings page.
@@ -46,9 +47,9 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     contactablePrivacy?: number | boolean;
     advancedContactable = false; // Whether the site supports "advanced" contactable privacy.
     allowSiteMessaging = false;
-    onlyContactsValue = AddonMessagesProvider.MESSAGE_PRIVACY_ONLYCONTACTS;
-    courseMemberValue = AddonMessagesProvider.MESSAGE_PRIVACY_COURSEMEMBER;
-    siteValue = AddonMessagesProvider.MESSAGE_PRIVACY_SITE;
+    onlyContactsValue = AddonMessagesMessagePrivacy.ONLYCONTACTS;
+    courseMemberValue = AddonMessagesMessagePrivacy.COURSEMEMBER;
+    siteValue = AddonMessagesMessagePrivacy.SITE;
     groupMessagingEnabled = false;
     sendOnEnter = false;
     warningMessage = signal<string | undefined>(undefined);
@@ -91,7 +92,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
                 for (const component of preferences.components) {
                     // Only display get the notification preferences.
                     component.notifications = component.notifications.filter((notification) =>
-                        notification.preferencekey == AddonMessagesProvider.NOTIFICATION_PREFERENCES_KEY);
+                        notification.preferencekey === ADDON_MESSAGES_NOTIFICATION_PREFERENCES_KEY);
 
                     if (this.loggedInOffLegacyMode) {
                         // Load enabled from loggedin / loggedoff values.

@@ -18,12 +18,12 @@ import { CoreSites } from '@services/sites';
 import {
     AddonMessages,
     AddonMessagesConversationMember,
-    AddonMessagesProvider,
 } from '../../services/messages';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT, ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT } from '@addons/messages/constants';
 
 /**
  * Page that displays contacts and contact requests.
@@ -63,7 +63,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
 
         // Update the contact requests badge.
         this.contactRequestsCountObserver = CoreEvents.on(
-            AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT,
+            ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT,
             (data) => {
                 this.requestsBadge = data.count > 0 ? String(data.count) : '';
             },
@@ -72,7 +72,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
 
         // Update block status of a user.
         this.memberInfoObserver = CoreEvents.on(
-            AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT,
+            ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT,
             (data) => {
                 if (data.userBlocked || data.userUnblocked) {
                     const user = this.confirmedContacts.find((user) => user.id == data.userId);
