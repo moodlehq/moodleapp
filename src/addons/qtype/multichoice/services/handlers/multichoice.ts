@@ -19,7 +19,6 @@ import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/ques
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
-import { AddonQtypeMultichoiceComponent } from '../../component/multichoice';
 
 /**
  * Handler to support multichoice question type.
@@ -33,7 +32,9 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonQtypeMultichoiceComponent } = await import('../../component/multichoice');
+
         return AddonQtypeMultichoiceComponent;
     }
 

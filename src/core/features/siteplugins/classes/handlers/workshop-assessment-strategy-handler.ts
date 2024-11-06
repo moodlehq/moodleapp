@@ -15,9 +15,6 @@
 import { AddonWorkshopAssessmentStrategyHandler } from '@addons/mod/workshop/services/assessment-strategy-delegate';
 import { AddonModWorkshopGetAssessmentFormFieldsParsedData } from '@addons/mod/workshop/services/workshop';
 import { Type } from '@angular/core';
-import {
-    CoreSitePluginsWorkshopAssessmentStrategyComponent,
-} from '@features/siteplugins/components/workshop-assessment-strategy/workshop-assessment-strategy';
 import { CoreFormFields } from '@singletons/form';
 import { CoreSitePluginsBaseHandler } from './base-handler';
 
@@ -35,7 +32,10 @@ export class CoreSitePluginsWorkshopAssessmentStrategyHandler
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { CoreSitePluginsWorkshopAssessmentStrategyComponent } =
+            await import('@features/siteplugins/components/workshop-assessment-strategy/workshop-assessment-strategy');
+
         return CoreSitePluginsWorkshopAssessmentStrategyComponent;
     }
 

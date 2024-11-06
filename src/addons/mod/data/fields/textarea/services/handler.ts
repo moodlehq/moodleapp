@@ -19,7 +19,6 @@ import { CoreText } from '@singletons/text';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModDataFieldTextHandlerService } from '../../text/services/handler';
-import { AddonModDataFieldTextareaComponent } from '../component/textarea';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 import { CoreDom } from '@singletons/dom';
@@ -36,7 +35,9 @@ export class AddonModDataFieldTextareaHandlerService extends AddonModDataFieldTe
     /**
      * @inheritdoc
      */
-    getComponent(): Type<AddonModDataFieldPluginBaseComponent> {
+    async getComponent(): Promise<Type<AddonModDataFieldPluginBaseComponent>> {
+        const { AddonModDataFieldTextareaComponent } = await import('../component/textarea');
+
         return AddonModDataFieldTextareaComponent;
     }
 

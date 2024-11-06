@@ -15,7 +15,6 @@
 import { Type } from '@angular/core';
 
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
-import { CoreSitePluginsUserProfileFieldComponent } from '@features/siteplugins/components/user-profile-field/user-profile-field';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '@features/user/services/user-profile-field-delegate';
 import { CoreFormFields } from '@singletons/form';
@@ -33,7 +32,10 @@ export class CoreSitePluginsUserProfileFieldHandler extends CoreSitePluginsBaseH
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { CoreSitePluginsUserProfileFieldComponent } =
+            await import('@features/siteplugins/components/user-profile-field/user-profile-field');
+
         return CoreSitePluginsUserProfileFieldComponent;
     }
 

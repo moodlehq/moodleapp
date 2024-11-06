@@ -23,7 +23,6 @@ import { AddonModAssignFeedbackHandler } from '@addons/mod/assign/services/feedb
 import { Injectable, Type } from '@angular/core';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { AddonModAssignFeedbackFileComponent } from '../component/file';
 
 /**
  * Handler for file feedback plugin.
@@ -37,7 +36,9 @@ export class AddonModAssignFeedbackFileHandlerService implements AddonModAssignF
     /**
      * @inheritdoc
      */
-    getComponent(): Type<IAddonModAssignFeedbackPluginComponent> {
+    async getComponent(): Promise<Type<IAddonModAssignFeedbackPluginComponent>> {
+        const { AddonModAssignFeedbackFileComponent } = await import('../component/file');
+
         return AddonModAssignFeedbackFileComponent;
     }
 

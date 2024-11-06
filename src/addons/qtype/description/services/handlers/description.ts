@@ -16,7 +16,6 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { makeSingleton } from '@singletons';
-import { AddonQtypeDescriptionComponent } from '../../component/description';
 
 /**
  * Handler to support description question type.
@@ -37,7 +36,9 @@ export class AddonQtypeDescriptionHandlerService implements CoreQuestionHandler 
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonQtypeDescriptionComponent } = await import('../../component/description');
+
         return AddonQtypeDescriptionComponent;
     }
 

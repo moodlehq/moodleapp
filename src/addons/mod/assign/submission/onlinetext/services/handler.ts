@@ -29,7 +29,6 @@ import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModAssignSubmissionOnlineTextComponent } from '../component/onlinetext';
 
 /**
  * Handler for online text submission plugin.
@@ -111,7 +110,9 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
     /**
      * @inheritdoc
      */
-    getComponent(): Type<AddonModAssignSubmissionPluginBaseComponent> {
+    async getComponent(): Promise<Type<AddonModAssignSubmissionPluginBaseComponent>> {
+        const { AddonModAssignSubmissionOnlineTextComponent } = await import('../component/onlinetext');
+
         return AddonModAssignSubmissionOnlineTextComponent;
     }
 

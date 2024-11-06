@@ -27,7 +27,6 @@ import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonQtypeEssayComponent } from '../../component/essay';
 import { CoreFileHelper } from '@services/file-helper';
 
 /**
@@ -108,7 +107,9 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonQtypeEssayComponent } = await import('../../component/essay');
+
         return AddonQtypeEssayComponent;
     }
 

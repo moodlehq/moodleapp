@@ -25,7 +25,6 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFileSession } from '@services/file-session';
 import { CoreFormFields } from '@singletons/form';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModDataFieldFileComponent } from '../component/file';
 import { CoreFileEntry } from '@services/file-helper';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
@@ -42,7 +41,9 @@ export class AddonModDataFieldFileHandlerService implements AddonModDataFieldHan
     /**
      * @inheritdoc
      */
-    getComponent(): Type<AddonModDataFieldPluginBaseComponent> {
+    async getComponent(): Promise<Type<AddonModDataFieldPluginBaseComponent>> {
+        const { AddonModDataFieldFileComponent } = await import('../component/file');
+
         return AddonModDataFieldFileComponent;
     }
 

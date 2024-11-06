@@ -18,7 +18,6 @@ import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { makeSingleton } from '@singletons';
-import { AddonQtypeMultiAnswerComponent } from '../../component/multianswer';
 
 /**
  * Handler to support multianswer question type.
@@ -43,7 +42,9 @@ export class AddonQtypeMultiAnswerHandlerService implements CoreQuestionHandler 
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonQtypeMultiAnswerComponent } = await import('../../component/multianswer');
+
         return AddonQtypeMultiAnswerComponent;
     }
 

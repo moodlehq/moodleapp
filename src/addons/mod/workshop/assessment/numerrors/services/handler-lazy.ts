@@ -23,7 +23,6 @@ import {
 import { Injectable, Type } from '@angular/core';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
-import { AddonModWorkshopAssessmentStrategyNumErrorsComponent } from '../component/numerrors';
 import { AddonModWorkshopAssessmentStrategyNumErrorsHandlerService } from './handler';
 
 /**
@@ -37,7 +36,9 @@ export class AddonModWorkshopAssessmentStrategyNumErrorsHandlerLazyService
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonModWorkshopAssessmentStrategyNumErrorsComponent } = await import('../component/numerrors');
+
         return AddonModWorkshopAssessmentStrategyNumErrorsComponent;
     }
 
