@@ -15,13 +15,13 @@
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreSite } from '@classes/sites/site';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_LABEL_COMPONENT } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
  * Service that provides some features for labels.
@@ -64,7 +64,7 @@ export class AddonModLabelProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getLabelDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_LABEL_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };

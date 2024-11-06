@@ -49,6 +49,7 @@ import {
     AddonModForumSortorder,
     AddonModForumType,
 } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 declare module '@singletons/events' {
 
@@ -429,7 +430,7 @@ export class AddonModForumProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getForumDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_FORUM_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -458,7 +459,7 @@ export class AddonModForumProvider {
         };
         const preSets = {
             cacheKey: this.getDiscussionPostDataCacheKey(forumId, discussionId, postId),
-            updateFrequency: CoreSite.FREQUENCY_USUALLY,
+            updateFrequency: CoreCacheUpdateFrequency.USUALLY,
             component: ADDON_MOD_FORUM_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.

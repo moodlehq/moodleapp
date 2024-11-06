@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
@@ -26,6 +25,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { AddonModSurveyOffline } from './survey-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_SURVEY_COMPONENT } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
  * Service that provides some features for surveys.
@@ -51,7 +51,7 @@ export class AddonModSurveyProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuestionsCacheKey(surveyId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_SURVEY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -108,7 +108,7 @@ export class AddonModSurveyProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSurveyCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_SURVEY_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };

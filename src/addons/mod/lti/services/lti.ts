@@ -27,6 +27,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_LTI_COMPONENT } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
  * Service that provides some features for LTI.
@@ -96,7 +97,7 @@ export class AddonModLtiProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getLtiCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_LTI_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };

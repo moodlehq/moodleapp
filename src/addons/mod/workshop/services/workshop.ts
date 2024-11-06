@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesMenuItem } from '@features/grades/services/grades-helper';
@@ -42,6 +41,7 @@ import {
     AddonModWorkshopSubmissionType,
 } from '@addons/mod/workshop/constants';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 declare module '@singletons/events' {
 
@@ -218,7 +218,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getWorkshopDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -360,7 +360,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserPlanDataCacheKey(workshopId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -407,7 +407,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubmissionsDataCacheKey(workshopId, userId, groupId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -537,7 +537,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getGradesReportDataCacheKey(workshopId, options.groupId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -1035,7 +1035,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssessmentFormDataCacheKey(workshopId, assessmentId, mode),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.

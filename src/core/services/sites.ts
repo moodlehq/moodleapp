@@ -22,7 +22,7 @@ import { CoreWS } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, MINIMUM_MOODLE_VERSION, MOODLE_RELEASES } from '@/core/constants';
 import {
     CoreSite,
     CoreSiteConfig,
@@ -482,7 +482,7 @@ export class CoreSitesProvider {
             options.message = Translate.instant('core.siteunavailablehelp', { site: siteUrl });
             options.debug = {
                 code: 'invalidmoodleversion',
-                details: Translate.instant('core.login.invalidmoodleversion', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+                details: Translate.instant('core.login.invalidmoodleversion', { $a: MINIMUM_MOODLE_VERSION }),
             };
         } else if (error.debug?.code === 'redirecterrordetected') {
             options.critical = false; // Keep checking fallback URLs.
@@ -710,7 +710,7 @@ export class CoreSitesProvider {
                 break;
             default:
                 errorKey = 'core.login.invalidmoodleversion';
-                translateParams = { $a: CoreSite.MINIMUM_MOODLE_VERSION };
+                translateParams = { $a: MINIMUM_MOODLE_VERSION };
                 debug = {
                     code: 'invalidmoodleversion',
                     details: 'Cannot connect to app',
@@ -788,7 +788,7 @@ export class CoreSitesProvider {
         if (info.version) {
             const version = parseInt(info.version, 10);
             if (!isNaN(version)) {
-                if (version >= CoreSite.MOODLE_RELEASES[CoreSite.MINIMUM_MOODLE_VERSION]) {
+                if (version >= MOODLE_RELEASES[MINIMUM_MOODLE_VERSION]) {
                     return this.validateWorkplaceVersion(info);
                 }
             }
@@ -797,7 +797,7 @@ export class CoreSitesProvider {
         // We couldn't validate by version number. Let's try to validate by release number.
         const release = this.getReleaseNumber(info.release || '');
         if (release) {
-            if (release >= CoreSite.MINIMUM_MOODLE_VERSION) {
+            if (release >= MINIMUM_MOODLE_VERSION) {
                 return this.validateWorkplaceVersion(info);
             }
         }

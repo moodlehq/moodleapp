@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ContextLevel } from '@/core/constants';
+import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreSite } from '@classes/sites/site';
 import { CoreUser } from '@features/user/services/user';
@@ -237,7 +237,7 @@ export class CoreRatingProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getItemRatingsCacheKey(contextLevel, instanceId, component, ratingArea, itemId, scaleId, sort),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         if (ignoreCache) {

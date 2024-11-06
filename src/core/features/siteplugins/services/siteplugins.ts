@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreConstants } from '@/core/constants';
+import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourses } from '@features/courses/services/courses';
@@ -225,7 +225,7 @@ export class CoreSitePluginsProvider {
 
         preSets = preSets || {};
         preSets.cacheKey = this.getContentCacheKey(component, method, args);
-        preSets.updateFrequency = preSets.updateFrequency ?? CoreSite.FREQUENCY_OFTEN;
+        preSets.updateFrequency = preSets.updateFrequency ?? CoreCacheUpdateFrequency.OFTEN;
 
         const result = await site.read<CoreSitePluginsGetContentWSResponse>('tool_mobile_get_content', data, preSets);
 

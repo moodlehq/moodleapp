@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreRatingInfo } from '@features/rating/services/rating';
@@ -37,6 +36,7 @@ import {
     ADDON_MOD_DATA_ENTRY_CHANGED,
     AddonModDataAction,
 } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 declare module '@singletons/events' {
 
@@ -543,7 +543,7 @@ export class AddonModDataProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getDatabaseDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_DATA_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -663,7 +663,7 @@ export class AddonModDataProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesCacheKey(dataId, options.groupId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_DATA_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -721,7 +721,7 @@ export class AddonModDataProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntryCacheKey(dataId, entryId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_DATA_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -773,7 +773,7 @@ export class AddonModDataProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFieldsCacheKey(dataId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_DATA_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.

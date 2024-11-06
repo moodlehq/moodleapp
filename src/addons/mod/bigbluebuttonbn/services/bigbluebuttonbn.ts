@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
@@ -25,6 +24,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_BBB_COMPONENT } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
  * Service that provides some features for Big Blue Button activity.
@@ -73,7 +73,7 @@ export class AddonModBBBService {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getBBBsCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_BBB_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };

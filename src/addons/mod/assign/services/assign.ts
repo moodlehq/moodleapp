@@ -35,7 +35,7 @@ import { CoreFormFields } from '@singletons/form';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ContextLevel } from '@/core/constants';
+import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import {
     ADDON_MOD_ASSIGN_AUTO_SYNCED,
     ADDON_MOD_ASSIGN_COMPONENT,
@@ -174,7 +174,7 @@ export class AddonModAssignProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssignmentCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_ASSIGN_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -246,7 +246,7 @@ export class AddonModAssignProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssignmentUserMappingsCacheKey(assignId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
             component: ADDON_MOD_ASSIGN_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
@@ -456,7 +456,7 @@ export class AddonModAssignProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubmissionsCacheKey(assignId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
             component: ADDON_MOD_ASSIGN_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
@@ -654,7 +654,7 @@ export class AddonModAssignProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.listParticipantsCacheKey(assignId, groupId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
             component: ADDON_MOD_ASSIGN_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),

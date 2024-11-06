@@ -22,7 +22,7 @@ import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSite } from '@classes/sites/site';
-import { CoreConstants, DownloadStatus } from '@/core/constants';
+import { CoreCacheUpdateFrequency, CoreConstants, DownloadStatus } from '@/core/constants';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 
@@ -455,7 +455,7 @@ export class CoreCourseProvider {
             };
             const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getCourseBlocksCacheKey(courseId),
-                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                updateFrequency: CoreCacheUpdateFrequency.RARELY,
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
             };
 
@@ -581,7 +581,7 @@ export class CoreCourseProvider {
 
             const preSets: CoreSiteWSPreSets = {
                 omitExpires: preferCache,
-                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                updateFrequency: CoreCacheUpdateFrequency.RARELY,
             };
 
             if (includeStealth) {
@@ -735,7 +735,7 @@ export class CoreCourseProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getModuleCacheKey(moduleId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
         const response = await site.read<CoreCourseGetCourseModuleWSResponse>('core_course_get_course_module', params, preSets);
@@ -796,7 +796,7 @@ export class CoreCourseProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getModuleBasicInfoByInstanceCacheKey(instanceId, moduleName),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -1007,7 +1007,7 @@ export class CoreCourseProvider {
         const preSets: CoreSiteWSPreSets = {
             ...options.preSets,
             cacheKey: this.getSectionsCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 

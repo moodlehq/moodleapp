@@ -26,6 +26,7 @@ import { AddonEnrolGuest, AddonEnrolGuestInfo } from '@addons/enrol/guest/servic
 import { AddonEnrolSelf } from '@addons/enrol/self/services/self';
 import { CoreEnrol, CoreEnrolEnrolmentInfo, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 declare module '@singletons/events' {
 
@@ -100,7 +101,7 @@ export class CoreCoursesProvider {
 
         const preSets = {
             cacheKey: this.getCategoriesCacheKey(categoryId, addSubcategories),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         return site.read('core_course_get_categories', params, preSets);
@@ -350,7 +351,7 @@ export class CoreCoursesProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCoursesCacheKey(ids),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         return site.read('core_course_get_courses', params, preSets);
@@ -487,7 +488,7 @@ export class CoreCoursesProvider {
             };
             const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getCoursesByFieldCacheKey(field, value),
-                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                updateFrequency: CoreCacheUpdateFrequency.RARELY,
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
             };
 
@@ -737,7 +738,7 @@ export class CoreCoursesProvider {
             };
             const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getUserAdministrationOptionsCacheKey(courseIds),
-                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                updateFrequency: CoreCacheUpdateFrequency.RARELY,
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
             };
 
@@ -807,7 +808,7 @@ export class CoreCoursesProvider {
             };
             const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getUserNavigationOptionsCacheKey(courseIds),
-                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                updateFrequency: CoreCacheUpdateFrequency.RARELY,
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
             };
 
@@ -910,7 +911,7 @@ export class CoreCoursesProvider {
             const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getUserCoursesCacheKey(),
                 getCacheUsingCacheKey: true,
-                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                updateFrequency: CoreCacheUpdateFrequency.RARELY,
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
             };
 

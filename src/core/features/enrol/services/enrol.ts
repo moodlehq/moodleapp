@@ -14,10 +14,10 @@
 
 import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
-import { CoreSite } from '@classes/sites/site';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEnrolAction, CoreEnrolDelegate } from './enrol-delegate';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
  * Service that provides functions for enrolment plugins.
@@ -44,7 +44,7 @@ export class CoreEnrolService {
         };
         const preSets = {
             cacheKey: this.getCourseEnrolmentMethodsCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         return site.read<CoreEnrolGetCourseEnrolmentMethodsWSResponse>('core_enrol_get_course_enrolment_methods', params, preSets);

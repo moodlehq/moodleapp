@@ -19,12 +19,12 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUser, USER_NOREPLY_USER } from '@features/user/services/user';
-import { CoreSite } from '@classes/sites/site';
 import { CoreLogger } from '@singletons/logger';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { AddonNotificationsPushNotification } from './handlers/push-click';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 declare module '@singletons/events' {
 
@@ -187,7 +187,7 @@ export class AddonNotificationsProvider {
         const site = await CoreSites.getSite(options.siteId);
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getNotificationPreferencesCacheKey(),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 

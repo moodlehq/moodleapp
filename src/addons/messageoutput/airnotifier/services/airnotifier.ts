@@ -16,8 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
-import { CoreConstants } from '@/core/constants';
-import { CoreSite } from '@classes/sites/site';
+import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
@@ -102,7 +101,7 @@ export class AddonMessageOutputAirnotifierProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSystemConfiguredCacheKey(),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -136,7 +135,7 @@ export class AddonMessageOutputAirnotifierProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserDevicesCacheKey(),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         if (ignoreCache) {
