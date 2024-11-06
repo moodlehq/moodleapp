@@ -22,9 +22,8 @@ import { CoreCourseAnyCourseDataWithExtraInfoAndOptions, CoreCourseWithImageAndC
 import { asyncObservable, ignoreErrors, zipIncludingComplete } from '@/core/utils/rxjs';
 import { of, firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AddonEnrolGuest, AddonEnrolGuestInfo } from '@addons/enrol/guest/services/guest';
-import { AddonEnrolSelf } from '@addons/enrol/self/services/self';
-import { CoreEnrol, CoreEnrolEnrolmentInfo, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
+import { AddonEnrolGuestInfo } from '@addons/enrol/guest/services/guest';
+import { CoreEnrolEnrolmentInfo, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import {
@@ -347,6 +346,8 @@ export class CoreCoursesProvider {
      * @deprecated since 4.3. Use CoreEnrol.getSupportedCourseEnrolmentMethods instead.
      */
     async getCourseEnrolmentMethods(courseId: number, siteId?: string): Promise<CoreEnrolEnrolmentMethod[]> {
+        const { CoreEnrol } = await import('@features/enrol/services/enrol');
+
         return CoreEnrol.getSupportedCourseEnrolmentMethods(courseId, { siteId });
     }
 
@@ -359,6 +360,8 @@ export class CoreCoursesProvider {
      * @deprecated since 4.3 use AddonEnrolGuest.getCourseGuestEnrolmentInfo instead.
      */
     async getCourseGuestEnrolmentInfo(instanceId: number, siteId?: string): Promise<AddonEnrolGuestInfo> {
+        const { AddonEnrolGuest } = await import('@addons/enrol/guest/services/guest');
+
         return AddonEnrolGuest.getGuestEnrolmentInfo(instanceId, siteId);
     }
 
@@ -1062,11 +1065,12 @@ export class CoreCoursesProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      * @deprecated since 4.3 use CoreEnrol.invalidateCourseEnrolmentMethods instead.
      */
     async invalidateCourseEnrolmentMethods(courseId: number, siteId?: string): Promise<void> {
-        return CoreEnrol.invalidateCourseEnrolmentMethods(courseId, siteId);
+        const { CoreEnrol } = await import('@features/enrol/services/enrol');
+
+        await CoreEnrol.invalidateCourseEnrolmentMethods(courseId, siteId);
     }
 
     /**
@@ -1074,11 +1078,12 @@ export class CoreCoursesProvider {
      *
      * @param instanceId Guest instance ID.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      * @deprecated since 4.3 use CoreEnrolDelegate.invalidate instead.
      */
     async invalidateCourseGuestEnrolmentInfo(instanceId: number, siteId?: string): Promise<void> {
-        return AddonEnrolGuest.invalidateGuestEnrolmentInfo(instanceId, siteId);
+        const { AddonEnrolGuest } = await import('@addons/enrol/guest/services/guest');
+
+        await AddonEnrolGuest.invalidateGuestEnrolmentInfo(instanceId, siteId);
     }
 
     /**
@@ -1274,6 +1279,8 @@ export class CoreCoursesProvider {
      * @deprecated since 4.3 use CoreEnrolDelegate.enrol instead.
      */
     async selfEnrol(courseId: number, password: string = '', instanceId?: number, siteId?: string): Promise<boolean> {
+        const { AddonEnrolSelf } = await import('@addons/enrol/self/services/self');
+
         return AddonEnrolSelf.selfEnrol(courseId, password, instanceId, siteId);
     }
 
