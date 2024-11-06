@@ -18,17 +18,15 @@ import { AlertOptions } from '@ionic/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
-    AddonMessagesProvider,
     AddonMessagesConversationFormatted,
     AddonMessagesConversationMember,
     AddonMessagesGetMessagesMessage,
     AddonMessages,
     AddonMessagesConversationMessageFormatted,
     AddonMessagesSendMessageResults,
-    AddonMessagesUpdateConversationAction,
 } from '../../services/messages';
 import { AddonMessagesOffline, AddonMessagesOfflineMessagesDBRecordFormatted } from '../../services/messages-offline';
-import { AddonMessagesSync, AddonMessagesSyncProvider } from '../../services/messages-sync';
+import { AddonMessagesSync } from '../../services/messages-sync';
 import { CoreUser } from '@features/user/services/user';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -48,6 +46,18 @@ import { CoreText } from '@singletons/text';
 import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/modals';
 import { CoreLoadings } from '@services/loadings';
+import {
+    ADDON_MESSAGES_AUTO_SYNCED,
+    ADDON_MESSAGES_LIMIT_MESSAGES,
+    ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT,
+    ADDON_MESSAGES_NEW_MESSAGE_EVENT,
+    ADDON_MESSAGES_OPEN_CONVERSATION_EVENT,
+    ADDON_MESSAGES_POLL_INTERVAL,
+    ADDON_MESSAGES_READ_CHANGED_EVENT,
+    ADDON_MESSAGES_UPDATE_CONVERSATION_LIST_EVENT,
+    AddonMessagesMessageConversationType,
+    AddonMessagesUpdateConversationAction,
+} from '@addons/messages/constants';
 
 /**
  * Page that displays a message discussion page.
@@ -125,7 +135,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         this.logger = CoreLogger.getInstance('AddonMessagesDiscussionPage');
 
         // Refresh data if this discussion is synchronized automatically.
-        this.syncObserver = CoreEvents.on(AddonMessagesSyncProvider.AUTO_SYNCED, (data) => {
+        this.syncObserver = CoreEvents.on(ADDON_MESSAGES_AUTO_SYNCED, (data) => {
             if ((data.userId && data.userId == this.userId) ||
                     (data.conversationId && data.conversationId == this.conversationId)) {
                 // Fetch messages.
@@ -140,7 +150,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
         // Refresh data if info of a mamber of the conversation have changed.
         this.memberInfoObserver = CoreEvents.on(
-            AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT,
+            ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT,
             (data) => {
                 if (data.userId && (this.members[data.userId] || this.otherMember && data.userId == this.otherMember.id)) {
                     this.fetchData();
@@ -595,13 +605,13 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             this.conversationId = this.conversation.id;
             this.title = this.conversation.name;
             this.conversationImage = this.conversation.imageurl;
-            this.isGroup = this.conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP;
+            this.isGroup = this.conversation.type === AddonMessagesMessageConversationType.GROUP;
             this.favouriteIcon = 'fas-star';
             this.muteIcon = this.conversation.ismuted ? 'fas-bell' : 'fas-bell-slash';
             if (!this.isGroup) {
                 this.userId = this.conversation.userid;
             }
-            this.isSelf = this.conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_SELF;
+            this.isSelf = this.conversation.type === AddonMessagesMessageConversationType.SELF;
 
             return true;
         } else {
@@ -645,7 +655,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         const messages: AddonMessagesConversationMessageFormatted[] = result.messages;
 
         if (pagesToLoad > 0 && result.canLoadMore) {
-            offset += AddonMessagesProvider.LIMIT_MESSAGES;
+            offset += ADDON_MESSAGES_LIMIT_MESSAGES;
 
             // Get more messages.
             const nextMessages = await this.getConversationMessages(pagesToLoad, offset);
@@ -764,7 +774,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         }
 
         if (readChanged) {
-            CoreEvents.trigger(AddonMessagesProvider.READ_CHANGED_EVENT, {
+            CoreEvents.trigger(ADDON_MESSAGES_READ_CHANGED_EVENT, {
                 conversationId: this.conversationId,
                 userId: this.userId,
             }, this.siteId);
@@ -789,7 +799,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
         if (trigger) {
             // Update discussions last message.
-            CoreEvents.trigger(AddonMessagesProvider.NEW_MESSAGE_EVENT, {
+            CoreEvents.trigger(ADDON_MESSAGES_NEW_MESSAGE_EVENT, {
                 conversationId: this.conversationId,
                 userId: this.userId,
                 message: this.lastMessage?.text,
@@ -905,7 +915,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 this.fetchMessages().catch(() => {
                     // Ignore errors.
                 });
-            }, AddonMessagesProvider.POLL_INTERVAL);
+            }, ADDON_MESSAGES_POLL_INTERVAL);
         }
     }
 
@@ -1265,7 +1275,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 if (splitViewLoaded) {
                     // Notify the left pane to load it, this way the right conversation will be highlighted.
                     CoreEvents.trigger(
-                        AddonMessagesProvider.OPEN_CONVERSATION_EVENT,
+                        ADDON_MESSAGES_OPEN_CONVERSATION_EVENT,
                         { userId },
                         this.siteId,
                     );
@@ -1300,7 +1310,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             // Get the conversation data so it's cached. Don't block the user for this.
             AddonMessages.getConversation(this.conversation.id, undefined, true);
 
-            CoreEvents.trigger(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, {
+            CoreEvents.trigger(ADDON_MESSAGES_UPDATE_CONVERSATION_LIST_EVENT, {
                 conversationId: this.conversation.id,
                 action: AddonMessagesUpdateConversationAction.FAVOURITE,
                 value: this.conversation.isfavourite,
@@ -1332,7 +1342,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             // Get the conversation data so it's cached. Don't block the user for this.
             AddonMessages.getConversation(this.conversation.id, undefined, true);
 
-            CoreEvents.trigger(AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT, {
+            CoreEvents.trigger(ADDON_MESSAGES_UPDATE_CONVERSATION_LIST_EVENT, {
                 conversationId: this.conversation.id,
                 action: AddonMessagesUpdateConversationAction.MUTE,
                 value: this.conversation.ismuted,
@@ -1447,7 +1457,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                     await AddonMessages.deleteConversation(this.conversation.id);
 
                     CoreEvents.trigger(
-                        AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT,
+                        ADDON_MESSAGES_UPDATE_CONVERSATION_LIST_EVENT,
                         {
                             conversationId: this.conversation.id,
                             action: AddonMessagesUpdateConversationAction.DELETE,

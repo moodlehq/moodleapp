@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import {
-    AddonMessagesProvider,
     AddonMessages,
 } from '../messages';
 import { CoreMainMenuHandler, CoreMainMenuHandlerToDisplay } from '@features/mainmenu/services/mainmenu-delegate';
@@ -28,6 +27,10 @@ import {
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { makeSingleton } from '@singletons';
 import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
+import {
+    ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT,
+    ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT,
+} from '@addons/messages/constants';
 
 /**
  * Handler to inject an option into main menu.
@@ -58,14 +61,14 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
 
     constructor() {
 
-        CoreEvents.on(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, (data) => {
+        CoreEvents.on(ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT, (data) => {
             this.unreadCount = data.favourites + data.individual + data.group + data.self;
             this.orMore = !!data.orMore;
 
             data.siteId && this.updateBadge(data.siteId);
         });
 
-        CoreEvents.on(AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT, (data) => {
+        CoreEvents.on(ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT, (data) => {
             this.contactRequestsCount = data.count;
 
             data.siteId && this.updateBadge(data.siteId);
