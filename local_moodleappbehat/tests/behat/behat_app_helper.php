@@ -740,7 +740,7 @@ EOF;
      * @param string $text
      * @return string|string[] Transformed text.
      */
-    protected function transform_time_to_string(string $text): string|array {
+    protected function transform_time_to_string(string $text) {
         if (!preg_match('/##(.*)##/', $text, $matches)) {
             // No time found, return the original text.
             return $text;

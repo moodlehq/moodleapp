@@ -21,7 +21,7 @@ Feature: Test accepting pending policies on signup
     But I should not be able to press "Continue" in the app
     And I should not be able to press "User account" in the app
 
-    When I press "Link to site policy agreement" in the app
+    When I press "Site policy agreement" "a" in the app
     And I press "OK" in the app
     Then the app should have opened a browser tab with url "moodle.org"
 
