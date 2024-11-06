@@ -34,6 +34,7 @@ import { AddonMessagesSyncEvents, AddonMessagesSyncProvider } from './messages-s
 import { CoreWSError } from '@classes/errors/wserror';
 import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons/notifications/services/notifications';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 declare module '@singletons/events' {
 
@@ -628,7 +629,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForBlockedContacts(userId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
         };
 
         return site.read('core_message_get_blocked_users', params, preSets);
@@ -648,7 +649,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForContacts(),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
         };
 
         const contacts = await site.read<AddonMessagesGetContactsWSResponse>('core_message_get_contacts', undefined, preSets);
@@ -699,7 +700,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForUserContacts(),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
         };
 
         const contacts = await site.read<AddonMessagesGetUserContactsWSResponse>('core_message_get_user_contacts', params, preSets);
@@ -743,7 +744,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForContactRequests(),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
         };
 
         const requests = await site.read<AddonMessagesGetContactRequestsWSResponse>(
@@ -939,7 +940,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForConversationMembers(userId, conversationId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         const params: AddonMessagesGetConversationMembersWSParams = {
@@ -1371,7 +1372,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForMemberInfo(userId, otherUserId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
         };
         const params: AddonMessagesGetMemberInfoWSParams = {
             referenceuserid: userId,
@@ -1410,7 +1411,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getMessagePreferencesCacheKey(),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         const data = await site.read<AddonMessagesGetUserMessagePreferencesWSResponse>(

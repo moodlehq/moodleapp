@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
@@ -36,6 +35,7 @@ import {
     ADDON_MOD_FEEDBACK_PER_PAGE,
     AddonModFeedbackIndexTabName,
 } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
  * Service that provides some features for feedbacks.
@@ -590,7 +590,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFeedbackCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_FEEDBACK_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -648,7 +648,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getItemsDataCacheKey(feedbackId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -1082,7 +1082,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCompletedDataCacheKey(feedbackId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_FEEDBACK_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };

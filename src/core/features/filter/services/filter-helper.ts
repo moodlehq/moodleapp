@@ -34,7 +34,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { firstValueFrom } from 'rxjs';
-import { ContextLevel } from '@/core/constants';
+import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreUtils } from '@services/utils/utils';
 
 /**
@@ -427,7 +427,7 @@ export class CoreFilterHelperProvider {
 
         const cachedData = this.moduleContextsCache[siteId][courseId][contextLevel];
 
-        if (!CoreNetwork.isOnline() || Date.now() <= cachedData.time + site.getExpirationDelay(CoreSite.FREQUENCY_RARELY)) {
+        if (!CoreNetwork.isOnline() || Date.now() <= cachedData.time + site.getExpirationDelay(CoreCacheUpdateFrequency.RARELY)) {
             // We can use cache, return the filters if found.
             return cachedData.contexts[contextLevel] && cachedData.contexts[contextLevel][instanceId];
         }

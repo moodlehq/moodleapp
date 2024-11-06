@@ -19,6 +19,7 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 const ROOT_CACHE_KEY = 'CoreTag:';
 
@@ -100,7 +101,7 @@ export class CoreTagProvider {
             rec: recursive,
         };
         const preSets: CoreSiteWSPreSets = {
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             cacheKey: this.getTagCloudKey(collectionId, isStandard, sort, search, fromContextId, contextId, recursive),
             getFromCache: search != '', // Try to get updated data when searching.
         };
@@ -118,7 +119,7 @@ export class CoreTagProvider {
     async getTagCollections(siteId?: string): Promise<CoreTagCollection[]> {
         const site = await CoreSites.getSite(siteId);
         const preSets: CoreSiteWSPreSets = {
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             cacheKey: this.getTagCollectionsKey(),
         };
 
@@ -172,7 +173,7 @@ export class CoreTagProvider {
             },
         };
         const preSets: CoreSiteWSPreSets = {
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
             cacheKey: this.getTagIndexPerAreaKey(id, name, collectionId, areaId, fromContextId, contextId, recursive),
         };
 

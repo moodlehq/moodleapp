@@ -37,6 +37,7 @@ import {
     ADDON_MOD_GLOSSARY_LIMIT_CATEGORIES,
     ADDON_MOD_GLOSSARY_LIMIT_ENTRIES,
 } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
  * Service that provides some features for glossaries.
@@ -72,7 +73,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCourseGlossariesCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -133,7 +134,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByAuthorCacheKey(glossaryId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -177,7 +178,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByCategoryCacheKey(glossaryId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -247,7 +248,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByDateCacheKey(glossaryId, order),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -305,7 +306,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByLetterCacheKey(glossaryId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -379,7 +380,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesBySearchCacheKey(glossaryId, query, fullSearch),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -457,7 +458,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCategoriesCacheKey(glossaryId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -514,7 +515,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets = {
             cacheKey: this.getEntryCacheKey(entryId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.

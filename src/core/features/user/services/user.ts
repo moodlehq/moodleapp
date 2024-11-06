@@ -28,7 +28,7 @@ import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
 import { CoreUrl } from '@singletons/url';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreConstants } from '@/core/constants';
+import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 
 const ROOT_CACHE_KEY = 'mmUser:';
 
@@ -223,7 +223,7 @@ export class CoreUserProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getParticipantsListCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         if (ignoreCache) {
@@ -362,7 +362,7 @@ export class CoreUserProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserCacheKey(userId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
         let users: CoreUserData[] | CoreUserCourseProfile[] | undefined;
 
@@ -463,7 +463,7 @@ export class CoreUserProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserPreferenceCacheKey(name),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         const result = await site.read<CoreUserGetUserPreferencesWSResponse>('core_user_get_user_preferences', params, preSets);

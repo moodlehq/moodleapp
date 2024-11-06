@@ -42,7 +42,7 @@ import { makeSingleton } from '@singletons';
 import { effectWithInjectionContext, modelWithInjectionContext } from '@/core/utils/signals';
 
 // Import core services.
-import { getCoreServices } from '@/core/core.module';
+import { getCoreExportedObjects, getCoreServices } from '@/core/core.module';
 import { getBlockServices } from '@features/block/block.module';
 import { getCommentsServices } from '@features/comments/comments.module';
 import { getContentLinksExportedObjects, getContentLinksServices } from '@features/contentlinks/contentlinks.module';
@@ -73,7 +73,6 @@ import { getXAPIServices } from '@features/xapi/xapi.module';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { CoreConstants, DownloadStatus } from '@/core/constants';
 import moment from 'moment-timezone';
 import { Md5 } from 'ts-md5/dist/md5';
 
@@ -297,9 +296,6 @@ export class CoreCompileProvider {
         // Add some final classes.
         instance['injector'] = injector;
         instance['Validators'] = Validators;
-        instance['CoreConstants'] = CoreConstants;
-        instance['DownloadStatus'] = DownloadStatus;
-        instance['CoreConfigConstants'] = CoreConstants.CONFIG;
         instance['CoreEventsProvider'] = CoreEvents;
         instance['CoreLoggerProvider'] = CoreLogger;
         instance['moment'] = moment;
@@ -420,6 +416,7 @@ export class CoreCompileProvider {
      */
     protected async getExportedObjects(): Promise<Record<string, unknown>> {
         const objects = await Promise.all([
+            getCoreExportedObjects(),
             getCoreErrorsExportedObjects(),
             getCourseExportedObjects(),
             getContentLinksExportedObjects(),

@@ -24,7 +24,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreCommentsOffline } from './comments-offline';
 import { CoreCommentsSyncAutoSyncData, CoreCommentsSyncProvider } from './comments-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ContextLevel } from '@/core/constants';
+import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 
 const ROOT_CACHE_KEY = 'mmComments:';
 
@@ -422,7 +422,7 @@ export class CoreCommentsProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCommentsCacheKey(contextLevel, instanceId, component, itemId, area),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
         const response = await site.read<CoreCommentsGetCommentsWSResponse>('core_comment_get_comments', params, preSets);
 

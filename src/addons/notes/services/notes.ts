@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreSite } from '@classes/sites/site';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
@@ -23,6 +22,7 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonNotesOffline } from './notes-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 const ROOT_CACHE_KEY = 'mmaNotes:';
 
@@ -241,7 +241,7 @@ export class AddonNotesProvider {
             ],
         };
         const preSets: CoreSiteWSPreSets = {
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         // Use .read to cache data and be able to check it in offline. This means that, if a user loses the capabilities
@@ -309,7 +309,7 @@ export class AddonNotesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getNotesCacheKey(courseId, userId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         if (ignoreCache) {

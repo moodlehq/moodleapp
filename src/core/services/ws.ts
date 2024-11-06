@@ -26,7 +26,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileFormat } from '@services/file';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, MINIMUM_MOODLE_VERSION } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreInterceptor } from '@classes/interceptor';
 import { makeSingleton, Translate, Http, NativeHttp } from '@singletons';
@@ -35,7 +35,6 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
 import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
 import { CoreNetworkError } from '@classes/errors/network-error';
-import { CoreSite } from '@classes/sites/site';
 import { CoreHttpError } from '@classes/errors/httperror';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
@@ -592,7 +591,7 @@ export class CoreWSProvider {
                         options.debug = {
                             code: 'endpointnotfound',
                             details: Translate.instant('core.ajaxendpointnotfound', {
-                                $a: CoreSite.MINIMUM_MOODLE_VERSION,
+                                $a: MINIMUM_MOODLE_VERSION,
                             }),
                         };
                         break;

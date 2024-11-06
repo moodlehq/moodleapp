@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreSite } from '@classes/sites/site';
 import { CoreEnrolEnrolmentInfo } from '@features/enrol/services/enrol';
 import { CoreSites } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
@@ -44,7 +44,7 @@ export class AddonEnrolGuestService {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getGuestEnrolmentInfoCacheKey(instanceId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         const response =

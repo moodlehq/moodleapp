@@ -29,7 +29,7 @@ import { CoreWSExternalWarning, CoreWSDate } from '@services/ws';
 import moment from 'moment-timezone';
 import { AddonCalendarEventDBRecord } from './database/calendar';
 import { CoreCourses } from '@features/courses/services/courses';
-import { ContextLevel, CoreConstants } from '@/core/constants';
+import { ContextLevel, CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CoreWSError } from '@classes/errors/wserror';
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
@@ -563,7 +563,7 @@ export class AddonCalendarProvider {
         const site = await CoreSites.getSite(siteId);
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEventCacheKey(id),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
         const params: AddonCalendarGetCalendarEventsWSParams = {
             options: {
@@ -599,7 +599,7 @@ export class AddonCalendarProvider {
         const site = await CoreSites.getSite(siteId);
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEventCacheKey(id),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
         const params: AddonCalendarGetCalendarEventByIdWSParams = {
             eventid: id,
@@ -765,7 +765,7 @@ export class AddonCalendarProvider {
         }
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getDayEventsCacheKey(year, month, day, courseId, categoryId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
         if (ignoreCache) {
             preSets.getFromCache = false;
@@ -877,7 +877,7 @@ export class AddonCalendarProvider {
             cacheKey: this.getEventsListCacheKey(daysToStart, daysInterval),
             getCacheUsingCacheKey: true,
             uniqueCacheKey: true,
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
         const response =
             await site.read<AddonCalendarGetCalendarEventsWSResponse>('core_calendar_get_calendar_events', params, preSets);
@@ -955,7 +955,7 @@ export class AddonCalendarProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getMonthlyEventsCacheKey(year, month, courseId, categoryId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
         if (ignoreCache) {
             preSets.getFromCache = false;
@@ -1040,7 +1040,7 @@ export class AddonCalendarProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUpcomingEventsCacheKey(courseId, categoryId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         if (ignoreCache) {

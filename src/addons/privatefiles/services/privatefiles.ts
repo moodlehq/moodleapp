@@ -19,7 +19,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';
-import { ContextLevel } from '@/core/constants';
+import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 
 const ROOT_CACHE_KEY = 'mmaFiles:';
@@ -84,7 +84,7 @@ export class AddonPrivateFilesProvider {
 
         const preSets = {
             cacheKey: this.getFilesListCacheKey(params),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         const result: AddonPrivateFilesGetFilesWSResult = await site.read('core_files_get_files', params, preSets);
@@ -163,7 +163,7 @@ export class AddonPrivateFilesProvider {
         };
         const preSets = {
             cacheKey: this.getPrivateFilesInfoCacheKey(userId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         return site.read('core_user_get_private_files_info', params, preSets);

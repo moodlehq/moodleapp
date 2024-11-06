@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreSite } from '@classes/sites/site';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWS } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -29,6 +28,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_BOOK_COMPONENT } from '../constants';
 import { CoreUrl } from '@singletons/url';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
  * Service that provides some features for books.
@@ -72,7 +72,7 @@ export class AddonModBookProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getBookDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_BOOK_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };

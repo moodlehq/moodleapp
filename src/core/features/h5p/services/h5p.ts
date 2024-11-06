@@ -31,7 +31,7 @@ import { CoreError } from '@classes/errors/error';
 import { CorePath } from '@singletons/path';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreFilepool } from '@services/filepool';
-import { DownloadStatus } from '@/core/constants';
+import { CoreCacheUpdateFrequency, DownloadStatus } from '@/core/constants';
 import { CoreUtils } from '@services/utils/utils';
 
 /**
@@ -145,7 +145,7 @@ export class CoreH5PProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getTrustedH5PFileCacheKey(url),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         if (ignoreCache) {

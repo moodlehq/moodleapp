@@ -14,10 +14,9 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreSite } from '@classes/sites/site';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreConstants } from '@/core/constants';
+import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreUtils } from '@services/utils/utils';
@@ -119,7 +118,7 @@ export class AddonModUrlProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUrlCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_URL_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };

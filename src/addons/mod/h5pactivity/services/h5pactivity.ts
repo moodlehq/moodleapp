@@ -34,6 +34,7 @@ import {
     ADDON_MOD_H5PACTIVITY_USERS_PER_PAGE,
     AddonModH5PActivityGradeMethod,
 } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
  * Service that provides some features for H5P activity.
@@ -162,7 +163,7 @@ export class AddonModH5PActivityProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAccessInformationCacheKey(id),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
             component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -266,7 +267,7 @@ export class AddonModH5PActivityProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUsersAttemptsCacheKey(id, options),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -362,7 +363,7 @@ export class AddonModH5PActivityProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptResultsCacheKey(id, params.attemptids),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -427,7 +428,7 @@ export class AddonModH5PActivityProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptResultsCommonCacheKey(id),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -510,7 +511,7 @@ export class AddonModH5PActivityProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getH5PActivityDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -617,7 +618,7 @@ export class AddonModH5PActivityProvider {
 
             const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getUserAttemptsCacheKey(id, params.userids),
-                updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+                updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
                 component: ADDON_MOD_H5PACTIVITY_COMPONENT,
                 componentId: options.cmId,
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.

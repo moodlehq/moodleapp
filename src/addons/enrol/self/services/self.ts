@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCoursesProvider } from '@features/courses/services/courses';
 import { CoreSites } from '@services/sites';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
@@ -45,7 +45,7 @@ export class AddonEnrolSelfService {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSelfEnrolmentInfoCacheKey(instanceId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         return await site.read<AddonEnrolSelfGetInstanceInfoWSResponse>('enrol_self_get_instance_info', params, preSets);

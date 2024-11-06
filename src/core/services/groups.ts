@@ -15,12 +15,12 @@
 import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreSite } from '@classes/sites/site';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CoreCacheUpdateFrequency } from '../constants';
 
 const ROOT_CACHE_KEY = 'mmGroups:';
 
@@ -78,7 +78,7 @@ export class CoreGroupsProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getActivityAllowedGroupsCacheKey(cmId, userId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         if (ignoreCache) {
@@ -202,7 +202,7 @@ export class CoreGroupsProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getActivityGroupModeCacheKey(cmId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         if (ignoreCache) {
@@ -285,7 +285,7 @@ export class CoreGroupsProvider {
         };
         const preSets = {
             cacheKey: this.getUserGroupsInCourseCacheKey(courseId, userId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         const response: CoreGroupGetCourseUserGroupsWSResponse =

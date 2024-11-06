@@ -23,6 +23,7 @@ import { map } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
 import { asyncObservable } from '@/core/utils/rxjs';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 const ROOT_CACHE_KEY = 'CoreCoursesDashboard:';
 
@@ -90,7 +91,7 @@ export class CoreCoursesDashboardProvider {
 
             const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getDashboardBlocksCacheKey(myPage, options.userId),
-                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                updateFrequency: CoreCacheUpdateFrequency.RARELY,
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
             };
             if (options.userId) {

@@ -24,7 +24,7 @@ import {
 import { CoreToasts, ToastDuration } from '@services/toasts';
 import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreConstants } from '@/core/constants';
+import { CoreCacheUpdateFrequency, CoreConstants, MINIMUM_MOODLE_VERSION, MOODLE_RELEASES } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreLogger } from '@singletons/logger';
@@ -51,31 +51,34 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
     static readonly REQUEST_QUEUE_FORCE_WS = false; // Use "tool_mobile_call_external_functions" even for calling a single function.
 
-    // Constants for cache update frequency.
-    static readonly FREQUENCY_USUALLY = 0;
-    static readonly FREQUENCY_OFTEN = 1;
-    static readonly FREQUENCY_SOMETIMES = 2;
-    static readonly FREQUENCY_RARELY = 3;
+    /**
+     * @deprecated 5.0. Use CoreCacheUpdateFrequency.USUALLY instead.
+     */
+    static readonly FREQUENCY_USUALLY = CoreCacheUpdateFrequency.USUALLY;
+    /**
+     * @deprecated 5.0. Use CoreCacheUpdateFrequency.OFTEN instead.
+     */
+    static readonly FREQUENCY_OFTEN = CoreCacheUpdateFrequency.OFTEN;
+    /**
+     * @deprecated 5.0. Use CoreCacheUpdateFrequency.SOMETIMES instead.
+     */
+    static readonly FREQUENCY_SOMETIMES = CoreCacheUpdateFrequency.SOMETIMES;
+    /**
+     * @deprecated 5.0. Use CoreCacheUpdateFrequency.RARELY instead.
+     */
+    static readonly FREQUENCY_RARELY = CoreCacheUpdateFrequency.RARELY;
 
-    static readonly MINIMUM_MOODLE_VERSION = '3.5';
+    /**
+     * @deprecated 5.0. Use MINIMUM_MOODLE_VERSION from constants.ts.
+     */
+    static readonly MINIMUM_MOODLE_VERSION = MINIMUM_MOODLE_VERSION;
 
-    // Versions of Moodle releases.
-    static readonly MOODLE_RELEASES = {
-        '3.5': 2018051700,
-        '3.6': 2018120300,
-        '3.7': 2019052000,
-        '3.8': 2019111800,
-        '3.9': 2020061500,
-        '3.10': 2020110900,
-        '3.11': 2021051700,
-        '4.0': 2022041900,
-        '4.1': 2022112800,
-        '4.2': 2023042400,
-        '4.3': 2023100900,
-        '4.4': 2024042200,
-        '4.5': 2024100700,
-        '5.0': 2024100800, // @todo [5.0] replace with right value when released. Using a tmp value to be able to test new things.
-    };
+    /**
+     * Versions of Moodle releases.
+     *
+     * @deprecated 5.0. Use MOODLE_RELEASES from constants.ts.
+     */
+    static readonly MOODLE_RELEASES = MOODLE_RELEASES;
 
     // Possible cache update frequencies.
     protected static readonly UPDATE_FREQUENCIES = [
@@ -1484,9 +1487,9 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             return 0;
         }
 
-        if (CoreAuthenticatedSite.MOODLE_RELEASES[data.major] === undefined) {
+        if (MOODLE_RELEASES[data.major] === undefined) {
             // Major version not found. Use the last one.
-            const major = Object.keys(CoreAuthenticatedSite.MOODLE_RELEASES).pop();
+            const major = Object.keys(MOODLE_RELEASES).pop();
             if (!major) {
                 return 0;
             }
@@ -1494,7 +1497,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
             data.major = major;
         }
 
-        return CoreAuthenticatedSite.MOODLE_RELEASES[data.major] + data.minor;
+        return MOODLE_RELEASES[data.major] + data.minor;
     }
 
     /**
@@ -1524,7 +1527,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      */
     protected getNextMajorVersionNumber(version: string): number {
         const data = this.getMajorAndMinor(version);
-        const releases = Object.keys(CoreAuthenticatedSite.MOODLE_RELEASES);
+        const releases = Object.keys(MOODLE_RELEASES);
 
         if (!data) {
             // Invalid version.
@@ -1535,10 +1538,10 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
         if (position == -1 || position == releases.length - 1) {
             // Major version not found or it's the last one. Use the last one.
-            return CoreAuthenticatedSite.MOODLE_RELEASES[releases[position]];
+            return MOODLE_RELEASES[releases[position]];
         }
 
-        return CoreAuthenticatedSite.MOODLE_RELEASES[releases[position + 1]];
+        return MOODLE_RELEASES[releases[position + 1]];
     }
 
     /**
@@ -1547,10 +1550,10 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      * @param updateFrequency The update frequency of the entry.
      * @returns Expiration delay.
      */
-    getExpirationDelay(updateFrequency?: number): number {
-        updateFrequency = updateFrequency || CoreAuthenticatedSite.FREQUENCY_USUALLY;
+    getExpirationDelay(updateFrequency?: CoreCacheUpdateFrequency): number {
+        updateFrequency = updateFrequency ?? CoreCacheUpdateFrequency.USUALLY;
         let expirationDelay = CoreAuthenticatedSite.UPDATE_FREQUENCIES[updateFrequency] ||
-        CoreAuthenticatedSite.UPDATE_FREQUENCIES[CoreAuthenticatedSite.FREQUENCY_USUALLY];
+        CoreAuthenticatedSite.UPDATE_FREQUENCIES[CoreCacheUpdateFrequency.USUALLY];
 
         if (CoreNetwork.isNetworkAccessLimited()) {
             // Not WiFi, increase the expiration delay a 50% to decrease the data usage in this case.
@@ -1744,10 +1747,10 @@ export type CoreSiteWSPreSets = {
 
     /**
      * Update frequency. This value determines how often the cached data will be updated. Possible values:
-     * CoreSite.FREQUENCY_USUALLY, CoreSite.FREQUENCY_OFTEN, CoreSite.FREQUENCY_SOMETIMES, CoreSite.FREQUENCY_RARELY.
-     * Defaults to CoreSite.FREQUENCY_USUALLY.
+     * USUALLY, OFTEN, SOMETIMES, RARELY.
+     * Defaults to USUALLY.
      */
-    updateFrequency?: number;
+    updateFrequency?: CoreCacheUpdateFrequency;
 
     /**
      * Component name. Optionally included if this request is being made on behalf of a specific

@@ -25,6 +25,7 @@ import { asyncObservable } from '@/core/utils/rxjs';
 import { map } from 'rxjs/operators';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 import { firstValueFrom } from 'rxjs';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 const ROOT_CACHE_KEY = 'mmaCourseCompletion:';
 
@@ -173,7 +174,7 @@ export class AddonCourseCompletionProvider {
             const preSets = {
                 ...(options.preSets ?? {}),
                 cacheKey: this.getCompletionCacheKey(courseId, userId),
-                updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+                updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
                 cacheErrors: ['notenroled'],
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
             };
