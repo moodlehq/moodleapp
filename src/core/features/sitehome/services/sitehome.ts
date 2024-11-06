@@ -19,7 +19,7 @@ import { CoreSite } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';
 import { CoreCourse } from '../../course/services/course';
 import { CoreCourses } from '../../courses/services/courses';
-import { AddonModForum, AddonModForumData } from '@addons/mod/forum/services/forum';
+import { AddonModForumData } from '@addons/mod/forum/services/forum';
 import { CoreError } from '@classes/errors/error';
 import { CoreBlockHelper } from '@features/block/services/block-helper';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -53,6 +53,8 @@ export class CoreSiteHomeProvider {
             siteHomeId = CoreSites.getCurrentSiteHomeId();
         }
 
+        const { AddonModForum } = await import('@addons/mod/forum/services/forum');
+
         const forums = await AddonModForum.getCourseForums(siteHomeId);
         const forum = forums.find((forum) => forum.type == 'news');
 
@@ -67,9 +69,10 @@ export class CoreSiteHomeProvider {
      * Invalidate the WS call to get the news forum for the Site Home.
      *
      * @param siteHomeId Site Home ID.
-     * @returns Promise resolved when invalidated.
      */
     async invalidateNewsForum(siteHomeId: number): Promise<void> {
+        const { AddonModForum } = await import('@addons/mod/forum/services/forum');
+
         await AddonModForum.invalidateForumData(siteHomeId);
     }
 
