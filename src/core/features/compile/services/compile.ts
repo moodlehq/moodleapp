@@ -55,7 +55,7 @@ import { getFilterServices } from '@features/filter/filter.module';
 import { getGradesServices } from '@features/grades/grades.module';
 import { getH5PServices } from '@features/h5p/h5p.module';
 import { getLoginServices } from '@features/login/login.module';
-import { getMainMenuServices } from '@features/mainmenu/mainmenu.module';
+import { getMainMenuExportedObjects, getMainMenuServices } from '@features/mainmenu/mainmenu.module';
 import { getNativeServices } from '@features/native/native.module';
 import { getPushNotificationsServices } from '@features/pushnotifications/pushnotifications.module';
 import { getQuestionServices } from '@features/question/question.module';
@@ -420,6 +420,7 @@ export class CoreCompileProvider {
             getCoreErrorsExportedObjects(),
             getCourseExportedObjects(),
             getCoursesExportedObjects(),
+            getMainMenuExportedObjects(),
             getContentLinksExportedObjects(),
             getSitePluginsExportedObjects(),
         ]);

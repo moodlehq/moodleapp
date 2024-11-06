@@ -17,9 +17,9 @@ import { Routes, ROUTES } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 import { CoreMainMenuMorePage } from '@features/mainmenu/pages/more/more';
+import { MAIN_MENU_MORE_PAGE_NAME } from './constants';
 
 /**
  * Build module routes.
@@ -31,7 +31,7 @@ function buildRoutes(injector: Injector): Routes {
     return buildTabMainRoutes(injector, {
         component: CoreMainMenuMorePage,
         data: {
-            mainMenuTabRoot: CoreMainMenuProvider.MORE_PAGE_NAME,
+            mainMenuTabRoot: MAIN_MENU_MORE_PAGE_NAME,
         },
     });
 }

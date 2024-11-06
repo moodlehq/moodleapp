@@ -44,7 +44,6 @@ import {
 import { CoreError } from '@classes/errors/error';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreSitesFactory } from '@services/sites-factory';
-import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
 import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
@@ -56,6 +55,7 @@ import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { Push } from '@features/native/plugins';
 import { CoreNavigator } from '@services/navigator';
 import { CoreWait } from '@singletons/wait';
+import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
 
 /**
  * Service to handle push notifications.
@@ -149,7 +149,7 @@ export class CorePushNotificationsProvider {
             }
         });
 
-        CoreEvents.on(CoreMainMenuProvider.MAIN_MENU_HANDLER_BADGE_UPDATED, (data) => {
+        CoreEvents.on(MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT, (data) => {
             this.updateAddonCounter(data.handler, data.value, data.siteId);
         });
 
