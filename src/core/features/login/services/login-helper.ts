@@ -802,8 +802,8 @@ export class CoreLoginHelperProvider {
             loginUrl = CoreUrl.addParamsToUrl(loginUrl, urlParams);
         }
 
-        // Store the siteurl and passport in CoreConfigProvider for persistence.
-        // We are "configuring" the app to wait for an SSO. CoreConfigProvider shouldn't be used as a temporary storage.
+        // Store the siteurl and passport in CoreConfig for persistence.
+        // We are "configuring" the app to wait for an SSO. CoreConfig shouldn't be used as a temporary storage.
         await CoreConfig.set(CoreConstants.LOGIN_LAUNCH_DATA, JSON.stringify(<StoredLoginLaunchData> {
             siteUrl: siteUrl,
             passport: passport,

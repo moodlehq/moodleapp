@@ -34,7 +34,7 @@ export const XAPI_STATE_DELETED = 'STATE_DELETED';
 @Injectable({ providedIn: 'root' })
 export class CoreXAPIProvider {
 
-    static readonly ROOT_CACHE_KEY = 'CoreXAPI:';
+    protected static readonly ROOT_CACHE_KEY = 'CoreXAPI:';
 
     protected logger = CoreLogger.getInstance('CoreXAPIProvider');
 
