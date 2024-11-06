@@ -22,7 +22,7 @@ import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonNotifications, AddonNotificationsProvider } from '../notifications';
-import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
+import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
 
 /**
  * Handler to inject an option into main menu.
@@ -120,7 +120,7 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
             CorePushNotifications.updateAddonCounter(AddonNotificationsMainMenuHandlerService.name, unreadCountData.count, siteId);
 
             CoreEvents.trigger(
-                CoreMainMenuProvider.MAIN_MENU_HANDLER_BADGE_UPDATED,
+                MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
                 {
                     handler: AddonNotificationsMainMenuHandlerService.name,
                     value: unreadCountData.count,

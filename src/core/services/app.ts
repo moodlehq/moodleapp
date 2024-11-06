@@ -30,9 +30,9 @@ import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CorePromisedValue } from '@classes/promised-value';
 import { Subscription } from 'rxjs';
 import { CorePlatform } from '@services/platform';
-import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreNetwork } from './network';
+import { MAIN_MENU_VISIBILITY_UPDATED_EVENT } from '@features/mainmenu/constants';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -61,7 +61,7 @@ export class CoreAppProvider {
         this.logger = CoreLogger.getInstance('CoreAppProvider');
         if (CorePlatform.isAndroid()) {
             this.mainMenuListener =
-                CoreEvents.on(CoreMainMenuProvider.MAIN_MENU_VISIBILITY_UPDATED, () => this.setAndroidNavigationBarColor());
+                CoreEvents.on(MAIN_MENU_VISIBILITY_UPDATED_EVENT, () => this.setAndroidNavigationBarColor());
         }
     }
 

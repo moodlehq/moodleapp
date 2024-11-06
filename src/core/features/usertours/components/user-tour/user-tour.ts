@@ -33,8 +33,8 @@ import { AngularFrameworkDelegate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
 import { COLLAPSIBLE_HEADER_UPDATED } from '@directives/collapsible-header';
+import { MAIN_MENU_VISIBILITY_UPDATED_EVENT } from '@features/mainmenu/constants';
 
 const ANIMATION_DURATION = 200;
 const USER_TOURS_BACK_BUTTON_PRIORITY = 100;
@@ -264,7 +264,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
         this.collapsibleHeaderListener = this.collapsibleHeaderListener ??
             CoreEvents.on(COLLAPSIBLE_HEADER_UPDATED, () => this.calculateStyles());
         this.mainMenuListener = this.mainMenuListener ??
-            CoreEvents.on(CoreMainMenuProvider.MAIN_MENU_VISIBILITY_UPDATED, () => this.calculateStyles());
+            CoreEvents.on(MAIN_MENU_VISIBILITY_UPDATED_EVENT, () => this.calculateStyles());
         this.resizeListener = this.resizeListener ?? CoreDom.onWindowResize(() => this.calculateStyles());
         this.content = this.content ?? CoreDom.closest(this.focus, 'ion-content');
 

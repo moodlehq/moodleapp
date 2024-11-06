@@ -26,11 +26,11 @@ import {
 } from '@features/pushnotifications/services/pushnotifications';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { makeSingleton } from '@singletons';
-import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
 import {
     ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT,
     ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT,
 } from '@addons/messages/constants';
+import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
 
 /**
  * Handler to inject an option into main menu.
@@ -177,7 +177,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
 
         // Update push notifications badge.
         CoreEvents.trigger(
-            CoreMainMenuProvider.MAIN_MENU_HANDLER_BADGE_UPDATED,
+            MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
             {
                 handler: AddonMessagesMainMenuHandlerService.name,
                 value: totalCount,

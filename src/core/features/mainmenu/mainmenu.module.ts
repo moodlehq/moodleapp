@@ -38,6 +38,32 @@ export async function getMainMenuServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get main menu exported objects.
+ *
+ * @returns Main menu exported objects.
+ */
+export async function getMainMenuExportedObjects(): Promise<Record<string, unknown>> {
+    const {
+        MAIN_MENU_NUM_MAIN_HANDLERS,
+        MAIN_MENU_ITEM_MIN_WIDTH,
+        MAIN_MENU_MORE_PAGE_NAME,
+        MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
+        MAIN_MENU_VISIBILITY_UPDATED_EVENT,
+
+    } = await import('@features/mainmenu/constants');
+
+    /* eslint-disable @typescript-eslint/naming-convention */
+    return {
+        MAIN_MENU_NUM_MAIN_HANDLERS,
+        MAIN_MENU_ITEM_MIN_WIDTH,
+        MAIN_MENU_MORE_PAGE_NAME,
+        MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
+        MAIN_MENU_VISIBILITY_UPDATED_EVENT,
+    };
+    /* eslint-enable @typescript-eslint/naming-convention */
+}
+
 const appRoutes: Routes = [
     {
         path: '',
