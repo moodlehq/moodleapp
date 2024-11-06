@@ -305,18 +305,6 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Get fixed site or sites.
-     *
-     * @returns Fixed site or list of fixed sites.
-     * @deprecated since 4.2. Use CoreConstants.CONFIG.sites or getAvailableSites() instead.
-     */
-    getFixedSites(): string | CoreLoginSiteInfo[] {
-        const notStagingSites = CoreConstants.CONFIG.sites.filter(site => !site.staging);
-
-        return notStagingSites.length === 1 ? notStagingSites[0].url : notStagingSites;
-    }
-
-    /**
      * Get Available sites (includes staging sites if are enabled). It doesn't include demo mode site.
      *
      * @returns Available sites.
@@ -481,18 +469,6 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Check if the app is configured to use several fixed URLs.
-     *
-     * @returns Whether there are several fixed URLs.
-     * @deprecated since 4.2. Use CoreConstants.CONFIG.sites.length > 1 instead.
-     */
-    async hasSeveralFixedSites(): Promise<boolean> {
-        const sites = await this.getAvailableSites();
-
-        return sites.length > 1;
-    }
-
-    /**
      * Given a site public config, check if email signup is disabled.
      *
      * @param config Site public config.
@@ -519,16 +495,6 @@ export class CoreLoginHelperProvider {
         const regEx = new RegExp('(,|^)' + feature + '(,|$)', 'g');
 
         return !!disabledFeatures.match(regEx);
-    }
-
-    /**
-     * Check if the app is configured to use a fixed URL (only 1).
-     *
-     * @returns Whether there is 1 fixed URL.
-     * @deprecated since 4.2. Use isSingleFixedSite instead.
-     */
-    isFixedUrlSet(): boolean {
-        return CoreConstants.CONFIG.sites.filter(site => !site.staging).length === 1;
     }
 
     /**
