@@ -28,7 +28,6 @@ import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { AddonModAssignFeedbackCommentsComponent } from '../component/comments';
 import { CoreFileHelper } from '@services/file-helper';
 
 /**
@@ -73,7 +72,9 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     /**
      * @inheritdoc
      */
-    getComponent(): Type<IAddonModAssignFeedbackPluginComponent> {
+    async getComponent(): Promise<Type<IAddonModAssignFeedbackPluginComponent>> {
+        const { AddonModAssignFeedbackCommentsComponent } = await import('../component/comments');
+
         return AddonModAssignFeedbackCommentsComponent;
     }
 

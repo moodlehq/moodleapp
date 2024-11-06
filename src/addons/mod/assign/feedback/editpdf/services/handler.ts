@@ -22,7 +22,6 @@ import { AddonModAssignFeedbackHandler } from '@addons/mod/assign/services/feedb
 import { Injectable, Type } from '@angular/core';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { AddonModAssignFeedbackEditPdfComponent } from '../component/editpdf';
 import type { IAddonModAssignFeedbackPluginComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 
 /**
@@ -37,7 +36,9 @@ export class AddonModAssignFeedbackEditPdfHandlerService implements AddonModAssi
     /**
      * @inheritdoc
      */
-    getComponent(): Type<IAddonModAssignFeedbackPluginComponent> {
+    async getComponent(): Promise<Type<IAddonModAssignFeedbackPluginComponent>> {
+        const { AddonModAssignFeedbackEditPdfComponent } = await import('../component/editpdf');
+
         return AddonModAssignFeedbackEditPdfComponent;
     }
 

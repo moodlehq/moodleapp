@@ -17,7 +17,6 @@ import { Injectable, Type } from '@angular/core';
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { makeSingleton } from '@singletons';
-import { AddonQtypeGapSelectComponent } from '../../component/gapselect';
 
 /**
  * Handler to support gapselect question type.
@@ -42,7 +41,9 @@ export class AddonQtypeGapSelectHandlerService implements CoreQuestionHandler {
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonQtypeGapSelectComponent } = await import('../../component/gapselect');
+
         return AddonQtypeGapSelectComponent;
     }
 

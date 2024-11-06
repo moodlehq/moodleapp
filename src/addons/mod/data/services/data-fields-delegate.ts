@@ -45,7 +45,7 @@ export interface AddonModDataFieldHandler extends CoreDelegateHandler {
      * @param field The field object.
      * @returns The component to use, undefined if not found.
      */
-    getComponent?(plugin: AddonModDataField): Type<AddonModDataFieldPluginBaseComponent> | undefined;
+    getComponent?(plugin: AddonModDataField): Promise<Type<AddonModDataFieldPluginBaseComponent> | undefined>;
 
     /**
      * Get field search data in the input data.

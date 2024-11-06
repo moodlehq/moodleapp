@@ -28,7 +28,6 @@ import { CoreFileSession } from '@services/file-session';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { AddonModAssignSubmissionFileComponent } from '../component/file';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import type { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
@@ -101,7 +100,9 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
     /**
      * @inheritdoc
      */
-    getComponent(): Type<AddonModAssignSubmissionPluginBaseComponent> {
+    async getComponent(): Promise<Type<AddonModAssignSubmissionPluginBaseComponent>> {
+        const { AddonModAssignSubmissionFileComponent } = await import('../component/file');
+
         return AddonModAssignSubmissionFileComponent;
     }
 

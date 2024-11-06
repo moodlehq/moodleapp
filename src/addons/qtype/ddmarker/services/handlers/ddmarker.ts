@@ -19,7 +19,6 @@ import { CoreQuestionHandler } from '@features/question/services/question-delega
 import { CoreQuestionHelper, CoreQuestionQuestion } from '@features/question/services/question-helper';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { AddonQtypeDdMarkerComponent } from '../../component/ddmarker';
 
 /**
  * Handler to support drag-and-drop markers question type.
@@ -44,7 +43,9 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonQtypeDdMarkerComponent } = await import('../../component/ddmarker');
+
         return AddonQtypeDdMarkerComponent;
     }
 

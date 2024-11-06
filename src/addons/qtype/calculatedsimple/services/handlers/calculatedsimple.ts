@@ -14,7 +14,6 @@
 
 import { Injectable, Type } from '@angular/core';
 
-import { AddonQtypeCalculatedComponent } from '@addons/qtype/calculated/component/calculated';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { AddonQtypeCalculatedHandler } from '@addons/qtype/calculated/services/handlers/calculated';
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
@@ -32,8 +31,10 @@ export class AddonQtypeCalculatedSimpleHandlerService implements CoreQuestionHan
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
         // Calculated simple behaves like a calculated, use the same component.
+        const { AddonQtypeCalculatedComponent } = await import('@addons/qtype/calculated/component/calculated');
+
         return AddonQtypeCalculatedComponent;
     }
 

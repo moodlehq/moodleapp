@@ -18,7 +18,6 @@ import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/ques
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
-import { AddonQtypeShortAnswerComponent } from '../../component/shortanswer';
 
 /**
  * Handler to support short answer question type.
@@ -32,7 +31,9 @@ export class AddonQtypeShortAnswerHandlerService implements CoreQuestionHandler 
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonQtypeShortAnswerComponent } = await import('../../component/shortanswer');
+
         return AddonQtypeShortAnswerComponent;
     }
 

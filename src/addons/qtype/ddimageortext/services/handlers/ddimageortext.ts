@@ -17,7 +17,6 @@ import { Injectable, Type } from '@angular/core';
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { makeSingleton } from '@singletons';
-import { AddonQtypeDdImageOrTextComponent } from '../../component/ddimageortext';
 
 /**
  * Handler to support drag-and-drop onto image question type.
@@ -42,7 +41,9 @@ export class AddonQtypeDdImageOrTextHandlerService implements CoreQuestionHandle
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonQtypeDdImageOrTextComponent } = await import('../../component/ddimageortext');
+
         return AddonQtypeDdImageOrTextComponent;
     }
 

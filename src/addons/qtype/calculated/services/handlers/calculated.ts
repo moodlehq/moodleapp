@@ -19,7 +19,6 @@ import { CoreQuestionHandler } from '@features/question/services/question-delega
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
-import { AddonQtypeCalculatedComponent } from '../../component/calculated';
 
 /**
  * Handler to support calculated question type.
@@ -41,7 +40,9 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonQtypeCalculatedComponent } = await import('../../component/calculated');
+
         return AddonQtypeCalculatedComponent;
     }
 
