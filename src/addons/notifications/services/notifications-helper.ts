@@ -38,19 +38,6 @@ import { CoreTimeUtils } from '@services/utils/time';
 export class AddonNotificationsHelperProvider {
 
     /**
-     * Formats the text of a notification.
-     *
-     * @param notification The notification object.
-     * @returns The notification formatted to render.
-     * @deprecated since 4.2. This function isn't needed anymore.
-     */
-    formatNotificationText(
-        notification: AddonNotificationsNotificationMessageFormatted,
-    ): AddonNotificationsNotificationMessageFormatted {
-        return notification;
-    }
-
-    /**
      * Format preferences data.
      *
      * @param preferences Preferences to format.

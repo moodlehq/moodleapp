@@ -288,19 +288,6 @@ export class CoreXAPIProvider {
     }
 
     /**
-     * Get URL for XAPI events.
-     *
-     * @param contextId Context ID.
-     * @param type Type (e.g. 'activity').
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
-     * @deprecated since 4.2. Use CoreXAPIIRI.generate instead.
-     */
-    async getUrl(contextId: number, type: string, siteId?: string): Promise<string> {
-        return CoreXAPIIRI.generate(contextId, type, siteId);
-    }
-
-    /**
      * Invalidates a state.
      *
      * @param component Component.
