@@ -39,7 +39,6 @@ import { CoreError } from '@classes/errors/error';
 import {
     CoreCourseAnyCourseData,
     CoreCourses,
-    CoreCoursesProvider,
 } from '../../courses/services/courses';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSError } from '@classes/errors/wserror';
@@ -64,6 +63,7 @@ import { CoreLoadings } from '@services/loadings';
 import { CoreArray } from '@singletons/array';
 import { CoreText } from '@singletons/text';
 import { ArrayElement } from '@/core/utils/types';
+import { CORE_COURSES_MY_COURSES_UPDATED_EVENT, CoreCoursesMyCoursesUpdatedEventAction } from '@features/courses/constants';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -1288,9 +1288,9 @@ export class CoreCourseProvider {
         if (!response.status) {
             throw Error('WS core_course_view_course failed.');
         } else {
-            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+            CoreEvents.trigger(CORE_COURSES_MY_COURSES_UPDATED_EVENT, {
                 courseId: courseId,
-                action: CoreCoursesProvider.ACTION_VIEW,
+                action: CoreCoursesMyCoursesUpdatedEventAction.VIEW,
             }, site.getId());
         }
     }

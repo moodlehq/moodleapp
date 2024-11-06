@@ -23,13 +23,19 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreColors } from '@singletons/colors';
 import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreCourseListItem, CoreCourses, CoreCoursesProvider } from '../../services/courses';
+import { CoreCourseListItem, CoreCourses } from '../../services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CoreEnrolHelper } from '@features/enrol/services/enrol-helper';
 import { CoreDownloadStatusTranslatable } from '@components/download-refresh/download-refresh';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CorePopovers } from '@services/popovers';
 import { CoreLoadings } from '@services/loadings';
+import {
+    CORE_COURSES_MY_COURSES_UPDATED_EVENT,
+    CoreCoursesMyCoursesUpdatedEventAction,
+    CORE_COURSES_STATE_HIDDEN,
+    CORE_COURSES_STATE_FAVOURITE,
+} from '@features/courses/constants';
 
 /**
  * This directive is meant to display an item for a list of courses.
@@ -356,11 +362,11 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
             this.course.hidden = hide;
 
             (<CoreEnrolledCourseDataWithExtraInfoAndOptions> this.course).hidden = hide;
-            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+            CoreEvents.trigger(CORE_COURSES_MY_COURSES_UPDATED_EVENT, {
                 courseId: this.course.id,
                 course: this.course,
-                action: CoreCoursesProvider.ACTION_STATE_CHANGED,
-                state: CoreCoursesProvider.STATE_HIDDEN,
+                action: CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED,
+                state: CORE_COURSES_STATE_HIDDEN,
                 value: hide,
             }, CoreSites.getCurrentSiteId());
 
@@ -385,11 +391,11 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
             await CoreCourses.setFavouriteCourse(this.course.id, favourite);
 
             this.course.isfavourite = favourite;
-            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+            CoreEvents.trigger(CORE_COURSES_MY_COURSES_UPDATED_EVENT, {
                 courseId: this.course.id,
                 course: this.course,
-                action: CoreCoursesProvider.ACTION_STATE_CHANGED,
-                state: CoreCoursesProvider.STATE_FAVOURITE,
+                action: CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED,
+                state: CORE_COURSES_STATE_FAVOURITE,
                 value: favourite,
             }, CoreSites.getCurrentSiteId());
 

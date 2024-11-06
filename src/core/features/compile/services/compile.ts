@@ -47,7 +47,7 @@ import { getBlockServices } from '@features/block/block.module';
 import { getCommentsServices } from '@features/comments/comments.module';
 import { getContentLinksExportedObjects, getContentLinksServices } from '@features/contentlinks/contentlinks.module';
 import { getCourseExportedObjects, getCourseServices, getCourseStandaloneComponents } from '@features/course/course.module';
-import { getCoursesServices } from '@features/courses/courses.module';
+import { getCoursesExportedObjects, getCoursesServices } from '@features/courses/courses.module';
 import { getEditorServices } from '@features/editor/editor.module';
 import { getEnrolServices } from '@features/enrol/enrol.module';
 import { getFileUploadedServices } from '@features/fileuploader/fileuploader.module';
@@ -419,6 +419,7 @@ export class CoreCompileProvider {
             getCoreExportedObjects(),
             getCoreErrorsExportedObjects(),
             getCourseExportedObjects(),
+            getCoursesExportedObjects(),
             getContentLinksExportedObjects(),
             getSitePluginsExportedObjects(),
         ]);

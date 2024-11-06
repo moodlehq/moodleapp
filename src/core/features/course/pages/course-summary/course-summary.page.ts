@@ -21,7 +21,6 @@ import {
     CoreCourseCustomField,
     CoreCourses,
     CoreCourseSearchedData,
-    CoreCoursesProvider,
     CoreEnrolledCourseData,
 } from '@features/courses/services/courses';
 import {
@@ -42,6 +41,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreEnrolHelper } from '@features/enrol/services/enrol-helper';
 import { CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 import { CoreEnrol, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
+import { CORE_COURSES_MY_COURSES_UPDATED_EVENT, CoreCoursesMyCoursesUpdatedEventAction } from '@features/courses/constants';
 
 /**
  * Page that shows the summary of a course including buttons to enrol and other available options.
@@ -391,10 +391,10 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
 
         await this.refreshData().finally(() => {
             // My courses have been updated, trigger event.
-            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+            CoreEvents.trigger(CORE_COURSES_MY_COURSES_UPDATED_EVENT, {
                 courseId: this.courseId,
                 course: this.course,
-                action: CoreCoursesProvider.ACTION_ENROL,
+                action: CoreCoursesMyCoursesUpdatedEventAction.ENROL,
             }, CoreSites.getCurrentSiteId());
         });
 
