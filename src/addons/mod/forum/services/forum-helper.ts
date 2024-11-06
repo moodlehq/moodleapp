@@ -254,7 +254,7 @@ export class AddonModForumHelperProvider {
     async deleteNewDiscussionStoredFiles(forumId: number, timecreated: number, siteId?: string): Promise<void> {
         const folderPath = await AddonModForumOffline.getNewDiscussionFolder(forumId, timecreated, siteId);
 
-        // Ignore any errors, CoreFileProvider.removeDir fails if folder doesn't exist.
+        // Ignore any errors, CoreFile.removeDir fails if folder doesn't exist.
         await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
@@ -270,7 +270,7 @@ export class AddonModForumHelperProvider {
     async deleteReplyStoredFiles(forumId: number, postId: number, siteId?: string, userId?: number): Promise<void> {
         const folderPath = await AddonModForumOffline.getReplyFolder(forumId, postId, siteId, userId);
 
-        // Ignore any errors, CoreFileProvider.removeDir fails if folder doesn't exist.
+        // Ignore any errors, CoreFile.removeDir fails if folder doesn't exist.
         await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 

@@ -26,11 +26,7 @@ export class CoreSiteInfoCronHandlerService implements CoreCronHandler {
     name = 'CoreSiteInfoCronHandler';
 
     /**
-     * Execute the process.
-     * Receives the ID of the site affected, undefined for all sites.
-     *
-     * @param siteId ID of the site affected, undefined for all sites.
-     * @returns Promise resolved when done, rejected on failure.
+     * @inheritdoc
      */
     async execute(siteId?: string): Promise<void> {
         if (!siteId) {
@@ -43,18 +39,14 @@ export class CoreSiteInfoCronHandlerService implements CoreCronHandler {
     }
 
     /**
-     * Returns handler's interval in milliseconds. Defaults to CoreCronDelegateService.DEFAULT_INTERVAL.
-     *
-     * @returns Interval time (in milliseconds).
+     * @inheritdoc
      */
     getInterval(): number {
         return 10800000; // 3 hours.
     }
 
     /**
-     * Check whether it's a synchronization process or not. True if not defined.
-     *
-     * @returns Whether it's a synchronization process or not.
+     * @inheritdoc
      */
     isSync(): boolean {
         return false;

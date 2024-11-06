@@ -240,7 +240,7 @@ export class AddonModWorkshopHelperProvider {
     async deleteSubmissionStoredFiles(workshopId: number, siteId?: string): Promise<void> {
         const folderPath = await AddonModWorkshopOffline.getSubmissionFolder(workshopId, siteId);
 
-        // Ignore any errors, CoreFileProvider.removeDir fails if folder doesn't exists.
+        // Ignore any errors, CoreFile.removeDir fails if folder doesn't exists.
         await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
@@ -344,7 +344,7 @@ export class AddonModWorkshopHelperProvider {
     async deleteAssessmentStoredFiles(workshopId: number, assessmentId: number, siteId?: string): Promise<void> {
         const folderPath = await AddonModWorkshopOffline.getAssessmentFolder(workshopId, assessmentId, siteId);
 
-        // Ignore any errors, CoreFileProvider.removeDir fails if folder doesn't exists.
+        // Ignore any errors, CoreFile.removeDir fails if folder doesn't exists.
         await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
