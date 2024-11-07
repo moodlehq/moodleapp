@@ -639,7 +639,8 @@ export class CoreFileUploaderProvider {
             }
         });
 
-        await Promise.all(filesToUpload.map(async (file) => {
+        // Upload files 1 by 1 to avoid race conditions in the server.
+        for (const file of filesToUpload) {
             // Make sure the file name is unique in the area.
             const name = CoreFile.calculateUniqueName(usedNames, file.name);
             usedNames[name] = file;
@@ -649,7 +650,7 @@ export class CoreFileUploaderProvider {
             const options = this.getFileUploadOptions(filePath, name, undefined, false, 'draft', itemId);
 
             await this.uploadFile(filePath, options, undefined, siteId);
-        }));
+        }
     }
 
     /**
@@ -742,14 +743,11 @@ export class CoreFileUploaderProvider {
         // Upload only the first file first to get a draft id.
         const itemId = await this.uploadOrReuploadFile(files[0], 0, component, componentId, siteId);
 
-        const promises: Promise<number>[] = [];
-
+        // Upload files 1 by 1 to avoid race conditions in the server.
         for (let i = 1; i < files.length; i++) {
             const file = files[i];
-            promises.push(this.uploadOrReuploadFile(file, itemId, component, componentId, siteId));
+            await this.uploadOrReuploadFile(file, itemId, component, componentId, siteId);
         }
-
-        await Promise.all(promises);
 
         return itemId;
     }
