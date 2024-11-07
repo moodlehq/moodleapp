@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="44100" id="ca.umontreal.studiumprod" ios-CFBundleVersion="4.4.1.0" version="4.4.1" versionCode="44100" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="44103" id="ca.umontreal.studiumprod" ios-CFBundleVersion="4.4.1.3" version="4.4.1" versionCode="44103" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>StudiUM mobile</name>
     <description>StudiUM mobile se connecte aux plateformes d'apprentissage en ligne StudiUM et StudiUM FC de l'Université de Montréal.</description>
     <author email="studium-soutien@umontreal.ca" href="https://studium.umontreal.ca">Université de Montréal – Montréal</author>
@@ -61,23 +61,26 @@
         <preference name="AndroidWindowSplashScreenAnimatedIcon" value="resources/android/android-splash.xml" />
         <preference name="AndroidWindowSplashScreenBackground" value="#006BB6" />
         <resource-file src="google-services.json" target="app/google-services.json" />
-        <resource-file src="resources/android/icon/drawable-ldpi-smallicon.png" target="app/src/main/res/mipmap-ldpi/smallicon.png" />
-        <resource-file src="resources/android/icon/drawable-mdpi-smallicon.png" target="app/src/main/res/mipmap-mdpi/smallicon.png" />
-        <resource-file src="resources/android/icon/drawable-hdpi-smallicon.png" target="app/src/main/res/mipmap-hdpi/smallicon.png" />
-        <resource-file src="resources/android/icon/drawable-xhdpi-smallicon.png" target="app/src/main/res/mipmap-xhdpi/smallicon.png" />
+        <resource-file src="resources/android/icon/drawable-ldpi-smallicon.png" target="app/src/main/res/drawable-ldpi/smallicon.png" />
+        <resource-file src="resources/android/icon/drawable-mdpi-smallicon.png" target="app/src/main/res/drawable-mdpi/smallicon.png" />
+        <resource-file src="resources/android/icon/drawable-hdpi-smallicon.png" target="app/src/main/res/drawable-hdpi/smallicon.png" />
+        <resource-file src="resources/android/icon/drawable-xhdpi-smallicon.png" target="app/src/main/res/drawable-xhdpi/smallicon.png" />
+        <resource-file src="resources/android/icon/drawable-xhdpi-smallicon.png" target="app/src/main/res/drawable/smallicon.png" />
         <resource-file src="resources/android/xml/network_security_config.xml" target="app/src/main/res/xml/network_security_config.xml" />
         <resource-file src="resources/android/xml/backup_rules.xml" target="app/src/main/res/xml/backup_rules.xml" />
+        <resource-file src="resources/values/colors.xml" target="/app/src/main/res/values/colors.xml" />
         <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:allowBackup="true" android:dataExtractionRules="@xml/backup_rules" android:largeHeap="true" android:networkSecurityConfig="@xml/network_security_config" />
         </edit-config>
         <config-file parent="/manifest/application" target="AndroidManifest.xml">
             <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
+            <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/smallicon" />
+            <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:value="#006BB6" />
         </config-file>
         <config-file parent="/*" target="AndroidManifest.xml">
             <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
             <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
         </config-file>
-        <resource-file src="resources/values/colors.xml" target="/app/src/main/res/values/colors.xml" />
         <icon background="@color/background" density="ldpi" foreground="resources/android/xml/ldpi-foreground.xml"  src="resources/android/icon/ldpi-foreground.png" />
         <icon background="@color/background" density="mdpi" foreground="resources/android/xml/mdpi-foreground.xml" src="resources/android/icon/mdpi-foreground.png" />
         <icon background="@color/background" density="hdpi" foreground="resources/android/xml/hdpi-foreground.xml" src="resources/android/icon/hdpi-foreground.png" />

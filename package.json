@@ -21,7 +21,7 @@
         "ng": "ng",
         "start": "ionic serve --browser=$MOODLE_APP_BROWSER --ssl",
         "serve:test": "NODE_ENV=testing ionic serve --no-open",
-        "build": "NODE_OPTIONS=--max-old-space-size=8192 ionic build --configuration=development",
+        "build": "NODE_OPTIONS=--max-old-space-size=8192 ionic build --configuration=$BUILD_ENV",
         "build:prod": "NODE_ENV=production ionic build --prod",
         "build:test": "NODE_ENV=testing ionic build --configuration=testing",
         "dev:android": "concurrently \"npm run dev:android:app\" \"npm run dev:android:cordova\"",

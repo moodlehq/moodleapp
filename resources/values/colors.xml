@@ -3,4 +3,5 @@
     <color name="background">#0057ac</color>
     <color name="cdv_splashscreen_background">#0057ac</color>
     <color name="cdv_splashscreen_icon_background">#0057ac</color>
+	<color name="notification_ic_color">#0057ac</color>
 </resources>

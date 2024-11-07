@@ -57,4 +57,9 @@ echo "Le fichier $SOURCE_FILE_XML a été copié avec succès vers config.xml"
 # Générer le fichier google-services.json
 echo $GOOGLE_SERVICES > google-services.json
 
+# Générer le fichier GoogleService-Info.plist
+if [ "$DEVICE_TARGET" == "ios" ]; then
+  echo $GOOGLE_INFO_PLIST > GoogleService-Info.plist
+fi
+
 echo "Le fichier google-services.json a été généré avec succès"
