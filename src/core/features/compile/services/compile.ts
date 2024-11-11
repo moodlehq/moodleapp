@@ -79,23 +79,30 @@ import { Md5 } from 'ts-md5/dist/md5';
 // Import core classes that can be useful for site plugins.
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreArray } from '@singletons/array';
+import { CoreCache } from '@classes/cache';
 import { CoreColors } from '@singletons/colors';
+import { CoreCountries } from '@singletons/countries';
+import { CoreDelegate } from '@classes/delegate';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreForms } from '@singletons/form';
+import { CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreMedia } from '@singletons/media';
+import { CoreNetwork } from '@services/network';
 import { CoreObject } from '@singletons/object';
+import { CoreOpener } from '@singletons/opener';
 import { CorePath } from '@singletons/path';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreSSO } from '@singletons/sso';
 import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
+import { CoreUtils } from '@singletons/utils';
 import { CoreWait } from '@singletons/wait';
 import { CoreWindow } from '@singletons/window';
-import { CoreCache } from '@classes/cache';
-import { CoreDelegate } from '@classes/delegate';
-import { CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
 import { getCoreErrorsExportedObjects } from '@classes/errors/errors';
-import { CoreNetwork } from '@services/network';
 
 // Import all core modules that define components, directives and pipes.
 import { CoreSharedModule } from '@/core/shared.module';
@@ -312,19 +319,26 @@ export class CoreCompileProvider {
          */
         instance['Network'] = CoreNetwork.instance;
         instance['CoreNetwork'] = CoreNetwork.instance;
-        instance['CorePlatform'] = CorePlatform.instance;
-        instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
         instance['CoreArray'] = CoreArray;
         instance['CoreColors'] = CoreColors;
+        instance['CoreCountries'] = CoreCountries;
         instance['CoreDirectivesRegistry'] = CoreDirectivesRegistry;
         instance['CoreDom'] = CoreDom;
+        instance['CoreFileUtils'] = CoreFileUtils;
         instance['CoreForms'] = CoreForms;
         instance['CoreKeyboard'] = CoreKeyboard;
+        instance['CoreMedia'] = CoreMedia;
         instance['CoreObject'] = CoreObject;
+        instance['CoreOpener'] = CoreOpener;
         instance['CorePath'] = CorePath;
+        instance['CorePlatform'] = CorePlatform.instance;
+        instance['CorePromiseUtils'] = CorePromiseUtils;
+        instance['CoreSSO'] = CoreSSO;
+        instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
         instance['CoreText'] = CoreText;
         instance['CoreTime'] = CoreTime;
         instance['CoreUrl'] = CoreUrl;
+        instance['CoreUtils'] = CoreUtils;
         instance['CoreWait'] = CoreWait;
         instance['CoreWindow'] = CoreWindow;
         instance['CoreCache'] = CoreCache; // @deprecated since 4.4, plugins should use plain objects instead.

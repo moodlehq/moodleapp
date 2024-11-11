@@ -42,6 +42,11 @@ export enum CoreIonicColorNames {
  */
 export class CoreColors {
 
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
+
     /**
      * Returns better contrast color.
      *
@@ -99,7 +104,7 @@ export class CoreColors {
         }
 
         const hex = [0,1,2].map(
-            (idx) => this.componentToHex(rgba[idx]),
+            (idx) => CoreColors.componentToHex(rgba[idx]),
         ).join('');
 
         return '#' + hex;

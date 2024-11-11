@@ -26,6 +26,11 @@ type Subscribable<T> = EventEmitter<T> | Observable<T>;
  */
 export class CoreSubscriptions {
 
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
+
     /**
      * Listen once to a subscribable object.
      *

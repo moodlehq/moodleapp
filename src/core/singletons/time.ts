@@ -78,6 +78,11 @@ export class CoreTime {
         '13.0': 'Etc/GMT-13',
     };
 
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
+
     /**
      * Returns years, months, days, hours, minutes and seconds in a human readable format.
      *

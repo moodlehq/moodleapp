@@ -23,6 +23,11 @@ import { SwiperOptions } from 'swiper/types';
  */
 export class CoreSwiper {
 
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
+
     /**
      * Initialize a Swiper instance.
      * It will return swiper instance if current is not set or destroyed and new is set and not destroyed.

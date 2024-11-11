@@ -512,7 +512,7 @@ export class CoreDom {
                     return resolve();
                 }
 
-                unsubscribe = this.watchElementInViewport(element, intersectionRatio, inViewport => {
+                unsubscribe = CoreDom.watchElementInViewport(element, intersectionRatio, inViewport => {
                     if (!inViewport) {
                         return;
                     }
@@ -632,7 +632,7 @@ export class CoreDom {
         const value = styles.getPropertyValue(property);
 
         if (property === 'font-size') {
-            if (this.fontSizeZoom === null) {
+            if (CoreDom.fontSizeZoom === null) {
                 const baseFontSize = 20;
                 const span = document.createElement('span');
                 span.style.opacity = '0';
@@ -640,13 +640,13 @@ export class CoreDom {
 
                 document.body.append(span);
 
-                this.fontSizeZoom = baseFontSize / Number(getComputedStyle(span).fontSize.slice(0, -2));
+                CoreDom.fontSizeZoom = baseFontSize / Number(getComputedStyle(span).fontSize.slice(0, -2));
 
                 span.remove();
             }
 
-            if (this.fontSizeZoom !== 1) {
-                return `calc(${this.fontSizeZoom} * ${value})`;
+            if (CoreDom.fontSizeZoom !== 1) {
+                return `calc(${CoreDom.fontSizeZoom} * ${value})`;
             }
         }
 

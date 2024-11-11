@@ -28,6 +28,11 @@ export class CoreIcons {
 
     protected static logger = CoreLogger.getInstance('CoreIcons');
 
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
+
     /**
      * Add custom icons to Ionicons.
      */
@@ -47,7 +52,7 @@ export class CoreIcons {
 
         if (CoreIcons.ALIASES[icon]) {
             if (isAppIcon) {
-                this.logger.error(`Icon ${icon} is an alias of ${CoreIcons.ALIASES[icon]}, please use the new name.`);
+                CoreIcons.logger.error(`Icon ${icon} is an alias of ${CoreIcons.ALIASES[icon]}, please use the new name.`);
             }
 
             return { newLibrary, fileName: CoreIcons.ALIASES[icon] };
@@ -73,7 +78,7 @@ export class CoreIcons {
             CoreIcons.CUSTOM_ICONS[icon] === undefined &&
             CoreIcons.CUSTOM_ICONS[CoreIcons.prefixIconName(font, library, icon)] === undefined
         ) {
-            this.logger.error(`Icon ${icon} not found`);
+            CoreIcons.logger.error(`Icon ${icon} not found`);
         }
     }
 
