@@ -23,8 +23,6 @@ import { makeSingleton, Translate, Http } from '@singletons';
 import moment from 'moment-timezone';
 import { CoreSite } from '../classes/sites/site';
 import { CorePlatform } from '@services/platform';
-import { AddonFilterMultilangHandler } from '@addons/filter/multilang/services/handlers/multilang';
-import { AddonFilterMultilang2Handler } from '@addons/filter/multilang2/services/handlers/multilang2';
 import { firstValueFrom } from 'rxjs';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSites } from './sites';
@@ -547,6 +545,9 @@ export class CoreLangProvider {
      * @returns Filtered string.
      */
     async filterMultilang(text: string): Promise<string> {
+        const { AddonFilterMultilangHandler } = await import('@addons/filter/multilang/services/handlers/multilang');
+        const { AddonFilterMultilang2Handler } = await import('@addons/filter/multilang2/services/handlers/multilang2');
+
         return Promise.resolve(text)
             .then(text => AddonFilterMultilangHandler.filter(text))
             .then(text => AddonFilterMultilang2Handler.filter(text));
