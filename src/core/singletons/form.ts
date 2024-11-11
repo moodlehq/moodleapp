@@ -22,6 +22,11 @@ export class CoreForms {
 
     private static formIds: Record<string, number> = {};
 
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
+
     /**
      * Get the data from a form. It will only collect elements that have a name.
      *
@@ -102,9 +107,9 @@ export class CoreForms {
      * @returns Unique id.
      */
     static uniqueId(name: string): string {
-        const count = this.formIds[name] ?? 0;
+        const count = CoreForms.formIds[name] ?? 0;
 
-        return `${name}-${this.formIds[name] = count + 1}`;
+        return `${name}-${CoreForms.formIds[name] = count + 1}`;
     }
 
 }

@@ -20,6 +20,11 @@ import { CorePlatform } from '@services/platform';
  */
 export class CoreWait {
 
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
+
     /**
      * Wait until the next tick.
      *
