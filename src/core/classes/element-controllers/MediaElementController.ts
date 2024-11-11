@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreUtils } from '@services/utils/utils';
+import { CoreErrorHelper } from '@services/error-helper';
 import { ElementController } from './ElementController';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -70,7 +70,7 @@ export class MediaElementController extends ElementController {
 
             this.addPlaybackEventListeners(jsPlayer);
         } catch (error) {
-            CoreUtils.logUnhandledError('Error enabling media element', error);
+            CoreErrorHelper.logUnhandledError('Error enabling media element', error);
         }
     }
 

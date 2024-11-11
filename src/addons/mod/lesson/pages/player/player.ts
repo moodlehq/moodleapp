@@ -56,6 +56,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_LESSON_COMPONENT, AddonModLessonJumpTo } from '../../constants';
 import { CoreModals } from '@services/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Page that allows attempting and reviewing a lesson.
@@ -214,7 +215,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
                 throw error;
             }
 
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // WebService returned an error, cannot perform the action.
                 throw error;
             }
@@ -356,7 +357,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             return true;
         } catch (error) {
 
-            if (this.review && this.retakeToReview && CoreUtils.isWebServiceError(error)) {
+            if (this.review && this.retakeToReview && CoreWSError.isWebServiceError(error)) {
                 // The user cannot review the retake. Unmark the retake as being finished in sync.
                 await AddonModLessonSync.deleteRetakeFinishedInSync(this.lesson!.id);
             }

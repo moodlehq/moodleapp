@@ -40,6 +40,7 @@ import {
 } from '@addons/mod/workshop/constants';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreWSError } from '@classes/errors/wserror';
 
 declare module '@singletons/events' {
 
@@ -708,7 +709,7 @@ export class AddonModWorkshopProvider {
         try {
             return await this.addSubmissionOnline(workshopId, title, content, attachmentsId as number, siteId);
         } catch (error) {
-            if (allowOffline && !CoreUtils.isWebServiceError(error)) {
+            if (allowOffline && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             }
@@ -808,7 +809,7 @@ export class AddonModWorkshopProvider {
         try {
             return await this.updateSubmissionOnline(submissionId, title, content, attachmentsId as number, siteId);
         } catch (error) {
-            if (allowOffline && !CoreUtils.isWebServiceError(error)) {
+            if (allowOffline && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             }
@@ -887,7 +888,7 @@ export class AddonModWorkshopProvider {
         try {
             return await this.deleteSubmissionOnline(submissionId, siteId);
         } catch (error) {
-            if (!CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             }
@@ -1159,7 +1160,7 @@ export class AddonModWorkshopProvider {
 
             return true;
         } catch (error) {
-            if (allowOffline && !CoreUtils.isWebServiceError(error)) {
+            if (allowOffline && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             }
@@ -1236,7 +1237,7 @@ export class AddonModWorkshopProvider {
         try {
             return await this.evaluateSubmissionOnline(submissionId, feedbackText, published, gradeOver, siteId);
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error or offline not supported, reject.
                 throw error;
             }
@@ -1326,7 +1327,7 @@ export class AddonModWorkshopProvider {
         try {
             return await this.evaluateAssessmentOnline(assessmentId, feedbackText, weight, gradingGradeOver, siteId);
         } catch (error) {
-            if (!CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             }

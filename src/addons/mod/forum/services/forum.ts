@@ -51,6 +51,7 @@ import {
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 declare module '@singletons/events' {
 
@@ -1113,7 +1114,7 @@ export class AddonModForumProvider {
 
             return true;
         } catch (error) {
-            if (allowOffline && !CoreUtils.isWebServiceError(error)) {
+            if (allowOffline && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             } else {

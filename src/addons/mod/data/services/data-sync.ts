@@ -35,6 +35,7 @@ import { AddonModDataOffline, AddonModDataOfflineAction } from './data-offline';
 import { ADDON_MOD_DATA_AUTO_SYNCED, ADDON_MOD_DATA_COMPONENT, AddonModDataAction } from '../constants';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Service to sync databases.
@@ -294,7 +295,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
 
                 timemodified = entry.entry.timemodified;
             } catch (error) {
-                if (error && CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means the entry has been deleted.
                     timemodified = -1;
                 } else {
@@ -326,7 +327,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
                 await AddonModData.deleteEntryOnline(entryId, siteId);
                 entryResult.deleted = true;
             } catch (error) {
-                if (error && CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
                     entryResult.discardError = CoreErrorHelper.getErrorMessageFromError(error);
                 } else {
@@ -384,7 +385,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
                     await AddonModData.editEntryOnline(entryId, editAction.fields, siteId);
                 }
             } catch (error) {
-                if (error && CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
                     entryResult.discardError = CoreErrorHelper.getErrorMessageFromError(error);
                 } else {
@@ -402,7 +403,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
             try {
                 await AddonModData.approveEntryOnline(entryId, approveAction.action == AddonModDataAction.APPROVE, siteId);
             } catch (error) {
-                if (error && CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
                     entryResult.discardError = CoreErrorHelper.getErrorMessageFromError(error);
                 } else {

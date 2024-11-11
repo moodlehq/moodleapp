@@ -20,7 +20,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { getPrefetchHandlerInstance } from './handlers/prefetch';
@@ -185,7 +185,7 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
                 // Answers sent, delete them.
                 await AddonModSurveyOffline.deleteSurveyAnswers(surveyId, siteId, userId);
             } catch (error) {
-                if (!CoreUtils.isWebServiceError(error)) {
+                if (!CoreWSError.isWebServiceError(error)) {
                     // Local error, reject.
                     throw error;
                 }

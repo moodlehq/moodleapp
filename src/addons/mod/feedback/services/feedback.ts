@@ -36,6 +36,7 @@ import {
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Service that provides some features for feedbacks.
@@ -1195,7 +1196,7 @@ export class AddonModFeedbackProvider {
         try {
             return await this.processPageOnline(feedbackId, page, responses, !!options.goPrevious, options.siteId);
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 throw error;
             }

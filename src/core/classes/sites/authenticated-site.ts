@@ -642,7 +642,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         } catch (error) {
             let useSilentError = false;
 
-            if (CoreUtils.isExpiredTokenError(error)) {
+            if (CoreWSError.isExpiredTokenError(error)) {
                 // Session expired, trigger event.
                 this.triggerSiteEvent(CoreEvents.SESSION_EXPIRED, {});
                 // Change error message. Try to get data from cache, the event will handle the error.
@@ -719,7 +719,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 throw new CoreWSError(error);
             }
 
-            if (preSets.deleteCacheIfWSError && CoreUtils.isWebServiceError(error)) {
+            if (preSets.deleteCacheIfWSError && CoreWSError.isWebServiceError(error)) {
                 // Delete the cache entry and return the entry. Don't block the user with the delete.
                 CorePromiseUtils.ignoreErrors(this.deleteFromCache(method, data, preSets));
 
@@ -785,7 +785,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         try {
             return await this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets);
         } catch (error) {
-            if (CoreUtils.isExpiredTokenError(error)) {
+            if (CoreWSError.isExpiredTokenError(error)) {
                 if (initialToken !== this.token) {
                     // Token has changed, retry with the new token.
                     wsPreSets.wsToken = this.token ?? '';

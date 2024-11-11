@@ -1327,7 +1327,7 @@ export class CoreCourseProvider {
 
             return result;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 throw error;
             } else {

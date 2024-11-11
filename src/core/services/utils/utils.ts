@@ -62,16 +62,10 @@ export class CoreUtilsProvider {
      * @param error Error object or message.
      * @param defaultError Message to show if the error is not a string.
      * @returns New error message.
+     * @deprecated since 5.0. Use CoreErrorHelper.addDataNotDownloadedError instead.
      */
     addDataNotDownloadedError(error: Error | string, defaultError?: string): string {
-        const errorMessage = CoreErrorHelper.getErrorMessageFromError(error) || defaultError || '';
-
-        if (this.isWebServiceError(error)) {
-            return errorMessage;
-        }
-
-        // Local error. Add an extra warning.
-        return errorMessage + '<br><br>' + Translate.instant('core.errorsomedatanotdownloaded');
+        return CoreErrorHelper.addDataNotDownloadedError(error, defaultError);
     }
 
     /**
@@ -123,9 +117,10 @@ export class CoreUtilsProvider {
      *
      * @param message Message to contextualize the error.
      * @param error Error to log.
+     * @deprecated since 5.0. Use CoreErrorHelper.logUnhandledError instead.
      */
     logUnhandledError(message: string, error: unknown): void {
-        this.logger.error(message, error);
+        CoreErrorHelper.logUnhandledError(message, error);
     }
 
     /**
@@ -828,6 +823,7 @@ export class CoreUtilsProvider {
      *
      * @param error Error to check.
      * @returns Whether the error was returned by the WebService.
+     * @deprecated since 5.0. Use CoreWSError.isWebServiceError instead.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isWebServiceError(error: any): boolean {
@@ -838,6 +834,7 @@ export class CoreUtilsProvider {
                 error.errorcode != 'forcepasswordchangenotice' && error.errorcode != 'usernotfullysetup' &&
                 error.errorcode != 'sitepolicynotagreed' && error.errorcode != 'sitemaintenance' &&
                 error.errorcode != 'wsaccessusersuspended' && error.errorcode != 'wsaccessuserdeleted' &&
+                // eslint-disable-next-line deprecation/deprecation
                 !this.isExpiredTokenError(error)
             ) ||
             error.status && error.status >= 400 // CoreHttpError, assume status 400 and above are like WebService errors.
@@ -849,6 +846,7 @@ export class CoreUtilsProvider {
      *
      * @param error Error to check.
      * @returns Whether the error is a token expired error.
+     * @deprecated since 5.0. Use CoreWSError.isExpiredTokenError instead.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isExpiredTokenError(error: any): boolean {

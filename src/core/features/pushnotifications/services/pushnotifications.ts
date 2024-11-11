@@ -57,6 +57,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreWait } from '@singletons/wait';
 import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Service to handle push notifications.
@@ -578,7 +579,7 @@ export class CorePushNotificationsProvider {
         try {
             response = await site.write<CoreUserRemoveUserDeviceWSResponse>('core_user_remove_user_device', data);
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error) || CoreUtils.isExpiredTokenError(error)) {
+            if (CoreWSError.isWebServiceError(error) || CoreWSError.isExpiredTokenError(error)) {
                 // Cannot unregister. Don't try again.
                 await CorePromiseUtils.ignoreErrors(this.pendingUnregistersTable.delete({
                     token: site.getToken(),

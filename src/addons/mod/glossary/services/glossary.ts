@@ -39,6 +39,7 @@ import {
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Service that provides some features for glossaries.
@@ -874,7 +875,7 @@ export class AddonModGlossaryProvider {
 
             return entryId;
         } catch (error) {
-            if (otherOptions.allowOffline && !CoreUtils.isWebServiceError(error)) {
+            if (otherOptions.allowOffline && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             }

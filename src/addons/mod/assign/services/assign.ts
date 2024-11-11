@@ -24,7 +24,6 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
 import { CoreNetwork } from '@services/network';
-import { CoreUtils } from '@services/utils/utils';
 import { AddonModAssignOffline } from './assign-offline';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { CoreComments } from '@features/comments/services/comments';
@@ -1020,7 +1019,7 @@ export class AddonModAssignProvider {
 
             return true;
         } catch (error) {
-            if (allowOffline && error && !CoreUtils.isWebServiceError(error)) {
+            if (allowOffline && error && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             } else {
@@ -1130,7 +1129,7 @@ export class AddonModAssignProvider {
 
             return true;
         } catch (error) {
-            if (error && !CoreUtils.isWebServiceError(error)) {
+            if (error && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             } else {
@@ -1238,7 +1237,7 @@ export class AddonModAssignProvider {
 
             return true;
         } catch (error) {
-            if (error && !CoreUtils.isWebServiceError(error)) {
+            if (error && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             } else {
@@ -1379,7 +1378,7 @@ export class AddonModAssignProvider {
 
             return true;
         } catch (error) {
-            if (error && !CoreUtils.isWebServiceError(error)) {
+            if (error && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             } else {

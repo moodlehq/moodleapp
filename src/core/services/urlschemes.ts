@@ -29,7 +29,6 @@ import { CoreSiteCheckResponse, CoreSites } from './sites';
 import { CoreDomUtils } from './utils/dom';
 import { CoreErrorHelper, CoreErrorObject } from './error-helper';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from './utils/utils';
 import { CoreLoadings } from './loadings';
 
 /*
@@ -494,7 +493,7 @@ export class CoreCustomURLSchemesProvider {
     treatHandleCustomURLError(error: CoreCustomURLSchemesHandleError): void {
         if (error.error == 'Duplicated') {
             // Duplicated request
-        } else if (CoreUtils.isWebServiceError(error.error) && error.data && error.data.isSSOToken) {
+        } else if (CoreWSError.isWebServiceError(error.error) && error.data && error.data.isSSOToken) {
             // An error occurred, display the error and logout the user.
             CoreLoginHelper.treatUserTokenError(error.data.siteUrl, <CoreWSError> error.error);
             CoreSites.logout();

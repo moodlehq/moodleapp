@@ -27,6 +27,7 @@ import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWar
 import { makeSingleton } from '@singletons';
 import { AddonBlogOffline, AddonBlogOfflineEntry } from './blog-offline';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 const ROOT_CACHE_KEY = 'addonBlog:';
 
@@ -121,7 +122,7 @@ export class AddonBlogProvider {
         try {
             await this.addEntryOnline(params, siteId);
         } catch (error) {
-            if (!CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return await storeOffline();
             }
@@ -177,7 +178,7 @@ export class AddonBlogProvider {
         try {
             await this.updateEntryOnline(params, siteId);
         } catch (error) {
-            if (!CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return await storeOffline();
             }
@@ -232,7 +233,7 @@ export class AddonBlogProvider {
             await this.deleteEntryOnline(params, siteId);
             await CorePromiseUtils.ignoreErrors(AddonBlogOffline.unmarkEntryAsRemoved(params.entryid));
         } catch (error) {
-            if (!CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return await AddonBlogOffline.markEntryAsRemoved({ id: params.entryid, subject }, siteId);
             }

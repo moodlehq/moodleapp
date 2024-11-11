@@ -142,7 +142,7 @@ export class CoreCourseLogHelperProvider {
         try {
             await this.logOnline(ws, data, site.getId());
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 throw error;
             }
@@ -344,7 +344,7 @@ export class CoreCourseLogHelperProvider {
             try {
                 await this.logOnline(log.ws, data, siteId);
             } catch (error) {
-                if (CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means that responses cannot be submitted.
                     await CorePromiseUtils.ignoreErrors(this.deleteWSLogs(log.ws, data, siteId));
                 }

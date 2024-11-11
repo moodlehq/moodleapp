@@ -33,6 +33,7 @@ import { AddonModForumDiscussionOptions, AddonModForumOffline, AddonModForumOffl
 import { CoreFileEntry } from '@services/file-helper';
 import { ADDON_MOD_FORUM_ALL_GROUPS, ADDON_MOD_FORUM_COMPONENT } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Service that provides some features for forums.
@@ -107,7 +108,7 @@ export class AddonModForumHelperProvider {
             try {
                 await Promise.all(promises);
             } catch (error) {
-                if (CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     throw error;
                 }
 
@@ -161,7 +162,7 @@ export class AddonModForumHelperProvider {
         if (errors.length == groupIds.length) {
             // All requests have failed.
             for (let i = 0; i < errors.length; i++) {
-                if (CoreUtils.isWebServiceError(errors[i]) || (attachments && attachments.length > 0)) {
+                if (CoreWSError.isWebServiceError(errors[i]) || (attachments && attachments.length > 0)) {
                     // The WebService has thrown an error or offline not supported, reject.
                     throw errors[i];
                 }

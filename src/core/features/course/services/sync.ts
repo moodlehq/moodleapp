@@ -18,7 +18,7 @@ import { CoreSyncBaseProvider } from '@classes/base-sync';
 
 import { CoreSites } from '@services/sites';
 import { CoreNetwork } from '@services/network';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreCourseOffline } from './course-offline';
 import { CoreCourse } from './course';
@@ -212,7 +212,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
 
                 await CoreCourseOffline.deleteManualCompletion(entry.cmid, siteId);
             } catch (error) {
-                if (!CoreUtils.isWebServiceError(error)) {
+                if (!CoreWSError.isWebServiceError(error)) {
                     // Couldn't connect to server, reject.
                     throw error;
                 }
