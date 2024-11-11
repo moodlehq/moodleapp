@@ -19,7 +19,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModSurveyOffline } from './survey-offline';
@@ -268,7 +268,7 @@ export class AddonModSurveyProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
                 throw error;
             }

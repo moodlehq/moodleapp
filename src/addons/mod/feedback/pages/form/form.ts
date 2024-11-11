@@ -45,6 +45,7 @@ import {
 import { CoreLoadings } from '@services/loadings';
 import { CoreError } from '@classes/errors/error';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Page that displays feedback form.
@@ -219,7 +220,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
         try {
             this.access = await AddonModFeedback.getFeedbackAccessInformation(this.feedback.id, options);
         } catch (error) {
-            if (this.offline || CoreUtils.isWebServiceError(error)) {
+            if (this.offline || CoreWSError.isWebServiceError(error)) {
                 // Already offline or shouldn't go offline, fail.
                 throw error;
             }
@@ -246,7 +247,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
         try {
             return await AddonModFeedback.getResumePage(this.feedback.id, options);
         } catch (error) {
-            if (this.offline || CoreUtils.isWebServiceError(error)) {
+            if (this.offline || CoreWSError.isWebServiceError(error)) {
                 // Already offline or shouldn't go offline, fail.
                 throw error;
             }
@@ -314,7 +315,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
         try {
             response = await AddonModFeedback.getPageItemsWithValues(this.feedback.id, page, options);
         } catch (error) {
-            if (this.offline || CoreUtils.isWebServiceError(error)) {
+            if (this.offline || CoreWSError.isWebServiceError(error)) {
                 // Already offline or shouldn't go offline, fail.
                 throw error;
             }

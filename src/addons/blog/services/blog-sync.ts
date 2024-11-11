@@ -17,7 +17,7 @@ import { CoreSyncBaseProvider, CoreSyncBlockedError } from '@classes/base-sync';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { ADDON_BLOG_AUTO_SYNCED, ADDON_BLOG_SYNC_ID } from '../constants';
@@ -129,7 +129,7 @@ import { AddonBlogOfflineEntryDBRecord } from './database/blog';
                 await AddonBlogOffline.deleteOfflineEntryRecord({ created: entry.created }, siteId);
                 result.updated = true;
             } catch (error) {
-                if (!error || !CoreUtils.isWebServiceError(error)) {
+                if (!CoreWSError.isWebServiceError(error)) {
                     throw error;
                 }
 
@@ -223,7 +223,7 @@ import { AddonBlogOfflineEntryDBRecord } from './database/blog';
                     entriesToSync = entriesPendingToSync;
                 }
             } catch (error) {
-                if (!CoreUtils.isWebServiceError(error)) {
+                if (!CoreWSError.isWebServiceError(error)) {
                     throw error;
                 }
 

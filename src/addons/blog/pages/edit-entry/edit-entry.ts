@@ -41,7 +41,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
@@ -258,7 +258,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
 
             return selectedEntry;
         } catch (error) {
-            if (!params.filters || CoreUtils.isWebServiceError(error)) {
+            if (!params.filters || CoreWSError.isWebServiceError(error)) {
                 // Cannot get the entry, reject.
                 throw error;
             }
@@ -336,7 +336,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
 
                 return await this.saveEntry({ attachmentsId: attachmentsid });
             } catch (error) {
-                if (CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     // It's a WebService error, the user cannot send the message so don't store it.
                     CoreDomUtils.showErrorModalDefault(error, 'Error updating entry.');
 
@@ -361,7 +361,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
             const attachmentsId = await this.uploadOrStoreFiles({ created });
             await this.saveEntry({ created, attachmentsId });
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
                 CoreDomUtils.showErrorModalDefault(error, 'Error creating entry.');
 

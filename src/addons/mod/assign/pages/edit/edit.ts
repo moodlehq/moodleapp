@@ -36,7 +36,7 @@ import {
 import { AddonModAssignHelper } from '../../services/assign-helper';
 import { AddonModAssignOffline } from '../../services/assign-offline';
 import { AddonModAssignSync } from '../../services/assign-sync';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreWSExternalFile } from '@services/ws';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import {
@@ -344,7 +344,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
                 this.hasOffline,
             );
         } catch (error) {
-            if (this.allowOffline && !this.saveOffline && !CoreUtils.isWebServiceError(error)) {
+            if (this.allowOffline && !this.saveOffline && !CoreWSError.isWebServiceError(error)) {
                 // Cannot submit in online, prepare for offline usage.
                 this.saveOffline = true;
 

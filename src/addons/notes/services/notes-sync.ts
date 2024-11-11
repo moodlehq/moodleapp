@@ -18,7 +18,7 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonNotesDBRecord, AddonNotesDeletedDBRecord } from './database/notes';
@@ -179,7 +179,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
 
             return;
         }).catch((error) => {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, this means the user cannot send notes.
                 errors.push(error);
 
@@ -203,7 +203,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
 
         // Delete the notes.
         promises.push(AddonNotes.deleteNotesOnline(notesToDelete, courseId, siteId).catch((error) => {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, this means the user cannot send notes.
                 errors.push(error);
 

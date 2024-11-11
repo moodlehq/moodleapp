@@ -21,7 +21,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModFeedback, AddonModFeedbackWSFeedback } from './feedback';
@@ -266,7 +266,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
 
             await AddonModFeedbackOffline.deleteFeedbackPageResponses(feedback.id, data.page, siteId);
         } catch (error) {
-            if (!CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, reject.
                 throw error;
             }

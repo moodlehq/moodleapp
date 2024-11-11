@@ -22,7 +22,7 @@ import { CoreRatingSync } from '@features/rating/services/rating-sync';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModGlossary } from './glossary';
@@ -207,7 +207,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
 
                 await this.deleteAddEntry(glossaryId, data.concept, data.timecreated, siteId);
             } catch (error) {
-                if (!CoreUtils.isWebServiceError(error)) {
+                if (!CoreWSError.isWebServiceError(error)) {
                     // Couldn't connect to server, reject.
                     throw error;
                 }

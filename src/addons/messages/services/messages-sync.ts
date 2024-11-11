@@ -22,7 +22,7 @@ import {
     AddonMessagesGetMessagesWSParams,
 } from './messages';
 import { CoreEvents } from '@singletons/events';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreSites } from '@services/sites';
 import { CoreNetwork } from '@services/network';
@@ -238,7 +238,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
                     await AddonMessages.sendMessageOnline(userId, text, siteId);
                 }
             } catch (error) {
-                if (!CoreUtils.isWebServiceError(error)) {
+                if (!CoreWSError.isWebServiceError(error)) {
                     // Error sending, stop execution.
                     if (CoreNetwork.isOnline()) {
                         // App is online, unmark deviceoffline if marked.

@@ -20,7 +20,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreErrorHelper } from '@services/error-helper';
 import { Translate } from '@singletons';
 import {
     AddonModLesson,
@@ -103,7 +103,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
             this.performLogView();
         } catch (error) {
             this.selectedRetake = this.previousSelectedRetake ?? this.selectedRetake;
-            CoreDomUtils.showErrorModal(CoreUtils.addDataNotDownloadedError(error, 'Error getting attempt.'));
+            CoreDomUtils.showErrorModal(CoreErrorHelper.addDataNotDownloadedError(error, 'Error getting attempt.'));
         } finally {
             this.loaded = true;
         }

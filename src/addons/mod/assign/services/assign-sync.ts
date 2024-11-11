@@ -33,7 +33,7 @@ import {
 } from './assign-offline';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreNetwork } from '@services/network';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
@@ -360,7 +360,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             // Submission data sent, update cached data. No need to block the user for this.
             AddonModAssign.getSubmissionStatus(assign.id, options);
         } catch (error) {
-            if (!error || !CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Local error, reject.
                 throw error;
             }
@@ -511,7 +511,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
 
             await CorePromiseUtils.allPromises(promises);
         } catch (error) {
-            if (!error || !CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Local error, reject.
                 throw error;
             }

@@ -16,7 +16,7 @@ import { Params } from '@angular/router';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { CoreUser } from '@features/user/services/user';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import {
     AddonModForum,
     AddonModForumCanAddDiscussion,
@@ -246,7 +246,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
             canLoadMore = response.canLoadMore;
             this.errorLoadingDiscussions = false;
         } catch (error) {
-            if (page > 0 || CoreUtils.isWebServiceError(error)) {
+            if (page > 0 || CoreWSError.isWebServiceError(error)) {
                 throw error;
             }
 

@@ -20,7 +20,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModWikiPageDBRecord } from './database/wiki';
@@ -248,7 +248,7 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider<AddonModWikiS
                 // Delete the local page.
                 await AddonModWikiOffline.deleteNewPage(page.title, subwikiId, wikiId, userId, groupId, siteId);
             } catch (error) {
-                if (!CoreUtils.isWebServiceError(error)) {
+                if (!CoreWSError.isWebServiceError(error)) {
                     // Couldn't connect to server, reject.
                     throw error;
                 }

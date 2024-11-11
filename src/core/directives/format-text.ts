@@ -32,7 +32,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreIframeUtils, CoreIframeUtilsProvider } from '@services/utils/iframe';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSite } from '@classes/sites/site';
 import { NgZone, Translate } from '@singletons';
 import { CoreExternalContentDirective } from './external-content';
@@ -627,7 +627,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         }
 
         // Run asynchronous operations in the background to avoid blocking rendering.
-        Promise.all(promises).catch(error => CoreUtils.logUnhandledError('Error treating format-text elements', error));
+        Promise.all(promises).catch(error => CoreErrorHelper.logUnhandledError('Error treating format-text elements', error));
 
         return [
             ...videoControllers,

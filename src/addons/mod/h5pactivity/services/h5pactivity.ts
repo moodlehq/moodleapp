@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreH5P } from '@features/h5p/services/h5p';
@@ -380,7 +379,7 @@ export class AddonModH5PActivityProvider {
 
             return this.formatAttemptResults(response.attempts[0]);
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 throw error;
             }
 
@@ -634,7 +633,7 @@ export class AddonModH5PActivityProvider {
 
             return this.formatUserAttempts(response.usersattempts[0]);
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 throw error;
             }
 

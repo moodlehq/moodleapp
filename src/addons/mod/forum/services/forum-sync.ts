@@ -39,6 +39,7 @@ import {
     ADDON_MOD_FORUM_MANUAL_SYNCED,
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 declare module '@singletons/events' {
 
@@ -273,7 +274,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
                 if (errors.length === groupIds.length) {
                     // All requests have failed, reject if errors were not returned by WS.
                     for (const error of errors) {
-                        if (!CoreUtils.isWebServiceError(error)) {
+                        if (!CoreWSError.isWebServiceError(error)) {
                             throw error;
                         }
                     }
@@ -490,7 +491,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
 
                     await this.deleteReply(forumId, reply.postid, siteId, userId);
                 } catch (error) {
-                    if (!CoreUtils.isWebServiceError(error)) {
+                    if (!CoreWSError.isWebServiceError(error)) {
                         throw error;
                     }
 

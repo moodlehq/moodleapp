@@ -25,7 +25,7 @@ import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
@@ -376,7 +376,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
                     false,
                 );
             } catch (error) {
-                if (CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     throw error;
                 }
 

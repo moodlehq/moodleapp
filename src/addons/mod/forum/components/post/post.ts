@@ -59,6 +59,7 @@ import { CorePopovers } from '@services/popovers';
 import { CoreLoadings } from '@services/loadings';
 import { CoreWSFile } from '@services/ws';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -554,7 +555,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             return { attachments, saveOffline: false };
         } catch (error) {
             // Cannot upload them in online, save them in offline.
-            if (!this.forum.id || CoreUtils.isWebServiceError(error)) {
+            if (!this.forum.id || CoreWSError.isWebServiceError(error)) {
                 // Cannot store them in offline. Reject.
                 throw error;
             }

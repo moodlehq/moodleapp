@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSite } from '@classes/sites/site';
 import { CoreXAPIOffline, CoreXAPIOfflineSaveStatementsOptions } from './offline';
 import { makeSingleton } from '@singletons';
@@ -121,7 +121,7 @@ export class CoreXAPIProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that the state cannot be deleted.
                 throw error;
             }
@@ -347,7 +347,7 @@ export class CoreXAPIProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that statements cannot be submitted.
                 throw error;
             } else {
@@ -421,7 +421,7 @@ export class CoreXAPIProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that state cannot be submitted.
                 throw error;
             }

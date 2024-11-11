@@ -23,7 +23,6 @@ import {
     AddonMessagesOfflineConversationMessagesDBRecordFormatted,
     AddonMessagesOfflineMessagesDBRecordFormatted,
 } from './messages-offline';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreEvents } from '@singletons/events';
 import { CoreSite } from '@classes/sites/site';
@@ -2531,7 +2530,7 @@ export class AddonMessagesProvider {
                 message: result,
             };
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
                 throw error;
             }
@@ -2662,7 +2661,7 @@ export class AddonMessagesProvider {
                 message: result,
             };
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
                 throw error;
             }

@@ -20,7 +20,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreCommentsOffline } from './comments-offline';
 import { CoreSites } from '@services/sites';
 import { CoreNetwork } from '@services/network';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCommentsDBRecord, CoreCommentsDeletedDBRecord } from './database/comments';
 import { CoreSyncResult } from '@services/sync';
@@ -282,7 +282,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
                 CoreComments.getComments(contextLevel, instanceId, component, itemId, area, 0, siteId),
             );
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
             // It's a WebService error, this means the user cannot send comments.
                 errors.push(error.message);
             } else {

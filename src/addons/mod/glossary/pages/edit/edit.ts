@@ -25,7 +25,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
@@ -522,7 +522,7 @@ class AddonModGlossaryNewFormHandler extends AddonModGlossaryFormHandler {
             try {
                 onlineAttachments = await this.uploadAttachments(glossary);
             } catch (error) {
-                if (CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     throw error;
                 }
 

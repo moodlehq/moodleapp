@@ -24,6 +24,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreRatingOffline } from './rating-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CoreWSError } from '@classes/errors/wserror';
 
 const ROOT_CACHE_KEY = 'CoreRating:';
 
@@ -128,7 +129,7 @@ export class CoreRatingProvider {
 
             return response;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error or offline not supported, reject.
                 return Promise.reject(error);
             }

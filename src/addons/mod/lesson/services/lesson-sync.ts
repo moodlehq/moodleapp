@@ -24,7 +24,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModLessonRetakeFinishedInSyncDBRecord, RETAKES_FINISHED_SYNC_TABLE_NAME } from './database/lesson';
@@ -375,7 +375,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
             await AddonModLessonOffline.deleteAttempt(lesson.id, retake, pageId, timemodified, siteId);
         } catch (error) {
-            if (!error || !CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server.
                 throw error;
             }
@@ -473,7 +473,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
             await AddonModLessonOffline.deleteRetake(lessonId, siteId);
         } catch (error) {
-            if (!error || !CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server.
                 throw error;
             }

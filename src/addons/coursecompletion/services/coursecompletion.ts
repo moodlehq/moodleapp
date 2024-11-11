@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreCourseAnyCourseData, CoreCourses } from '@features/courses/services/courses';
 import { CoreSite  } from '@classes/sites/site';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
@@ -284,7 +284,7 @@ export class AddonCourseCompletionProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WS returned an error, plugin is not enabled.
                 return false;
             }

@@ -44,6 +44,7 @@ import {
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreLoadings } from '@services/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Component that displays workshop assessment strategy form.
@@ -318,7 +319,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
                     saveOffline,
                 );
             } catch (error) {
-                if (CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     throw error;
                 }
 

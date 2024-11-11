@@ -45,6 +45,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_ENTRY_CHANGED, AddonModDataTemplateType } from '../../constants';
 import { CoreLoadings } from '@services/loadings';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Page that displays the view edit page.
@@ -303,7 +304,7 @@ export class AddonModDataEditPage implements OnInit {
                         this.offline,
                     );
                 } catch (error) {
-                    if (this.offline || CoreUtils.isWebServiceError(error)) {
+                    if (this.offline || CoreWSError.isWebServiceError(error)) {
                         throw error;
                     }
 

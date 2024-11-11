@@ -22,7 +22,6 @@ import { CoreXAPIOffline } from '@features/xapi/services/offline';
 import { CoreXAPI, XAPI_STATE_DELETED } from '@features/xapi/services/xapi';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import {
@@ -196,7 +195,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
             h5pActivity = await AddonModH5PActivity.getH5PActivityByContextId(courseId, contextId, { siteId });
         } catch (error) {
             if (
-                CoreUtils.isWebServiceError(error) ||
+                CoreWSError.isWebServiceError(error) ||
                 CoreErrorHelper.getErrorMessageFromError(error) === Translate.instant('core.course.modulenotfound')
             ) {
                 // Activity no longer accessible. Delete the data and finish the sync.
@@ -253,7 +252,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
 
                 await CoreXAPIOffline.deleteStatements(entry.id, siteId);
             } catch (error) {
-                if (!CoreUtils.isWebServiceError(error)) {
+                if (!CoreWSError.isWebServiceError(error)) {
                     throw error;
                 }
 
@@ -313,7 +312,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
         } catch (error) {
             // Error getting attempts. If the WS has thrown an exception it means the user cannot retrieve the attempts for
             // some reason (it shouldn't happen), continue synchronizing in that case.
-            if (!CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 throw error;
             }
         }
@@ -364,7 +363,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
                     siteId,
                 });
             } catch (error) {
-                if (!CoreUtils.isWebServiceError(error)) {
+                if (!CoreWSError.isWebServiceError(error)) {
                     throw error;
                 }
 
