@@ -378,7 +378,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      */
     fixPluginfileURL(url: string): string {
         const accessKey = this.tokenPluginFileWorks || this.tokenPluginFileWorks === undefined ?
-            this.infos && this.infos.userprivateaccesskey : undefined;
+            this.getFilesAccessKey() : undefined;
 
         return CoreUrl.fixPluginfileURL(url, this.token || '', this.siteUrl, accessKey);
     }
@@ -685,12 +685,9 @@ export class CoreSite extends CoreAuthenticatedSite {
         }
 
         if (this.lastAutoLogin > 0) {
-            const timeBetweenRequests = await CoreUtils.ignoreErrors(
-                this.getConfig('tool_mobile_autologinmintimebetweenreq'),
-                CoreConstants.SECONDS_MINUTE * 6,
-            );
+            const timeBetweenRequests = await this.getAutoLoginMinTimeBetweenRequests();
 
-            if (CoreTimeUtils.timestamp() - this.lastAutoLogin < Number(timeBetweenRequests)) {
+            if (CoreTimeUtils.timestamp() - this.lastAutoLogin < timeBetweenRequests) {
                 // Not enough time has passed since last auto login.
                 return url;
             }
@@ -775,7 +772,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      * @returns Promise resolved with boolean: whether it works or not.
      */
     checkTokenPluginFile(url: string): Promise<boolean> {
-        if (!CoreUrl.canUseTokenPluginFile(url, this.siteUrl, this.infos && this.infos.userprivateaccesskey)) {
+        if (!CoreUrl.canUseTokenPluginFile(url, this.siteUrl, this.getFilesAccessKey())) {
             // Cannot use tokenpluginfile.
             return Promise.resolve(false);
         } else if (this.tokenPluginFileWorks !== undefined) {
@@ -870,6 +867,39 @@ export class CoreSite extends CoreAuthenticatedSite {
             data: options.data,
             timeaccess: options.timeaccess ?? Date.now(),
         });
+    }
+
+    /**
+     * Get the access key to use to fetch files.
+     *
+     * @returns Access key.
+     */
+    getFilesAccessKey(): string | undefined {
+        return this.infos?.userprivateaccesskey;
+    }
+
+    /**
+     * Get auto-login time between requests.
+     *
+     * @returns Time between requests.
+     */
+    async getAutoLoginMinTimeBetweenRequests(): Promise<number> {
+        const timeBetweenRequests = await CoreUtils.ignoreErrors(
+            this.getConfig('tool_mobile_autologinmintimebetweenreq'),
+            CoreConstants.SECONDS_MINUTE * 6,
+        );
+
+        return Number(timeBetweenRequests);
+    }
+
+    /**
+     * Get last auto login time.
+     * This time is stored in memory, so restarting the app will reset it.
+     *
+     * @returns Last auto login time.
+     */
+    getLastAutoLoginTime(): number {
+        return this.lastAutoLogin;
     }
 
 }
