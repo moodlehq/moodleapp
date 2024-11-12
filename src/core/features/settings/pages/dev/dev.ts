@@ -62,6 +62,13 @@ export class CoreSettingsDevPage implements OnInit {
 
     siteId: string | undefined;
 
+    token?: string;
+    privateToken?: string;
+    filesAccessKey?: string;
+
+    autoLoginTimeBetweenRequests?: number;
+    lastAutoLoginTime?: number;
+
     async ngOnInit(): Promise<void> {
         this.rtl = CorePlatform.isRTL;
         this.RTLChanged();
@@ -69,7 +76,8 @@ export class CoreSettingsDevPage implements OnInit {
         this.forceSafeAreaMargins = document.documentElement.classList.contains('force-safe-area-margins');
         this.safeAreaChanged();
 
-        this.siteId = CoreSites.getCurrentSite()?.getId();
+        const currentSite = CoreSites.getCurrentSite();
+        this.siteId = currentSite?.getId();
 
         this.stagingSitesCount = CoreConstants.CONFIG.sites.filter((site) => site.staging).length;
 
@@ -79,7 +87,7 @@ export class CoreSettingsDevPage implements OnInit {
         }
         this.alwaysShowLoginForm = Boolean(await CoreConfig.get(ALWAYS_SHOW_LOGIN_FORM, 0));
 
-        if (!this.siteId) {
+        if (!currentSite) {
             return;
         }
 
@@ -90,6 +98,15 @@ export class CoreSettingsDevPage implements OnInit {
         this.pluginStylesCount = 0;
 
         this.userToursEnabled = !CoreUserTours.isDisabled();
+
+        const privateToken = currentSite.getPrivateToken();
+        const filesAccessKey = currentSite.getFilesAccessKey();
+        this.token = '...' + currentSite.getToken().slice(-3);
+        this.privateToken = privateToken && ('...' + privateToken.slice(-3));
+        this.filesAccessKey = filesAccessKey && ('...' + filesAccessKey.slice(-3));
+
+        this.autoLoginTimeBetweenRequests = await currentSite.getAutoLoginMinTimeBetweenRequests();
+        this.lastAutoLoginTime = currentSite.getLastAutoLoginTime();
 
         document.head.querySelectorAll('style').forEach((style) => {
             if (this.siteId && style.id.endsWith(this.siteId)) {
@@ -113,7 +130,7 @@ export class CoreSettingsDevPage implements OnInit {
             version: plugin.version,
         }));
 
-        const disabledFeatures = (await CoreSites.getCurrentSite()?.getPublicConfig())?.tool_mobile_disabledfeatures;
+        const disabledFeatures = (await currentSite.getPublicConfig())?.tool_mobile_disabledfeatures;
 
         this.disabledFeatures = disabledFeatures?.split(',').filter(feature => feature.trim().length > 0) ?? [];
     }
@@ -183,7 +200,12 @@ export class CoreSettingsDevPage implements OnInit {
      * Copies site info.
      */
     copyInfo(): void {
-        CoreText.copyToClipboard(JSON.stringify({ disabledFeatures: this.disabledFeatures, sitePlugins: this.sitePlugins }));
+        CoreText.copyToClipboard(JSON.stringify({
+            disabledFeatures: this.disabledFeatures,
+            sitePlugins: this.sitePlugins,
+            autoLoginTimeBetweenRequests: this.autoLoginTimeBetweenRequests,
+            lastAutoLoginTime: this.lastAutoLoginTime,
+        }));
     }
 
     /**

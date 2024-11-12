@@ -42,6 +42,16 @@ a {
     font-weight: bold;
 }
 
+.core-text-sm {
+    font: var(--mdl-typography-body-font-sm);
+}
+.core-text-md {
+    font: var(--mdl-typography-body-font-md);
+}
+.core-text-lg {
+    font: var(--mdl-typography-body-font-lg);
+}
+
 .img-responsive {
     display: block;
     max-width: 100%;
