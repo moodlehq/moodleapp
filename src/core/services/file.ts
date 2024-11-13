@@ -149,7 +149,19 @@ export class CoreFileProvider {
         await this.init();
         this.logger.debug('Get file: ' + path);
 
-        return <FileEntry> await File.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(path));
+        try {
+            return <FileEntry> await File.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(path));
+        } catch (error) {
+            if (error && error.code === FileError.NOT_FOUND_ERR) {
+                // Cannot read some files if the path contains the % character and it's not an encoded char. Try encoding it.
+                const encodedPath = encodeURI(path);
+                if (encodedPath !== path) {
+                    return <FileEntry> await File.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(encodedPath));
+                }
+            }
+
+            throw error;
+        }
     }
 
     /**
@@ -163,7 +175,19 @@ export class CoreFileProvider {
 
         this.logger.debug('Get directory: ' + path);
 
-        return await File.resolveDirectoryUrl(this.addBasePathIfNeeded(path));
+        try {
+            return await File.resolveDirectoryUrl(this.addBasePathIfNeeded(path));
+        } catch (error) {
+            if (error && error.code === FileError.NOT_FOUND_ERR) {
+                // Cannot read some files if the path contains the % character and it's not an encoded char. Try encoding it.
+                const encodedPath = encodeURI(path);
+                if (encodedPath !== path) {
+                    return await File.resolveDirectoryUrl(this.addBasePathIfNeeded(encodedPath));
+                }
+            }
+
+            throw error;
+        }
     }
 
     /**
@@ -828,7 +852,19 @@ export class CoreFileProvider {
 
             return <FileEntry | DirectoryEntry> entry;
         } catch (error) {
-            // The copy can fail if the path has encoded characters. Try again if that's the case.
+            try {
+                // The copy/move can fail if the final path contains the % character and it's not an encoded char. Try encoding it.
+                const encodedTo = encodeURI(to);
+                if (to !== encodedTo) {
+                    const entry = await moveCopyFn(this.basePath, from, this.basePath, encodedTo);
+
+                    return <FileEntry | DirectoryEntry> entry;
+                }
+            } catch {
+                // Still failing, continue with next fallback.
+            }
+
+            // The copy/move can fail if the path has encoded characters. Try again if that's the case.
             const decodedFrom = decodeURI(from);
             const decodedTo = decodeURI(to);
 
