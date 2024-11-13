@@ -156,7 +156,7 @@
 
 
 <ng-template #label let-item="item">
-    <p class="ion-text-wrap" *ngIf="item.name" [core-mark-required]="item.required" [slot]="item.slottedLabel ? 'label' : undefined">
+    <p class="ion-text-wrap" *ngIf="item.name" [core-mark-required]="item.required" [attr.slot]="item.slottedLabel ? 'label' : undefined">
         <span *ngIf="feedback!.autonumbering && item.itemnumber">{{item.itemnumber}}. </span>
         <core-format-text [component]="component" [componentId]="cmId" [text]="item.name" contextLevel="module" [contextInstanceId]="cmId"
             [courseId]="courseId" [wsNotFiltered]="true" />
