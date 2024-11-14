@@ -18,6 +18,7 @@ import { CoreSitePluginsPluginContentComponent } from '@features/siteplugins/com
 import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the index of a course option site plugin.
@@ -25,8 +26,13 @@ import { CoreNavigator } from '@services/navigator';
 @Component({
     selector: 'core-site-plugins-course-option',
     templateUrl: 'core-siteplugins-course-option.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSitePluginsPluginContentComponent,
+    ],
 })
-export class CoreSitePluginsCourseOptionPage implements OnInit {
+export default class CoreSitePluginsCourseOptionPage implements OnInit {
 
     @ViewChild(CoreSitePluginsPluginContentComponent) content?: CoreSitePluginsPluginContentComponent;
 

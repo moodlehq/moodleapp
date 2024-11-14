@@ -47,7 +47,6 @@ import { CoreCourseHelper, CoreCourseModuleData, CoreCourseModuleCompletionData 
 import { CoreCourseFormatDelegate } from './format-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreCourseLogCronHandler } from './handlers/log-cron';
-import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreCourseAutoSyncData, CoreCourseSyncProvider } from './sync';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
@@ -1436,6 +1435,8 @@ export class CoreCourseProvider {
 
             return;
         }
+
+        const { CoreSitePlugins } = await import('@features/siteplugins/services/siteplugins');
 
         const loading = await CoreLoadings.show();
 

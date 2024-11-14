@@ -21,7 +21,6 @@ import {
     ONBOARDING_DONE,
 } from '@features/login/constants';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
-import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
 import { CoreCacheManager } from '@services/cache-manager';
 import { CoreConfig } from '@services/config';
@@ -124,6 +123,7 @@ export class CoreSettingsDevPage implements OnInit {
             }
         });
 
+        const { CoreSitePlugins } = await import('@features/siteplugins/services/siteplugins');
         this.sitePlugins = CoreSitePlugins.getCurrentSitePluginList().map((plugin) => ({
             addon: plugin.addon,
             component: plugin.component,

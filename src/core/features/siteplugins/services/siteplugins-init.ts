@@ -102,7 +102,7 @@ import { CORE_SITE_PLUGINS_COMPONENT } from '../constants';
 @Injectable({ providedIn: 'root' })
 export class CoreSitePluginsInitService {
 
-    protected logger: CoreLogger;
+    protected logger = CoreLogger.getInstance('CoreSitePluginsInit');
     protected courseRestrictHandlers: Record<string, {
         plugin: CoreSitePluginsPlugin;
         handlerName: string;
@@ -111,10 +111,6 @@ export class CoreSitePluginsInitService {
     }> = {};
 
     protected static readonly HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
-
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreSitePluginsInit');
-    }
 
     /**
      * Initialize.
