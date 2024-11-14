@@ -103,7 +103,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { CoreCourseDirectivesModule } from '@features/course/directives/directives.module';
 import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
-import { CoreSitePluginsDirectivesModule } from '@features/siteplugins/directives/directives.module';
 import { CoreUserComponentsModule } from '@features/user/components/components.module';
 import { CoreQuestionComponentsModule } from '@features/question/components/components.module';
 import { CoreBlockComponentsModule } from '@features/block/components/components.module';
@@ -132,8 +131,11 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 
 import { CoreAutoLogoutService } from '@features/autologout/services/autologout';
-import { CoreSitePluginsProvider } from '@features/siteplugins/services/siteplugins';
-import { getSitePluginsExportedObjects } from '@features/siteplugins/siteplugins.module';
+import {
+    getSitePluginsDirectives,
+    getSitePluginsExportedObjects,
+    getSitePluginsServices,
+} from '@features/siteplugins/siteplugins.module';
 import { CoreError } from '@classes/errors/error';
 
 /**
@@ -161,7 +163,6 @@ export class CoreCompileProvider {
         CoreBlockComponentsModule,
         CoreEditorComponentsModule,
         CoreSearchComponentsModule,
-        CoreSitePluginsDirectivesModule,
     ];
 
     protected readonly LAZY_IMPORTS = [
@@ -170,6 +171,7 @@ export class CoreCompileProvider {
         getModWorkshopComponentModules,
         getCoreStandaloneComponents,
         getCourseStandaloneComponents,
+        getSitePluginsDirectives,
     ];
 
     protected componentId = 0;
@@ -399,6 +401,7 @@ export class CoreCompileProvider {
             getNotesServices(),
             getNotificationsServices(),
             getPrivateFilesServices(),
+            getSitePluginsServices(),
         ]);
 
         const lazyLibraries = services.flat();
@@ -406,7 +409,6 @@ export class CoreCompileProvider {
         return [
             ...lazyLibraries,
             CoreAutoLogoutService,
-            CoreSitePluginsProvider,
             ...this.OTHER_SERVICES,
         ];
     }

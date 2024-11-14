@@ -18,6 +18,8 @@ import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } 
 import { AddonModAssignSubmissionDelegate } from '@addons/mod/assign/services/submission-delegate';
 import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/classes/compile-init-component';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays an assign submission plugin created using a site plugin.
@@ -26,6 +28,11 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-site-plugins-assign-submission',
     templateUrl: 'core-siteplugins-assign-submission.html',
     styles: [':host { display: contents; }'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCompileHtmlComponentModule,
+    ],
 })
 export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
 

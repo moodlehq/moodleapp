@@ -18,7 +18,6 @@ import { CoreModuleHandlerBase } from '@features/course/classes/module-base-hand
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreSitePluginsModuleHandler } from '@features/siteplugins/classes/handlers/module-handler';
-import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { makeSingleton } from '@singletons';
 import { AddonModBBBIndexComponent } from '../../components/index';
 import { AddonModBBB } from '../bigbluebuttonbn';
@@ -59,6 +58,8 @@ export class AddonModBBBModuleHandlerService extends CoreModuleHandlerBase imple
 
             return true;
         }
+
+        const { CoreSitePlugins } = await import('@features/siteplugins/services/siteplugins');
 
         // Native support not available in this site. Check if it's supported by site plugin.
         this.sitePluginHandler = CoreSitePlugins.getModuleHandlerInstance(this.modName);
