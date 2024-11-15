@@ -24,7 +24,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { AddonModImscp, AddonModImscpImscp, AddonModImscpTocItem } from '../../services/imscp';
 import { CoreModals } from '@services/modals';
@@ -214,12 +214,12 @@ export class AddonModImscpViewPage implements OnInit {
      * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(Promise.all([
+        await CorePromiseUtils.ignoreErrors(Promise.all([
             AddonModImscp.invalidateContent(this.cmId, this.courseId),
             CoreCourseModulePrefetchDelegate.invalidateCourseUpdates(this.courseId), // To detect if IMSCP was updated.
         ]));
 
-        await CoreUtils.ignoreErrors(this.fetchContent(true));
+        await CorePromiseUtils.ignoreErrors(this.fetchContent(true));
 
         refresher?.complete();
     }

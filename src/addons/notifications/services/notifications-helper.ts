@@ -30,6 +30,7 @@ import {
 import { CoreEvents } from '@singletons/events';
 import { AddonNotificationsPushNotification } from './handlers/push-click';
 import { CoreTimeUtils } from '@services/utils/time';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service that provides some helper functions for notifications.
@@ -119,7 +120,7 @@ export class AddonNotificationsHelperProvider {
 
         siteId = 'site' in notification ? notification.site : siteId;
 
-        await CoreUtils.ignoreErrors(AddonNotifications.markNotificationRead(notifId, siteId));
+        await CorePromiseUtils.ignoreErrors(AddonNotifications.markNotificationRead(notifId, siteId));
 
         const time = CoreTimeUtils.timestamp();
         if ('read' in notification) {
@@ -127,7 +128,7 @@ export class AddonNotificationsHelperProvider {
             notification.timeread = time;
         }
 
-        await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
+        await CorePromiseUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
 
         CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {
             id: notifId,

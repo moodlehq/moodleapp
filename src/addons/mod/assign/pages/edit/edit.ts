@@ -47,6 +47,7 @@ import {
 } from '../../constants';
 import { CoreToasts, ToastDuration } from '@services/toasts';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that allows adding or editing an assigment submission.
@@ -232,7 +233,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             }
 
             // Check if there's any offline data for this submission.
-            this.hasOffline = await CoreUtils.promiseWorks(AddonModAssignOffline.getSubmission(this.assign.id, this.userId));
+            this.hasOffline = await CorePromiseUtils.promiseWorks(AddonModAssignOffline.getSubmission(this.assign.id, this.userId));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM,

@@ -61,6 +61,7 @@ import {
 } from '../constants';
 import { REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
 import { AddonCalendarFilter } from './calendar-helper';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 declare module '@singletons/events' {
 
@@ -242,7 +243,7 @@ export class AddonCalendarProvider {
             component: ADDON_CALENDAR_COMPONENT,
         } , siteId));
 
-        await CoreUtils.ignoreErrors(Promise.all(promises));
+        await CorePromiseUtils.ignoreErrors(Promise.all(promises));
     }
 
     /**
@@ -1437,7 +1438,7 @@ export class AddonCalendarProvider {
      */
     protected async addDefaultEventReminder(event: AddonCalendarEventDBRecord, siteId?: string): Promise<void> {
         // Add default reminder if the event isn't stored already and doesn't have any reminder.
-        const eventExist = await CoreUtils.promiseWorks(this.getEventFromLocalDb(event.id, siteId));
+        const eventExist = await CorePromiseUtils.promiseWorks(this.getEventFromLocalDb(event.id, siteId));
         if (eventExist) {
             return;
         }
@@ -1508,7 +1509,7 @@ export class AddonCalendarProvider {
 
             // Now save the reminders if any.
             if (options.reminders?.length) {
-                await CoreUtils.ignoreErrors(
+                await CorePromiseUtils.ignoreErrors(
                     Promise.all(options.reminders.map((reminder) =>
                         this.addEventReminder(event, reminder.time, siteId))),
                 );
@@ -1531,7 +1532,7 @@ export class AddonCalendarProvider {
 
             // Now save the reminders if any.
             if (options.reminders?.length) {
-                await CoreUtils.ignoreErrors(
+                await CorePromiseUtils.ignoreErrors(
                     Promise.all(options.reminders.map((reminder) =>
                         this.addEventReminder(event, reminder.time, siteId))),
                 );
@@ -1592,7 +1593,7 @@ export class AddonCalendarProvider {
 
         if (eventId < 0) {
             // Offline event has been sent. Change reminders instanceId if any.
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 CoreReminders.updateReminders(
                     { instanceId: result.event.id },
                     {
@@ -1606,7 +1607,7 @@ export class AddonCalendarProvider {
 
         if (formData.id === 0) {
             // Store the new event in local DB.
-            await CoreUtils.ignoreErrors(this.storeEventInLocalDb(result.event, { addDefaultReminder: false, siteId }));
+            await CorePromiseUtils.ignoreErrors(this.storeEventInLocalDb(result.event, { addDefaultReminder: false, siteId }));
         }
 
         return result.event;

@@ -24,7 +24,7 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModQuizAccessRuleDelegate } from '../access-rules-delegate';
@@ -358,7 +358,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             }));
 
             // Update the download time to prevent detecting the new attempt as an update.
-            promises.push(CoreUtils.ignoreErrors(
+            promises.push(CorePromiseUtils.ignoreErrors(
                 CoreFilepool.updatePackageDownloadTime(siteId, ADDON_MOD_QUIZ_COMPONENT, module.id),
             ));
         } else {
@@ -374,7 +374,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         promises.push(AddonModQuiz.getAttemptAccessInformation(quiz.id, 0, modOptions)); // Last attempt.
 
         // Get course data, needed to determine upload max size if it's configured to be course limit.
-        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
+        promises.push(CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
         await Promise.all(promises);
 
@@ -493,7 +493,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
         // Get the review for each page.
         pages.forEach((page) => {
-            promises.push(CoreUtils.ignoreErrors(AddonModQuiz.getAttemptReview(attempt.id, {
+            promises.push(CorePromiseUtils.ignoreErrors(AddonModQuiz.getAttemptReview(attempt.id, {
                 page,
                 ...modOptions, // Include all options.
             })));
@@ -519,7 +519,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         modOptions: CoreCourseCommonModWSOptions,
     ): Promise<void> {
         // Get the review for all questions in same page.
-        const data = await CoreUtils.ignoreErrors(AddonModQuiz.getAttemptReview(attempt.id, {
+        const data = await CorePromiseUtils.ignoreErrors(AddonModQuiz.getAttemptReview(attempt.id, {
             page: -1,
             ...modOptions, // Include all options.
         }));

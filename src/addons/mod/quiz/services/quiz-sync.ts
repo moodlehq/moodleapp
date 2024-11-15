@@ -24,7 +24,7 @@ import { CoreQuestionDelegate } from '@features/question/services/question-deleg
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModQuizAttemptDBRecord } from './database/quiz';
@@ -65,7 +65,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         options = options || {};
 
         // Invalidate the data for the quiz and attempt.
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             AddonModQuiz.invalidateAllQuizData(quiz.id, courseId, options.attemptId, siteId),
         );
 
@@ -99,7 +99,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             }
         }
 
-        await CoreUtils.ignoreErrors(this.setSyncTime(quiz.id, siteId));
+        await CorePromiseUtils.ignoreErrors(this.setSyncTime(quiz.id, siteId));
 
         // Check if online attempt was finished because of the sync.
         let attemptFinished = false;
@@ -298,7 +298,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         this.logger.debug('Try to sync quiz ' + quiz.id + ' in site ' + siteId);
 
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             CoreCourseLogHelper.syncActivity(ADDON_MOD_QUIZ_COMPONENT, quiz.id, siteId),
         );
 
@@ -403,7 +403,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         if (!finish) {
             // Answers sent, now set the current page.
-            await CoreUtils.ignoreErrors(AddonModQuiz.logViewAttempt(
+            await CorePromiseUtils.ignoreErrors(AddonModQuiz.logViewAttempt(
                 onlineAttempt.id,
                 offlineAttempt.currentpage,
                 preflightData,

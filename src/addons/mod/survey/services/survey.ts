@@ -26,6 +26,7 @@ import { AddonModSurveyOffline } from './survey-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_SURVEY_COMPONENT } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service that provides some features for surveys.
@@ -175,7 +176,7 @@ export class AddonModSurveyProvider {
 
         promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_SURVEY_COMPONENT, moduleId));
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**

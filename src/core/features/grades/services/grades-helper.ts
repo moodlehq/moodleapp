@@ -46,6 +46,7 @@ import { CoreCourseAccess } from '@features/course/services/course-options-deleg
 import { CoreLoadings } from '@services/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreCourseAccessDataType } from '@features/course/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 export const GRADES_PAGE_NAME = 'grades';
 export const GRADES_PARTICIPANTS_PAGE_NAME = 'participant-grades';
@@ -469,7 +470,7 @@ export class CoreGradesHelperProvider {
             // Open the item directly.
             const gradeId = item.id;
 
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 CoreNavigator.navigateToSitePath(
                     `/${GRADES_PAGE_NAME}/${courseId}`,
                     { params: { gradeId }, siteId },
@@ -480,7 +481,7 @@ export class CoreGradesHelperProvider {
                 // Cannot get grade items or there's no need to.
                 if (userId && userId != currentUserId) {
                     // View another user grades. Open the grades page directly.
-                    await CoreUtils.ignoreErrors(
+                    await CorePromiseUtils.ignoreErrors(
                         CoreNavigator.navigateToSitePath(`/${GRADES_PAGE_NAME}/${courseId}`, { siteId }),
                     );
                 }

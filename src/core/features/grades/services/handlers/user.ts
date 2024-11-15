@@ -26,7 +26,7 @@ import {
 import { PARTICIPANTS_PAGE_NAME } from '@features/user/constants';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { GRADES_PAGE_NAME } from '../grades-helper';
 
@@ -68,7 +68,7 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
         }
 
         if (context === CoreUserDelegateContext.COURSE) {
-            return CoreUtils.ignoreErrors(CoreGrades.isPluginEnabledForCourse(courseId), false);
+            return CorePromiseUtils.ignoreErrors(CoreGrades.isPluginEnabledForCourse(courseId), false);
         } else {
             return CoreGrades.isCourseGradesEnabled();
         }
@@ -79,7 +79,7 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
      */
     async isEnabledForUser(user: CoreUserProfile, context: CoreUserDelegateContext, contextId: number): Promise<boolean> {
         if (context === CoreUserDelegateContext.COURSE) {
-            return CoreUtils.promiseWorks(CoreGrades.getCourseGradesTable(contextId, user.id));
+            return CorePromiseUtils.promiseWorks(CoreGrades.getCourseGradesTable(contextId, user.id));
         }
 
         // All course grades only available for the current user.

@@ -16,7 +16,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { ICoreBlockComponent } from '@features/block/classes/base-block-component';
 import { AddonBlockTimeline } from '../../services/timeline';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { CoreCourses } from '@features/courses/services/courses';
@@ -122,7 +122,7 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
      * @inheritdoc
      */
     async invalidateContent(): Promise<void> {
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             AddonBlockTimeline.invalidateActionEventsByTimesort(),
             AddonBlockTimeline.invalidateActionEventsByCourses(),
             CoreCourses.invalidateUserCourses(),

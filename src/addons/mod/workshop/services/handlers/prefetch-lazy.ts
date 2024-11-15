@@ -33,6 +33,7 @@ import { AddonModWorkshopHelper } from '../workshop-helper';
 import { AddonModWorkshopSync } from '../workshop-sync';
 import { AddonModWorkshopPrefetchHandlerService } from '@addons/mod/workshop/services/handlers/prefetch';
 import { AddonModWorkshopPhase } from '../../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler to prefetch workshops.
@@ -379,7 +380,7 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
         promises.push(CoreCourse.getModuleBasicGradeInfo(module.id, siteId));
 
         // Get course data, needed to determine upload max size if it's configured to be course limit.
-        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
+        promises.push(CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
         await Promise.all(promises);
 

@@ -22,7 +22,7 @@ import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourse, CoreCourseWSSection } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CORE_COURSE_CONTENTS_PAGE_NAME, CORE_COURSE_PROGRESS_UPDATED_EVENT } from '@features/course/constants';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -234,7 +234,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         this.updateProgress();
 
         // Load sections.
-        this.sections = await CoreUtils.ignoreErrors(CoreCourse.getSections(this.course.id, false, true), []);
+        this.sections = await CorePromiseUtils.ignoreErrors(CoreCourse.getSections(this.course.id, false, true), []);
 
         if (!this.sections) {
             return;

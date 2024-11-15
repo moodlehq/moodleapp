@@ -29,7 +29,7 @@ import {
     AddonPrivateFilesGetFilesWSParams,
 } from '@addons/privatefiles/services/privatefiles';
 import { AddonPrivateFilesHelper } from '@addons/privatefiles/services/privatefiles-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -192,7 +192,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
             // File uploaded, refresh the list.
             this.filesLoaded = false;
 
-            await CoreUtils.ignoreErrors(this.refreshFiles());
+            await CorePromiseUtils.ignoreErrors(this.refreshFiles());
 
             this.filesLoaded = true;
         } catch (error) {

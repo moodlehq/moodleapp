@@ -24,6 +24,7 @@ import { AddonModQuiz } from '../quiz';
 import { AddonModQuizHelper } from '../quiz-helper';
 import { isSafeNumber } from '@/core/utils/types';
 import { ADDON_MOD_QUIZ_FEATURE_NAME } from '../../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler for quiz push notifications clicks.
@@ -81,7 +82,7 @@ export class AddonModQuizPushClickHandlerService implements CorePushNotification
             return;
         }
 
-        await CoreUtils.ignoreErrors(AddonModQuiz.invalidateContent(moduleId, courseId, notification.site));
+        await CorePromiseUtils.ignoreErrors(AddonModQuiz.invalidateContent(moduleId, courseId, notification.site));
 
         return CoreCourseHelper.navigateToModule(moduleId, {
             courseId,

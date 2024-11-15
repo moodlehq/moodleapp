@@ -18,7 +18,7 @@ import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     AddonModH5PActivity,
     AddonModH5PActivityAttempt,
@@ -55,7 +55,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
                 return;
             }
 
-            await CoreUtils.ignoreErrors(AddonModH5PActivity.logViewReport(
+            await CorePromiseUtils.ignoreErrors(AddonModH5PActivity.logViewReport(
                 this.h5pActivity.id,
                 { userId: this.userId },
             ));
@@ -167,7 +167,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
             promises.push(AddonModH5PActivity.invalidateUserAttempts(this.h5pActivity.id, this.userId));
         }
 
-        await CoreUtils.ignoreErrors(Promise.all(promises));
+        await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
         await this.fetchData();
     }

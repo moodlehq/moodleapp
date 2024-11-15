@@ -20,7 +20,7 @@ import { CoreReportBuilder, CoreReportBuilderReport, REPORTS_LIST_LIMIT } from '
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreTime } from '@singletons/time';
 import { BehaviorSubject } from 'rxjs';
@@ -114,8 +114,8 @@ export class CoreReportBuilderListPage implements AfterViewInit, OnDestroy {
      * @param ionRefresher ionRefresher.
      */
     async refreshReports(ionRefresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreReportBuilder.invalidateReportsList());
-        await CoreUtils.ignoreErrors(this.fetchReports(true));
+        await CorePromiseUtils.ignoreErrors(CoreReportBuilder.invalidateReportsList());
+        await CorePromiseUtils.ignoreErrors(this.fetchReports(true));
         await ionRefresher?.complete();
     }
 

@@ -19,7 +19,7 @@ import { Device, Translate, NgZone } from '@singletons';
 import { CoreLang } from '@services/lang';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Subscription } from 'rxjs';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreConfig } from '@services/config';
@@ -208,7 +208,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         this.showDevOptions = this.devOptionsForced || showDevOptionsOnConfig == 1;
 
         const publicKey = this.deviceInfo.pushId ?
-            await CoreUtils.ignoreErrors(CorePushNotifications.getPublicKey()) :
+            await CorePromiseUtils.ignoreErrors(CorePushNotifications.getPublicKey()) :
             undefined;
         this.deviceInfo.encryptedPushSupported = publicKey !== undefined;
     }

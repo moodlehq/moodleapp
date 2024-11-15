@@ -29,6 +29,7 @@ import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
 import { CoreUrl } from '@singletons/url';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 const ROOT_CACHE_KEY = 'mmUser:';
 
@@ -291,7 +292,7 @@ export class CoreUserProvider {
      * @returns Starting week day.
      */
     async getStartingWeekDay(): Promise<number> {
-        const preference = await CoreUtils.ignoreErrors(this.getUserPreference('calendar_startwday'));
+        const preference = await CorePromiseUtils.ignoreErrors(this.getUserPreference('calendar_startwday'));
 
         if (preference && !isNaN(Number(preference))) {
             return Number(preference);
@@ -415,7 +416,7 @@ export class CoreUserProvider {
     async getUserPreference(name: string, siteId?: string): Promise<string | null> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const preference = await CoreUtils.ignoreErrors(CoreUserOffline.getPreference(name, siteId));
+        const preference = await CorePromiseUtils.ignoreErrors(CoreUserOffline.getPreference(name, siteId));
 
         if (preference && !CoreNetwork.isOnline()) {
             // Offline, return stored value.
@@ -547,7 +548,7 @@ export class CoreUserProvider {
         }
 
         // Retrieving one participant will fail if browsing users is disabled by capabilities.
-        return CoreUtils.promiseWorks(this.getParticipants(courseId, 0, 1, siteId));
+        return CorePromiseUtils.promiseWorks(this.getParticipants(courseId, 0, 1, siteId));
     }
 
     /**
@@ -791,7 +792,7 @@ export class CoreUserProvider {
             // Update preference and invalidate data.
             await Promise.all([
                 CoreUserOffline.setPreference(name, value, value),
-                CoreUtils.ignoreErrors(this.invalidateUserPreference(name)),
+                CorePromiseUtils.ignoreErrors(this.invalidateUserPreference(name)),
             ]);
         } catch (error) {
             // Preference not saved online. Update the offline one.

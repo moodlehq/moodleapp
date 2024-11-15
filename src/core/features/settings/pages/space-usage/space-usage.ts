@@ -20,6 +20,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 import { CoreSettingsHelper } from '../../services/settings-helper';
 import { CoreAccountsList } from '@features/login/services/login-helper';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays the space usage settings.
@@ -94,7 +95,7 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
         // Calculate total usage.
         let totalSize = 0;
 
-        const sites = await CoreUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
+        const sites = await CorePromiseUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
         const sitesWithUsage = await Promise.all(sites.map((site) => this.getSiteWithUsage(site)));
 
         let siteUrl = '';

@@ -40,7 +40,7 @@ import {
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AccordionGroupChangeEventDetail, IonContent } from '@ionic/angular';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCourseIndexSectionWithModule } from '../course-index/course-index';
 import { CoreBlockHelper } from '@features/block/services/block-helper';
 import { CoreNavigator } from '@services/navigator';
@@ -739,7 +739,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param firstLoad Whether it's the first load when opening the course.
      */
     async logView(sectionNumber?: number, firstLoad = false): Promise<void> {
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             CoreCourse.logView(this.course.id, sectionNumber),
         );
 
@@ -801,7 +801,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Initializes the expanded sections for the course.
      */
     protected async initializeExpandedSections(): Promise<void> {
-        const expandedSections = await CoreUtils.ignoreErrors(
+        const expandedSections = await CorePromiseUtils.ignoreErrors(
             this.currentSite?.getLocalSiteConfig<string>(`${CORE_COURSE_EXPANDED_SECTIONS_PREFIX}${this.course.id}`),
         );
 

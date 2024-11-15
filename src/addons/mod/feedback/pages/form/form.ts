@@ -44,6 +44,7 @@ import {
 } from '../../constants';
 import { CoreLoadings } from '@services/loadings';
 import { CoreError } from '@classes/errors/error';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays feedback form.
@@ -349,7 +350,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
         try {
             // Sync other pages first.
-            await CoreUtils.ignoreErrors(AddonModFeedbackSync.syncFeedback(this.feedback.id));
+            await CorePromiseUtils.ignoreErrors(AddonModFeedbackSync.syncFeedback(this.feedback.id));
 
             const response = await AddonModFeedback.processPage(this.feedback.id, this.currentPage, responses, {
                 goPrevious,

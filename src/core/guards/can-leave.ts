@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CanDeactivateFn } from '@angular/router';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Check if a component implements the canLeave interface.
@@ -34,7 +34,7 @@ export const canLeaveGuard: CanDeactivateFn<unknown> = async (component: unknown
         return true;
     }
 
-    return CoreUtils.ignoreErrors(component.canLeave(), false);
+    return CorePromiseUtils.ignoreErrors(component.canLeave(), false);
 };
 
 export interface CanLeave {

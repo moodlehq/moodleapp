@@ -31,6 +31,7 @@ import { makeSingleton } from '@singletons';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import type { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler for file submission plugin.
@@ -117,7 +118,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         siteId?: string,
     ): Promise<void> {
 
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             AddonModAssignHelper.deleteStoredSubmissionFiles(
                 assign.id,
                 AddonModAssignSubmissionFileHandlerService.FOLDER_NAME,
@@ -175,7 +176,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
     ): Promise<boolean> {
-        const offlineData = await CoreUtils.ignoreErrors(
+        const offlineData = await CorePromiseUtils.ignoreErrors(
             // Check if there's any offline data.
             AddonModAssignOffline.getSubmission(assign.id, submission.userid),
             undefined,
@@ -303,7 +304,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
 
         if (filesData.offline) {
             // Has offline files, get them and add them to the list.
-            const storedFiles = <FileEntry[]> await CoreUtils.ignoreErrors(
+            const storedFiles = <FileEntry[]> await CorePromiseUtils.ignoreErrors(
                 AddonModAssignHelper.getStoredSubmissionFiles(
                     assign.id,
                     AddonModAssignSubmissionFileHandlerService.FOLDER_NAME,

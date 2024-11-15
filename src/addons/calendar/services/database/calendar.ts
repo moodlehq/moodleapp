@@ -18,7 +18,7 @@ import { REMINDERS_DISABLED } from '@features/reminders/constants';
 import { CoreReminders } from '@features/reminders/services/reminders';
 import { CoreConfig } from '@services/config';
 import { CoreSiteSchema } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Database variables for AddonCalendarProvider service.
@@ -199,7 +199,7 @@ const migrateDefaultTime = async (siteId: string, convertToSeconds = false): Pro
     const key = 'mmaCalendarDefaultNotifTime#' + siteId;
     try {
         let defaultTime = await CoreConfig.get<number>(key);
-        await CoreUtils.ignoreErrors(CoreConfig.delete(key));
+        await CorePromiseUtils.ignoreErrors(CoreConfig.delete(key));
 
         if (defaultTime <= 0) {
             defaultTime = REMINDERS_DISABLED;

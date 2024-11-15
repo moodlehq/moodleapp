@@ -21,6 +21,7 @@ import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { makeSingleton } from '@singletons';
 import { CoreUserOffline } from './user-offline';
 import { CoreUser } from './user';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync user preferences.
@@ -77,7 +78,7 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
 
         const preferences = await CoreUserOffline.getChangedPreferences(siteId);
 
-        await CoreUtils.allPromises(preferences.map(async (preference) => {
+        await CorePromiseUtils.allPromises(preferences.map(async (preference) => {
             const onlineValue = await CoreUser.getUserPreferenceOnline(preference.name, siteId);
 
             if (onlineValue !== null && preference.onlinevalue != onlineValue) {

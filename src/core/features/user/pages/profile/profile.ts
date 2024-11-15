@@ -28,7 +28,7 @@ import {
     CoreUserProfileHandlerType,
     CoreUserProfileHandlerData,
 } from '@features/user/services/user-delegate';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
@@ -186,7 +186,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async refreshUser(event?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(Promise.all([
+        await CorePromiseUtils.ignoreErrors(Promise.all([
             CoreUser.invalidateUserCache(this.userId),
             CoreCourses.invalidateUserNavigationOptions(),
             CoreCourses.invalidateUserAdministrationOptions(),

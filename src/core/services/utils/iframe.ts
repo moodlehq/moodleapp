@@ -37,6 +37,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNative } from '@features/native/services/native';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 type CoreFrameElement = FrameElement & {
     window?: Window;
@@ -681,7 +682,7 @@ export class CoreIframeUtilsProvider {
             if (!CoreNetwork.isOnline()) {
                 // User is offline, try to open a local copy of the file if present.
                 const localUrl = options.site ?
-                    await CoreUtils.ignoreErrors(CoreFilepool.getInternalUrlByUrl(options.site.getId(), url)) :
+                    await CorePromiseUtils.ignoreErrors(CoreFilepool.getInternalUrlByUrl(options.site.getId(), url)) :
                     undefined;
 
                 if (localUrl) {
@@ -693,7 +694,7 @@ export class CoreIframeUtilsProvider {
                 return;
             }
 
-            const mimetype = await CoreUtils.ignoreErrors(CoreUtils.getMimeTypeFromUrl(url));
+            const mimetype = await CorePromiseUtils.ignoreErrors(CoreUtils.getMimeTypeFromUrl(url));
 
             if (!mimetype || mimetype === 'text/html' || mimetype === 'text/plain') {
                 // It's probably a web page, open in browser.

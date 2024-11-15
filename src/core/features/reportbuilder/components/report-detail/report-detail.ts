@@ -32,6 +32,7 @@ import { Translate } from '@singletons';
 import { CoreTime } from '@singletons/time';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 @Component({
     selector: 'core-report-builder-report-detail',
@@ -78,7 +79,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
         );
 
         this.logView = CoreTime.once(async (report) => {
-            await CoreUtils.ignoreErrors(CoreReportBuilder.viewReport(this.reportId));
+            await CorePromiseUtils.ignoreErrors(CoreReportBuilder.viewReport(this.reportId));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM,
@@ -171,9 +172,9 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
      * @param ionRefresher ionic refresher.
      */
     async refreshReport(ionRefresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreReportBuilder.invalidateReport());
+        await CorePromiseUtils.ignoreErrors(CoreReportBuilder.invalidateReport());
         this.updateState({ page: 0, canLoadMoreRows: false });
-        await CoreUtils.ignoreErrors(this.getReport());
+        await CorePromiseUtils.ignoreErrors(this.getReport());
         await ionRefresher?.complete();
     }
 

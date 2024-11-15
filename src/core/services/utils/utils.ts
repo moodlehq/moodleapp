@@ -37,6 +37,7 @@ import { CoreWait, CoreWaitOptions } from '@singletons/wait';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreInAppBrowser, CoreInAppBrowserOpenOptions } from '@singletons/iab';
+import { CorePromiseUtils, OrderedPromiseData } from '@singletons/promise-utils';
 
 export type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -77,37 +78,20 @@ export class CoreUtilsProvider {
      * Similar to Promise.all, but if a promise fails this function's promise won't be rejected until ALL promises have finished.
      *
      * @param promises Promises.
-     * @returns Promise resolved if all promises are resolved and rejected if at least 1 promise fails.
+     * @deprecated since 5.0. Use CorePromiseUtils.allPromises instead.
      */
-    async allPromises(promises: unknown[]): Promise<void> {
-        if (!promises || !promises.length) {
-            return;
-        }
-
-        const getPromiseError = async (promise: unknown): Promise<Error | void> => {
-            try {
-                await promise;
-            } catch (error) {
-                return error;
-            }
-        };
-
-        const errors = await Promise.all(promises.map(getPromiseError));
-        const error = errors.find(error => !!error);
-
-        if (error) {
-            throw error;
-        }
+    async allPromises(promises: Promise<unknown>[]): Promise<void> {
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**
      * Combination of allPromises and ignoreErrors functions.
      *
      * @param promises Promises.
-     * @returns Promise resolved if all promises are resolved and rejected if at least 1 promise fails.
+     * @deprecated since 5.0. Use CorePromiseUtils.allPromisesIgnoringErrors instead.
      */
     async allPromisesIgnoringErrors(promises: Promise<unknown>[]): Promise<void> {
-        await CoreUtils.ignoreErrors(this.allPromises(promises));
+        await CorePromiseUtils.allPromisesIgnoringErrors(promises);
     }
 
     /**
@@ -251,7 +235,7 @@ export class CoreUtilsProvider {
         }
 
         try {
-            const response = await this.timeoutPromise(window.fetch(url, initOptions), CoreWS.getRequestTimeout());
+            const response = await CorePromiseUtils.timeoutPromise(window.fetch(url, initOptions), CoreWS.getRequestTimeout());
 
             return response.redirected;
         } catch (error) {
@@ -398,35 +382,10 @@ export class CoreUtilsProvider {
      * Execute promises one depending on the previous.
      *
      * @param orderedPromisesData Data to be executed.
-     * @returns Promise resolved when all promises are resolved.
+     * @deprecated since 5.0 Use CorePromiseUtils.executeOrderedPromises instead.
      */
-    executeOrderedPromises(orderedPromisesData: OrderedPromiseData[]): Promise<void> {
-        const promises: Promise<void>[] = [];
-        let dependency = Promise.resolve();
-
-        // Execute all the processes in order.
-        for (const i in orderedPromisesData) {
-            const data = orderedPromisesData[i];
-            // Add the process to the dependency stack.
-            const promise = dependency.finally(() => {
-                try {
-                    return data.function();
-                } catch (e) {
-                    this.logger.error(e.message);
-
-                    return;
-                }
-            });
-            promises.push(promise);
-
-            // If the new process is blocking, we set it as the dependency.
-            if (data.blocking) {
-                dependency = promise;
-            }
-        }
-
-        // Return when all promises are done.
-        return this.allPromises(promises);
+    async executeOrderedPromises(orderedPromisesData: OrderedPromiseData[]): Promise<void> {
+        await CorePromiseUtils.executeOrderedPromises(orderedPromisesData);
     }
 
     /**
@@ -508,7 +467,7 @@ export class CoreUtilsProvider {
             }
         }
 
-        await CoreUtils.ignoreErrors(this.allPromises(promises));
+        await CorePromiseUtils.allPromisesIgnoringErrors(promises);
 
         if (!checkAll) {
             // Checking 1 was enough, so it will either return all the sites or none.
@@ -972,7 +931,7 @@ export class CoreUtilsProvider {
 
             return;
         } else if (extension === 'apk' && CorePlatform.isAndroid()) {
-            const url = await CoreUtils.ignoreErrors(
+            const url = await CorePromiseUtils.ignoreErrors(
                 CoreFilepool.getFileUrlByPath(CoreSites.getCurrentSiteId(), CoreFile.removeBasePath(path)),
             );
 
@@ -1092,7 +1051,7 @@ export class CoreUtilsProvider {
     async openOnlineFile(url: string): Promise<void> {
         if (CorePlatform.isAndroid()) {
             // In Android we need the mimetype to open it.
-            const mimetype = await this.ignoreErrors(this.getMimeTypeFromUrl(url));
+            const mimetype = await CorePromiseUtils.ignoreErrors(this.getMimeTypeFromUrl(url));
 
             if (!mimetype) {
                 // Couldn't retrieve mimetype. Return error.
@@ -1298,15 +1257,10 @@ export class CoreUtilsProvider {
      *
      * @param promise Promise to check
      * @returns Promise resolved with boolean: true if the promise is rejected or false if it's resolved.
+     * @deprecated since 5.0. Use CorePromiseUtils.promiseFails instead.
      */
     async promiseFails(promise: Promise<unknown>): Promise<boolean> {
-        try {
-            await promise;
-
-            return false;
-        } catch {
-            return true;
-        }
+        return CorePromiseUtils.promiseFails(promise);
     }
 
     /**
@@ -1314,15 +1268,10 @@ export class CoreUtilsProvider {
      *
      * @param promise Promise to check
      * @returns Promise resolved with boolean: true if the promise it's resolved or false if it's rejected.
+     * @deprecated since 5.0. Use CorePromiseUtils.promiseWorks instead.
      */
     async promiseWorks(promise: Promise<unknown>): Promise<boolean> {
-        try {
-            await promise;
-
-            return true;
-        } catch {
-            return false;
-        }
+        return CorePromiseUtils.promiseWorks(promise);
     }
 
     /**
@@ -1408,29 +1357,10 @@ export class CoreUtilsProvider {
      * @param promise The promise to timeout.
      * @param time Number of milliseconds of the timeout.
      * @returns Promise with the timeout.
+     * @deprecated since 5.0. Use CorePromiseUtils.timeoutPromise instead.
      */
     timeoutPromise<T>(promise: Promise<T>, time: number): Promise<T> {
-        return new Promise((resolve, reject): void => {
-            let timedOut = false;
-            const resolveBeforeTimeout = (value: T) => {
-                if (timedOut) {
-                    return;
-                }
-                resolve(value);
-            };
-            const timeout = setTimeout(
-                () => {
-                    reject({ timeout: true });
-                    timedOut = true;
-                },
-                time,
-            );
-
-            promise
-                .then(resolveBeforeTimeout)
-                .catch(reject)
-                .finally(() => clearTimeout(timeout));
-        });
+        return CorePromiseUtils.timeoutPromise(promise, time);
     }
 
     /**
@@ -1584,18 +1514,16 @@ export class CoreUtilsProvider {
      * @param promise Promise to ignore errors.
      * @param fallback Value to return if the promise is rejected.
      * @returns Promise with ignored errors, resolving to the fallback result if provided.
+     * @deprecated since 5.0. Use CorePromiseUtils.ignoreErrors instead.
      */
     async ignoreErrors<Result>(promise?: Promise<Result>): Promise<Result | undefined>;
     async ignoreErrors<Result, Fallback>(promise: Promise<Result>, fallback: Fallback): Promise<Result | Fallback>;
     async ignoreErrors<Result, Fallback>(promise?: Promise<Result>, fallback?: Fallback): Promise<Result | Fallback | undefined> {
-        try {
-            const result = await promise;
-
-            return result;
-        } catch {
-            // Ignore errors.
-            return fallback;
+        if(promise) {
+            return CorePromiseUtils.ignoreErrors(promise, fallback);
         }
+
+        return CorePromiseUtils.ignoreErrors(promise);
     }
 
     /**
@@ -1658,21 +1586,6 @@ export class CoreUtilsProvider {
 }
 
 export const CoreUtils = makeSingleton(CoreUtilsProvider);
-
-/**
- * Data for each entry of executeOrderedPromises.
- */
-export type OrderedPromiseData = {
-    /**
-     * Function to execute.
-     */
-    function: () => Promise<unknown>;
-
-    /**
-     * Whether the promise should block the following one.
-     */
-    blocking?: boolean;
-};
 
 /**
  * Data about a country.

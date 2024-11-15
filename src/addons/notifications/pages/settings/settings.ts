@@ -18,7 +18,7 @@ import { CoreConfig } from '@services/config';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreUser } from '@features/user/services/user';
 import { AddonMessageOutputDelegate, AddonMessageOutputHandlerData } from '@addons/messageoutput/services/messageoutput-delegate';
 import { CoreConstants } from '@/core/constants';
@@ -179,7 +179,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     protected async updatePreferences(): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationPreferences());
+        await CorePromiseUtils.ignoreErrors(AddonNotifications.invalidateNotificationPreferences());
 
         await AddonNotifications.getNotificationPreferences();
     }
@@ -204,7 +204,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
      */
     async refreshPreferences(refresher?: HTMLIonRefresherElement): Promise<void> {
         try {
-            await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationPreferences());
+            await CorePromiseUtils.ignoreErrors(AddonNotifications.invalidateNotificationPreferences());
 
             await this.fetchPreferences();
         } finally {
@@ -334,7 +334,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
      * @param enabled True to enable the notification sound, false to disable it.
      */
     async changeNotificationSound(enabled: boolean): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreConfig.set(CoreConstants.SETTINGS_NOTIFICATION_SOUND, enabled ? 1 : 0));
+        await CorePromiseUtils.ignoreErrors(CoreConfig.set(CoreConstants.SETTINGS_NOTIFICATION_SOUND, enabled ? 1 : 0));
 
         const siteId = CoreSites.getCurrentSiteId();
         CoreEvents.trigger(CoreEvents.NOTIFICATION_SOUND_CHANGED, { enabled }, siteId);

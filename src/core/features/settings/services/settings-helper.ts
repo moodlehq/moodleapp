@@ -20,7 +20,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSite } from '@classes/sites/site';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreFilter } from '@features/filter/services/filter';
@@ -249,7 +249,7 @@ export class CoreSettingsHelperProvider {
 
         const syncPromise = Promise.all([
             // Invalidate all the site files so they are re-downloaded.
-            CoreUtils.ignoreErrors(CoreFilepool.invalidateAllFiles(siteId)),
+            CorePromiseUtils.ignoreErrors(CoreFilepool.invalidateAllFiles(siteId)),
             // Invalidate and synchronize site data.
             site.invalidateWsCache(),
             CoreSites.updateSiteInfo(site.getId()),

@@ -18,7 +18,7 @@ import { CoreSitePlugins, CoreSitePluginsCourseModuleHandlerData } from '@featur
 import { CoreFilepool } from '@services/filepool';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler to prefetch a module site plugin.
@@ -200,7 +200,7 @@ export class CoreSitePluginsModulePrefetchHandler extends CoreCourseActivityPref
             }
         }
 
-        return CoreUtils.allPromises(promises);
+        return CorePromiseUtils.allPromises(promises);
     }
 
     /**

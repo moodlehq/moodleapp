@@ -19,7 +19,7 @@ import { CoreWSExternalWarning, CoreWSExternalFile, CoreWS } from '@services/ws'
 import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreText } from '@singletons/text';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -311,7 +311,7 @@ export class AddonModBookProvider {
         promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_BOOK_COMPONENT, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId));
 
-        return CoreUtils.allPromises(promises);
+        return CorePromiseUtils.allPromises(promises);
     }
 
     /**

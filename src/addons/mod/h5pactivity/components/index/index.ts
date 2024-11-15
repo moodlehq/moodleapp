@@ -45,7 +45,7 @@ import {
 } from '../../services/h5pactivity-sync';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     ADDON_MOD_H5PACTIVITY_AUTO_SYNCED,
     ADDON_MOD_H5PACTIVITY_COMPONENT,
@@ -699,7 +699,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             return;
         }
 
-        await CoreUtils.ignoreErrors(CoreXAPIOffline.deleteStates(ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT, {
+        await CorePromiseUtils.ignoreErrors(CoreXAPIOffline.deleteStates(ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT, {
             itemId: this.h5pActivity.context,
         }));
     }

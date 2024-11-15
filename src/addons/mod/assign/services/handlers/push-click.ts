@@ -21,6 +21,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonModAssign } from '../assign';
 import { ADDON_MOD_ASSIGN_FEATURE_NAME } from '../../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler for assign push notifications clicks.
@@ -54,7 +55,7 @@ export class AddonModAssignPushClickHandlerService implements CorePushNotificati
         const courseId = Number(notification.courseid);
         const moduleId = Number(contextUrlParams.id);
 
-        await CoreUtils.ignoreErrors(AddonModAssign.invalidateContent(moduleId, courseId, notification.site));
+        await CorePromiseUtils.ignoreErrors(AddonModAssign.invalidateContent(moduleId, courseId, notification.site));
         await CoreCourseHelper.navigateToModule(moduleId, {
             courseId,
             siteId: notification.site,

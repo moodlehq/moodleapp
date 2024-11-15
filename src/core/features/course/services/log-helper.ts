@@ -23,6 +23,7 @@ import { makeSingleton } from '@singletons';
 import { ACTIVITY_LOG_TABLE, CoreCourseActivityLogDBRecord } from './database/log';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Helper to manage logging to Moodle.
@@ -345,7 +346,7 @@ export class CoreCourseLogHelperProvider {
             } catch (error) {
                 if (CoreUtils.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means that responses cannot be submitted.
-                    await CoreUtils.ignoreErrors(this.deleteWSLogs(log.ws, data, siteId));
+                    await CorePromiseUtils.ignoreErrors(this.deleteWSLogs(log.ws, data, siteId));
                 }
 
                 throw error;

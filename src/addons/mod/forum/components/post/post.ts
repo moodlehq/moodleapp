@@ -58,6 +58,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CorePopovers } from '@services/popovers';
 import { CoreLoadings } from '@services/loadings';
 import { CoreWSFile } from '@services/ws';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -599,7 +600,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                 }));
             }
 
-            await CoreUtils.ignoreErrors(Promise.all(promises));
+            await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
             // Reset data.
             this.setFormData();

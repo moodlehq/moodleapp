@@ -28,6 +28,7 @@ import { AddonModFeedback, AddonModFeedbackWSFeedback } from './feedback';
 import { AddonModFeedbackOffline, AddonModFeedbackOfflineResponse } from './feedback-offline';
 import { AddonModFeedbackPrefetchHandler, AddonModFeedbackPrefetchHandlerService } from './handlers/prefetch';
 import { ADDON_MOD_FEEDBACK_AUTO_SYNCED, ADDON_MOD_FEEDBACK_COMPONENT } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync feedbacks.
@@ -161,14 +162,14 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         };
 
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_FEEDBACK_COMPONENT, feedbackId, siteId));
+        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_FEEDBACK_COMPONENT, feedbackId, siteId));
 
         // Get offline responses to be sent.
-        const responses = await CoreUtils.ignoreErrors(AddonModFeedbackOffline.getFeedbackResponses(feedbackId, siteId));
+        const responses = await CorePromiseUtils.ignoreErrors(AddonModFeedbackOffline.getFeedbackResponses(feedbackId, siteId));
 
         if (!responses || !responses.length) {
             // Nothing to sync.
-            await CoreUtils.ignoreErrors(this.setSyncTime(feedbackId, siteId));
+            await CorePromiseUtils.ignoreErrors(this.setSyncTime(feedbackId, siteId));
 
             return result;
         }
@@ -198,7 +199,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
                     Translate.instant('addon.mod_feedback.this_feedback_is_already_submitted'),
                 );
 
-                await CoreUtils.ignoreErrors(this.setSyncTime(feedbackId, siteId));
+                await CorePromiseUtils.ignoreErrors(this.setSyncTime(feedbackId, siteId));
 
                 return result;
             }
@@ -217,7 +218,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         }));
 
         // Execute all the processes in order to solve dependencies.
-        await CoreUtils.executeOrderedPromises(orderedData);
+        await CorePromiseUtils.executeOrderedPromises(orderedData);
 
         if (result.updated) {
             // Data has been sent to server, update data.
@@ -231,7 +232,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         }
 
         // Sync finished, set sync time.
-        await CoreUtils.ignoreErrors(this.setSyncTime(feedbackId, siteId));
+        await CorePromiseUtils.ignoreErrors(this.setSyncTime(feedbackId, siteId));
 
         return result;
     }

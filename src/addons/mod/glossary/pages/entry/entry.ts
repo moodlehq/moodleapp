@@ -27,7 +27,7 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModGlossaryEntriesSource, AddonModGlossaryEntryItem } from '../../classes/glossary-entries-source';
@@ -86,7 +86,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
                 return;
             }
 
-            await CoreUtils.ignoreErrors(AddonModGlossary.logEntryView(this.onlineEntry.id, this.componentId));
+            await CorePromiseUtils.ignoreErrors(AddonModGlossary.logEntryView(this.onlineEntry.id, this.componentId));
 
             this.analyticsLogEvent('mod_glossary_get_entry_by_id', `/mod/glossary/showentry.php?eid=${this.onlineEntry.id}`);
         });
@@ -184,7 +184,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
         );
 
         const glossaryId = this.glossary?.id;
-        const cancelled = await CoreUtils.promiseFails(
+        const cancelled = await CorePromiseUtils.promiseFails(
             CoreDomUtils.showConfirm(Translate.instant('addon.mod_glossary.areyousuredelete')),
         );
 
@@ -200,13 +200,13 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
                 await AddonModGlossary.deleteEntry(glossaryId, entryId);
                 await Promise.all([
-                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntry(entryId)),
-                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByLetter(glossaryId)),
-                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByAuthor(glossaryId)),
-                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByCategory(glossaryId)),
-                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'CREATION')),
-                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'UPDATE')),
-                    CoreUtils.ignoreErrors(this.entries.getSource().invalidateCache(false)),
+                    CorePromiseUtils.ignoreErrors(AddonModGlossary.invalidateEntry(entryId)),
+                    CorePromiseUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByLetter(glossaryId)),
+                    CorePromiseUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByAuthor(glossaryId)),
+                    CorePromiseUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByCategory(glossaryId)),
+                    CorePromiseUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'CREATION')),
+                    CorePromiseUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'UPDATE')),
+                    CorePromiseUtils.ignoreErrors(this.entries.getSource().invalidateCache(false)),
                 ]);
             } else if (this.offlineEntry) {
                 const concept = this.offlineEntry.concept;
@@ -239,12 +239,12 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
     async doRefresh(refresher?: HTMLIonRefresherElement): Promise<void> {
         if (this.onlineEntry && this.glossary?.allowcomments && this.onlineEntry.id > 0 && this.commentsEnabled && this.comments) {
             // Refresh comments asynchronously (without blocking the current promise).
-            CoreUtils.ignoreErrors(this.comments.doRefresh());
+            CorePromiseUtils.ignoreErrors(this.comments.doRefresh());
         }
 
         try {
             if (this.onlineEntry) {
-                await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntry(this.onlineEntry.id));
+                await CorePromiseUtils.ignoreErrors(AddonModGlossary.invalidateEntry(this.onlineEntry.id));
                 await this.loadOnlineEntry(this.onlineEntry.id);
             } else if (this.offlineEntry) {
                 const timecreated = Number(this.entrySlug.slice(4));

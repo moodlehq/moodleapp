@@ -41,6 +41,7 @@ import {
     ADDON_MOD_H5PACTIVITY_COMPONENT,
     ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
 } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync H5P activities.
@@ -208,7 +209,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
         }
 
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             CoreCourseLogHelper.syncActivity(ADDON_MOD_H5PACTIVITY_COMPONENT, h5pActivity.id, siteId),
         );
 
@@ -268,7 +269,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
 
         if (result.updated) {
             // Data has been sent to server, invalidate attempts.
-            await CoreUtils.ignoreErrors(AddonModH5PActivity.invalidateUserAttempts(id, undefined, siteId));
+            await CorePromiseUtils.ignoreErrors(AddonModH5PActivity.invalidateUserAttempts(id, undefined, siteId));
         }
 
         return result;

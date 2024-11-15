@@ -25,6 +25,7 @@ import { AddonNotificationsMainMenuHandlerService } from './mainmenu';
 import { AddonNotificationsHelper } from '../notifications-helper';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreInAppBrowser } from '@singletons/iab';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler for non-messaging push notifications clicks.
@@ -65,7 +66,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
      * @returns Promise resolved when done.
      */
     protected async markAsRead(notification: AddonNotificationsPushNotification): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonNotificationsHelper.markNotificationAsRead(notification));
+        await CorePromiseUtils.ignoreErrors(AddonNotificationsHelper.markNotificationAsRead(notification));
     }
 
     /**
@@ -117,7 +118,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
         }
 
         // No contexturl or cannot be handled by the app. Open the notifications page.
-        await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList(notification.site));
+        await CorePromiseUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList(notification.site));
 
         await CoreNavigator.navigateToSitePath(
             `${AddonNotificationsMainMenuHandlerService.PAGE_NAME}/list`,

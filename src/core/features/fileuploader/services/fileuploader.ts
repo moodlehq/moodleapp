@@ -33,6 +33,7 @@ import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
 import { CoreModals } from '@services/modals';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * File upload options.
@@ -401,7 +402,7 @@ export class CoreFileUploaderProvider {
         }
 
         if (filesObject.offline > 0) {
-            const offlineFiles = await CoreUtils.ignoreErrors(this.getStoredFiles(folderPath));
+            const offlineFiles = await CorePromiseUtils.ignoreErrors(this.getStoredFiles(folderPath));
 
             if (offlineFiles) {
                 files = files.concat(offlineFiles);

@@ -42,6 +42,7 @@ import {
     ADDON_MOD_SCORM_LAUNCH_PREV_SCO_EVENT,
     ADDON_MOD_SCORM_UPDATE_TOC_EVENT,
 } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 // Private constants.
 const VALID_STATUSES = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'];
@@ -1635,7 +1636,7 @@ export class AddonModScormProvider {
 
         if (isOutdated === undefined) {
             // Calculate if it's outdated.
-            const data = await CoreUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, component, scorm.coursemodule));
+            const data = await CorePromiseUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, component, scorm.coursemodule));
 
             if (!data) {
                 // Package not found, not downloaded.
@@ -1650,7 +1651,7 @@ export class AddonModScormProvider {
 
         } else if (isOutdated) {
             // The package is outdated, but maybe the file hasn't changed.
-            const extra = await CoreUtils.ignoreErrors(CoreFilepool.getPackageExtra(siteId, component, scorm.coursemodule));
+            const extra = await CorePromiseUtils.ignoreErrors(CoreFilepool.getPackageExtra(siteId, component, scorm.coursemodule));
 
             if (!extra) {
                 // Package not found, not downloaded.

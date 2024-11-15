@@ -16,7 +16,7 @@ import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFormFields, CoreForms } from '@singletons/form';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ModalController, Translate } from '@singletons';
 import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '../../services/assign';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
@@ -88,7 +88,7 @@ export class AddonModAssignEditFeedbackModalComponent {
      * @returns Promise resolved with boolean: whether the data has changed.
      */
     protected async hasDataChanged(): Promise<boolean> {
-        const changed = await CoreUtils.ignoreErrors(
+        const changed = await CorePromiseUtils.ignoreErrors(
             AddonModAssignFeedbackDelegate.hasPluginDataChanged(
                 this.assign,
                 this.submission,

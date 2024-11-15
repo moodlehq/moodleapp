@@ -50,6 +50,7 @@ import {
     AddonModForumType,
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 declare module '@singletons/events' {
 
@@ -733,7 +734,7 @@ export class AddonModForumProvider {
         let sortOrderValue: number | null = null;
 
         if (this.isDiscussionListSortingAvailable()) {
-            const preferenceValue = await CoreUtils.ignoreErrors(
+            const preferenceValue = await CorePromiseUtils.ignoreErrors(
                 CoreUser.getUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER),
             );
 
@@ -931,7 +932,7 @@ export class AddonModForumProvider {
                             promises.push(this.invalidateDiscussionPosts(discussion.discussion, forum.id));
                         });
 
-                        return CoreUtils.allPromises(promises);
+                        return CorePromiseUtils.allPromises(promises);
                     }),
             );
         });
@@ -940,7 +941,7 @@ export class AddonModForumProvider {
             promises.push(CoreUser.invalidateUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER));
         }
 
-        return CoreUtils.allPromises(promises);
+        return CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -972,7 +973,7 @@ export class AddonModForumProvider {
             promises.push(site.invalidateWsCacheForKeyStartingWith(this.getForumDiscussionDataCacheKey(forumId, discussionId)));
         }
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**

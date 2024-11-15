@@ -27,6 +27,7 @@ import { AddonModChoice } from './choice';
 import { AddonModChoiceOffline } from './choice-offline';
 import { AddonModChoicePrefetchHandler } from './handlers/prefetch';
 import { ADDON_MOD_CHOICE_AUTO_SYNCED, ADDON_MOD_CHOICE_COMPONENT } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 declare module '@singletons/events' {
 
@@ -162,9 +163,9 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
         };
 
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_CHOICE_COMPONENT, choiceId, siteId));
+        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_CHOICE_COMPONENT, choiceId, siteId));
 
-        const data = await CoreUtils.ignoreErrors(AddonModChoiceOffline.getResponse(choiceId, siteId, userId));
+        const data = await CorePromiseUtils.ignoreErrors(AddonModChoiceOffline.getResponse(choiceId, siteId, userId));
 
         if (!data || !data.choiceid) {
             // Nothing to sync. Set sync time.

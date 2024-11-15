@@ -20,7 +20,7 @@ import { CoreCommentsArea } from '@features/comments/services/comments';
 import { CoreCourseSummary } from '@features/course/services/course';
 import { CoreUserSummary } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 
 const ROOT_CACHE_KEY = 'mmaCompetency:';
@@ -189,7 +189,7 @@ export class AddonCompetencyProvider {
             return false;
         }
 
-        return CoreUtils.promiseWorks(this.getCourseCompetencies(courseId, undefined, siteId));
+        return CorePromiseUtils.promiseWorks(this.getCourseCompetencies(courseId, undefined, siteId));
     }
 
     /**

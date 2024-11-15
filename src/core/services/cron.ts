@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreAppDB } from '@services/app-db';
 import { CoreNetwork } from '@services/network';
 import { CoreConfig } from '@services/config';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 
@@ -109,13 +109,13 @@ export class CoreCronDelegateService {
         }
 
         // Add the execution to the queue.
-        this.queuePromise = CoreUtils.ignoreErrors(this.queuePromise).then(async () => {
+        this.queuePromise = CorePromiseUtils.ignoreErrors(this.queuePromise).then(async () => {
             try {
                 await this.executeHandler(name, force, siteId);
 
                 this.logger.debug(`Cron job '${name}' was successfully executed.`);
 
-                await CoreUtils.ignoreErrors(this.setHandlerLastExecutionTime(name, Date.now()));
+                await CorePromiseUtils.ignoreErrors(this.setHandlerLastExecutionTime(name, Date.now()));
 
                 this.scheduleNextExecution(name);
 
@@ -147,7 +147,7 @@ export class CoreCronDelegateService {
             // Wrap the call in Promise.resolve to make sure it's a promise.
             const promise = Promise.resolve(this.handlers[name].execute?.(siteId, force));
 
-            await CoreUtils.timeoutPromise(promise, CoreCronDelegateService.MAX_TIME_PROCESS);
+            await CorePromiseUtils.timeoutPromise(promise, CoreCronDelegateService.MAX_TIME_PROCESS);
         } catch (error) {
             if (error.timeout) {
                 // The handler took too long. Resolve because we don't want to retry soon.
@@ -177,7 +177,7 @@ export class CoreCronDelegateService {
             }
         }
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -373,7 +373,7 @@ export class CoreCronDelegateService {
 
         this.handlers[name].timeout = window.setTimeout(() => {
             delete this.handlers[name].timeout;
-            CoreUtils.ignoreErrors(this.checkAndExecuteHandler(name));
+            CorePromiseUtils.ignoreErrors(this.checkAndExecuteHandler(name));
         }, timeToNextExecution);
     }
 

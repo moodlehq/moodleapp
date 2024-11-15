@@ -21,7 +21,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CorePlatform } from '@services/platform';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModScorm, AddonModScormScorm } from '../scorm';
@@ -84,9 +84,11 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
             this.downloadOrPrefetchMainFileIfNeeded(scorm, prefetch, onProgress, siteId),
             // Download WS data. If it fails we don't want to fail the whole download, so we'll ignore the error for now.
             // @todo Implement a warning system so the user knows which SCORMs have failed.
-            CoreUtils.ignoreErrors(this.fetchWSData(scorm, siteId)),
+            CorePromiseUtils.ignoreErrors(this.fetchWSData(scorm, siteId)),
             // Download intro files, ignoring errors.
-            CoreUtils.ignoreErrors(CoreFilepool.downloadOrPrefetchFiles(siteId, files, prefetch, false, this.component, module.id)),
+            CorePromiseUtils.ignoreErrors(
+                CoreFilepool.downloadOrPrefetchFiles(siteId, files, prefetch, false, this.component, module.id),
+            ),
         ]);
 
         // Success, return the hash.
@@ -154,7 +156,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
             (event: ProgressEvent<EventTarget>) => this.downloadProgress(false, onProgress, event),
         );
 
-        await CoreUtils.ignoreErrors(CoreFilepool.removeFileByUrl(siteId, packageUrl));
+        await CorePromiseUtils.ignoreErrors(CoreFilepool.removeFileByUrl(siteId, packageUrl));
     }
 
     /**
@@ -238,7 +240,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
      */
     async fetchAttempts(scorm: AddonModScormScorm, modOptions: CoreCourseCommonModWSOptions): Promise<void> {
         // If it fails, assume we have no attempts.
-        const numAttempts = await CoreUtils.ignoreErrors(AddonModScorm.getAttemptCountOnline(scorm.id, modOptions), 0);
+        const numAttempts = await CorePromiseUtils.ignoreErrors(AddonModScorm.getAttemptCountOnline(scorm.id, modOptions), 0);
 
         if (numAttempts <= 0) {
             // No attempts. We'll still try to get user data to be able to identify SCOs not visible and so.

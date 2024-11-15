@@ -56,6 +56,7 @@ import { Push } from '@features/native/plugins';
 import { CoreNavigator } from '@services/navigator';
 import { CoreWait } from '@singletons/wait';
 import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to handle push notifications.
@@ -579,7 +580,7 @@ export class CorePushNotificationsProvider {
         } catch (error) {
             if (CoreUtils.isWebServiceError(error) || CoreUtils.isExpiredTokenError(error)) {
                 // Cannot unregister. Don't try again.
-                await CoreUtils.ignoreErrors(this.pendingUnregistersTable.delete({
+                await CorePromiseUtils.ignoreErrors(this.pendingUnregistersTable.delete({
                     token: site.getToken(),
                     siteid: site.getId(),
                 }));
@@ -602,7 +603,7 @@ export class CorePushNotificationsProvider {
             throw new CoreError('Cannot unregister device');
         }
 
-        await CoreUtils.ignoreErrors(Promise.all([
+        await CorePromiseUtils.ignoreErrors(Promise.all([
             // Remove the device from the local DB.
             this.registeredDevicesTables[site.getId()].delete(this.getRequiredRegisterData()),
             // Remove pending unregisters for this site.
@@ -751,7 +752,7 @@ export class CorePushNotificationsProvider {
 
             if (neededActions.unregister) {
                 // Unregister the device first.
-                await CoreUtils.ignoreErrors(this.unregisterDeviceOnMoodle(site));
+                await CorePromiseUtils.ignoreErrors(this.unregisterDeviceOnMoodle(site));
             }
 
             if (neededActions.register) {
@@ -769,7 +770,7 @@ export class CorePushNotificationsProvider {
                 CoreEvents.trigger(CoreEvents.DEVICE_REGISTERED_IN_MOODLE, {}, site.getId());
 
                 // Insert the device in the local DB.
-                await CoreUtils.ignoreErrors(this.registeredDevicesTables[site.getId()].insert(data));
+                await CorePromiseUtils.ignoreErrors(this.registeredDevicesTables[site.getId()].insert(data));
             } else if (neededActions.updatePublicKey) {
                 // Device already registered, make sure the public key is up to date.
                 const response = await this.updatePublicKeyOnMoodle(site, data);
@@ -789,7 +790,7 @@ export class CorePushNotificationsProvider {
             }
         } finally {
             // Remove pending unregisters for this site.
-            await CoreUtils.ignoreErrors(this.pendingUnregistersTable.deleteByPrimaryKey({ siteid: site.getId() }));
+            await CorePromiseUtils.ignoreErrors(this.pendingUnregistersTable.deleteByPrimaryKey({ siteid: site.getId() }));
         }
     }
 
@@ -930,7 +931,7 @@ export class CorePushNotificationsProvider {
         }
 
         // Check if the device is already registered.
-        const records = await CoreUtils.ignoreErrors(
+        const records = await CorePromiseUtils.ignoreErrors(
             this.registeredDevicesTables[site.getId()].getMany({
                 appid: data.appid,
                 uuid: data.uuid,

@@ -55,6 +55,7 @@ import { CoreFormFields, CoreForms } from '@singletons/form';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_LESSON_COMPONENT, AddonModLessonJumpTo } from '../../constants';
 import { CoreModals } from '@services/modals';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that allows attempting and reviewing a lesson.
@@ -384,7 +385,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         if (this.offline && CoreNetwork.isOnline()) {
             // Offline mode but the app is online. Try to sync the data.
-            const result = await CoreUtils.ignoreErrors(
+            const result = await CorePromiseUtils.ignoreErrors(
                 AddonModLessonSync.syncLesson(lesson.id, true, true),
             );
 

@@ -34,6 +34,7 @@ import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreConfig } from '@services/config';
 import { CoreConstants } from '@/core/constants';
 import { CorePlatform } from '@services/platform';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays the list of notifications.
@@ -192,7 +193,7 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
     async markAllNotificationsAsRead(): Promise<void> {
         this.loadingMarkAllNotificationsAsRead = true;
 
-        await CoreUtils.ignoreErrors(AddonNotifications.markAllNotificationsAsRead());
+        await CorePromiseUtils.ignoreErrors(AddonNotifications.markAllNotificationsAsRead());
 
         CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {
             time: CoreTimeUtils.timestamp(),
@@ -225,8 +226,8 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
      * @param refresher Refresher.
      */
     async refreshNotifications(refresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
-        await CoreUtils.ignoreErrors(this.fetchNotifications(true));
+        await CorePromiseUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
+        await CorePromiseUtils.ignoreErrors(this.fetchNotifications(true));
 
         refresher?.complete();
     }

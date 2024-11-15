@@ -27,7 +27,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
@@ -313,7 +313,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
      * Log view.
      */
     protected async performLogView(): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonNotes.logView(this.courseId, this.userId));
+        await CorePromiseUtils.ignoreErrors(AddonNotes.logView(this.courseId, this.userId));
 
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.VIEW_ITEM_LIST,

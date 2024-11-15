@@ -19,7 +19,7 @@ import { CoreQuestionAnswerDBRecord } from '@features/question/services/database
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreSites } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizAttemptDBRecord, ATTEMPTS_TABLE_NAME } from './database/quiz';
@@ -149,7 +149,7 @@ export class AddonModQuizOfflineProvider {
     ): Promise<CoreQuestionQuestionParsed[]> {
 
         await Promise.all(questions.map(async (question) => {
-            const dbQuestion = await CoreUtils.ignoreErrors(
+            const dbQuestion = await CorePromiseUtils.ignoreErrors(
                 CoreQuestion.getQuestion(ADDON_MOD_QUIZ_COMPONENT, attemptId, question.slot, siteId),
             );
 
@@ -192,7 +192,7 @@ export class AddonModQuizOfflineProvider {
         const db = await CoreSites.getSiteDb(siteId);
 
         // Check if an attempt already exists. Return a new one if it doesn't.
-        let entry = await CoreUtils.ignoreErrors(this.getAttemptById(attempt.id, siteId));
+        let entry = await CorePromiseUtils.ignoreErrors(this.getAttemptById(attempt.id, siteId));
 
         if (entry) {
             entry.timemodified = now;
@@ -329,7 +329,7 @@ export class AddonModQuizOfflineProvider {
 
         try {
             // Answers have been saved, now we can save the questions with the states.
-            await CoreUtils.allPromises(Object.keys(newStates).map(async (slot) => {
+            await CorePromiseUtils.allPromises(Object.keys(newStates).map(async (slot) => {
                 const question = questionsWithAnswers[Number(slot)];
 
                 await CoreQuestion.saveQuestion(

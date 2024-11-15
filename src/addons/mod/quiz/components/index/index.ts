@@ -23,7 +23,7 @@ import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModQuizPrefetchHandler } from '../../services/handlers/prefetch';
@@ -200,7 +200,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         if (AddonModQuiz.isQuizOffline(quiz)) {
             if (sync) {
                 // Try to sync the quiz.
-                await CoreUtils.ignoreErrors(this.syncActivity(showErrors));
+                await CorePromiseUtils.ignoreErrors(this.syncActivity(showErrors));
             }
         } else {
             this.showStatusSpinner = false;
@@ -375,7 +375,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             return; // Shouldn't happen.
         }
 
-        await CoreUtils.ignoreErrors(AddonModQuiz.logViewQuiz(this.quiz.id));
+        await CorePromiseUtils.ignoreErrors(AddonModQuiz.logViewQuiz(this.quiz.id));
 
         this.analyticsLogEvent('mod_quiz_view_quiz');
     }
@@ -440,7 +440,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         this.showLoading = true;
         this.content?.scrollToTop();
 
-        await CoreUtils.ignoreErrors(this.refreshContent(true));
+        await CorePromiseUtils.ignoreErrors(this.refreshContent(true));
 
         this.showLoading = false;
         this.autoReview = undefined;

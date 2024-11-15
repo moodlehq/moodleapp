@@ -14,7 +14,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigator } from '@services/navigator';
 import { ActivatedRoute } from '@angular/router';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -81,7 +81,7 @@ export class AddonBadgesBadgeClassPage implements OnInit {
      * @param refresher Refresher.
      */
     async refreshBadgeClass(refresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonBadges.invalidateBadgeClass(this.badgeId));
+        await CorePromiseUtils.ignoreErrors(AddonBadges.invalidateBadgeClass(this.badgeId));
 
         await this.fetchBadgeClass();
 

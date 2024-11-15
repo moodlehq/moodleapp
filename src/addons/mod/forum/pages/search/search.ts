@@ -30,6 +30,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 @Component({
     selector: 'page-addon-mod-forum-search',
@@ -104,7 +105,7 @@ export class AddonModForumSearchPage implements OnInit {
 
         await CoreDomUtils.showOperationModals('core.searching', true, async () => {
             await this.resultsSource.reload();
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 CoreSearchGlobalSearch.logViewResults(this.resultsSource.getQuery(), this.resultsSource.getFilters()),
             );
 

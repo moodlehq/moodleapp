@@ -16,7 +16,7 @@ import { Params } from '@angular/router';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreEvents } from '@singletons/events';
@@ -194,7 +194,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
         const showSubmissions: AddonModAssignSubmissionForList[] = await Promise.all(
             submissions.map(async (submission: AddonModAssignSubmissionForList) => {
                 const gradeData =
-                    await CoreUtils.ignoreErrors(AddonModAssignOffline.getSubmissionGrade(assign.id, submission.userid));
+                    await CorePromiseUtils.ignoreErrors(AddonModAssignOffline.getSubmissionGrade(assign.id, submission.userid));
 
                 // Load offline grades.
                 const notSynced = !!gradeData && submission.timemodified < gradeData.timemodified;

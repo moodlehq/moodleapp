@@ -21,7 +21,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModFeedbackAttemptItem, AddonModFeedbackAttemptsSource } from '../../classes/feedback-attempts-source';
 import { AddonModFeedbackWSAnonAttempt, AddonModFeedbackWSAttempt } from '../../services/feedback';
 import { CoreTime } from '@singletons/time';
@@ -180,7 +180,7 @@ export class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
         try {
             this.fetchFailed = false;
 
-            await CoreUtils.ignoreErrors(attempts.getSource().invalidateCache());
+            await CorePromiseUtils.ignoreErrors(attempts.getSource().invalidateCache());
             await attempts.getSource().loadFeedback();
             await attempts.reload();
         } catch (error) {

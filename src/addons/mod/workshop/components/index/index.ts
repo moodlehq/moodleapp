@@ -57,6 +57,7 @@ import {
     ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED,
     AddonModWorkshopPhase,
 } from '@addons/mod/workshop/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Component that displays a workshop index page.
@@ -259,7 +260,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             return; // Shouldn't happen.
         }
 
-        await CoreUtils.ignoreErrors(AddonModWorkshop.logView(this.workshop.id));
+        await CorePromiseUtils.ignoreErrors(AddonModWorkshop.logView(this.workshop.id));
 
         this.analyticsLogEvent('mod_workshop_view_workshop');
     }

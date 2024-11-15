@@ -32,7 +32,7 @@ import { CoreModals } from '@services/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ModalController, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 
@@ -141,7 +141,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const siteConfig = await CoreUtils.ignoreErrors(currentSite.getPublicConfig());
+        const siteConfig = await CorePromiseUtils.ignoreErrors(currentSite.getPublicConfig());
         this.siteLogo = currentSite.getLogoUrl(siteConfig);
         this.siteLogoLoaded = true;
     }

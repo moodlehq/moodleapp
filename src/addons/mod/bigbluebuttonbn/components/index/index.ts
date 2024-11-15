@@ -34,6 +34,7 @@ import {
 import { ADDON_MOD_BBB_COMPONENT } from '../../constants';
 import { CoreLoadings } from '@services/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Component that displays a Big Blue Button activity.
@@ -228,7 +229,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             return; // Shouldn't happen.
         }
 
-        await CoreUtils.ignoreErrors(AddonModBBB.logView(this.bbb.id));
+        await CorePromiseUtils.ignoreErrors(AddonModBBB.logView(this.bbb.id));
 
         this.analyticsLogEvent('mod_bigbluebuttonbn_view_bigbluebuttonbn');
     }

@@ -31,7 +31,7 @@ import {
 } from '@addons/competency/services/competency';
 import { CoreNavigator } from '@services/navigator';
 import { ContextLevel } from '@/core/constants';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/constants';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
@@ -175,7 +175,7 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
     async refreshCompetency(refresher: HTMLIonRefresherElement): Promise<void> {
         const source = this.competencies.getSource();
 
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             source instanceof AddonCompetencyPlanCompetenciesSource
                 ? AddonCompetency.invalidateCompetencyInPlan(source.PLAN_ID, this.requireCompetencyId())
                 : AddonCompetency.invalidateCompetencyInCourse(source.COURSE_ID, this.requireCompetencyId(), source.USER_ID),
@@ -287,7 +287,7 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
                 return;
             }
 
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 AddonCompetency.logCompetencyInPlanView(source.PLAN_ID, compId, this.planStatus, name, userId),
             );
 
@@ -316,7 +316,9 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
             return;
         }
 
-        await CoreUtils.ignoreErrors(AddonCompetency.logCompetencyInCourseView(source.COURSE_ID, compId, name, source.USER_ID));
+        await CorePromiseUtils.ignoreErrors(
+            AddonCompetency.logCompetencyInCourseView(source.COURSE_ID, compId, name, source.USER_ID),
+        );
 
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.VIEW_ITEM,

@@ -18,7 +18,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreGroups } from '@services/groups';
 import { CoreFileSizeSum, CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModWiki, AddonModWikiSubwikiPage } from '../wiki';
@@ -128,7 +128,7 @@ export class AddonModWikiPrefetchHandlerLazyService extends AddonModWikiPrefetch
         // Get the download time of the package before starting the download (otherwise we'd always get current time).
         const siteId = CoreSites.getCurrentSiteId();
 
-        const data = await CoreUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, this.component, module.id));
+        const data = await CorePromiseUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, this.component, module.id));
 
         const downloadTime = data?.downloadTime || 0;
 

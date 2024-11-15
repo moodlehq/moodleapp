@@ -74,6 +74,7 @@ import {
     CORE_COURSE_PROGRESS_UPDATED_EVENT,
     CORE_COURSE_STEALTH_MODULES_SECTION_ID,
 } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 export type CoreCourseProgressUpdated = { progress: number; courseId: number };
 
@@ -175,7 +176,7 @@ export class CoreCourseProvider {
         CorePlatform.resume.subscribe(() => {
             // Run the handler the app is open to keep user in online status.
             setTimeout(() => {
-                CoreUtils.ignoreErrors(
+                CorePromiseUtils.ignoreErrors(
                     CoreCronDelegate.forceCronHandlerExecution(CoreCourseLogCronHandler.name),
                 );
             }, 1000);
@@ -184,7 +185,7 @@ export class CoreCourseProvider {
         CoreEvents.on(CoreEvents.LOGIN, () => {
             setTimeout(() => {
                 // Ignore errors here, since probably login is not complete: it happens on token invalid.
-                CoreUtils.ignoreErrors(
+                CorePromiseUtils.ignoreErrors(
                     CoreCronDelegate.forceCronHandlerExecution(CoreCourseLogCronHandler.name),
                 );
             }, 1000);
@@ -1319,7 +1320,7 @@ export class CoreCourseProvider {
             const result = await this.markCompletedManuallyOnline(cmId, completed, siteId);
 
             // Data sent to server, if there is some offline data delete it now.
-            await CoreUtils.ignoreErrors(CoreCourseOffline.deleteManualCompletion(cmId, siteId));
+            await CorePromiseUtils.ignoreErrors(CoreCourseOffline.deleteManualCompletion(cmId, siteId));
 
             // Invalidate module now, completion has changed.
             await this.invalidateModule(cmId, siteId);
@@ -1430,7 +1431,7 @@ export class CoreCourseProvider {
         const loading = await CoreLoadings.show();
 
         // Wait for site plugins to be fetched.
-        await CoreUtils.ignoreErrors(CoreSitePlugins.waitFetchPlugins());
+        await CorePromiseUtils.ignoreErrors(CoreSitePlugins.waitFetchPlugins());
 
         if (!('format' in course) || course.format === undefined) {
             const result = await CoreCourseHelper.getCourse(course.id);

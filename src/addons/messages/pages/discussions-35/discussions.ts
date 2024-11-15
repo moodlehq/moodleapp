@@ -33,6 +33,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { ADDON_MESSAGES_NEW_MESSAGE_EVENT, ADDON_MESSAGES_READ_CHANGED_EVENT } from '@addons/messages/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays the list of discussions.
@@ -170,7 +171,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
             promises.push(AddonMessages.invalidateUnreadConversationCounts(this.siteId));
         }
 
-        await CoreUtils.allPromises(promises).finally(() => this.fetchData().finally(() => {
+        await CorePromiseUtils.allPromises(promises).finally(() => this.fetchData().finally(() => {
             if (refresher) {
                 refresher?.complete();
             }

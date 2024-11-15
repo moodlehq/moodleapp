@@ -33,6 +33,7 @@ import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { AddonModQuizNavigationQuestion } from '@addons/mod/quiz/components/navigation-modal/navigation-modal';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service with some common functions to handle questions.
@@ -115,7 +116,7 @@ export class CoreQuestionHelperProvider {
         const folderPath = CoreQuestion.getQuestionFolder(question.type, component, questionComponentId, siteId);
 
         // Ignore errors, maybe the folder doesn't exist.
-        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
     /**
@@ -570,7 +571,7 @@ export class CoreQuestionHelperProvider {
      * @returns Promise resolved when done.
      */
     async loadLocalAnswers(question: CoreQuestionQuestion, component: string, attemptId: number): Promise<void> {
-        const answers = await CoreUtils.ignoreErrors(
+        const answers = await CorePromiseUtils.ignoreErrors(
             CoreQuestion.getQuestionAnswers(component, attemptId, question.slot),
         );
 
@@ -715,7 +716,7 @@ export class CoreQuestionHelperProvider {
         componentId: string | number,
         siteId?: string,
     ): Promise<CoreQuestionsAnswers> {
-        await CoreUtils.allPromises(questions.map(async (question) => {
+        await CorePromiseUtils.allPromises(questions.map(async (question) => {
             await CoreQuestionDelegate.prepareAnswersForQuestion(
                 question,
                 answers,

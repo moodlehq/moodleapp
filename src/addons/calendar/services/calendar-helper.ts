@@ -43,6 +43,7 @@ import {
 } from '../constants';
 import { AddonCalendarSyncInvalidateEvent } from './calendar-sync';
 import { REMINDERS_DISABLED, REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service that provides some features regarding lists of courses and categories.
@@ -638,7 +639,7 @@ export class AddonCalendarHelperProvider {
                 const repeatedEvents =
                     await AddonCalendar.getLocalEventsByRepeatIdFromLocalDb(eventData.repeatid, site.id);
 
-                await CoreUtils.allPromises(repeatedEvents.map((event) =>
+                await CorePromiseUtils.allPromises(repeatedEvents.map((event) =>
                     AddonCalendar.invalidateEvent(event.id)));
 
                 return;
@@ -659,7 +660,7 @@ export class AddonCalendarHelperProvider {
         }));
 
         try {
-            await CoreUtils.allPromisesIgnoringErrors(promises);
+            await CorePromiseUtils.allPromisesIgnoringErrors(promises);
         } finally {
             const treatedMonths = {};
             const treatedDays = {};
@@ -727,7 +728,7 @@ export class AddonCalendarHelperProvider {
                 }
             });
 
-            await CoreUtils.allPromisesIgnoringErrors(finalPromises);
+            await CorePromiseUtils.allPromisesIgnoringErrors(finalPromises);
         }
     }
 

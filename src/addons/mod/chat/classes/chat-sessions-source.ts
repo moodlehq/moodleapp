@@ -16,7 +16,7 @@ import { Params } from '@angular/router';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { CoreUser } from '@features/user/services/user';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { AddonModChat, AddonModChatSession, AddonModChatSessionUser } from '../services/chat';
 
@@ -45,10 +45,10 @@ export class AddonModChatSessionsSource extends CoreRoutedItemsManagerSource<Add
      * Invalidate chat cache.
      */
     async invalidateCache(): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreUtils.allPromises([
+        await CorePromiseUtils.allPromisesIgnoringErrors([
             CoreGroups.invalidateActivityGroupInfo(this.CM_ID),
             AddonModChat.invalidateSessions(this.CHAT_ID, this.groupId, this.showAll),
-        ]));
+        ]);
     }
 
     /**

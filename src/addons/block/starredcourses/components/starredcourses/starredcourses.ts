@@ -33,6 +33,7 @@ import {
     CoreCoursesMyCoursesUpdatedEventAction,
     CORE_COURSES_STATE_FAVOURITE,
 } from '@features/courses/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Component to render a starred courses block.
@@ -113,7 +114,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
 
         // Invalidate course completion data.
         promises.push(this.invalidateCourseList().finally(() =>
-            CoreUtils.allPromises(courseIds.map((courseId) =>
+            CorePromiseUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
         if (courseIds.length  == 1) {
@@ -125,7 +126,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
             promises.push(CoreCourses.invalidateCoursesByField('ids', courseIds.join(',')));
         }
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**

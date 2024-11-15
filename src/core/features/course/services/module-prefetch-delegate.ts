@@ -34,6 +34,7 @@ import { CoreWSFile, CoreWSExternalWarning } from '@services/ws';
 import { CHECK_UPDATES_TIMES_TABLE, CoreCourseCheckUpdatesDBRecord } from './database/module-prefetch';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreCourseHelper, CoreCourseModuleData } from './course-helper';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -286,7 +287,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
                 courseId: courseId,
                 time: CoreTimeUtils.timestamp(),
             };
-            CoreUtils.ignoreErrors(site.getDb().insertRecord(CHECK_UPDATES_TIMES_TABLE, entry));
+            CorePromiseUtils.ignoreErrors(site.getDb().insertRecord(CHECK_UPDATES_TIMES_TABLE, entry));
 
             return this.treatCheckUpdatesResult(data.toCheck, response, result);
         } catch (error) {
@@ -711,7 +712,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             // Has updates, mark the module as outdated.
             status = DownloadStatus.OUTDATED;
 
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 CoreFilepool.storePackageStatus(siteId, status, handler.component, module.id),
             );
 
@@ -967,7 +968,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             }
 
             if (handler.invalidateModule) {
-                await CoreUtils.ignoreErrors(handler.invalidateModule(module, courseId));
+                await CorePromiseUtils.ignoreErrors(handler.invalidateModule(module, courseId));
             }
 
             // Invalidate cache.
@@ -1121,7 +1122,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             await Promise.all(modules.map((module) => this.syncModule(module, courseId)));
         } finally {
             // Invalidate course updates.
-            await CoreUtils.ignoreErrors(this.invalidateCourseUpdates(courseId));
+            await CorePromiseUtils.ignoreErrors(this.invalidateCourseUpdates(courseId));
         }
     }
 
@@ -1138,7 +1139,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             return;
         }
 
-        const result = await CoreUtils.ignoreErrors(handler.sync(module, courseId));
+        const result = await CorePromiseUtils.ignoreErrors(handler.sync(module, courseId));
 
         // Always invalidate status cache for this module. We cannot know if data was sent to server or not.
         this.invalidateModuleStatusCache(module);
@@ -1211,7 +1212,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         });
 
         // Set the promise.
-        prefetchData.promise = CoreUtils.allPromises(promises);
+        prefetchData.promise = CorePromiseUtils.allPromises(promises);
 
         // Store the prefetch data in the list.
         this.prefetchData[siteId] = this.prefetchData[siteId] || {};
@@ -1247,7 +1248,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             const files = await this.getModuleFiles(module, courseId);
 
             await Promise.all(files.map(async (file) => {
-                await CoreUtils.ignoreErrors(CoreFilepool.removeFileByUrl(siteId, CoreFileHelper.getFileUrl(file)));
+                await CorePromiseUtils.ignoreErrors(CoreFilepool.removeFileByUrl(siteId, CoreFileHelper.getFileUrl(file)));
             }));
         }
 

@@ -30,7 +30,7 @@ import {
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { ActionSheetController, ModalController, NgZone, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { Subscription } from 'rxjs';
 import { CoreColors } from '@singletons/colors';
@@ -174,7 +174,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         await this.loadMenuHandlers(refresh);
 
         // After loading menu handlers, admOptions should be available.
-        this.isTeacher = await CoreUtils.ignoreErrors(CoreCourseHelper.guessIsTeacher(this.courseId, this.course), false);
+        this.isTeacher = await CorePromiseUtils.ignoreErrors(CoreCourseHelper.guessIsTeacher(this.courseId, this.course), false);
 
         this.dataLoaded = true;
     }
@@ -204,7 +204,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
             // Ignore errors.
         }
 
-        const courseByField = await CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', this.courseId));
+        const courseByField = await CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', this.courseId));
         if (courseByField) {
             if (this.course) {
                 this.course.customfields = courseByField.customfields;
@@ -440,7 +440,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         }
 
         // Check if user is enrolled in the course.
-        await CoreUtils.ignoreErrors(CoreCourses.invalidateUserCourses());
+        await CorePromiseUtils.ignoreErrors(CoreCourses.invalidateUserCourses());
 
         try {
             await CoreCourses.getUserCourse(this.courseId);

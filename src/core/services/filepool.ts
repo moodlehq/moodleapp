@@ -59,6 +59,7 @@ import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreAnalytics, CoreAnalyticsEventType } from './analytics';
 import { convertTextToHTMLElement } from '../utils/create-html-element';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.
@@ -573,7 +574,7 @@ export class CoreFilepoolProvider {
 
         if (timemodified > 0 && !entry.timemodified) {
             // Entry is not outdated but it doesn't have timemodified. Update it.
-            await CoreUtils.ignoreErrors(this.filesTables[siteId].update({ timemodified }, { fileId: entry.fileId }));
+            await CorePromiseUtils.ignoreErrors(this.filesTables[siteId].update({ timemodified }, { fileId: entry.fileId }));
 
             entry.timemodified = timemodified;
         }
@@ -883,7 +884,7 @@ export class CoreFilepoolProvider {
             }
         });
 
-        return CoreUtils.allPromises(promises);
+        return CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -1088,7 +1089,7 @@ export class CoreFilepoolProvider {
 
         const finishSuccessfulDownload = (url: string): string => {
             if (component !== undefined) {
-                CoreUtils.ignoreErrors(this.addFileLink(siteId, fileId, component, componentId));
+                CorePromiseUtils.ignoreErrors(this.addFileLink(siteId, fileId, component, componentId));
             }
 
             if (!alreadyDownloaded) {
@@ -1628,7 +1629,7 @@ export class CoreFilepoolProvider {
     ): Promise<string> {
         const addToQueue = (fileUrl: string): void => {
             // Add the file to queue if needed and ignore errors.
-            CoreUtils.ignoreErrors(this.addToQueueIfNeeded(
+            CorePromiseUtils.ignoreErrors(this.addToQueueIfNeeded(
                 siteId,
                 fileUrl,
                 component,
@@ -2266,7 +2267,7 @@ export class CoreFilepoolProvider {
 
             await Promise.all([
                 this.filesTables[siteId].update({ fileId: newFileId }, { fileId: buggedFileId }),
-                CoreUtils.ignoreErrors(this.linksTables[siteId].update({ fileId: newFileId }, { fileId: buggedFileId })),
+                CorePromiseUtils.ignoreErrors(this.linksTables[siteId].update({ fileId: newFileId }, { fileId: buggedFileId })),
             ]);
 
             fileEntry.fileId = newFileId;
@@ -2714,11 +2715,11 @@ export class CoreFilepoolProvider {
             await this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress, entry);
 
             // Success, we add links and remove from queue.
-            CoreUtils.ignoreErrors(this.addFileLinks(siteId, fileId, links));
+            CorePromiseUtils.ignoreErrors(this.addFileLinks(siteId, fileId, links));
 
             // Wait for the item to be removed from queue before resolving the promise.
             // If the item could not be removed from queue we still resolve the promise.
-            await CoreUtils.ignoreErrors(this.removeFromQueue(siteId, fileId));
+            await CorePromiseUtils.ignoreErrors(this.removeFromQueue(siteId, fileId));
 
             this.treatQueueDeferred(siteId, fileId, true);
             this.notifyFileDownloaded(siteId, fileId, links);
@@ -2761,7 +2762,7 @@ export class CoreFilepoolProvider {
             if (dropFromQueue) {
                 this.logger.debug('Item dropped from queue due to error: ' + fileUrl, errorObject);
 
-                await CoreUtils.ignoreErrors(this.removeFromQueue(siteId, fileId));
+                await CorePromiseUtils.ignoreErrors(this.removeFromQueue(siteId, fileId));
 
                 this.treatQueueDeferred(siteId, fileId, false, errorMessage);
                 this.notifyFileDownloadError(siteId, fileId, links);
@@ -2840,7 +2841,7 @@ export class CoreFilepoolProvider {
         this.notifyFileDeleted(siteId, fileId, links);
 
         if (fileUrl) {
-            await CoreUtils.ignoreErrors(CorePluginFileDelegate.fileDeleted(fileUrl, path, siteId));
+            await CorePromiseUtils.ignoreErrors(CorePluginFileDelegate.fileDeleted(fileUrl, path, siteId));
         }
     }
 

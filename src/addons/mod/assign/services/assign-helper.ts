@@ -37,6 +37,7 @@ import { makeSingleton } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
 import { ADDON_MOD_ASSIGN_COMPONENT } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service that provides some helper functions for assign.
@@ -81,7 +82,7 @@ export class AddonModAssignHelperProvider {
             return true;
         }
 
-        if (await CoreUtils.promiseWorks(AddonModAssignOffline.getSubmission(assign.id, submission.userid))) {
+        if (await CorePromiseUtils.promiseWorks(AddonModAssignOffline.getSubmission(assign.id, submission.userid))) {
             // Submission was saved or deleted offline, allow editing it or creating a new one.
             return true;
         }
@@ -530,7 +531,7 @@ export class AddonModAssignHelperProvider {
 
         const promises = feedback.plugins.map((plugin) =>
             this.prepareFeedbackPluginData(assign.id, userId, feedback).then(async (inputData) => {
-                const changed = await CoreUtils.ignoreErrors(
+                const changed = await CorePromiseUtils.ignoreErrors(
                     AddonModAssignFeedbackDelegate.hasPluginDataChanged(assign, submission, plugin, inputData, userId),
                     false,
                 );
@@ -541,7 +542,7 @@ export class AddonModAssignHelperProvider {
                 return;
             }));
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
 
         return hasChanged;
     }
@@ -579,7 +580,7 @@ export class AddonModAssignHelperProvider {
                     }))
             : [];
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
 
         return hasChanged;
     }

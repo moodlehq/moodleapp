@@ -18,7 +18,7 @@ import { AddonModBook, AddonModBookBookWSData, AddonModBookTocChapter } from '..
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_MOD_BOOK_PAGE_NAME, AddonModBookNumbering } from '../../constants';
 
 /**
@@ -104,7 +104,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      * @inheritdoc
      */
     protected async logActivity(): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonModBook.logView(this.module.instance));
+        await CorePromiseUtils.ignoreErrors(AddonModBook.logView(this.module.instance));
 
         this.analyticsLogEvent('mod_book_view_book');
     }

@@ -35,6 +35,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Component to display a module summary modal.
@@ -274,7 +275,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
     protected async fetchCourse(): Promise<void> {
         this.course = await CoreCourseHelper.getCourseInfo(this.courseId);
 
-        this.isTeacher = await CoreUtils.ignoreErrors(CoreCourseHelper.guessIsTeacher(this.courseId, this.course), false);
+        this.isTeacher = await CorePromiseUtils.ignoreErrors(CoreCourseHelper.guessIsTeacher(this.courseId, this.course), false);
     }
 
     /**

@@ -23,7 +23,7 @@ import {
 } from '../services/handler';
 import { AddonModAssignFeedbackDelegate } from '@addons/mod/assign/services/feedback-delegate';
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 import { ContextLevel } from '@/core/constants';
 import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
@@ -124,7 +124,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
         }
 
         // There is no draft saved. Check if we have anything offline.
-        const offlineData = await CoreUtils.ignoreErrors(
+        const offlineData = await CorePromiseUtils.ignoreErrors(
             AddonModAssignOffline.getSubmissionGrade(this.assign.id, this.userId),
             undefined,
         );

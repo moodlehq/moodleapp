@@ -28,6 +28,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreWSFile } from '@services/ws';
 import { CorePlatform } from '@services/platform';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Component to handle a remote file. Shows the file name, icon (depending on mimetype) and a button
@@ -226,7 +227,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
 
                 // User confirmed, add the file to queue.
                 // @todo Is the invalidate really needed?
-                await CoreUtils.ignoreErrors(CoreFilepool.invalidateFileByUrl(this.siteId, this.fileUrl));
+                await CorePromiseUtils.ignoreErrors(CoreFilepool.invalidateFileByUrl(this.siteId, this.fileUrl));
 
                 this.isDownloading = true;
 

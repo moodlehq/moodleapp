@@ -23,6 +23,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { AddonNotesOffline } from './notes-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 const ROOT_CACHE_KEY = 'mmaNotes:';
 
@@ -111,7 +112,7 @@ export class AddonNotesProvider {
             throw new CoreWSError({ message: response[0].errormessage });
         }
 
-        await CoreUtils.ignoreErrors(this.invalidateNotes(courseId, undefined, siteId));
+        await CorePromiseUtils.ignoreErrors(this.invalidateNotes(courseId, undefined, siteId));
     }
 
     /**
@@ -199,7 +200,7 @@ export class AddonNotesProvider {
 
         await site.write('core_notes_delete_notes', params);
 
-        CoreUtils.ignoreErrors(this.invalidateNotes(courseId, undefined, siteId));
+        CorePromiseUtils.ignoreErrors(this.invalidateNotes(courseId, undefined, siteId));
     }
 
     /**
@@ -246,7 +247,7 @@ export class AddonNotesProvider {
 
         // Use .read to cache data and be able to check it in offline. This means that, if a user loses the capabilities
         // to add notes, he'll still see the option in the app.
-        return CoreUtils.promiseWorks(site.read('core_notes_create_notes', params, preSets));
+        return CorePromiseUtils.promiseWorks(site.read('core_notes_create_notes', params, preSets));
     }
 
     /**
@@ -257,7 +258,7 @@ export class AddonNotesProvider {
      * @returns Promise resolved with true if enabled, resolved with false or rejected otherwise.
      */
     isPluginViewNotesEnabledForCourse(courseId: number, siteId?: string): Promise<boolean> {
-        return CoreUtils.promiseWorks(this.getNotes(courseId, undefined, false, true, siteId));
+        return CorePromiseUtils.promiseWorks(this.getNotes(courseId, undefined, false, true, siteId));
     }
 
     /**

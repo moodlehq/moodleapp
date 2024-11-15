@@ -24,6 +24,7 @@ import { CoreRoutedItemsManagerSource } from './routed-items-manager-source';
 import { CoreRoutedItemsManager } from './routed-items-manager';
 import { CoreDom } from '@singletons/dom';
 import { CoreTime } from '@singletons/time';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Helper class to manage the state and routing of a list of items in a page.
@@ -45,7 +46,7 @@ export class CoreListItemsManager<
 
         this.pageRouteLocator = pageRouteLocator;
         this.addListener({ onSelectedItemUpdated: debouncedScrollToCurrentElement });
-        this.finishSuccessfulFetch = CoreTime.once(() => CoreUtils.ignoreErrors(this.logActivity()));
+        this.finishSuccessfulFetch = CoreTime.once(() => CorePromiseUtils.ignoreErrors(this.logActivity()));
     }
 
     get items(): Item[] {

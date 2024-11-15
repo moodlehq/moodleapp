@@ -42,6 +42,7 @@ import { Md5 } from 'ts-md5';
 import { CoreSiteWSCacheRecord } from '@services/database/sites';
 import { CoreErrorLogs } from '@singletons/error-logs';
 import { CoreWait } from '@singletons/wait';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Class that represents a site (combination of site + user) where the user has authenticated but the site hasn't been validated
@@ -720,7 +721,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
             if (preSets.deleteCacheIfWSError && CoreUtils.isWebServiceError(error)) {
                 // Delete the cache entry and return the entry. Don't block the user with the delete.
-                CoreUtils.ignoreErrors(this.deleteFromCache(method, data, preSets));
+                CorePromiseUtils.ignoreErrors(this.deleteFromCache(method, data, preSets));
 
                 throw new CoreWSError(error);
             }
@@ -1148,7 +1149,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
     protected async saveToCache(method: string, data: any, response: any, preSets: CoreSiteWSPreSets): Promise<void> {
         if (preSets.uniqueCacheKey) {
             // Cache key must be unique, delete all entries with same cache key.
-            await CoreUtils.ignoreErrors(this.deleteFromCache(method, data, preSets, true));
+            await CorePromiseUtils.ignoreErrors(this.deleteFromCache(method, data, preSets, true));
         }
 
         // Since 3.7, the expiration time contains the time the entry is modified instead of the expiration time.

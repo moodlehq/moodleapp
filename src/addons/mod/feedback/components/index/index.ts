@@ -23,7 +23,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     AddonModFeedback,
@@ -108,7 +108,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
             // Prefetch data if needed.
             if (!data.offline && this.isPrefetched()) {
-                await CoreUtils.ignoreErrors(AddonModFeedbackSync.prefetchAfterUpdate(
+                await CorePromiseUtils.ignoreErrors(AddonModFeedbackSync.prefetchAfterUpdate(
                     AddonModFeedbackPrefetchHandler.instance,
                     this.module,
                     this.courseId,

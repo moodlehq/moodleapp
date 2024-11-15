@@ -35,6 +35,7 @@ import {
     AddonModFeedbackIndexTabName,
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service that provides some features for feedbacks.
@@ -156,7 +157,7 @@ export class AddonModFeedbackProvider {
         }
 
         // Merge with offline data.
-        const offlineResponses = await CoreUtils.ignoreErrors(
+        const offlineResponses = await CorePromiseUtils.ignoreErrors(
             AddonModFeedbackOffline.getFeedbackResponses(feedbackId, options.siteId),
         );
 
@@ -1086,7 +1087,7 @@ export class AddonModFeedbackProvider {
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
-        return CoreUtils.promiseWorks(site.read('mod_feedback_get_last_completed', params, preSets));
+        return CorePromiseUtils.promiseWorks(site.read('mod_feedback_get_last_completed', params, preSets));
     }
 
     /**
@@ -1233,9 +1234,9 @@ export class AddonModFeedbackProvider {
         const response = await site.write<AddonModFeedbackProcessPageWSResponse>('mod_feedback_process_page', params);
 
         // Invalidate and update current values because they will change.
-        await CoreUtils.ignoreErrors(this.invalidateCurrentValuesData(feedbackId, site.getId()));
+        await CorePromiseUtils.ignoreErrors(this.invalidateCurrentValuesData(feedbackId, site.getId()));
 
-        await CoreUtils.ignoreErrors(this.getCurrentValues(feedbackId, { siteId: site.getId() }));
+        await CorePromiseUtils.ignoreErrors(this.getCurrentValues(feedbackId, { siteId: site.getId() }));
 
         return response;
     }

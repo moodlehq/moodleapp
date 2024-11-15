@@ -31,7 +31,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreConstants } from '@/core/constants';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
@@ -480,7 +480,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         }
         promises.push(AddonCalendar.invalidateTimeFormat());
 
-        await CoreUtils.allPromisesIgnoringErrors(promises);
+        await CorePromiseUtils.allPromisesIgnoringErrors(promises);
 
         await this.fetchEvent(sync, showErrors);
     }

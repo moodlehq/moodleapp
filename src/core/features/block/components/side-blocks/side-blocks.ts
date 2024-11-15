@@ -18,7 +18,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse, CoreCourseBlock } from '@features/course/services/course';
 import { CoreBlockHelper } from '../../services/block-helper';
 import { CoreBlockComponent } from '../block/block';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 import { CoreDom } from '@singletons/dom';
 import { ContextLevel } from '@/core/constants';
@@ -118,7 +118,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
      * @param refresher Refresher.
      */
     async doRefresh(refresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(this.invalidateBlocks());
+        await CorePromiseUtils.ignoreErrors(this.invalidateBlocks());
 
         await this.loadContent().finally(() => {
             refresher?.complete();
