@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreReminderData, CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
+import { CoreReminderData, CoreReminders } from '@features/reminders/services/reminders';
 import { Component, Input, OnInit } from '@angular/core';
 import { CorePopovers } from '@services/popovers';
 import { Translate } from '@singletons';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreToasts } from '@services/toasts';
+import { REMINDERS_DISABLED } from '@features/reminders/constants';
 
 /**
  * Component that displays a button to set a reminder.
@@ -128,7 +129,7 @@ export class CoreRemindersSetButtonComponent implements OnInit {
             type: this.type,
         });
 
-        if (timebefore === undefined || timebefore === CoreRemindersService.DISABLED) {
+        if (timebefore === undefined || timebefore === REMINDERS_DISABLED) {
             this.setTimebefore(undefined);
             CoreToasts.show({
                 message: 'core.reminders.reminderunset',

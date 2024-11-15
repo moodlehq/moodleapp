@@ -18,6 +18,7 @@ import {
     CoreReminders,
     CoreRemindersService,
 } from '@features/reminders/services/reminders';
+import { REMINDERS_DISABLED } from '@features/reminders/constants';
 
 /**
  * Page that displays the calendar settings.
@@ -67,7 +68,7 @@ export class AddonCalendarSettingsPage implements OnInit {
             return;
         }
 
-        await CoreReminders.setDefaultNotificationTime(reminderTime.timeBefore ?? CoreRemindersService.DISABLED);
+        await CoreReminders.setDefaultNotificationTime(reminderTime.timeBefore ?? REMINDERS_DISABLED);
         this.updateDefaultTimeLabel();
     }
 

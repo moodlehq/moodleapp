@@ -40,7 +40,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreNavigator } from '@services/navigator';
 import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
-import { CoreReminders, CoreRemindersService, CoreRemindersUnits } from '@features/reminders/services/reminders';
+import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
 import moment from 'moment-timezone';
 import {
     ADDON_CALENDAR_COMPONENT,
@@ -52,6 +52,7 @@ import {
 import { ContextLevel } from '@/core/constants';
 import { CorePopovers } from '@services/popovers';
 import { CoreLoadings } from '@services/loadings';
+import { REMINDERS_DISABLED, CoreRemindersUnits } from '@features/reminders/constants';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -621,7 +622,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
         // Check if default reminders are enabled.
         const defaultTime = await CoreReminders.getDefaultNotificationTime(this.currentSite.getId());
-        if (defaultTime === CoreRemindersService.DISABLED) {
+        if (defaultTime === REMINDERS_DISABLED) {
             return;
         }
 

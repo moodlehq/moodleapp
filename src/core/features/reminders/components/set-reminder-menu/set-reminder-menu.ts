@@ -16,13 +16,13 @@ import { Component, Input, OnInit } from '@angular/core';
 import {
     CoreReminders,
     CoreRemindersService,
-    CoreRemindersUnits,
     CoreReminderValueAndUnit,
 } from '@features/reminders/services/reminders';
 import { CorePopovers } from '@services/popovers';
 import { CoreWait } from '@singletons/wait';
 import { PopoverController } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreRemindersUnits, REMINDERS_DISABLED } from '@features/reminders/constants';
 
 /**
  * This component is meant to display a popover with the reminder options.
@@ -88,7 +88,7 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
         });
 
         const initialValue = CoreRemindersService.convertSecondsToValueAndUnit(this.initialValue);
-        if (initialValue.value === CoreRemindersService.DISABLED) {
+        if (initialValue.value === REMINDERS_DISABLED) {
             this.currentValue = 'disabled';
 
             return;

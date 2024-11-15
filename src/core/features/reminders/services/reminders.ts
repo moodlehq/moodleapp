@@ -27,31 +27,14 @@ import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
-
-/**
- * Units to set a reminder.
- */
-export enum CoreRemindersUnits {
-    MINUTE = CoreConstants.SECONDS_MINUTE,
-    HOUR = CoreConstants.SECONDS_HOUR,
-    DAY = CoreConstants.SECONDS_DAY,
-    WEEK = CoreConstants.SECONDS_WEEK,
-}
-
-const REMINDER_UNITS_LABELS = {
-    single: {
-        [CoreRemindersUnits.MINUTE]: 'core.minute',
-        [CoreRemindersUnits.HOUR]: 'core.hour',
-        [CoreRemindersUnits.DAY]: 'core.day',
-        [CoreRemindersUnits.WEEK]: 'core.week',
-    },
-    multi: {
-        [CoreRemindersUnits.MINUTE]: 'core.minutes',
-        [CoreRemindersUnits.HOUR]: 'core.hours',
-        [CoreRemindersUnits.DAY]: 'core.days',
-        [CoreRemindersUnits.WEEK]: 'core.weeks',
-    },
-};
+import {
+    CoreRemindersUnits,
+    REMINDERS_DEFAULT_NOTIFICATION_TIME_CHANGED,
+    REMINDERS_DEFAULT_NOTIFICATION_TIME_SETTING,
+    REMINDERS_DEFAULT_REMINDER_TIMEBEFORE,
+    REMINDERS_DISABLED,
+    REMINDERS_UNITS_LABELS,
+} from '../constants';
 
 /**
  * Service to handle reminders.
@@ -59,11 +42,23 @@ const REMINDER_UNITS_LABELS = {
 @Injectable({ providedIn: 'root' })
 export class CoreRemindersService {
 
-    static readonly DEFAULT_REMINDER_TIMEBEFORE = -1;
-    static readonly DISABLED = -1;
+    /**
+     * @deprecated since 5.0. Use REMINDERS_DEFAULT_REMINDER_TIMEBEFORE instead.
+     */
+    static readonly DEFAULT_REMINDER_TIMEBEFORE = REMINDERS_DEFAULT_REMINDER_TIMEBEFORE;
+    /**
+     * @deprecated since 5.0. Use REMINDERS_DISABLED instead.
+     */
+    static readonly DISABLED = REMINDERS_DISABLED;
 
-    static readonly DEFAULT_NOTIFICATION_TIME_SETTING = 'CoreRemindersDefaultNotification';
-    static readonly DEFAULT_NOTIFICATION_TIME_CHANGED = 'CoreRemindersDefaultNotificationChangedEvent';
+    /**
+     * @deprecated since 5.0. Use REMINDERS_DEFAULT_NOTIFICATION_TIME_SETTING instead.
+     */
+    static readonly DEFAULT_NOTIFICATION_TIME_SETTING = REMINDERS_DEFAULT_NOTIFICATION_TIME_SETTING;
+    /**
+     * @deprecated since 5.0. Use REMINDERS_DEFAULT_NOTIFICATION_TIME_CHANGED instead.
+     */
+    static readonly DEFAULT_NOTIFICATION_TIME_CHANGED = REMINDERS_DEFAULT_NOTIFICATION_TIME_CHANGED;
 
     protected remindersTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreReminderDBRecord>>>;
 
@@ -91,7 +86,7 @@ export class CoreRemindersService {
 
         this.scheduleAllNotifications();
 
-        CoreEvents.on(CoreRemindersService.DEFAULT_NOTIFICATION_TIME_CHANGED, async (data) => {
+        CoreEvents.on(REMINDERS_DEFAULT_NOTIFICATION_TIME_CHANGED, async (data) => {
             const site = await CoreSites.getSite(data.siteId);
             const siteId = site.getId();
 
@@ -215,7 +210,7 @@ export class CoreRemindersService {
     protected async getRemindersWithDefaultTime(siteId?: string): Promise<CoreReminderDBRecord[]> {
         siteId ??= CoreSites.getCurrentSiteId();
 
-        return this.remindersTables[siteId].getMany({ timebefore: CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE }, {
+        return this.remindersTables[siteId].getMany({ timebefore: REMINDERS_DEFAULT_REMINDER_TIMEBEFORE }, {
             sorting: [
                 { time: 'asc' },
             ],
@@ -294,11 +289,11 @@ export class CoreRemindersService {
 
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const timebefore = reminder.timebefore === CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE
+        const timebefore = reminder.timebefore === REMINDERS_DEFAULT_REMINDER_TIMEBEFORE
             ? await this.getDefaultNotificationTime(siteId)
             : reminder.timebefore;
 
-        if (timebefore === CoreRemindersService.DISABLED) {
+        if (timebefore === REMINDERS_DISABLED) {
             // Notification disabled. Cancel.
             return this.cancelReminder(reminder.id, reminder.component, siteId);
         }
@@ -364,7 +359,7 @@ export class CoreRemindersService {
      * @returns Translated label.
      */
     getUnitValueLabel(value: number, unit: CoreRemindersUnits, addDefaultLabel = false): string {
-        if (value === CoreRemindersService.DISABLED) {
+        if (value === REMINDERS_DISABLED) {
             return Translate.instant('core.settings.disabled');
         }
 
@@ -373,8 +368,8 @@ export class CoreRemindersService {
         }
 
         const unitsLabel = value === 1 ?
-            REMINDER_UNITS_LABELS.single[unit] :
-            REMINDER_UNITS_LABELS.multi[unit];
+            REMINDERS_UNITS_LABELS.single[unit] :
+            REMINDERS_UNITS_LABELS.multi[unit];
 
         const label = Translate.instant('core.reminders.timebefore', {
             units: Translate.instant(unitsLabel),
@@ -397,7 +392,7 @@ export class CoreRemindersService {
     static convertSecondsToValueAndUnit(seconds?: number): CoreReminderValueAndUnit {
         if (seconds === undefined || seconds < 0) {
             return {
-                value: CoreRemindersService.DISABLED,
+                value: REMINDERS_DISABLED,
                 unit: CoreRemindersUnits.MINUTE,
             };
         } else if (seconds === 0) {
@@ -437,7 +432,7 @@ export class CoreRemindersService {
     async getDefaultNotificationTime(siteId?: string): Promise<number> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const key = CoreRemindersService.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+        const key = REMINDERS_DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
 
         return CoreConfig.get(key, CoreConstants.CONFIG.calendarreminderdefaultvalue || 3600);
     }
@@ -452,11 +447,11 @@ export class CoreRemindersService {
     async setDefaultNotificationTime(time: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const key = CoreRemindersService.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+        const key = REMINDERS_DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
 
         await CoreConfig.set(key, time);
 
-        CoreEvents.trigger(CoreRemindersService.DEFAULT_NOTIFICATION_TIME_CHANGED, { time }, siteId);
+        CoreEvents.trigger(REMINDERS_DEFAULT_NOTIFICATION_TIME_CHANGED, { time }, siteId);
     }
 
 }
