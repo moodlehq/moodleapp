@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreCountries } from '@singletons/countries';
 import { CoreUserOffline } from './user-offline';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite } from '@classes/sites/site';
@@ -399,7 +399,7 @@ export class CoreUserProvider {
 
         const user: CoreUserData | CoreUserCourseProfile = users[0];
         if (user.country) {
-            user.country = CoreUtils.getCountryName(user.country);
+            user.country = CoreCountries.getCountryName(user.country);
         }
         this.storeUser(user.id, user.fullname, user.profileimageurl);
 

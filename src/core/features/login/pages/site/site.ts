@@ -50,6 +50,7 @@ import { CoreModals } from '@services/modals';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreLoadings } from '@services/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreCountries } from '@singletons/countries';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -223,7 +224,7 @@ export class CoreLoginSitePage implements OnInit {
             site.title = name && alias ? name + ' (' + alias + ')' : name + alias;
 
             const country = this.siteFinderSettings.displaycountry && site.countrycode ?
-                CoreUtils.getCountryName(site.countrycode) : '';
+                CoreCountries.getCountryName(site.countrycode) : '';
             const city = this.siteFinderSettings.displaycity && site.city ?
                 site.city : '';
 
