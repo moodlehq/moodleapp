@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { PREFERENCES_TABLE_NAME, CoreUserPreferenceDBRecord } from './database/user';
 
@@ -73,7 +73,7 @@ export class CoreUserOfflineProvider {
 
         if (onlineValue === undefined) {
             // Keep online value already stored (if any).
-            const entry = await CoreUtils.ignoreErrors(
+            const entry = await CorePromiseUtils.ignoreErrors(
                 site.getDb().getRecord<CoreUserPreferenceDBRecord>(PREFERENCES_TABLE_NAME, { name }),
                 null,
             );

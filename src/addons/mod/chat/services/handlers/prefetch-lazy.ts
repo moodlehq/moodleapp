@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { AddonModChatPrefetchHandlerService } from './prefetch';
 import { AddonModChat, AddonModChatSession } from '../chat';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreGroups } from '@services/groups';
@@ -34,7 +34,7 @@ export class AddonModChatPrefetchHandlerLazyService extends AddonModChatPrefetch
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         const chat = await AddonModChat.getChat(courseId, moduleId);
 
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             AddonModChat.invalidateAllSessions(chat.id),
             AddonModChat.invalidateAllSessionMessages(chat.id),
         ]);
@@ -44,7 +44,7 @@ export class AddonModChatPrefetchHandlerLazyService extends AddonModChatPrefetch
      * @inheritdoc
      */
     async invalidateModule(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             AddonModChat.invalidateChats(courseId),
             CoreCourse.invalidateModule(module.id),
         ]);

@@ -38,6 +38,7 @@ import {
     ADDON_MOD_GLOSSARY_LIMIT_ENTRIES,
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service that provides some features for glossaries.
@@ -320,7 +321,7 @@ export class AddonModGlossaryProvider {
 
         if (limit === ADDON_MOD_GLOSSARY_LIMIT_ENTRIES) {
             // Store entries in background, don't block the user for this.
-            CoreUtils.ignoreErrors(this.storeEntries(glossaryId, result.entries, from, site.getId()));
+            CorePromiseUtils.ignoreErrors(this.storeEntries(glossaryId, result.entries, from, site.getId()));
         }
 
         return result;
@@ -529,7 +530,7 @@ export class AddonModGlossaryProvider {
                 const data = await this.getStoredDataForEntry(entryId, site.getId());
 
                 if (data.from !== undefined) {
-                    const response = await CoreUtils.ignoreErrors(
+                    const response = await CorePromiseUtils.ignoreErrors(
                         this.getEntryFromList(data.glossaryId, entryId, data.from, false, options),
                     );
 
@@ -703,9 +704,9 @@ export class AddonModGlossaryProvider {
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         const glossary = await this.getGlossary(courseId, moduleId);
 
-        await CoreUtils.ignoreErrors(this.invalidateGlossaryEntries(glossary));
+        await CorePromiseUtils.ignoreErrors(this.invalidateGlossaryEntries(glossary));
 
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             this.invalidateCourseGlossaries(courseId),
             this.invalidateCategories(glossary.id),
         ]);
@@ -751,7 +752,7 @@ export class AddonModGlossaryProvider {
             }
         });
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**

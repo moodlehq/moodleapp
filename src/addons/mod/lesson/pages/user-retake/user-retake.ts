@@ -35,6 +35,7 @@ import { AddonModLessonAnswerData, AddonModLessonHelper } from '../../services/l
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_LESSON_COMPONENT } from '../../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays a retake made by a certain user.
@@ -161,7 +162,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
             }
 
             // Get the profile image of the user.
-            const user = await CoreUtils.ignoreErrors(CoreUser.getProfile(student.id, this.courseId, true));
+            const user = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(student.id, this.courseId, true));
 
             this.student = student;
             this.student.profileimageurl = user?.profileimageurl;
@@ -188,7 +189,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
             promises.push(AddonModLesson.invalidateUserRetakesForUser(this.lesson.id, this.userId));
         }
 
-        await CoreUtils.ignoreErrors(Promise.all(promises));
+        await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
         await this.fetchData();
     }

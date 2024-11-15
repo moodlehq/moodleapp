@@ -22,7 +22,7 @@ import { CoreGroups } from '@services/groups';
 import { CoreFileSizeSum, CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreModals } from '@services/modals';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import {
@@ -119,7 +119,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         }
 
         // The lesson requires a password. Check if there is one in DB.
-        let password = await CoreUtils.ignoreErrors(AddonModLesson.getStoredPassword(lessonId));
+        let password = await CorePromiseUtils.ignoreErrors(AddonModLesson.getStoredPassword(lessonId));
 
         if (password) {
             try {
@@ -294,7 +294,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         await AddonModLesson.launchRetake(lessonId, password, undefined, false, siteId);
 
         const results = await Promise.all([
-            CoreUtils.ignoreErrors(CoreFilepool.updatePackageDownloadTime(siteId, this.component, module.id)),
+            CorePromiseUtils.ignoreErrors(CoreFilepool.updatePackageDownloadTime(siteId, this.component, module.id)),
             AddonModLesson.getAccessInformation(lessonId, modOptions),
         ]);
 
@@ -324,7 +324,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         await Promise.all([
             this.prefetchPagesData(lesson, passwordOptions),
             // Prefetch user timers to be able to calculate timemodified in offline.
-            CoreUtils.ignoreErrors(AddonModLesson.getTimers(lesson.id, modOptions)),
+            CorePromiseUtils.ignoreErrors(AddonModLesson.getTimers(lesson.id, modOptions)),
             // Prefetch viewed pages in last retake to calculate progress.
             AddonModLesson.getContentPagesViewedOnline(lesson.id, retake, modOptions),
             // Prefetch question attempts in last retake for offline calculations.

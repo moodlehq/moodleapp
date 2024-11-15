@@ -17,7 +17,7 @@ import { ContextLevel } from '@/core/constants';
 import { AddonCompetencySummary, AddonCompetency } from '@addons/competency/services/competency';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/constants';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -45,7 +45,7 @@ export class AddonCompetencyCompetencySummaryPage implements OnInit {
                 return;
             }
 
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 AddonCompetency.logCompetencyView(this.competencyId, this.competency.competency.shortname),
             );
 

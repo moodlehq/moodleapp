@@ -25,7 +25,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreForms } from '@singletons/form';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModLessonRetakeFinishedInSyncDBRecord } from '../../services/database/lesson';
 import { AddonModLessonPrefetchHandler } from '../../services/handlers/prefetch';
@@ -375,7 +375,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        await CoreUtils.ignoreErrors(AddonModLesson.logViewLesson(this.lesson.id, this.password));
+        await CorePromiseUtils.ignoreErrors(AddonModLesson.logViewLesson(this.lesson.id, this.password));
     }
 
     /**
@@ -562,10 +562,10 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (formattedData.students) {
             // Get the user data for each student returned.
-            await CoreUtils.allPromises(formattedData.students.map(async (student) => {
+            await CorePromiseUtils.allPromises(formattedData.students.map(async (student) => {
                 student.bestgrade = CoreText.roundToDecimals(student.bestgrade, 2);
 
-                const user = await CoreUtils.ignoreErrors(CoreUser.getProfile(student.id, this.courseId, true));
+                const user = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(student.id, this.courseId, true));
                 if (user) {
                     student.profileimageurl = user.profileimageurl;
                 }
@@ -672,7 +672,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (!result.updated && this.dataSent && this.isPrefetched()) {
             // The user sent data to server, but not in the sync process. Check if we need to fetch data.
-            await CoreUtils.ignoreErrors(AddonModLessonSync.prefetchAfterUpdate(
+            await CorePromiseUtils.ignoreErrors(AddonModLessonSync.prefetchAfterUpdate(
                 AddonModLessonPrefetchHandler.instance,
                 this.module,
                 this.courseId,

@@ -17,7 +17,7 @@ import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fi
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { CorePath } from '@singletons/path';
 import { AddonModDataEntryWSField } from './data';
@@ -80,7 +80,7 @@ export class AddonModDataOfflineProvider {
      */
     protected async deleteEntryFiles(dataId: number, entryId: number, action: AddonModDataAction, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
-        const entry = await CoreUtils.ignoreErrors(this.getEntry(dataId, entryId, action, site.id));
+        const entry = await CorePromiseUtils.ignoreErrors(this.getEntry(dataId, entryId, action, site.id));
 
         if (!entry || !entry.fields) {
             // Entry not found or no fields, ignore.
@@ -191,7 +191,7 @@ export class AddonModDataOfflineProvider {
     async hasOfflineData(dataId: number, siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
 
-        return CoreUtils.promiseWorks(
+        return CorePromiseUtils.promiseWorks(
             site.getDb().recordExists(DATA_ENTRY_TABLE, { dataid: dataId }),
         );
     }

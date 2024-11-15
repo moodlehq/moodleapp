@@ -20,7 +20,7 @@ import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '@addons/mod/q
 import { CoreSites } from '@services/sites';
 import { AddonModQuizAccessPasswordDBRecord, PASSWORD_TABLE_NAME } from '../database/password';
 import { AddonModQuizAccessPasswordComponent } from '../../component/password';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler to support password access rule.
@@ -111,7 +111,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
         siteId?: string,
     ): Promise<boolean> {
         // If there's a password stored don't require the preflight since we'll use the stored one.
-        const entry = await CoreUtils.ignoreErrors(this.getPasswordEntry(quiz.id, siteId));
+        const entry = await CorePromiseUtils.ignoreErrors(this.getPasswordEntry(quiz.id, siteId));
 
         return !entry;
     }

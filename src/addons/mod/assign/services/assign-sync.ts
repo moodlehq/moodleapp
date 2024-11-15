@@ -40,6 +40,7 @@ import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/serv
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 import { ADDON_MOD_ASSIGN_AUTO_SYNCED, ADDON_MOD_ASSIGN_COMPONENT, ADDON_MOD_ASSIGN_MANUAL_SYNCED } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync assigns.
@@ -189,7 +190,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      */
     protected async performSyncAssign(assignId: number, siteId: string): Promise<AddonModAssignSyncResult> {
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             CoreCourseLogHelper.syncActivity(ADDON_MOD_ASSIGN_COMPONENT, assignId, siteId),
         );
 
@@ -207,7 +208,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         if (!submissions.length && !grades.length) {
             // Nothing to sync.
-            await CoreUtils.ignoreErrors(this.setSyncTime(assignId, siteId));
+            await CorePromiseUtils.ignoreErrors(this.setSyncTime(assignId, siteId));
 
             return result;
         }
@@ -246,15 +247,15 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             }
         }));
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
 
         if (result.updated) {
             // Data has been sent to server. Now invalidate the WS calls.
-            await CoreUtils.ignoreErrors(AddonModAssign.invalidateContent(assign.cmid, courseId, siteId));
+            await CorePromiseUtils.ignoreErrors(AddonModAssign.invalidateContent(assign.cmid, courseId, siteId));
         }
 
         // Sync finished, set sync time.
-        await CoreUtils.ignoreErrors(this.setSyncTime(assignId, siteId));
+        await CorePromiseUtils.ignoreErrors(this.setSyncTime(assignId, siteId));
 
         // All done, return the result.
         return result;
@@ -272,7 +273,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
         siteId: string,
     ): Promise<AddonModAssignSubmissionsGradingDBRecordFormatted[]> {
         // If no offline data found, return empty array.
-        return CoreUtils.ignoreErrors(AddonModAssignOffline.getAssignSubmissionsGrade(assignId, siteId), []);
+        return CorePromiseUtils.ignoreErrors(AddonModAssignOffline.getAssignSubmissionsGrade(assignId, siteId), []);
     }
 
     /**
@@ -287,7 +288,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
         siteId: string,
     ): Promise<AddonModAssignSubmissionsDBRecordFormatted[]> {
         // If no offline data found, return empty array.
-        return CoreUtils.ignoreErrors(AddonModAssignOffline.getAssignSubmissions(assignId, siteId), []);
+        return CorePromiseUtils.ignoreErrors(AddonModAssignOffline.getAssignSubmissions(assignId, siteId), []);
     }
 
     /**
@@ -508,7 +509,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             // Update cached data.
             promises.push(AddonModAssign.getSubmissionStatus(assign.id, options));
 
-            await CoreUtils.allPromises(promises);
+            await CorePromiseUtils.allPromises(promises);
         } catch (error) {
             if (!error || !CoreUtils.isWebServiceError(error)) {
                 // Local error, reject.

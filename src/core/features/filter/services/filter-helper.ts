@@ -35,7 +35,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { firstValueFrom } from 'rxjs';
 import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Helper service to provide filter functionalities.
@@ -118,7 +118,7 @@ export class CoreFilterHelperProvider {
     async getCategoryContexts(categoryId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
         // Get the categories of courses the user is enrolled in to decrease the number of WS requests.
         // Using CoreCourses.getCategories would group more categories, but it would require a new WS request.
-        const courses = await CoreUtils.ignoreErrors(CoreCourses.getUserCourses(true, siteId));
+        const courses = await CorePromiseUtils.ignoreErrors(CoreCourses.getUserCourses(true, siteId));
 
         const categoriesIds = (courses ?? []).map(course => course.categoryid)
             .filter((categoryId): categoryId is number => categoryId !== undefined);

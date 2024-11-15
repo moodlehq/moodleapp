@@ -16,7 +16,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     CoreUser,
@@ -203,7 +203,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async refreshUser(event?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreUser.invalidateUserCache(this.userId));
+        await CorePromiseUtils.ignoreErrors(CoreUser.invalidateUserCache(this.userId));
 
         await this.fetchUser();
 

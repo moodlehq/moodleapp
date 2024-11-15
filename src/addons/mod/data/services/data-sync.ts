@@ -34,6 +34,7 @@ import { AddonModDataHelper } from './data-helper';
 import { AddonModDataOffline, AddonModDataOfflineAction } from './data-offline';
 import { ADDON_MOD_DATA_AUTO_SYNCED, ADDON_MOD_DATA_COMPONENT, AddonModDataAction } from '../constants';
 import { CoreText } from '@singletons/text';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync databases.
@@ -164,7 +165,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
      */
     protected async performSyncDatabase(dataId: number, siteId: string): Promise<AddonModDataSyncResult> {
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             CoreCourseLogHelper.syncActivity(ADDON_MOD_DATA_COMPONENT, dataId, siteId),
         );
 
@@ -175,11 +176,11 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         // Get answers to be sent.
         const offlineActions: AddonModDataOfflineAction[] =
-            await CoreUtils.ignoreErrors(AddonModDataOffline.getDatabaseEntries(dataId, siteId), []);
+            await CorePromiseUtils.ignoreErrors(AddonModDataOffline.getDatabaseEntries(dataId, siteId), []);
 
         if (!offlineActions.length) {
             // Nothing to sync.
-            await CoreUtils.ignoreErrors(this.setSyncTime(dataId, siteId));
+            await CorePromiseUtils.ignoreErrors(this.setSyncTime(dataId, siteId));
 
             return result;
         }
@@ -211,11 +212,11 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         if (result.updated) {
             // Data has been sent to server. Now invalidate the WS calls.
-            await CoreUtils.ignoreErrors(AddonModData.invalidateContent(database.coursemodule, courseId, siteId));
+            await CorePromiseUtils.ignoreErrors(AddonModData.invalidateContent(database.coursemodule, courseId, siteId));
         }
 
         // Sync finished, set sync time.
-        await CoreUtils.ignoreErrors(this.setSyncTime(dataId, siteId));
+        await CorePromiseUtils.ignoreErrors(this.setSyncTime(dataId, siteId));
 
         return result;
     }
@@ -453,7 +454,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
                         });
                     }
 
-                    return CoreUtils.allPromises(subPromises);
+                    return CorePromiseUtils.allPromises(subPromises);
                 }));
 
         await Promise.all(promises);

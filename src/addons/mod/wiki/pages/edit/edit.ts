@@ -22,7 +22,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -224,7 +224,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
                     }
 
                     // Check if there's already some offline data for this page.
-                    const page = await CoreUtils.ignoreErrors(
+                    const page = await CorePromiseUtils.ignoreErrors(
                         AddonModWikiOffline.getNewPage(pageTitle, this.subwikiId, this.wikiId, this.userId, this.groupId),
                     );
 
@@ -396,7 +396,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
             if (!this.editOffline) {
                 // Check if the user has an offline page with the same title.
-                const page = await CoreUtils.ignoreErrors(
+                const page = await CorePromiseUtils.ignoreErrors(
                     AddonModWikiOffline.getNewPage(title, this.subwikiId, this.wikiId, this.userId, this.groupId),
                 );
 
@@ -442,7 +442,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
             this.userId = pageContents.userid;
             this.groupId = pageContents.groupid;
 
-            await CoreUtils.ignoreErrors(Promise.all(promises));
+            await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
             // Notify page created.
             CoreEvents.trigger(ADDON_MOD_WIKI_PAGE_CREATED_EVENT, {

@@ -29,7 +29,7 @@ import { AddonMessagesOffline, AddonMessagesOfflineMessagesDBRecordFormatted } f
 import { AddonMessagesSync } from '../../services/messages-sync';
 import { CoreUser } from '@features/user/services/user';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreLogger } from '@singletons/logger';
 import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infinite-loading';
 import { Md5 } from 'ts-md5/dist/md5';
@@ -897,7 +897,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         }
 
         await CoreWait.wait(400);
-        await CoreUtils.ignoreErrors(this.waitForFetch());
+        await CorePromiseUtils.ignoreErrors(this.waitForFetch());
     }
 
     /**

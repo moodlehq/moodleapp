@@ -19,7 +19,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_RESOURCE_COMPONENT } from '../constants';
@@ -114,7 +114,7 @@ export class AddonModResourceProvider {
         promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_RESOURCE_COMPONENT, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId, 'resource'));
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**

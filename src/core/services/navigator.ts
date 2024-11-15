@@ -33,6 +33,7 @@ import { filter } from 'rxjs/operators';
 import { CorePromisedValue } from '@classes/promised-value';
 import { BehaviorSubject } from 'rxjs';
 import { CoreLoadings } from './loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Redirect payload.
@@ -549,7 +550,7 @@ export class CoreNavigatorService {
 
         const currentMainMenuTab = this.getCurrentMainMenuTab();
         const isMainMenuTab = pathRoot === currentMainMenuTab || (!currentMainMenuTab && path === this.getLandingTabPage()) ||
-            await CoreUtils.ignoreErrors(CoreMainMenu.isMainMenuTab(pathRoot), false);
+            await CorePromiseUtils.ignoreErrors(CoreMainMenu.isMainMenuTab(pathRoot), false);
 
         if (!options.preferCurrentTab && isMainMenuTab) {
             return this.navigate(`/main/${path}`, options);

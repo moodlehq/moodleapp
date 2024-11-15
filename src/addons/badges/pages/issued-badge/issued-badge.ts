@@ -18,7 +18,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreUser } from '@features/user/services/user';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreNavigator } from '@services/navigator';
 import { ActivatedRoute } from '@angular/router';
@@ -151,12 +151,12 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
      * @param refresher Refresher.
      */
     async refreshBadges(refresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.allPromisesIgnoringErrors([
+        await CorePromiseUtils.allPromisesIgnoringErrors([
             AddonBadges.invalidateUserBadges(this.courseId, this.userId),
             AddonBadges.invalidateUserBadgeByHash(this.badgeHash),
         ]);
 
-        await CoreUtils.ignoreErrors(Promise.all([
+        await CorePromiseUtils.ignoreErrors(Promise.all([
             this.fetchIssuedBadge(),
         ]));
 

@@ -36,7 +36,7 @@ import {
     AddonModSurveySync,
     AddonModSurveySyncResult,
 } from '../../services/survey-sync';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT } from '../../constants';
 import { CoreLoadings } from '@services/loadings';
 
@@ -169,7 +169,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
             return; // Shouldn't happen.
         }
 
-        await CoreUtils.ignoreErrors(AddonModSurvey.logView(this.survey.id));
+        await CorePromiseUtils.ignoreErrors(AddonModSurvey.logView(this.survey.id));
 
         this.analyticsLogEvent('mod_survey_view_survey');
     }

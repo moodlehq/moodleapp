@@ -20,7 +20,7 @@ import {
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ContextLevel } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
 
@@ -76,7 +76,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
                     this.undefinedOrEqual(data, 'component') && this.undefinedOrEqual(data, 'itemId') &&
                     this.undefinedOrEqual(data, 'area')) {
 
-                    CoreUtils.ignoreErrors(this.doRefresh());
+                    CorePromiseUtils.ignoreErrors(this.doRefresh());
                 }
             },
             CoreSites.getCurrentSiteId(),

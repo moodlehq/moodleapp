@@ -21,7 +21,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CorePath } from '@singletons/path';
@@ -228,7 +228,7 @@ export class AddonModImscpProvider {
         promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_IMSCP_COMPONENT, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId));
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**

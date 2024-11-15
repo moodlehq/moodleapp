@@ -35,6 +35,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreText } from '@singletons/text';
 import { CoreModals } from '@services/modals';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Result of a resource download.
@@ -131,10 +132,10 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         // If it's a single activity course and the refresher is displayed within the component,
         // call doRefresh on the section page to refresh the course data.
         if (this.courseContentsPage && !CoreCourseModuleDelegate.displayRefresherInSingleActivity(this.module.modname)) {
-            await CoreUtils.ignoreErrors(this.courseContentsPage.doRefresh());
+            await CorePromiseUtils.ignoreErrors(this.courseContentsPage.doRefresh());
         }
 
-        await CoreUtils.ignoreErrors(this.refreshContent(true, showErrors));
+        await CorePromiseUtils.ignoreErrors(this.refreshContent(true, showErrors));
 
         refresher?.complete();
     }
@@ -153,7 +154,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
             return;
         }
 
-        await CoreUtils.ignoreErrors(Promise.all([
+        await CorePromiseUtils.ignoreErrors(Promise.all([
             this.invalidateContent(),
             this.showCompletion ? CoreCourse.invalidateModule(this.module.id) : undefined,
         ]));
@@ -315,7 +316,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         }
 
         if (refresh) {
-            await CoreUtils.ignoreErrors(CoreCourseModulePrefetchDelegate.invalidateCourseUpdates(this.courseId));
+            await CorePromiseUtils.ignoreErrors(CoreCourseModulePrefetchDelegate.invalidateCourseUpdates(this.courseId));
         }
 
         // Also, get the current status.
@@ -420,7 +421,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
         // @todo: Temporary fix to update course page completion. This should be refactored in MOBILE-4326.
         if (previousCompletion && module.completiondata && previousCompletion.state !== module.completiondata.state) {
-            await CoreUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId));
+            await CorePromiseUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId));
 
             CoreEvents.trigger(CoreEvents.COMPLETION_MODULE_VIEWED, {
                 courseId: this.courseId,

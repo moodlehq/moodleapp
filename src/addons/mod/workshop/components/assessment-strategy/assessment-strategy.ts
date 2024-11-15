@@ -43,6 +43,7 @@ import {
 } from '@addons/mod/workshop/constants';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Component that displays workshop assessment strategy form.
@@ -384,7 +385,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
                 promises.push(AddonModWorkshop.invalidateAssessmentData(this.workshop.id, this.assessmentId));
             }
 
-            await CoreUtils.ignoreErrors(Promise.all(promises));
+            await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
             CoreEvents.trigger(ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED, {
                 workshopId: this.workshop.id,

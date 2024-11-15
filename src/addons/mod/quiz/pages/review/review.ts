@@ -18,7 +18,7 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreDom } from '@singletons/dom';
 import { CoreTime } from '@singletons/time';
 import {
@@ -231,7 +231,7 @@ export class AddonModQuizReviewPage implements OnInit {
             promises.push(AddonModQuiz.invalidateCombinedReviewOptionsForUser(this.quiz.id));
         }
 
-        await CoreUtils.ignoreErrors(Promise.all(promises));
+        await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
         try {
             await this.fetchData();
@@ -299,7 +299,7 @@ export class AddonModQuizReviewPage implements OnInit {
         }
 
         if (logInLMS) {
-            await CoreUtils.ignoreErrors(AddonModQuiz.logViewAttemptReview(this.attemptId, this.quiz.id));
+            await CorePromiseUtils.ignoreErrors(AddonModQuiz.logViewAttemptReview(this.attemptId, this.quiz.id));
         }
 
         let url = `/mod/quiz/review.php?attempt=${this.attemptId}&cmid=${this.cmId}`;

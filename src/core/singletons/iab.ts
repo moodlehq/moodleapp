@@ -59,7 +59,7 @@ export class CoreInAppBrowser {
 
     /**
      * Open a URL using InAppBrowser.
-     * Do not use for files, refer to {@link CoreUtilsProvider.openFile}.
+     * Do not use for files, refer to CoreUtils.openFile.
      *
      * @param url The URL to open.
      * @param options Override default options passed to InAppBrowser.

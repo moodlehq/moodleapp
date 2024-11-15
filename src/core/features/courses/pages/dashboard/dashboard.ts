@@ -26,7 +26,7 @@ import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays the dashboard page.
@@ -61,7 +61,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
         }, CoreSites.getCurrentSiteId());
 
         this.logView = CoreTime.once(async () => {
-            await CoreUtils.ignoreErrors(CoreCourses.logView('dashboard'));
+            await CorePromiseUtils.ignoreErrors(CoreCourses.logView('dashboard'));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM,

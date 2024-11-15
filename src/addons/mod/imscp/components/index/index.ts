@@ -18,7 +18,7 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModImscp, AddonModImscpTocItem } from '../../services/imscp';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_MOD_IMSCP_COMPONENT, ADDON_MOD_IMSCP_PAGE_NAME } from '../../constants';
 
 /**
@@ -103,7 +103,7 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
      * @inheritdoc
      */
     protected async logActivity(): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonModImscp.logView(this.module.instance));
+        await CorePromiseUtils.ignoreErrors(AddonModImscp.logView(this.module.instance));
 
         this.analyticsLogEvent('mod_imscp_view_imscp');
     }

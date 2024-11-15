@@ -18,7 +18,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_FOLDER_COMPONENT } from '../constants';
@@ -106,7 +106,7 @@ export class AddonModFolderProvider {
         promises.push(this.invalidateFolderData(courseId, siteId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId));
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**

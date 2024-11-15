@@ -24,7 +24,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
@@ -182,7 +182,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (sync) {
             // Try to synchronize the assign.
-            await CoreUtils.ignoreErrors(this.syncActivity(showErrors));
+            await CorePromiseUtils.ignoreErrors(this.syncActivity(showErrors));
         }
 
         // Check if there's any offline data for this assign.
@@ -250,18 +250,18 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             return; // Shouldn't happen.
         }
 
-        await CoreUtils.ignoreErrors(AddonModAssign.logView(this.assign.id));
+        await CorePromiseUtils.ignoreErrors(AddonModAssign.logView(this.assign.id));
 
         this.analyticsLogEvent('mod_assign_view_assign');
 
         if (this.canViewAllSubmissions) {
             // User can see all submissions, log grading view.
-            await CoreUtils.ignoreErrors(AddonModAssign.logGradingView(this.assign.id));
+            await CorePromiseUtils.ignoreErrors(AddonModAssign.logGradingView(this.assign.id));
 
             this.analyticsLogEvent('mod_assign_view_grading_table', { sendUrl: false });
         } else if (this.canViewOwnSubmission) {
             // User can only see their own submission, log view the user submission.
-            await CoreUtils.ignoreErrors(AddonModAssign.logSubmissionView(this.assign.id));
+            await CorePromiseUtils.ignoreErrors(AddonModAssign.logSubmissionView(this.assign.id));
 
             this.analyticsLogEvent('mod_assign_view_submission_status', { sendUrl: false });
         }

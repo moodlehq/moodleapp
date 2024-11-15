@@ -21,7 +21,7 @@ import { makeSingleton } from '@singletons';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSites } from './sites';
-import { CoreUtils } from './utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreRedirects } from '@singletons/redirects';
 import { CoreZoomLevel } from '@features/settings/services/settings-helper';
 import { CorePromisedValue } from '@classes/promised-value';
@@ -69,7 +69,7 @@ export class CoreUpdateManagerProvider {
         const [versionApplied, previousAppFolder, currentAppFolder] = await Promise.all([
             CoreConfig.get<number>(CoreUpdateManagerProvider.VERSION_APPLIED, 0),
             CoreConfig.get<string>(CoreUpdateManagerProvider.PREVIOUS_APP_FOLDER, ''),
-            CorePlatform.isMobile() ? CoreUtils.ignoreErrors(CoreFile.getBasePath(), '') : '',
+            CorePlatform.isMobile() ? CorePromiseUtils.ignoreErrors(CoreFile.getBasePath(), '') : '',
         ]);
 
         if (versionCode > versionApplied) {
@@ -119,12 +119,12 @@ export class CoreUpdateManagerProvider {
             return;
         }
 
-        const currentSiteId = await CoreUtils.ignoreErrors(CoreSites.getStoredCurrentSiteId());
+        const currentSiteId = await CorePromiseUtils.ignoreErrors(CoreSites.getStoredCurrentSiteId());
         if (!currentSiteId) {
             return;
         }
 
-        const site = await CoreUtils.ignoreErrors(CoreSites.getSite(currentSiteId));
+        const site = await CorePromiseUtils.ignoreErrors(CoreSites.getSite(currentSiteId));
         if (!site) {
             return;
         }

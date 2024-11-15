@@ -17,7 +17,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_LABEL_COMPONENT } from '../constants';
@@ -133,7 +133,7 @@ export class AddonModLabelProvider {
         promises.push(this.invalidateLabelData(courseId, siteId));
         promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_LABEL_COMPONENT, moduleId, true));
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
 }

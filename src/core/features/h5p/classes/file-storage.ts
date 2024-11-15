@@ -17,7 +17,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CorePath } from '@singletons/path';
 import {
     CoreH5PCore,
@@ -154,7 +154,7 @@ export class CoreH5PFileStorage {
         });
 
         // Ignore errors, maybe there's no cached asset of some type.
-        await CoreUtils.ignoreErrors(CoreUtils.allPromises(promises));
+        await CorePromiseUtils.allPromisesIgnoringErrors(promises);
     }
 
     /**
@@ -418,7 +418,7 @@ export class CoreH5PFileStorage {
         const folderPath = this.getContentFolderPath(folderName, siteId);
 
         // Delete existing content for this package.
-        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(folderPath));
 
         // Copy the new one.
         await CoreFile.moveDir(contentPath, folderPath);

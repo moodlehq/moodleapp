@@ -26,7 +26,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 
@@ -178,7 +178,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
 
         // Get the original text from plugin or offline.
         const offlineData =
-            await CoreUtils.ignoreErrors(AddonModAssignOffline.getSubmission(assign.id, submission.userid));
+            await CorePromiseUtils.ignoreErrors(AddonModAssignOffline.getSubmission(assign.id, submission.userid));
 
         let initialText = '';
         if (offlineData && offlineData.plugindata && offlineData.plugindata.onlinetext_editor) {

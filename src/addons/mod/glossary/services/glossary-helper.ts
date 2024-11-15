@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFile } from '@services/file';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModGlossaryOffline } from './glossary-offline';
 import { makeSingleton } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
@@ -39,7 +39,7 @@ export class AddonModGlossaryHelperProvider {
     async deleteStoredFiles(glossaryId: number, entryName: string, timeCreated: number, siteId?: string): Promise<void> {
         const folderPath = await AddonModGlossaryOffline.getEntryFolder(glossaryId, entryName, timeCreated, siteId);
 
-        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
     /**

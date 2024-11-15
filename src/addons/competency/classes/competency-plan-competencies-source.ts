@@ -14,7 +14,7 @@
 
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { CoreUserProfile } from '@features/user/services/user';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     AddonCompetency,
     AddonCompetencyDataForPlanPageCompetency,
@@ -60,7 +60,7 @@ export class AddonCompetencyPlanCompetenciesSource extends CoreRoutedItemsManage
      * Invalidate plan cache.
      */
     async invalidateCache(): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonCompetency.invalidateLearningPlan(this.PLAN_ID));
+        await CorePromiseUtils.ignoreErrors(AddonCompetency.invalidateLearningPlan(this.PLAN_ID));
     }
 
     /**

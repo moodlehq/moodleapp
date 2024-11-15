@@ -28,6 +28,7 @@ import {
 
 import { AddonModLessonPageWSData } from './lesson';
 import { AddonModLessonPageType } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to handle offline lesson.
@@ -144,8 +145,8 @@ export class AddonModLessonOfflineProvider {
         const lessons: Record<number, AddonModLessonLessonStoredData> = {};
 
         const [pageAttempts, retakes] = await Promise.all([
-            CoreUtils.ignoreErrors(this.getAllAttempts(siteId)),
-            CoreUtils.ignoreErrors(this.getAllRetakes(siteId)),
+            CorePromiseUtils.ignoreErrors(this.getAllAttempts(siteId)),
+            CorePromiseUtils.ignoreErrors(this.getAllRetakes(siteId)),
         ]);
 
         this.getLessonsFromEntries(lessons, pageAttempts || []);
@@ -420,8 +421,8 @@ export class AddonModLessonOfflineProvider {
      */
     async hasOfflineData(lessonId: number, siteId?: string): Promise<boolean> {
         const [retake, attempts] = await Promise.all([
-            CoreUtils.ignoreErrors(this.getRetake(lessonId, siteId)),
-            CoreUtils.ignoreErrors(this.getLessonAttempts(lessonId, siteId)),
+            CorePromiseUtils.ignoreErrors(this.getRetake(lessonId, siteId)),
+            CorePromiseUtils.ignoreErrors(this.getLessonAttempts(lessonId, siteId)),
         ]);
 
         return !!retake || !!attempts?.length;

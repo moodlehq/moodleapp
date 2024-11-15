@@ -19,7 +19,7 @@ import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonQtypeDdMarkerQuestionData } from '../component/ddmarker';
 import { AddonQtypeDdMarkerGraphicsApi } from './graphics_api';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreExternalContentDirective } from '@directives/external-content';
 import { CoreLinkDirective } from '@directives/link';
@@ -715,7 +715,7 @@ export class AddonQtypeDdMarkerQuestion {
             // Wait for image to be visible, otherwise the calculated positions are wrong.
             const visiblePromise = CoreDom.waitToBeVisible(bgImg);
 
-            await CoreUtils.ignoreErrors(CoreUtils.timeoutPromise(visiblePromise, 500));
+            await CorePromiseUtils.ignoreErrors(CorePromiseUtils.timeoutPromise(visiblePromise, 500));
             visiblePromise.cancel(); // In case of timeout, cancel the promise.
 
             this.redrawDragsAndDrops();

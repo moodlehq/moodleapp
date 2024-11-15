@@ -26,6 +26,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonBlogOffline, AddonBlogOfflineEntry } from './blog-offline';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 const ROOT_CACHE_KEY = 'addonBlog:';
 
@@ -229,7 +230,7 @@ export class AddonBlogProvider {
             }
 
             await this.deleteEntryOnline(params, siteId);
-            await CoreUtils.ignoreErrors(AddonBlogOffline.unmarkEntryAsRemoved(params.entryid));
+            await CorePromiseUtils.ignoreErrors(AddonBlogOffline.unmarkEntryAsRemoved(params.entryid));
         } catch (error) {
             if (!CoreUtils.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
@@ -311,7 +312,7 @@ export class AddonBlogProvider {
         const tags = options?.find(option => option.name === 'tags')?.value as string | undefined;
         const publishState = options?.find(option => option.name === 'publishstate')?.value as AddonBlogPublishState
             ?? AddonBlogPublishState.draft;
-        const user = await CoreUtils.ignoreErrors(CoreUser.getProfile(offlineEntry.userid, courseId, true));
+        const user = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(offlineEntry.userid, courseId, true));
         const folder = 'id' in offlineEntry && offlineEntry.id ? { id: offlineEntry.id } : { created: offlineEntry.created };
         const offlineFiles = await AddonBlogOffline.getOfflineFiles(folder);
         const optionsFiles = this.getAttachmentFilesFromOptions(options);
@@ -375,7 +376,7 @@ export class AddonBlogProvider {
         }
 
         entry.summary = CoreFileHelper.replacePluginfileUrls(entry.summary, entry.summaryfiles || []);
-        entry.user = await CoreUtils.ignoreErrors(CoreUser.getProfile(entry.userid, entry.courseid, true));
+        entry.user = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(entry.userid, entry.courseid, true));
     }
 
     /**

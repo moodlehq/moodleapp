@@ -32,6 +32,7 @@ import {
 import { AddonModForumDiscussionOptions, AddonModForumOffline, AddonModForumOfflineReply } from './forum-offline';
 import { CoreFileEntry } from '@services/file-helper';
 import { ADDON_MOD_FORUM_ALL_GROUPS, ADDON_MOD_FORUM_COMPONENT } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service that provides some features for forums.
@@ -224,7 +225,7 @@ export class AddonModForumHelperProvider {
 
         // Get user data.
         promises.push(
-            CoreUtils.ignoreErrors(
+            CorePromiseUtils.ignoreErrors(
                 CoreUser.instance
                     .getProfile(offlineReply.userid, offlineReply.courseid, true)
                     .then(user => {
@@ -255,7 +256,7 @@ export class AddonModForumHelperProvider {
         const folderPath = await AddonModForumOffline.getNewDiscussionFolder(forumId, timecreated, siteId);
 
         // Ignore any errors, CoreFile.removeDir fails if folder doesn't exist.
-        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
     /**
@@ -271,7 +272,7 @@ export class AddonModForumHelperProvider {
         const folderPath = await AddonModForumOffline.getReplyFolder(forumId, postId, siteId, userId);
 
         // Ignore any errors, CoreFile.removeDir fails if folder doesn't exist.
-        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
     /**

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Subject, BehaviorSubject } from 'rxjs';
 
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEvents } from '@singletons/events';
 import { CoreUserProfile, USER_PROFILE_REFRESHED } from './user';
 import { makeSingleton } from '@singletons';
@@ -334,7 +334,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
         const handlersData = this.getHandlersData(user.id, context, contextId);
         handlersData.handlers = [];
 
-        await CoreUtils.allPromises(Object.keys(this.enabledHandlers).map(async (name) => {
+        await CorePromiseUtils.allPromises(Object.keys(this.enabledHandlers).map(async (name) => {
             // Checks if the handler is enabled for the user.
             const handler = this.handlers[name];
 

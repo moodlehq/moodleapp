@@ -18,7 +18,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteBasicInfo, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSite } from '@classes/sites/site';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -180,7 +180,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
      * Get some data (like identity providers) from the site config.
      */
     protected async checkSiteConfig(): Promise<void> {
-        this.siteConfig = await CoreUtils.ignoreErrors(this.site.getPublicConfig({
+        this.siteConfig = await CorePromiseUtils.ignoreErrors(this.site.getPublicConfig({
             readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
         }));
 

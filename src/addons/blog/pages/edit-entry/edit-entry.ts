@@ -47,6 +47,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreTimeUtils } from '@services/utils/time';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 @Component({
     selector: 'addon-blog-edit-entry',
@@ -323,7 +324,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
                 const filters: AddonBlogFilter | undefined = CoreNavigator.getRouteParam('filters');
                 const entry = this.entry && 'attachment' in this.entry
                     ? this.entry
-                    : await CoreUtils.ignoreErrors(this.getEntry({ filters, lastModified, entryId: this.entry.id }));
+                    : await CorePromiseUtils.ignoreErrors(this.getEntry({ filters, lastModified, entryId: this.entry.id }));
 
                 const removedFiles = CoreFileUploader.getFilesToDelete(entry?.attachmentfiles ?? [], this.files);
 

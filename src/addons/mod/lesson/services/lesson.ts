@@ -36,6 +36,7 @@ import {
 } from '../constants';
 import { CoreGradeType } from '@features/grades/constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 declare module '@singletons/events' {
 
@@ -1013,7 +1014,7 @@ export class AddonModLessonProvider {
             siteId: options.siteId,
         };
 
-        const gradeInfo = await CoreUtils.ignoreErrors(this.lessonGrade(lesson, retake, newOptions));
+        const gradeInfo = await CorePromiseUtils.ignoreErrors(this.lessonGrade(lesson, retake, newOptions));
 
         // Retake marked, now return the response.
         return this.processEolPage(lesson, courseId, options, gradeInfo);
@@ -1193,7 +1194,7 @@ export class AddonModLessonProvider {
 
         const [online, offline] = await Promise.all([
             this.getContentPagesViewedOnline(lessonId, retake, options),
-            CoreUtils.ignoreErrors(
+            CorePromiseUtils.ignoreErrors(
                 AddonModLessonOffline.getRetakeAttemptsForType(lessonId, retake, type, options.siteId),
             ),
         ]);
@@ -1485,7 +1486,7 @@ export class AddonModLessonProvider {
 
             if (validatePassword) {
                 // Invalidate the data and reject.
-                await CoreUtils.ignoreErrors(this.invalidateLessonWithPassword(lessonId, site.id));
+                await CorePromiseUtils.ignoreErrors(this.invalidateLessonWithPassword(lessonId, site.id));
 
                 throw new CoreError(Translate.instant('addon.mod_lesson.loginfail'));
             }
@@ -1885,7 +1886,7 @@ export class AddonModLessonProvider {
                 // Tell student how many questions they have seen, how many are required and their grade.
                 const retake = accessInfo.attemptscount;
 
-                const gradeInfo = await CoreUtils.ignoreErrors(this.lessonGrade(lesson, retake, options));
+                const gradeInfo = await CorePromiseUtils.ignoreErrors(this.lessonGrade(lesson, retake, options));
                 if (gradeInfo?.attempts) {
                     if (gradeInfo.nquestions < lesson.minquestions) {
                         this.addMessage(messages, 'addon.mod_lesson.numberofpagesviewednotice', {
@@ -1943,7 +1944,7 @@ export class AddonModLessonProvider {
 
         const [online, offline] = await Promise.all([
             this.getQuestionsAttemptsOnline(lessonId, retake, options),
-            CoreUtils.ignoreErrors(AddonModLessonOffline.getQuestionsAttempts(
+            CorePromiseUtils.ignoreErrors(AddonModLessonOffline.getQuestionsAttempts(
                 lessonId,
                 retake,
                 options.correct,

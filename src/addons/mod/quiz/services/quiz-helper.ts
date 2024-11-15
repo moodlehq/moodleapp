@@ -43,6 +43,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreModals } from '@services/modals';
 import { CoreLoadings } from '@services/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Helper service that provides some features for quiz.
@@ -474,7 +475,7 @@ export class AddonModQuizHelperProvider {
 
                     if (options.offline) {
                         // Get current page stored in local.
-                        const storedAttempt = await CoreUtils.ignoreErrors(
+                        const storedAttempt = await CorePromiseUtils.ignoreErrors(
                             AddonModQuizOffline.getAttemptById(attempt.id),
                         );
 

@@ -19,7 +19,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 import { CoreLogger } from '@singletons/logger';
 import { CoreAppDB } from '@services/app-db';
 import { CoreFile } from '@services/file';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreSites } from '@services/sites';
 import { CoreEvents } from '@singletons/events';
@@ -74,7 +74,7 @@ export class CoreSharedFilesProvider {
     async checkIOSNewFiles(): Promise<FileEntry | undefined> {
         this.logger.debug('Search for new files on iOS');
 
-        const entries = await CoreUtils.ignoreErrors(CoreFile.getDirectoryContents('Inbox'));
+        const entries = await CorePromiseUtils.ignoreErrors(CoreFile.getDirectoryContents('Inbox'));
 
         if (!entries || !entries.length) {
             return;
@@ -127,7 +127,7 @@ export class CoreSharedFilesProvider {
     async deleteInboxFile(entry: FileEntry): Promise<void> {
         this.logger.debug('Delete inbox file: ' + entry.name);
 
-        await CoreUtils.ignoreErrors(CoreFile.removeFileByFileEntry(entry));
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeFileByFileEntry(entry));
 
         try {
             await this.unmarkAsTreated(this.getFileId(entry));

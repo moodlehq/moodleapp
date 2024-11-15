@@ -27,7 +27,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreWSFile } from '@services/ws';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../assign-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroups } from '@services/groups';
 import { AddonModAssignSync, AddonModAssignSyncResult } from '../assign-sync';
@@ -252,7 +252,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         if (blindMarking) {
             promises.push(
-                CoreUtils.ignoreErrors(AddonModAssign.getAssignmentUserMappings(assign.id, -1, modOptions)),
+                CorePromiseUtils.ignoreErrors(AddonModAssign.getAssignmentUserMappings(assign.id, -1, modOptions)),
             );
         }
 
@@ -260,7 +260,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         promises.push(CoreCourse.getModuleBasicInfoByInstance(assign.id, 'assign', { siteId }));
         // Get course data, needed to determine upload max size if it's configured to be course limit.
-        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
+        promises.push(CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
         // Download intro files and attachments. Do not call getFiles because it'd call some WS twice.
         let files: CoreWSFile[] = assign.introattachments || [];

@@ -25,6 +25,7 @@ import { makeSingleton } from '@singletons';
 import { CorePath } from '@singletons/path';
 import { CoreCourses } from '../courses';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler for course request push notifications clicks.
@@ -69,7 +70,7 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
         // Open the course.
         const modal = await CoreLoadings.show();
 
-        await CoreUtils.ignoreErrors(CoreCourses.invalidateUserCourses(notification.site));
+        await CorePromiseUtils.ignoreErrors(CoreCourses.invalidateUserCourses(notification.site));
 
         try {
             const result = await CoreCourseHelper.getCourse(courseId, notification.site);

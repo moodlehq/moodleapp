@@ -63,6 +63,7 @@ import { CoreLoadings } from '@services/loadings';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSSO } from '@singletons/sso';
 import { CoreInAppBrowser } from '@singletons/iab';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -374,7 +375,7 @@ export class CoreLoginHelperProvider {
      * @returns Valid identity providers.
      */
     async getValidIdentityProvidersForSite(site: CoreUnauthenticatedSite): Promise<CoreSiteIdentityProvider[]> {
-        const siteConfig = await CoreUtils.ignoreErrors(site.getPublicConfig());
+        const siteConfig = await CorePromiseUtils.ignoreErrors(site.getPublicConfig());
         if (!siteConfig) {
             return [];
         }
@@ -876,7 +877,7 @@ export class CoreLoginHelperProvider {
                     return;
                 }
 
-                await CoreUtils.ignoreErrors(CoreNavigator.navigate('/login/reconnect', {
+                await CorePromiseUtils.ignoreErrors(CoreNavigator.navigate('/login/reconnect', {
                     params: {
                         siteId,
                         ...redirectData,
@@ -1332,7 +1333,7 @@ export class CoreLoginHelperProvider {
      * @returns Promise resolved with account list.
      */
     async getAccountsList(): Promise<CoreAccountsList> {
-        const sites = await CoreUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
+        const sites = await CorePromiseUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
 
         const accountsList: CoreAccountsList = {
             sameSite: [],
@@ -1350,7 +1351,7 @@ export class CoreLoginHelperProvider {
 
         // Add site counter and classify sites.
         await Promise.all(sites.map(async (site) => {
-            site.badge = await CoreUtils.ignoreErrors(CorePushNotifications.getSiteCounter(site.id)) || 0;
+            site.badge = await CorePromiseUtils.ignoreErrors(CorePushNotifications.getSiteCounter(site.id)) || 0;
 
             if (site.id === currentSiteId) {
                 accountsList.currentSite = site;

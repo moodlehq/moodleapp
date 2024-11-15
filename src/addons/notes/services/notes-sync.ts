@@ -28,6 +28,7 @@ import { CoreArray } from '@singletons/array';
 import { CoreAnyError } from '@classes/errors/error';
 import { CoreErrorHelper } from '@services/error-helper';
 import { ADDON_NOTES_AUTO_SYNCED } from './constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync notes.
@@ -223,13 +224,13 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
         await Promise.all(promises);
 
         // Fetch the notes from server to be sure they're up to date.
-        await CoreUtils.ignoreErrors(AddonNotes.invalidateNotes(courseId, undefined, siteId));
+        await CorePromiseUtils.ignoreErrors(AddonNotes.invalidateNotes(courseId, undefined, siteId));
 
-        await CoreUtils.ignoreErrors(AddonNotes.getNotes(courseId, undefined, false, true, siteId));
+        await CorePromiseUtils.ignoreErrors(AddonNotes.getNotes(courseId, undefined, false, true, siteId));
 
         if (errors && errors.length) {
             // At least an error occurred, get course name and add errors to warnings array.
-            const course = await CoreUtils.ignoreErrors(CoreCourses.getUserCourse(courseId, true, siteId), {});
+            const course = await CorePromiseUtils.ignoreErrors(CoreCourses.getUserCourse(courseId, true, siteId), {});
 
             result.warnings = errors.map((error) =>
                 Translate.instant('addon.notes.warningnotenotsent', {

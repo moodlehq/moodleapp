@@ -38,6 +38,7 @@ import { EMAIL_SIGNUP_FEATURE_NAME } from '@features/login/constants';
 import { CoreInputErrorsMessages } from '@components/input-errors/input-errors';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page to signup using email.
@@ -189,7 +190,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
                 // Check content verification.
                 if (this.ageDigitalConsentVerification === undefined) {
 
-                    const result = await CoreUtils.ignoreErrors(
+                    const result = await CorePromiseUtils.ignoreErrors(
                         CoreWS.callAjax<IsAgeVerificationEnabledWSResponse>(
                             'core_auth_is_age_digital_consent_verification_enabled',
                             {},

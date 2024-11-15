@@ -25,7 +25,7 @@ import { AddonModAssignFeedbackHandler } from '@addons/mod/assign/services/feedb
 import { Injectable, Type } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreFileHelper } from '@services/file-helper';
@@ -125,7 +125,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
         userId: number,
     ): Promise<boolean> {
         // Get it from plugin or offline.
-        const offlineData = await CoreUtils.ignoreErrors(
+        const offlineData = await CorePromiseUtils.ignoreErrors(
             AddonModAssignOffline.getSubmissionGrade(assign.id, userId),
             undefined,
         );

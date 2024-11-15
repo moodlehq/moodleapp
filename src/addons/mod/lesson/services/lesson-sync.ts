@@ -32,6 +32,7 @@ import { AddonModLessonGetPasswordResult, AddonModLessonPrefetchHandler } from '
 import { AddonModLesson, AddonModLessonLessonWSData } from './lesson';
 import { AddonModLessonOffline, AddonModLessonPageAttemptRecord } from './lesson-offline';
 import { ADDON_MOD_LESSON_AUTO_SYNCED, ADDON_MOD_LESSON_COMPONENT } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync lesson.
@@ -56,7 +57,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         const site = await CoreSites.getSite(siteId);
 
         // Ignore errors, maybe there is none.
-        await CoreUtils.ignoreErrors(site.getDb().deleteRecords(RETAKES_FINISHED_SYNC_TABLE_NAME, { lessonid: lessonId }));
+        await CorePromiseUtils.ignoreErrors(site.getDb().deleteRecords(RETAKES_FINISHED_SYNC_TABLE_NAME, { lessonid: lessonId }));
     }
 
     /**
@@ -72,7 +73,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     ): Promise<AddonModLessonRetakeFinishedInSyncDBRecord | undefined> {
         const site = await CoreSites.getSite(siteId);
 
-        return CoreUtils.ignoreErrors(site.getDb().getRecord(RETAKES_FINISHED_SYNC_TABLE_NAME, { lessonid: lessonId }));
+        return CorePromiseUtils.ignoreErrors(site.getDb().getRecord(RETAKES_FINISHED_SYNC_TABLE_NAME, { lessonid: lessonId }));
     }
 
     /**
@@ -86,8 +87,8 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     async hasDataToSync(lessonId: number, retake: number, siteId?: string): Promise<boolean> {
 
         const [hasAttempts, hasFinished] = await Promise.all([
-            CoreUtils.ignoreErrors(AddonModLessonOffline.hasRetakeAttempts(lessonId, retake, siteId)),
-            CoreUtils.ignoreErrors(AddonModLessonOffline.hasFinishedRetake(lessonId, siteId)),
+            CorePromiseUtils.ignoreErrors(AddonModLessonOffline.hasRetakeAttempts(lessonId, retake, siteId)),
+            CorePromiseUtils.ignoreErrors(AddonModLessonOffline.hasFinishedRetake(lessonId, siteId)),
         ]);
 
         return !!(hasAttempts || hasFinished);
@@ -224,7 +225,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         siteId?: string,
     ): Promise<AddonModLessonSyncResult> {
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             CoreCourseLogHelper.syncActivity(ADDON_MOD_LESSON_COMPONENT, lessonId, siteId),
         );
 
@@ -250,7 +251,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         }
 
         // Sync finished, set sync time.
-        await CoreUtils.ignoreErrors(this.setSyncTime(lessonId, siteId));
+        await CorePromiseUtils.ignoreErrors(this.setSyncTime(lessonId, siteId));
 
         // All done, return the result.
         return result;
@@ -302,7 +303,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
             }
 
             // Attempt doesn't belong to current retake, delete.
-            promises.push(CoreUtils.ignoreErrors(AddonModLessonOffline.deleteAttempt(
+            promises.push(CorePromiseUtils.ignoreErrors(AddonModLessonOffline.deleteAttempt(
                 lesson.id,
                 attempt.retake,
                 attempt.pageid,
@@ -337,7 +338,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
             blocking: true,
         }));
 
-        await CoreUtils.executeOrderedPromises(promisesData);
+        await CorePromiseUtils.executeOrderedPromises(promisesData);
 
         return passwordData;
     }
@@ -408,7 +409,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         siteId?: string,
     ): Promise<void> {
         // Attempts sent or there was none. If there is a finished retake, send it.
-        const retake = await CoreUtils.ignoreErrors(AddonModLessonOffline.getRetake(lessonId, siteId));
+        const retake = await CorePromiseUtils.ignoreErrors(AddonModLessonOffline.getRetake(lessonId, siteId));
 
         if (!retake) {
             // No retake to sync.

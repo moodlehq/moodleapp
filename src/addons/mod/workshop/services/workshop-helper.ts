@@ -44,6 +44,7 @@ import {
     AddonModWorkshopOverallFeedbackMode,
     AddonModWorkshopPhase,
 } from '@addons/mod/workshop/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Helper to gather some common functions for workshop.
@@ -241,7 +242,7 @@ export class AddonModWorkshopHelperProvider {
         const folderPath = await AddonModWorkshopOffline.getSubmissionFolder(workshopId, siteId);
 
         // Ignore any errors, CoreFile.removeDir fails if folder doesn't exists.
-        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
     /**
@@ -312,7 +313,7 @@ export class AddonModWorkshopHelperProvider {
         const folderPath = await AddonModWorkshopOffline.getSubmissionFolder(workshopId, siteId);
 
         // Ignore not found files.
-        return CoreUtils.ignoreErrors(CoreFileUploader.getStoredFiles(folderPath), []);
+        return CorePromiseUtils.ignoreErrors(CoreFileUploader.getStoredFiles(folderPath), []);
     }
 
     /**
@@ -345,7 +346,7 @@ export class AddonModWorkshopHelperProvider {
         const folderPath = await AddonModWorkshopOffline.getAssessmentFolder(workshopId, assessmentId, siteId);
 
         // Ignore any errors, CoreFile.removeDir fails if folder doesn't exists.
-        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
     /**
@@ -420,7 +421,7 @@ export class AddonModWorkshopHelperProvider {
         const folderPath = await AddonModWorkshopOffline.getAssessmentFolder(workshopId, assessmentId, siteId);
 
         // Ignore not found files.
-        return CoreUtils.ignoreErrors(CoreFileUploader.getStoredFiles(folderPath), []);
+        return CorePromiseUtils.ignoreErrors(CoreFileUploader.getStoredFiles(folderPath), []);
     }
 
     /**

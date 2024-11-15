@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler, CoreDelegateToDisplay } from '@classes/delegate';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     CoreCourseAnyCourseData,
     CoreCourseAnyCourseDataWithOptions,
@@ -573,7 +573,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
             }
         });
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**

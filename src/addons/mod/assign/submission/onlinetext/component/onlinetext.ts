@@ -19,7 +19,7 @@ import { Component, OnInit, ElementRef } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModAssignSubmissionOnlineTextPluginData } from '../services/handler';
 import { ContextLevel } from '@/core/constants';
 import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
@@ -60,7 +60,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
      */
     async ngOnInit(): Promise<void> {
         // Get the text. Check if we have anything offline.
-        const offlineData = await CoreUtils.ignoreErrors(
+        const offlineData = await CorePromiseUtils.ignoreErrors(
             AddonModAssignOffline.getSubmission(this.assign.id),
             undefined,
         );

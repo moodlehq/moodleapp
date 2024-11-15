@@ -18,7 +18,7 @@ import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -109,7 +109,7 @@ export class AddonModPageProvider {
         promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_PAGE_COMPONENT, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId));
 
-        return CoreUtils.allPromises(promises);
+        return CorePromiseUtils.allPromises(promises);
     }
 
     /**

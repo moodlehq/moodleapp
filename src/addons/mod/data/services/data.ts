@@ -35,6 +35,7 @@ import {
     AddonModDataAction,
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 declare module '@singletons/events' {
 
@@ -823,7 +824,7 @@ export class AddonModDataProvider {
 
         promises.push(this.invalidateFiles(moduleId, siteId));
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**

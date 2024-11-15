@@ -30,6 +30,7 @@ import {
 import { CoreNavigator } from '@services/navigator';
 import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
 import { CoreModals } from '@services/modals';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 @Component({
     selector: 'page-core-search-global-search',
@@ -104,7 +105,7 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
 
         await CoreDomUtils.showOperationModals('core.searching', true, async () => {
             await this.resultsSource.reload();
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 CoreSearchGlobalSearch.logViewResults(this.resultsSource.getQuery(), this.resultsSource.getFilters()),
             );
 

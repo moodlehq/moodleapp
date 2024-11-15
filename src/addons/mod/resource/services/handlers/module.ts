@@ -24,7 +24,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModResource } from '../resource';
 import { AddonModResourceHelper } from '../resource-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_MOD_RESOURCE_PAGE_NAME } from '../../constants';
 
 /**
@@ -92,8 +92,8 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
         };
 
         const [hideButton, extraBadge] = await Promise.all([
-            CoreUtils.ignoreErrors(this.hideOpenButton(module)),
-            CoreUtils.ignoreErrors(AddonModResourceHelper.getAfterLinkDetails(module, courseId)),
+            CorePromiseUtils.ignoreErrors(this.hideOpenButton(module)),
+            CorePromiseUtils.ignoreErrors(AddonModResourceHelper.getAfterLinkDetails(module, courseId)),
         ]);
 
         // Check if the button needs to be shown or not.

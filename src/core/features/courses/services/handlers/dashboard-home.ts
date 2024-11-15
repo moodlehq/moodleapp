@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreCoursesDashboard } from '../dashboard';
@@ -60,7 +60,7 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
             CoreBlockDelegate.areBlocksDisabled(site.getId()),
             CoreCoursesDashboard.isDisabled(site.getId()),
             CoreCoursesDashboard.isAvailable(site.getId()),
-            CoreUtils.ignoreErrors(site.getConfig('enabledashboard'), '1'),
+            CorePromiseUtils.ignoreErrors(site.getConfig('enabledashboard'), '1'),
         ]);
         const dashboardEnabled = !dashboardDisabled && dashboardConfig !== '0';
 

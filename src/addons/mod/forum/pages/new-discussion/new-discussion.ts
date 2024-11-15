@@ -53,6 +53,7 @@ import {
 } from '../../constants';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 type NewDiscussionData = {
     subject: string;
@@ -242,7 +243,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
 
                 // Use the canAddDiscussion WS to check if the user can add attachments and pin discussions.
                 promises.push(
-                    CoreUtils.ignoreErrors(
+                    CorePromiseUtils.ignoreErrors(
                         AddonModForum.instance
                             .canAddDiscussionToAll(this.forumId, { cmId: this.cmId })
                             .then((response) => {
@@ -611,7 +612,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
 
             promises.push(AddonModForumOffline.deleteNewDiscussion(this.forumId, this.timeCreated));
             promises.push(
-                CoreUtils.ignoreErrors(
+                CorePromiseUtils.ignoreErrors(
                     AddonModForumHelper.deleteNewDiscussionStoredFiles(this.forumId, this.timeCreated),
                 ),
             );

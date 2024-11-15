@@ -20,7 +20,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { NgZone, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
@@ -258,7 +258,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
 
         // Start polling.
         this.polling = window.setInterval(() => {
-            CoreUtils.ignoreErrors(this.fetchMessagesInterval());
+            CorePromiseUtils.ignoreErrors(this.fetchMessagesInterval());
         }, AddonModChatChatPage.POLL_INTERVAL);
     }
 
@@ -324,7 +324,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
             await AddonModChat.sendMessage(this.sessionId!, text, beep);
 
             // Update messages to show the sent message.
-            CoreUtils.ignoreErrors(this.fetchMessagesInterval());
+            CorePromiseUtils.ignoreErrors(this.fetchMessagesInterval());
         } catch (error) {
             // Only close the keyboard if an error happens, we want the user to be able to send multiple
             // messages without the keyboard being closed.

@@ -82,6 +82,7 @@ import {
     CORE_COURSE_STEALTH_MODULES_SECTION_ID,
     CORE_COURSE_COMPONENT,
 } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Prefetch info of a module.
@@ -443,7 +444,7 @@ export class CoreCourseHelperProvider {
             options.onProgress({ count: 0, total: total, success: true });
         }
 
-        return CoreUtils.allPromises(promises);
+        return CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -1302,7 +1303,7 @@ export class CoreCourseHelperProvider {
             // If this function is changed to do more actions if invalidateCache=true, please review those modules.
             CoreCourseModulePrefetchDelegate.invalidateModuleStatusCache(module);
 
-            await CoreUtils.ignoreErrors(CoreCourseModulePrefetchDelegate.invalidateCourseUpdates(courseId));
+            await CorePromiseUtils.ignoreErrors(CoreCourseModulePrefetchDelegate.invalidateCourseUpdates(courseId));
         }
 
         const [size, status, packageData] = await Promise.all([
@@ -1355,7 +1356,7 @@ export class CoreCourseHelperProvider {
         component = '',
     ): Promise<CoreCourseModulePackageLastDownloaded> {
         const siteId = CoreSites.getCurrentSiteId();
-        const packageData = await CoreUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, component, module.id));
+        const packageData = await CorePromiseUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, component, module.id));
 
         // Treat download time.
         if (
@@ -1600,7 +1601,7 @@ export class CoreCourseHelperProvider {
 
             promises.push(CoreFilterHelper.getFilters(ContextLevel.COURSE, course.id));
 
-            await CoreUtils.allPromises(promises);
+            await CorePromiseUtils.allPromises(promises);
 
             // Download success, mark the course as downloaded.
             return CoreCourse.setCourseStatus(course.id, DownloadStatus.DOWNLOADED, requiredSiteId);
@@ -1639,7 +1640,7 @@ export class CoreCourseHelperProvider {
 
         // Invalidate content if refreshing and download the data.
         if (refresh) {
-            await CoreUtils.ignoreErrors(handler.invalidateContent(module.id, courseId));
+            await CorePromiseUtils.ignoreErrors(handler.invalidateContent(module.id, courseId));
         }
 
         await CoreCourseModulePrefetchDelegate.prefetchModule(module, courseId, true);
@@ -1687,7 +1688,7 @@ export class CoreCourseHelperProvider {
         });
 
         try {
-            await CoreUtils.allPromises(promises);
+            await CorePromiseUtils.allPromises(promises);
 
             // Set "All sections" data.
             if (allSectionsSection) {
@@ -1724,7 +1725,7 @@ export class CoreCourseHelperProvider {
 
         // Download the files in the section description.
         const introFiles = CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(section.summary);
-        promises.push(CoreUtils.ignoreErrors(
+        promises.push(CorePromiseUtils.ignoreErrors(
             CoreFilepool.addFilesToQueue(siteId, introFiles, CORE_COURSE_COMPONENT, courseId),
         ));
 
@@ -1862,11 +1863,11 @@ export class CoreCourseHelperProvider {
      */
     async userHasAccessToCourse(courseId: number): Promise<boolean> {
         if (CoreNetwork.isOnline()) {
-            return CoreUtils.promiseWorks(
+            return CorePromiseUtils.promiseWorks(
                 CoreCourse.getSections(courseId, true, true, { getFromCache: false, emergencyCache: false }, undefined, false),
             );
         } else {
-            return CoreUtils.promiseWorks(
+            return CorePromiseUtils.promiseWorks(
                 CoreCourse.getSections(courseId, true, true, { getCacheUsingCacheKey: true }, undefined, false),
             );
         }

@@ -26,7 +26,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import {
     AddonModBook,
@@ -163,13 +163,13 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
      */
     async doRefresh(refresher?: HTMLIonRefresherElement): Promise<void> {
         if (this.manager) {
-            await CoreUtils.ignoreErrors(Promise.all([
+            await CorePromiseUtils.ignoreErrors(Promise.all([
                 this.manager.getSource().invalidateContent(),
                 CoreCourseModulePrefetchDelegate.invalidateCourseUpdates(this.courseId), // To detect if book was updated.
             ]));
         }
 
-        await CoreUtils.ignoreErrors(this.fetchContent(true));
+        await CorePromiseUtils.ignoreErrors(this.fetchContent(true));
 
         refresher?.complete();
     }
@@ -219,7 +219,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
         }
 
         // Chapter loaded, log view.
-        await CoreUtils.ignoreErrors(AddonModBook.logView(this.module.instance, chapterId));
+        await CorePromiseUtils.ignoreErrors(AddonModBook.logView(this.module.instance, chapterId));
 
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.VIEW_ITEM,

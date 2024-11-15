@@ -29,7 +29,7 @@ import { IonContent } from '@ionic/angular';
 import { ContextLevel, CoreConstants } from '@/core/constants';
 import { CoreNavigator } from '@services/navigator';
 import { NgZone, Translate } from '@singletons';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUser } from '@features/user/services/user';
 import { CoreText } from '@singletons/text';
@@ -161,7 +161,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         this.loadMoreError = false;
 
         if (sync) {
-            await CoreUtils.ignoreErrors(this.syncComments(showErrors));
+            await CorePromiseUtils.ignoreErrors(this.syncComments(showErrors));
         }
 
         try {
@@ -256,7 +256,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         this.refreshIcon = CoreConstants.ICON_LOADING;
         this.syncIcon = CoreConstants.ICON_LOADING;
 
-        await CoreUtils.ignoreErrors(this.invalidateComments());
+        await CorePromiseUtils.ignoreErrors(this.invalidateComments());
 
         this.page = 0;
         this.comments = [];
@@ -623,7 +623,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * Refresh cached data in background.
      */
     protected async refreshInBackground(): Promise<void> {
-        await CoreUtils.ignoreErrors(this.invalidateComments());
+        await CorePromiseUtils.ignoreErrors(this.invalidateComments());
 
         const promises: Promise<unknown>[] = [];
 

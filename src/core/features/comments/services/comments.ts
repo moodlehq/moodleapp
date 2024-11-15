@@ -24,6 +24,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreCommentsOffline } from './comments-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 const ROOT_CACHE_KEY = 'mmComments:';
 
@@ -148,7 +149,7 @@ export class CoreCommentsProvider {
         const commentsResponse = await this.addCommentsOnline(comments, siteId);
 
         // A comment was added, invalidate them.
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             this.invalidateCommentsData(contextLevel, instanceId, component, itemId, area, siteId),
         );
 
@@ -332,7 +333,7 @@ export class CoreCommentsProvider {
 
         await site.write('core_comment_delete_comments', data);
 
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             this.invalidateCommentsData(contextLevel, instanceId, component, itemId, area, siteId),
         );
     }
@@ -522,7 +523,7 @@ export class CoreCommentsProvider {
     ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             // This is done with starting with to avoid conflicts with previous keys that were including page.
             site.invalidateWsCacheForKeyStartingWith(this.getCommentsCacheKey(
                 contextLevel,

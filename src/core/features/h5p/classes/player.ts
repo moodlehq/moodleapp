@@ -22,6 +22,7 @@ import { CoreH5PCoreSettings, CoreH5PHelper } from './helper';
 import { CoreH5PStorage } from './storage';
 import { CorePath } from '@singletons/path';
 import { CoreXAPIIRI } from '@features/xapi/classes/iri';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Equivalent to Moodle's H5P player class.
@@ -175,7 +176,7 @@ export class CoreH5PPlayer {
         const records = await this.h5pCore.h5pFramework.getAllContentData(siteIdentifier);
 
         await Promise.all(records.map(async (record) => {
-            await CoreUtils.ignoreErrors(this.h5pCore.h5pFS.deleteContentIndex(record.foldername, siteIdentifier));
+            await CorePromiseUtils.ignoreErrors(this.h5pCore.h5pFS.deleteContentIndex(record.foldername, siteIdentifier));
         }));
     }
 
@@ -191,7 +192,7 @@ export class CoreH5PPlayer {
 
         const data = await this.h5pCore.h5pFramework.getContentDataByUrl(fileUrl, siteId);
 
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             this.h5pCore.h5pFramework.deleteContentData(data.id, siteId),
 
             this.h5pCore.h5pFS.deleteContentFolder(data.foldername, siteId),
@@ -298,7 +299,7 @@ export class CoreH5PPlayer {
             params.state = otherOptions.state;
         }
 
-        const customCssUrl = await CoreUtils.ignoreErrors(CoreH5P.getCustomCssSrc(siteId));
+        const customCssUrl = await CorePromiseUtils.ignoreErrors(CoreH5P.getCustomCssSrc(siteId));
         if (customCssUrl) {
             params.customCssUrl = customCssUrl;
         }

@@ -25,6 +25,7 @@ import { makeSingleton } from '@singletons';
 
 import { isSafeNumber } from '@/core/utils/types';
 import { ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler for forum push notifications clicks.
@@ -75,7 +76,7 @@ export class AddonModForumPushClickHandlerService implements CorePushNotificatio
             pageParams.postId = Number(data.postid || contextUrlParams.urlHash.replace('p', ''));
         }
 
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             AddonModForum.invalidateDiscussionPosts(discussionId, undefined, notification.site),
         );
 

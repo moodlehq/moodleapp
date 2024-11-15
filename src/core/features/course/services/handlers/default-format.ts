@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreCourseAnyCourseData, CoreCourses } from '@features/courses/services/courses';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreCourseSection } from '../course-helper';
 import { CoreCourseFormatCurrentSectionData, CoreCourseFormatHandler } from '../format-delegate';
@@ -86,7 +86,7 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
             marker = course.marker;
         } else {
             // Try to retrieve the marker.
-            const courseData = await CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', course.id));
+            const courseData = await CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', course.id));
 
             marker = courseData?.marker;
         }

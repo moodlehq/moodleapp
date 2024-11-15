@@ -20,7 +20,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreConstants } from '@/core/constants';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
@@ -190,7 +190,7 @@ export class CoreCourseListModTypePage implements OnInit {
      * @param refresher Refresher.
      */
     async refreshData(refresher: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId));
+        await CorePromiseUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId));
 
         try {
             await this.fetchData();

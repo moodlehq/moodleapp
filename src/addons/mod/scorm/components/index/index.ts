@@ -50,6 +50,7 @@ import {
     ADDON_MOD_SCORM_PAGE_NAME,
 } from '../../constants';
 import { CoreWait } from '@singletons/wait';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Component that displays a SCORM entry page.
@@ -188,7 +189,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
         if (sync) {
             // Try to synchronize the SCORM.
-            await CoreUtils.ignoreErrors(this.syncActivity(showErrors));
+            await CorePromiseUtils.ignoreErrors(this.syncActivity(showErrors));
         }
 
         const [syncTime, accessInfo] = await Promise.all([
@@ -363,7 +364,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
             return; // Shouldn't happen.
         }
 
-        await CoreUtils.ignoreErrors(AddonModScorm.logView(this.scorm.id));
+        await CorePromiseUtils.ignoreErrors(AddonModScorm.logView(this.scorm.id));
 
         this.analyticsLogEvent('mod_scorm_view_scorm');
     }
@@ -516,7 +517,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         await AddonModScormHelper.confirmDownload(scorm, isOutdated);
         // Invalidate WS data if SCORM is outdated.
         if (isOutdated) {
-            await CoreUtils.ignoreErrors(AddonModScorm.invalidateAllScormData(scorm.id));
+            await CorePromiseUtils.ignoreErrors(AddonModScorm.invalidateAllScormData(scorm.id));
         }
 
         try {
@@ -626,7 +627,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
         if (!result.updated && this.dataSent) {
             // The user sent data to server, but not in the sync process. Check if we need to fetch data.
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 AddonModScormSync.prefetchAfterUpdate(AddonModScormPrefetchHandler.instance, this.module, this.courseId),
             );
         }

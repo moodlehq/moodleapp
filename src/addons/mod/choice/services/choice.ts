@@ -27,6 +27,7 @@ import { AddonModChoiceOffline } from './choice-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_CHOICE_COMPONENT, AddonModChoiceShowResults } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service that provides some features for choices.
@@ -158,7 +159,7 @@ export class AddonModChoiceProvider {
         }
 
         // Invalidate related data.
-        await CoreUtils.ignoreErrors(Promise.all([
+        await CorePromiseUtils.ignoreErrors(Promise.all([
             this.invalidateOptions(choiceId, site.id),
             this.invalidateResults(choiceId, site.id),
         ]));
@@ -462,7 +463,7 @@ export class AddonModChoiceProvider {
         await site.write('mod_choice_submit_choice_response', params);
 
         // Invalidate related data.
-        await CoreUtils.ignoreErrors(Promise.all([
+        await CorePromiseUtils.ignoreErrors(Promise.all([
             this.invalidateOptions(choiceId, siteId),
             this.invalidateResults(choiceId, siteId),
         ]));

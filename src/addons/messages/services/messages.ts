@@ -52,6 +52,7 @@ import {
     AddonMessagesMessagePrivacy,
     AddonMessagesUpdateConversationAction,
 } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 declare module '@singletons/events' {
 
@@ -240,7 +241,7 @@ export class AddonMessagesProvider {
 
         await site.write('core_message_confirm_contact_request', params);
 
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             this.invalidateAllMemberInfo(userId, site),
             this.invalidateContactsCache(site.id),
             this.invalidateUserContacts(site.id),
@@ -305,7 +306,7 @@ export class AddonMessagesProvider {
 
         await site.write('core_message_decline_contact_request', params);
 
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             this.invalidateAllMemberInfo(userId, site),
             this.refreshContactRequestsCount(site.id),
         ]).finally(() => {
@@ -1934,7 +1935,7 @@ export class AddonMessagesProvider {
      * @returns Promise resolved when done.
      */
     protected async invalidateAllMemberInfo(userId: number, site: CoreSite): Promise<void> {
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             this.invalidateMemberInfo(userId, site.id),
             this.invalidateUserContacts(site.id),
             this.invalidateBlockedContactsCache(site.id),
@@ -1952,7 +1953,7 @@ export class AddonMessagesProvider {
                 site.id,
                 undefined,
                 true,
-            ).then((conversation) => CoreUtils.allPromises([
+            ).then((conversation) => CorePromiseUtils.allPromises([
                 this.invalidateConversation(conversation.id),
                 this.invalidateConversationMembers(conversation.id, site.id),
             ])).catch(() => {
@@ -2314,7 +2315,7 @@ export class AddonMessagesProvider {
 
         await site.write('core_message_delete_contacts', params, preSets);
 
-        return CoreUtils.allPromises([
+        return CorePromiseUtils.allPromises([
             this.invalidateUserContacts(site.id),
             this.invalidateAllMemberInfo(userId, site),
             this.invalidateContactsCache(site.id),

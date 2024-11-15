@@ -26,7 +26,7 @@ import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/servi
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreSite } from '@classes/sites/site';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
@@ -243,7 +243,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         // Invalidate course completion data.
         promises.push(this.invalidateCourseList().finally(() =>
-            CoreUtils.allPromises(courseIds.map((courseId) =>
+            CorePromiseUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
         if (courseIds.length  == 1) {
@@ -255,7 +255,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             promises.push(CoreCourses.invalidateCoursesByField('ids', courseIds.join(',')));
         }
 
-        await CoreUtils.allPromises(promises).finally(() => {
+        await CorePromiseUtils.allPromises(promises).finally(() => {
             this.prefetchIconsInitialized = false;
         });
     }

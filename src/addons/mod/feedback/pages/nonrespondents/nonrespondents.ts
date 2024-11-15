@@ -16,7 +16,7 @@ import { Component, OnInit } from '@angular/core';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModFeedback, AddonModFeedbackWSFeedback } from '../../services/feedback';
 import { AddonModFeedbackHelper, AddonModFeedbackNonRespondent } from '../../services/feedback-helper';
 import { CoreTime } from '@singletons/time';
@@ -182,7 +182,7 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
                 promises.push(AddonModFeedback.invalidateNonRespondentsData(this.feedback.id));
             }
 
-            await CoreUtils.ignoreErrors(Promise.all(promises));
+            await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
             await this.fetchData(true);
         } finally {

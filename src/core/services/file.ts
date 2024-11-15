@@ -29,6 +29,7 @@ import { CorePlatform } from '@services/platform';
 import { CorePath } from '@singletons/path';
 import { Zip } from '@features/native/plugins';
 import { CoreUrl } from '@singletons/url';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Progress event used when writing a file data into a file.
@@ -947,7 +948,7 @@ export class CoreFileProvider {
 
         if (destFolder && recreateDir) {
             // Make sure the dest dir doesn't exist already.
-            await CoreUtils.ignoreErrors(this.removeDir(destFolder));
+            await CorePromiseUtils.ignoreErrors(this.removeDir(destFolder));
 
             // Now create the dir, otherwise if any of the ancestor dirs doesn't exist the unzip would fail.
             await this.createDir(destFolder);
@@ -1138,7 +1139,7 @@ export class CoreFileProvider {
      */
     async clearTmpFolder(): Promise<void> {
         // Ignore errors because the folder might not exist.
-        await CoreUtils.ignoreErrors(this.removeDir(CoreFileProvider.TMPFOLDER));
+        await CorePromiseUtils.ignoreErrors(this.removeDir(CoreFileProvider.TMPFOLDER));
     }
 
     /**
@@ -1162,7 +1163,7 @@ export class CoreFileProvider {
                 if (file.isDirectory) {
                     if (!existingSiteNames.includes(file.name)) {
                         // Site does not exist... delete it.
-                        await CoreUtils.ignoreErrors(this.removeDir(this.getSiteFolder(file.name)));
+                        await CorePromiseUtils.ignoreErrors(this.removeDir(this.getSiteFolder(file.name)));
                     }
                 }
             });

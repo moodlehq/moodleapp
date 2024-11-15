@@ -52,6 +52,7 @@ import {
     AddonModDataTemplateMode,
 } from '../../constants';
 import { CoreModals } from '@services/modals';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 
@@ -223,7 +224,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         if (sync) {
             // Try to synchronize the data.
-            await CoreUtils.ignoreErrors(this.syncActivity(showErrors));
+            await CorePromiseUtils.ignoreErrors(this.syncActivity(showErrors));
         }
 
         this.groupInfo = await CoreGroups.getActivityGroupInfo(this.database.coursemodule);

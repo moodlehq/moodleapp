@@ -20,7 +20,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCoursesLinksHandlerBase } from '@features/courses/services/handlers/base-link-handler';
 import { CoreLogger } from '@singletons/logger';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler to treat links to course section.
@@ -85,12 +85,12 @@ export class CoreCoursesSectionLinkHandlerService extends CoreCoursesLinksHandle
         // Given that getting all the courses from a user could be very network intensive, the following
         // requests will only use cache.
 
-        const courses = await CoreUtils.ignoreErrors(
+        const courses = await CorePromiseUtils.ignoreErrors(
             CoreCourses.getUserCourses(true, siteId, CoreSitesReadingStrategy.ONLY_CACHE),
         ) ?? [];
 
         for (const course of courses) {
-            const courseSections = await CoreUtils.ignoreErrors(CoreCourse.getSections(
+            const courseSections = await CorePromiseUtils.ignoreErrors(CoreCourse.getSections(
                 course.id,
                 true,
                 true,

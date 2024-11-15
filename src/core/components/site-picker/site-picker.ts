@@ -16,7 +16,7 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 
 /**
@@ -56,7 +56,7 @@ export class CoreSitePickerComponent implements OnInit {
         await Promise.all(sites.map(async (site: SiteInfo) => {
             // Format the site name.
             const options = { clean: true, singleLine: true, filter: false };
-            const siteName = await CoreUtils.ignoreErrors(
+            const siteName = await CorePromiseUtils.ignoreErrors(
                 CoreFilter.formatText(site.siteName || '', options, [], site.id),
                 site.siteName || '',
             );

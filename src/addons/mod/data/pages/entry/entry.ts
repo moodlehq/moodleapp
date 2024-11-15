@@ -43,6 +43,7 @@ import {
     AddonModDataTemplateType,
     AddonModDataTemplateMode,
 } from '../../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays the view entry page.
@@ -432,7 +433,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
             return;
         }
 
-        await CoreUtils.ignoreErrors(AddonModData.logView(this.database.id));
+        await CorePromiseUtils.ignoreErrors(AddonModData.logView(this.database.id));
 
         // Store module viewed because this page also updates recent accessed items block.
         CoreCourse.storeModuleViewed(this.courseId, this.moduleId);

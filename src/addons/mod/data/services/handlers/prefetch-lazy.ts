@@ -27,6 +27,7 @@ import { AddonModDataEntry, AddonModData, AddonModDataData } from '../data';
 import { AddonModDataSync, AddonModDataSyncResult } from '../data-sync';
 import { ContextLevel } from '@/core/constants';
 import { AddonModDataPrefetchHandlerService } from '@addons/mod/data/services/handlers/prefetch';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler to prefetch databases.
@@ -151,7 +152,7 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
      * @inheritdoc
      */
     async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
-        const data = await CoreUtils.ignoreErrors(AddonModData.getDatabase(courseId, module.id));
+        const data = await CorePromiseUtils.ignoreErrors(AddonModData.getDatabase(courseId, module.id));
 
         return this.getIntroFilesFromInstance(module, data);
     }
@@ -260,7 +261,7 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
         promises.push(CoreCourse.getModuleBasicInfoByInstance(database.id, 'data', { siteId }));
 
         // Get course data, needed to determine upload max size if it's configured to be course limit.
-        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
+        promises.push(CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
         await Promise.all(promises);
     }

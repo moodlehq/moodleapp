@@ -19,6 +19,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CoreText } from '@singletons/text';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Interface that all handlers must implement.
@@ -193,7 +194,7 @@ export class CoreContentLinksDelegateService {
                     return;
                 }
 
-                const actions = await CoreUtils.ignoreErrors(
+                const actions = await CorePromiseUtils.ignoreErrors(
                     Promise.resolve(handler.getActions(siteIds, relativeUrl, params, courseId, data)),
                     <CoreContentLinksAction[]> [],
                 );
@@ -240,7 +241,7 @@ export class CoreContentLinksDelegateService {
             }));
         }
         try {
-            await CoreUtils.allPromises(promises);
+            await CorePromiseUtils.allPromises(promises);
         } catch {
             // Ignore errors.
         }

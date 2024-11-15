@@ -41,6 +41,7 @@ import {
     AddonModWorkshopAction,
     AddonModWorkshopSubmissionType,
 } from '@addons/mod/workshop/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync workshops.
@@ -163,18 +164,18 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
         };
 
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_WORKSHOP_COMPONENT, workshopId, siteId));
+        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_WORKSHOP_COMPONENT, workshopId, siteId));
 
         // Get offline submissions to be sent.
         const syncs = await Promise.all([
             // Get offline submissions to be sent.
-            CoreUtils.ignoreErrors(AddonModWorkshopOffline.getSubmissions(workshopId, siteId), []),
+            CorePromiseUtils.ignoreErrors(AddonModWorkshopOffline.getSubmissions(workshopId, siteId), []),
             // Get offline submission assessments to be sent.
-            CoreUtils.ignoreErrors(AddonModWorkshopOffline.getAssessments(workshopId, siteId), []),
+            CorePromiseUtils.ignoreErrors(AddonModWorkshopOffline.getAssessments(workshopId, siteId), []),
             // Get offline submission evaluations to be sent.
-            CoreUtils.ignoreErrors(AddonModWorkshopOffline.getEvaluateSubmissions(workshopId, siteId), []),
+            CorePromiseUtils.ignoreErrors(AddonModWorkshopOffline.getEvaluateSubmissions(workshopId, siteId), []),
             // Get offline assessment evaluations to be sent.
-            CoreUtils.ignoreErrors(AddonModWorkshopOffline.getEvaluateAssessments(workshopId, siteId), []),
+            CorePromiseUtils.ignoreErrors(AddonModWorkshopOffline.getEvaluateAssessments(workshopId, siteId), []),
         ]);
 
         let courseId: number | undefined;
@@ -189,7 +190,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
 
         if (!courseId) {
             // Sync finished, set sync time.
-            await CoreUtils.ignoreErrors(this.setSyncTime(workshopId, siteId));
+            await CorePromiseUtils.ignoreErrors(this.setSyncTime(workshopId, siteId));
 
             // Nothing to sync.
             return result;
@@ -252,11 +253,11 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
 
         if (result.updated) {
             // Data has been sent to server. Now invalidate the WS calls.
-            await CoreUtils.ignoreErrors(AddonModWorkshop.invalidateContentById(workshopId, courseId, siteId));
+            await CorePromiseUtils.ignoreErrors(AddonModWorkshop.invalidateContentById(workshopId, courseId, siteId));
         }
 
         // Sync finished, set sync time.
-        await CoreUtils.ignoreErrors(this.setSyncTime(workshopId, siteId));
+        await CorePromiseUtils.ignoreErrors(this.setSyncTime(workshopId, siteId));
 
         // All done, return the warnings.
         return result;

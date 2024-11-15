@@ -27,6 +27,7 @@ import {
 import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '../services/forum-offline';
 import { ADDON_MOD_FORUM_DISCUSSIONS_PER_PAGE, AddonModForumType } from '../constants';
 import { CoreSites } from '@services/sites';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource<AddonModForumDiscussionItem> {
 
@@ -157,7 +158,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
     async loadGroupInfo(forumId: number): Promise<void> {
         [this.groupInfo, this.allPartsPermissions] = await Promise.all([
             CoreGroups.getActivityGroupInfo(this.CM_ID, false),
-            CoreUtils.ignoreErrors(AddonModForum.canAddDiscussionToAll(forumId, { cmId: this.CM_ID })),
+            CorePromiseUtils.ignoreErrors(AddonModForum.canAddDiscussionToAll(forumId, { cmId: this.CM_ID })),
         ]);
 
         this.supportsChangeGroup = AddonModForum.isGetDiscussionPostsAvailable();

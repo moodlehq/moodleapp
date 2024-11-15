@@ -27,6 +27,7 @@ import { AddonModWikiPageDBRecord } from './database/wiki';
 import { AddonModWiki } from './wiki';
 import { AddonModWikiOffline } from './wiki-offline';
 import { ADDON_MOD_WIKI_AUTO_SYNCED, ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_MANUAL_SYNCED } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync wikis.
@@ -210,14 +211,14 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider<AddonModWikiS
         const subwikiBlockId = this.getSubwikiBlockId(subwikiId, wikiId, userId, groupId);
 
         // Get offline pages to be sent.
-        const pages = await CoreUtils.ignoreErrors(
+        const pages = await CorePromiseUtils.ignoreErrors(
             AddonModWikiOffline.getSubwikiNewPages(subwikiId, wikiId, userId, groupId, siteId),
             <AddonModWikiPageDBRecord[]> [],
         );
 
         if (!pages || !pages.length) {
             // Nothing to sync.
-            await CoreUtils.ignoreErrors(this.setSyncTime(subwikiBlockId, siteId));
+            await CorePromiseUtils.ignoreErrors(this.setSyncTime(subwikiBlockId, siteId));
 
             return result;
         }
@@ -270,7 +271,7 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider<AddonModWikiS
         }));
 
         // Sync finished, set sync time.
-        await CoreUtils.ignoreErrors(this.setSyncTime(subwikiBlockId, siteId));
+        await CorePromiseUtils.ignoreErrors(this.setSyncTime(subwikiBlockId, siteId));
 
         return result;
     }
@@ -288,7 +289,7 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider<AddonModWikiS
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_WIKI_COMPONENT, wikiId, siteId));
+        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_WIKI_COMPONENT, wikiId, siteId));
 
         // Sync is done at subwiki level, get all the subwikis.
         const subwikis = await AddonModWiki.getSubwikis(wikiId, { cmId, siteId });
@@ -330,7 +331,7 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider<AddonModWikiS
                 promises.push(CoreGroups.invalidateActivityGroupMode(cmId));
             }
 
-            await CoreUtils.ignoreErrors(Promise.all(promises));
+            await CorePromiseUtils.ignoreErrors(Promise.all(promises));
         }
 
         return result;

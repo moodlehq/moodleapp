@@ -25,7 +25,7 @@ import { CoreXAPI } from '@features/xapi/services/xapi';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import {
@@ -149,7 +149,7 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
             const fileState = await CoreFilepool.getFileStateByUrl(siteId, CoreFileHelper.getFileUrl(deployedFile));
 
             if (fileState !== DownloadStatus.DOWNLOADED) {
-                await CoreUtils.ignoreErrors(CoreXAPIOffline.deleteStates(ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT, {
+                await CorePromiseUtils.ignoreErrors(CoreXAPIOffline.deleteStates(ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT, {
                     itemId: h5pActivity.context,
                     siteId,
                 }));

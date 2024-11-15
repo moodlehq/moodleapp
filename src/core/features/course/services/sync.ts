@@ -30,6 +30,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CORE_COURSE_AUTO_SYNCED } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync course offline data. This only syncs the offline data of the course itself, not the offline data of
@@ -82,7 +83,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
         // Sync all courses.
         await Promise.all(completions.map(async (completion) => {
             if (courseNames[completion.courseid] === undefined) {
-                const course = await CoreUtils.ignoreErrors(CoreCourses.getUserCourse(completion.courseid, true, siteId));
+                const course = await CorePromiseUtils.ignoreErrors(CoreCourses.getUserCourse(completion.courseid, true, siteId));
 
                 courseNames[completion.courseid] = course?.displayname || course?.fullname;
             }
@@ -153,7 +154,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
         };
 
         // Get offline responses to be sent.
-        const completions = await CoreUtils.ignoreErrors(
+        const completions = await CorePromiseUtils.ignoreErrors(
             CoreCourseOffline.getCourseManualCompletions(courseId, siteId),
             <CoreCourseManualCompletionDBRecord[]> [],
         );

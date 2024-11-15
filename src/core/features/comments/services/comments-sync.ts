@@ -26,6 +26,7 @@ import { CoreCommentsDBRecord, CoreCommentsDeletedDBRecord } from './database/co
 import { CoreSyncResult } from '@services/sync';
 import { ContextLevel } from '@/core/constants';
 import { CORE_COMMENTS_AUTO_SYNCED } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync omments.
@@ -274,10 +275,10 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
             }, CoreSites.getCurrentSiteId());
 
             // Fetch the comments from server to be sure they're up to date.
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 CoreComments.invalidateCommentsData(contextLevel, instanceId, component, itemId, area, siteId),
             );
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 CoreComments.getComments(contextLevel, instanceId, component, itemId, area, 0, siteId),
             );
         } catch (error) {

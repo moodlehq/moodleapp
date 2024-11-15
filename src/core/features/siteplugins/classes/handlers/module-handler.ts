@@ -28,7 +28,7 @@ import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSitePluginsBaseHandler } from './base-handler';
 import { CoreEvents } from '@singletons/events';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '@features/siteplugins/constants';
 
 /**
@@ -184,7 +184,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
         };
 
         if (refresh) {
-            await CoreUtils.ignoreErrors(CoreSitePlugins.invalidateContent(this.plugin.component, method, args));
+            await CorePromiseUtils.ignoreErrors(CoreSitePlugins.invalidateContent(this.plugin.component, method, args));
         }
 
         try {

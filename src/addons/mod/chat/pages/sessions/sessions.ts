@@ -24,7 +24,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { AddonModChat } from '@addons/mod/chat/services/chat';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreLoadings } from '@services/loadings';
 
 /**
@@ -46,7 +46,7 @@ export class AddonModChatSessionsPage implements OnInit, AfterViewInit, OnDestro
         this.logView = CoreTime.once(async () => {
             const source = this.sessions.getSource();
 
-            await CoreUtils.ignoreErrors(AddonModChat.logViewSessions(this.sessions.getSource().CM_ID));
+            await CorePromiseUtils.ignoreErrors(AddonModChat.logViewSessions(this.sessions.getSource().CM_ID));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM_LIST,

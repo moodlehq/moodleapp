@@ -17,7 +17,7 @@ import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     AddonModH5PActivity,
     AddonModH5PActivityData,
@@ -54,7 +54,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
                 return;
             }
 
-            await CoreUtils.ignoreErrors(AddonModH5PActivity.logViewReport(this.h5pActivity.id));
+            await CorePromiseUtils.ignoreErrors(AddonModH5PActivity.logViewReport(this.h5pActivity.id));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
@@ -214,7 +214,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
             promises.push(AddonModH5PActivity.invalidateAllUsersAttempts(this.h5pActivity.id));
         }
 
-        await CoreUtils.ignoreErrors(Promise.all(promises));
+        await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
         await this.fetchData(true);
     }

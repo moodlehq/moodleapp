@@ -35,6 +35,7 @@ import {
 import { AddonModResourceHelper } from '../../services/resource-helper';
 import { CorePlatform } from '@services/platform';
 import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Component that displays a resource.
@@ -191,7 +192,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
      * @inheritdoc
      */
     protected async logActivity(): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonModResource.logView(this.module.instance));
+        await CorePromiseUtils.ignoreErrors(AddonModResource.logView(this.module.instance));
 
         this.analyticsLogEvent('mod_resource_view_resource');
     }

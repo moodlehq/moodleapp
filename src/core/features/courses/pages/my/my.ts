@@ -23,7 +23,7 @@ import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreCoursesDashboard, CoreCoursesDashboardProvider } from '@features/courses/services/dashboard';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import { CoreCourses } from '../../services/courses';
@@ -78,7 +78,7 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
         });
 
         this.logView = CoreTime.once(async () => {
-            await CoreUtils.ignoreErrors(CoreCourses.logView('my'));
+            await CorePromiseUtils.ignoreErrors(CoreCourses.logView('my'));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM,
@@ -187,7 +187,7 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
 
         // Invalidate the blocks.
         if (this.myOverviewBlock) {
-            promises.push(CoreUtils.ignoreErrors(this.myOverviewBlock.invalidateContent()));
+            promises.push(CorePromiseUtils.ignoreErrors(this.myOverviewBlock.invalidateContent()));
         }
 
         Promise.all(promises).finally(() => {

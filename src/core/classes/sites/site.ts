@@ -56,6 +56,7 @@ import { firstValueFrom } from 'rxjs';
 import { CorePlatform } from '@services/platform';
 import { CoreLoadings } from '@services/loadings';
 import { CoreInAppBrowser } from '@singletons/iab';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Class that represents a site (combination of site + user).
@@ -406,7 +407,7 @@ export class CoreSite extends CoreAuthenticatedSite {
         const siteFolder = CoreFile.getSiteFolder(this.id);
 
         // Ignore any errors, removeDir fails if folder doesn't exists.
-        await CoreUtils.ignoreErrors(CoreFile.removeDir(siteFolder));
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(siteFolder));
     }
 
     /**
@@ -414,14 +415,14 @@ export class CoreSite extends CoreAuthenticatedSite {
      *
      * @returns Promise resolved with the site space usage (size).
      */
-    getSpaceUsage(): Promise<number> {
+    async getSpaceUsage(): Promise<number> {
         if (CoreFile.isAvailable() && this.id) {
             const siteFolderPath = CoreFile.getSiteFolder(this.id);
 
             return CoreFile.getDirectorySize(siteFolderPath).catch(() => 0);
-        } else {
-            return Promise.resolve(0);
         }
+
+        return 0;
     }
 
     /**
@@ -885,7 +886,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      * @returns Time between requests.
      */
     async getAutoLoginMinTimeBetweenRequests(): Promise<number> {
-        const timeBetweenRequests = await CoreUtils.ignoreErrors(
+        const timeBetweenRequests = await CorePromiseUtils.ignoreErrors(
             this.getConfig('tool_mobile_autologinmintimebetweenreq'),
             CoreConstants.SECONDS_MINUTE * 6,
         );

@@ -24,7 +24,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreCourses } from '@features/courses/services/courses';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { toBoolean } from '@/core/transforms/boolean';
 
 /**
@@ -106,7 +106,7 @@ export class CoreAttachmentsComponent implements OnInit {
     protected async getMaxSizeOfArea(): Promise<void> {
         if (this.courseId) {
             // Check course max size.
-            const course = await CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', this.courseId));
+            const course = await CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', this.courseId));
 
             if (course?.maxbytes) {
                 this.maxSize = course.maxbytes;

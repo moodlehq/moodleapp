@@ -17,7 +17,7 @@ import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreNavigator } from '@services/navigator';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
@@ -90,13 +90,13 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
      * @param refresher Refresher.
      */
     async refreshBadges(refresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             AddonBadges.invalidateUserBadges(
                 this.badges.getSource().COURSE_ID,
                 this.badges.getSource().USER_ID,
             ),
         );
-        await CoreUtils.ignoreErrors(this.badges.reload());
+        await CorePromiseUtils.ignoreErrors(this.badges.reload());
 
         refresher?.complete();
     }
