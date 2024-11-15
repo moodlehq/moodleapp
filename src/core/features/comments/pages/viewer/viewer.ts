@@ -24,7 +24,6 @@ import {
 } from '@features/comments/services/comments';
 import {
     CoreCommentsSync,
-    CoreCommentsSyncProvider,
 } from '@features/comments/services/comments-sync';
 import { IonContent } from '@ionic/angular';
 import { ContextLevel, CoreConstants } from '@/core/constants';
@@ -45,6 +44,7 @@ import { CoreAnimations } from '@components/animations';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreToasts, ToastDuration } from '@services/toasts';
 import { CoreLoadings } from '@services/loadings';
+import { CORE_COMMENTS_AUTO_SYNCED } from '@features/comments/constants';
 
 /**
  * Page that displays comments.
@@ -94,7 +94,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
 
         // Refresh data if comments are synchronized automatically.
-        this.syncObserver = CoreEvents.on(CoreCommentsSyncProvider.AUTO_SYNCED, (data) => {
+        this.syncObserver = CoreEvents.on(CORE_COMMENTS_AUTO_SYNCED, (data) => {
             if (data.contextLevel == this.contextLevel && data.instanceId == this.instanceId &&
                     data.componentName == this.componentName && data.itemId == this.itemId && data.area == this.area) {
                 // Show the sync warnings.

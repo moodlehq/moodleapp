@@ -28,8 +28,6 @@ import { CoreUser } from './user';
 @Injectable({ providedIn: 'root' })
 export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
 
-    static readonly AUTO_SYNCED = 'core_user_autom_synced';
-
     constructor() {
         super('CoreUserSync');
     }

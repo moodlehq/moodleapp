@@ -499,9 +499,22 @@ export type AddonModLessonSyncResult = CoreSyncResult & {
 };
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to ADDON_MOD_LESSON_AUTO_SYNCED event.
  */
 export type AddonModLessonAutoSyncData = {
     lessonId: number;
     warnings: string[];
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_MOD_LESSON_AUTO_SYNCED]: AddonModLessonAutoSyncData;
+    }
+
+}

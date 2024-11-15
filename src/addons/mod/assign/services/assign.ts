@@ -30,17 +30,14 @@ import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { CoreComments } from '@features/comments/services/comments';
 import { AddonModAssignSubmissionFormatted } from './assign-helper';
 import { CoreWSError } from '@classes/errors/wserror';
-import { AddonModAssignAutoSyncData, AddonModAssignManualSyncData } from './assign-sync';
 import { CoreFormFields } from '@singletons/form';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import {
-    ADDON_MOD_ASSIGN_AUTO_SYNCED,
     ADDON_MOD_ASSIGN_COMPONENT,
     ADDON_MOD_ASSIGN_GRADED_EVENT,
-    ADDON_MOD_ASSIGN_MANUAL_SYNCED,
     ADDON_MOD_ASSIGN_STARTED_EVENT,
     ADDON_MOD_ASSIGN_SUBMISSION_REMOVED_EVENT,
     ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT,
@@ -60,8 +57,6 @@ declare module '@singletons/events' {
         [ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT]: AddonModAssignSubmittedForGradingEventData;
         [ADDON_MOD_ASSIGN_GRADED_EVENT]: AddonModAssignGradedEventData;
         [ADDON_MOD_ASSIGN_STARTED_EVENT]: AddonModAssignStartedEventData;
-        [ADDON_MOD_ASSIGN_MANUAL_SYNCED]: AddonModAssignManualSyncData;
-        [ADDON_MOD_ASSIGN_AUTO_SYNCED]: AddonModAssignAutoSyncData;
     }
 
 }

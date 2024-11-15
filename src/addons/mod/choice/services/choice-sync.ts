@@ -28,6 +28,19 @@ import { AddonModChoiceOffline } from './choice-offline';
 import { AddonModChoicePrefetchHandler } from './handlers/prefetch';
 import { ADDON_MOD_CHOICE_AUTO_SYNCED, ADDON_MOD_CHOICE_COMPONENT } from '../constants';
 
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_MOD_CHOICE_AUTO_SYNCED]: AddonModChoiceAutoSyncData;
+    }
+
+}
+
 /**
  * Service to sync choices.
  */
@@ -220,7 +233,7 @@ export const AddonModChoiceSync = makeSingleton(AddonModChoiceSyncProvider);
 export type AddonModChoiceSyncResult = CoreSyncResult;
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to ADDON_MOD_CHOICE_AUTO_SYNCED event.
  */
 export type AddonModChoiceAutoSyncData = {
     choiceId: number;

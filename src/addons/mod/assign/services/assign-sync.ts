@@ -39,7 +39,7 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
-import { ADDON_MOD_ASSIGN_AUTO_SYNCED, ADDON_MOD_ASSIGN_COMPONENT } from '../constants';
+import { ADDON_MOD_ASSIGN_AUTO_SYNCED, ADDON_MOD_ASSIGN_COMPONENT, ADDON_MOD_ASSIGN_MANUAL_SYNCED } from '../constants';
 
 /**
  * Service to sync assigns.
@@ -535,7 +535,7 @@ export type AddonModAssignSyncResult = CoreSyncResult & {
 };
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to ADDON_MOD_ASSIGN_AUTO_SYNCED event.
  */
 export type AddonModAssignAutoSyncData = {
     assignId: number;
@@ -544,9 +544,23 @@ export type AddonModAssignAutoSyncData = {
 };
 
 /**
- * Data passed to MANUAL_SYNCED event.
+ * Data passed to ADDON_MOD_ASSIGN_MANUAL_SYNCED event.
  */
 export type AddonModAssignManualSyncData = AddonModAssignAutoSyncData & {
     context: string;
     submitId?: number;
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_MOD_ASSIGN_MANUAL_SYNCED]: AddonModAssignManualSyncData;
+        [ADDON_MOD_ASSIGN_AUTO_SYNCED]: AddonModAssignAutoSyncData;
+    }
+
+}

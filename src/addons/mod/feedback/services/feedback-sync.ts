@@ -27,15 +27,13 @@ import { CoreEvents } from '@singletons/events';
 import { AddonModFeedback, AddonModFeedbackWSFeedback } from './feedback';
 import { AddonModFeedbackOffline, AddonModFeedbackOfflineResponse } from './feedback-offline';
 import { AddonModFeedbackPrefetchHandler, AddonModFeedbackPrefetchHandlerService } from './handlers/prefetch';
-import { ADDON_MOD_FEEDBACK_COMPONENT } from '../constants';
+import { ADDON_MOD_FEEDBACK_AUTO_SYNCED, ADDON_MOD_FEEDBACK_COMPONENT } from '../constants';
 
 /**
  * Service to sync feedbacks.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProvider<AddonModFeedbackSyncResult> {
-
-    static readonly AUTO_SYNCED = 'addon_mod_feedback_autom_synced';
 
     protected componentTranslatableString = 'feedback';
 
@@ -96,7 +94,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
 
             if (result?.updated) {
                 // Sync successful, send event.
-                CoreEvents.trigger(AddonModFeedbackSyncProvider.AUTO_SYNCED, {
+                CoreEvents.trigger(ADDON_MOD_FEEDBACK_AUTO_SYNCED, {
                     feedbackId: response.feedbackid,
                     warnings: result.warnings,
                 }, siteId);
@@ -296,9 +294,22 @@ export const AddonModFeedbackSync = makeSingleton(AddonModFeedbackSyncProvider);
 export type AddonModFeedbackSyncResult = CoreSyncResult;
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to ADDON_MOD_FEEDBACK_AUTO_SYNCED event.
  */
 export type AddonModFeedbackAutoSyncData = {
     feedbackId: number;
     warnings: string[];
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_MOD_FEEDBACK_AUTO_SYNCED]: AddonModFeedbackAutoSyncData;
+    }
+
+}

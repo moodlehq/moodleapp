@@ -25,11 +25,9 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { makeSingleton, Translate } from '@singletons/index';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreError } from '@classes/errors/error';
-import { AddonModH5PActivityAutoSyncData } from './h5pactivity-sync';
 import { CoreTime } from '@singletons/time';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_H5PACTIVITY_AUTO_SYNCED,
     ADDON_MOD_H5PACTIVITY_COMPONENT,
     ADDON_MOD_H5PACTIVITY_USERS_PER_PAGE,
     AddonModH5PActivityGradeMethod,
@@ -1136,19 +1134,6 @@ export type AddonModH5PActivityGetUsersAttemptsOptions = CoreCourseCommonModWSOp
 export type AddonModH5PActivityGetAllUsersAttemptsOptions = AddonModH5PActivityGetUsersAttemptsOptions & {
     dontFailOnError?: boolean; // If true the function will return the users it's able to retrieve, until a call fails.
 };
-
-declare module '@singletons/events' {
-
-    /**
-     * Augment CoreEventsData interface with events specific to this service.
-     *
-     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
-     */
-    export interface CoreEventsData {
-        [ADDON_MOD_H5PACTIVITY_AUTO_SYNCED]: AddonModH5PActivityAutoSyncData;
-    }
-
-}
 
 /**
  * Data to be sent using xAPI.

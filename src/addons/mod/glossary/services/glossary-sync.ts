@@ -30,9 +30,7 @@ import { AddonModGlossaryHelper } from './glossary-helper';
 import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from './glossary-offline';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreFileEntry } from '@services/file-helper';
-import { ADDON_MOD_GLOSSARY_COMPONENT } from '../constants';
-
-export const GLOSSARY_AUTO_SYNCED = 'addon_mod_glossary_auto_synced';
+import { ADDON_MOD_GLOSSARY_COMPONENT, GLOSSARY_AUTO_SYNCED } from '../constants';
 
 /**
  * Service to sync glossaries.

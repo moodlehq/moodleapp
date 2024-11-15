@@ -12,6 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const PARTICIPANTS_PAGE_NAME = 'participants';
-
-export const CORE_USER_AUTO_SYNCED = 'core_user_autom_synced';
+export const ADDON_NOTES_AUTO_SYNCED = 'addon_notes_autom_synced';

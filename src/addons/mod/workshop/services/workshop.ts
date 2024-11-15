@@ -25,11 +25,9 @@ import { CoreStatusWithWarningsWSResponse, CoreWS, CoreWSExternalFile, CoreWSExt
 import { makeSingleton, Translate } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
 import { AddonModWorkshopOffline } from './workshop-offline';
-import { AddonModWorkshopAutoSyncData } from './workshop-sync';
 import {
     ADDON_MOD_WORKSHOP_ASSESSMENT_INVALIDATED,
     ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED,
-    ADDON_MOD_WORKSHOP_AUTO_SYNCED,
     ADDON_MOD_WORKSHOP_COMPONENT,
     ADDON_MOD_WORKSHOP_PER_PAGE,
     ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED,
@@ -51,7 +49,6 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [ADDON_MOD_WORKSHOP_AUTO_SYNCED]: AddonModWorkshopAutoSyncData;
         [ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED]: AddonModWorkshopSubmissionChangedEventData;
         [ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED]: AddonModWorkshopAssessmentSavedChangedEventData;
         [ADDON_MOD_WORKSHOP_ASSESSMENT_INVALIDATED]: AddonModWorkshopAssessmentInvalidatedChangedEventData;

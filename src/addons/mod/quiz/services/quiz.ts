@@ -36,7 +36,6 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-offline';
-import { AddonModQuizAutoSyncData } from './quiz-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
     QUESTION_INVALID_STATE_CLASSES,
@@ -51,7 +50,6 @@ import {
     AddonModQuizGradeMethods,
     AddonModQuizDisplayOptionsAttemptStates,
     ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD,
-    ADDON_MOD_QUIZ_AUTO_SYNCED,
 } from '../constants';
 import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
@@ -65,7 +63,6 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT]: AddonModQuizAttemptFinishedData;
-        [ADDON_MOD_QUIZ_AUTO_SYNCED]: AddonModQuizAutoSyncData;
     }
 
 }

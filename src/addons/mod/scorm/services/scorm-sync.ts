@@ -850,3 +850,16 @@ export type AddonModScormAutoSyncEventData = CoreSyncResult & {
     scormId: number;
     attemptFinished: boolean;
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_MOD_SCORM_DATA_AUTO_SYNCED]: AddonModScormAutoSyncEventData;
+    }
+
+}

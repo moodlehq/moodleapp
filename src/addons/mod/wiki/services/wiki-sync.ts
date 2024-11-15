@@ -26,7 +26,7 @@ import { CoreEvents } from '@singletons/events';
 import { AddonModWikiPageDBRecord } from './database/wiki';
 import { AddonModWiki } from './wiki';
 import { AddonModWikiOffline } from './wiki-offline';
-import { ADDON_MOD_WIKI_AUTO_SYNCED, ADDON_MOD_WIKI_COMPONENT } from '../constants';
+import { ADDON_MOD_WIKI_AUTO_SYNCED, ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_MANUAL_SYNCED } from '../constants';
 
 /**
  * Service to sync wikis.
@@ -386,7 +386,7 @@ export type AddonModWikiDiscardedPage = {
 };
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to ADDON_MOD_WIKI_AUTO_SYNCED event.
  */
 export type AddonModWikiAutoSyncData = {
     siteId: string;
@@ -400,8 +400,22 @@ export type AddonModWikiAutoSyncData = {
 };
 
 /**
- * Data passed to MANUAL_SYNCED event.
+ * Data passed to ADDON_MOD_WIKI_MANUAL_SYNCED event.
  */
 export type AddonModWikiManualSyncData = AddonModWikiSyncWikiResult & {
     wikiId: number;
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_MOD_WIKI_AUTO_SYNCED]: AddonModWikiAutoSyncData;
+        [ADDON_MOD_WIKI_MANUAL_SYNCED]: AddonModWikiManualSyncData;
+    }
+
+}

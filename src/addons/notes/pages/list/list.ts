@@ -16,7 +16,7 @@ import { CoreConstants } from '@/core/constants';
 import { AddonNotesAddModalReturn } from '@addons/notes/components/add/add-modal';
 import { AddonNotes, AddonNotesNoteFormatted, AddonNotesPublishState } from '@addons/notes/services/notes';
 import { AddonNotesOffline } from '@addons/notes/services/notes-offline';
-import { AddonNotesSync, AddonNotesSyncProvider } from '@addons/notes/services/notes-sync';
+import { AddonNotesSync } from '@addons/notes/services/notes-sync';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreAnimations } from '@components/animations';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
@@ -33,6 +33,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
 import { CoreToasts, ToastDuration } from '@services/toasts';
 import { CoreModals } from '@services/modals';
+import { ADDON_NOTES_AUTO_SYNCED } from '@addons/notes/services/constants';
 
 /**
  * Page that displays a list of notes.
@@ -77,7 +78,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
         }
 
         // Refresh data if notes are synchronized automatically.
-        this.syncObserver = CoreEvents.on(AddonNotesSyncProvider.AUTO_SYNCED, (data) => {
+        this.syncObserver = CoreEvents.on(ADDON_NOTES_AUTO_SYNCED, (data) => {
             if (data.courseId == this.courseId) {
                 // Show the sync warnings.
                 this.showSyncWarnings(data.warnings);
