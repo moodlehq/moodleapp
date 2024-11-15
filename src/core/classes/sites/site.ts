@@ -55,6 +55,7 @@ import { CoreAuthenticatedSite, CoreAuthenticatedSiteOptionalData, CoreSiteWSPre
 import { firstValueFrom } from 'rxjs';
 import { CorePlatform } from '@services/platform';
 import { CoreLoadings } from '@services/loadings';
+import { CoreInAppBrowser } from '@singletons/iab';
 
 /**
  * Class that represents a site (combination of site + user).
@@ -535,7 +536,7 @@ export class CoreSite extends CoreAuthenticatedSite {
                 options.clearsessioncache = 'yes';
             }
 
-            return CoreUtils.openInApp(autoLoginUrl, options);
+            return CoreInAppBrowser.open(autoLoginUrl, options);
         } else {
             return CoreUtils.openInBrowser(autoLoginUrl, options);
         }

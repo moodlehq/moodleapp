@@ -18,7 +18,7 @@ import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/suppo
 import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreInAppBrowser } from '@singletons/iab';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreSubscriptions } from '@singletons/subscriptions';
@@ -42,7 +42,7 @@ export class CoreUserSupportService {
         const supportConfig = options.supportConfig ?? CoreUserAuthenticatedSupportConfig.forCurrentSite();
         const supportPageUrl = supportConfig.getSupportPageUrl();
         const autoLoginUrl = await CoreSites.getCurrentSite()?.getAutoLoginUrl(supportPageUrl, false);
-        const browser = CoreUtils.openInApp(autoLoginUrl ?? supportPageUrl);
+        const browser = CoreInAppBrowser.open(autoLoginUrl ?? supportPageUrl);
 
         if (supportPageUrl.endsWith('/user/contactsitesupport.php')) {
             this.populateSupportForm(browser, options.subject, options.message);

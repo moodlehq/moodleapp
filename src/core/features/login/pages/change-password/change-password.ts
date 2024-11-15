@@ -19,7 +19,7 @@ import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreInAppBrowser } from '@singletons/iab';
 import { CoreUserSupport } from '@features/user/services/support';
 
 /**
@@ -94,7 +94,7 @@ export class CoreLoginChangePasswordPage implements OnDestroy {
         this.urlLoadedObserver = CoreEvents.on(CoreEvents.IAB_LOAD_STOP, (event) => {
             if (event.url.match(/\/login\/change_password\.php.*return=1/)) {
                 // Password has changed, close the IAB now.
-                CoreUtils.closeInAppBrowser();
+                CoreInAppBrowser.closeInAppBrowser();
                 this.login();
 
                 return;
@@ -105,7 +105,7 @@ export class CoreLoginChangePasswordPage implements OnDestroy {
             }
 
             // Use a script to check if the user changed the password, in some platforms we cannot tell using the URL.
-            CoreUtils.getInAppBrowserInstance()?.executeScript({
+            CoreInAppBrowser.getInAppBrowserInstance()?.executeScript({
                 code: `
                     if (
                         document.querySelector('input[type="password"]') === null &&
@@ -119,7 +119,7 @@ export class CoreLoginChangePasswordPage implements OnDestroy {
 
         this.messageObserver = CoreEvents.on(CoreEvents.IAB_MESSAGE, (data) => {
             if (data.passwordChanged) {
-                CoreUtils.closeInAppBrowser();
+                CoreInAppBrowser.closeInAppBrowser();
                 this.login();
             }
         });

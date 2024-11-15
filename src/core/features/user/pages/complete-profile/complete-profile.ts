@@ -19,7 +19,7 @@ import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreInAppBrowser } from '@singletons/iab';
 import { CoreUserSupport } from '@features/user/services/support';
 
 /**
@@ -93,7 +93,7 @@ export class CoreUserCompleteProfilePage implements OnDestroy {
         this.urlLoadedObserver = CoreEvents.on(CoreEvents.IAB_LOAD_START, (event) => {
             if (event.url.match(/\/user\/preferences.php/)) {
                 // Profile should be complete now.
-                CoreUtils.closeInAppBrowser();
+                CoreInAppBrowser.closeInAppBrowser();
                 this.login();
             }
         });

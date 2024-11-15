@@ -62,6 +62,7 @@ import { CoreQRScan } from '@services/qrscan';
 import { CoreLoadings } from '@services/loadings';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSSO } from '@singletons/sso';
+import { CoreInAppBrowser } from '@singletons/iab';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -172,7 +173,7 @@ export class CoreLoginHelperProvider {
     async forgottenPasswordClicked(siteUrl: string, username: string, siteConfig?: CoreSitePublicConfigResponse): Promise<void> {
         if (siteConfig && siteConfig.forgottenpasswordurl) {
             // URL set, open it.
-            CoreUtils.openInApp(siteConfig.forgottenpasswordurl);
+            CoreInAppBrowser.open(siteConfig.forgottenpasswordurl);
 
             return;
         }
@@ -663,7 +664,7 @@ export class CoreLoginHelperProvider {
             this.logger.debug('openBrowserForSSOLogin loginUrl:', loginUrl);
 
             if (this.isSSOEmbeddedBrowser(typeOfLogin)) {
-                CoreUtils.openInApp(loginUrl, {
+                CoreInAppBrowser.open(loginUrl, {
                     clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
                     closebuttoncaption: Translate.instant('core.login.cancel'),
                 });
@@ -690,7 +691,7 @@ export class CoreLoginHelperProvider {
 
         await alert.onDidDismiss();
 
-        CoreUtils.openInApp(siteUrl + '/login/change_password.php');
+        CoreInAppBrowser.open(siteUrl + '/login/change_password.php');
     }
 
     /**
@@ -699,7 +700,7 @@ export class CoreLoginHelperProvider {
      * @param siteUrl URL of the site.
      */
     openForgottenPassword(siteUrl: string): void {
-        CoreUtils.openInApp(siteUrl + '/login/forgot_password.php');
+        CoreInAppBrowser.open(siteUrl + '/login/forgot_password.php');
     }
 
     /**
