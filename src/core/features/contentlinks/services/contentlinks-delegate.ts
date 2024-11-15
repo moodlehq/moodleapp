@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -188,7 +187,7 @@ export class CoreContentLinksDelegateService {
             }
 
             // Filter the site IDs using the isEnabled function.
-            promises.push(CoreUtils.filterEnabledSites(siteIds, isEnabledFn, checkAll).then(async (siteIds) => {
+            promises.push(CoreSites.filterEnabledSites(siteIds, isEnabledFn, checkAll).then(async (siteIds) => {
                 if (!siteIds.length) {
                     // No sites supported, no actions.
                     return;

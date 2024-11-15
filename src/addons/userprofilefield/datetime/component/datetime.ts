@@ -16,7 +16,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { Component } from '@angular/core';
 
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-profilefield-component';

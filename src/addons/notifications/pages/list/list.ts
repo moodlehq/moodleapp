@@ -16,7 +16,7 @@ import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     AddonNotifications, AddonNotificationsNotificationMessageFormatted, AddonNotificationsProvider,

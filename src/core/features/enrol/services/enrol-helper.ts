@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
 import { CoreEnrolAction, CoreEnrolDelegate, CoreEnrolInfoIcon } from './enrol-delegate';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreEnrol, CoreEnrolEnrolmentMethod } from './enrol';
 import { CoreArray } from '@singletons/array';
 

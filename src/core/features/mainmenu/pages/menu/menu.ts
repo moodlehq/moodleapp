@@ -21,7 +21,7 @@ import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import { CoreMainMenu } from '../../services/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/mainmenu-delegate';
 import { Router } from '@singletons';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from '@classes/aria-role-tab';
 import { CoreNavigator } from '@services/navigator';
 import { filter } from 'rxjs/operators';

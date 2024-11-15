@@ -31,7 +31,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreSync } from '@services/sync';
 import { AddonModForumDiscussionOptions, AddonModForumOffline } from '@addons/mod/forum/services/forum-offline';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreText } from '@singletons/text';

@@ -20,7 +20,7 @@ import { CoreAppDB } from '@services/app-db';
 import { CoreSites } from '@services/sites';
 import { CorePushNotificationsDelegate } from './push-delegate';
 import { CoreLocalNotifications } from '@services/local-notifications';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreText } from '@singletons/text';
 import { CoreConfig } from '@services/config';
 import { CoreConstants } from '@/core/constants';

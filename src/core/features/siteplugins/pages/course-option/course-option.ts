@@ -16,7 +16,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { CoreSitePluginsPluginContentComponent } from '@features/siteplugins/components/plugin-content/plugin-content';
 import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSharedModule } from '@/core/shared.module';
 

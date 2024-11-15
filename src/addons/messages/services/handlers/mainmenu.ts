@@ -20,7 +20,7 @@ import { CoreMainMenuHandler, CoreMainMenuHandlerToDisplay } from '@features/mai
 import { CoreCronHandler } from '@services/cron';
 import { CoreSites } from '@services/sites';
 import { CoreEvents } from '@singletons/events';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import {
     CorePushNotificationsNotificationBasicData,
 } from '@features/pushnotifications/services/pushnotifications';

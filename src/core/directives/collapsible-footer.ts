@@ -15,7 +15,7 @@
 import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { ScrollDetail } from '@ionic/core';
 import { IonContent } from '@ionic/angular';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreMath } from '@singletons/math';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreFormatTextDirective } from './format-text';

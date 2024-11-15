@@ -20,7 +20,7 @@ import { CoreFile } from '@services/file';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreText, CoreTextFormat } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
 import { AddonModWorkshopAssessmentStrategyFieldErrors } from '../components/assessment-strategy/assessment-strategy';

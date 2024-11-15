@@ -37,7 +37,7 @@ import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreTabComponent } from '@components/tabs/tab';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
-import { CoreMenuItem, CoreUtils } from '@services/utils/utils';
+import { CoreMenuItem, CoreUtils } from '@singletons/utils';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../../services/assign-helper';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';

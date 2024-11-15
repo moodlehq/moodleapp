@@ -26,7 +26,7 @@ import {
     AddonModLessonGetPageDataWSResponse,
 } from './lesson';
 import { CoreTime } from '@singletons/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { AddonModLessonPageSubtype } from '../constants';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 

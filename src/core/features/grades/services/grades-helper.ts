@@ -35,7 +35,7 @@ import {
 } from '@features/grades/services/grades';
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
-import { CoreMenuItem, CoreUtils } from '@services/utils/utils';
+import { CoreMenuItem, CoreUtils } from '@singletons/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton, Translate } from '@singletons';

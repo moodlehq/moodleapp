@@ -15,7 +15,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreCategoryData, CoreCourseListItem, CoreCourses } from '../../services/courses';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';

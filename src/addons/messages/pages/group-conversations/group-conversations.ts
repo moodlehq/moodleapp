@@ -33,7 +33,7 @@ import { Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { ActivatedRoute, Params } from '@angular/router';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CorePlatform } from '@services/platform';

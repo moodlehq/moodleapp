@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { AddonBadges } from '../badges';
 import { makeSingleton } from '@singletons';
