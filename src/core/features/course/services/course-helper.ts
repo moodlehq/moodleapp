@@ -32,7 +32,7 @@ import { CoreLogger } from '@singletons/logger';
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils, CoreUtilsOpenFileOptions } from '@services/utils/utils';
+import { CoreUtils } from '@services/utils/utils';
 import {
     CoreCourseAnyCourseData,
     CoreCourseBasicData,
@@ -83,6 +83,7 @@ import {
     CORE_COURSE_COMPONENT,
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener, CoreOpenerOpenFileOptions } from '@singletons/opener';
 
 /**
  * Prefetch info of a module.
@@ -640,7 +641,7 @@ export class CoreCourseHelperProvider {
         componentId?: string | number,
         files?: CoreCourseModuleContentFile[],
         siteId?: string,
-        options: CoreUtilsOpenFileOptions = {},
+        options: CoreOpenerOpenFileOptions = {},
     ): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -678,7 +679,7 @@ export class CoreCourseHelperProvider {
         );
 
         if (CoreUrl.isLocalFileUrl(result.path)) {
-            return CoreUtils.openFile(result.path, options);
+            return CoreOpener.openFile(result.path, options);
         }
 
         /* In iOS, if we use the same URL in embedded browser and background download then the download only
@@ -686,7 +687,7 @@ export class CoreCourseHelperProvider {
         result.path = result.path + '#moodlemobile-embedded';
 
         try {
-            await CoreUtils.openOnlineFile(result.path);
+            await CoreOpener.openOnlineFile(result.path);
         } catch (error) {
             // Error opening the file, some apps don't allow opening online files.
             if (!CoreFile.isAvailable()) {
@@ -706,7 +707,7 @@ export class CoreCourseHelperProvider {
                 path = await CoreFilepool.getInternalUrlByUrl(siteId, mainFile.fileurl);
             }
 
-            await CoreUtils.openFile(path, options);
+            await CoreOpener.openFile(path, options);
         }
     }
 
@@ -731,7 +732,7 @@ export class CoreCourseHelperProvider {
         component?: string,
         componentId?: string | number,
         files?: CoreCourseModuleContentFile[],
-        options: CoreUtilsOpenFileOptions = {},
+        options: CoreOpenerOpenFileOptions = {},
     ): Promise<void> {
         if (!CoreNetwork.isOnline()) {
             // Not online, get the offline file. It will fail if not found.
@@ -742,7 +743,7 @@ export class CoreCourseHelperProvider {
                 throw new CoreNetworkError();
             }
 
-            return CoreUtils.openFile(path, options);
+            return CoreOpener.openFile(path, options);
         }
 
         // Open in browser.
@@ -754,7 +755,7 @@ export class CoreCourseHelperProvider {
         // Remove forcedownload when not followed by any param.
         fixedUrl = fixedUrl.replace(/[?|&]forcedownload=\d+/, '');
 
-        CoreUtils.openInBrowser(fixedUrl);
+        CoreOpener.openInBrowser(fixedUrl);
 
         if (CoreFile.isAvailable()) {
             // Download the file if needed (file outdated or not downloaded).
@@ -783,7 +784,7 @@ export class CoreCourseHelperProvider {
         componentId?: string | number,
         files?: CoreCourseModuleContentFile[],
         siteId?: string,
-        options: CoreUtilsOpenFileOptions = {},
+        options: CoreOpenerOpenFileOptions = {},
     ): Promise<{ fixedUrl: string; path: string; status?: DownloadStatus }> {
 
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -881,7 +882,7 @@ export class CoreCourseHelperProvider {
         component?: string,
         componentId?: string | number,
         siteId?: string,
-        options: CoreUtilsOpenFileOptions = {},
+        options: CoreOpenerOpenFileOptions = {},
     ): Promise<string> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 

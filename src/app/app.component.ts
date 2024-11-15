@@ -22,12 +22,12 @@ import { CoreApp } from '@services/app';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { CoreWindow } from '@singletons/window';
-import { CoreInAppBrowser } from '@singletons/iab';
 import { CorePlatform } from '@services/platform';
 import { CoreLogger } from '@singletons/logger';
 import { CorePromisedValue } from '@classes/promised-value';
 import { register } from 'swiper/element/bundle';
 import { CoreWait } from '@singletons/wait';
+import { CoreOpener } from '@singletons/opener';
 
 register();
 
@@ -51,7 +51,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         CorePlatform.resume.subscribe(() => {
             // Wait a second before setting it to false since in iOS there could be some frozen WS calls.
             setTimeout(() => {
-                if (CoreLoginHelper.isWaitingForBrowser() && !CoreInAppBrowser.isInAppBrowserOpen()) {
+                if (CoreLoginHelper.isWaitingForBrowser() && !CoreOpener.isInAppBrowserOpen()) {
                     CoreLoginHelper.stopWaitingForBrowser();
                     CoreLoginHelper.checkLogout();
                 }

@@ -16,7 +16,6 @@ import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild 
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNavigator } from '@services/navigator';
@@ -141,7 +140,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
         // Try to get the mime type.
         try {
-            const mimeType = await CoreUtils.getMimeTypeFromUrl(this.sitePoliciesURL);
+            const mimeType = await CoreMimetypeUtils.getMimeTypeFromUrl(this.sitePoliciesURL);
 
             const extension = CoreMimetypeUtils.getExtension(mimeType, this.sitePoliciesURL);
             this.showInline = extension == 'html' || extension == 'htm';

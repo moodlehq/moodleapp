@@ -23,7 +23,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
+import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@singletons/opener';
 import { CoreForms } from '@singletons/form';
 import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
@@ -134,13 +134,13 @@ export class CoreLocalFileComponent implements OnInit {
             }
         }
 
-        const options: CoreUtilsOpenFileOptions = {};
+        const options: CoreOpenerOpenFileOptions = {};
         if (isOpenButton) {
             // Use the non-default method.
             options.iOSOpenFileAction = this.defaultIsOpenWithPicker ? OpenFileAction.OPEN : OpenFileAction.OPEN_WITH;
         }
 
-        CoreUtils.openFile(CoreFile.getFileEntryURL(this.file), options);
+        CoreOpener.openFile(CoreFile.getFileEntryURL(this.file), options);
     }
 
     /**

@@ -22,7 +22,7 @@ import { CoreFile } from '@services/file';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreText } from '@singletons/text';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreOpener } from '@singletons/opener';
 import { CoreConstants } from '@/core/constants';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
@@ -1199,7 +1199,7 @@ export class CoreDomUtilsProvider {
             buttons.push({
                 text: Translate.instant('core.download'),
                 handler: (): void => {
-                    CoreUtils.openInBrowser(link, { showBrowserWarning: false });
+                    CoreOpener.openInBrowser(link, { showBrowserWarning: false });
                 },
             });
         }
@@ -1428,7 +1428,7 @@ export class CoreDomUtilsProvider {
                     event.preventDefault();
                     event.stopPropagation();
 
-                    CoreUtils.openInBrowser(href);
+                    CoreOpener.openInBrowser(href);
                 }
             });
         });

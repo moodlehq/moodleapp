@@ -17,7 +17,7 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreSites } from '@services/sites';
-import { CoreInAppBrowser } from '@singletons/iab';
+import { CoreOpener } from '@singletons/opener';
 import { CorePath } from '@singletons/path';
 
 /**
@@ -66,7 +66,7 @@ export class CoreRecaptchaComponent implements OnInit {
         // The app cannot render the recaptcha directly because it has problems with the local protocols and domains.
         const src = CorePath.concatenatePaths(this.siteUrl, 'webservice/recaptcha.php?lang=' + this.lang);
 
-        const inAppBrowserWindow = CoreInAppBrowser.open(src);
+        const inAppBrowserWindow = CoreOpener.openInApp(src);
         if (!inAppBrowserWindow) {
             return;
         }

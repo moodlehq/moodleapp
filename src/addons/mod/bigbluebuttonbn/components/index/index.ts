@@ -35,6 +35,7 @@ import { ADDON_MOD_BBB_COMPONENT } from '../../constants';
 import { CoreLoadings } from '@services/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener } from '@singletons/opener';
 
 /**
  * Component that displays a Big Blue Button activity.
@@ -303,7 +304,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         try {
             const joinUrl = await AddonModBBB.getJoinUrl(this.module.id, this.groupId);
 
-            await CoreUtils.openInBrowser(joinUrl, {
+            await CoreOpener.openInBrowser(joinUrl, {
                 showBrowserWarning: false,
             });
 

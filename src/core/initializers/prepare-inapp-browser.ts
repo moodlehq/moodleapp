@@ -20,10 +20,9 @@ import { CoreSites } from '@services/sites';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreOpener } from '@singletons/opener';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { CoreInAppBrowser } from '@singletons/iab';
 
 let lastInAppUrl: string | null = null;
 
@@ -44,14 +43,14 @@ export default function(): void {
             CoreCustomURLSchemes.handleCustomURL(url).catch((error) => {
                 CoreCustomURLSchemes.treatHandleCustomURLError(error);
             });
-            CoreInAppBrowser.closeInAppBrowser();
+            CoreOpener.closeInAppBrowser();
 
             return;
         }
 
         if (isExternalApp && url.includes('://token=')) {
             // It's an SSO token for another app. Close the IAB and show an error.
-            CoreInAppBrowser.closeInAppBrowser();
+            CoreOpener.closeInAppBrowser();
             CoreDomUtils.showErrorModal(new CoreSiteError({
                 supportConfig: CoreSites.getCurrentSite()
                     ? CoreUserAuthenticatedSupportConfig.forCurrentSite()
@@ -69,15 +68,15 @@ export default function(): void {
         }
 
         // Open in browser should launch the right app if found and do nothing if not found.
-        CoreUtils.openInBrowser(url, { showBrowserWarning: false });
+        CoreOpener.openInBrowser(url, { showBrowserWarning: false });
 
         // At this point, URL schemes will stop working in IAB, and in Android the IAB is showing a "Webpage not available" error.
         // Re-loading the page inside the existing IAB doesn't fix it, we need to re-load the whole IAB.
         if (lastInAppUrl) {
-            CoreInAppBrowser.open(lastInAppUrl);
+            CoreOpener.openInApp(lastInAppUrl);
         } else {
             // No last URL loaded, close the InAppBrowser.
-            CoreInAppBrowser.closeInAppBrowser();
+            CoreOpener.closeInAppBrowser();
         }
     });
 

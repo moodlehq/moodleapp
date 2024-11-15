@@ -13,15 +13,11 @@
 // limitations under the License.
 
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
-import { CoreConfig } from '@services/config';
 
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
-import { Translate } from '@singletons';
-import { CoreConstants } from '../constants';
+import { CoreOpener } from './opener';
 
 /**
  * Singleton with helper functions for windows.
@@ -36,36 +32,16 @@ export class CoreWindow {
     /**
      * Show a confirm before opening a link in browser, unless the user previously marked to not show again.
      *
-     * @param url URL to open.
-     * @returns Promise resolved if confirmed, rejected if rejected.
+     * @returns Only shows a deprecation warning.
+     * @deprecated since 5.0. Not used anymore. Use CoreOpener.openInBrowser and it will confirm if needed.
      */
-    static async confirmOpenBrowserIfNeeded(url: string): Promise<void> {
-        if (!CoreUrl.isHttpURL(url)) {
-            // Only ask confirm for http(s), other cases usually launch external apps.
-            return;
-        }
+    static async confirmOpenBrowserIfNeeded(): Promise<void> {
+        const { CoreLogger } = await import('@singletons/logger');
 
-        // Check if the user decided not to see the warning.
-        const dontShowWarning = await CoreConfig.get(CoreConstants.SETTINGS_DONT_SHOW_EXTERNAL_LINK_WARN, 0);
-        if (dontShowWarning) {
-            return;
-        }
+        CoreLogger.getInstance('CoreWindow')
+            .warn('confirmOpenBrowserIfNeeded has been deprecated since 5.0. Not used anymore.\
+                 Use CoreOpener.openInBrowser and it will confirm if needed.');
 
-        // Remove common sensitive information from the URL.
-        url = url
-            .replace(/token=[^&#]+/gi, 'token=secret')
-            .replace(/tokenpluginfile\.php\/[^/]+/gi, 'tokenpluginfile.php/secret');
-
-        const dontShowAgain = await CoreDomUtils.showPrompt(
-            Translate.instant('core.warnopeninbrowser', { url }),
-            undefined,
-            Translate.instant('core.dontshowagain'),
-            'checkbox',
-        );
-
-        if (dontShowAgain) {
-            CoreConfig.set(CoreConstants.SETTINGS_DONT_SHOW_EXTERNAL_LINK_WARN, 1);
-        }
     }
 
     /**
@@ -88,7 +64,7 @@ export class CoreWindow {
                 }
             }
 
-            await CoreUtils.openFile(url);
+            await CoreOpener.openFile(url);
         } else {
             let treated = false;
 
@@ -101,7 +77,7 @@ export class CoreWindow {
                 // Not opened in the app, open with browser. Check if we need to auto-login.
                 if (!CoreSites.isLoggedIn()) {
                     // Not logged in, cannot auto-login.
-                    CoreUtils.openInBrowser(url);
+                    CoreOpener.openInBrowser(url);
                 } else {
                     await CoreSites.getRequiredCurrentSite().openInBrowserWithAutoLogin(url);
                 }

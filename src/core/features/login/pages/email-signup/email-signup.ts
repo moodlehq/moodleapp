@@ -39,6 +39,7 @@ import { CoreInputErrorsMessages } from '@components/input-errors/input-errors';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener } from '@singletons/opener';
 
 /**
  * Page to signup using email.
@@ -395,7 +396,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * Show contact information on site (we have to display again the age verification form).
      */
     showContactOnSite(): void {
-        CoreUtils.openInBrowser(
+        CoreOpener.openInBrowser(
             CorePath.concatenatePaths(this.site.getURL(), '/login/verify_age_location.php'),
             { showBrowserWarning: false },
         );

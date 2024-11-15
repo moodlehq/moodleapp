@@ -58,6 +58,7 @@ import {
     AddonModWorkshopPhase,
 } from '@addons/mod/workshop/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener } from '@singletons/opener';
 
 /**
  * Component that displays a workshop index page.
@@ -363,7 +364,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         if (task.code == 'submit') {
             this.gotoSubmit();
         } else if (task.link) {
-            CoreUtils.openInBrowser(task.link);
+            CoreOpener.openInBrowser(task.link);
         }
     }
 

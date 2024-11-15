@@ -71,6 +71,7 @@ import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreAppDB } from './app-db';
 import { CoreRedirects } from '@singletons/redirects';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener } from '@singletons/opener';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -947,7 +948,7 @@ export class CoreSitesProvider {
                     Translate.instant('core.updaterequired'),
                     Translate.instant('core.download'),
                     Translate.instant(siteId ? 'core.mainmenu.logout' : 'core.cancel'),
-                ).then(() => CoreUtils.openInBrowser(downloadUrl, { showBrowserWarning: false })).catch(() => {
+                ).then(() => CoreOpener.openInBrowser(downloadUrl, { showBrowserWarning: false })).catch(() => {
                     // Do nothing.
                 });
             } else {
