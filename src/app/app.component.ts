@@ -22,7 +22,7 @@ import { CoreApp } from '@services/app';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { CoreWindow } from '@singletons/window';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreInAppBrowser } from '@singletons/iab';
 import { CorePlatform } from '@services/platform';
 import { CoreLogger } from '@singletons/logger';
 import { CorePromisedValue } from '@classes/promised-value';
@@ -51,7 +51,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         CorePlatform.resume.subscribe(() => {
             // Wait a second before setting it to false since in iOS there could be some frozen WS calls.
             setTimeout(() => {
-                if (CoreLoginHelper.isWaitingForBrowser() && !CoreUtils.isInAppBrowserOpen()) {
+                if (CoreLoginHelper.isWaitingForBrowser() && !CoreInAppBrowser.isInAppBrowserOpen()) {
                     CoreLoginHelper.stopWaitingForBrowser();
                     CoreLoginHelper.checkLogout();
                 }

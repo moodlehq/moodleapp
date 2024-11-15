@@ -13,19 +13,17 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { InAppBrowserObject, InAppBrowserOptions } from '@awesome-cordova-plugins/in-app-browser';
+import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
-import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreWS } from '@services/ws';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { makeSingleton, InAppBrowser, FileOpener, WebIntent, Translate, NgZone } from '@singletons';
+import { makeSingleton, FileOpener, WebIntent, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreConstants } from '@/core/constants';
 import { CoreWindow } from '@singletons/window';
-import { CoreColors } from '@singletons/colors';
 import { CorePlatform } from '@services/platform';
 import { CoreErrorWithOptions } from '@classes/errors/errorwithoptions';
 import { CoreFilepool } from '@services/filepool';
@@ -38,6 +36,7 @@ import { CoreText } from '@singletons/text';
 import { CoreWait, CoreWaitOptions } from '@singletons/wait';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreErrorHelper } from '@services/error-helper';
+import { CoreInAppBrowser, CoreInAppBrowserOpenOptions } from '@singletons/iab';
 
 export type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -50,7 +49,6 @@ export class CoreUtilsProvider {
     protected readonly DONT_CLONE = ['[object FileEntry]', '[object DirectoryEntry]', '[object DOMFileSystem]'];
 
     protected logger: CoreLogger;
-    protected iabInstance?: InAppBrowserObject;
     protected uniqueIds: {[name: string]: number} = {};
 
     constructor() {
@@ -269,29 +267,31 @@ export class CoreUtilsProvider {
 
     /**
      * Close the InAppBrowser window.
+     *
+     * @deprecated since 5.0. Use CoreInAppBrowser.closeInAppBrowser instead.
      */
     closeInAppBrowser(): void {
-        if (this.iabInstance) {
-            this.iabInstance.close();
-        }
+        CoreInAppBrowser.closeInAppBrowser();
     }
 
     /**
      * Get inapp browser instance (if any).
      *
      * @returns IAB instance, undefined if not open.
+     * @deprecated since 5.0. Use CoreInAppBrowser.getInAppBrowserInstance instead.
      */
     getInAppBrowserInstance(): InAppBrowserObject | undefined  {
-        return this.iabInstance;
+        return CoreInAppBrowser.getInAppBrowserInstance();
     }
 
     /**
      * Check if inapp browser is open.
      *
      * @returns Whether it's open.
+     * @deprecated since 5.0. Use CoreInAppBrowser.isInAppBrowserOpen instead.
      */
     isInAppBrowserOpen(): boolean {
-        return !!this.iabInstance;
+        return CoreInAppBrowser.isInAppBrowserOpen();
     }
 
     /**
@@ -968,7 +968,7 @@ export class CoreUtilsProvider {
 
         if (mimetype == 'text/html' && CorePlatform.isAndroid()) {
             // Open HTML local files in InAppBrowser, in system browser some embedded files aren't loaded.
-            this.openInApp(path);
+            CoreInAppBrowser.open(path);
 
             return;
         } else if (extension === 'apk' && CorePlatform.isAndroid()) {
@@ -1042,117 +1042,16 @@ export class CoreUtilsProvider {
 
     /**
      * Open a URL using InAppBrowser.
-     * Do not use for files, refer to {@link CoreUtilsProvider.openFile}.
+     * Do not use for files, refer to {@link CoreUtils.openFile}.
      *
      * @param url The URL to open.
      * @param options Override default options passed to InAppBrowser.
      * @returns The opened window.
-     */
-    openInApp(url: string, options?: CoreUtilsOpenInAppOptions): InAppBrowserObject {
-        options = options || {};
-        options.usewkwebview = 'yes'; // Force WKWebView in iOS.
-        options.enableViewPortScale = options.enableViewPortScale ?? 'yes'; // Enable zoom on iOS by default.
-        options.allowInlineMediaPlayback = options.allowInlineMediaPlayback ?? 'yes'; // Allow playing inline videos in iOS.
-
-        if (!options.location && CorePlatform.isIOS() && url.indexOf('file://') === 0) {
-            // The URL uses file protocol, don't show it on iOS.
-            // In Android we keep it because otherwise we lose the whole toolbar.
-            options.location = 'no';
-        }
-
-        this.setInAppBrowserToolbarColors(options);
-
-        this.iabInstance = InAppBrowser.create(url, '_blank', options);
-
-        if (CorePlatform.isMobile()) {
-            const loadStartUrls: string[] = [];
-
-            const loadStartSubscription = this.iabInstance.on('loadstart').subscribe((event) => {
-                NgZone.run(() => {
-                    // Store the last loaded URLs (max 10).
-                    loadStartUrls.push(event.url);
-                    if (loadStartUrls.length > 10) {
-                        loadStartUrls.shift();
-                    }
-
-                    CoreEvents.trigger(CoreEvents.IAB_LOAD_START, event);
-                });
-            });
-
-            const loadStopSubscription = this.iabInstance.on('loadstop').subscribe((event) => {
-                NgZone.run(() => {
-                    CoreEvents.trigger(CoreEvents.IAB_LOAD_STOP, event);
-                });
-            });
-
-            const messageSubscription = this.iabInstance.on('message').subscribe((event) => {
-                NgZone.run(() => {
-                    CoreEvents.trigger(CoreEvents.IAB_MESSAGE, event.data);
-                });
-            });
-
-            const exitSubscription = this.iabInstance.on('exit').subscribe((event) => {
-                NgZone.run(() => {
-                    loadStartSubscription.unsubscribe();
-                    loadStopSubscription.unsubscribe();
-                    messageSubscription.unsubscribe();
-                    exitSubscription.unsubscribe();
-
-                    this.iabInstance = undefined;
-                    CoreEvents.trigger(CoreEvents.IAB_EXIT, event);
-                });
-            });
-        }
-
-        CoreAnalytics.logEvent({
-            type: CoreAnalyticsEventType.OPEN_LINK,
-            link: CoreUrl.unfixPluginfileURL(options.originalUrl ?? url),
-        });
-
-        return this.iabInstance;
-    }
-
-    /**
-     * Given some IAB options, set the toolbar colors properties to the right values.
      *
-     * @param options Options to change.
-     * @returns Changed options.
+     * @deprecated since 5.0. Use CoreInAppBrowser.openInApp instead.
      */
-    protected setInAppBrowserToolbarColors(options: InAppBrowserOptions): InAppBrowserOptions {
-        if (options.toolbarcolor) {
-            // Color already set.
-            return options;
-        }
-
-        // Color not set. Check if it needs to be changed automatically.
-        let bgColor: string | undefined;
-        let textColor: string | undefined;
-
-        if (CoreConstants.CONFIG.iabToolbarColors === 'auto') {
-            bgColor = CoreColors.getToolbarBackgroundColor();
-        } else if (CoreConstants.CONFIG.iabToolbarColors && typeof CoreConstants.CONFIG.iabToolbarColors === 'object') {
-            bgColor = CoreConstants.CONFIG.iabToolbarColors.background;
-            textColor = CoreConstants.CONFIG.iabToolbarColors.text;
-        }
-
-        if (!bgColor) {
-            // Use default color. In iOS, use black background color since the default is transparent and doesn't look good.
-            options.locationcolor = '#000000';
-
-            return options;
-        }
-
-        if (!textColor) {
-            textColor = CoreColors.isWhiteContrastingBetter(bgColor) ? '#ffffff' : '#000000';
-        }
-
-        options.toolbarcolor = bgColor;
-        options.closebuttoncolor = textColor;
-        options.navigationbuttoncolor = textColor;
-        options.locationcolor = bgColor;
-        options.locationtextcolor = textColor;
-
-        return options;
+    openInApp(url: string, options?: CoreInAppBrowserOpenOptions): InAppBrowserObject {
+        return CoreInAppBrowser.open(url, options);
     }
 
     /**
@@ -1224,7 +1123,7 @@ export class CoreUtilsProvider {
         }
 
         // In the rest of platforms we need to open them in InAppBrowser.
-        this.openInApp(url);
+        CoreInAppBrowser.open(url);
     }
 
     /**
@@ -1808,13 +1707,6 @@ export type CoreUtilsOpenInBrowserOptions = {
      * @deprecated since 4.3. Use originalUrl instead.
      */
     browserWarningUrl?: string;
-};
-
-/**
- * Options for opening in InAppBrowser.
- */
-export type CoreUtilsOpenInAppOptions = InAppBrowserOptions & {
-    originalUrl?: string; // Original URL to open (in case the URL was treated, e.g. to add a token or an auto-login).
 };
 
 /**

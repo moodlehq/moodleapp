@@ -28,6 +28,7 @@ import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_LTI_COMPONENT } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreInAppBrowser } from '@singletons/iab';
 
 /**
  * Service that provides some features for LTI.
@@ -253,7 +254,7 @@ export class AddonModLtiProvider {
         const launcherUrl = await this.generateLauncher(url, params);
 
         if (CorePlatform.isMobile()) {
-            CoreUtils.openInApp(launcherUrl);
+            CoreInAppBrowser.open(launcherUrl);
         } else {
             // In desktop open in browser, we found some cases where inapp caused JS issues.
             CoreUtils.openInBrowser(launcherUrl);

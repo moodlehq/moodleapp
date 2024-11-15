@@ -24,6 +24,7 @@ import { AddonNotifications } from '../notifications';
 import { AddonNotificationsMainMenuHandlerService } from './mainmenu';
 import { AddonNotificationsHelper } from '../notifications-helper';
 import { CoreViewer } from '@features/viewer/services/viewer';
+import { CoreInAppBrowser } from '@singletons/iab';
 
 /**
  * Handler for non-messaging push notifications clicks.
@@ -89,7 +90,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
 
             switch (notification.customdata.appurlopenin) {
                 case 'inapp':
-                    CoreUtils.openInApp(url);
+                    CoreInAppBrowser.open(url);
 
                     return;
 

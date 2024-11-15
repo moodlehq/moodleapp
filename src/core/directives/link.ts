@@ -28,6 +28,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreDom } from '@singletons/dom';
 import { toBoolean } from '../transforms/boolean';
 import { CoreLoadings } from '@services/loadings';
+import { CoreInAppBrowser } from '@singletons/iab';
 
 /**
  * Directive to open a link in external browser or in the app.
@@ -186,7 +187,7 @@ export class CoreLinkDirective implements OnInit {
         if (!CoreSites.isLoggedIn()) {
             // Not logged in, cannot auto-login.
             if (openInApp) {
-                CoreUtils.openInApp(href);
+                CoreInAppBrowser.open(href);
             } else {
                 CoreUtils.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
             }
@@ -227,7 +228,7 @@ export class CoreLinkDirective implements OnInit {
             }
         } else {
             if (openInApp) {
-                CoreUtils.openInApp(href);
+                CoreInAppBrowser.open(href);
             } else {
                 CoreUtils.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
             }
