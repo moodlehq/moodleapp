@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
 
-import { CoreApp } from '@services/app';
+import { CoreAppDB } from '@services/app-db';
 import { CoreConfig } from '@services/config';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreText } from '@singletons/text';
@@ -185,13 +185,9 @@ export class CoreLocalNotificationsProvider {
      * Initialize database.
      */
     async initializeDatabase(): Promise<void> {
-        try {
-            await CoreApp.createTablesFromSchema(APP_SCHEMA);
-        } catch {
-            // Ignore errors.
-        }
+        await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
-        const database = CoreApp.getDB();
+        const database = CoreAppDB.getDB();
         const sitesTable = new CoreDatabaseTableProxy<CoreLocalNotificationsSitesDBRecord, 'id', never>(
             { cachingStrategy: CoreDatabaseCachingStrategy.None },
             database,

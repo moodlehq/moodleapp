@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CorePromisedValue } from '@classes/promised-value';
-import { CoreAppSchema } from '@services/app';
+import { CoreAppSchema } from '@services/app-db';
 
 /**
  * Database variables for CoreLocalNotifications service.

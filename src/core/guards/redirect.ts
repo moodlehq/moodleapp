@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CanActivateFn } from '@angular/router';
-import { CoreApp } from '@services/app';
+import { CoreRedirects } from '@singletons/redirects';
 import { CoreRedirectPayload } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { Router } from '@singletons';
@@ -25,7 +25,7 @@ import { CoreConstants } from '../constants';
  * @returns True if there's no redirect, redirection route otherwise.
  */
 export const redirectGuard: CanActivateFn = async () => {
-    const redirect = CoreApp.consumeMemoryRedirect();
+    const redirect = CoreRedirects.consumeMemoryRedirect();
         if (!redirect) {
             return true;
         }
