@@ -14,7 +14,7 @@
 
 import { DownloadStatus } from '@/core/constants';
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
-import { CoreCourseProvider, CoreCourse } from '@features/course/services/course';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
@@ -36,6 +36,7 @@ import {
     CORE_COURSES_STATE_HIDDEN,
     CORE_COURSES_STATE_FAVOURITE,
 } from '@features/courses/constants';
+import { CORE_COURSE_ALL_COURSES_CLEARED, CORE_COURSE_PROGRESS_UPDATED_EVENT } from '@features/course/constants';
 
 /**
  * This directive is meant to display an item for a list of courses.
@@ -85,7 +86,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
         const siteId = CoreSites.getCurrentSiteId();
-        this.progressObserver = CoreEvents.on(CoreCourseProvider.PROGRESS_UPDATED, (data) => {
+        this.progressObserver = CoreEvents.on(CORE_COURSE_PROGRESS_UPDATED_EVENT, (data) => {
             if (!this.course || this.course.id !== data.courseId || !('progress' in this.course)) {
                 return;
             }
@@ -203,7 +204,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
 
         // Listen for status change in course.
         this.courseStatusObserver = CoreEvents.on(CoreEvents.COURSE_STATUS_CHANGED, (data: CoreEventCourseStatusChanged) => {
-            if (data.courseId == this.course.id || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
+            if (data.courseId == this.course.id || data.courseId == CORE_COURSE_ALL_COURSES_CLEARED) {
                 this.updateCourseStatus(data.status);
             }
         }, CoreSites.getCurrentSiteId());

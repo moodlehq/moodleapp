@@ -31,7 +31,7 @@ import { CoreCourseModulesTagAreaHandler } from './services/handlers/modules-tag
 import { CoreCourse } from './services/course';
 import { buildRegExpUrlMatcher } from '@/app/app-routing.module';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
-import { COURSE_PAGE_NAME, CONTENTS_PAGE_NAME } from './constants';
+import { CORE_COURSE_PAGE_NAME, CORE_COURSE_CONTENTS_PAGE_NAME } from './constants';
 
 /**
  * Get course services.
@@ -70,7 +70,15 @@ export async function getCourseServices(): Promise<Type<unknown>[]> {
 export async function getCourseExportedObjects(): Promise<Record<string, unknown>> {
     const { CoreCourseActivityPrefetchHandlerBase } = await import('@features/course/classes/activity-prefetch-handler');
     const { CoreCourseResourcePrefetchHandlerBase } = await import('@features/course/classes/resource-prefetch-handler');
-    const { CoreCourseAccessDataType } = await import('@features/course/services/course');
+    const {
+        CoreCourseAccessDataType,
+        CORE_COURSE_ALL_SECTIONS_ID,
+        CORE_COURSE_STEALTH_MODULES_SECTION_ID,
+        CORE_COURSE_ALL_COURSES_CLEARED,
+        CORE_COURSE_PROGRESS_UPDATED_EVENT,
+        CORE_COURSE_COMPONENT,
+        CORE_COURSE_CORE_MODULES,
+    } = await import('@features/course/constants');
     const { CoreCourseUnsupportedModuleComponent } =
         await import ('@features/course/components/unsupported-module/unsupported-module');
     const { CoreCourseFormatSingleActivityComponent } =
@@ -83,6 +91,12 @@ export async function getCourseExportedObjects(): Promise<Record<string, unknown
         CoreCourseUnsupportedModuleComponent,
         CoreCourseFormatSingleActivityComponent,
         CoreCourseAccessDataType,
+        CORE_COURSE_ALL_SECTIONS_ID,
+        CORE_COURSE_STEALTH_MODULES_SECTION_ID,
+        CORE_COURSE_ALL_COURSES_CLEARED,
+        CORE_COURSE_PROGRESS_UPDATED_EVENT,
+        CORE_COURSE_COMPONENT,
+        CORE_COURSE_CORE_MODULES,
     };
     /* eslint-enable @typescript-eslint/naming-convention */
 }
@@ -111,14 +125,14 @@ export async function getCourseStandaloneComponents(): Promise<Type<unknown>[]> 
 
 const routes: Routes = [
     {
-        matcher: buildRegExpUrlMatcher(new RegExp(`^${COURSE_PAGE_NAME}(/deep)*`)),
+        matcher: buildRegExpUrlMatcher(new RegExp(`^${CORE_COURSE_PAGE_NAME}(/deep)*`)),
         loadChildren: () => import('@features/course/course-lazy.module'),
     },
 ];
 
 const courseIndexRoutes: Routes = [
     {
-        path: CONTENTS_PAGE_NAME,
+        path: CORE_COURSE_CONTENTS_PAGE_NAME,
         loadChildren: () => import('@features/course/course-contents-lazy.module'),
     },
 ];

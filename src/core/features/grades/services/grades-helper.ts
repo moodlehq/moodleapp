@@ -22,7 +22,7 @@ import {
     CoreCourseSearchedData,
     CoreCourseUserAdminOrNavOptionIndexed,
 } from '@features/courses/services/courses';
-import { CoreCourse, CoreCourseAccessDataType } from '@features/course/services/course';
+import { CoreCourse } from '@features/course/services/course';
 import {
     CoreGrades,
     CoreGradesGradeItem,
@@ -45,6 +45,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseAccess } from '@features/course/services/course-options-delegate';
 import { CoreLoadings } from '@services/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
+import { CoreCourseAccessDataType } from '@features/course/constants';
 
 export const GRADES_PAGE_NAME = 'grades';
 export const GRADES_PARTICIPANTS_PAGE_NAME = 'participant-grades';

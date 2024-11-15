@@ -23,7 +23,7 @@ import {
     CoreCourses,
     CoreCourseUserAdminOrNavOptionIndexed,
 } from '@features/courses/services/courses';
-import { CoreCourseAccessDataType } from './course';
+import { CoreCourseAccessDataType } from '../constants';
 import { Params } from '@angular/router';
 import { makeSingleton } from '@singletons';
 import { CorePromisedValue } from '@classes/promised-value';

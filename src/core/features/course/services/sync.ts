@@ -29,6 +29,7 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreCourses } from '@features/courses/services/courses';
+import { CORE_COURSE_AUTO_SYNCED } from '../constants';
 
 /**
  * Service to sync course offline data. This only syncs the offline data of the course itself, not the offline data of
@@ -36,8 +37,6 @@ import { CoreCourses } from '@features/courses/services/courses';
  */
 @Injectable({ providedIn: 'root' })
 export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncResult> {
-
-    static readonly AUTO_SYNCED = 'core_course_autom_synced';
 
     constructor() {
         super('CoreCourseSyncProvider');
@@ -96,7 +95,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
             }
 
             // Sync successful, send event.
-            CoreEvents.trigger(CoreCourseSyncProvider.AUTO_SYNCED, {
+            CoreEvents.trigger(CORE_COURSE_AUTO_SYNCED, {
                 courseId: completion.courseid,
                 warnings: result.warnings,
             }, siteId);
@@ -270,7 +269,7 @@ export type CoreCourseSyncResult = {
 };
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to CORE_COURSE_AUTO_SYNCED event.
  */
 export type CoreCourseAutoSyncData = {
     courseId: number;

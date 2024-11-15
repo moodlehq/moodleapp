@@ -34,7 +34,7 @@ import { CoreUserHelper } from './services/user-helper';
 import { AppRoutingModule, conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 import { CoreEvents } from '@singletons/events';
-import { COURSE_PAGE_NAME, COURSE_INDEX_PATH } from '@features/course/constants';
+import { CORE_COURSE_PAGE_NAME, CORE_COURSE_INDEX_PATH } from '@features/course/constants';
 import { PARTICIPANTS_PAGE_NAME } from './constants';
 
 /**
@@ -74,7 +74,7 @@ const routes: Routes = [
     },
     ...conditionalRoutes([
         {
-            path: `${COURSE_PAGE_NAME}/${COURSE_INDEX_PATH}/${PARTICIPANTS_PAGE_NAME}/:userId`,
+            path: `${CORE_COURSE_PAGE_NAME}/${CORE_COURSE_INDEX_PATH}/${PARTICIPANTS_PAGE_NAME}/:userId`,
             loadChildren: () => import('@features/user/user-profile-lazy.module'),
             data: {
                 swipeManagerSource: 'participants',

@@ -14,7 +14,7 @@
 
 import { ADDON_COMPETENCY_COMPETENCIES_PAGE, ADDON_COMPETENCY_LEARNING_PLANS_PAGE } from '@addons/competency/constants';
 import { Injectable } from '@angular/core';
-import { COURSE_PAGE_NAME } from '@features/course/constants';
+import { CORE_COURSE_PAGE_NAME } from '@features/course/constants';
 import { CoreUserProfile } from '@features/user/services/user';
 import {
     CoreUserProfileHandler,
@@ -112,9 +112,13 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
             action: (event, user, context, contextId): void => {
                 event.preventDefault();
                 event.stopPropagation();
-                CoreNavigator.navigateToSitePath(
-                    [COURSE_PAGE_NAME, contextId, PARTICIPANTS_PAGE_NAME, user.id, ADDON_COMPETENCY_COMPETENCIES_PAGE].join('/'),
-                );
+                CoreNavigator.navigateToSitePath([
+                    CORE_COURSE_PAGE_NAME,
+                    contextId,
+                    PARTICIPANTS_PAGE_NAME,
+                    user.id,
+                    ADDON_COMPETENCY_COMPETENCIES_PAGE,
+                ].join('/'));
             },
         };
     }

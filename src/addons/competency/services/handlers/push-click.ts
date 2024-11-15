@@ -14,7 +14,7 @@
 
 import { ADDON_COMPETENCY_COMPETENCIES_PAGE, ADDON_COMPETENCY_LEARNING_PLANS_PAGE } from '@addons/competency/constants';
 import { Injectable } from '@angular/core';
-import { COURSE_PAGE_NAME } from '@features/course/constants';
+import { CORE_COURSE_PAGE_NAME } from '@features/course/constants';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CoreNavigator } from '@services/navigator';
@@ -75,7 +75,7 @@ export class AddonCompetencyPushClickHandlerService implements CorePushNotificat
 
             if (courseId) {
                 await CoreNavigator.navigateToSitePath(
-                    `${COURSE_PAGE_NAME}/${courseId}/${ADDON_COMPETENCY_COMPETENCIES_PAGE}/${competencyId}`,
+                    `${CORE_COURSE_PAGE_NAME}/${courseId}/${ADDON_COMPETENCY_COMPETENCIES_PAGE}/${competencyId}`,
                     {
                         params: { userId },
                         siteId: notification.site,

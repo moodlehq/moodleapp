@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { COURSE_PAGE_NAME } from '@features/course/constants';
+import { CORE_COURSE_PAGE_NAME } from '@features/course/constants';
 
 import { CoreGrades } from '@features/grades/services/grades';
 import { CoreUserProfile } from '@features/user/services/user';
@@ -99,7 +99,7 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
                     event.preventDefault();
                     event.stopPropagation();
                     CoreNavigator.navigateToSitePath(
-                        [COURSE_PAGE_NAME, contextId, PARTICIPANTS_PAGE_NAME, user.id, GRADES_PAGE_NAME].join('/'),
+                        [CORE_COURSE_PAGE_NAME, contextId, PARTICIPANTS_PAGE_NAME, user.id, GRADES_PAGE_NAME].join('/'),
                     );
                 },
             };
