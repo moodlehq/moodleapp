@@ -22,10 +22,7 @@ import {
     CoreCourseCompletionActivityStatus,
     CoreCourseModuleWSCompletionData,
     CoreCourseModuleContentFile,
-    CoreCourseProvider,
     CoreCourseWSSection,
-    CoreCourseModuleCompletionTracking,
-    CoreCourseModuleCompletionStatus,
     CoreCourseGetContentsWSModule,
     sectionContentIsModule,
     CoreCourseAnyModuleData,
@@ -78,6 +75,13 @@ import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enr
 import { LazyRoutesModule } from '@/app/app-routing.module';
 import { CoreModals } from '@services/modals';
 import { CoreLoadings } from '@services/loadings';
+import {
+    CoreCourseModuleCompletionTracking,
+    CoreCourseModuleCompletionStatus,
+    CORE_COURSE_ALL_SECTIONS_ID,
+    CORE_COURSE_STEALTH_MODULES_SECTION_ID,
+    CORE_COURSE_COMPONENT,
+} from '../constants';
 
 /**
  * Prefetch info of a module.
@@ -255,7 +259,7 @@ export class CoreCourseHelperProvider {
      * @returns Wether section is stealth (accessible but not visible to students).
      */
     isSectionStealth(section: CoreCourseWSSection): boolean {
-        return section.hiddenbynumsections === 1 || section.id === CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
+        return section.hiddenbynumsections === 1 || section.id === CORE_COURSE_STEALTH_MODULES_SECTION_ID;
     }
 
     /**
@@ -283,7 +287,7 @@ export class CoreCourseHelperProvider {
         refresh?: boolean,
         checkUpdates: boolean = true,
     ): Promise<{statusData: CoreCourseModulesStatus; section: CoreCourseSectionWithStatus}> {
-        if (section.id === CoreCourseProvider.ALL_SECTIONS_ID) {
+        if (section.id === CORE_COURSE_ALL_SECTIONS_ID) {
             throw new CoreError('Invalid section');
         }
 
@@ -462,7 +466,7 @@ export class CoreCourseHelperProvider {
         };
 
         const getSectionSize = async (section: CoreCourseWSSection): Promise<CoreFileSizeSum> => {
-            if (section.id === CoreCourseProvider.ALL_SECTIONS_ID) {
+            if (section.id === CORE_COURSE_ALL_SECTIONS_ID) {
                 return { size: 0, total: true };
             }
 
@@ -579,7 +583,7 @@ export class CoreCourseHelperProvider {
      */
     createAllSectionsSection(): CoreCourseSection {
         return {
-            id: CoreCourseProvider.ALL_SECTIONS_ID,
+            id: CORE_COURSE_ALL_SECTIONS_ID,
             name: Translate.instant('core.course.allsections'),
             hasContent: true,
             summary: '',
@@ -1659,7 +1663,7 @@ export class CoreCourseHelperProvider {
         if (updateAllSections) {
             // Prefetch all the sections. If the first section is "All sections", use it. Otherwise, use a fake "All sections".
             allSectionsSection = sections[0];
-            if (sections[0].id !== CoreCourseProvider.ALL_SECTIONS_ID) {
+            if (sections[0].id !== CORE_COURSE_ALL_SECTIONS_ID) {
                 allSectionsSection = this.createAllSectionsSection();
             }
             allSectionsSection.isDownloading = true;
@@ -1667,7 +1671,7 @@ export class CoreCourseHelperProvider {
 
         const promises = sections.map(async (section) => {
             // Download all the sections except "All sections".
-            if (section.id === CoreCourseProvider.ALL_SECTIONS_ID) {
+            if (section.id === CORE_COURSE_ALL_SECTIONS_ID) {
                 return;
             }
 
@@ -1706,7 +1710,7 @@ export class CoreCourseHelperProvider {
      * @returns Promise resolved when the section is prefetched.
      */
     protected async prefetchSingleSectionIfNeeded(section: CoreCourseSectionWithStatus, courseId: number): Promise<void> {
-        if (section.id === CoreCourseProvider.ALL_SECTIONS_ID || section.hiddenbynumsections) {
+        if (section.id === CORE_COURSE_ALL_SECTIONS_ID || section.hiddenbynumsections) {
             return;
         }
 
@@ -1721,7 +1725,7 @@ export class CoreCourseHelperProvider {
         // Download the files in the section description.
         const introFiles = CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(section.summary);
         promises.push(CoreUtils.ignoreErrors(
-            CoreFilepool.addFilesToQueue(siteId, introFiles, CoreCourseProvider.COMPONENT, courseId),
+            CoreFilepool.addFilesToQueue(siteId, introFiles, CORE_COURSE_COMPONENT, courseId),
         ));
 
         try {
@@ -1782,7 +1786,7 @@ export class CoreCourseHelperProvider {
         result: CoreCourseModulesStatus,
         courseId: number,
     ): Promise<void> {
-        if (section.id === CoreCourseProvider.ALL_SECTIONS_ID) {
+        if (section.id === CORE_COURSE_ALL_SECTIONS_ID) {
             return;
         }
 
@@ -1881,7 +1885,7 @@ export class CoreCourseHelperProvider {
 
         await Promise.all([
             ...modules.map((module) => this.removeModuleStoredData(module, courseId)),
-            siteId && CoreFilepool.removeFilesByComponent(siteId, CoreCourseProvider.COMPONENT, courseId),
+            siteId && CoreFilepool.removeFilesByComponent(siteId, CORE_COURSE_COMPONENT, courseId),
         ]);
 
         await CoreCourse.setCourseStatus(courseId, DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED);
@@ -1922,7 +1926,7 @@ export class CoreCourseHelperProvider {
         }
 
         if (completion.cmid === undefined ||
-            completion.tracking !== CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_MANUAL) {
+            completion.tracking !== CoreCourseModuleCompletionTracking.MANUAL) {
             return;
         }
 
@@ -2087,7 +2091,7 @@ export class CoreCourseHelperProvider {
             return undefined;
         }
 
-        if (completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE) {
+        if (completion.tracking === CoreCourseModuleCompletionTracking.NONE) {
             return undefined;
         }
 

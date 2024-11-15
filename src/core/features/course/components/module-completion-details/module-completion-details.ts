@@ -14,9 +14,9 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input, OnInit } from '@angular/core';
+import { CoreCourseModuleCompletionStatus } from '@features/course/constants';
 
 import {
-    CoreCourseModuleCompletionStatus,
     CoreCourseModuleWSRuleDetails,
 } from '@features/course/services/course';
 import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';

@@ -15,7 +15,8 @@
 import { DownloadStatus } from '@/core/constants';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreQueueRunner } from '@classes/queue-runner';
-import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
+import { CORE_COURSE_ALL_COURSES_CLEARED } from '@features/course/constants';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreSettingsHelper, CoreSiteSpaceUsage } from '@features/settings/services/settings-helper';
@@ -181,7 +182,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
      * @param courseId Updated course id.
      */
     private async onCourseUpdated(courseId: number, status: DownloadStatus): Promise<void> {
-        if (courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
+        if (courseId == CORE_COURSE_ALL_COURSES_CLEARED) {
             await this.downloadedCoursesQueue.run(() => this.setDownloadedCourses([]));
 
             return;

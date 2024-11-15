@@ -28,7 +28,7 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
 import { PARTICIPANTS_PAGE_NAME } from '@features/user/constants';
-import { COURSE_PAGE_NAME } from '@features/course/constants';
+import { CORE_COURSE_PAGE_NAME } from '@features/course/constants';
 import { ADDON_COMPETENCY_LEARNING_PLANS_PAGE, ADDON_COMPETENCY_COMPETENCIES_PAGE } from './constants';
 
 /**
@@ -52,11 +52,11 @@ const mainMenuChildrenRoutes: Routes = [
         loadChildren: () => import('./competency-learning-plans-lazy.module'),
     },
     {
-        path: `${COURSE_PAGE_NAME}/:courseId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
+        path: `${CORE_COURSE_PAGE_NAME}/:courseId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
         loadChildren: () => import('./competency-course-details-lazy.module'),
     },
     {
-        path: `${COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
+        path: `${CORE_COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
         loadChildren: () => import('./competency-course-details-lazy.module'),
     },
 ];
