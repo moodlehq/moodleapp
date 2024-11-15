@@ -80,14 +80,10 @@ export class CoreFileProvider {
 
     static readonly CHUNK_SIZE = 1048576; // 1 MB. Same chunk size as Ionic Native.
 
-    protected logger: CoreLogger;
+    protected logger = CoreLogger.getInstance('CoreFileProvider');
     protected initialized = false;
     protected basePath = '';
     protected isHTMLAPI = false;
-
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreFileProvider');
-    }
 
     /**
      * Sets basePath to use with HTML API. Reserved for core use.
@@ -438,11 +434,11 @@ export class CoreFileProvider {
      *
      * @param filename The file name.
      * @returns The file name normalized.
+     *
+     * @deprecated since 5.0. Not used anymore.
      */
     normalizeFileName(filename: string): string {
-        filename = CoreUrl.decodeURIComponent(filename);
-
-        return filename;
+        return CoreUrl.decodeURIComponent(filename);
     }
 
     /**
@@ -820,7 +816,7 @@ export class CoreFileProvider {
         from = this.removeBasePath(from);
         to = this.removeBasePath(to);
 
-        const toFileAndDir = this.getFileAndDirectoryFromPath(to);
+        const toFileAndDir = CoreFileUtils.getFileAndDirectoryFromPath(to);
 
         if (toFileAndDir.directory && !destDirExists) {
             // Create the target directory if it doesn't exist.
@@ -851,23 +847,10 @@ export class CoreFileProvider {
      *
      * @param path Path to be extracted.
      * @returns Plain object containing the file name and directory.
-     * @description
-     * file.pdf         -> directory: '', name: 'file.pdf'
-     * /file.pdf        -> directory: '', name: 'file.pdf'
-     * path/file.pdf    -> directory: 'path', name: 'file.pdf'
-     * path/            -> directory: 'path', name: ''
-     * path             -> directory: '', name: 'path'
+     * @deprecated since 5.0. Use CoreFileUtils.getFileAndDirectoryFromPath instead.
      */
     getFileAndDirectoryFromPath(path: string): {directory: string; name: string} {
-        const file = {
-            directory: '',
-            name: '',
-        };
-
-        file.directory = path.substring(0, path.lastIndexOf('/'));
-        file.name = path.substring(path.lastIndexOf('/') + 1);
-
-        return file;
+        return CoreFileUtils.getFileAndDirectoryFromPath(path);
     }
 
     /**
@@ -1028,7 +1011,7 @@ export class CoreFileProvider {
         const fileEntry = await this.getExternalFile(from);
 
         // Create the destination dir if it doesn't exist.
-        const dirAndFile = this.getFileAndDirectoryFromPath(to);
+        const dirAndFile = CoreFileUtils.getFileAndDirectoryFromPath(to);
 
         const dirEntry = await this.createDir(dirAndFile.directory);
 

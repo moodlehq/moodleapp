@@ -243,7 +243,7 @@ export class CoreFileUploaderProvider {
             deleteAfterUpload: !isFromAlbum,
             mimeType: mimetype,
         };
-        const fileName = CoreFile.getFileAndDirectoryFromPath(uri).name;
+        const fileName = CoreFileUtils.getFileAndDirectoryFromPath(uri).name;
 
         if (isIOS && (mimetype == 'image/jpeg' || mimetype == 'image/png')) {
             // In iOS, the pictures can have repeated names, even if they come from the album.
@@ -287,7 +287,7 @@ export class CoreFileUploaderProvider {
 
         originalFiles.forEach((file) => {
             const stillInList = currentFiles.some((currentFile) =>
-                CoreFileHelper.getFileUrl(<CoreWSFile> currentFile) == CoreFileHelper.getFileUrl(file));
+                CoreFileHelper.getFileUrl(<CoreWSFile> currentFile) === CoreFileHelper.getFileUrl(file));
 
             if (!stillInList) {
                 filesToDelete.push({

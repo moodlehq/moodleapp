@@ -29,6 +29,7 @@ import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreLoadings } from '@services/loadings';
+import { CoreFileUtils } from '@singletons/file-utils';
 
 /**
  * Component to handle a local file. Only files inside the app folder can be managed.
@@ -182,7 +183,7 @@ export class CoreLocalFileComponent implements OnInit {
         }
 
         const modal = await CoreLoadings.show();
-        const fileAndDir = CoreFile.getFileAndDirectoryFromPath(this.relativePath);
+        const fileAndDir = CoreFileUtils.getFileAndDirectoryFromPath(this.relativePath);
         const newPath = CorePath.concatenatePaths(fileAndDir.directory, newName);
 
         try {

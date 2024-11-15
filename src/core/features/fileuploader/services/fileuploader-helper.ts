@@ -46,6 +46,7 @@ import { CorePlatform } from '@services/platform';
 import { Chooser } from '@features/native/plugins';
 import { CoreToasts } from '@services/toasts';
 import { CoreLoadings } from '@services/loadings';
+import { CoreFileUtils } from '@singletons/file-utils';
 
 /**
  * Helper service to upload files.
@@ -210,7 +211,7 @@ export class CoreFileUploaderHelperProvider {
         options?: CoreFileUploaderOptions,
     ): Promise<FileEntry> {
 
-        const fileName = options?.fileName || CoreFile.getFileAndDirectoryFromPath(path).name;
+        const fileName = options?.fileName || CoreFileUtils.getFileAndDirectoryFromPath(path).name;
 
         // Check that size isn't too large.
         if (maxSize !== undefined && maxSize != -1) {
@@ -283,7 +284,7 @@ export class CoreFileUploaderHelperProvider {
      * @returns File name, undefined if cannot get it.
      */
     protected getChosenFileNameFromPath(result: ChooserResult): string | undefined {
-        const nameAndDir = CoreFile.getFileAndDirectoryFromPath(result.uri);
+        const nameAndDir = CoreFileUtils.getFileAndDirectoryFromPath(result.uri);
 
         if (!nameAndDir.name) {
             return;

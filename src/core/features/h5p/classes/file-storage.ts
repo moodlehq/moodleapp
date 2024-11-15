@@ -29,6 +29,7 @@ import {
 } from './core';
 import { CONTENTS_LIBRARIES_TABLE_NAME, CONTENT_TABLE_NAME, CoreH5PLibraryCachedAssetsDBRecord } from '../services/database/h5p';
 import { CoreH5PLibraryBeingSaved } from './storage';
+import { CoreFileUtils } from '@singletons/file-utils';
 
 /**
  * Equivalent to Moodle's implementation of H5PFileStorage.
@@ -115,7 +116,7 @@ export class CoreH5PFileStorage {
                     }
 
                     treated[url] = url;
-                    const assetPathFolder = CoreFile.getFileAndDirectoryFromPath(assetPath).directory;
+                    const assetPathFolder = CoreFileUtils.getFileAndDirectoryFromPath(assetPath).directory;
 
                     fileContent = fileContent.replace(
                         new RegExp(CoreText.escapeForRegex(match), 'g'),
@@ -300,7 +301,7 @@ export class CoreH5PFileStorage {
     async getContentFolderNameByUrl(fileUrl: string, siteId: string): Promise<string> {
         const path = await CoreFilepool.getFilePathByUrl(siteId, fileUrl);
 
-        const fileAndDir = CoreFile.getFileAndDirectoryFromPath(path);
+        const fileAndDir = CoreFileUtils.getFileAndDirectoryFromPath(path);
 
         return CoreMimetypeUtils.removeExtension(fileAndDir.name);
     }
