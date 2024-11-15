@@ -17,7 +17,7 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
-import { CoreCountry, CoreUtils } from '@services/utils/utils';
+import { CoreCountries, CoreCountry } from '@singletons/countries';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { Translate } from '@singletons';
 import { CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
@@ -245,7 +245,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         }
         this.namefieldsErrors = namefieldsErrors;
 
-        this.countries = await CoreUtils.getCountryListSorted();
+        this.countries = await CoreCountries.getCountryListSorted();
     }
 
     /**

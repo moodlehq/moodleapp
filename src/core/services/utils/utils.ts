@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFileUtils } from '@singletons/file-utils';
-import { CoreLang } from '@services/lang';
 import { CoreWS } from '@services/ws';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { makeSingleton, Translate } from '@singletons';
@@ -30,6 +29,7 @@ import { CoreQRScan } from '@services/qrscan';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CorePromiseUtils, OrderedPromiseData } from '@singletons/promise-utils';
 import { CoreOpener, CoreOpenerOpenFileOptions, CoreOpenerOpenInBrowserOptions } from '@singletons/opener';
+import { CoreCountries, CoreCountry } from '@singletons/countries';
 
 export type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -570,100 +570,30 @@ export class CoreUtilsProvider {
      *
      * @param code Country code (AF, ES, US, ...).
      * @returns Country name. If the country is not found, return the country code.
+     * @deprecated since 5.0. Use CoreCountries.getCountryName instead.
      */
     getCountryName(code: string): string {
-        const countryKey = 'assets.countries.' + code;
-        const countryName = Translate.instant(countryKey);
-
-        return countryName !== countryKey ? countryName : code;
+        return CoreCountries.getCountryName(code);
     }
 
     /**
      * Get list of countries with their code and translated name.
      *
      * @returns Promise resolved with the list of countries.
+     * @deprecated since 5.0. Use CoreCountries.getCountryList instead.
      */
     async getCountryList(): Promise<Record<string, string>> {
-        // Get the keys of the countries.
-        const keys = await this.getCountryKeysList();
-
-        // Now get the code and the translated name.
-        const countries: Record<string, string> = {};
-
-        keys.forEach((key) => {
-            if (key.indexOf('assets.countries.') === 0) {
-                const code = key.replace('assets.countries.', '');
-                countries[code] = Translate.instant(key);
-            }
-        });
-
-        return countries;
+        return CoreCountries.getCountryList();
     }
 
     /**
      * Get list of countries with their code and translated name. Sorted by the name of the country.
      *
      * @returns Promise resolved with the list of countries.
+     * @deprecated since 5.0. Use CoreCountries.getCountryListSorted instead.
      */
     async getCountryListSorted(): Promise<CoreCountry[]> {
-        // Get the keys of the countries.
-        const countries = await this.getCountryList();
-
-        // Sort translations.
-        return Object.keys(countries)
-            .sort((a, b) => countries[a].localeCompare(countries[b]))
-            .map((code) => ({ code, name: countries[code] }));
-    }
-
-    /**
-     * Get the list of language keys of the countries.
-     *
-     * @returns Promise resolved with the countries list. Rejected if not translated.
-     */
-    protected async getCountryKeysList(): Promise<string[]> {
-        // It's possible that the current language isn't translated, so try with default language first.
-        const defaultLang = CoreLang.getDefaultLanguage();
-
-        try {
-            return await this.getCountryKeysListForLanguage(defaultLang);
-        } catch {
-            // Not translated, try to use the fallback language.
-            const fallbackLang = CoreLang.getFallbackLanguage();
-
-            if (fallbackLang === defaultLang) {
-                // Same language, just reject.
-                throw new Error('Countries not found.');
-            }
-
-            return this.getCountryKeysListForLanguage(fallbackLang);
-        }
-    }
-
-    /**
-     * Get the list of language keys of the countries, based on the translation table for a certain language.
-     *
-     * @param lang Language to check.
-     * @returns Promise resolved with the countries list. Rejected if not translated.
-     */
-    protected async getCountryKeysListForLanguage(lang: string): Promise<string[]> {
-        // Get the translation table for the language.
-        const table = await CoreLang.getTranslationTable(lang);
-
-        // Gather all the keys for countries,
-        const keys: string[] = [];
-
-        for (const name in table) {
-            if (name.indexOf('assets.countries.') === 0) {
-                keys.push(name);
-            }
-        }
-
-        if (keys.length === 0) {
-            // Not translated, reject.
-            throw new Error('Countries not found.');
-        }
-
-        return keys;
+        return CoreCountries.getCountryListSorted();
     }
 
     /**
@@ -673,21 +603,10 @@ export class CoreUtilsProvider {
      *
      * @param url The URL of the file.
      * @returns Promise resolved with the mimetype.
+     * @deprecated since 5.0. Use CoreMimetypeUtils.getMimeTypeFromUrl instead.
      */
     async getMimeTypeFromUrl(url: string): Promise<string> {
-        // First check if it can be guessed from the URL.
-        const extension = CoreMimetypeUtils.guessExtensionFromUrl(url);
-        const mimetype = extension && CoreMimetypeUtils.getMimeType(extension);
-
-        // Ignore PHP extension for now, it could be serving a file.
-        if (mimetype && extension !== 'php') {
-            return mimetype;
-        }
-
-        // Can't be guessed, get the remote mimetype.
-        const remoteMimetype = await CoreWS.getRemoteFileMimeType(url);
-
-        return remoteMimetype || mimetype || '';
+        return CoreMimetypeUtils.getMimeTypeFromUrl(url);
     }
 
     /**
@@ -1431,14 +1350,6 @@ export class CoreUtilsProvider {
 }
 
 export const CoreUtils = makeSingleton(CoreUtilsProvider);
-
-/**
- * Data about a country.
- */
-export type CoreCountry = {
-    code: string;
-    name: string;
-};
 
 /**
  * Menu item.
