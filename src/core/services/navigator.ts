@@ -461,7 +461,7 @@ export class CoreNavigatorService {
             return route;
         }
 
-        if (routeData && CoreUtils.basicLeftCompare(routeData, this.getRouteData(route), 3)) {
+        if (routeData && CoreObject.basicLeftCompare(routeData, this.getRouteData(route), 3)) {
             return route;
         }
 
@@ -607,7 +607,7 @@ export class CoreNavigatorService {
     protected replaceObjectParams(queryParams?: Params | null): void {
         for (const name in queryParams) {
             const value = queryParams[name];
-            if (typeof value != 'object' || value === null) {
+            if (typeof value !== 'object' || value === null) {
                 continue;
             }
 

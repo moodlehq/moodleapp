@@ -66,7 +66,7 @@ export class CoreInterceptor implements HttpInterceptor {
         // Add the header and serialize the body if needed.
         const newReq = req.clone({
             headers: req.headers.set('Content-Type', 'application/x-www-form-urlencoded'),
-            body: typeof req.body == 'object' && String(req.body) != '[object File]' ?
+            body: typeof req.body === 'object' && String(req.body) != '[object File]' ?
                 CoreInterceptor.serialize(req.body) : req.body,
         });
 

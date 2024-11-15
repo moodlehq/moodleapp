@@ -23,7 +23,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { Translate } from '@singletons';
 import {
     AddonModBBB,
@@ -146,7 +146,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         const recordingsTable = await AddonModBBB.getRecordings(this.bbb.id, this.groupId, {
             cmId: this.module.id,
         });
-        const columns = CoreUtils.arrayToObject(recordingsTable.columns, 'key');
+        const columns = CoreArray.toObject(recordingsTable.columns, 'key');
 
         this.recordings = recordingsTable.parsedData.map(recordingData => {
             const details: RecordingDetail[] = [];

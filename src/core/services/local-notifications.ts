@@ -290,7 +290,7 @@ export class CoreLocalNotificationsProvider {
         scheduled.forEach((notif) => {
             notif.data = this.parseNotificationData(notif.data);
 
-            if (notif.id && typeof notif.data == 'object' && notif.data.siteId === siteId) {
+            if (notif.id && typeof notif.data === 'object' && notif.data.siteId === siteId) {
                 ids.push(notif.id);
             }
         });
@@ -563,7 +563,7 @@ export class CoreLocalNotificationsProvider {
 
         try {
             // Check if request is valid.
-            if (typeof request != 'object' || request.table === undefined || request.id === undefined) {
+            if (typeof request !== 'object' || request.table === undefined || request.id === undefined) {
                 return;
             }
 

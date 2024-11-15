@@ -52,6 +52,7 @@ import {
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreObject } from '@singletons/object';
 
 declare module '@singletons/events' {
 
@@ -221,7 +222,7 @@ export class AddonModForumProvider {
             message: message,
 
             // eslint-disable-next-line max-len
-            options: CoreUtils.objectToArrayOfObjects<AddonModForumAddDiscussionWSOptionsArray[0], AddonModForumAddDiscussionWSOptionsObject>(
+            options: CoreObject.toArrayOfObjects<AddonModForumAddDiscussionWSOptionsArray[0], AddonModForumAddDiscussionWSOptionsObject>(
                 options || {},
                 'name',
                 'value',
@@ -1147,7 +1148,7 @@ export class AddonModForumProvider {
             subject: subject,
             message: message,
 
-            options: CoreUtils.objectToArrayOfObjects<
+            options: CoreObject.toArrayOfObjects<
             AddonModForumAddDiscussionPostWSOptionsArray[0],
             AddonModForumAddDiscussionPostWSOptionsObject
             >(
@@ -1277,7 +1278,7 @@ export class AddonModForumProvider {
             }
         });
 
-        CoreUser.storeUsers(CoreUtils.objectToArray(users));
+        CoreUser.storeUsers(CoreObject.toArray(users));
     }
 
     /**
@@ -1332,7 +1333,7 @@ export class AddonModForumProvider {
             subject: subject,
             message: message,
 
-            options: CoreUtils.objectToArrayOfObjects<
+            options: CoreObject.toArrayOfObjects<
             AddonModForumUpdateDiscussionPostWSOptionsArray[0],
             AddonModForumUpdateDiscussionPostWSOptionsObject
             >(

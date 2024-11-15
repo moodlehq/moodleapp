@@ -17,7 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { AddonModQuizMultichoiceQuestion } from '@features/question/classes/base-question-component';
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -120,7 +120,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
         for (const name in newAnswers) {
             if (name.indexOf('choice') !== -1) {
                 isSingle = false;
-                if (!CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, name)) {
+                if (!CoreObject.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, name)) {
                     isMultiSame = false;
                     break;
                 }
@@ -142,7 +142,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
      * @returns Whether they're the same.
      */
     isSameResponseSingle(prevAnswers: CoreQuestionsAnswers, newAnswers: CoreQuestionsAnswers): boolean {
-        return CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
+        return CoreObject.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     }
 
     /**

@@ -27,7 +27,7 @@ import {
     AddonModAssignSubmissionStatusValues,
 } from './assign';
 import { AddonModAssignOffline } from './assign-offline';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreFile } from '@services/file';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreGroups } from '@services/groups';
@@ -314,7 +314,7 @@ export class AddonModAssignHelperProvider {
 
         await Promise.all(promises);
 
-        return CoreUtils.objectToArray(participantsIndexed);
+        return CoreObject.toArray(participantsIndexed);
     }
 
     /**

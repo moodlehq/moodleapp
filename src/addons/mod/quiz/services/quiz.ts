@@ -53,6 +53,8 @@ import {
 } from '../constants';
 import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreObject } from '@singletons/object';
+import { CoreArray } from '@singletons/array';
 
 declare module '@singletons/events' {
 
@@ -227,7 +229,7 @@ export class AddonModQuizProvider {
         const params: AddonModQuizGetAttemptDataWSParams = {
             attemptid: attemptId,
             page: page,
-            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreObject.toArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -550,7 +552,7 @@ export class AddonModQuizProvider {
 
         const params: AddonModQuizGetAttemptSummaryWSParams = {
             attemptid: attemptId,
-            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreObject.toArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -629,8 +631,8 @@ export class AddonModQuizProvider {
 
         // Convert the arrays to objects with name -> value.
         return {
-            someoptions: <Record<string, number>> CoreUtils.objectToKeyValueMap(response.someoptions, 'name', 'value'),
-            alloptions: <Record<string, number>> CoreUtils.objectToKeyValueMap(response.alloptions, 'name', 'value'),
+            someoptions: <Record<string, number>> CoreObject.toKeyValueMap(response.someoptions, 'name', 'value'),
+            alloptions: <Record<string, number>> CoreObject.toKeyValueMap(response.alloptions, 'name', 'value'),
             warnings: response.warnings,
         };
     }
@@ -1640,7 +1642,7 @@ export class AddonModQuizProvider {
         const params: AddonModQuizViewAttemptWSParams = {
             attemptid: attemptId,
             page: page,
-            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreObject.toArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -1695,7 +1697,7 @@ export class AddonModQuizProvider {
     ): Promise<void> {
         const params: AddonModQuizViewAttemptSummaryWSParams = {
             attemptid: attemptId,
-            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreObject.toArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -1785,10 +1787,10 @@ export class AddonModQuizProvider {
 
         const params: AddonModQuizProcessAttemptWSParams = {
             attemptid: attemptId,
-            data: CoreUtils.objectToArrayOfObjects(data, 'name', 'value'),
+            data: CoreObject.toArrayOfObjects(data, 'name', 'value'),
             finishattempt: !!finish,
             timeup: !!timeUp,
-            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreObject.toArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -1834,7 +1836,7 @@ export class AddonModQuizProvider {
         });
 
         // Convert the question array to an object.
-        const questions = CoreUtils.arrayToObject(questionsArray, 'slot');
+        const questions = CoreArray.toObject(questionsArray, 'slot');
 
         return AddonModQuizOffline.processAttempt(quiz, attempt, questions, data, finish, siteId);
     }
@@ -1939,8 +1941,8 @@ export class AddonModQuizProvider {
 
         const params: AddonModQuizSaveAttemptWSParams = {
             attemptid: attemptId,
-            data: CoreUtils.objectToArrayOfObjects(data, 'name', 'value'),
-            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            data: CoreObject.toArrayOfObjects(data, 'name', 'value'),
+            preflightdata: CoreObject.toArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -1995,7 +1997,7 @@ export class AddonModQuizProvider {
 
         const params: AddonModQuizStartAttemptWSParams = {
             quizid: quizId,
-            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreObject.toArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',

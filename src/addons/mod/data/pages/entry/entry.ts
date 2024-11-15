@@ -22,7 +22,7 @@ import { CoreGroups, CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModDataComponentsCompileModule } from '../../components/components-compile.module';
 import {
@@ -183,7 +183,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
             this.title = this.database.name || this.title;
 
             this.fieldsArray = await AddonModData.getFields(this.database.id, { cmId: this.moduleId });
-            this.fields = CoreUtils.arrayToObject(this.fieldsArray, 'id');
+            this.fields = CoreArray.toObject(this.fieldsArray, 'id');
 
             await this.setEntryFromOffset();
 

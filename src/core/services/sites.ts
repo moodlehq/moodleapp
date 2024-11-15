@@ -1292,7 +1292,7 @@ export class CoreSitesProvider {
             return !!this.currentSite;
         }
 
-        const siteId = typeof site == 'object' ? site.getId() : site;
+        const siteId = typeof site === 'object' ? site.getId() : site;
 
         return this.currentSite.getId() === siteId;
     }

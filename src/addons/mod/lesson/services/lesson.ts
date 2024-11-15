@@ -37,6 +37,8 @@ import {
 import { CoreGradeType } from '@features/grades/constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreObject } from '@singletons/object';
+import { CoreArray } from '@singletons/array';
 
 declare module '@singletons/events' {
 
@@ -286,7 +288,7 @@ export class AddonModLessonProvider {
         const validPages = {};
         let pageId = accessInfo.firstpageid;
 
-        viewedPagesIds = CoreUtils.mergeArraysWithoutDuplicates(viewedPagesIds, viewedContentPagesIds);
+        viewedPagesIds = CoreArray.mergeWithoutDuplicates(viewedPagesIds, viewedContentPagesIds);
 
         // Filter out the following pages:
         // - End of Cluster
@@ -398,11 +400,11 @@ export class AddonModLessonProvider {
         // The name was changed to "answer_editor" in 3.7. Before it was just "answer". Support both cases.
         if (data['answer_editor[text]'] !== undefined) {
             studentAnswer = data['answer_editor[text]'];
-        } else if (typeof data.answer_editor == 'object') {
+        } else if (typeof data.answer_editor === 'object') {
             studentAnswer = (<{text: string}> data.answer_editor).text;
         } else if (data['answer[text]'] !== undefined) {
             studentAnswer = data['answer[text]'];
-        } else if (typeof data.answer == 'object') {
+        } else if (typeof data.answer === 'object') {
             studentAnswer = (<{text: string}> data.answer).text;
         } else {
             studentAnswer = data.answer;
@@ -3087,7 +3089,7 @@ export class AddonModLessonProvider {
         const params: AddonModLessonProcessPageWSParams = {
             lessonid: lessonId,
             pageid: pageId,
-            data: CoreUtils.objectToArrayOfObjects<ProcessPageData>(data, 'name', 'value', true),
+            data: CoreObject.toArrayOfObjects<ProcessPageData>(data, 'name', 'value', true),
             review: !!options.review,
         };
 

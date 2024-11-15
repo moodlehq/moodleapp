@@ -18,6 +18,7 @@ import { CoreH5P } from '@features/h5p/services/h5p';
 import { Translate } from '@singletons';
 import { CoreH5PCore, CoreH5PLibraryData, CoreH5PLibraryAddonData, CoreH5PContentDepsTreeDependency } from './core';
 import { CoreArray } from '@singletons/array';
+import { CoreObject } from '@singletons/object';
 
 const ALLOWED_STYLEABLE_TAGS = ['span', 'p', 'div', 'h1', 'h2', 'h3', 'table', 'col', 'figure', 'td', 'th', 'li'];
 
@@ -354,7 +355,7 @@ export class CoreH5PContentValidator {
         }
 
         if (!isArray) {
-            list = CoreUtils.objectToArray(<Record<string, unknown>> list);
+            list = CoreObject.toArray(<Record<string, unknown>> list);
         }
 
         if (!list.length) {
@@ -677,7 +678,7 @@ export class CoreH5PContentValidator {
      */
     protected filterXssSplit(tags: string[], store: boolean = false): string {
         if (store) {
-            this.allowedHtml = CoreUtils.arrayToObject(tags);
+            this.allowedHtml = CoreArray.toObject(tags);
 
             return '';
         }

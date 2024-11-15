@@ -447,7 +447,7 @@ export class CoreDomUtilsProvider {
         let extraInfo = '';
         let errorMessage: string | undefined;
 
-        if (typeof error == 'object') {
+        if (typeof error === 'object') {
             if (this.debugDisplay) {
                 // Get the debug info. Escape the HTML so it is displayed as it is in the view.
                 if ('debuginfo' in error && error.debuginfo) {

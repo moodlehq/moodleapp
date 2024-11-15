@@ -20,7 +20,6 @@ import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCacheUpdateFrequency, CoreConstants, DownloadStatus } from '@/core/constants';
 import { makeSingleton, Translate } from '@singletons';
@@ -75,6 +74,7 @@ import {
     CORE_COURSE_STEALTH_MODULES_SECTION_ID,
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreObject } from '@singletons/object';
 
 export type CoreCourseProgressUpdated = { progress: number; courseId: number };
 
@@ -260,7 +260,7 @@ export class CoreCourseProvider {
         }
 
         const course = await CoreCourses.getCourseByField('id', courseId, site.id);
-        const formatOptions = CoreUtils.objectToKeyValueMap(
+        const formatOptions = CoreObject.toKeyValueMap(
             course.courseformatoptions ?? [],
             'name',
             'value',
@@ -353,7 +353,7 @@ export class CoreCourseProvider {
             throw Error('WS core_completion_get_activities_completion_status failed');
         }
 
-        const completionStatus = CoreUtils.arrayToObject(data.statuses, 'cmid');
+        const completionStatus = CoreArray.toObject(data.statuses, 'cmid');
         if (!includeOffline) {
             return completionStatus;
         }
@@ -412,7 +412,7 @@ export class CoreCourseProvider {
             js: (record) => ids.includes(record.cmId),
         });
 
-        return CoreUtils.arrayToObject(entries, 'cmId');
+        return CoreArray.toObject(entries, 'cmId');
     }
 
     /**

@@ -46,6 +46,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_ENTRY_CHANGED, AddonModDataTemplateType } from '../../constants';
 import { CoreLoadings } from '@services/loadings';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreArray } from '@singletons/array';
 
 /**
  * Page that displays the view edit page.
@@ -180,7 +181,7 @@ export class AddonModDataEditPage implements OnInit {
             this.cssClass = 'addon-data-entries-' + this.database.id;
 
             this.fieldsArray = await AddonModData.getFields(this.database.id, { cmId: this.moduleId });
-            this.fields = CoreUtils.arrayToObject(this.fieldsArray, 'id');
+            this.fields = CoreArray.toObject(this.fieldsArray, 'id');
 
             const entry = await AddonModDataHelper.fetchEntry(this.database, this.fieldsArray, this.entryId || 0);
             this.entry = entry.entry;

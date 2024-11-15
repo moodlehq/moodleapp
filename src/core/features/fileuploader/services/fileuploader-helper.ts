@@ -24,7 +24,7 @@ import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/fil
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { makeSingleton, Translate, Camera, ActionSheetController } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
@@ -635,8 +635,8 @@ export class CoreFileUploaderHelperProvider {
         };
 
         if (fromAlbum) {
-            const imageSupported = !mimetypes || CoreUtils.indexOfRegexp(mimetypes, /^image\//) > -1;
-            const videoSupported = !mimetypes || CoreUtils.indexOfRegexp(mimetypes, /^video\//) > -1;
+            const imageSupported = !mimetypes || CoreArray.indexOfRegexp(mimetypes, /^image\//) > -1;
+            const videoSupported = !mimetypes || CoreArray.indexOfRegexp(mimetypes, /^video\//) > -1;
 
             options.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
             options.popoverOptions = {

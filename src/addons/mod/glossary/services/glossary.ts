@@ -22,7 +22,7 @@ import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -911,7 +911,7 @@ export class AddonModGlossaryProvider {
             concept: concept,
             definition: definition,
             definitionformat: 1,
-            options: CoreUtils.objectToArrayOfObjects(options || {}, 'name', 'value'),
+            options: CoreObject.toArrayOfObjects(options || {}, 'name', 'value'),
         };
 
         if (attachId) {
@@ -955,7 +955,7 @@ export class AddonModGlossaryProvider {
             concept: concept,
             definition: definition,
             definitionformat: 1,
-            options: CoreUtils.objectToArrayOfObjects(options || {}, 'name', 'value'),
+            options: CoreObject.toArrayOfObjects(options || {}, 'name', 'value'),
         };
 
         if (attachId) {

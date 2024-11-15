@@ -455,7 +455,7 @@ export class CoreIframeUtilsProvider {
                 return;
             }
 
-            if (element.tagName.toLowerCase() == 'object') {
+            if (element.tagName.toLowerCase() === 'object') {
                 element.setAttribute('data', url);
             } else {
                 element.setAttribute('src', url);
@@ -509,7 +509,7 @@ export class CoreIframeUtilsProvider {
                 (!link.target || link.target == '_self')
             ) {
                 // Load the link inside the frame itself.
-                if (element.tagName.toLowerCase() == 'object') {
+                if (element.tagName.toLowerCase() === 'object') {
                     element.setAttribute('data', link.href);
                 } else {
                     element.setAttribute('src', link.href);
@@ -546,7 +546,7 @@ export class CoreIframeUtilsProvider {
         } else if (CorePlatform.isIOS() && (!link.target || link.target == '_self') && element) {
             // In cordova ios 4.1.0 links inside iframes stopped working. We'll manually treat them.
             event && event.preventDefault();
-            if (element.tagName.toLowerCase() == 'object') {
+            if (element.tagName.toLowerCase() === 'object') {
                 element.setAttribute('data', link.href);
             } else {
                 element.setAttribute('src', link.href);

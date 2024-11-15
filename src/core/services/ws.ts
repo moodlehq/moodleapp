@@ -170,7 +170,7 @@ export class CoreWSProvider {
             if (value == null) {
                 // Skip null or undefined value.
                 continue;
-            } else if (typeof value == 'object') {
+            } else if (typeof value === 'object') {
                 // Object or array.
                 value = this.convertValuesToString(value, stripUnicode);
                 if (value == null) {
@@ -498,7 +498,7 @@ export class CoreWSProvider {
             }
 
             // Check if error. Ajax layer should always return an object (if error) or an array (if success).
-            if (!data || typeof data != 'object') {
+            if (!data || typeof data !== 'object') {
                 const message = CoreSites.isLoggedIn()
                     ? Translate.instant('core.siteunavailablehelp', { site: CoreSites.getCurrentSite()?.siteUrl })
                     : Translate.instant('core.sitenotfoundhelp');
@@ -1090,7 +1090,7 @@ export class CoreWSProvider {
                     }),
                 },
             });
-        } else if (typeof data != 'object') {
+        } else if (typeof data !== 'object') {
             this.logger.warn('Upload file: Response of type "' + typeof data + '" received, expecting "object"');
 
             throw await this.createCannotConnectSiteError(preSets.siteUrl, {

@@ -33,7 +33,7 @@ import { NgZone, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreConstants } from '@/core/constants';
 import { CoreSwipeSlidesDynamicItemsManager } from '@classes/items-management/swipe-slides-dynamic-items-manager';
 import { CoreSwipeSlidesComponent } from '@components/swipe-slides/swipe-slides';
@@ -58,6 +58,7 @@ import {
     ADDON_CALENDAR_UNDELETED_EVENT_EVENT,
     AddonCalendarEventType,
 } from '@addons/calendar/constants';
+import { CoreObject } from '@singletons/object';
 
 /**
  * Page that displays the calendar events for a certain day.
@@ -221,7 +222,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         const types: string[] = [];
 
-        CoreUtils.enumKeys(AddonCalendarEventType).forEach((name) => {
+        CoreObject.enumKeys(AddonCalendarEventType).forEach((name) => {
             const value = AddonCalendarEventType[name];
             this.filter[name] = CoreNavigator.getRouteBooleanParam(name) ?? true;
             types.push(value);
@@ -606,7 +607,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
             const categories = await CoreCourses.getCategories(0, true);
 
             // Index categories by ID.
-            this.categories = CoreUtils.arrayToObject(categories, 'id');
+            this.categories = CoreArray.toObject(categories, 'id');
         } catch {
             // Ignore errors.
         }

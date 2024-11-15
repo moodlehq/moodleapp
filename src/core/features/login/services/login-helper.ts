@@ -23,7 +23,7 @@ import { CoreSites, CoreLoginSiteInfo, CoreSiteBasicInfo } from '@services/sites
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreConstants } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreError } from '@classes/errors/error';
@@ -1368,7 +1368,7 @@ export class CoreLoginHelperProvider {
             return;
         }));
 
-        accountsList.otherSites = CoreUtils.objectToArray(otherSites);
+        accountsList.otherSites = CoreObject.toArray(otherSites);
 
         return accountsList;
     }

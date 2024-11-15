@@ -22,7 +22,7 @@ import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModScormPrefetchHandler } from '../../services/handlers/prefetch';
@@ -340,8 +340,8 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         this.grade = AddonModScorm.calculateScormGrade(scorm, onlineAttempts);
 
         // Add the attempts to the SCORM in array format in ASC order, and format the grades.
-        this.onlineAttempts = CoreUtils.objectToArray(onlineAttempts);
-        this.offlineAttempts = CoreUtils.objectToArray(offlineAttempts);
+        this.onlineAttempts = CoreObject.toArray(onlineAttempts);
+        this.offlineAttempts = CoreObject.toArray(offlineAttempts);
         this.onlineAttempts.sort((a, b) => a.num - b.num);
         this.offlineAttempts.sort((a, b) => a.num - b.num);
 

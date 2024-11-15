@@ -20,7 +20,7 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_BBB_COMPONENT } from '../constants';
@@ -182,7 +182,7 @@ export class AddonModBBBService {
 
         return {
             ...meetingInfo,
-            features: meetingInfo.features ? CoreUtils.objectToKeyValueMap(meetingInfo.features, 'name', 'isenabled') : undefined,
+            features: meetingInfo.features ? CoreObject.toKeyValueMap(meetingInfo.features, 'name', 'isenabled') : undefined,
         };
     }
 

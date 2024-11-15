@@ -45,6 +45,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CoreLoadings } from '@services/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreObject } from '@singletons/object';
 
 /**
  * Component that displays workshop assessment strategy form.
@@ -188,7 +189,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
 
                 // Override assessment plugins values.
                 this.data.assessment.form.current = AddonModWorkshop.parseFields(
-                    CoreUtils.objectToArrayOfObjects(offlineData, 'name', 'value'),
+                    CoreObject.toArrayOfObjects(offlineData, 'name', 'value'),
                 );
 
                 // Override offline files.

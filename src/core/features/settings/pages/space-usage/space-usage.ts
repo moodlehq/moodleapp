@@ -15,7 +15,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 import { CoreSettingsHelper } from '../../services/settings-helper';
@@ -129,7 +129,7 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
             }
         });
 
-        this.accountsList.otherSites = CoreUtils.objectToArray(otherSites);
+        this.accountsList.otherSites = CoreObject.toArray(otherSites);
         this.accountsList.count = sites.length;
 
         this.totalSpaceUsage = totalSize;

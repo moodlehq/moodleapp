@@ -63,6 +63,7 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { CoreToasts } from '@services/toasts';
 import { CoreLoadings } from '@services/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreObject } from '@singletons/object';
 
 type SortType = 'flat-newest' | 'flat-oldest' | 'nested';
 
@@ -463,7 +464,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             await Promise.all(convertPromises);
 
             // Convert back to array.
-            onlinePosts = CoreUtils.objectToArray(onlinePostsMap);
+            onlinePosts = CoreObject.toArray(onlinePostsMap);
 
             let posts = offlineReplies.concat(onlinePosts);
 
