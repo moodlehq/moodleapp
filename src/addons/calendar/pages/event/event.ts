@@ -37,7 +37,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-source';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
-import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
+import { CoreReminders } from '@features/reminders/services/reminders';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CorePlatform } from '@services/platform';
 import { CoreConfig } from '@services/config';
@@ -54,6 +54,7 @@ import {
     ADDON_CALENDAR_NEW_EVENT_EVENT,
     ADDON_CALENDAR_UNDELETED_EVENT_EVENT,
 } from '@addons/calendar/constants';
+import { REMINDERS_DEFAULT_NOTIFICATION_TIME_CHANGED } from '@features/reminders/constants';
 
 /**
  * Page that displays a single calendar event.
@@ -146,7 +147,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         });
 
         // Reload reminders if default notification time changes.
-        this.defaultTimeChangedObserver = CoreEvents.on(CoreRemindersService.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
+        this.defaultTimeChangedObserver = CoreEvents.on(REMINDERS_DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
             this.loadReminders();
         }, this.currentSiteId);
 

@@ -42,6 +42,7 @@ import {
     AddonCalendarEventType,
 } from '../constants';
 import { AddonCalendarSyncInvalidateEvent } from './calendar-sync';
+import { REMINDERS_DISABLED, REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
 
 /**
  * Service that provides some features regarding lists of courses and categories.
@@ -314,7 +315,7 @@ export class AddonCalendarHelperProvider {
         const defaultTime = await CoreReminders.getDefaultNotificationTime(siteId);
         let defaultLabel: string | undefined;
 
-        if (defaultTime > CoreRemindersService.DISABLED) {
+        if (defaultTime > REMINDERS_DISABLED) {
             const data = CoreRemindersService.convertSecondsToValueAndUnit(defaultTime);
             defaultLabel = CoreReminders.getUnitValueLabel(data.value, data.unit, true);
         }
@@ -324,7 +325,7 @@ export class AddonCalendarHelperProvider {
                 id: reminder.id,
             };
 
-            if (reminder.timebefore === CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE) {
+            if (reminder.timebefore === REMINDERS_DEFAULT_REMINDER_TIMEBEFORE) {
                 // Default time. Check if default notifications are disabled.
                 if (defaultLabel !== undefined) {
                     formatted.label = defaultLabel;

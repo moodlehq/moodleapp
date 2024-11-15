@@ -16,8 +16,9 @@ import { ADDON_CALENDAR_COMPONENT, ADDON_CALENDAR_EVENTS_TABLE } from '@addons/c
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreSiteSchema } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreReminderData, CoreRemindersService } from '../reminders';
+import { CoreReminderData } from '../reminders';
 import { AddonCalendarEventDBRecord } from '@addons/calendar/services/database/calendar';
+import { REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
 
 /**
  * Database variables for CoreRemindersService service.
@@ -113,7 +114,7 @@ const migrateFromCalendarRemindersV1 = async (db: SQLiteDB): Promise<void> => {
 
         if (!reminderTime || reminderTime === -1) {
             // Default reminder.
-            reminderTime = CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE;
+            reminderTime = REMINDERS_DEFAULT_REMINDER_TIMEBEFORE;
         } else if (reminderTime > event.timestart) {
             // Reminder is after the event, ignore it.
             return;
@@ -165,7 +166,7 @@ const migrateFromCalendarRemindersV2 = async (db: SQLiteDB): Promise<void> => {
         }
         const event = events[record.eventid];
 
-        const reminderTime = record.time || CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE;
+        const reminderTime = record.time || REMINDERS_DEFAULT_REMINDER_TIMEBEFORE;
 
         if (uniqueReminder[record.eventid] === undefined) {
             uniqueReminder[record.eventid] = [];

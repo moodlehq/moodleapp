@@ -14,7 +14,8 @@
 
 import { ADDON_CALENDAR_EVENTS_TABLE, AddonCalendarEventType } from '@addons/calendar/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
-import { CoreRemindersService, CoreReminders } from '@features/reminders/services/reminders';
+import { REMINDERS_DISABLED } from '@features/reminders/constants';
+import { CoreReminders } from '@features/reminders/services/reminders';
 import { CoreConfig } from '@services/config';
 import { CoreSiteSchema } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -201,7 +202,7 @@ const migrateDefaultTime = async (siteId: string, convertToSeconds = false): Pro
         await CoreUtils.ignoreErrors(CoreConfig.delete(key));
 
         if (defaultTime <= 0) {
-            defaultTime = CoreRemindersService.DISABLED;
+            defaultTime = REMINDERS_DISABLED;
         } else if (convertToSeconds) {
             // Convert from minutes to seconds.
             defaultTime = defaultTime * 60;
