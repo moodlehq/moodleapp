@@ -32,7 +32,6 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import {
     AddonCalendar,
-    AddonCalendarProvider,
     AddonCalendarWeek,
     AddonCalendarWeekDaysTranslationKeys,
     AddonCalendarEventToDisplay,
@@ -54,6 +53,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { toBoolean } from '@/core/transforms/boolean';
+import { ADDON_CALENDAR_UNDELETED_EVENT_EVENT } from '@addons/calendar/constants';
 
 /**
  * Component that displays a calendar.
@@ -93,7 +93,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
         // Listen for events "undeleted" (offline).
         this.undeleteEventObserver = CoreEvents.on(
-            AddonCalendarProvider.UNDELETED_EVENT_EVENT,
+            ADDON_CALENDAR_UNDELETED_EVENT_EVENT,
             (data) => {
                 if (!data || !data.eventId) {
                     return;

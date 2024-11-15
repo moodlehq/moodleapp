@@ -13,3 +13,46 @@
 // limitations under the License.
 
 export const ADDON_CALENDAR_COMPONENT = 'AddonCalendarEvents';
+
+export const ADDON_CALENDAR_PAGE_NAME = 'calendar';
+
+export const ADDON_CALENDAR_EVENTS_TABLE = 'addon_calendar_events_3';
+
+export const ADDON_CALENDAR_AUTO_SYNCED = 'addon_calendar_autom_synced';
+export const ADDON_CALENDAR_MANUAL_SYNCED = 'addon_calendar_manual_synced';
+export const ADDON_CALENDAR_SYNC_ID = 'calendar';
+
+export const ADDON_CALENDAR_DAYS_INTERVAL = 30;
+
+export const ADDON_CALENDAR_STARTING_WEEK_DAY = 'addon_calendar_starting_week_day';
+export const ADDON_CALENDAR_TF_24 = '%H:%M'; // Calendar time in 24 hours format.
+export const ADDON_CALENDAR_TF_12 = '%I:%M %p'; // Calendar time in 12 hours format.
+
+export const ADDON_CALENDAR_NEW_EVENT_EVENT = 'addon_calendar_new_event';
+export const ADDON_CALENDAR_NEW_EVENT_DISCARDED_EVENT = 'addon_calendar_new_event_discarded';
+export const ADDON_CALENDAR_EDIT_EVENT_EVENT = 'addon_calendar_edit_event';
+export const ADDON_CALENDAR_DELETED_EVENT_EVENT = 'addon_calendar_deleted_event';
+export const ADDON_CALENDAR_UNDELETED_EVENT_EVENT = 'addon_calendar_undeleted_event';
+export const ADDON_CALENDAR_FILTER_CHANGED_EVENT = 'addon_calendar_filter_changed_event';
+
+/**
+ * Context levels enumeration.
+ */
+export enum AddonCalendarEventIcons {
+    SITE = 'fas-globe',
+    CATEGORY = 'fas-cubes',
+    COURSE = 'fas-graduation-cap',
+    GROUP = 'fas-users',
+    USER = 'fas-user',
+}
+
+/**
+ * Main calendar Event types enumeration.
+ */
+export enum AddonCalendarEventType {
+    SITE = 'site',
+    CATEGORY = 'category',
+    COURSE = 'course',
+    GROUP = 'group',
+    USER = 'user',
+}

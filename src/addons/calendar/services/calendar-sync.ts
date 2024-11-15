@@ -29,17 +29,18 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import moment from 'moment-timezone';
-import { ADDON_CALENDAR_COMPONENT } from '../constants';
+import {
+    ADDON_CALENDAR_AUTO_SYNCED,
+    ADDON_CALENDAR_COMPONENT,
+    ADDON_CALENDAR_MANUAL_SYNCED,
+    ADDON_CALENDAR_SYNC_ID,
+} from '../constants';
 
 /**
  * Service to sync calendar.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalendarSyncEvents> {
-
-    static readonly AUTO_SYNCED = 'addon_calendar_autom_synced';
-    static readonly MANUAL_SYNCED = 'addon_calendar_manual_synced';
-    static readonly SYNC_ID = 'calendar';
 
     protected componentTranslatableString = 'addon.calendar.calendarevent';
 
@@ -72,7 +73,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
 
         if (result?.updated) {
             // Sync successful, send event.
-            CoreEvents.trigger(AddonCalendarSyncProvider.AUTO_SYNCED, result, siteId);
+            CoreEvents.trigger(ADDON_CALENDAR_AUTO_SYNCED, result, siteId);
         }
     }
 
@@ -85,7 +86,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
     async syncEventsIfNeeded(siteId?: string): Promise<AddonCalendarSyncEvents | undefined> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const needed = await this.isSyncNeeded(AddonCalendarSyncProvider.SYNC_ID, siteId);
+        const needed = await this.isSyncNeeded(ADDON_CALENDAR_SYNC_ID, siteId);
 
         if (needed) {
             return this.syncEvents(siteId);
@@ -101,7 +102,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
     async syncEvents(siteId?: string): Promise<AddonCalendarSyncEvents> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const currentSyncPromise = this.getOngoingSync(AddonCalendarSyncProvider.SYNC_ID, siteId);
+        const currentSyncPromise = this.getOngoingSync(ADDON_CALENDAR_SYNC_ID, siteId);
         if (currentSyncPromise) {
             // There's already a sync ongoing for this site, return the promise.
             return currentSyncPromise;
@@ -112,7 +113,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
         // Get offline events.
         const syncPromise = this.performSyncEvents(siteId);
 
-        return this.addOngoingSync(AddonCalendarSyncProvider.SYNC_ID, syncPromise, siteId);
+        return this.addOngoingSync(ADDON_CALENDAR_SYNC_ID, syncPromise, siteId);
     }
 
     /**
@@ -156,7 +157,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
         }
 
         // Sync finished, set sync time.
-        await CoreUtils.ignoreErrors(this.setSyncTime(AddonCalendarSyncProvider.SYNC_ID, siteId));
+        await CoreUtils.ignoreErrors(this.setSyncTime(ADDON_CALENDAR_SYNC_ID, siteId));
 
         // All done, return the result.
         return result;
@@ -298,7 +299,6 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
     }
 
 }
-
 export const AddonCalendarSync = makeSingleton(AddonCalendarSyncProvider);
 
 export type AddonCalendarSyncEvents = CoreSyncResult & {
@@ -316,3 +316,17 @@ export type AddonCalendarSyncInvalidateEvent = {
     timestart: number;
     repeated: number;
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_CALENDAR_MANUAL_SYNCED]: AddonCalendarSyncEvents;
+        [ADDON_CALENDAR_AUTO_SYNCED]: AddonCalendarSyncEvents;
+    }
+
+}

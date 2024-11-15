@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ADDON_CALENDAR_COMPONENT } from '@addons/calendar/constants';
-import { AddonCalendarEventDBRecord, EVENTS_TABLE } from '@addons/calendar/services/database/calendar';
+import { ADDON_CALENDAR_COMPONENT, ADDON_CALENDAR_EVENTS_TABLE } from '@addons/calendar/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreSiteSchema } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreReminderData, CoreRemindersService } from '../reminders';
+import { AddonCalendarEventDBRecord } from '@addons/calendar/services/database/calendar';
 
 /**
  * Database variables for CoreRemindersService service.
@@ -100,7 +100,7 @@ const migrateFromCalendarRemindersV1 = async (db: SQLiteDB): Promise<void> => {
         // Get the event to compare the reminder time with the event time.
         if (!events[record.eventid]) {
             try {
-                events[record.eventid] = await db.getRecord(EVENTS_TABLE, { id: record.eventid });
+                events[record.eventid] = await db.getRecord(ADDON_CALENDAR_EVENTS_TABLE, { id: record.eventid });
             } catch {
                 // Event not found in local DB, shouldn't happen. Ignore the reminder.
                 return;
@@ -157,7 +157,7 @@ const migrateFromCalendarRemindersV2 = async (db: SQLiteDB): Promise<void> => {
         // Get the event to compare the reminder time with the event time.
         if (!events[record.eventid]) {
             try {
-                events[record.eventid] = await db.getRecord(EVENTS_TABLE, { id: record.eventid });
+                events[record.eventid] = await db.getRecord(ADDON_CALENDAR_EVENTS_TABLE, { id: record.eventid });
             } catch {
                 // Event not found in local DB, shouldn't happen. Ignore the reminder.
                 return;
