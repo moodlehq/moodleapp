@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFile } from '@services/file';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreWS } from '@services/ws';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
@@ -288,7 +289,7 @@ export class CoreUtilsProvider {
             return source;
         }
 
-        if (this.valueIsFileEntry(source)) {
+        if (CoreFileUtils.valueIsFileEntry(source)) {
             // Don't clone FileEntry. It has a lot of depth and they shouldn't be modified.
             return source;
         } else if (Array.isArray(source)) {
@@ -717,9 +718,10 @@ export class CoreUtilsProvider {
      *
      * @param file File.
      * @returns Type guard indicating if the file is a FileEntry.
+     * @deprecated since 5.0. Use CoreFile.isFileEntry singleton instead.
      */
     isFileEntry(file: CoreFileEntry): file is FileEntry {
-        return 'isFile' in file;
+        return CoreFileUtils.isFileEntry(file);
     }
 
     /**
@@ -727,11 +729,10 @@ export class CoreUtilsProvider {
      *
      * @param file Object to check.
      * @returns Type guard indicating if the file is a FileEntry.
+     * @deprecated since 5.0. Use CoreFile.valueIsFileEntry singleton instead.
      */
     valueIsFileEntry(file: unknown): file is FileEntry {
-        // We cannot use instanceof because FileEntry is a type. Check some of the properties.
-        return !!(file && typeof file == 'object' && 'isFile' in file && 'filesystem' in file &&
-            'toInternalURL' in file && 'copyTo' in file);
+        return CoreFileUtils.valueIsFileEntry(file);
     }
 
     /**
@@ -749,27 +750,10 @@ export class CoreUtilsProvider {
      *
      * @param files List of files.
      * @returns String with error message if repeated, false if no repeated.
+     * @deprecated since 5.0. Use CoreFileUtils.hasRepeatedFilenames instead.
      */
     hasRepeatedFilenames(files: CoreFileEntry[]): string | false {
-        if (!files || !files.length) {
-            return false;
-        }
-
-        const names: string[] = [];
-
-        // Check if there are 2 files with the same name.
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const name = (this.isFileEntry(file) ? file.name : file.filename) || '';
-
-            if (names.indexOf(name) > -1) {
-                return Translate.instant('core.filenameexist', { $a: name });
-            }
-
-            names.push(name);
-        }
-
-        return false;
+        return CoreFileUtils.hasRepeatedFilenames(files);
     }
 
     /**
@@ -956,7 +940,7 @@ export class CoreUtilsProvider {
         // Path needs to be decoded, the file won't be opened if the path has %20 instead of spaces and so.
         try {
             path = decodeURIComponent(path);
-        } catch (ex) {
+        } catch {
             // Error, use the original path.
         }
 

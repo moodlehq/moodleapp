@@ -45,7 +45,7 @@ import { CoreSync } from '@services/sync';
 import { CoreText } from '@singletons/text';
 import { AddonModForumHelper } from '../../services/forum-helper';
 import { AddonModForumOffline } from '../../services/forum-offline';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreForms } from '@singletons/form';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
@@ -506,7 +506,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         }
 
         // Use prepare post for edition to avoid re-uploading all files.
-        let filesToKeep = files.filter((file): file is CoreWSFile => !CoreUtils.isFileEntry(file));
+        let filesToKeep = files.filter((file): file is CoreWSFile => !CoreFileUtils.isFileEntry(file));
         let removedFiles: { filepath: string; filename: string }[] | undefined;
 
         if (previousAttachments.length && !filesToKeep.length) {

@@ -25,7 +25,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
@@ -242,7 +242,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
 
         // Data has changed, we need to upload new files and re-upload all the existing files.
         const currentFiles = CoreFileSession.getFiles(ADDON_MOD_ASSIGN_COMPONENT, assign.id);
-        const error = CoreUtils.hasRepeatedFilenames(currentFiles);
+        const error = CoreFileUtils.hasRepeatedFilenames(currentFiles);
 
         if (error) {
             throw error;

@@ -17,6 +17,7 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreNetwork } from '@services/network';
 import { CoreFile } from '@services/file';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSFile } from '@services/ws';
@@ -489,7 +490,7 @@ export class CoreFileHelperProvider {
      * @returns The file name.
      */
     getFilenameFromPath(file: CoreFileEntry): string | undefined {
-        const path = CoreUtils.isFileEntry(file) ? file.fullPath : file.filepath;
+        const path = CoreFileUtils.isFileEntry(file) ? file.fullPath : file.filepath;
 
         if (path === undefined || path.length == 0) {
             return;

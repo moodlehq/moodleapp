@@ -19,6 +19,7 @@ import { MediaFile, CaptureError, CaptureVideoOptions } from '@awesome-cordova-p
 import { Subject } from 'rxjs';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
@@ -557,7 +558,7 @@ export class CoreFileUploaderProvider {
         await CoreFile.removeUnusedFiles(folderPath, files);
 
         await Promise.all(files.map(async (file) => {
-            if (!CoreUtils.isFileEntry(file)) {
+            if (!CoreFileUtils.isFileEntry(file)) {
                 // It's an online file, add it to the result and ignore it.
                 result.online.push({
                     filename: file.filename,
@@ -632,7 +633,7 @@ export class CoreFileUploaderProvider {
         const usedNames: {[name: string]: CoreFileEntry} = {};
         const filesToUpload: FileEntry[] = [];
         files.forEach((file) => {
-            if (CoreUtils.isFileEntry(file)) {
+            if (CoreFileUtils.isFileEntry(file)) {
                 filesToUpload.push(<FileEntry> file);
             } else {
                 // It's an online file.
@@ -679,9 +680,9 @@ export class CoreFileUploaderProvider {
         let fileName = '';
         let fileEntry: FileEntry | undefined;
 
-        const isOnline = !CoreUtils.isFileEntry(file);
+        const isOnline = !CoreFileUtils.isFileEntry(file);
 
-        if (CoreUtils.isFileEntry(file)) {
+        if (CoreFileUtils.isFileEntry(file)) {
             // Local file, we already have the file entry.
             fileName = file.name;
             fileEntry = file;
