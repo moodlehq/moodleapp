@@ -83,7 +83,8 @@ export class CoreWindow {
                 try {
                     await CoreFileHelper.showConfirmOpenUnsupportedFile(false, { filename });
                 } catch {
-                    return; // Cancelled, stop.
+                    // Cancelled, stop.
+                    return;
                 }
             }
 
