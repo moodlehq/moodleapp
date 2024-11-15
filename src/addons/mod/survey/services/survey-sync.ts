@@ -241,7 +241,7 @@ export type AddonModSurveySyncResult = CoreSyncResult & {
 };
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to ADDON_MOD_SURVEY_AUTO_SYNCED event.
  */
 export type AddonModSurveyAutoSyncData = {
     surveyId: number;

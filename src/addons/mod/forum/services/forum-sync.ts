@@ -648,7 +648,7 @@ export const AddonModForumSync = makeSingleton(AddonModForumSyncProvider);
 export type AddonModForumSyncResult = CoreSyncResult;
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to ADDON_MOD_FORUM_AUTO_SYNCED event.
  */
 export type AddonModForumAutoSyncData = {
     forumId: number;
@@ -658,7 +658,7 @@ export type AddonModForumAutoSyncData = {
 };
 
 /**
- * Data passed to MANUAL_SYNCED event.
+ * Data passed to ADDON_MOD_FORUM_MANUAL_SYNCED event.
  */
 export type AddonModForumManualSyncData = {
     forumId: number;

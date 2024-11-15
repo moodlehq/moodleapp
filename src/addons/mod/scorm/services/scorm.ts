@@ -29,7 +29,6 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CorePath } from '@singletons/path';
 import { AddonModScormOffline } from './scorm-offline';
-import { AddonModScormAutoSyncEventData } from './scorm-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
     ADDON_MOD_SCORM_COMPONENT,
@@ -42,7 +41,6 @@ import {
     ADDON_MOD_SCORM_LAUNCH_NEXT_SCO_EVENT,
     ADDON_MOD_SCORM_LAUNCH_PREV_SCO_EVENT,
     ADDON_MOD_SCORM_UPDATE_TOC_EVENT,
-    ADDON_MOD_SCORM_DATA_AUTO_SYNCED,
 } from '../constants';
 
 // Private constants.
@@ -2080,7 +2078,6 @@ declare module '@singletons/events' {
         [ADDON_MOD_SCORM_UPDATE_TOC_EVENT]: AddonModScormCommonEventData;
         [ADDON_MOD_SCORM_GO_OFFLINE_EVENT]: AddonModScormCommonEventData;
         [ADDON_MOD_SCORM_DATA_SENT_EVENT]: AddonModScormCommonEventData;
-        [ADDON_MOD_SCORM_DATA_AUTO_SYNCED]: AddonModScormAutoSyncEventData;
     }
 
 }

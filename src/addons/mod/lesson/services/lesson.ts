@@ -25,10 +25,8 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModLessonPasswordDBRecord, PASSWORD_TABLE_NAME } from './database/lesson';
 import { AddonModLessonOffline, AddonModLessonPageAttemptRecord } from './lesson-offline';
-import { AddonModLessonAutoSyncData } from './lesson-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_LESSON_AUTO_SYNCED,
     ADDON_MOD_LESSON_COMPONENT,
     ADDON_MOD_LESSON_DATA_SENT_EVENT,
     ADDON_MOD_LESSON_OTHER_ANSWERS,
@@ -48,7 +46,6 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [ADDON_MOD_LESSON_DATA_SENT_EVENT]: AddonModLessonDataSentData;
-        [ADDON_MOD_LESSON_AUTO_SYNCED]: AddonModLessonAutoSyncData;
     }
 
 }

@@ -35,11 +35,11 @@ import { AddonModFeedbackOffline } from '../../services/feedback-offline';
 import {
     AddonModFeedbackAutoSyncData,
     AddonModFeedbackSync,
-    AddonModFeedbackSyncProvider,
     AddonModFeedbackSyncResult,
 } from '../../services/feedback-sync';
 import { AddonModFeedbackPrefetchHandler } from '../../services/handlers/prefetch';
 import {
+    ADDON_MOD_FEEDBACK_AUTO_SYNCED,
     ADDON_MOD_FEEDBACK_COMPONENT,
     ADDON_MOD_FEEDBACK_FORM_SUBMITTED,
     ADDON_MOD_FEEDBACK_PAGE_NAME,
@@ -87,7 +87,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     };
 
     protected submitObserver: CoreEventObserver;
-    protected syncEventName = AddonModFeedbackSyncProvider.AUTO_SYNCED;
+    protected syncEventName = ADDON_MOD_FEEDBACK_AUTO_SYNCED;
     protected checkCompletionAfterLog = false;
 
     constructor(

@@ -401,3 +401,16 @@ export type AddonModH5PActivityAutoSyncData = {
     contextId: number;
     warnings: string[];
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_MOD_H5PACTIVITY_AUTO_SYNCED]: AddonModH5PActivityAutoSyncData;
+    }
+
+}

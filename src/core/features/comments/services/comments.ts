@@ -22,7 +22,6 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreCommentsOffline } from './comments-offline';
-import { CoreCommentsSyncAutoSyncData, CoreCommentsSyncProvider } from './comments-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 
@@ -38,7 +37,6 @@ declare module '@singletons/events' {
     export interface CoreEventsData {
         [CoreCommentsProvider.REFRESH_COMMENTS_EVENT]: CoreCommentsRefreshCommentsEventData;
         [CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT]: CoreCommentsCountChangedEventData;
-        [CoreCommentsSyncProvider.AUTO_SYNCED]: CoreCommentsSyncAutoSyncData;
     }
 
 }

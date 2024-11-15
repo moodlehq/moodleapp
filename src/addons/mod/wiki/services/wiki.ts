@@ -26,12 +26,9 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModWikiPageDBRecord } from './database/wiki';
 import { AddonModWikiOffline } from './wiki-offline';
-import { AddonModWikiAutoSyncData, AddonModWikiManualSyncData } from './wiki-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_WIKI_AUTO_SYNCED,
     ADDON_MOD_WIKI_COMPONENT,
-    ADDON_MOD_WIKI_MANUAL_SYNCED,
     ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
@@ -898,8 +895,6 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [ADDON_MOD_WIKI_PAGE_CREATED_EVENT]: AddonModWikiPageCreatedData;
-        [ADDON_MOD_WIKI_AUTO_SYNCED]: AddonModWikiAutoSyncData;
-        [ADDON_MOD_WIKI_MANUAL_SYNCED]: AddonModWikiManualSyncData;
     }
 
 }

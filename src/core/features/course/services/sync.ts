@@ -275,3 +275,16 @@ export type CoreCourseAutoSyncData = {
     courseId: number;
     warnings: CoreWSExternalWarning[];
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [CORE_COURSE_AUTO_SYNCED]: CoreCourseAutoSyncData;
+    }
+
+}

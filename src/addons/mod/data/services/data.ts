@@ -27,10 +27,8 @@ import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModDataFieldsDelegate } from './data-fields-delegate';
 import { AddonModDataOffline } from './data-offline';
-import { AddonModDataAutoSyncData } from './data-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_DATA_AUTO_SYNCED,
     ADDON_MOD_DATA_COMPONENT,
     ADDON_MOD_DATA_ENTRIES_PER_PAGE,
     ADDON_MOD_DATA_ENTRY_CHANGED,
@@ -46,7 +44,6 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [ADDON_MOD_DATA_AUTO_SYNCED]: AddonModDataAutoSyncData;
         [ADDON_MOD_DATA_ENTRY_CHANGED]: AddonModDataEntryChangedEventData;
     }
 }

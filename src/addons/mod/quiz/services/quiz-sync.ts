@@ -496,10 +496,23 @@ type FinishSyncOptions = {
 };
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to ADDON_MOD_QUIZ_AUTO_SYNCED event.
  */
 export type AddonModQuizAutoSyncData = {
     quizId: number;
     attemptFinished: boolean;
     warnings: string[];
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_MOD_QUIZ_AUTO_SYNCED]: AddonModQuizAutoSyncData;
+    }
+
+}

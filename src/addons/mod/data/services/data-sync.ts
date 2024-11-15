@@ -486,3 +486,15 @@ export type AddonModDataAutoSyncData = {
     offlineEntryId?: number;
     deleted?: boolean;
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_MOD_DATA_AUTO_SYNCED]: AddonModDataAutoSyncData;
+    }
+}

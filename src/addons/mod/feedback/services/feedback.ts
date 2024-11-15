@@ -23,7 +23,6 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning, CoreWSStoredFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModFeedbackOffline } from './feedback-offline';
-import { AddonModFeedbackAutoSyncData, AddonModFeedbackSyncProvider } from './feedback-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
     ADDON_MOD_FEEDBACK_COMPONENT,
@@ -1254,7 +1253,6 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [ADDON_MOD_FEEDBACK_FORM_SUBMITTED]: AddonModFeedbackFormSubmittedData;
-        [AddonModFeedbackSyncProvider.AUTO_SYNCED]: AddonModFeedbackAutoSyncData;
     }
 
 }
