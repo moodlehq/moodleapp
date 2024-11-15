@@ -64,7 +64,7 @@ export class CoreFileUtils {
         // Check if there are 2 files with the same name.
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            const name = (this.isFileEntry(file) ? file.name : file.filename) || '';
+            const name = (CoreFileUtils.isFileEntry(file) ? file.name : file.filename) || '';
 
             if (names.indexOf(name) > -1) {
                 return Translate.instant('core.filenameexist', { $a: name });
@@ -74,6 +74,30 @@ export class CoreFileUtils {
         }
 
         return false;
+    }
+
+    /**
+     * Extract the file name and directory from a given path.
+     *
+     * @param path Path to be extracted.
+     * @returns Plain object containing the file name and directory.
+     * @description
+     * file.pdf         -> directory: '', name: 'file.pdf'
+     * /file.pdf        -> directory: '', name: 'file.pdf'
+     * path/file.pdf    -> directory: 'path', name: 'file.pdf'
+     * path/            -> directory: 'path', name: ''
+     * path             -> directory: '', name: 'path'
+     */
+    static getFileAndDirectoryFromPath(path: string): {directory: string; name: string} {
+        const file = {
+            directory: '',
+            name: '',
+        };
+
+        file.directory = path.substring(0, path.lastIndexOf('/'));
+        file.name = path.substring(path.lastIndexOf('/') + 1);
+
+        return file;
     }
 
 }

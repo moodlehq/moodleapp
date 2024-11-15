@@ -20,6 +20,7 @@ import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSiteBasicInfo } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreFileUtils } from '@singletons/file-utils';
 
 /**
  * Page to display the list of sites to choose one to store a shared file.
@@ -57,7 +58,7 @@ export class CoreSharedFilesChooseSitePage implements OnInit {
         }
 
         if (this.filePath) {
-            const fileAndDir = CoreFile.getFileAndDirectoryFromPath(this.filePath);
+            const fileAndDir = CoreFileUtils.getFileAndDirectoryFromPath(this.filePath);
             this.fileName = fileAndDir.name;
         }
 

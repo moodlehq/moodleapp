@@ -14,7 +14,7 @@
 
 import { Component, OnInit } from '@angular/core';
 
-import { CoreFile } from '@services/file';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreNavigator } from '@services/navigator';
 import { Translate } from '@singletons';
 
@@ -54,7 +54,7 @@ export class CoreSharedFilesListPage implements OnInit {
      */
     calculateTitle(path?: string): void {
         if (path) {
-            this.title = CoreFile.getFileAndDirectoryFromPath(path).name;
+            this.title = CoreFileUtils.getFileAndDirectoryFromPath(path).name;
         } else {
             this.title = Translate.instant('core.sharedfiles.sharedfiles');
         }

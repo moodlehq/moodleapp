@@ -38,6 +38,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreNative } from '@features/native/services/native';
 import { CoreLoadings } from '@services/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreFileUtils } from '@singletons/file-utils';
 
 type CoreFrameElement = FrameElement & {
     window?: Window;
@@ -431,7 +432,7 @@ export class CoreIframeUtilsProvider {
                 ? ('src' in element ? element.src : element.data)
                 : null;
             if (src) {
-                const dirAndFile = CoreFile.getFileAndDirectoryFromPath(src);
+                const dirAndFile = CoreFileUtils.getFileAndDirectoryFromPath(src);
                 if (dirAndFile.directory) {
                     url = CorePath.concatenatePaths(dirAndFile.directory, url);
                 } else {
