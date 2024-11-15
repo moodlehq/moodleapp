@@ -21,7 +21,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreMainMenu } from '@features/mainmenu/services/mainmenu';
 import { CoreObject } from '@singletons/object';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreText } from '@singletons/text';
 import { makeSingleton, NavController, Router } from '@singletons';

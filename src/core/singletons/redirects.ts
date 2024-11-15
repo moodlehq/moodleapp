@@ -15,6 +15,8 @@
 import { CoreRedirectPayload } from '@services/navigator';
 import { CoreLogger } from './logger';
 import { CoreObject } from './object';
+import { CoreWS } from '@services/ws';
+import { CorePromiseUtils } from './promise-utils';
 
 /**
  * Singleton with helper functions to manage redirects.
@@ -116,6 +118,42 @@ export class CoreRedirects {
             localStorage.setItem('CoreRedirect', JSON.stringify(redirect));
         } catch {
             // Ignore errors.
+        }
+    }
+
+    /**
+     * Check if a URL has a redirect.
+     *
+     * @param url The URL to check.
+     * @returns Promise resolved with boolean_ whether there is a redirect.
+     */
+    static async checkRedirect(url: string): Promise<boolean> {
+        if (!window.fetch) {
+            // Cannot check if there is a redirect, assume it's false.
+            return false;
+        }
+
+        const initOptions: RequestInit = { redirect: 'follow' };
+
+        // Some browsers implement fetch but no AbortController.
+        const controller = AbortController ? new AbortController() : false;
+
+        if (controller) {
+            initOptions.signal = controller.signal;
+        }
+
+        try {
+            const response = await CorePromiseUtils.timeoutPromise(window.fetch(url, initOptions), CoreWS.getRequestTimeout());
+
+            return response.redirected;
+        } catch (error) {
+            if (error.timeout && controller) {
+                // Timeout, abort the request.
+                controller.abort();
+            }
+
+            // There was a timeout, cannot determine if there's a redirect. Assume it's false.
+            return false;
         }
     }
 

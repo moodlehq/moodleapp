@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreEventObserver } from '@singletons/events';
 import { CorePlatform } from '@services/platform';
 import { CoreWait } from './wait';

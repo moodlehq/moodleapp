@@ -16,7 +16,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { CoreH5PFileStorage } from './file-storage';
 import { CoreH5PFramework } from './framework';

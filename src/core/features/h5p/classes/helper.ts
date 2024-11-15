@@ -17,7 +17,6 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreH5P } from '../services/h5p';
 import { CoreH5PCore, CoreH5PDisplayOptions, CoreH5PLocalization } from './core';
 import { CoreError } from '@classes/errors/error';
@@ -56,10 +55,8 @@ export class CoreH5PHelper {
         const config: CoreH5PDisplayOptions = {
             export: false, // Don't allow downloading in the app.
             embed: false, // Don't display the embed button in the app.
-            copyright: CoreUtils.notNullOrUndefined(displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT]) ?
-                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] : false,
-            icon: CoreUtils.notNullOrUndefined(displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_ABOUT]) ?
-                displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_ABOUT] : false,
+            copyright: displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_COPYRIGHT] ?? false,
+            icon: displayOptionsObject[CoreH5PCore.DISPLAY_OPTION_ABOUT] ?? false,
         };
 
         config.frame = config.copyright || config.export || config.embed;

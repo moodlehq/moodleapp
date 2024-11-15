@@ -18,7 +18,7 @@ import { FormBuilder, FormGroup, ValidatorFn, AbstractControl, ValidationErrors 
 import { CoreNetwork } from '@services/network';
 import { CoreConfig } from '@services/config';
 import { CoreSites, CoreSiteCheckResponse, CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import {
     CoreLoginHelper,

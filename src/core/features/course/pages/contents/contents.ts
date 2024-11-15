@@ -16,7 +16,7 @@ import { Component, ViewChild, OnInit, OnDestroy, forwardRef, ChangeDetectorRef 
 import { IonContent } from '@ionic/angular';
 
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreCourses, CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import {
     CoreCourse,

@@ -21,7 +21,7 @@ import {
 } from '../../services/recentlyaccesseditems';
 import { CoreText } from '@singletons/text';
 import { CoreLoadings } from '@services/loadings';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**

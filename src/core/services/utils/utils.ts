@@ -16,10 +16,9 @@ import { Injectable } from '@angular/core';
 import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFileUtils } from '@singletons/file-utils';
-import { CoreWS } from '@services/ws';
+import { CoreRedirects } from '@singletons/redirects';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { makeSingleton, Translate } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { makeSingleton } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreArray } from '@singletons/array';
@@ -31,23 +30,15 @@ import { CorePromiseUtils, OrderedPromiseData } from '@singletons/promise-utils'
 import { CoreOpener, CoreOpenerOpenFileOptions, CoreOpenerOpenInBrowserOptions } from '@singletons/opener';
 import { CoreCountries, CoreCountry } from '@singletons/countries';
 import { CoreObject } from '@singletons/object';
-
-export type TreeNode<T> = T & { children: TreeNode<T>[] };
+import { CoreSites } from '@services/sites';
+import { CoreMenuItem, CoreUtils as CoreUtilsSingleton, TreeNode } from '@singletons/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /*
  * "Utils" service with helper functions.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreUtilsProvider {
-
-    protected readonly DONT_CLONE = ['[object FileEntry]', '[object DirectoryEntry]', '[object DOMFileSystem]'];
-
-    protected logger: CoreLogger;
-    protected uniqueIds: {[name: string]: number} = {};
-
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreUtilsProvider');
-    }
 
     /**
      * Given an error, add an extra warning to the error message and return the new error message.
@@ -158,35 +149,10 @@ export class CoreUtilsProvider {
      *
      * @param url The URL to check.
      * @returns Promise resolved with boolean_ whether there is a redirect.
+     * @deprecated since 5.0. Use CoreRedirects.checkRedirect instead.
      */
     async checkRedirect(url: string): Promise<boolean> {
-        if (!window.fetch) {
-            // Cannot check if there is a redirect, assume it's false.
-            return false;
-        }
-
-        const initOptions: RequestInit = { redirect: 'follow' };
-
-        // Some browsers implement fetch but no AbortController.
-        const controller = AbortController ? new AbortController() : false;
-
-        if (controller) {
-            initOptions.signal = controller.signal;
-        }
-
-        try {
-            const response = await CorePromiseUtils.timeoutPromise(window.fetch(url, initOptions), CoreWS.getRequestTimeout());
-
-            return response.redirected;
-        } catch (error) {
-            if (error.timeout && controller) {
-                // Timeout, abort the request.
-                controller.abort();
-            }
-
-            // There was a timeout, cannot determine if there's a redirect. Assume it's false.
-            return false;
-        }
+        return CoreRedirects.checkRedirect(url);
     }
 
     /**
@@ -224,44 +190,10 @@ export class CoreUtilsProvider {
      * @param source The variable to clone.
      * @param level Depth we are right now inside a cloned object. It's used to prevent reaching max call stack size.
      * @returns Cloned variable.
+     * @deprecated since 5.0. Use CoreUtils.clone instead.
      */
     clone<T>(source: T, level: number = 0): T {
-        if (level >= 20) {
-            // Max 20 levels.
-            this.logger.error('Max depth reached when cloning object.', source);
-
-            return source;
-        }
-
-        if (CoreFileUtils.valueIsFileEntry(source)) {
-            // Don't clone FileEntry. It has a lot of depth and they shouldn't be modified.
-            return source;
-        } else if (Array.isArray(source)) {
-            // Clone the array and all the entries.
-            const newArray = [] as unknown as T;
-            for (let i = 0; i < source.length; i++) {
-                newArray[i] = this.clone(source[i], level + 1);
-            }
-
-            return newArray;
-        } else if (CoreObject.isObject(source)) {
-            // Check if the object shouldn't be copied.
-            if (source.toString && this.DONT_CLONE.indexOf(source.toString()) != -1) {
-                // Object shouldn't be copied, return it as it is.
-                return source;
-            }
-
-            // Clone the object and all the subproperties.
-            const newObject = {} as T;
-            for (const name in source) {
-                newObject[name] = this.clone(source[name], level + 1);
-            }
-
-            return newObject;
-        } else {
-            // Primitive type or unknown, return it as it is.
-            return source;
-        }
+        return CoreUtilsSingleton.clone(source, level);
     }
 
     /**
@@ -275,7 +207,7 @@ export class CoreUtilsProvider {
     copyProperties(from: Record<string, unknown>, to: Record<string, unknown>, clone: boolean = true): void {
         for (const name in from) {
             if (clone) {
-                to[name] = this.clone(from[name]);
+                to[name] = CoreUtilsSingleton.clone(from[name]);
             } else {
                 to[name] = from[name];
             }
@@ -363,6 +295,7 @@ export class CoreUtilsProvider {
      * @param checkAll True if it should check all the sites, false if it should check only 1 and treat them all
      *                 depending on this result.
      * @returns Promise resolved with the list of enabled sites.
+     * @deprecated since 5.0. Use CoreSites.filterEnabledSites instead.
      */
     async filterEnabledSites<P extends unknown[]>(
         siteIds: string[],
@@ -370,29 +303,7 @@ export class CoreUtilsProvider {
         checkAll?: boolean,
         ...args: P
     ): Promise<string[]> {
-        const promises: Promise<false | number>[] = [];
-        const enabledSites: string[] = [];
-
-        for (const i in siteIds) {
-            const siteId = siteIds[i];
-            const pushIfEnabled = enabled => enabled && enabledSites.push(siteId);
-            if (checkAll || !promises.length) {
-                promises.push(
-                    Promise
-                        .resolve(isEnabledFn(siteId, ...args))
-                        .then(pushIfEnabled),
-                );
-            }
-        }
-
-        await CorePromiseUtils.allPromisesIgnoringErrors(promises);
-
-        if (!checkAll) {
-            // Checking 1 was enough, so it will either return all the sites or none.
-            return enabledSites.length ? siteIds : [];
-        } else {
-            return enabledSites;
-        }
+        return CoreSites.filterEnabledSites(siteIds, isEnabledFn, checkAll, ...args);
     }
 
     /**
@@ -401,17 +312,10 @@ export class CoreUtilsProvider {
      *
      * @param float The float to print.
      * @returns Locale float.
+     * @deprecated since 5.0. Use CoreUtils.formatFloat on singletons instead.
      */
     formatFloat(float: unknown): string {
-        if (float === undefined || float === null || typeof float == 'boolean') {
-            return '';
-        }
-
-        const localeSeparator = Translate.instant('core.decsep');
-
-        const floatString = String(float);
-
-        return floatString.replace('.', localeSeparator);
+        return CoreUtilsSingleton.formatFloat(float);
     }
 
     /**
@@ -425,6 +329,7 @@ export class CoreUtilsProvider {
      * @param rootParentId The id of the root.
      * @param maxDepth Max Depth to convert to tree. Children found will be in the last level of depth.
      * @returns Array with the formatted tree, children will be on each node under children field.
+     * @deprecated since 5.0. Use CoreUtils.formatTree on singletons instead.
      */
     formatTree<T>(
         list: T[],
@@ -433,67 +338,7 @@ export class CoreUtilsProvider {
         rootParentId: number = 0,
         maxDepth: number = 5,
     ): TreeNode<T>[] {
-        const map = {};
-        const mapDepth = {};
-        const tree: TreeNode<T>[] = [];
-
-        // Create a map first to avoid problems with not sorted.
-        list.forEach((node: TreeNode<T>, index): void => {
-            const id = node[idFieldName];
-
-            if (id === undefined) {
-                this.logger.error(`Node with incorrect ${idFieldName}:${id} found on formatTree`);
-            }
-
-            if (node.children === undefined) {
-                node.children = [];
-            }
-            map[id] = index;
-        });
-
-        list.forEach((node: TreeNode<T>): void => {
-            const id = node[idFieldName];
-            const parent = node[parentFieldName];
-
-            if (id === undefined || parent === undefined) {
-                this.logger.error(`Node with incorrect ${idFieldName}:${id} or ${parentFieldName}:${parent} found on formatTree`);
-            }
-
-            // Use map to look-up the parents.
-            if (parent !== rootParentId) {
-                const parentNode = list[map[parent]] as TreeNode<T>;
-                if (parentNode) {
-                    if (mapDepth[parent] == maxDepth) {
-                        // Reached max level of depth. Proceed with flat order. Find parent object of the current node.
-                        const parentOfParent = parentNode[parentFieldName];
-                        if (parentOfParent) {
-                            // This element will be the child of the node that is two levels up the hierarchy
-                            // (i.e. the child of node.parent.parent).
-                            (list[map[parentOfParent]] as TreeNode<T>).children.push(node);
-                            // Assign depth level to the same depth as the parent (i.e. max depth level).
-                            mapDepth[id] = mapDepth[parent];
-                            // Change the parent to be the one that is two levels up the hierarchy.
-                            node[parentFieldName] = parentOfParent;
-                        } else {
-                            this.logger.error(`Node parent of parent:${parentOfParent} not found on formatTree`);
-                        }
-                    } else {
-                        parentNode.children.push(node);
-                        // Increase the depth level.
-                        mapDepth[id] = mapDepth[parent] + 1;
-                    }
-                } else {
-                    this.logger.error(`Node parent:${parent} not found on formatTree`);
-                }
-            } else {
-                tree.push(node);
-
-                // Root elements are the first elements in the tree structure, therefore have the depth level 1.
-                mapDepth[id] = 1;
-            }
-        });
-
-        return tree;
+        return CoreUtilsSingleton.formatTree(list, parentFieldName, idFieldName, rootParentId, maxDepth);
     }
 
     /**
@@ -545,13 +390,10 @@ export class CoreUtilsProvider {
      *
      * @param name The name to get the ID for.
      * @returns Unique ID.
+     * @deprecated since 5.0. Use CoreUtils.getUniqueId singleton instead.
      */
     getUniqueId(name: string): number {
-        if (!this.uniqueIds[name]) {
-            this.uniqueIds[name] = 0;
-        }
-
-        return ++this.uniqueIds[name];
+        return CoreUtilsSingleton.getUniqueId(name);
     }
 
     /**
@@ -615,10 +457,11 @@ export class CoreUtilsProvider {
      *
      * @param value Value to check.
      * @returns Whether the value is false, 0 or "0".
+     * @deprecated since 5.0. Use CoreUtils.isFalseOrZero singleton instead.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isFalseOrZero(value: any): boolean {
-        return value !== undefined && (value === false || value === 'false' || parseInt(value, 10) === 0);
+        return CoreUtilsSingleton.isFalseOrZero(value);
     }
 
     /**
@@ -626,10 +469,11 @@ export class CoreUtilsProvider {
      *
      * @param value Value to check.
      * @returns Whether the value is true, 1 or "1".
+     * @deprecated since 5.0. Use CoreUtils.isTrueOrOne singleton instead.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isTrueOrOne(value: any): boolean {
-        return value !== undefined && (value === true || value === 'true' || parseInt(value, 10) === 1);
+        return CoreUtilsSingleton.isTrueOrOne(value);
     }
 
     /**
@@ -641,18 +485,7 @@ export class CoreUtilsProvider {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isWebServiceError(error: any): boolean {
-        return error && (
-            error.warningcode !== undefined ||
-            (
-                error.errorcode !== undefined && error.errorcode != 'userdeleted' && error.errorcode != 'upgraderunning' &&
-                error.errorcode != 'forcepasswordchangenotice' && error.errorcode != 'usernotfullysetup' &&
-                error.errorcode != 'sitepolicynotagreed' && error.errorcode != 'sitemaintenance' &&
-                error.errorcode != 'wsaccessusersuspended' && error.errorcode != 'wsaccessuserdeleted' &&
-                // eslint-disable-next-line deprecation/deprecation
-                !this.isExpiredTokenError(error)
-            ) ||
-            error.status && error.status >= 400 // CoreHttpError, assume status 400 and above are like WebService errors.
-        );
+        return CoreWSError.isWebServiceError(error);
     }
 
     /**
@@ -664,8 +497,7 @@ export class CoreUtilsProvider {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isExpiredTokenError(error: any): boolean {
-        return error.errorcode === 'invalidtoken' ||
-            (error.errorcode === 'accessexception' && error.message.includes('Invalid token - token expired'));
+        return CoreWSError.isExpiredTokenError(error);
     }
 
     /**
@@ -677,6 +509,7 @@ export class CoreUtilsProvider {
      * @param separator The separator used within the list string. Default ','.
      * @param defaultValue Element that will become default option value. Default 0.
      * @returns The now assembled array
+     * @deprecated since 5.0. Use CoreUtils.makeMenuFromList singleton instead.
      */
     makeMenuFromList<T>(
         list: string,
@@ -684,20 +517,7 @@ export class CoreUtilsProvider {
         separator: string = ',',
         defaultValue?: T,
     ): CoreMenuItem<T>[] {
-        // Split and format the list.
-        const split = list.split(separator).map((label, index) => ({
-            label: label.trim(),
-            value: index + 1,
-        })) as { label: string; value: T | number }[];
-
-        if (defaultLabel) {
-            split.unshift({
-                label: defaultLabel,
-                value: defaultValue || 0,
-            });
-        }
-
-        return split;
+        return CoreUtilsSingleton.makeMenuFromList(list, defaultLabel, separator, defaultValue);
     }
 
     /**
@@ -718,6 +538,7 @@ export class CoreUtilsProvider {
      *
      * @param value Value to check.
      * @returns True if not null and not undefined.
+     * @deprecated since 5.0. Use ?? instead.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     notNullOrUndefined(value: any): boolean {
@@ -967,39 +788,10 @@ export class CoreUtilsProvider {
      * @param localeFloat Locale aware float representation.
      * @param strict If true, then check the input and return false if it is not a valid number.
      * @returns False if bad format, empty string if empty value or the parsed float if not.
+     * @deprecated since 5.0. Use CoreUtils.unformatFloat on singletons instead.
      */
     unformatFloat(localeFloat: string | number | null | undefined, strict?: boolean): false | '' | number {
-        // Bad format on input type number.
-        if (localeFloat === undefined) {
-            return false;
-        }
-
-        // Empty (but not zero).
-        if (localeFloat == null) {
-            return '';
-        }
-
-        // Convert float to string.
-        localeFloat = String(localeFloat);
-        localeFloat = localeFloat.trim();
-
-        if (localeFloat == '') {
-            return '';
-        }
-
-        localeFloat = localeFloat.replace(' ', ''); // No spaces - those might be used as thousand separators.
-        localeFloat = localeFloat.replace(Translate.instant('core.decsep'), '.');
-
-        // Use Number instead of parseFloat because the latter truncates the number when it finds ",", while Number returns NaN.
-        // If the number still has "," then it means it's not a valid separator.
-        const parsedFloat = Number(localeFloat);
-
-        // Bad format.
-        if (strict && (!isFinite(parsedFloat) || isNaN(parsedFloat))) {
-            return false;
-        }
-
-        return parsedFloat;
+        return CoreUtilsSingleton.unformatFloat(localeFloat, strict);
     }
 
     /**
@@ -1020,17 +812,10 @@ export class CoreUtilsProvider {
      * @param fn Function to debounce.
      * @param delay Time that must pass until the function is called.
      * @returns Debounced function.
+     * @deprecated since 5.0. Use CoreUtils.debounce on singletons instead.
      */
     debounce<T extends unknown[]>(fn: (...args: T) => unknown, delay: number): (...args: T) => void {
-        let timeoutID: number;
-
-        const debounced = (...args: T): void => {
-            clearTimeout(timeoutID);
-
-            timeoutID = window.setTimeout(() => fn.apply(null, args), delay);
-        };
-
-        return debounced;
+        return CoreUtilsSingleton.debounce(fn, delay);
     }
 
     /**
@@ -1039,23 +824,10 @@ export class CoreUtilsProvider {
      * @param fn Function to throttle.
      * @param duration Time that must pass until the function is called.
      * @returns Throttled function.
+     * @deprecated since 5.0. Use CoreUtils.throttle on singletons instead.
      */
     throttle<T extends unknown[]>(fn: (...args: T) => unknown, duration: number): (...args: T) => void {
-        let shouldWait = false;
-
-        const throttled = (...args: T): void => {
-            if (!shouldWait) {
-                fn.apply(null, args);
-
-                shouldWait = true;
-
-                setTimeout(() => {
-                    shouldWait = false;
-                }, duration);
-            }
-        };
-
-        return throttled;
+        return CoreUtilsSingleton.throttle(fn, duration);
     }
 
     /**
@@ -1181,14 +953,6 @@ export class CoreUtilsProvider {
 }
 
 export const CoreUtils = makeSingleton(CoreUtilsProvider);
-
-/**
- * Menu item.
- */
-export type CoreMenuItem<T = number> = {
-    label: string;
-    value: T | number;
-};
 
 /**
  * Options for waiting.

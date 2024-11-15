@@ -15,7 +15,7 @@
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreH5P } from '../services/h5p';
 import { CoreH5PCore, CoreH5PDisplayOptions, CoreH5PContentData, CoreH5PDependenciesFiles } from './core';
 import { CoreH5PCoreSettings, CoreH5PHelper } from './helper';

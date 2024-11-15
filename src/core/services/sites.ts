@@ -21,7 +21,6 @@ import { CoreEvents } from '@singletons/events';
 import { CoreWS } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants, MINIMUM_MOODLE_VERSION, MOODLE_RELEASES } from '@/core/constants';
 import {
     CoreSite,
@@ -466,7 +465,7 @@ export class CoreSitesProvider {
 
         if (error.debug?.code === 'codingerror') {
             // This could be caused by a redirect. Check if it's the case.
-            const redirect = await CoreUtils.checkRedirect(siteUrl);
+            const redirect = await CoreRedirects.checkRedirect(siteUrl);
 
             options.message = Translate.instant('core.siteunavailablehelp', { site: siteUrl });
 
@@ -557,9 +556,9 @@ export class CoreSitesProvider {
             return this.getUserToken(siteUrl, username, password, service, true);
         }
 
-        if (data.errorcode == 'missingparam') {
+        if (data.errorcode === 'missingparam') {
             // It seems the server didn't receive all required params, it could be due to a redirect.
-            const redirect = await CoreUtils.checkRedirect(loginUrl);
+            const redirect = await CoreRedirects.checkRedirect(loginUrl);
 
             if (redirect) {
                 throw this.createCannotConnectLoginError(siteUrl, {
@@ -2215,6 +2214,47 @@ export class CoreSitesProvider {
             this.afterLoginNavigationQueueRunner.run(data.callback, { priority: data.priority });
         });
         this.afterLoginNavigationQueue = [];
+    }
+
+    /**
+     * Filter the list of site IDs based on a isEnabled function.
+     *
+     * @param siteIds Site IDs to filter.
+     * @param isEnabledFn Function to call for each site. It receives a siteId param and all the params sent to this function
+     *                    after 'checkAll'.
+     * @param checkAll True if it should check all the sites, false if it should check only 1 and treat them all
+     *                 depending on this result.
+     * @returns Promise resolved with the list of enabled sites.
+     */
+    async filterEnabledSites<P extends unknown[]>(
+        siteIds: string[],
+        isEnabledFn: (siteId: string, ...args: P) => boolean | Promise<boolean>,
+        checkAll?: boolean,
+        ...args: P
+    ): Promise<string[]> {
+        const promises: Promise<false | number>[] = [];
+        const enabledSites: string[] = [];
+
+        for (const i in siteIds) {
+            const siteId = siteIds[i];
+            const pushIfEnabled = enabled => enabled && enabledSites.push(siteId);
+            if (checkAll || !promises.length) {
+                promises.push(
+                    Promise
+                        .resolve(isEnabledFn(siteId, ...args))
+                        .then(pushIfEnabled),
+                );
+            }
+        }
+
+        await CorePromiseUtils.allPromisesIgnoringErrors(promises);
+
+        if (!checkAll) {
+            // Checking 1 was enough, so it will either return all the sites or none.
+            return enabledSites.length ? siteIds : [];
+        }
+
+        return enabledSites;
     }
 
 }
