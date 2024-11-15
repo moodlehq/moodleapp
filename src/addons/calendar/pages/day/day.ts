@@ -19,15 +19,13 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import {
-    AddonCalendarProvider,
     AddonCalendar,
     AddonCalendarEventToDisplay,
     AddonCalendarCalendarDay,
-    AddonCalendarEventType,
 } from '../../services/calendar';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarFilter, AddonCalendarHelper } from '../../services/calendar-helper';
-import { AddonCalendarSync, AddonCalendarSyncProvider } from '../../services/calendar-sync';
+import { AddonCalendarSync } from '../../services/calendar-sync';
 import { CoreCategoryData, CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import moment from 'moment-timezone';
@@ -49,6 +47,17 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
 import { CoreModals } from '@services/modals';
+import {
+    ADDON_CALENDAR_AUTO_SYNCED,
+    ADDON_CALENDAR_DELETED_EVENT_EVENT,
+    ADDON_CALENDAR_EDIT_EVENT_EVENT,
+    ADDON_CALENDAR_FILTER_CHANGED_EVENT,
+    ADDON_CALENDAR_MANUAL_SYNCED,
+    ADDON_CALENDAR_NEW_EVENT_DISCARDED_EVENT,
+    ADDON_CALENDAR_NEW_EVENT_EVENT,
+    ADDON_CALENDAR_UNDELETED_EVENT_EVENT,
+    AddonCalendarEventType,
+} from '@addons/calendar/constants';
 
 /**
  * Page that displays the calendar events for a certain day.
@@ -91,7 +100,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
         // Listen for events added. When an event is added, reload the data.
         this.eventObservers.push(CoreEvents.on(
-            AddonCalendarProvider.NEW_EVENT_EVENT,
+            ADDON_CALENDAR_NEW_EVENT_EVENT,
             (data) => {
                 if (data && data.eventId) {
                     this.manager?.getSource().markAllItemsUnloaded();
@@ -102,14 +111,14 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         ));
 
         // Listen for new event discarded event. When it does, reload the data.
-        this.eventObservers.push(CoreEvents.on(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, () => {
+        this.eventObservers.push(CoreEvents.on(ADDON_CALENDAR_NEW_EVENT_DISCARDED_EVENT, () => {
             this.manager?.getSource().markAllItemsUnloaded();
             this.refreshData(true, true);
         }, this.currentSiteId));
 
         // Listen for events edited. When an event is edited, reload the data.
         this.eventObservers.push(CoreEvents.on(
-            AddonCalendarProvider.EDIT_EVENT_EVENT,
+            ADDON_CALENDAR_EDIT_EVENT_EVENT,
             (data) => {
                 if (data && data.eventId) {
                     this.manager?.getSource().markAllItemsUnloaded();
@@ -120,13 +129,13 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         ));
 
         // Refresh data if calendar events are synchronized automatically.
-        this.eventObservers.push(CoreEvents.on(AddonCalendarSyncProvider.AUTO_SYNCED, () => {
+        this.eventObservers.push(CoreEvents.on(ADDON_CALENDAR_AUTO_SYNCED, () => {
             this.manager?.getSource().markAllItemsUnloaded();
             this.refreshData(false, true);
         }, this.currentSiteId));
 
         // Refresh data if calendar events are synchronized manually but not by this page.
-        this.eventObservers.push(CoreEvents.on(AddonCalendarSyncProvider.MANUAL_SYNCED, (data) => {
+        this.eventObservers.push(CoreEvents.on(ADDON_CALENDAR_MANUAL_SYNCED, (data) => {
             const selectedDay = this.manager?.getSelectedItem();
             if (data && (data.source != 'day' || !selectedDay || !data.moment || !selectedDay.moment.isSame(data.moment, 'day'))) {
                 this.manager?.getSource().markAllItemsUnloaded();
@@ -136,7 +145,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
         // Update the events when an event is deleted.
         this.eventObservers.push(CoreEvents.on(
-            AddonCalendarProvider.DELETED_EVENT_EVENT,
+            ADDON_CALENDAR_DELETED_EVENT_EVENT,
             (data) => {
                 if (data && !data.sent) {
                     // Event was deleted in offline. Just mark it as deleted, no need to refresh.
@@ -151,7 +160,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
         // Listen for events "undeleted" (offline).
         this.eventObservers.push(CoreEvents.on(
-            AddonCalendarProvider.UNDELETED_EVENT_EVENT,
+            ADDON_CALENDAR_UNDELETED_EVENT_EVENT,
             (data) => {
                 if (!data || !data.eventId) {
                     return;
@@ -164,7 +173,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         ));
 
         this.eventObservers.push(CoreEvents.on(
-            AddonCalendarProvider.FILTER_CHANGED_EVENT,
+            ADDON_CALENDAR_FILTER_CHANGED_EVENT,
             async (data) => {
                 this.filter = data;
 
@@ -343,7 +352,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
                 result.moment = selectedDay?.moment;
 
                 this.manager?.getSource().markAllItemsUnloaded();
-                CoreEvents.trigger(AddonCalendarSyncProvider.MANUAL_SYNCED, result, this.currentSiteId);
+                CoreEvents.trigger(ADDON_CALENDAR_MANUAL_SYNCED, result, this.currentSiteId);
             }
         } catch (error) {
             if (showErrors) {
