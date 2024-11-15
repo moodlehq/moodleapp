@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { CoreAppProvider } from '@services/app';
+import { CoreTime } from '@singletons/time';
 import moment from 'moment-timezone';
 import { TestingBehatRuntime, TestingBehatRuntimeService } from './services/behat-runtime';
 import { CorePlatform } from '@services/platform';
@@ -35,7 +35,7 @@ function initializeAutomatedTests(window: AutomatedTestsWindow) {
     window.behat = TestingBehatRuntime.instance;
 
     // Force timezone for automated tests.
-    moment.tz.setDefault(CoreAppProvider.getForcedTimezone());
+    moment.tz.setDefault(CoreTime.getForcedTimezone());
 }
 
 @NgModule({

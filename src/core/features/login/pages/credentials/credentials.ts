@@ -17,7 +17,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { CoreApp } from '@services/app';
+import { CoreSSO } from '@singletons/sso';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteCheckResponse, CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -251,7 +251,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         e?.stopPropagation();
 
         // Check that there's no SSO authentication ongoing and the view hasn't changed.
-        if (CoreApp.isSSOAuthenticationOngoing() || this.viewLeft || !this.siteCheck) {
+        if (CoreSSO.isSSOAuthenticationOngoing() || this.viewLeft || !this.siteCheck) {
             return;
         }
 

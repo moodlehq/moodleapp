@@ -93,6 +93,24 @@ export class CoreMedia {
         return sources.some(source => CoreMedia.sourceUsesJavascriptPlayer(source));
     }
 
+    /**
+     * Check if the browser supports mediaDevices.getUserMedia.
+     *
+     * @returns Whether the function is supported.
+     */
+    static canGetUserMedia(): boolean {
+        return !!(navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    }
+
+    /**
+     * Check if the browser supports MediaRecorder.
+     *
+     * @returns Whether the function is supported.
+     */
+    static canRecordMedia(): boolean {
+        return !!window.MediaRecorder;
+    }
+
 }
 
 /**

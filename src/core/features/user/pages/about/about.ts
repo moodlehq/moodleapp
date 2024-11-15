@@ -25,7 +25,6 @@ import {
     USER_PROFILE_REFRESHED,
     USER_PROFILE_SERVER_TIMEZONE,
 } from '@features/user/services/user';
-import { CoreUserHelper } from '@features/user/services/user-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreSite } from '@classes/sites/site';
@@ -34,6 +33,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreLoadings } from '@services/loadings';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Page that displays info about a user.
@@ -275,7 +275,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
         }
 
         if (this.user.timezone) {
-            this.user.timezone = CoreUserHelper.translateLegacyTimezone(this.user.timezone);
+            this.user.timezone = CoreTime.translateLegacyTimezone(this.user.timezone);
         }
     }
 

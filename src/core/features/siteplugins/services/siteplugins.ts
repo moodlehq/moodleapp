@@ -18,7 +18,6 @@ import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourses } from '@features/courses/services/courses';
-import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreSites } from '@services/sites';
@@ -101,7 +100,7 @@ export class CoreSitePluginsProvider {
             appcustomurlscheme: CoreConstants.CONFIG.customurlscheme,
             appisdesktop: false,
             appismobile: CorePlatform.isMobile(),
-            appiswide: CoreApp.isWide(),
+            appiswide: CorePlatform.isWide(),
             appplatform: 'browser',
         };
 

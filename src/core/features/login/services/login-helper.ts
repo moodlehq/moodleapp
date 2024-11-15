@@ -61,6 +61,7 @@ import { CoreSiteError, CoreSiteErrorDebug } from '@classes/errors/siteerror';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreLoadings } from '@services/loadings';
 import { CoreErrorHelper } from '@services/error-helper';
+import { CoreSSO } from '@singletons/sso';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -131,7 +132,7 @@ export class CoreLoginHelperProvider {
         const currentSite = CoreSites.getCurrentSite();
 
         if (
-            !CoreApp.isSSOAuthenticationOngoing() &&
+            !CoreSSO.isSSOAuthenticationOngoing() &&
             currentSite?.isLoggedOut() &&
             CoreNavigator.isCurrent('/login/reconnect')
         ) {

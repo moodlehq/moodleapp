@@ -15,7 +15,7 @@
 import { Inject, Injectable, Optional } from '@angular/core';
 
 import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
-import { CoreApp } from '@services/app';
+import { CoreAppDB } from './app-db';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { makeSingleton } from '@singletons';
@@ -32,7 +32,7 @@ import { NULL_INJECTION_TOKEN } from '@/core/constants';
  * The data can be scoped to a single site using CoreStorage.forSite(site), and it will be automatically cleared
  * when the site is deleted.
  *
- * For tabular data, use CoreAppProvider.getDB() or CoreSite.getDb().
+ * For tabular data, use CoreAppDB.getDB() or CoreSite.getDb().
  */
 @Injectable({ providedIn: 'root' })
 export class CoreStorageService {
@@ -47,13 +47,9 @@ export class CoreStorageService {
      * Initialize database.
      */
     async initializeDatabase(): Promise<void> {
-        try {
-            await CoreApp.createTablesFromSchema(APP_SCHEMA);
-        } catch {
-            // Ignore errors.
-        }
+        await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
-        await this.initializeTable(CoreApp.getDB());
+        await this.initializeTable(CoreAppDB.getDB());
     }
 
     /**
@@ -97,7 +93,7 @@ export class CoreStorageService {
     async getFromDB<T>(key: string, defaultValue: T): Promise<T>;
     async getFromDB<T=unknown>(key: string, defaultValue: T | null = null): Promise<T | null> {
         try {
-            const db = CoreApp.getDB();
+            const db = CoreAppDB.getDB();
             const { value } = await db.getRecord<CoreStorageRecord>(TABLE_NAME, { key });
 
             return JSON.parse(value);

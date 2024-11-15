@@ -18,13 +18,12 @@ import { Injectable } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
-import { CoreApp } from '@services/app';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreAppDB } from '@services/app-db';
 import { AngularFrameworkDelegate, makeSingleton } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreSubscriptions } from '@singletons/subscriptions';
-import { CoreUserToursUserTourComponent } from '../components/user-tour/user-tour';
+import type { CoreUserToursUserTourComponent } from '../components/user-tour/user-tour';
 import { APP_SCHEMA, CoreUserToursDBEntry, USER_TOURS_TABLE_NAME } from './database/user-tours';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreWait } from '@singletons/wait';
@@ -43,12 +42,12 @@ export class CoreUserToursService {
      * Initialize database.
      */
     async initializeDatabase(): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreApp.createTablesFromSchema(APP_SCHEMA));
+        await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
         this.table.setLazyConstructor(async () => {
             const table = new CoreDatabaseTableProxy<CoreUserToursDBEntry>(
                 { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
-                CoreApp.getDB(),
+                CoreAppDB.getDB(),
                 USER_TOURS_TABLE_NAME,
             );
 
@@ -112,6 +111,8 @@ export class CoreUserToursService {
     protected async show(options: CoreUserToursBasicOptions): Promise<CoreUserToursUserTour>;
     protected async show(options: CoreUserToursFocusedOptions): Promise<CoreUserToursUserTour>;
     protected async show(options: CoreUserToursBasicOptions | CoreUserToursFocusedOptions): Promise<CoreUserToursUserTour> {
+        const { CoreUserToursUserTourComponent } = await import('../components/user-tour/user-tour');
+
         const { delay, ...componentOptions } = options;
 
         await CoreWait.wait(delay ?? 200);

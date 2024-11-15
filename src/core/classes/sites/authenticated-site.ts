@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreApp } from '@services/app';
+import { CoreSSO } from '@singletons/sso';
 import { CoreNetwork } from '@services/network';
 import { CoreEventData, CoreEvents } from '@singletons/events';
 import {
@@ -790,9 +790,9 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                     wsPreSets.wsToken = this.token ?? '';
 
                     return await this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets);
-                } else if (CoreApp.isSSOAuthenticationOngoing()) {
+                } else if (CoreSSO.isSSOAuthenticationOngoing()) {
                     // There's an SSO authentication ongoing, wait for it to finish and try again.
-                    await CoreApp.waitForSSOAuthentication();
+                    await CoreSSO.waitForSSOAuthentication();
 
                     return await this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets);
                 }

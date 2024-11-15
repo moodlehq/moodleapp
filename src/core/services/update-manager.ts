@@ -22,7 +22,7 @@ import { CoreH5P } from '@features/h5p/services/h5p';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSites } from './sites';
 import { CoreUtils } from './utils/utils';
-import { CoreApp } from './app';
+import { CoreRedirects } from '@singletons/redirects';
 import { CoreZoomLevel } from '@features/settings/services/settings-helper';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreFile } from './file';
@@ -138,7 +138,7 @@ export class CoreUpdateManagerProvider {
         await CoreSites.removeStoredCurrentSite();
 
         // Tell the app to open add site so the user can add the new site.
-        CoreApp.storeRedirect(CoreConstants.NO_SITE_ID, {
+        CoreRedirects.storeRedirect(CoreConstants.NO_SITE_ID, {
             redirectPath: '/login/sites',
             redirectOptions: {
                 params: {

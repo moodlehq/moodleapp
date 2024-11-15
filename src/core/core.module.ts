@@ -29,6 +29,7 @@ import { getInitializerProviders } from './initializers';
 export async function getCoreServices(): Promise<Type<unknown>[]> {
 
     const { CoreAppProvider } = await import('@services/app');
+    const { CoreAppDBService } = await import('@services/app-db');
     const { CoreConfigProvider } = await import('@services/config');
     const { CoreCronDelegateService } = await import('@services/cron');
     const { CoreCustomURLSchemesProvider } = await import('@services/urlschemes');
@@ -65,6 +66,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
 
     return [
         CoreAppProvider,
+        CoreAppDBService,
         CoreConfigProvider,
         CoreCronDelegateService,
         CoreCustomURLSchemesProvider,

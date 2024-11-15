@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
 import { NotificationEventResponse, PushOptions, RegistrationEventResponse } from '@awesome-cordova-plugins/push/ngx';
 
-import { CoreApp } from '@services/app';
+import { CoreAppDB } from '@services/app-db';
 import { CoreSites } from '@services/sites';
 import { CorePushNotificationsDelegate } from './push-delegate';
 import { CoreLocalNotifications } from '@services/local-notifications';
@@ -204,13 +204,9 @@ export class CorePushNotificationsProvider {
      * @returns Promise resolved when done.
      */
     protected async initializeDatabase(): Promise<void> {
-        try {
-            await CoreApp.createTablesFromSchema(APP_SCHEMA);
-        } catch {
-            // Ignore errors.
-        }
+        await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
-        const database = CoreApp.getDB();
+        const database = CoreAppDB.getDB();
         const badgesTable = new CoreDatabaseTableProxy<CorePushNotificationsBadgeDBRecord, CorePushNotificationsBadgeDBPrimaryKeys>(
             { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
             database,
