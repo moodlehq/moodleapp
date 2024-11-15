@@ -21,7 +21,6 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
 import { CoreText } from '@singletons/text';
 import { DownloadStatus } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -29,6 +28,7 @@ import { CoreWSFile } from '@services/ws';
 import { CorePlatform } from '@services/platform';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@singletons/opener';
 
 /**
  * Component to handle a remote file. Shows the file name, icon (depending on mimetype) and a button
@@ -155,7 +155,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const options: CoreUtilsOpenFileOptions = {};
+        const options: CoreOpenerOpenFileOptions = {};
         if (isOpenButton) {
             // Use the non-default method.
             options.iOSOpenFileAction = this.defaultIsOpenWithPicker ? OpenFileAction.OPEN : OpenFileAction.OPEN_WITH;
@@ -194,9 +194,9 @@ export class CoreFileComponent implements OnInit, OnDestroy {
         if (!this.canDownload || !this.state || this.state === DownloadStatus.NOT_DOWNLOADABLE) {
             // File cannot be downloaded, just open it.
             if (CoreUrl.isLocalFileUrl(this.fileUrl)) {
-                CoreUtils.openFile(this.fileUrl);
+                CoreOpener.openFile(this.fileUrl);
             } else {
-                CoreUtils.openOnlineFile(CoreUrl.unfixPluginfileURL(this.fileUrl));
+                CoreOpener.openOnlineFile(CoreUrl.unfixPluginfileURL(this.fileUrl));
             }
 
             return;

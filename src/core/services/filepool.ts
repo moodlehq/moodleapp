@@ -27,7 +27,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
-import { CoreUtils, CoreUtilsOpenFileOptions } from '@services/utils/utils';
+import { CoreUtils } from '@services/utils/utils';
 import { CoreError } from '@classes/errors/error';
 import { DownloadStatus } from '@/core/constants';
 import { ApplicationInit, makeSingleton, NgZone, Translate } from '@singletons';
@@ -60,6 +60,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CoreAnalytics, CoreAnalyticsEventType } from './analytics';
 import { convertTextToHTMLElement } from '../utils/create-html-element';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener, CoreOpenerOpenFileOptions } from '@singletons/opener';
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.
@@ -2949,18 +2950,18 @@ export class CoreFilepoolProvider {
      *     - The file cannot be streamed.
      * If the file is big and can be streamed, the promise returned by this function will be rejected.
      */
-    async shouldDownloadFileBeforeOpen(url: string, size: number, options: CoreUtilsOpenFileOptions = {}): Promise<boolean> {
+    async shouldDownloadFileBeforeOpen(url: string, size: number, options: CoreOpenerOpenFileOptions = {}): Promise<boolean> {
         if (size >= 0 && size <= CoreFilepoolProvider.DOWNLOAD_THRESHOLD) {
             // The file is small, download it.
             return true;
         }
 
-        if (CoreUtils.shouldOpenWithDialog(options)) {
+        if (CoreOpener.shouldOpenWithDialog(options)) {
             // Open with dialog needs a local file.
             return true;
         }
 
-        const mimetype = await CoreUtils.getMimeTypeFromUrl(url);
+        const mimetype = await CoreMimetypeUtils.getMimeTypeFromUrl(url);
 
         // If the file is streaming (audio or video), return false.
         return !CoreMimetypeUtils.isStreamedMimetype(mimetype);

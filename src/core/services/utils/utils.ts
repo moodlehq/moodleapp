@@ -15,30 +15,21 @@
 import { Injectable } from '@angular/core';
 import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
-import { CoreFile } from '@services/file';
 import { CoreFileUtils } from '@singletons/file-utils';
-import { CoreLang, CoreLangFormat } from '@services/lang';
+import { CoreLang } from '@services/lang';
 import { CoreWS } from '@services/ws';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { makeSingleton, FileOpener, WebIntent, Translate } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileEntry } from '@services/file-helper';
-import { CoreConstants } from '@/core/constants';
-import { CoreWindow } from '@singletons/window';
-import { CorePlatform } from '@services/platform';
-import { CoreErrorWithOptions } from '@classes/errors/errorwithoptions';
-import { CoreFilepool } from '@services/filepool';
-import { CoreSites } from '@services/sites';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreUrl } from '@singletons/url';
 import { CoreArray } from '@singletons/array';
 import { CoreText } from '@singletons/text';
 import { CoreWait, CoreWaitOptions } from '@singletons/wait';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreInAppBrowser, CoreInAppBrowserOpenOptions } from '@singletons/iab';
 import { CorePromiseUtils, OrderedPromiseData } from '@singletons/promise-utils';
+import { CoreOpener, CoreOpenerOpenFileOptions, CoreOpenerOpenInBrowserOptions } from '@singletons/opener';
 
 export type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -248,30 +239,30 @@ export class CoreUtilsProvider {
     /**
      * Close the InAppBrowser window.
      *
-     * @deprecated since 5.0. Use CoreInAppBrowser.closeInAppBrowser instead.
+     * @deprecated since 5.0. Use CoreOpener.closeInAppBrowser instead.
      */
     closeInAppBrowser(): void {
-        CoreInAppBrowser.closeInAppBrowser();
+        CoreOpener.closeInAppBrowser();
     }
 
     /**
      * Get inapp browser instance (if any).
      *
      * @returns IAB instance, undefined if not open.
-     * @deprecated since 5.0. Use CoreInAppBrowser.getInAppBrowserInstance instead.
+     * @deprecated since 5.0. Use CoreOpener.getInAppBrowserInstance instead.
      */
     getInAppBrowserInstance(): InAppBrowserObject | undefined  {
-        return CoreInAppBrowser.getInAppBrowserInstance();
+        return CoreOpener.getInAppBrowserInstance();
     }
 
     /**
      * Check if inapp browser is open.
      *
      * @returns Whether it's open.
-     * @deprecated since 5.0. Use CoreInAppBrowser.isInAppBrowserOpen instead.
+     * @deprecated since 5.0. Use CoreOpener.isInAppBrowserOpen instead.
      */
     isInAppBrowserOpen(): boolean {
-        return CoreInAppBrowser.isInAppBrowserOpen();
+        return CoreOpener.isInAppBrowserOpen();
     }
 
     /**
@@ -898,129 +889,35 @@ export class CoreUtilsProvider {
      *
      * @param path The local path of the file to be open.
      * @param options Options.
-     * @returns Promise resolved when done.
+     * @deprecated since 5.0. Use CoreOpener.openFile instead.
      */
-    async openFile(path: string, options: CoreUtilsOpenFileOptions = {}): Promise<void> {
-        // Convert the path to a native path if needed.
-        path = CoreFile.unconvertFileSrc(path);
-
-        const extension = CoreMimetypeUtils.getFileExtension(path);
-        const mimetype = extension && CoreMimetypeUtils.getMimeType(extension);
-
-        if (mimetype == 'text/html' && CorePlatform.isAndroid()) {
-            // Open HTML local files in InAppBrowser, in system browser some embedded files aren't loaded.
-            CoreInAppBrowser.open(path);
-
-            return;
-        } else if (extension === 'apk' && CorePlatform.isAndroid()) {
-            const url = await CorePromiseUtils.ignoreErrors(
-                CoreFilepool.getFileUrlByPath(CoreSites.getCurrentSiteId(), CoreFile.removeBasePath(path)),
-            );
-
-            // @todo MOBILE-4167: Handle urls with expired tokens.
-
-            throw new CoreErrorWithOptions(
-                Translate.instant('core.cannotinstallapkinfo'),
-                Translate.instant('core.cannotinstallapk'),
-                url
-                    ? [
-                        {
-                            text: Translate.instant('core.openinbrowser'),
-                            handler: () => this.openInBrowser(url),
-                        },
-                        {
-                            text: Translate.instant('core.cancel'),
-                            role: 'cancel',
-                        },
-                    ]
-                    : undefined,
-            );
-        }
-
-        // Path needs to be decoded, the file won't be opened if the path has %20 instead of spaces and so.
-        try {
-            path = decodeURIComponent(path);
-        } catch {
-            // Error, use the original path.
-        }
-
-        const openFile = async (mimetype?: string) => {
-            if (this.shouldOpenWithDialog(options)) {
-                await FileOpener.showOpenWithDialog(path, mimetype || '');
-            } else {
-                await FileOpener.open(path, mimetype || '');
-            }
-        };
-
-        try {
-            try {
-                await openFile(mimetype);
-            } catch (error) {
-                if (!extension || !error || Number(error.status) !== 9) {
-                    throw error;
-                }
-
-                // Cannot open mimetype. Check if there is a deprecated mimetype for the extension.
-                const deprecatedMimetype = CoreMimetypeUtils.getDeprecatedMimeType(extension);
-                if (!deprecatedMimetype || deprecatedMimetype === mimetype) {
-                    throw error;
-                }
-
-                await openFile(deprecatedMimetype);
-            }
-        } catch (error) {
-            this.logger.error('Error opening file ' + path + ' with mimetype ' + mimetype);
-            this.logger.error('Error: ', JSON.stringify(error));
-
-            if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
-                // Extension not found.
-                throw new Error(Translate.instant('core.erroropenfilenoextension'));
-            }
-
-            throw new Error(Translate.instant('core.erroropenfilenoapp'));
-        }
+    async openFile(path: string, options: CoreOpenerOpenFileOptions = {}): Promise<void> {
+        await CoreOpener.openFile(path, options);
     }
 
     /**
      * Open a URL using InAppBrowser.
-     * Do not use for files, refer to {@link CoreUtils.openFile}.
+     * Do not use for files, refer to {@link CoreOpener.openFile}.
      *
      * @param url The URL to open.
      * @param options Override default options passed to InAppBrowser.
      * @returns The opened window.
      *
-     * @deprecated since 5.0. Use CoreInAppBrowser.openInApp instead.
+     * @deprecated since 5.0. Use CoreOpener.openInApp instead.
      */
-    openInApp(url: string, options?: CoreInAppBrowserOpenOptions): InAppBrowserObject {
-        return CoreInAppBrowser.open(url, options);
+    openInApp(url: string, options?: CoreOpenerOpenFileOptions): InAppBrowserObject {
+        return CoreOpener.openInApp(url, options);
     }
 
     /**
      * Open a URL using a browser.
-     * Do not use for files, refer to {@link CoreUtilsProvider.openFile}.
      *
      * @param url The URL to open.
      * @param options Options.
+     * @deprecated since 5.0. Use CoreOpener.openInBrowser instead.
      */
-    async openInBrowser(url: string, options: CoreUtilsOpenInBrowserOptions = {}): Promise<void> {
-        // eslint-disable-next-line deprecation/deprecation
-        const originaUrl = CoreUrl.unfixPluginfileURL(options.originalUrl ?? options.browserWarningUrl ?? url);
-        if (options.showBrowserWarning || options.showBrowserWarning === undefined) {
-            try {
-                await CoreWindow.confirmOpenBrowserIfNeeded(originaUrl);
-            } catch {
-                return; // Cancelled, stop.
-            }
-        }
-
-        const site = CoreSites.getCurrentSite();
-        CoreAnalytics.logEvent({ type: CoreAnalyticsEventType.OPEN_LINK, link: originaUrl });
-        window.open(
-            site?.containsUrl(url)
-                ? CoreUrl.addParamsToUrl(url, { lang: await CoreLang.getCurrentLanguage(CoreLangFormat.LMS) })
-                : url,
-            '_system',
-        );
+    async openInBrowser(url: string, options: CoreOpenerOpenInBrowserOptions = {}): Promise<void> {
+        await CoreOpener.openInBrowser(url, options);
     }
 
     /**
@@ -1028,43 +925,10 @@ export class CoreUtilsProvider {
      * Specially useful for audio and video since they can be streamed.
      *
      * @param url The URL of the file.
-     * @returns Promise resolved when opened.
+     * @deprecated since 5.0. Use CoreOpener.openOnlineFile instead.
      */
     async openOnlineFile(url: string): Promise<void> {
-        if (CorePlatform.isAndroid()) {
-            // In Android we need the mimetype to open it.
-            const mimetype = await CorePromiseUtils.ignoreErrors(this.getMimeTypeFromUrl(url));
-
-            if (!mimetype) {
-                // Couldn't retrieve mimetype. Return error.
-                throw new Error(Translate.instant('core.erroropenfilenoextension'));
-            }
-
-            const options = {
-                action: WebIntent.ACTION_VIEW,
-                url,
-                type: mimetype,
-            };
-
-            try {
-                await WebIntent.startActivity(options);
-
-                CoreAnalytics.logEvent({
-                    type: CoreAnalyticsEventType.OPEN_LINK,
-                    link: CoreUrl.unfixPluginfileURL(url),
-                });
-
-                return;
-            } catch (error) {
-                this.logger.error('Error opening online file ' + url + ' with mimetype ' + mimetype);
-                this.logger.error('Error: ', JSON.stringify(error));
-
-                throw new Error(Translate.instant('core.erroropenfilenoapp'));
-            }
-        }
-
-        // In the rest of platforms we need to open them in InAppBrowser.
-        CoreInAppBrowser.open(url);
+        await CoreOpener.openOnlineFile(url);
     }
 
     /**
@@ -1558,11 +1422,10 @@ export class CoreUtilsProvider {
      *
      * @param options Options.
      * @returns Boolean.
+     * @deprecated since 5.0. Use CoreOpener.shouldOpenWithDialog instead.
      */
-    shouldOpenWithDialog(options: CoreUtilsOpenFileOptions = {}): boolean {
-        const openFileAction = options.iOSOpenFileAction ?? CoreConstants.CONFIG.iOSDefaultOpenFileAction;
-
-        return CorePlatform.isIOS() && openFileAction == OpenFileAction.OPEN_WITH;
+    shouldOpenWithDialog(options: CoreOpenerOpenFileOptions = {}): boolean {
+        return CoreOpener.shouldOpenWithDialog(options);
     }
 
 }
@@ -1586,35 +1449,8 @@ export type CoreMenuItem<T = number> = {
 };
 
 /**
- * Options for opening a file.
- */
-export type CoreUtilsOpenFileOptions = {
-    iOSOpenFileAction?: OpenFileAction; // Action to do when opening a file.
-};
-
-/**
- * Options for opening in browser.
- */
-export type CoreUtilsOpenInBrowserOptions = {
-    showBrowserWarning?: boolean; // Whether to display a warning before opening in browser. Defaults to true.
-    originalUrl?: string; // Original URL to open (in case the URL was treated, e.g. to add a token or an auto-login).
-    /**
-     * @deprecated since 4.3. Use originalUrl instead.
-     */
-    browserWarningUrl?: string;
-};
-
-/**
  * Options for waiting.
  *
  * @deprecated since 4.5. Use CoreWaitOptions instead.
  */
 export type CoreUtilsWaitOptions = CoreWaitOptions;
-
-/**
- * Possible default picker actions.
- */
-export enum OpenFileAction {
-    OPEN = 'open',
-    OPEN_WITH = 'open-with',
-}

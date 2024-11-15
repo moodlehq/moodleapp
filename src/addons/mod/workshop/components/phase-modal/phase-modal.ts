@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreOpener } from '@singletons/opener';
 import { ModalController } from '@singletons';
 import { AddonModWorkshopPhaseData, AddonModWorkshopPhaseTaskData } from '../../services/workshop';
 import { AddonModWorkshopPhase } from '../../constants';
@@ -69,7 +69,7 @@ export class AddonModWorkshopPhaseInfoModalComponent implements OnInit {
             // This will close the modal and go to the submit.
             ModalController.dismiss(true);
         } else if (task.link) {
-            CoreUtils.openInBrowser(task.link);
+            CoreOpener.openInBrowser(task.link);
         }
     }
 

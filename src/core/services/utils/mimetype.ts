@@ -20,7 +20,7 @@ import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreText } from '@singletons/text';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { CoreWSFile } from '@services/ws';
+import { CoreWS, CoreWSFile } from '@services/ws';
 
 import extToMime from '@/assets/exttomime.json';
 import mimeToExt from '@/assets/mimetoext.json';
@@ -536,6 +536,30 @@ export class CoreMimetypeUtilsProvider {
         }
 
         return this.getFileIconForType(icon);
+    }
+
+    /**
+     * Get the mimetype of a file given its URL. It'll try to guess it using the URL, if that fails then it'll
+     * perform a HEAD request to get it. It's done in this order because pluginfile.php can return wrong mimetypes.
+     * This function is in here instead of MimetypeUtils to prevent circular dependencies.
+     *
+     * @param url The URL of the file.
+     * @returns Promise resolved with the mimetype.
+     */
+    async getMimeTypeFromUrl(url: string): Promise<string> {
+        // First check if it can be guessed from the URL.
+        const extension = CoreMimetypeUtils.guessExtensionFromUrl(url);
+        const mimetype = extension && CoreMimetypeUtils.getMimeType(extension);
+
+        // Ignore PHP extension for now, it could be serving a file.
+        if (mimetype && extension !== 'php') {
+            return mimetype;
+        }
+
+        // Can't be guessed, get the remote mimetype.
+        const remoteMimetype = await CoreWS.getRemoteFileMimeType(url);
+
+        return remoteMimetype || mimetype || '';
     }
 
     /**

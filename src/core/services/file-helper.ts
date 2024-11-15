@@ -23,7 +23,7 @@ import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
+import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@singletons/opener';
 import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
@@ -69,7 +69,7 @@ export class CoreFileHelperProvider {
         state?: DownloadStatus,
         onProgress?: CoreFileHelperOnProgress,
         siteId?: string,
-        options: CoreUtilsOpenFileOptions = {},
+        options: CoreOpenerOpenFileOptions = {},
     ): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -102,7 +102,7 @@ export class CoreFileHelperProvider {
             url = url + '#moodlemobile-embedded';
 
             try {
-                await CoreUtils.openOnlineFile(url);
+                await CoreOpener.openOnlineFile(url);
 
                 return;
             } catch (error) {
@@ -130,7 +130,7 @@ export class CoreFileHelperProvider {
             }
         }
 
-        return CoreUtils.openFile(url, options);
+        return CoreOpener.openFile(url, options);
     }
 
     /**
@@ -156,7 +156,7 @@ export class CoreFileHelperProvider {
         state?: DownloadStatus,
         onProgress?: CoreFileHelperOnProgress,
         siteId?: string,
-        options: CoreUtilsOpenFileOptions = {},
+        options: CoreOpenerOpenFileOptions = {},
     ): Promise<string> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 

@@ -22,7 +22,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreOpener } from '@singletons/opener';
 import { CorePath } from '@singletons/path';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
@@ -222,7 +222,7 @@ export class AddonMessageOutputAirnotifierProvider {
                             );
 
                             // Don't try auto-login, admins cannot use it.
-                            CoreUtils.openInBrowser(url, {
+                            CoreOpener.openInBrowser(url, {
                                 showBrowserWarning: false,
                             });
                         },

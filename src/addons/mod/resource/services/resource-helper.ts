@@ -24,7 +24,6 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreUtilsOpenFileOptions } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CorePath } from '@singletons/path';
 import { AddonModResource, AddonModResourceCustomData } from './resource';
@@ -33,6 +32,7 @@ import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { ADDON_MOD_RESOURCE_COMPONENT } from '../constants';
 import { CoreLoadings } from '@services/loadings';
+import { CoreOpenerOpenFileOptions } from '@singletons/opener';
 
 /**
  * Service that provides helper functions for resources.
@@ -190,7 +190,7 @@ export class AddonModResourceHelperProvider {
      * @param options Options to open the file.
      * @returns Resolved when done.
      */
-    async openModuleFile(module: CoreCourseModuleData, courseId: number, options: CoreUtilsOpenFileOptions = {}): Promise<void> {
+    async openModuleFile(module: CoreCourseModuleData, courseId: number, options: CoreOpenerOpenFileOptions = {}): Promise<void> {
         const modal = await CoreLoadings.show();
 
         try {

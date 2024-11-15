@@ -19,7 +19,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreOpener } from '@singletons/opener';
 import { CoreConstants } from '@/core/constants';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
@@ -28,7 +28,6 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreDom } from '@singletons/dom';
 import { toBoolean } from '../transforms/boolean';
 import { CoreLoadings } from '@services/loadings';
-import { CoreInAppBrowser } from '@singletons/iab';
 
 /**
  * Directive to open a link in external browser or in the app.
@@ -164,7 +163,7 @@ export class CoreLinkDirective implements OnInit {
         }
 
         try {
-            await CoreUtils.openFile(path);
+            await CoreOpener.openFile(path);
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
         }
@@ -187,9 +186,9 @@ export class CoreLinkDirective implements OnInit {
         if (!CoreSites.isLoggedIn()) {
             // Not logged in, cannot auto-login.
             if (openInApp) {
-                CoreInAppBrowser.open(href);
+                CoreOpener.openInApp(href);
             } else {
-                CoreUtils.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
+                CoreOpener.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
             }
 
             return;
@@ -228,9 +227,9 @@ export class CoreLinkDirective implements OnInit {
             }
         } else {
             if (openInApp) {
-                CoreInAppBrowser.open(href);
+                CoreOpener.openInApp(href);
             } else {
-                CoreUtils.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
+                CoreOpener.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
             }
         }
     }

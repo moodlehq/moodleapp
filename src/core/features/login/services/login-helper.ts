@@ -62,8 +62,8 @@ import { CoreQRScan } from '@services/qrscan';
 import { CoreLoadings } from '@services/loadings';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSSO } from '@singletons/sso';
-import { CoreInAppBrowser } from '@singletons/iab';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener } from '@singletons/opener';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -174,7 +174,7 @@ export class CoreLoginHelperProvider {
     async forgottenPasswordClicked(siteUrl: string, username: string, siteConfig?: CoreSitePublicConfigResponse): Promise<void> {
         if (siteConfig && siteConfig.forgottenpasswordurl) {
             // URL set, open it.
-            CoreInAppBrowser.open(siteConfig.forgottenpasswordurl);
+            CoreOpener.openInApp(siteConfig.forgottenpasswordurl);
 
             return;
         }
@@ -628,7 +628,7 @@ export class CoreLoginHelperProvider {
             });
 
             // Always open it in browser because the user might have the session stored in there.
-            CoreUtils.openInBrowser(loginUrl, { showBrowserWarning: false });
+            CoreOpener.openInBrowser(loginUrl, { showBrowserWarning: false });
             CoreApp.closeApp();
 
             return true;
@@ -665,12 +665,12 @@ export class CoreLoginHelperProvider {
             this.logger.debug('openBrowserForSSOLogin loginUrl:', loginUrl);
 
             if (this.isSSOEmbeddedBrowser(typeOfLogin)) {
-                CoreInAppBrowser.open(loginUrl, {
+                CoreOpener.openInApp(loginUrl, {
                     clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
                     closebuttoncaption: Translate.instant('core.login.cancel'),
                 });
             } else {
-                CoreUtils.openInBrowser(loginUrl, { showBrowserWarning: false });
+                CoreOpener.openInBrowser(loginUrl, { showBrowserWarning: false });
                 CoreApp.closeApp();
             }
         } catch (error) {
@@ -692,7 +692,7 @@ export class CoreLoginHelperProvider {
 
         await alert.onDidDismiss();
 
-        CoreInAppBrowser.open(siteUrl + '/login/change_password.php');
+        CoreOpener.openInApp(siteUrl + '/login/change_password.php');
     }
 
     /**
@@ -701,7 +701,7 @@ export class CoreLoginHelperProvider {
      * @param siteUrl URL of the site.
      */
     openForgottenPassword(siteUrl: string): void {
-        CoreInAppBrowser.open(siteUrl + '/login/forgot_password.php');
+        CoreOpener.openInApp(siteUrl + '/login/forgot_password.php');
     }
 
     /**
@@ -977,7 +977,7 @@ export class CoreLoginHelperProvider {
     async openInBrowserFallback(siteUrl: string, debug?: CoreSiteErrorDebug): Promise<void> {
         CoreEvents.trigger(APP_UNSUPPORTED_CHURN, { siteUrl, debug });
 
-        await CoreUtils.openInBrowser(siteUrl, { showBrowserWarning: false });
+        await CoreOpener.openInBrowser(siteUrl, { showBrowserWarning: false });
     }
 
     /**

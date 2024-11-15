@@ -27,7 +27,7 @@ import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreErrorObject } from '@services/error-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreOpener } from '@singletons/opener';
 import { Translate } from '@singletons';
 import { CoreTime } from '@singletons/time';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -150,7 +150,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
                         handler: async () => {
                             const site = CoreSites.getRequiredCurrentSite();
                             const href = `${site.getURL()}/reportbuilder/view.php?id=${this.reportId}`;
-                            await CoreUtils.openInBrowser(href, { showBrowserWarning: false });
+                            await CoreOpener.openInBrowser(href, { showBrowserWarning: false });
                             await CoreNavigator.back();
                         },
                     },
