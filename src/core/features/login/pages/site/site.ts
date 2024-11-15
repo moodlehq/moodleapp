@@ -25,7 +25,7 @@ import {
     CoreLoginSiteFinderSettings,
     CoreLoginSiteSelectorListMethod,
 } from '@features/login/services/login-helper';
-import { CoreError } from '@classes/errors/error';
+import { CoreError, CoreErrorDebug } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
@@ -34,7 +34,7 @@ import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreForms } from '@singletons/form';
 import { AlertButton } from '@ionic/core';
-import { CoreSiteError, CoreSiteErrorDebug } from '@classes/errors/siteerror';
+import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreErrorAccordion } from '@services/error-accordion';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
@@ -419,7 +419,7 @@ export class CoreLoginSitePage implements OnInit {
      */
     protected async showLoginIssue(url: string, error: CoreError): Promise<void> {
         let errorMessage = CoreDomUtils.getErrorMessage(error);
-        let debug: CoreSiteErrorDebug | undefined;
+        let debug: CoreErrorDebug | undefined;
         let errorTitle: string | undefined;
         let site: CoreUnauthenticatedSite | undefined;
         let supportConfig: CoreUserSupportConfig | undefined;
@@ -480,7 +480,7 @@ export class CoreLoginSitePage implements OnInit {
             const containerElement = alertElement.querySelector('.core-error-accordion-container');
 
             if (containerElement) {
-                await CoreErrorAccordion.render(containerElement, debug.code, debug.details);
+                await CoreErrorAccordion.render(containerElement, debug.details, debug.code);
             }
         }
     }

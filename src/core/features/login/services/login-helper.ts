@@ -26,7 +26,7 @@ import { CoreText } from '@singletons/text';
 import { CoreObject } from '@singletons/object';
 import { CoreConstants } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
-import { CoreError } from '@classes/errors/error';
+import { CoreError, CoreErrorDebug } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { DomSanitizer, makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
@@ -57,7 +57,7 @@ import {
     IDENTITY_PROVIDER_FEATURE_NAME_PREFIX,
 } from '../constants';
 import { LazyRoutesModule } from '@/app/app-routing.module';
-import { CoreSiteError, CoreSiteErrorDebug } from '@classes/errors/siteerror';
+import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreLoadings } from '@services/loadings';
 import { CoreErrorHelper } from '@services/error-helper';
@@ -949,7 +949,7 @@ export class CoreLoginHelperProvider {
      * @param site Site instance.
      * @param debug Error debug information.
      */
-    async showAppUnsupportedModal(siteUrl: string, site?: CoreUnauthenticatedSite, debug?: CoreSiteErrorDebug): Promise<void> {
+    async showAppUnsupportedModal(siteUrl: string, site?: CoreUnauthenticatedSite, debug?: CoreErrorDebug): Promise<void> {
         const siteName = await site?.getSiteName() ?? siteUrl;
 
         await CoreDomUtils.showAlertWithOptions({
@@ -974,7 +974,7 @@ export class CoreLoginHelperProvider {
      * @param siteUrl Site url.
      * @param debug Error debug information.
      */
-    async openInBrowserFallback(siteUrl: string, debug?: CoreSiteErrorDebug): Promise<void> {
+    async openInBrowserFallback(siteUrl: string, debug?: CoreErrorDebug): Promise<void> {
         CoreEvents.trigger(APP_UNSUPPORTED_CHURN, { siteUrl, debug });
 
         await CoreOpener.openInBrowser(siteUrl, { showBrowserWarning: false });
@@ -1677,7 +1677,7 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [ALWAYS_SHOW_LOGIN_FORM_CHANGED]: { value: number };
-        [APP_UNSUPPORTED_CHURN]: { siteUrl: string; debug?: CoreSiteErrorDebug };
+        [APP_UNSUPPORTED_CHURN]: { siteUrl: string; debug?: CoreErrorDebug };
     }
 
 }

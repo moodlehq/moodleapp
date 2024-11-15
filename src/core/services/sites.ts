@@ -27,7 +27,7 @@ import {
     CoreSiteConfig,
 } from '@classes/sites/site';
 import { SQLiteDB, SQLiteDBRecordValues, SQLiteDBTableSchema } from '@classes/sqlitedb';
-import { CoreError } from '@classes/errors/error';
+import { CoreError, CoreErrorDebug } from '@classes/errors/error';
 import { CoreLoginError, CoreLoginErrorOptions } from '@classes/errors/loginerror';
 import { makeSingleton, Translate, Http } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
@@ -64,7 +64,6 @@ import { CoreSiteInfo, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { firstValueFrom } from 'rxjs';
 import { CoreHTMLClasses } from '@singletons/html-classes';
-import { CoreSiteErrorDebug } from '@classes/errors/siteerror';
 import { CoreErrorHelper } from './error-helper';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreAppDB } from './app-db';
@@ -459,7 +458,7 @@ export class CoreSitesProvider {
             critical: true,
             title: Translate.instant('core.cannotconnect'),
             message: Translate.instant('core.siteunavailablehelp', { site: siteUrl }),
-            supportConfig: error.supportConfig,
+            supportConfig: 'supportConfig' in error ? error.supportConfig : undefined,
             debug: error.debug,
         };
 
@@ -688,7 +687,7 @@ export class CoreSitesProvider {
      * @returns A promise rejected with the error info.
      */
     protected async treatInvalidAppVersion(result: number, siteId?: string): Promise<never> {
-        let debug: CoreSiteErrorDebug | undefined;
+        let debug: CoreErrorDebug | undefined;
         let errorKey: string | undefined;
         let translateParams = {};
 
