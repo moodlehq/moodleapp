@@ -30,6 +30,7 @@ import { CoreErrorHelper } from '@services/error-helper';
 import { CorePromiseUtils, OrderedPromiseData } from '@singletons/promise-utils';
 import { CoreOpener, CoreOpenerOpenFileOptions, CoreOpenerOpenInBrowserOptions } from '@singletons/opener';
 import { CoreCountries, CoreCountry } from '@singletons/countries';
+import { CoreObject } from '@singletons/object';
 
 export type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -89,19 +90,14 @@ export class CoreUtilsProvider {
      * @param propertyName The name of the property to use as the key. If not provided, the whole item will be used.
      * @param result Object where to put the properties. If not defined, a new object will be created.
      * @returns The object.
+     * @deprecated since 5.0. Use CoreArray.toObject instead.
      */
     arrayToObject<T>(
         array: T[] = [],
         propertyName?: string,
         result: Record<string, T> = {},
     ): Record<string, T> {
-        for (const entry of array) {
-            const key = propertyName ? entry[propertyName] : entry;
-
-            result[key] = entry;
-        }
-
-        return result;
+        return CoreArray.toObject(array, propertyName, result);
     }
 
     /**
@@ -124,22 +120,14 @@ export class CoreUtilsProvider {
      * @param propertyName The name of the property to use as the key. If not provided, the whole item will be used.
      * @param result Object where to put the properties. If not defined, a new object will be created.
      * @returns The object.
+     * @deprecated since 5.0. Use CoreArray.toObjectMultiple instead.
      */
     arrayToObjectMultiple<T>(
         array: T[] = [],
         propertyName?: string,
         result: Record<string, T[]> = {},
     ): Record<string, T[]> {
-        for (const entry of array) {
-            const key = propertyName ? entry[propertyName] : entry;
-            if (result[key] === undefined) {
-                result[key] = [];
-            }
-
-            result[key].push(entry);
-        }
-
-        return result;
+        return CoreArray.toObjectMultiple(array, propertyName, result);
     }
 
     /**
@@ -153,6 +141,7 @@ export class CoreUtilsProvider {
      * @param level Current deep level (when comparing objects).
      * @param undefinedIsNull True if undefined is equal to null. Defaults to true.
      * @returns Whether both items are equal.
+     * @deprecated since 5.0. Use CoreObject.basicLeftCompare instead.
      */
     basicLeftCompare(
         itemA: any, // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -161,43 +150,7 @@ export class CoreUtilsProvider {
         level: number = 0,
         undefinedIsNull: boolean = true,
     ): boolean {
-        if (typeof itemA == 'function' || typeof itemB == 'function') {
-            return true; // Don't compare functions.
-        } else if (typeof itemA == 'object' && typeof itemB == 'object') {
-            if (level >= maxLevels) {
-                return true; // Max deep reached.
-            }
-
-            let equal = true;
-            for (const name in itemA) {
-                const value = itemA[name];
-                if (name == '$$hashKey') {
-                    // Ignore $$hashKey property since it's a "calculated" property.
-                    continue;
-                }
-
-                if (!this.basicLeftCompare(value, itemB[name], maxLevels, level + 1)) {
-                    equal = false;
-                }
-            }
-
-            return equal;
-        } else {
-            if (undefinedIsNull && (
-                (itemA === undefined && itemB === null) || (itemA === null && itemB === undefined))) {
-                return true;
-            }
-
-            // We'll treat "2" and 2 as the same value.
-            const floatA = parseFloat(itemA);
-            const floatB = parseFloat(itemB);
-
-            if (!isNaN(floatA) && !isNaN(floatB)) {
-                return floatA == floatB;
-            }
-
-            return itemA === itemB;
-        }
+        return CoreObject.basicLeftCompare(itemA, itemB, maxLevels, level, undefinedIsNull);
     }
 
     /**
@@ -291,7 +244,7 @@ export class CoreUtilsProvider {
             }
 
             return newArray;
-        } else if (this.isObject(source)) {
+        } else if (CoreObject.isObject(source)) {
             // Check if the object shouldn't be copied.
             if (source.toString && this.DONT_CLONE.indexOf(source.toString()) != -1) {
                 // Object shouldn't be copied, return it as it is.
@@ -383,32 +336,10 @@ export class CoreUtilsProvider {
      * @param obj Object to flatten.
      * @param useDotNotation Whether to use dot notation '.' or square brackets '['.
      * @returns Flattened object.
+     * @deprecated since 5.0. Use CoreObject.flatten instead.
      */
     flattenObject(obj: Record<string, unknown>, useDotNotation?: boolean): Record<string, unknown> {
-        const toReturn = {};
-
-        for (const name in obj) {
-            if (!Object.prototype.hasOwnProperty.call(obj, name)) {
-                continue;
-            }
-
-            const value = obj[name];
-            if (typeof value == 'object' && !Array.isArray(value)) {
-                const flatObject = this.flattenObject(value as Record<string, unknown>);
-                for (const subName in flatObject) {
-                    if (!Object.prototype.hasOwnProperty.call(flatObject, subName)) {
-                        continue;
-                    }
-
-                    const newName = useDotNotation ? name + '.' + subName : name + '[' + subName + ']';
-                    toReturn[newName] = flatObject[subName];
-                }
-            } else {
-                toReturn[name] = value;
-            }
-        }
-
-        return toReturn;
+        return CoreObject.flatten(obj, useDotNotation);
     }
 
     /**
@@ -650,9 +581,10 @@ export class CoreUtilsProvider {
      *
      * @param object Variable.
      * @returns Type guard indicating if this is an object.
+     * @deprecated since 5.0. Use CoreObject.isObject instead.
      */
     isObject(object: unknown): object is Record<string, unknown> {
-        return typeof object === 'object' && object !== null;
+        return CoreObject.isObject(object);
     }
 
     /**
@@ -672,22 +604,10 @@ export class CoreUtilsProvider {
      * @param array Array to search.
      * @param regex RegExp to apply to each string.
      * @returns Index of the first string that matches the RegExp. -1 if not found.
+     * @deprecated since 4.4. Use CoreArray.indexOfRegexp instead.
      */
     indexOfRegexp(array: string[], regex: RegExp): number {
-        if (!array || !array.length) {
-            return -1;
-        }
-
-        for (let i = 0; i < array.length; i++) {
-            const entry = array[i];
-            const matches = entry.match(regex);
-
-            if (matches && matches.length) {
-                return i;
-            }
-        }
-
-        return -1;
+        return CoreArray.indexOfRegexp(array, regex);
     }
 
     /**
@@ -787,9 +707,10 @@ export class CoreUtilsProvider {
      * @param array2 The second array.
      * @param [key] Key of the property that must be unique. If not specified, the whole entry.
      * @returns Merged array.
+     * @deprecated since 5.0. Use CoreArray.mergeWithoutDuplicates instead.
      */
     mergeArraysWithoutDuplicates<T>(array1: T[], array2: T[], key?: string): T[] {
-        return CoreArray.unique(array1.concat(array2), key) as T[];
+        return CoreArray.mergeWithoutDuplicates(array1, array2, key);
     }
 
     /**
@@ -855,9 +776,10 @@ export class CoreUtilsProvider {
      *
      * @param obj Object to convert.
      * @returns Array with the values of the object but losing the keys.
+     * @deprecated since 5.0. Use CoreObject.toArray instead.
      */
     objectToArray<T>(obj: Record<string, T>): T[] {
-        return Object.keys(obj).map((key) => obj[key]);
+        return CoreObject.toArray(obj);
     }
 
     /**
@@ -871,6 +793,7 @@ export class CoreUtilsProvider {
      * @param sortByKey True to sort keys alphabetically, false otherwise. Has priority over sortByValue.
      * @param sortByValue True to sort values alphabetically, false otherwise.
      * @returns Array of objects with the name & value of each property.
+     * @deprecated since 5.0. Use CoreObject.toArrayOfObjects instead.
      */
     objectToArrayOfObjects<
         A extends Record<string,unknown> = Record<string, unknown>,
@@ -882,53 +805,7 @@ export class CoreUtilsProvider {
         sortByKey?: boolean,
         sortByValue?: boolean,
     ): A[] {
-        // Get the entries from an object or primitive value.
-        const getEntries = (elKey: string, value: unknown): Record<string, unknown>[] | unknown => {
-            if (value === undefined || value == null) {
-                // Filter undefined and null values.
-                return;
-            } else if (this.isObject(value)) {
-                // It's an object, return at least an entry for each property.
-                const keys = Object.keys(value);
-                let entries: unknown[] = [];
-
-                keys.forEach((key) => {
-                    const newElKey = elKey ? elKey + '[' + key + ']' : key;
-                    const subEntries = getEntries(newElKey, value[key]);
-
-                    if (subEntries) {
-                        entries = entries.concat(subEntries);
-                    }
-                });
-
-                return entries;
-            } else {
-                // Not an object, return a single entry.
-                const entry = {};
-                entry[keyName] = elKey;
-                entry[valueName] = value;
-
-                return entry;
-            }
-        };
-
-        if (!obj) {
-            return [];
-        }
-
-        // "obj" will always be an object, so "entries" will always be an array.
-        const entries = getEntries('', obj) as A[];
-        if (sortByKey || sortByValue) {
-            return entries.sort((a, b) => {
-                if (sortByKey) {
-                    return (a[keyName] as number) >= (b[keyName] as number) ? 1 : -1;
-                } else {
-                    return (a[valueName] as number) >= (b[valueName] as number) ? 1 : -1;
-                }
-            });
-        }
-
-        return entries;
+        return CoreObject.toArrayOfObjects(obj, keyName, valueName, sortByKey, sortByValue);
     }
 
     /**
@@ -940,6 +817,7 @@ export class CoreUtilsProvider {
      * @param valueName Name of the properties where the values are stored.
      * @param keyPrefix Key prefix if neededs to delete it.
      * @returns Object.
+     * @deprecated since 5.0. Use CoreObject.toKeyValueMap instead.
      */
     objectToKeyValueMap<T = unknown>(
         objects: Record<string, unknown>[],
@@ -947,15 +825,7 @@ export class CoreUtilsProvider {
         valueName: string,
         keyPrefix?: string,
     ): {[name: string]: T} {
-        const prefixSubstr = keyPrefix ? keyPrefix.length : 0;
-        const mapped = {};
-        objects.forEach((item) => {
-            const keyValue = item[keyName] as string;
-            const key = prefixSubstr > 0 ? keyValue.substring(prefixSubstr) : keyValue;
-            mapped[key] = item[valueName];
-        });
-
-        return mapped;
+        return CoreObject.toKeyValueMap(objects, keyName, valueName, keyPrefix);
     }
 
     /**
@@ -964,29 +834,10 @@ export class CoreUtilsProvider {
      * @param object Object to convert.
      * @param removeEmpty Whether to remove params whose value is null/undefined.
      * @returns GET params.
+     * @deprecated since 5.0. Use CoreObject.toGetParams instead.
      */
     objectToGetParams(object: Record<string, unknown>, removeEmpty: boolean = true): string {
-        // First of all, flatten the object so all properties are in the first level.
-        const flattened = this.flattenObject(object);
-        let result = '';
-        let joinChar = '';
-
-        for (const name in flattened) {
-            let value = flattened[name];
-
-            if (removeEmpty && (value === null || value === undefined)) {
-                continue;
-            }
-
-            if (typeof value == 'boolean') {
-                value = value ? 1 : 0;
-            }
-
-            result += joinChar + name + '=' + value;
-            joinChar = '&';
-        }
-
-        return result;
+        return CoreObject.toGetParams(object, removeEmpty);
     }
 
     /**
@@ -995,6 +846,7 @@ export class CoreUtilsProvider {
      * @param data Object.
      * @param prefix Prefix to add.
      * @returns Prefixed object.
+     * @deprecated since 5.0. Not used anymore
      */
     prefixKeys(data: Record<string, unknown>, prefix: string): Record<string, unknown> {
         const newObj = {};
@@ -1012,9 +864,10 @@ export class CoreUtilsProvider {
      *
      * @param enumeration Enumeration object.
      * @returns Keys of the enumeration.
+     * @deprecated since 5.0. Use CoreObject.enumKeys instead.
      */
     enumKeys<O extends object, K extends keyof O = keyof O>(enumeration: O): K[] {
-        return Object.keys(enumeration).filter(k => Number.isNaN(+k)) as K[];
+        return CoreObject.enumKeys(enumeration);
     }
 
     /**
@@ -1048,23 +901,14 @@ export class CoreUtilsProvider {
      * @param obj2 The second object or array.
      * @param key Key to check.
      * @returns Whether the two objects/arrays have the same value (or lack of one) for a given key.
+     * @deprecated since 5.0. Use CoreObject.sameAtKeyMissingIsBlank instead.
      */
     sameAtKeyMissingIsBlank(
         obj1: Record<string, unknown> | unknown[],
         obj2: Record<string, unknown> | unknown[],
         key: string,
     ): boolean {
-        let value1 = obj1[key] !== undefined ? obj1[key] : '';
-        let value2 = obj2[key] !== undefined ? obj2[key] : '';
-
-        if (typeof value1 == 'number' || typeof value1 == 'boolean') {
-            value1 = '' + value1;
-        }
-        if (typeof value2 == 'number' || typeof value2 == 'boolean') {
-            value2 = '' + value2;
-        }
-
-        return value1 === value2;
+        return CoreObject.sameAtKeyMissingIsBlank(obj1, obj2, key);
     }
 
     /**
@@ -1073,9 +917,11 @@ export class CoreUtilsProvider {
      *
      * @param obj Object to stringify.
      * @returns Stringified object.
+     * @deprecated since 5.0. Use CoreObject.sortAndStringify instead.
      */
     sortAndStringify(obj: Record<string, unknown>): string {
-        return JSON.stringify(this.sortProperties(obj));
+        return CoreObject.sortAndStringify(obj);
+
     }
 
     /**
@@ -1083,19 +929,10 @@ export class CoreUtilsProvider {
      *
      * @param obj The object to sort. If it isn't an object, the original value will be returned.
      * @returns Sorted object.
+     * @deprecated since 5.0. Use CoreObject.sortProperties instead.
      */
     sortProperties<T>(obj: T): T {
-        if (obj != null && typeof obj == 'object' && !Array.isArray(obj)) {
-            // It's an object, sort it.
-            return Object.keys(obj).sort().reduce((accumulator, key) => {
-                // Always call sort with the value. If it isn't an object, the original value will be returned.
-                accumulator[key] = this.sortProperties(obj[key]);
-
-                return accumulator;
-            }, {} as T);
-        } else {
-            return obj;
-        }
+        return CoreObject.sortProperties(obj);
     }
 
     /**
@@ -1103,16 +940,10 @@ export class CoreUtilsProvider {
      *
      * @param obj The object to sort. If it isn't an object, the original value will be returned.
      * @returns Sorted object.
+     * @deprecated since 5.0. Use CoreObject.sortValues instead.
      */
     sortValues<T>(obj: T): T {
-        if (typeof obj == 'object' && !Array.isArray(obj)) {
-            // It's an object, sort it. Convert it to an array to be able to sort it and then convert it back to object.
-            const array = this.objectToArrayOfObjects(obj as Record<string, unknown>, 'name', 'value', false, true);
-
-            return this.objectToKeyValueMap(array, 'name', 'value') as unknown as T;
-        } else {
-            return obj;
-        }
+        return CoreObject.sortValues(obj);
     }
 
     /**

@@ -26,7 +26,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     AddonModData,
@@ -53,6 +53,7 @@ import {
 } from '../../constants';
 import { CoreModals } from '@services/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreObject } from '@singletons/object';
 
 const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 
@@ -269,8 +270,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         const fields = await AddonModData.getFields(this.database.id, { cmId: this.module.id });
         this.search.advanced = [];
 
-        this.fields = CoreUtils.arrayToObject(fields, 'id');
-        this.fieldsArray = CoreUtils.objectToArray(this.fields);
+        this.fields = CoreArray.toObject(fields, 'id');
+        this.fieldsArray = CoreObject.toArray(this.fields);
         if (this.fieldsArray.length == 0) {
             canSearch = false;
             canAdd = false;

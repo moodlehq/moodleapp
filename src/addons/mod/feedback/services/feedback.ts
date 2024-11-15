@@ -19,7 +19,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile, CoreWSExternalWarning, CoreWSStoredFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModFeedbackOffline } from './feedback-offline';
@@ -170,7 +170,7 @@ export class AddonModFeedbackProvider {
 
         // Merge all values into one array.
         const offlineValuesArray = offlineResponses.reduce((array, entry) => {
-            const responses = <OfflineResponsesArray> CoreUtils.objectToArrayOfObjects(entry.responses, 'id', 'value');
+            const responses = <OfflineResponsesArray> CoreObject.toArrayOfObjects(entry.responses, 'id', 'value');
 
             return array.concat(responses);
         }, <OfflineResponsesArray> []).map((valueEntry) => {
@@ -1228,7 +1228,7 @@ export class AddonModFeedbackProvider {
         const params: AddonModFeedbackProcessPageWSParams = {
             feedbackid: feedbackId,
             page: page,
-            responses: CoreUtils.objectToArrayOfObjects(responses, 'name', 'value'),
+            responses: CoreObject.toArrayOfObjects(responses, 'name', 'value'),
             goprevious: goPrevious,
         };
 

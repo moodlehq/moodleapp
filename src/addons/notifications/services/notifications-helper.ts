@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { makeSingleton } from '@singletons';
 import { AddonMessageOutputDelegate } from '@addons/messageoutput/services/messageoutput-delegate';
 import {
@@ -53,7 +53,7 @@ export class AddonNotificationsHelperProvider {
 
         formattedPreferences.components.forEach((component) => {
             component.notifications.forEach((notification) => {
-                notification.processorsByName = CoreUtils.arrayToObject(notification.processors, 'name');
+                notification.processorsByName = CoreArray.toObject(notification.processors, 'name');
             });
         });
 

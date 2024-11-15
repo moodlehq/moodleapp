@@ -17,7 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -133,8 +133,8 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
-        return CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') &&
-            CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'unit');
+        return CoreObject.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') &&
+            CoreObject.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'unit');
     }
 
     /**

@@ -18,7 +18,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { makeSingleton } from '@singletons';
 import { ACTIVITY_LOG_TABLE, CoreCourseActivityLogDBRecord } from './database/log';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
@@ -84,7 +84,7 @@ export class CoreCourseLogHelperProvider {
 
         const conditions: Partial<CoreCourseActivityLogDBRecord> = {
             ws,
-            data: CoreUtils.sortAndStringify(data),
+            data: CoreObject.sortAndStringify(data),
         };
 
         await site.getDb().deleteRecords(ACTIVITY_LOG_TABLE, conditions);
@@ -264,7 +264,7 @@ export class CoreCourseLogHelperProvider {
             component,
             componentid: componentId,
             ws,
-            data: CoreUtils.sortAndStringify(data),
+            data: CoreObject.sortAndStringify(data),
             time: CoreTimeUtils.timestamp(),
         };
 

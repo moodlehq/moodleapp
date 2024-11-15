@@ -22,7 +22,7 @@ import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonBlogOffline, AddonBlogOfflineEntry } from './blog-offline';
@@ -63,7 +63,7 @@ export class AddonBlogProvider {
      * @returns Cache key.
      */
     getEntriesCacheKey(filter: AddonBlogFilter = {}): string {
-        return ROOT_CACHE_KEY + CoreUtils.sortAndStringify(filter);
+        return ROOT_CACHE_KEY + CoreObject.sortAndStringify(filter);
     }
 
     /**
@@ -77,7 +77,7 @@ export class AddonBlogProvider {
         const site = await CoreSites.getSite(options?.siteId);
 
         const data: CoreBlogGetEntriesWSParams = {
-            filters: CoreUtils.objectToArrayOfObjects(filter, 'name', 'value'),
+            filters: CoreObject.toArrayOfObjects(filter, 'name', 'value'),
             page: options?.page ?? 0,
             perpage: AddonBlogProvider.ENTRIES_PER_PAGE,
         };
@@ -290,7 +290,7 @@ export class AddonBlogProvider {
         const site = await CoreSites.getSite(siteId);
 
         const data: AddonBlogViewEntriesWSParams = {
-            filters: CoreUtils.objectToArrayOfObjects(filter, 'name', 'value'),
+            filters: CoreObject.toArrayOfObjects(filter, 'name', 'value'),
         };
 
         return site.write('core_blog_view_entries', data);

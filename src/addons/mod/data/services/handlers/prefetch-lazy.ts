@@ -20,7 +20,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModDataEntry, AddonModData, AddonModDataData } from '../data';
@@ -63,7 +63,7 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
             });
         });
 
-        return CoreUtils.objectToArray(uniqueEntries);
+        return CoreObject.toArray(uniqueEntries);
     }
 
     /**
@@ -133,7 +133,7 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
         let files: CoreWSFile[] = [];
 
         entries.forEach((entry) => {
-            CoreUtils.objectToArray(entry.contents).forEach((content) => {
+            CoreObject.toArray(entry.contents).forEach((content) => {
                 files = files.concat(<CoreWSFile[]>content.files);
             });
         });

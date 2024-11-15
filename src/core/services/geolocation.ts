@@ -154,7 +154,7 @@ export class CoreGeolocationProvider {
      */
     protected isCordovaPermissionDeniedError(error?: CoreAnyError | GeolocationPositionError): boolean {
         return !!error &&
-            typeof error == 'object' &&
+            typeof error === 'object' &&
             'code' in error &&
             'PERMISSION_DENIED' in error &&
             error.code === error.PERMISSION_DENIED;

@@ -16,7 +16,7 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { AddonModQuizMultichoiceQuestion } from '@features/question/classes/base-question-component';
 import { makeSingleton } from '@singletons';
 
@@ -74,7 +74,7 @@ export class AddonQtypeTrueFalseHandlerService implements CoreQuestionHandler {
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
-        return CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
+        return CoreObject.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     }
 
     /**

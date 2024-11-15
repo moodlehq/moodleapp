@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import {
     CoreCourseAnyCourseData,
@@ -157,7 +157,7 @@ export class CoreCoursesHelperProvider {
 
         // Get the extra data for the courses.
         return CoreCourses.getCoursesByFieldObservable('ids', courseIds, options).pipe(map(coursesInfosArray => {
-            const coursesInfo = CoreUtils.arrayToObject(coursesInfosArray, 'id');
+            const coursesInfo = CoreArray.toObject(coursesInfosArray, 'id');
 
             courses.forEach((course) => {
                 this.loadCourseExtraInfo(course, coursesInfo[course.id], loadCategoryNames);

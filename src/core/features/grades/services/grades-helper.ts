@@ -47,6 +47,7 @@ import { CoreLoadings } from '@services/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreCourseAccessDataType } from '@features/course/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreArray } from '@singletons/array';
 
 export const GRADES_PAGE_NAME = 'grades';
 export const GRADES_PARTICIPANTS_PAGE_NAME = 'participant-grades';
@@ -271,7 +272,7 @@ export class CoreGradesHelperProvider {
 
         try {
             const courses = await CoreCourses.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.ONLY_CACHE);
-            const coursesMap = CoreUtils.arrayToObject(courses, 'id');
+            const coursesMap = CoreArray.toObject(courses, 'id');
 
             coursesWereMissing = this.addCourseData(grades, coursesMap);
         } catch {
@@ -282,7 +283,7 @@ export class CoreGradesHelperProvider {
         if (coursesWereMissing) {
             const courses = await CoreCourses.getCoursesByField('ids', grades.map((grade) => grade.courseid).join(','));
             const coursesMap =
-                CoreUtils.arrayToObject(courses as Record<string, unknown>[], 'id') as
+                CoreArray.toObject(courses as Record<string, unknown>[], 'id') as
                     Record<string, CoreEnrolledCourseData> |
                     Record<string, CoreCourseSearchedData>;
 

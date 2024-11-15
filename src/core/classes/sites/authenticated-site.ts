@@ -43,6 +43,8 @@ import { CoreSiteWSCacheRecord } from '@services/database/sites';
 import { CoreErrorLogs } from '@singletons/error-logs';
 import { CoreWait } from '@singletons/wait';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreObject } from '@singletons/object';
+import { CoreArray } from '@singletons/array';
 
 /**
  * Class that represents a site (combination of site + user) where the user has authenticated but the site hasn't been validated
@@ -212,7 +214,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
         // Index function by name to speed up wsAvailable method.
         if (infos?.functions) {
-            infos.functionsByName = CoreUtils.arrayToObject(infos.functions, 'name');
+            infos.functionsByName = CoreArray.toObject(infos.functions, 'name');
         }
     }
 
@@ -1020,7 +1022,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected getCacheId(method: string, data: any): string {
-        return Md5.hashAsciiStr(method + ':' + CoreUtils.sortAndStringify(data));
+        return Md5.hashAsciiStr(method + ':' + CoreObject.sortAndStringify(data));
     }
 
     /**

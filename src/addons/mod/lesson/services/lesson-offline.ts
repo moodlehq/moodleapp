@@ -17,7 +17,7 @@ import { CoreSites } from '@services/sites';
 import { CoreFormFields } from '@singletons/form';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { makeSingleton } from '@singletons';
 import {
     AddonModLessonPageAttemptDBRecord,
@@ -152,7 +152,7 @@ export class AddonModLessonOfflineProvider {
         this.getLessonsFromEntries(lessons, pageAttempts || []);
         this.getLessonsFromEntries(lessons, retakes || []);
 
-        return CoreUtils.objectToArray(lessons);
+        return CoreObject.toArray(lessons);
     }
 
     /**

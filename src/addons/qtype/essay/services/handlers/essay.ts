@@ -24,7 +24,7 @@ import { CoreFileSession } from '@services/file-session';
 import { CoreSites } from '@services/sites';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreFileHelper } from '@services/file-helper';
@@ -267,7 +267,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
 
         // First check the inline text.
         const answerIsEqual = allowedOptions.text ?
-            CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') : true;
+            CoreObject.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') : true;
 
         if (!allowedOptions.attachments || !uploadFilesSupported || !answerIsEqual) {
             // No need to check attachments.

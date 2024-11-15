@@ -21,7 +21,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseModuleContentFile } from './course';
 import { CoreCache } from '@classes/cache';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -1317,7 +1317,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         previousTime?: number,
     ): CourseUpdates {
         // Format the response to index it by module ID.
-        CoreUtils.arrayToObject<false | CheckUpdatesWSInstance>(response.instances, 'id', result);
+        CoreArray.toObject<false | CheckUpdatesWSInstance>(response.instances, 'id', result);
 
         // Treat warnings, adding the not supported modules.
         response.warnings?.forEach((warning) => {

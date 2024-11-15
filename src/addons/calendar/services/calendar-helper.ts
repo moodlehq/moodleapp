@@ -25,7 +25,7 @@ import {
     AddonCalendarWeekDay,
 } from './calendar';
 import { CoreConfig } from '@services/config';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreCourse } from '@features/course/services/course';
 import { ContextLevel, CoreConstants } from '@/core/constants';
 import moment from 'moment-timezone';
@@ -61,7 +61,7 @@ export class AddonCalendarHelperProvider {
      */
     getEventIcon(eventType: AddonCalendarEventType | string): string {
         if (this.eventTypeIcons.length == 0) {
-            CoreUtils.enumKeys(AddonCalendarEventType).forEach((name) => {
+            CoreObject.enumKeys(AddonCalendarEventType).forEach((name) => {
                 const value = AddonCalendarEventType[name];
                 this.eventTypeIcons[value] = AddonCalendarEventIcons[name];
             });

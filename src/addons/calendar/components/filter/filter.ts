@@ -14,7 +14,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreEnrolledCourseData } from '@features/courses/services/courses';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { ModalController } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonCalendarFilter } from '@addons/calendar/services/calendar-helper';
@@ -54,7 +54,7 @@ export class AddonCalendarFilterComponent implements OnInit {
     sortedCourses: CoreEnrolledCourseData[] = [];
 
     constructor() {
-        CoreUtils.enumKeys(AddonCalendarEventType).forEach((name) => {
+        CoreObject.enumKeys(AddonCalendarEventType).forEach((name) => {
             const value = AddonCalendarEventType[name];
             this.typeIcons[value] = AddonCalendarEventIcons[name];
             this.types.push(value);

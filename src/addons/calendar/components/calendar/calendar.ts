@@ -29,7 +29,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import {
     AddonCalendar,
     AddonCalendarWeek,
@@ -464,7 +464,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
             const categories = await CoreCourses.getCategories(0, true);
 
             // Index categories by ID.
-            this.categories = CoreUtils.arrayToObject(categories, 'id');
+            this.categories = CoreArray.toObject(categories, 'id');
         } catch {
             // Ignore errors.
         }

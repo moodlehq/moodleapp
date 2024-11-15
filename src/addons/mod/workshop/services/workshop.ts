@@ -20,7 +20,7 @@ import { CoreGradesMenuItem } from '@features/grades/services/grades-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTextFormat, defaultTextFormat } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreStatusWithWarningsWSResponse, CoreWS, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
@@ -41,6 +41,7 @@ import {
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreObject } from '@singletons/object';
 
 declare module '@singletons/events' {
 
@@ -366,7 +367,7 @@ export class AddonModWorkshopProvider {
 
         const response = await site.read<AddonModWorkshopGetUserPlanWSResponse>('mod_workshop_get_user_plan', params, preSets);
 
-        return CoreUtils.arrayToObject(response.userplan.phases, 'code');
+        return CoreArray.toObject(response.userplan.phases, 'code');
     }
 
     /**
@@ -1052,7 +1053,7 @@ export class AddonModWorkshopProvider {
             warnings: response.warnings,
             fields: this.parseFields(response.fields),
             current: this.parseFields(response.current),
-            options: CoreUtils.objectToKeyValueMap<string>(response.options, 'name', 'value'),
+            options: CoreObject.toKeyValueMap<string>(response.options, 'name', 'value'),
         };
     }
 
@@ -1183,7 +1184,7 @@ export class AddonModWorkshopProvider {
 
         const params: AddonModWorkshopUpdateAssessmentWSParams = {
             assessmentid: assessmentId,
-            data: CoreUtils.objectToArrayOfObjects(inputData, 'name', 'value'),
+            data: CoreObject.toArrayOfObjects(inputData, 'name', 'value'),
         };
 
         const response = await site.write<AddonModWorkshopUpdateAssessmentWSResponse>('mod_workshop_update_assessment', params);

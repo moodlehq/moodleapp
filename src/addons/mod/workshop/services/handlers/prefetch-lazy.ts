@@ -20,7 +20,7 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreSites, CoreSitesReadingStrategy, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile, CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import {
@@ -248,7 +248,7 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
             });
         });
 
-        return CoreUtils.objectToArray(uniqueGrades);
+        return CoreObject.toArray(uniqueGrades);
     }
 
     /**

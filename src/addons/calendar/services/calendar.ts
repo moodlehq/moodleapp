@@ -19,7 +19,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreGroups } from '@services/groups';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreConfig } from '@services/config';
@@ -1578,7 +1578,7 @@ export class AddonCalendarProvider {
         }
 
         const params: AddonCalendarSubmitCreateUpdateFormWSParams = {
-            formdata: CoreUtils.objectToGetParams(formData),
+            formdata: CoreObject.toGetParams(formData),
         };
         const result =
             await site.write<AddonCalendarSubmitCreateUpdateFormWSResponse>('core_calendar_submit_create_update_form', params);

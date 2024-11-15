@@ -15,7 +15,7 @@
 import { OnInit, Input, Component, Optional, Inject, OnChanges, SimpleChanges } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreText } from '@singletons/text';
 import { CoreCourseBlock } from '../../course/services/course';
 import { Params } from '@angular/router';
@@ -78,7 +78,7 @@ export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ICore
             config.value = CoreText.parseJSON(config.value);
         });
 
-        this.block.configsRecord = CoreUtils.arrayToObject(this.block.configs, 'name');
+        this.block.configsRecord = CoreArray.toObject(this.block.configs, 'name');
     }
 
     /**

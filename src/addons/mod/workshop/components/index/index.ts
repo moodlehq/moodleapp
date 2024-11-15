@@ -22,7 +22,7 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreModals } from '@services/modals';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import {
@@ -405,7 +405,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         const modalData = await CoreModals.openModal<boolean>({
             component: AddonModWorkshopPhaseInfoModalComponent,
             componentProps: {
-                phases: CoreUtils.objectToArray(this.phases),
+                phases: CoreObject.toArray(this.phases),
                 workshopPhase: this.workshop.phase,
                 externalUrl: this.module.url,
                 showSubmit: this.showSubmit,

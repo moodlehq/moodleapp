@@ -27,7 +27,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreError } from '@classes/errors/error';
 import { DownloadStatus } from '@/core/constants';
 import { ApplicationInit, makeSingleton, NgZone, Translate } from '@singletons';
@@ -650,7 +650,7 @@ export class CoreFilepoolProvider {
         ]);
 
         // Notify now.
-        const filesLinksMap = CoreUtils.arrayToObjectMultiple(filesLinks, 'fileId');
+        const filesLinksMap = CoreArray.toObjectMultiple(filesLinks, 'fileId');
 
         filesEntries.forEach(entry => this.notifyFileDeleted(siteId, entry.fileId, filesLinksMap[entry.fileId] || []));
     }

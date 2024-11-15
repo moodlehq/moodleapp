@@ -46,6 +46,7 @@ import { CoreLoadings } from '@services/loadings';
 import { CoreError } from '@classes/errors/error';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreObject } from '@singletons/object';
 
 /**
  * Page that displays feedback form.
@@ -158,7 +159,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
             if (this.items && !this.completed && this.originalData) {
                 // Form submitted. Check if there is any change.
-                if (!CoreUtils.basicLeftCompare(responses, this.originalData, 3)) {
+                if (!CoreObject.basicLeftCompare(responses, this.originalData, 3)) {
                     await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
                 }
             }

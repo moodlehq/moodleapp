@@ -424,10 +424,10 @@ export class CoreMimetypeUtilsProvider {
         let mimetype: string | undefined = '';
         let extension: string | undefined = '';
 
-        if (typeof obj == 'object' && CoreFileUtils.isFileEntry(obj)) {
+        if (typeof obj === 'object' && CoreFileUtils.isFileEntry(obj)) {
             // It's a FileEntry. Don't use the file function because it's asynchronous and the type isn't reliable.
             filename = obj.name;
-        } else if (typeof obj == 'object') {
+        } else if (typeof obj === 'object') {
             filename = obj.filename || '';
             mimetype = obj.mimetype || '';
         } else {

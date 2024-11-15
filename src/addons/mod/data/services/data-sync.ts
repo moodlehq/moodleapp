@@ -26,7 +26,7 @@ import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModData, AddonModDataData } from './data';
@@ -206,7 +206,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
             offlineEntries[entry.entryid].push(entry);
         });
 
-        const promises = CoreUtils.objectToArray(offlineEntries).map((entryActions) =>
+        const promises = CoreObject.toArray(offlineEntries).map((entryActions) =>
             this.syncEntry(database, entryActions, result, siteId));
 
         await Promise.all(promises);

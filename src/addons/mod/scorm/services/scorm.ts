@@ -23,7 +23,7 @@ import { CoreSync } from '@services/sync';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreWS, CoreWSExternalFile, CoreWSExternalWarning, CoreWSFile, CoreWSPreSets } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -808,12 +808,12 @@ export class AddonModScormProvider {
         response.data.forEach((sco) => {
             data[sco.scoid] = {
                 scoid: sco.scoid,
-                defaultdata: <Record<string, AddonModScormDataValue>> CoreUtils.objectToKeyValueMap(
+                defaultdata: <Record<string, AddonModScormDataValue>> CoreObject.toKeyValueMap(
                     sco.defaultdata,
                     'element',
                     'value',
                 ),
-                userdata: <Record<string, AddonModScormDataValue>> CoreUtils.objectToKeyValueMap(sco.userdata, 'element', 'value'),
+                userdata: <Record<string, AddonModScormDataValue>> CoreObject.toKeyValueMap(sco.userdata, 'element', 'value'),
             };
 
         });
@@ -1114,7 +1114,7 @@ export class AddonModScormProvider {
         }
 
         if (response.options) {
-            const scormOptions = CoreUtils.objectToKeyValueMap(response.options, 'name', 'value');
+            const scormOptions = CoreObject.toKeyValueMap(response.options, 'name', 'value');
 
             if (scormOptions.scormstandard) {
                 currentScorm.scormStandard = Number(scormOptions.scormstandard);

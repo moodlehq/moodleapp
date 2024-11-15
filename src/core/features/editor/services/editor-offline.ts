@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreEditorDraft, CoreEditorDraftPrimaryData, DRAFT_TABLE } from './database/editor';
@@ -82,7 +82,7 @@ export class CoreEditorOfflineProvider {
             contextlevel: contextLevel,
             contextinstanceid: contextInstanceId,
             elementid: elementId,
-            extraparams: CoreUtils.sortAndStringify(extraParams || {}),
+            extraparams: CoreObject.sortAndStringify(extraParams || {}),
         };
     }
 

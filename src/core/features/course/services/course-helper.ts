@@ -32,7 +32,7 @@ import { CoreLogger } from '@singletons/logger';
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import {
     CoreCourseAnyCourseData,
     CoreCourseBasicData,
@@ -1088,7 +1088,7 @@ export class CoreCourseHelperProvider {
 
         const totalOffline = offlineCompletions.length;
         let loaded = 0;
-        const offlineCompletionsMap = CoreUtils.arrayToObject(offlineCompletions, 'cmid');
+        const offlineCompletionsMap = CoreArray.toObject(offlineCompletions, 'cmid');
 
         const loadSectionOfflineCompletion = (section: CoreCourseWSSection): void => {
             if (!section.contents || !section.contents.length) {

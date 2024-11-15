@@ -16,7 +16,7 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -72,7 +72,7 @@ export class AddonQtypeShortAnswerHandlerService implements CoreQuestionHandler 
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
-        return CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
+        return CoreObject.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     }
 
 }

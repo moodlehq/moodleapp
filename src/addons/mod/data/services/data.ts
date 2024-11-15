@@ -22,7 +22,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModDataFieldsDelegate } from './data-fields-delegate';
@@ -251,7 +251,7 @@ export class AddonModDataProvider {
      */
     protected checkFields(fields: AddonModDataField[], contents: AddonModDataSubfieldData[]): AddonModDataFieldNotification[] {
         const notifications: AddonModDataFieldNotification[] = [];
-        const contentsIndexed = CoreUtils.arrayToObjectMultiple(contents, 'fieldid');
+        const contentsIndexed = CoreArray.toObjectMultiple(contents, 'fieldid');
 
         // App is offline, check required fields.
         fields.forEach((field) => {
@@ -741,7 +741,7 @@ export class AddonModDataProvider {
      */
     protected formatEntryContents(entry: AddonModDataEntryWS): AddonModDataEntry {
         return Object.assign(entry, {
-            contents: CoreUtils.arrayToObject(entry.contents, 'fieldid'),
+            contents: CoreArray.toObject(entry.contents, 'fieldid'),
         });
     }
 

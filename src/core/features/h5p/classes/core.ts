@@ -961,7 +961,7 @@ export class CoreH5PCore {
             if (params.match(pattern)) {
                 return true;
             }
-        } else if (typeof params == 'object') {
+        } else if (typeof params === 'object') {
             for (const key in params) {
                 const value = params[key];
 

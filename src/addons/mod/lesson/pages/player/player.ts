@@ -24,7 +24,7 @@ import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile } from '@services/ws';
 import { ModalController, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -171,7 +171,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         if (this.question && !this.eolData && !this.processData && this.originalData) {
             // Question shown. Check if there is any change.
-            if (!CoreUtils.basicLeftCompare(this.questionForm.getRawValue(), this.originalData, 3)) {
+            if (!CoreObject.basicLeftCompare(this.questionForm.getRawValue(), this.originalData, 3)) {
                 await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
             }
         }

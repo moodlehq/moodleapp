@@ -18,13 +18,13 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreRatingOffline } from './rating-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreObject } from '@singletons/object';
 
 const ROOT_CACHE_KEY = 'CoreRating:';
 
@@ -351,8 +351,8 @@ export class CoreRatingProvider {
         });
 
         if (result) {
-            result.scales = CoreUtils.objectToArray(scales);
-            result.ratings = CoreUtils.objectToArray(ratings);
+            result.scales = CoreObject.toArray(scales);
+            result.ratings = CoreObject.toArray(ratings);
         }
 
         return result;
