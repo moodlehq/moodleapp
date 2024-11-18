@@ -174,7 +174,7 @@
         "minimatch": "^9.0.5",
         "native-run": "^2.0.1",
         "nyc": "^15.1.0",
-        "patch-package": "^6.5.1",
+        "patch-package": "^8.0.0",
         "terser-webpack-plugin": "^5.3.10",
         "ts-jest": "^29.2.5",
         "ts-node": "^8.10.2",
