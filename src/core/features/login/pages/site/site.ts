@@ -333,14 +333,14 @@ export class CoreLoginSitePage implements OnInit {
             let checkResult: CoreSiteCheckResponse;
 
             try {
-                checkResult = await CoreSites.checkSite(url);
+                checkResult = await CoreSites.checkSite(url, undefined, 'Site URL page');
             } catch (error) {
                 // Attempt guessing the domain if the initial check failed
                 const domain = CoreUrl.guessMoodleDomain(url);
 
                 if (domain && domain != url) {
                     try {
-                        checkResult = await CoreSites.checkSite(domain);
+                        checkResult = await CoreSites.checkSite(domain, undefined, 'Site URL page');
                     } catch (secondError) {
                         // Try to use the first error.
                         modal.dismiss();
@@ -608,7 +608,7 @@ export class CoreLoginSitePage implements OnInit {
 
         try {
             // Check if site uses SSO.
-            const siteCheck = await CoreSites.checkSite(siteUrl);
+            const siteCheck = await CoreSites.checkSite(siteUrl, undefined, 'Site URL page');
 
             await CoreSites.checkApplication(siteCheck.config);
 

@@ -181,7 +181,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
         try {
             if (!this.siteCheck) {
-                this.siteCheck = await CoreSites.checkSite(this.site.siteUrl, protocol);
+                this.siteCheck = await CoreSites.checkSite(this.site.siteUrl, protocol, 'Credentials page');
                 this.siteCheck.config && this.site.setPublicConfig(this.siteCheck.config);
             }
 
