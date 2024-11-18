@@ -667,17 +667,10 @@ export class CoreUtilsProvider {
      * @param data Object.
      * @param prefix Prefix to add.
      * @returns Prefixed object.
-     * @deprecated since 5.0. Not used anymore
+     * @deprecated since 5.0. Use CoreObject.prefixKeys instead.
      */
     prefixKeys(data: Record<string, unknown>, prefix: string): Record<string, unknown> {
-        const newObj = {};
-        const keys = Object.keys(data);
-
-        keys.forEach((key) => {
-            newObj[prefix + key] = data[key];
-        });
-
-        return newObj;
+        return CoreObject.prefixKeys(data, prefix);
     }
 
     /**
