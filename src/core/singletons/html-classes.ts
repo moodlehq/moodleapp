@@ -89,7 +89,7 @@ export class CoreHTMLClasses {
      *
      * @param prefixes Prefixes of the class mode to be removed.
      */
-    protected static removeModeClasses(prefixes: string[]): void {
+    static removeModeClasses(prefixes: string[]): void {
         for (const modeClass of CoreHTMLClasses.getModeClasses()) {
             if (!prefixes.some((prefix) => modeClass.startsWith(prefix))) {
                 continue;
