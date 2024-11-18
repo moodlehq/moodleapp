@@ -45,6 +45,22 @@ export class CoreCustomURLSchemesProvider {
     }
 
     /**
+     * Create a CoreCustomURLSchemesHandleError to be used when treating a URL that doesn't have a valid scheme.
+     *
+     * @param url URL that caused the error.
+     * @param data Data obtained from the URL (if any).
+     * @returns Error.
+     */
+    protected createInvalidSchemeError(url: string, data?: CoreCustomURLSchemesParams): CoreCustomURLSchemesHandleError {
+        const defaultError = new CoreError(Translate.instant('core.login.invalidsite'), {
+            code: 'invalidurlscheme',
+            details: `Error when treating a URL scheme, it seems the URL is not valid.<br><br>URL: ${url}`,
+        });
+
+        return new CoreCustomURLSchemesHandleError(defaultError, data);
+    }
+
+    /**
      * Given some data of a custom URL with a token, create a site if it needs to be created.
      *
      * @param data URL data.
@@ -62,7 +78,7 @@ export class CoreCustomURLSchemesProvider {
 
             if (!data.siteUrl.match(/^https?:\/\//)) {
                 // URL doesn't have a protocol and it's required to be able to create the site. Check which one to use.
-                const result = await CoreSites.checkSite(data.siteUrl);
+                const result = await CoreSites.checkSite(data.siteUrl, undefined, 'URL scheme create site');
 
                 data.siteUrl = result.siteUrl;
 
@@ -90,7 +106,13 @@ export class CoreCustomURLSchemesProvider {
      */
     async handleCustomURL(url: string): Promise<void> {
         if (!this.isCustomURL(url)) {
-            throw new CoreCustomURLSchemesHandleError(null);
+            throw this.createInvalidSchemeError(url);
+        }
+
+        // Check if there is nothing valid after the URL scheme.
+        const urlWithoutScheme = this.removeCustomURLScheme(url).trim();
+        if (!urlWithoutScheme || urlWithoutScheme.match(/^\/?(#.*)?\/?$/)) {
+            throw this.createInvalidSchemeError(url);
         }
 
         /* First check that this URL hasn't been treated a few seconds ago. The function that handles custom URL schemes already
@@ -202,7 +224,7 @@ export class CoreCustomURLSchemesProvider {
 
             } else {
                 // Site not stored. Try to add the site.
-                const result = await CoreSites.checkSite(data.siteUrl);
+                const result = await CoreSites.checkSite(data.siteUrl, undefined, `URL scheme redirect: ${url}`);
 
                 // Site exists. We'll allow to add it.
                 modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
@@ -211,7 +233,12 @@ export class CoreCustomURLSchemesProvider {
             }
 
         } catch (error) {
-            throw new CoreCustomURLSchemesHandleError(error, data);
+            if (!error || !CoreErrorHelper.getErrorMessageFromError(error)) {
+                // Use a default error.
+                this.createInvalidSchemeError(url, data);
+            } else {
+                throw new CoreCustomURLSchemesHandleError(error, data);
+            }
         } finally {
             modal.dismiss();
 
@@ -230,7 +257,7 @@ export class CoreCustomURLSchemesProvider {
      */
     protected async getCustomURLData(url: string): Promise<CoreCustomURLSchemesParams> {
         if (!this.isCustomURL(url)) {
-            throw new CoreCustomURLSchemesHandleError(null);
+            throw this.createInvalidSchemeError(url);
         }
 
         // App opened using custom URL scheme.
@@ -283,7 +310,7 @@ export class CoreCustomURLSchemesProvider {
      */
     protected async getCustomURLLinkData(url: string): Promise<CoreCustomURLSchemesParams> {
         if (!this.isCustomURLLink(url)) {
-            throw new CoreCustomURLSchemesHandleError(null);
+            throw this.createInvalidSchemeError(url);
         }
 
         // App opened using custom URL scheme.
@@ -345,7 +372,7 @@ export class CoreCustomURLSchemesProvider {
      */
     protected async getCustomURLTokenData(url: string): Promise<CoreCustomURLSchemesParams> {
         if (!this.isCustomURLToken(url)) {
-            throw new CoreCustomURLSchemesHandleError(null);
+            throw this.createInvalidSchemeError(url);
         }
 
         if (CoreSSO.isSSOAuthenticationOngoing()) {
@@ -358,6 +385,7 @@ export class CoreCustomURLSchemesProvider {
         this.logger.debug('App launched by URL with an SSO');
 
         // Delete the sso scheme from the URL.
+        const originalUrl = url;
         url = this.removeCustomURLTokenScheme(url);
 
         // Some platforms like Windows add a slash at the end. Remove it.
@@ -371,7 +399,11 @@ export class CoreCustomURLSchemesProvider {
             // Error decoding the parameter.
             this.logger.error('Error decoding parameter received for login SSO');
 
-            throw new CoreCustomURLSchemesHandleError(null);
+            throw new CoreCustomURLSchemesHandleError(new CoreError(Translate.instant('core.login.invalidsite'), {
+                code: 'errordecodingparameter',
+                details: `Error when trying to decode base 64 string.<br><br>URL: ${originalUrl}<br><br>Text to decode: ${url}` +
+                    `<br><br>Error: ${CoreErrorHelper.getErrorMessageFromError(err)}`,
+            }));
         }
 
         const data: CoreCustomURLSchemesParams = await CoreLoginHelper.validateBrowserSSOLogin(url);
@@ -491,14 +523,17 @@ export class CoreCustomURLSchemesProvider {
      * @param error Error data.
      */
     treatHandleCustomURLError(error: CoreCustomURLSchemesHandleError): void {
-        if (error.error == 'Duplicated') {
+        if (error.error === 'Duplicated') {
             // Duplicated request
         } else if (CoreWSError.isWebServiceError(error.error) && error.data && error.data.isSSOToken) {
             // An error occurred, display the error and logout the user.
             CoreLoginHelper.treatUserTokenError(error.data.siteUrl, <CoreWSError> error.error);
             CoreSites.logout();
         } else {
-            CoreDomUtils.showErrorModalDefault(error.error, Translate.instant('core.login.invalidsite'));
+            CoreDomUtils.showErrorModal(error.error ?? new CoreError(Translate.instant('core.login.invalidsite'), {
+                code: 'unknownerror',
+                details: 'Unknown error when treating a URL scheme.',
+            }));
         }
     }
 

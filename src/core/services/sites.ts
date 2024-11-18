@@ -286,14 +286,18 @@ export class CoreSitesProvider {
      *
      * @param siteUrl URL of the site to check.
      * @param protocol Protocol to use first.
+     * @param origin Origin of this check site call.
      * @returns A promise resolved when the site is checked.
      */
-    async checkSite(siteUrl: string, protocol: string = 'https://'): Promise<CoreSiteCheckResponse> {
+    async checkSite(siteUrl: string, protocol: string = 'https://', origin = 'unknown'): Promise<CoreSiteCheckResponse> {
         // The formatURL function adds the protocol if is missing.
         siteUrl = CoreUrl.formatURL(siteUrl);
 
         if (!CoreUrl.isHttpURL(siteUrl)) {
-            throw new CoreError(Translate.instant('core.login.invalidsite'));
+            throw new CoreError(Translate.instant('core.login.invalidsite'), {
+                code: 'invalidprotocol',
+                details: `URL contains an invalid protocol when checking site.<br><br>Origin: ${origin}.<br><br>URL: ${siteUrl}.`,
+            });
         }
 
         if (!CoreNetwork.isOnline()) {
