@@ -391,6 +391,24 @@ export class CoreObject {
     }
 
     /**
+     * Add a prefix to all the keys in an object.
+     *
+     * @param data Object.
+     * @param prefix Prefix to add.
+     * @returns Prefixed object.
+     */
+    static prefixKeys(data: Record<string, unknown>, prefix: string): Record<string, unknown> {
+        const newObj = {};
+        const keys = Object.keys(data);
+
+        keys.forEach((key) => {
+            newObj[prefix + key] = data[key];
+        });
+
+        return newObj;
+    }
+
+    /**
      * Function to enumerate enum keys.
      *
      * @param enumeration Enumeration object.
