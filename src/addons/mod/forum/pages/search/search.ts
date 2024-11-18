@@ -38,7 +38,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 })
 export class AddonModForumSearchPage implements OnInit {
 
-    loadMoreError: string | null = null;
+    loadMoreError = false;
     searchBanner: string | null = null;
     resultsSource = new CoreSearchGlobalSearchResultsSource('', {});
     forum?: AddonModForumData;
@@ -128,7 +128,7 @@ export class AddonModForumSearchPage implements OnInit {
      * Clear search results.
      */
     clearSearch(): void {
-        this.loadMoreError = null;
+        this.loadMoreError = false;
 
         this.resultsSource.setQuery('');
         this.resultsSource.reset();
@@ -152,7 +152,7 @@ export class AddonModForumSearchPage implements OnInit {
         try {
             await this.resultsSource?.load();
         } catch (error) {
-            this.loadMoreError = CoreDomUtils.getErrorMessage(error);
+            this.loadMoreError = true;
         } finally {
             complete();
         }
