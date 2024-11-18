@@ -22,7 +22,7 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreModals } from '@services/modals';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import {
@@ -57,6 +57,8 @@ import {
     ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED,
     AddonModWorkshopPhase,
 } from '@addons/mod/workshop/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener } from '@singletons/opener';
 
 /**
  * Component that displays a workshop index page.
@@ -259,7 +261,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             return; // Shouldn't happen.
         }
 
-        await CoreUtils.ignoreErrors(AddonModWorkshop.logView(this.workshop.id));
+        await CorePromiseUtils.ignoreErrors(AddonModWorkshop.logView(this.workshop.id));
 
         this.analyticsLogEvent('mod_workshop_view_workshop');
     }
@@ -362,7 +364,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         if (task.code == 'submit') {
             this.gotoSubmit();
         } else if (task.link) {
-            CoreUtils.openInBrowser(task.link);
+            CoreOpener.openInBrowser(task.link);
         }
     }
 
@@ -403,7 +405,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         const modalData = await CoreModals.openModal<boolean>({
             component: AddonModWorkshopPhaseInfoModalComponent,
             componentProps: {
-                phases: CoreUtils.objectToArray(this.phases),
+                phases: CoreObject.toArray(this.phases),
                 workshopPhase: this.workshop.phase,
                 externalUrl: this.module.url,
                 showSubmit: this.showSubmit,

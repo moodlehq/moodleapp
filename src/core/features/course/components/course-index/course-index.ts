@@ -16,8 +16,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import {
     CoreCourse,
-    CoreCourseModuleCompletionStatus,
-    CoreCourseProvider,
     sectionContentIsModule,
 } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
@@ -28,6 +26,7 @@ import { CoreSites } from '@services/sites';
 import { CoreWait } from '@singletons/wait';
 import { ModalController } from '@singletons';
 import { CoreDom } from '@singletons/dom';
+import { CoreCourseModuleCompletionStatus, CORE_COURSE_ALL_SECTIONS_ID } from '@features/course/constants';
 
 /**
  * Component to display course index modal.
@@ -47,7 +46,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
     @Input() selectedId?: number;
     @Input() course?: CoreCourseAnyCourseData;
 
-    allSectionId = CoreCourseProvider.ALL_SECTIONS_ID;
+    allSectionId = CORE_COURSE_ALL_SECTIONS_ID;
     highlighted?: string;
     sectionsToRender: CourseIndexSection[] = [];
     loaded = false;

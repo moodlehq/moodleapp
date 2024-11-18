@@ -14,7 +14,7 @@
 
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CorePath } from '@singletons/path';
 import { CoreH5PCore, CoreH5PLibraryBasicData } from './core';
 import { CoreH5PFramework } from './framework';
@@ -57,7 +57,7 @@ export class CoreH5PStorage {
             const libraryData: CoreH5PLibraryBeingSaved = librariesJsonData[libString];
 
             // Find local library with same major + minor.
-            const existingLibrary = await CoreUtils.ignoreErrors(this.h5pFramework.getLibraryByData(libraryData));
+            const existingLibrary = await CorePromiseUtils.ignoreErrors(this.h5pFramework.getLibraryByData(libraryData));
 
             if (existingLibrary) {
                 // Library already installed.
@@ -100,7 +100,7 @@ export class CoreH5PStorage {
                     await this.h5pCore.h5pFS.deleteCachedAssets(removedEntries, siteId);
                 }
 
-                await CoreUtils.allPromises(promises);
+                await CorePromiseUtils.allPromises(promises);
             }
         }));
 

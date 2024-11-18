@@ -22,10 +22,7 @@ import {
     CoreCourseCompletionActivityStatus,
     CoreCourseModuleWSCompletionData,
     CoreCourseModuleContentFile,
-    CoreCourseProvider,
     CoreCourseWSSection,
-    CoreCourseModuleCompletionTracking,
-    CoreCourseModuleCompletionStatus,
     CoreCourseGetContentsWSModule,
     sectionContentIsModule,
     CoreCourseAnyModuleData,
@@ -35,7 +32,7 @@ import { CoreLogger } from '@singletons/logger';
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils, CoreUtilsOpenFileOptions } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import {
     CoreCourseAnyCourseData,
     CoreCourseBasicData,
@@ -78,6 +75,15 @@ import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enr
 import { LazyRoutesModule } from '@/app/app-routing.module';
 import { CoreModals } from '@services/modals';
 import { CoreLoadings } from '@services/loadings';
+import {
+    CoreCourseModuleCompletionTracking,
+    CoreCourseModuleCompletionStatus,
+    CORE_COURSE_ALL_SECTIONS_ID,
+    CORE_COURSE_STEALTH_MODULES_SECTION_ID,
+    CORE_COURSE_COMPONENT,
+} from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener, CoreOpenerOpenFileOptions } from '@singletons/opener';
 
 /**
  * Prefetch info of a module.
@@ -255,7 +261,7 @@ export class CoreCourseHelperProvider {
      * @returns Wether section is stealth (accessible but not visible to students).
      */
     isSectionStealth(section: CoreCourseWSSection): boolean {
-        return section.hiddenbynumsections === 1 || section.id === CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
+        return section.hiddenbynumsections === 1 || section.id === CORE_COURSE_STEALTH_MODULES_SECTION_ID;
     }
 
     /**
@@ -283,7 +289,7 @@ export class CoreCourseHelperProvider {
         refresh?: boolean,
         checkUpdates: boolean = true,
     ): Promise<{statusData: CoreCourseModulesStatus; section: CoreCourseSectionWithStatus}> {
-        if (section.id === CoreCourseProvider.ALL_SECTIONS_ID) {
+        if (section.id === CORE_COURSE_ALL_SECTIONS_ID) {
             throw new CoreError('Invalid section');
         }
 
@@ -439,7 +445,7 @@ export class CoreCourseHelperProvider {
             options.onProgress({ count: 0, total: total, success: true });
         }
 
-        return CoreUtils.allPromises(promises);
+        return CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -462,7 +468,7 @@ export class CoreCourseHelperProvider {
         };
 
         const getSectionSize = async (section: CoreCourseWSSection): Promise<CoreFileSizeSum> => {
-            if (section.id === CoreCourseProvider.ALL_SECTIONS_ID) {
+            if (section.id === CORE_COURSE_ALL_SECTIONS_ID) {
                 return { size: 0, total: true };
             }
 
@@ -579,7 +585,7 @@ export class CoreCourseHelperProvider {
      */
     createAllSectionsSection(): CoreCourseSection {
         return {
-            id: CoreCourseProvider.ALL_SECTIONS_ID,
+            id: CORE_COURSE_ALL_SECTIONS_ID,
             name: Translate.instant('core.course.allsections'),
             hasContent: true,
             summary: '',
@@ -635,7 +641,7 @@ export class CoreCourseHelperProvider {
         componentId?: string | number,
         files?: CoreCourseModuleContentFile[],
         siteId?: string,
-        options: CoreUtilsOpenFileOptions = {},
+        options: CoreOpenerOpenFileOptions = {},
     ): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -673,7 +679,7 @@ export class CoreCourseHelperProvider {
         );
 
         if (CoreUrl.isLocalFileUrl(result.path)) {
-            return CoreUtils.openFile(result.path, options);
+            return CoreOpener.openFile(result.path, options);
         }
 
         /* In iOS, if we use the same URL in embedded browser and background download then the download only
@@ -681,7 +687,7 @@ export class CoreCourseHelperProvider {
         result.path = result.path + '#moodlemobile-embedded';
 
         try {
-            await CoreUtils.openOnlineFile(result.path);
+            await CoreOpener.openOnlineFile(result.path);
         } catch (error) {
             // Error opening the file, some apps don't allow opening online files.
             if (!CoreFile.isAvailable()) {
@@ -701,7 +707,7 @@ export class CoreCourseHelperProvider {
                 path = await CoreFilepool.getInternalUrlByUrl(siteId, mainFile.fileurl);
             }
 
-            await CoreUtils.openFile(path, options);
+            await CoreOpener.openFile(path, options);
         }
     }
 
@@ -726,7 +732,7 @@ export class CoreCourseHelperProvider {
         component?: string,
         componentId?: string | number,
         files?: CoreCourseModuleContentFile[],
-        options: CoreUtilsOpenFileOptions = {},
+        options: CoreOpenerOpenFileOptions = {},
     ): Promise<void> {
         if (!CoreNetwork.isOnline()) {
             // Not online, get the offline file. It will fail if not found.
@@ -737,7 +743,7 @@ export class CoreCourseHelperProvider {
                 throw new CoreNetworkError();
             }
 
-            return CoreUtils.openFile(path, options);
+            return CoreOpener.openFile(path, options);
         }
 
         // Open in browser.
@@ -749,7 +755,7 @@ export class CoreCourseHelperProvider {
         // Remove forcedownload when not followed by any param.
         fixedUrl = fixedUrl.replace(/[?|&]forcedownload=\d+/, '');
 
-        CoreUtils.openInBrowser(fixedUrl);
+        CoreOpener.openInBrowser(fixedUrl);
 
         if (CoreFile.isAvailable()) {
             // Download the file if needed (file outdated or not downloaded).
@@ -778,7 +784,7 @@ export class CoreCourseHelperProvider {
         componentId?: string | number,
         files?: CoreCourseModuleContentFile[],
         siteId?: string,
-        options: CoreUtilsOpenFileOptions = {},
+        options: CoreOpenerOpenFileOptions = {},
     ): Promise<{ fixedUrl: string; path: string; status?: DownloadStatus }> {
 
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -876,7 +882,7 @@ export class CoreCourseHelperProvider {
         component?: string,
         componentId?: string | number,
         siteId?: string,
-        options: CoreUtilsOpenFileOptions = {},
+        options: CoreOpenerOpenFileOptions = {},
     ): Promise<string> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -1082,7 +1088,7 @@ export class CoreCourseHelperProvider {
 
         const totalOffline = offlineCompletions.length;
         let loaded = 0;
-        const offlineCompletionsMap = CoreUtils.arrayToObject(offlineCompletions, 'cmid');
+        const offlineCompletionsMap = CoreArray.toObject(offlineCompletions, 'cmid');
 
         const loadSectionOfflineCompletion = (section: CoreCourseWSSection): void => {
             if (!section.contents || !section.contents.length) {
@@ -1298,7 +1304,7 @@ export class CoreCourseHelperProvider {
             // If this function is changed to do more actions if invalidateCache=true, please review those modules.
             CoreCourseModulePrefetchDelegate.invalidateModuleStatusCache(module);
 
-            await CoreUtils.ignoreErrors(CoreCourseModulePrefetchDelegate.invalidateCourseUpdates(courseId));
+            await CorePromiseUtils.ignoreErrors(CoreCourseModulePrefetchDelegate.invalidateCourseUpdates(courseId));
         }
 
         const [size, status, packageData] = await Promise.all([
@@ -1351,7 +1357,7 @@ export class CoreCourseHelperProvider {
         component = '',
     ): Promise<CoreCourseModulePackageLastDownloaded> {
         const siteId = CoreSites.getCurrentSiteId();
-        const packageData = await CoreUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, component, module.id));
+        const packageData = await CorePromiseUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, component, module.id));
 
         // Treat download time.
         if (
@@ -1596,7 +1602,7 @@ export class CoreCourseHelperProvider {
 
             promises.push(CoreFilterHelper.getFilters(ContextLevel.COURSE, course.id));
 
-            await CoreUtils.allPromises(promises);
+            await CorePromiseUtils.allPromises(promises);
 
             // Download success, mark the course as downloaded.
             return CoreCourse.setCourseStatus(course.id, DownloadStatus.DOWNLOADED, requiredSiteId);
@@ -1635,7 +1641,7 @@ export class CoreCourseHelperProvider {
 
         // Invalidate content if refreshing and download the data.
         if (refresh) {
-            await CoreUtils.ignoreErrors(handler.invalidateContent(module.id, courseId));
+            await CorePromiseUtils.ignoreErrors(handler.invalidateContent(module.id, courseId));
         }
 
         await CoreCourseModulePrefetchDelegate.prefetchModule(module, courseId, true);
@@ -1659,7 +1665,7 @@ export class CoreCourseHelperProvider {
         if (updateAllSections) {
             // Prefetch all the sections. If the first section is "All sections", use it. Otherwise, use a fake "All sections".
             allSectionsSection = sections[0];
-            if (sections[0].id !== CoreCourseProvider.ALL_SECTIONS_ID) {
+            if (sections[0].id !== CORE_COURSE_ALL_SECTIONS_ID) {
                 allSectionsSection = this.createAllSectionsSection();
             }
             allSectionsSection.isDownloading = true;
@@ -1667,7 +1673,7 @@ export class CoreCourseHelperProvider {
 
         const promises = sections.map(async (section) => {
             // Download all the sections except "All sections".
-            if (section.id === CoreCourseProvider.ALL_SECTIONS_ID) {
+            if (section.id === CORE_COURSE_ALL_SECTIONS_ID) {
                 return;
             }
 
@@ -1683,7 +1689,7 @@ export class CoreCourseHelperProvider {
         });
 
         try {
-            await CoreUtils.allPromises(promises);
+            await CorePromiseUtils.allPromises(promises);
 
             // Set "All sections" data.
             if (allSectionsSection) {
@@ -1706,7 +1712,7 @@ export class CoreCourseHelperProvider {
      * @returns Promise resolved when the section is prefetched.
      */
     protected async prefetchSingleSectionIfNeeded(section: CoreCourseSectionWithStatus, courseId: number): Promise<void> {
-        if (section.id === CoreCourseProvider.ALL_SECTIONS_ID || section.hiddenbynumsections) {
+        if (section.id === CORE_COURSE_ALL_SECTIONS_ID || section.hiddenbynumsections) {
             return;
         }
 
@@ -1720,8 +1726,8 @@ export class CoreCourseHelperProvider {
 
         // Download the files in the section description.
         const introFiles = CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(section.summary);
-        promises.push(CoreUtils.ignoreErrors(
-            CoreFilepool.addFilesToQueue(siteId, introFiles, CoreCourseProvider.COMPONENT, courseId),
+        promises.push(CorePromiseUtils.ignoreErrors(
+            CoreFilepool.addFilesToQueue(siteId, introFiles, CORE_COURSE_COMPONENT, courseId),
         ));
 
         try {
@@ -1782,7 +1788,7 @@ export class CoreCourseHelperProvider {
         result: CoreCourseModulesStatus,
         courseId: number,
     ): Promise<void> {
-        if (section.id === CoreCourseProvider.ALL_SECTIONS_ID) {
+        if (section.id === CORE_COURSE_ALL_SECTIONS_ID) {
             return;
         }
 
@@ -1858,11 +1864,11 @@ export class CoreCourseHelperProvider {
      */
     async userHasAccessToCourse(courseId: number): Promise<boolean> {
         if (CoreNetwork.isOnline()) {
-            return CoreUtils.promiseWorks(
+            return CorePromiseUtils.promiseWorks(
                 CoreCourse.getSections(courseId, true, true, { getFromCache: false, emergencyCache: false }, undefined, false),
             );
         } else {
-            return CoreUtils.promiseWorks(
+            return CorePromiseUtils.promiseWorks(
                 CoreCourse.getSections(courseId, true, true, { getCacheUsingCacheKey: true }, undefined, false),
             );
         }
@@ -1881,7 +1887,7 @@ export class CoreCourseHelperProvider {
 
         await Promise.all([
             ...modules.map((module) => this.removeModuleStoredData(module, courseId)),
-            siteId && CoreFilepool.removeFilesByComponent(siteId, CoreCourseProvider.COMPONENT, courseId),
+            siteId && CoreFilepool.removeFilesByComponent(siteId, CORE_COURSE_COMPONENT, courseId),
         ]);
 
         await CoreCourse.setCourseStatus(courseId, DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED);
@@ -1922,7 +1928,7 @@ export class CoreCourseHelperProvider {
         }
 
         if (completion.cmid === undefined ||
-            completion.tracking !== CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_MANUAL) {
+            completion.tracking !== CoreCourseModuleCompletionTracking.MANUAL) {
             return;
         }
 
@@ -1963,8 +1969,8 @@ export class CoreCourseHelperProvider {
      *
      * @returns Course summary page module.
      */
-    async getCourseSummaryRouteModule(): Promise<LazyRoutesModule> {
-        return import('../course-summary-lazy.module').then(m => m.CoreCourseSummaryLazyModule);
+    getCourseSummaryRouteModule(): LazyRoutesModule {
+        return import('../course-summary-lazy.module');
     }
 
     /**
@@ -2087,7 +2093,7 @@ export class CoreCourseHelperProvider {
             return undefined;
         }
 
-        if (completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE) {
+        if (completion.tracking === CoreCourseModuleCompletionTracking.NONE) {
             return undefined;
         }
 

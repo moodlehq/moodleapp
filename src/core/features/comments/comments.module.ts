@@ -42,7 +42,7 @@ export async function getCommentsServices(): Promise<Type<unknown>[]> {
 const routes: Routes = [
     {
         path: 'comments',
-        loadChildren: () => import('@features/comments/comments-lazy.module').then(m => m.CoreCommentsLazyModule),
+        loadChildren: () => import('@features/comments/comments-lazy.module'),
     },
 ];
 

@@ -122,6 +122,11 @@ export class CoreEvents {
     protected static observables: { [eventName: string]: Subject<unknown> } = {};
     protected static uniqueEvents: { [eventName: string]: {data: unknown} } = {};
 
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
+
     /**
      * Listen for a certain event. To stop listening to the event:
      * let observer = eventsProvider.on('something', myCallBack);
@@ -140,8 +145,8 @@ export class CoreEvents {
     ): CoreEventObserver {
         // If it's a unique event and has been triggered already, call the callBack.
         // We don't need to create an observer because the event won't be triggered again.
-        if (this.uniqueEvents[eventName]) {
-            callBack(this.uniqueEvents[eventName].data as CoreEventData<Event, Fallback> & CoreEventSiteData);
+        if (CoreEvents.uniqueEvents[eventName]) {
+            callBack(CoreEvents.uniqueEvents[eventName].data as CoreEventData<Event, Fallback> & CoreEventSiteData);
 
             // Return a fake observer to prevent errors.
             return {
@@ -151,14 +156,14 @@ export class CoreEvents {
             };
         }
 
-        this.logger.debug(`New observer listening to event '${eventName}'`);
+        CoreEvents.logger.debug(`New observer listening to event '${eventName}'`);
 
-        if (this.observables[eventName] === undefined) {
+        if (CoreEvents.observables[eventName] === undefined) {
             // No observable for this event, create a new one.
-            this.observables[eventName] = new Subject();
+            CoreEvents.observables[eventName] = new Subject();
         }
 
-        const subscription = this.observables[eventName].subscribe(
+        const subscription = CoreEvents.observables[eventName].subscribe(
             (value: CoreEventData<Event, Fallback> & CoreEventSiteData) => {
                 if (!siteId || value.siteId == siteId) {
                     callBack(value);
@@ -169,7 +174,7 @@ export class CoreEvents {
         // Create and return a CoreEventObserver.
         return {
             off: (): void => {
-                this.logger.debug(`Stop listening to event '${eventName}'`);
+                CoreEvents.logger.debug(`Stop listening to event '${eventName}'`);
                 subscription.unsubscribe();
             },
         };
@@ -211,7 +216,7 @@ export class CoreEvents {
      * @returns Observer to stop listening.
      */
     static onMultiple<T = unknown>(eventNames: string[], callBack: (value: T) => void, siteId?: string): CoreEventObserver {
-        const observers = eventNames.map((name) => this.on<T>(name, callBack, siteId));
+        const observers = eventNames.map((name) => CoreEvents.on<T>(name, callBack, siteId));
 
         // Create and return a CoreEventObserver.
         return {
@@ -235,12 +240,12 @@ export class CoreEvents {
         data?: CoreEventData<Event, Fallback>,
         siteId?: string,
     ): void {
-        this.logger.debug(`Event '${eventName}' triggered.`);
-        if (this.observables[eventName]) {
+        CoreEvents.logger.debug(`Event '${eventName}' triggered.`);
+        if (CoreEvents.observables[eventName]) {
             if (siteId) {
                 Object.assign(data || {}, { siteId });
             }
-            this.observables[eventName].next(data || {});
+            CoreEvents.observables[eventName].next(data || {});
         }
     }
 
@@ -256,23 +261,23 @@ export class CoreEvents {
         data: CoreEventData<Event, Fallback>,
         siteId?: string,
     ): void {
-        if (this.uniqueEvents[eventName]) {
-            this.logger.debug(`Unique event '${eventName}' ignored because it was already triggered.`);
+        if (CoreEvents.uniqueEvents[eventName]) {
+            CoreEvents.logger.debug(`Unique event '${eventName}' ignored because it was already triggered.`);
         } else {
-            this.logger.debug(`Unique event '${eventName}' triggered.`);
+            CoreEvents.logger.debug(`Unique event '${eventName}' triggered.`);
 
             if (siteId) {
                 Object.assign(data || {}, { siteId });
             }
 
             // Store the data so it can be passed to observers that register from now on.
-            this.uniqueEvents[eventName] = {
+            CoreEvents.uniqueEvents[eventName] = {
                 data,
             };
 
             // Now pass the data to observers.
-            if (this.observables[eventName]) {
-                this.observables[eventName].next(data);
+            if (CoreEvents.observables[eventName]) {
+                CoreEvents.observables[eventName].next(data);
             }
         }
     }
@@ -283,7 +288,7 @@ export class CoreEvents {
      * @param eventName Event name.
      */
     static waitUntil(eventName: string): Promise<void> {
-        return new Promise(resolve => this.once(eventName, () => resolve()));
+        return new Promise(resolve => CoreEvents.once(eventName, () => resolve()));
     }
 
 }

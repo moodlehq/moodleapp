@@ -33,7 +33,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'core-emulator-capture-media',
     templateUrl: 'capture-media.html',
-    styleUrls: ['capture-media.scss'],
+    styleUrl: 'capture-media.scss',
 })
 export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
 

@@ -16,12 +16,31 @@ import { Injectable } from '@angular/core';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { AlertButton } from '@ionic/angular';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Provider to provide some helper functions regarding files and packages.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreErrorHelperService {
+
+    /**
+     * Given an error, add an extra warning to the error message and return the new error message.
+     *
+     * @param error Error object or message.
+     * @param defaultError Message to show if the error is not a string.
+     * @returns New error message.
+     */
+    addDataNotDownloadedError(error: Error | string, defaultError?: string): string {
+        const errorMessage = CoreErrorHelper.getErrorMessageFromError(error) || defaultError || '';
+
+        if (CoreWSError.isWebServiceError(error)) {
+            return errorMessage;
+        }
+
+        // Local error. Add an extra warning.
+        return errorMessage + '<br><br>' + Translate.instant('core.errorsomedatanotdownloaded');
+    }
 
     /**
      * Add some text to an error message.
@@ -156,6 +175,17 @@ export class CoreErrorHelperService {
         const element = doc.body.querySelector<HTMLElement>('.errorbox .errormessage');
 
         return element?.innerText.trim() ?? '';
+    }
+
+    /**
+     * Log an unhandled error.
+     *
+     * @param message Message to contextualize the error.
+     * @param error Error to log.
+     */
+    logUnhandledError(message: string, error: unknown): void {
+       // eslint-disable-next-line no-console
+       console.error('Unhandled error: '+message, error);
     }
 
 }

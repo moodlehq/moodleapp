@@ -23,7 +23,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { Translate } from '@singletons';
 import {
     AddonModBBB,
@@ -34,6 +34,8 @@ import {
 import { ADDON_MOD_BBB_COMPONENT } from '../../constants';
 import { CoreLoadings } from '@services/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener } from '@singletons/opener';
 
 /**
  * Component that displays a Big Blue Button activity.
@@ -41,7 +43,7 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 @Component({
     selector: 'addon-mod-bbb-index',
     templateUrl: 'index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
@@ -144,7 +146,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         const recordingsTable = await AddonModBBB.getRecordings(this.bbb.id, this.groupId, {
             cmId: this.module.id,
         });
-        const columns = CoreUtils.arrayToObject(recordingsTable.columns, 'key');
+        const columns = CoreArray.toObject(recordingsTable.columns, 'key');
 
         this.recordings = recordingsTable.parsedData.map(recordingData => {
             const details: RecordingDetail[] = [];
@@ -228,7 +230,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             return; // Shouldn't happen.
         }
 
-        await CoreUtils.ignoreErrors(AddonModBBB.logView(this.bbb.id));
+        await CorePromiseUtils.ignoreErrors(AddonModBBB.logView(this.bbb.id));
 
         this.analyticsLogEvent('mod_bigbluebuttonbn_view_bigbluebuttonbn');
     }
@@ -302,7 +304,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         try {
             const joinUrl = await AddonModBBB.getJoinUrl(this.module.id, this.groupId);
 
-            await CoreUtils.openInBrowser(joinUrl, {
+            await CoreOpener.openInBrowser(joinUrl, {
                 showBrowserWarning: false,
             });
 

@@ -15,9 +15,9 @@
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
-import { CoreSite } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 const ROOT_CACHE_KEY = 'mmaBadges:';
 
@@ -70,7 +70,7 @@ export class AddonBadgesProvider {
         };
         const preSets = {
             cacheKey: this.getBadgesCacheKey(courseId, userId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         const response = await site.read<AddonBadgesGetUserBadgesWSResponse>('core_badges_get_user_badges', data, preSets);
@@ -133,7 +133,7 @@ export class AddonBadgesProvider {
         };
         const preSets = {
             cacheKey: this.getUserBadgeByHashCacheKey(hash),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         const response = await site.read<AddonBadgesGetUserBadgeByHashWSResponse>(
@@ -190,7 +190,7 @@ export class AddonBadgesProvider {
         };
         const preSets = {
             cacheKey: this.getBadgeClassCacheKey(id),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         const response = await site.read<AddonBadgesGetBadgeClassWSResponse>(

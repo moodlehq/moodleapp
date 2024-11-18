@@ -16,7 +16,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CorePolicy, CorePolicySitePolicy, CorePolicyStatus } from '@features/policy/services/policy';
@@ -35,7 +35,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-core-policy-acceptances',
     templateUrl: 'acceptances.html',
-    styleUrls: ['acceptances.scss'],
+    styleUrl: 'acceptances.scss',
 })
 export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
 
@@ -90,7 +90,7 @@ export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.canContactDPO = await CoreUtils.ignoreErrors(CoreDataPrivacy.isEnabled(), false);
+        this.canContactDPO = await CorePromiseUtils.ignoreErrors(CoreDataPrivacy.isEnabled(), false);
     }
 
     /**
@@ -164,9 +164,9 @@ export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
      * @param refresher Refresher.
      */
     async refreshAcceptances(refresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(CorePolicy.invalidateAcceptances());
+        await CorePromiseUtils.ignoreErrors(CorePolicy.invalidateAcceptances());
 
-        await CoreUtils.ignoreErrors(this.fetchAcceptances());
+        await CorePromiseUtils.ignoreErrors(this.fetchAcceptances());
 
         refresher?.complete();
     }

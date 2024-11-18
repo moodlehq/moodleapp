@@ -20,7 +20,7 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 import { ModalController } from '@singletons';
 import { CoreLoadings } from '@services/loadings';
@@ -62,7 +62,7 @@ export class CoreDataPrivacyContactDPOComponent implements OnInit {
 
         // Get current user email.
         const userId = CoreSites.getCurrentSiteUserId();
-        const user = await CoreUtils.ignoreErrors(CoreUser.getProfile(userId));
+        const user = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(userId));
 
         this.email = user?.email || '';
 

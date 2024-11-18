@@ -19,7 +19,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreUser, CoreUserParticipant, CoreUserData } from '@features/user/services/user';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreUserParticipantsSource } from '@features/user/classes/participants-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -136,8 +136,8 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
      * @param refresher Refresher.
      */
     async refreshParticipants(refresher: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreUser.invalidateParticipantsList(this.courseId));
-        await CoreUtils.ignoreErrors(this.fetchParticipants(true));
+        await CorePromiseUtils.ignoreErrors(CoreUser.invalidateParticipantsList(this.courseId));
+        await CorePromiseUtils.ignoreErrors(this.fetchParticipants(true));
 
         refresher?.complete();
     }
@@ -196,7 +196,7 @@ class CoreUserParticipantsManager extends CoreListItemsManager<CoreUserParticipa
      * @inheritdoc
      */
     protected async logActivity(): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreUser.logParticipantsView(this.getSource().COURSE_ID));
+        await CorePromiseUtils.ignoreErrors(CoreUser.logParticipantsView(this.getSource().COURSE_ID));
 
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.VIEW_ITEM_LIST,

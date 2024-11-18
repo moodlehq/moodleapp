@@ -21,7 +21,7 @@ import { CoreColors } from '@singletons/colors';
 @Component({
     selector: 'core-course-image',
     templateUrl: 'course-image.html',
-    styleUrls: ['./course-image.scss'],
+    styleUrl: './course-image.scss',
 })
 export class CoreCourseImageComponent {
 

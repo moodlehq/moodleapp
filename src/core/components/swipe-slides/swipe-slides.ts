@@ -34,7 +34,7 @@ import { SwiperOptions } from 'swiper/types';
 @Component({
     selector: 'core-swipe-slides',
     templateUrl: 'swipe-slides.html',
-    styleUrls: ['swipe-slides.scss'],
+    styleUrl: 'swipe-slides.scss',
 })
 export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDestroy, AsyncDirective {
 

@@ -14,20 +14,23 @@
 
 import { Injectable } from '@angular/core';
 import {
-    AddonMessagesProvider,
     AddonMessages,
 } from '../messages';
 import { CoreMainMenuHandler, CoreMainMenuHandlerToDisplay } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreCronHandler } from '@services/cron';
 import { CoreSites } from '@services/sites';
 import { CoreEvents } from '@singletons/events';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import {
     CorePushNotificationsNotificationBasicData,
 } from '@features/pushnotifications/services/pushnotifications';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { makeSingleton } from '@singletons';
-import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
+import {
+    ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT,
+    ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT,
+} from '@addons/messages/constants';
+import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
 
 /**
  * Handler to inject an option into main menu.
@@ -58,14 +61,14 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
 
     constructor() {
 
-        CoreEvents.on(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, (data) => {
+        CoreEvents.on(ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT, (data) => {
             this.unreadCount = data.favourites + data.individual + data.group + data.self;
             this.orMore = !!data.orMore;
 
             data.siteId && this.updateBadge(data.siteId);
         });
 
-        CoreEvents.on(AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT, (data) => {
+        CoreEvents.on(ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT, (data) => {
             this.contactRequestsCount = data.count;
 
             data.siteId && this.updateBadge(data.siteId);
@@ -174,7 +177,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
 
         // Update push notifications badge.
         CoreEvents.trigger(
-            CoreMainMenuProvider.MAIN_MENU_HANDLER_BADGE_UPDATED,
+            MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
             {
                 handler: AddonMessagesMainMenuHandlerService.name,
                 value: totalCount,

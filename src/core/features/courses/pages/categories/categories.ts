@@ -15,13 +15,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreCategoryData, CoreCourseListItem, CoreCourses, CoreCoursesProvider } from '../../services/courses';
+import { CoreUtils } from '@singletons/utils';
+import { CoreCategoryData, CoreCourseListItem, CoreCourses } from '../../services/courses';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
+import {
+    CORE_COURSES_MY_COURSES_UPDATED_EVENT,
+    CoreCoursesMyCoursesUpdatedEventAction,
+    CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT,
+} from '@features/courses/constants';
 
 /**
  * Page that displays a list of categories and the courses in the current category if any.
@@ -59,9 +64,9 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
 
         // Update list if user enrols in a course.
         this.myCoursesObserver = CoreEvents.on(
-            CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
+            CORE_COURSES_MY_COURSES_UPDATED_EVENT,
             (data) => {
-                if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+                if (data.action === CoreCoursesMyCoursesUpdatedEventAction.ENROL) {
                     this.fetchCategories();
                 }
             },
@@ -77,7 +82,7 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
             this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && this.downloadEnabled;
         }, this.currentSiteId);
 
-        this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
+        this.downloadEnabledObserver = CoreEvents.on(CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT, (data) => {
             this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && data.enabled;
         });
 

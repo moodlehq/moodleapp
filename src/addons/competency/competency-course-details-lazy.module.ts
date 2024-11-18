@@ -69,4 +69,4 @@ const routes: Routes = [
         AddonCompetencyCompetencySummaryPageModule,
     ],
 })
-export class AddonCompetencyCourseDetailsLazyModule {}
+export default class AddonCompetencyCourseDetailsLazyModule {}

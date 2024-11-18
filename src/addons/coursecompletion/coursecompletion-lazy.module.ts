@@ -37,4 +37,4 @@ const routes: Routes = [
         AddonCourseCompletionReportPage,
     ],
 })
-export class AddonCourseCompletionLazyModule {}
+export default class AddonCourseCompletionLazyModule {}

@@ -22,7 +22,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreOpener } from '@singletons/opener';
 
 import { makeSingleton, NgZone, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
@@ -37,6 +37,8 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNative } from '@features/native/services/native';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreFileUtils } from '@singletons/file-utils';
 
 type CoreFrameElement = FrameElement & {
     window?: Window;
@@ -430,7 +432,7 @@ export class CoreIframeUtilsProvider {
                 ? ('src' in element ? element.src : element.data)
                 : null;
             if (src) {
-                const dirAndFile = CoreFile.getFileAndDirectoryFromPath(src);
+                const dirAndFile = CoreFileUtils.getFileAndDirectoryFromPath(src);
                 if (dirAndFile.directory) {
                     url = CorePath.concatenatePaths(dirAndFile.directory, url);
                 } else {
@@ -453,7 +455,7 @@ export class CoreIframeUtilsProvider {
                 return;
             }
 
-            if (element.tagName.toLowerCase() == 'object') {
+            if (element.tagName.toLowerCase() === 'object') {
                 element.setAttribute('data', url);
             } else {
                 element.setAttribute('src', url);
@@ -507,7 +509,7 @@ export class CoreIframeUtilsProvider {
                 (!link.target || link.target == '_self')
             ) {
                 // Load the link inside the frame itself.
-                if (element.tagName.toLowerCase() == 'object') {
+                if (element.tagName.toLowerCase() === 'object') {
                     element.setAttribute('data', link.href);
                 } else {
                     element.setAttribute('src', link.href);
@@ -518,7 +520,7 @@ export class CoreIframeUtilsProvider {
 
             // The frame is local or the link needs to be opened in a new window. Open in browser.
             if (!CoreSites.isLoggedIn()) {
-                CoreUtils.openInBrowser(link.href);
+                CoreOpener.openInBrowser(link.href);
             } else {
                 await CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(link.href);
             }
@@ -537,14 +539,14 @@ export class CoreIframeUtilsProvider {
             }
 
             try {
-                await CoreUtils.openFile(link.href);
+                await CoreOpener.openFile(link.href);
             } catch (error) {
                 CoreDomUtils.showErrorModal(error);
             }
         } else if (CorePlatform.isIOS() && (!link.target || link.target == '_self') && element) {
             // In cordova ios 4.1.0 links inside iframes stopped working. We'll manually treat them.
             event && event.preventDefault();
-            if (element.tagName.toLowerCase() == 'object') {
+            if (element.tagName.toLowerCase() === 'object') {
                 element.setAttribute('data', link.href);
             } else {
                 element.setAttribute('src', link.href);
@@ -681,11 +683,11 @@ export class CoreIframeUtilsProvider {
             if (!CoreNetwork.isOnline()) {
                 // User is offline, try to open a local copy of the file if present.
                 const localUrl = options.site ?
-                    await CoreUtils.ignoreErrors(CoreFilepool.getInternalUrlByUrl(options.site.getId(), url)) :
+                    await CorePromiseUtils.ignoreErrors(CoreFilepool.getInternalUrlByUrl(options.site.getId(), url)) :
                     undefined;
 
                 if (localUrl) {
-                    CoreUtils.openFile(localUrl);
+                    CoreOpener.openFile(localUrl);
                 } else {
                     CoreDomUtils.showErrorModal('core.networkerrormsg', true);
                 }
@@ -693,11 +695,11 @@ export class CoreIframeUtilsProvider {
                 return;
             }
 
-            const mimetype = await CoreUtils.ignoreErrors(CoreUtils.getMimeTypeFromUrl(url));
+            const mimetype = await CorePromiseUtils.ignoreErrors(CoreMimetypeUtils.getMimeTypeFromUrl(url));
 
             if (!mimetype || mimetype === 'text/html' || mimetype === 'text/plain') {
                 // It's probably a web page, open in browser.
-                options.site ? options.site.openInBrowserWithAutoLogin(url) : CoreUtils.openInBrowser(url);
+                options.site ? options.site.openInBrowserWithAutoLogin(url) : CoreOpener.openInBrowser(url);
 
                 return;
             }
@@ -709,7 +711,7 @@ export class CoreIframeUtilsProvider {
                 url = await options.site.checkAndFixPluginfileURL(url);
             }
 
-            CoreUtils.openOnlineFile(url);
+            CoreOpener.openOnlineFile(url);
 
         } finally {
             modal.dismiss();

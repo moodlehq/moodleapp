@@ -26,7 +26,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     AddonModData,
@@ -52,6 +52,8 @@ import {
     AddonModDataTemplateMode,
 } from '../../constants';
 import { CoreModals } from '@services/modals';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreObject } from '@singletons/object';
 
 const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 
@@ -61,7 +63,7 @@ const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 @Component({
     selector: 'addon-mod-data-index',
     templateUrl: 'addon-mod-data-index.html',
-    styleUrls: ['../../data.scss'],
+    styleUrl: '../../data.scss',
 })
 export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
@@ -223,7 +225,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         if (sync) {
             // Try to synchronize the data.
-            await CoreUtils.ignoreErrors(this.syncActivity(showErrors));
+            await CorePromiseUtils.ignoreErrors(this.syncActivity(showErrors));
         }
 
         this.groupInfo = await CoreGroups.getActivityGroupInfo(this.database.coursemodule);
@@ -268,8 +270,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         const fields = await AddonModData.getFields(this.database.id, { cmId: this.module.id });
         this.search.advanced = [];
 
-        this.fields = CoreUtils.arrayToObject(fields, 'id');
-        this.fieldsArray = CoreUtils.objectToArray(this.fields);
+        this.fields = CoreArray.toObject(fields, 'id');
+        this.fieldsArray = CoreObject.toArray(this.fields);
         if (this.fieldsArray.length == 0) {
             canSearch = false;
             canAdd = false;

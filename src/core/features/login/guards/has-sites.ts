@@ -14,7 +14,7 @@
 
 import { CanActivateFn } from '@angular/router';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Router } from '@singletons';
 import { CoreLoginHelper } from '../services/login-helper';
 
@@ -24,7 +24,7 @@ import { CoreLoginHelper } from '../services/login-helper';
  * @returns True if user has sites, redirect route otherwise.
  */
 export const hasSitesGuard: CanActivateFn = async () => {
-    const sites = await CoreUtils.ignoreErrors(CoreSites.getSites(), []);
+    const sites = await CorePromiseUtils.ignoreErrors(CoreSites.getSites(), []);
 
     if (sites.length > 0) {
         return true;

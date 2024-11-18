@@ -14,7 +14,7 @@
 
 import { CanActivateFn } from '@angular/router';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
-import { CoreApp } from '@services/app';
+import { CoreRedirects } from '@singletons/redirects';
 
 import { CoreSites } from '@services/sites';
 import { Router } from '@singletons';
@@ -35,7 +35,7 @@ export const authGuard: CanActivateFn = async () => {
         const siteId = CoreSites.getCurrentSiteId();
 
         // Pass redirect data (if any and belongs to same site).
-        let redirect = CoreApp.consumeMemoryRedirect();
+        let redirect = CoreRedirects.consumeMemoryRedirect();
         if (redirect?.siteId !== siteId) {
             redirect = null;
         }

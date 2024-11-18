@@ -14,17 +14,15 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile, CoreWSExternalWarning, CoreWSStoredFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModFeedbackOffline } from './feedback-offline';
-import { AddonModFeedbackAutoSyncData, AddonModFeedbackSyncProvider } from './feedback-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
     ADDON_MOD_FEEDBACK_COMPONENT,
@@ -36,6 +34,9 @@ import {
     ADDON_MOD_FEEDBACK_PER_PAGE,
     AddonModFeedbackIndexTabName,
 } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Service that provides some features for feedbacks.
@@ -157,7 +158,7 @@ export class AddonModFeedbackProvider {
         }
 
         // Merge with offline data.
-        const offlineResponses = await CoreUtils.ignoreErrors(
+        const offlineResponses = await CorePromiseUtils.ignoreErrors(
             AddonModFeedbackOffline.getFeedbackResponses(feedbackId, options.siteId),
         );
 
@@ -169,7 +170,7 @@ export class AddonModFeedbackProvider {
 
         // Merge all values into one array.
         const offlineValuesArray = offlineResponses.reduce((array, entry) => {
-            const responses = <OfflineResponsesArray> CoreUtils.objectToArrayOfObjects(entry.responses, 'id', 'value');
+            const responses = <OfflineResponsesArray> CoreObject.toArrayOfObjects(entry.responses, 'id', 'value');
 
             return array.concat(responses);
         }, <OfflineResponsesArray> []).map((valueEntry) => {
@@ -590,7 +591,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFeedbackCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_FEEDBACK_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -648,7 +649,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getItemsDataCacheKey(feedbackId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_FEEDBACK_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -1082,12 +1083,12 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCompletedDataCacheKey(feedbackId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_FEEDBACK_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
-        return CoreUtils.promiseWorks(site.read('mod_feedback_get_last_completed', params, preSets));
+        return CorePromiseUtils.promiseWorks(site.read('mod_feedback_get_last_completed', params, preSets));
     }
 
     /**
@@ -1195,7 +1196,7 @@ export class AddonModFeedbackProvider {
         try {
             return await this.processPageOnline(feedbackId, page, responses, !!options.goPrevious, options.siteId);
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 throw error;
             }
@@ -1227,16 +1228,16 @@ export class AddonModFeedbackProvider {
         const params: AddonModFeedbackProcessPageWSParams = {
             feedbackid: feedbackId,
             page: page,
-            responses: CoreUtils.objectToArrayOfObjects(responses, 'name', 'value'),
+            responses: CoreObject.toArrayOfObjects(responses, 'name', 'value'),
             goprevious: goPrevious,
         };
 
         const response = await site.write<AddonModFeedbackProcessPageWSResponse>('mod_feedback_process_page', params);
 
         // Invalidate and update current values because they will change.
-        await CoreUtils.ignoreErrors(this.invalidateCurrentValuesData(feedbackId, site.getId()));
+        await CorePromiseUtils.ignoreErrors(this.invalidateCurrentValuesData(feedbackId, site.getId()));
 
-        await CoreUtils.ignoreErrors(this.getCurrentValues(feedbackId, { siteId: site.getId() }));
+        await CorePromiseUtils.ignoreErrors(this.getCurrentValues(feedbackId, { siteId: site.getId() }));
 
         return response;
     }
@@ -1254,7 +1255,6 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [ADDON_MOD_FEEDBACK_FORM_SUBMITTED]: AddonModFeedbackFormSubmittedData;
-        [AddonModFeedbackSyncProvider.AUTO_SYNCED]: AddonModFeedbackAutoSyncData;
     }
 
 }

@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { makeSingleton } from '@singletons';
 import { AddonCalendarSubmitCreateUpdateFormDataWSParams } from './calendar';
 import {
@@ -62,7 +62,7 @@ export class AddonCalendarOfflineProvider {
 
         const result = await Promise.all(promises);
 
-        return CoreUtils.mergeArraysWithoutDuplicates(result[0], result[1]);
+        return CoreArray.mergeWithoutDuplicates(result[0], result[1]);
     }
 
     /**

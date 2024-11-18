@@ -18,6 +18,8 @@ import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } 
 import { AddonModAssignFeedbackDelegate } from '@addons/mod/assign/services/feedback-delegate';
 import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/classes/compile-init-component';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays an assign feedback plugin created using a site plugin.
@@ -26,6 +28,11 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-site-plugins-assign-feedback',
     templateUrl: 'core-siteplugins-assign-feedback.html',
     styles: [':host { display: contents; }'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCompileHtmlComponentModule,
+    ],
 })
 export class CoreSitePluginsAssignFeedbackComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
 

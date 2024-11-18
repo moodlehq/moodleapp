@@ -92,6 +92,15 @@ export class CorePlatformService extends Platform {
     }
 
     /**
+     * Checks if the current window is wider than a mobile.
+     *
+     * @returns Whether the app the current window is wider than a mobile.
+     */
+    isWide(): boolean {
+        return this.width() > 768;
+    }
+
+    /**
      * Check whether the device is configured to reduce motion.
      *
      * @returns Whether the device is configured to reduce motion.

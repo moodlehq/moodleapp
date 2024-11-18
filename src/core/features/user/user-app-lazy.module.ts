@@ -33,4 +33,4 @@ const routes: Routes = [
         CoreUserCompleteProfilePage,
     ],
 })
-export class CoreUserAppLazyModule {}
+export default class CoreUserAppLazyModule {}

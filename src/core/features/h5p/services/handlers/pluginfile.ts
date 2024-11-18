@@ -20,7 +20,7 @@ import { CorePluginFileDownloadableResult, CorePluginFileHandler } from '@servic
 import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreWSFile } from '@services/ws';
 import { CoreH5P } from '../h5p';
 import { Translate, makeSingleton } from '@singletons';
@@ -103,7 +103,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
 
             return trustedFile.filesize || 0;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // WS returned an error, it means it cannot be downloaded.
                 return 0;
             }

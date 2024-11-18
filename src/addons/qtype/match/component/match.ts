@@ -22,7 +22,7 @@ import { AddonModQuizMatchQuestion, CoreQuestionBaseComponent } from '@features/
 @Component({
     selector: 'addon-qtype-match',
     templateUrl: 'addon-qtype-match.html',
-    styleUrls: ['match.scss'],
+    styleUrl: 'match.scss',
 })
 export class AddonQtypeMatchComponent extends CoreQuestionBaseComponent<AddonModQuizMatchQuestion> {
 

@@ -27,7 +27,7 @@ import { ContextLevel } from '@/core/constants';
 @Component({
     selector: 'core-block-side-blocks-button',
     templateUrl: 'side-blocks-button.html',
-    styleUrls: ['side-blocks-button.scss'],
+    styleUrl: 'side-blocks-button.scss',
 })
 export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
 

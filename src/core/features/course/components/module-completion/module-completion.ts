@@ -15,9 +15,7 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange } from '@angular/core';
 
 import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classes/module-completion';
-import {
-    CoreCourseModuleCompletionStatus,
-} from '@features/course/services/course';
+import { CoreCourseModuleCompletionStatus } from '@features/course/constants';
 import { CorePopovers } from '@services/popovers';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUser } from '@features/user/services/user';
@@ -37,7 +35,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-course-module-completion',
     templateUrl: 'core-course-module-completion.html',
-    styleUrls: ['module-completion.scss'],
+    styleUrl: 'module-completion.scss',
 })
 export class CoreCourseModuleCompletionComponent
     extends CoreCourseModuleCompletionBaseComponent

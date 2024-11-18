@@ -17,7 +17,6 @@ import { Injectable, Type } from '@angular/core';
 import { CoreFormFields } from '@singletons/form';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModDataFieldTextHandlerService } from '../../text/services/handler';
-import { AddonModDataFieldNumberComponent } from '../component/number';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 
 /**
@@ -32,7 +31,9 @@ export class AddonModDataFieldNumberHandlerService extends AddonModDataFieldText
     /**
      * @inheritdoc
      */
-    getComponent(): Type<AddonModDataFieldPluginBaseComponent> {
+    async getComponent(): Promise<Type<AddonModDataFieldPluginBaseComponent>> {
+        const { AddonModDataFieldNumberComponent } = await import('../component/number');
+
         return AddonModDataFieldNumberComponent;
     }
 

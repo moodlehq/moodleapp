@@ -37,7 +37,7 @@ import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreTabComponent } from '@components/tabs/tab';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
-import { CoreMenuItem, CoreUtils } from '@services/utils/utils';
+import { CoreMenuItem, CoreUtils } from '@singletons/utils';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../../services/assign-helper';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
@@ -70,6 +70,7 @@ import {
 } from '../../constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Component that displays an assignment submission.
@@ -77,7 +78,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'addon-mod-assign-submission',
     templateUrl: 'addon-mod-assign-submission.html',
-    styleUrls: ['submission.scss'],
+    styleUrl: 'submission.scss',
 })
 export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, CanLeave {
 
@@ -327,7 +328,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         const previousSubmission = this.previousAttempt.submission;
         let modal = await CoreLoadings.show();
 
-        const size = await CoreUtils.ignoreErrors(
+        const size = await CorePromiseUtils.ignoreErrors(
             AddonModAssignHelper.getSubmissionSizeForCopy(this.assign, previousSubmission),
             -1,
         ); // Error calculating size, return -1.
@@ -548,7 +549,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             });
         }
 
-        await CoreUtils.ignoreErrors(Promise.all(promises));
+        await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
         await this.loadData(sync);
     }
@@ -716,7 +717,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
             // If we have data about the grader, get its profile.
             if (feedback.grade && feedback.grade.grader > 0) {
-                this.grader = await CoreUtils.ignoreErrors(CoreUser.getProfile(feedback.grade.grader, this.courseId));
+                this.grader = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(feedback.grade.grader, this.courseId));
             } else {
                 delete this.grader;
             }
@@ -803,7 +804,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
         // Submission grades aren't identified by attempt number so it can retrieve the feedback for a previous attempt.
         // The app will not treat that as an special case.
-        const submissionGrade = await CoreUtils.ignoreErrors(
+        const submissionGrade = await CorePromiseUtils.ignoreErrors(
             AddonModAssignOffline.getSubmissionGrade(assign.id, this.submitId),
         );
 
@@ -1075,7 +1076,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         const [gradebookGrades, assignGrades] = await Promise.all([
             CoreGradesHelper.getGradeModuleItems(this.courseId, this.moduleId, this.submitId),
             gradeNotReleased ?
-                CoreUtils.ignoreErrors(AddonModAssign.getAssignmentGrades(assign.id, { cmId: assign.cmid })) :
+                CorePromiseUtils.ignoreErrors(AddonModAssign.getAssignmentGrades(assign.id, { cmId: assign.cmid })) :
                 undefined,
         ]);
 

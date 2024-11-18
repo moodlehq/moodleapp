@@ -15,7 +15,7 @@
 import { Injectable, Type } from '@angular/core';
 
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from './quiz';
 import { CoreSites } from '@services/sites';
@@ -171,9 +171,9 @@ export class AddonModQuizAccessRuleDelegateService extends CoreDelegate<AddonMod
     ): Promise<void> {
         rules = rules || [];
 
-        await CoreUtils.ignoreErrors(CoreUtils.allPromises(rules.map(async (rule) => {
+        await CorePromiseUtils.allPromisesIgnoringErrors(rules.map(async (rule) => {
             await this.executeFunctionOnEnabled(rule, 'getFixedPreflightData', [quiz, preflightData, attempt, prefetch, siteId]);
-        })));
+        }));
     }
 
     /**
@@ -216,11 +216,11 @@ export class AddonModQuizAccessRuleDelegateService extends CoreDelegate<AddonMod
         rules = rules || [];
         let isRequired = false;
 
-        await CoreUtils.ignoreErrors(CoreUtils.allPromises(rules.map(async (rule) => {
+        await CorePromiseUtils.allPromisesIgnoringErrors(rules.map(async (rule) => {
             const ruleRequired = await this.isPreflightCheckRequiredForRule(rule, quiz, attempt, prefetch, siteId);
 
             isRequired = isRequired || ruleRequired;
-        })));
+        }));
 
         return isRequired;
     }
@@ -268,13 +268,13 @@ export class AddonModQuizAccessRuleDelegateService extends CoreDelegate<AddonMod
     ): Promise<void> {
         rules = rules || [];
 
-        await CoreUtils.ignoreErrors(CoreUtils.allPromises(rules.map(async (rule) => {
+        await CorePromiseUtils.allPromisesIgnoringErrors(rules.map(async (rule) => {
             await this.executeFunctionOnEnabled(
                 rule,
                 'notifyPreflightCheckPassed',
                 [quiz, attempt, preflightData, prefetch, siteId],
             );
-        })));
+        }));
     }
 
     /**
@@ -298,13 +298,13 @@ export class AddonModQuizAccessRuleDelegateService extends CoreDelegate<AddonMod
     ): Promise<void> {
         rules = rules || [];
 
-        await CoreUtils.ignoreErrors(CoreUtils.allPromises(rules.map(async (rule) => {
+        await CorePromiseUtils.allPromisesIgnoringErrors(rules.map(async (rule) => {
             await this.executeFunctionOnEnabled(
                 rule,
                 'notifyPreflightCheckFailed',
                 [quiz, attempt, preflightData, prefetch, siteId],
             );
-        })));
+        }));
     }
 
     /**

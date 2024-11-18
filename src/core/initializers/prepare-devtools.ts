@@ -13,16 +13,16 @@
 // limitations under the License.
 
 import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
-import { CoreApp, CoreAppProvider } from '@services/app';
 import { CoreConfig, CoreConfigProvider } from '@services/config';
 import { CoreDB, CoreDbProvider } from '@services/db';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
 import { CoreBrowser } from '@singletons/browser';
 import { CoreConstants } from '../constants';
+import { CoreAppDB, CoreAppDBService } from '@services/app-db';
 
 type DevelopmentWindow = Window & {
     browser?: typeof CoreBrowser;
-    appProvider?: CoreAppProvider;
+    appDBService?: CoreAppDBService;
     configProvider?: CoreConfigProvider;
     dbProvider?: CoreDbProvider;
     urlSchemes?: CoreCustomURLSchemesProvider;
@@ -36,7 +36,7 @@ type DevelopmentWindow = Window & {
  */
 function initializeDevelopmentWindow(window: DevelopmentWindow) {
     window.browser = CoreBrowser;
-    window.appProvider = CoreApp.instance;
+    window.appDBService = CoreAppDB.instance;
     window.configProvider = CoreConfig.instance;
     window.dbProvider = CoreDB.instance;
     window.urlSchemes = CoreCustomURLSchemes.instance;

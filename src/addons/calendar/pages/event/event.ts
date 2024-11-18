@@ -17,11 +17,10 @@ import { AlertOptions } from '@ionic/core';
 import {
     AddonCalendar,
     AddonCalendarEventToDisplay,
-    AddonCalendarProvider,
 } from '../../services/calendar';
 import { AddonCalendarEventReminder, AddonCalendarHelper } from '../../services/calendar-helper';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
-import { AddonCalendarSync, AddonCalendarSyncEvents, AddonCalendarSyncProvider } from '../../services/calendar-sync';
+import { AddonCalendarSync, AddonCalendarSyncEvents } from '../../services/calendar-sync';
 import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -32,13 +31,13 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreConstants } from '@/core/constants';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-source';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
-import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
+import { CoreReminders } from '@features/reminders/services/reminders';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CorePlatform } from '@services/platform';
 import { CoreConfig } from '@services/config';
@@ -46,6 +45,16 @@ import { CoreToasts, ToastDuration } from '@services/toasts';
 import { CorePopovers } from '@services/popovers';
 import { CoreLoadings } from '@services/loadings';
 import { CoreUrl } from '@singletons/url';
+import {
+    ADDON_CALENDAR_AUTO_SYNCED,
+    ADDON_CALENDAR_DELETED_EVENT_EVENT,
+    ADDON_CALENDAR_EDIT_EVENT_EVENT,
+    ADDON_CALENDAR_MANUAL_SYNCED,
+    ADDON_CALENDAR_NEW_EVENT_DISCARDED_EVENT,
+    ADDON_CALENDAR_NEW_EVENT_EVENT,
+    ADDON_CALENDAR_UNDELETED_EVENT_EVENT,
+} from '@addons/calendar/constants';
+import { REMINDERS_DEFAULT_NOTIFICATION_TIME_CHANGED } from '@features/reminders/constants';
 
 /**
  * Page that displays a single calendar event.
@@ -99,7 +108,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         this.canEdit = AddonCalendar.canEditEventsInSite();
 
         // Listen for event edited. If current event is edited, reload the data.
-        this.editEventObserver = CoreEvents.on(AddonCalendarProvider.EDIT_EVENT_EVENT, (data) => {
+        this.editEventObserver = CoreEvents.on(ADDON_CALENDAR_EDIT_EVENT_EVENT, (data) => {
             if (data && data.eventId === this.eventId) {
                 this.eventLoaded = false;
                 this.refreshEvent(true, false);
@@ -107,7 +116,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         }, this.currentSiteId);
 
         // Listen for event created. If user edits the data of a new offline event or it's sent to server, this event is triggered.
-        this.newEventObserver = CoreEvents.on(AddonCalendarProvider.NEW_EVENT_EVENT, (data) => {
+        this.newEventObserver = CoreEvents.on(ADDON_CALENDAR_NEW_EVENT_EVENT, (data) => {
             if (this.eventId < 0 && data && (data.eventId === this.eventId || data.oldEventId === this.eventId)) {
                 this.eventId = data.eventId;
                 this.eventLoaded = false;
@@ -117,14 +126,14 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
         // Refresh data if this calendar event is synchronized automatically.
         this.syncObserver = CoreEvents.on(
-            AddonCalendarSyncProvider.AUTO_SYNCED,
+            ADDON_CALENDAR_AUTO_SYNCED,
             (data) => this.checkSyncResult(false, data),
             this.currentSiteId,
         );
 
         // Refresh data if calendar events are synchronized manually but not by this page.
         this.manualSyncObserver = CoreEvents.on(
-            AddonCalendarSyncProvider.MANUAL_SYNCED,
+            ADDON_CALENDAR_MANUAL_SYNCED,
             (data) => this.checkSyncResult(true, data),
             this.currentSiteId,
         );
@@ -138,7 +147,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         });
 
         // Reload reminders if default notification time changes.
-        this.defaultTimeChangedObserver = CoreEvents.on(CoreRemindersService.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
+        this.defaultTimeChangedObserver = CoreEvents.on(REMINDERS_DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
             this.loadReminders();
         }, this.currentSiteId);
 
@@ -364,7 +373,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                 result.source = 'event';
 
                 CoreEvents.trigger(
-                    AddonCalendarSyncProvider.MANUAL_SYNCED,
+                    ADDON_CALENDAR_MANUAL_SYNCED,
                     result,
                     this.currentSiteId,
                 );
@@ -471,7 +480,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         }
         promises.push(AddonCalendar.invalidateTimeFormat());
 
-        await CoreUtils.allPromisesIgnoringErrors(promises);
+        await CorePromiseUtils.allPromisesIgnoringErrors(promises);
 
         await this.fetchEvent(sync, showErrors);
     }
@@ -552,9 +561,9 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
             // Trigger an event.
             if (this.event.id < 0) {
-                CoreEvents.trigger(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, {}, CoreSites.getCurrentSiteId());
+                CoreEvents.trigger(ADDON_CALENDAR_NEW_EVENT_DISCARDED_EVENT, {}, CoreSites.getCurrentSiteId());
             } else {
-                CoreEvents.trigger(AddonCalendarProvider.DELETED_EVENT_EVENT, {
+                CoreEvents.trigger(ADDON_CALENDAR_DELETED_EVENT_EVENT, {
                     eventId: this.eventId,
                     sent: onlineEventDeleted,
                 }, CoreSites.getCurrentSiteId());
@@ -595,7 +604,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             await AddonCalendarOffline.unmarkDeleted(this.event.id);
 
             // Trigger an event.
-            CoreEvents.trigger(AddonCalendarProvider.UNDELETED_EVENT_EVENT, {
+            CoreEvents.trigger(ADDON_CALENDAR_UNDELETED_EVENT_EVENT, {
                 eventId: this.eventId,
             }, CoreSites.getCurrentSiteId());
 

@@ -24,7 +24,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ContextLevel } from '@/core/constants';
+import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
  * Service to provide filter functionalities.
@@ -288,7 +288,7 @@ export class CoreFilterProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAllStatesCacheKey(),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             // Use stale while revalidate by default, but always use the first value. If data is updated it will be stored in DB.
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy ?? CoreSitesReadingStrategy.STALE_WHILE_REVALIDATE),
         };
@@ -364,7 +364,7 @@ export class CoreFilterProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAvailableInContextsCacheKey(contextsToSend),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             splitRequest: {
                 param: 'contexts',
                 maxLength: 300,
@@ -428,7 +428,7 @@ export class CoreFilterProvider {
 
             // Check the context isn't "expired". The time stored in this cache will not match the one in the site cache.
             if (cachedCtxt && (!isOnline ||
-                    Date.now() <= cachedCtxt.time + site.getExpirationDelay(CoreSite.FREQUENCY_RARELY))) {
+                    Date.now() <= cachedCtxt.time + site.getExpirationDelay(CoreCacheUpdateFrequency.RARELY))) {
 
                 result[context.contextlevel] = result[context.contextlevel] || {};
                 result[context.contextlevel][context.instanceid] = cachedCtxt.filters;

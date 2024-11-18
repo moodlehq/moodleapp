@@ -20,7 +20,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModScormDataModel12 } from '../../classes/data-model-12';
 import {
@@ -540,7 +540,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      */
     protected async refreshToc(): Promise<void> {
         try {
-            await CoreUtils.ignoreErrors(AddonModScorm.invalidateAllScormData(this.scorm.id));
+            await CorePromiseUtils.ignoreErrors(AddonModScorm.invalidateAllScormData(this.scorm.id));
 
             await this.fetchToc();
         } catch (error) {
@@ -571,7 +571,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         }
 
         // New online attempt created, update cached data about online attempts.
-        await CoreUtils.ignoreErrors(AddonModScorm.getAttemptCount(this.scorm.id, {
+        await CorePromiseUtils.ignoreErrors(AddonModScorm.getAttemptCount(this.scorm.id, {
             cmId: this.cmId,
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
         }));
@@ -581,7 +581,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      * Log event.
      */
     protected async logEvent(scoId: number): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonModScorm.logLaunchSco(this.scorm.id, scoId));
+        await CorePromiseUtils.ignoreErrors(AddonModScorm.logLaunchSco(this.scorm.id, scoId));
 
         let url = '/mod/scorm/player.php';
         if (this.scorm.popup) {

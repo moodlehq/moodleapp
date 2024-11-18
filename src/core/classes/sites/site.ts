@@ -27,7 +27,7 @@ import {
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils, CoreUtilsOpenInBrowserOptions } from '@services/utils/utils';
+import { CoreOpener, CoreOpenerOpenInBrowserOptions } from '@singletons/opener';
 import { CoreConstants } from '@/core/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
@@ -55,6 +55,7 @@ import { CoreAuthenticatedSite, CoreAuthenticatedSiteOptionalData, CoreSiteWSPre
 import { firstValueFrom } from 'rxjs';
 import { CorePlatform } from '@services/platform';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Class that represents a site (combination of site + user).
@@ -405,7 +406,7 @@ export class CoreSite extends CoreAuthenticatedSite {
         const siteFolder = CoreFile.getSiteFolder(this.id);
 
         // Ignore any errors, removeDir fails if folder doesn't exists.
-        await CoreUtils.ignoreErrors(CoreFile.removeDir(siteFolder));
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(siteFolder));
     }
 
     /**
@@ -413,14 +414,14 @@ export class CoreSite extends CoreAuthenticatedSite {
      *
      * @returns Promise resolved with the site space usage (size).
      */
-    getSpaceUsage(): Promise<number> {
+    async getSpaceUsage(): Promise<number> {
         if (CoreFile.isAvailable() && this.id) {
             const siteFolderPath = CoreFile.getSiteFolder(this.id);
 
             return CoreFile.getDirectorySize(siteFolderPath).catch(() => 0);
-        } else {
-            return Promise.resolve(0);
         }
+
+        return 0;
     }
 
     /**
@@ -470,7 +471,7 @@ export class CoreSite extends CoreAuthenticatedSite {
     async openInBrowserWithAutoLogin(
         url: string,
         alertMessage?: string,
-        options: CoreUtilsOpenInBrowserOptions = {},
+        options: CoreOpenerOpenInBrowserOptions = {},
     ): Promise<void> {
         await this.openWithAutoLogin(false, url, options, alertMessage);
     }
@@ -501,7 +502,7 @@ export class CoreSite extends CoreAuthenticatedSite {
     async openWithAutoLogin(
         inApp: boolean,
         url: string,
-        options: InAppBrowserOptions & CoreUtilsOpenInBrowserOptions = {},
+        options: InAppBrowserOptions & CoreOpenerOpenInBrowserOptions = {},
         alertMessage?: string,
     ): Promise<InAppBrowserObject | void> {
         // Get the URL to open.
@@ -535,9 +536,9 @@ export class CoreSite extends CoreAuthenticatedSite {
                 options.clearsessioncache = 'yes';
             }
 
-            return CoreUtils.openInApp(autoLoginUrl, options);
+            return CoreOpener.openInApp(autoLoginUrl, options);
         } else {
-            return CoreUtils.openInBrowser(autoLoginUrl, options);
+            return CoreOpener.openInBrowser(autoLoginUrl, options);
         }
     }
 
@@ -884,7 +885,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      * @returns Time between requests.
      */
     async getAutoLoginMinTimeBetweenRequests(): Promise<number> {
-        const timeBetweenRequests = await CoreUtils.ignoreErrors(
+        const timeBetweenRequests = await CorePromiseUtils.ignoreErrors(
             this.getConfig('tool_mobile_autologinmintimebetweenreq'),
             CoreConstants.SECONDS_MINUTE * 6,
         );

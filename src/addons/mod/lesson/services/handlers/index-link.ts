@@ -20,7 +20,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreLoadings } from '@services/loadings';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModLesson } from '../lesson';
 
@@ -95,7 +95,7 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
             );
 
             // Store the password so it's automatically used.
-            await CoreUtils.ignoreErrors(AddonModLesson.storePassword(module.instance, password, siteId));
+            await CorePromiseUtils.ignoreErrors(AddonModLesson.storePassword(module.instance, password, siteId));
 
             await CoreCourseHelper.navigateToModule(moduleId, {
                 courseId: module.course,

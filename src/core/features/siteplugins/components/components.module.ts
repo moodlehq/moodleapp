@@ -16,53 +16,13 @@ import { NgModule } from '@angular/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
-import { CoreSitePluginsPluginContentComponent } from './plugin-content/plugin-content';
-import { CoreSitePluginsModuleIndexComponent } from './module-index/module-index';
-import { CoreSitePluginsCourseFormatComponent } from './course-format/course-format';
-import { CoreSitePluginsUserProfileFieldComponent } from './user-profile-field/user-profile-field';
-import { CoreSitePluginsQuestionComponent } from './question/question';
-import { CoreSitePluginsQuestionBehaviourComponent } from './question-behaviour/question-behaviour';
-import { CoreSitePluginsQuizAccessRuleComponent } from './quiz-access-rule/quiz-access-rule';
-import { CoreSitePluginsAssignFeedbackComponent } from './assign-feedback/assign-feedback';
-import { CoreSitePluginsAssignSubmissionComponent } from './assign-submission/assign-submission';
-import { CoreSitePluginsWorkshopAssessmentStrategyComponent } from './workshop-assessment-strategy/workshop-assessment-strategy';
-import { CoreSitePluginsBlockComponent } from './block/block';
-import { CoreSitePluginsOnlyTitleBlockComponent } from './only-title-block/only-title-block';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 @NgModule({
-    declarations: [
-        CoreSitePluginsPluginContentComponent,
-        CoreSitePluginsModuleIndexComponent,
-        CoreSitePluginsBlockComponent,
-        CoreSitePluginsOnlyTitleBlockComponent,
-        CoreSitePluginsCourseFormatComponent,
-        CoreSitePluginsUserProfileFieldComponent,
-        CoreSitePluginsQuestionComponent,
-        CoreSitePluginsQuestionBehaviourComponent,
-        CoreSitePluginsQuizAccessRuleComponent,
-        CoreSitePluginsAssignFeedbackComponent,
-        CoreSitePluginsAssignSubmissionComponent,
-        CoreSitePluginsWorkshopAssessmentStrategyComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponentModule,
         CoreCourseComponentsModule,
-    ],
-    exports: [
-        CoreSitePluginsPluginContentComponent,
-        CoreSitePluginsModuleIndexComponent,
-        CoreSitePluginsBlockComponent,
-        CoreSitePluginsOnlyTitleBlockComponent,
-        CoreSitePluginsCourseFormatComponent,
-        CoreSitePluginsUserProfileFieldComponent,
-        CoreSitePluginsQuestionComponent,
-        CoreSitePluginsQuestionBehaviourComponent,
-        CoreSitePluginsQuizAccessRuleComponent,
-        CoreSitePluginsAssignFeedbackComponent,
-        CoreSitePluginsAssignSubmissionComponent,
-        CoreSitePluginsWorkshopAssessmentStrategyComponent,
     ],
 })
 export class CoreSitePluginsComponentsModule {}

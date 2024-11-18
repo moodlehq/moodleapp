@@ -22,7 +22,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { NgZone, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
@@ -44,6 +44,9 @@ import {
 } from '../../constants';
 import { CoreLoadings } from '@services/loadings';
 import { CoreError } from '@classes/errors/error';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
+import { CoreObject } from '@singletons/object';
 
 /**
  * Page that displays feedback form.
@@ -51,7 +54,7 @@ import { CoreError } from '@classes/errors/error';
 @Component({
     selector: 'page-addon-mod-feedback-form',
     templateUrl: 'form.html',
-    styleUrls: ['form.scss'],
+    styleUrl: 'form.scss',
 })
 export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
@@ -156,7 +159,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
             if (this.items && !this.completed && this.originalData) {
                 // Form submitted. Check if there is any change.
-                if (!CoreUtils.basicLeftCompare(responses, this.originalData, 3)) {
+                if (!CoreObject.basicLeftCompare(responses, this.originalData, 3)) {
                     await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
                 }
             }
@@ -218,7 +221,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
         try {
             this.access = await AddonModFeedback.getFeedbackAccessInformation(this.feedback.id, options);
         } catch (error) {
-            if (this.offline || CoreUtils.isWebServiceError(error)) {
+            if (this.offline || CoreWSError.isWebServiceError(error)) {
                 // Already offline or shouldn't go offline, fail.
                 throw error;
             }
@@ -245,7 +248,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
         try {
             return await AddonModFeedback.getResumePage(this.feedback.id, options);
         } catch (error) {
-            if (this.offline || CoreUtils.isWebServiceError(error)) {
+            if (this.offline || CoreWSError.isWebServiceError(error)) {
                 // Already offline or shouldn't go offline, fail.
                 throw error;
             }
@@ -313,7 +316,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
         try {
             response = await AddonModFeedback.getPageItemsWithValues(this.feedback.id, page, options);
         } catch (error) {
-            if (this.offline || CoreUtils.isWebServiceError(error)) {
+            if (this.offline || CoreWSError.isWebServiceError(error)) {
                 // Already offline or shouldn't go offline, fail.
                 throw error;
             }
@@ -349,7 +352,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
         try {
             // Sync other pages first.
-            await CoreUtils.ignoreErrors(AddonModFeedbackSync.syncFeedback(this.feedback.id));
+            await CorePromiseUtils.ignoreErrors(AddonModFeedbackSync.syncFeedback(this.feedback.id));
 
             const response = await AddonModFeedback.processPage(this.feedback.id, this.currentPage, responses, {
                 goPrevious,

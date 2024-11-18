@@ -39,7 +39,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-sites-list',
     templateUrl: 'sites-list.html',
-    styleUrls: ['sites-list.scss'],
+    styleUrl: 'sites-list.scss',
 })
 export class CoreSitesListComponent<T extends CoreSiteBasicInfo> {
 

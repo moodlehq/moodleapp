@@ -23,7 +23,7 @@ import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreFormatTextDirective } from '@directives/format-text';
 import { CoreSite } from '@classes/sites/site';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 import { mock, mockSingleton, RenderConfig, renderTemplate, renderWrapperComponent } from '@/testing/utils';
 import { ContextLevel } from '@/core/constants';
@@ -135,7 +135,7 @@ describe('CoreFormatTextDirective', () => {
         });
 
         // @todo this is done because we cannot mock image being loaded, we should find an alternative...
-        CoreUtils.instance.timeoutPromise = <T>() => Promise.resolve(null as unknown as T);
+        CorePromiseUtils.timeoutPromise = <T>() => Promise.resolve(null as unknown as T);
 
         mockSingleton(CoreFilepool, { getSrcByUrl: () => Promise.resolve('file://local-path') });
         mockSingleton(CoreSites, {

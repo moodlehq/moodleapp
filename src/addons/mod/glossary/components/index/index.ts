@@ -47,7 +47,6 @@ import { AddonModGlossaryOfflineEntry } from '../../services/glossary-offline';
 import {
     AddonModGlossaryAutoSyncedData,
     AddonModGlossarySyncResult,
-    GLOSSARY_AUTO_SYNCED,
 } from '../../services/glossary-sync';
 import { AddonModGlossaryPrefetchHandler } from '../../services/handlers/prefetch';
 import { CoreTime } from '@singletons/time';
@@ -57,6 +56,7 @@ import {
     ADDON_MOD_GLOSSARY_ENTRY_DELETED,
     ADDON_MOD_GLOSSARY_ENTRY_UPDATED,
     ADDON_MOD_GLOSSARY_PAGE_NAME,
+    GLOSSARY_AUTO_SYNCED,
 } from '../../constants';
 import { CorePopovers } from '@services/popovers';
 
@@ -66,7 +66,7 @@ import { CorePopovers } from '@services/popovers';
 @Component({
     selector: 'addon-mod-glossary-index',
     templateUrl: 'addon-mod-glossary-index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivityComponent
     implements OnInit, AfterViewInit, OnDestroy {

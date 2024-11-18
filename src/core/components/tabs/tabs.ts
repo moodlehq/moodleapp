@@ -41,7 +41,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-tabs',
     templateUrl: 'core-tabs.html',
-    styleUrls: ['tabs.scss'],
+    styleUrl: 'tabs.scss',
 })
 export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> implements AfterViewInit {
 

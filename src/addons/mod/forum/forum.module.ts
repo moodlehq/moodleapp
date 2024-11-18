@@ -37,7 +37,7 @@ import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { AddonModForumTagAreaHandler } from './services/handlers/tag-area';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonModForumPushClickHandler } from './services/handlers/push-click';
-import { COURSE_CONTENTS_PATH } from '@features/course/constants';
+import { CORE_COURSE_CONTENTS_PATH } from '@features/course/constants';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { ADDON_MOD_FORUM_COMPONENT, ADDON_MOD_FORUM_PAGE_NAME, ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from './constants';
 
@@ -58,12 +58,12 @@ const mainMenuRoutes: Routes = [
     ...conditionalRoutes(
         [
             {
-                path: `${COURSE_CONTENTS_PATH}/${ADDON_MOD_FORUM_PAGE_NAME}/new/:timeCreated`,
+                path: `${CORE_COURSE_CONTENTS_PATH}/${ADDON_MOD_FORUM_PAGE_NAME}/new/:timeCreated`,
                 loadChildren: () => import('./forum-new-discussion-lazy.module'),
                 data: { discussionsPathPrefix: `${ADDON_MOD_FORUM_PAGE_NAME}/` },
             },
             {
-                path: `${COURSE_CONTENTS_PATH}/${ADDON_MOD_FORUM_PAGE_NAME}/:discussionId`,
+                path: `${CORE_COURSE_CONTENTS_PATH}/${ADDON_MOD_FORUM_PAGE_NAME}/:discussionId`,
                 loadChildren: () => import('./forum-discussion-lazy.module'),
                 data: { discussionsPathPrefix: `${ADDON_MOD_FORUM_PAGE_NAME}/` },
             },

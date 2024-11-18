@@ -18,7 +18,7 @@ import { CoreSyncBaseProvider } from '@classes/base-sync';
 
 import { CoreSites } from '@services/sites';
 import { CoreNetwork } from '@services/network';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreCourseOffline } from './course-offline';
 import { CoreCourse } from './course';
@@ -29,6 +29,8 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreCourses } from '@features/courses/services/courses';
+import { CORE_COURSE_AUTO_SYNCED } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync course offline data. This only syncs the offline data of the course itself, not the offline data of
@@ -36,8 +38,6 @@ import { CoreCourses } from '@features/courses/services/courses';
  */
 @Injectable({ providedIn: 'root' })
 export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncResult> {
-
-    static readonly AUTO_SYNCED = 'core_course_autom_synced';
 
     constructor() {
         super('CoreCourseSyncProvider');
@@ -83,7 +83,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
         // Sync all courses.
         await Promise.all(completions.map(async (completion) => {
             if (courseNames[completion.courseid] === undefined) {
-                const course = await CoreUtils.ignoreErrors(CoreCourses.getUserCourse(completion.courseid, true, siteId));
+                const course = await CorePromiseUtils.ignoreErrors(CoreCourses.getUserCourse(completion.courseid, true, siteId));
 
                 courseNames[completion.courseid] = course?.displayname || course?.fullname;
             }
@@ -96,7 +96,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
             }
 
             // Sync successful, send event.
-            CoreEvents.trigger(CoreCourseSyncProvider.AUTO_SYNCED, {
+            CoreEvents.trigger(CORE_COURSE_AUTO_SYNCED, {
                 courseId: completion.courseid,
                 warnings: result.warnings,
             }, siteId);
@@ -154,7 +154,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
         };
 
         // Get offline responses to be sent.
-        const completions = await CoreUtils.ignoreErrors(
+        const completions = await CorePromiseUtils.ignoreErrors(
             CoreCourseOffline.getCourseManualCompletions(courseId, siteId),
             <CoreCourseManualCompletionDBRecord[]> [],
         );
@@ -212,7 +212,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
 
                 await CoreCourseOffline.deleteManualCompletion(entry.cmid, siteId);
             } catch (error) {
-                if (!CoreUtils.isWebServiceError(error)) {
+                if (!CoreWSError.isWebServiceError(error)) {
                     // Couldn't connect to server, reject.
                     throw error;
                 }
@@ -270,9 +270,22 @@ export type CoreCourseSyncResult = {
 };
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to CORE_COURSE_AUTO_SYNCED event.
  */
 export type CoreCourseAutoSyncData = {
     courseId: number;
     warnings: CoreWSExternalWarning[];
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [CORE_COURSE_AUTO_SYNCED]: CoreCourseAutoSyncData;
+    }
+
+}

@@ -45,7 +45,7 @@ export async function getSharedFilesServices(): Promise<Type<unknown>[]> {
 const routes: Routes = [
     {
         path: SHAREDFILES_PAGE_NAME,
-        loadChildren: () => import('./sharedfiles-lazy.module').then(m => m.CoreSharedFilesLazyModule),
+        loadChildren: () => import('./sharedfiles-lazy.module'),
     },
 ];
 

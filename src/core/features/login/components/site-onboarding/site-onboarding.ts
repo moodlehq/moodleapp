@@ -15,7 +15,7 @@
 import { Component } from '@angular/core';
 
 import { CoreConfig } from '@services/config';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreOpener } from '@singletons/opener';
 import { GET_STARTED_URL, ONBOARDING_DONE } from '@features/login/constants';
 import { ModalController } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -84,7 +84,7 @@ export class CoreLoginSiteOnboardingComponent {
 
         this.saveOnboardingDone();
 
-        CoreUtils.openInBrowser(GET_STARTED_URL, { showBrowserWarning: false });
+        CoreOpener.openInBrowser(GET_STARTED_URL, { showBrowserWarning: false });
 
         ModalController.dismiss();
     }

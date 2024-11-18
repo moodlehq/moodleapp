@@ -17,6 +17,62 @@
  */
 export class CoreArray {
 
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
+
+    /**
+     * Converts an array of objects to an object, using a property of each entry as the key.
+     * It can also be used to convert an array of strings to an object where the keys are the elements of the array.
+     * E.g. [{id: 10, name: 'A'}, {id: 11, name: 'B'}] => {10: {id: 10, name: 'A'}, 11: {id: 11, name: 'B'}}
+     *
+     * @param array The array to convert.
+     * @param propertyName The name of the property to use as the key. If not provided, the whole item will be used.
+     * @param result Object where to put the properties. If not defined, a new object will be created.
+     * @returns The object.
+     */
+    static toObject<T>(
+        array: T[] = [],
+        propertyName?: string,
+        result: Record<string, T> = {},
+    ): Record<string, T> {
+        for (const entry of array) {
+            const key = propertyName ? entry[propertyName] : entry;
+
+            result[key] = entry;
+        }
+
+        return result;
+    }
+
+    /**
+     * Converts an array of objects to an indexed array, using a property of each entry as the key.
+     * Every entry will contain an array of the found objects of the property identifier.
+     * E.g. [{id: 10, name: 'A'}, {id: 10, name: 'B'}] => {10: [ {id: 10, name: 'A'}, {id: 10, name: 'B'} ] }
+     *
+     * @param array The array to convert.
+     * @param propertyName The name of the property to use as the key. If not provided, the whole item will be used.
+     * @param result Object where to put the properties. If not defined, a new object will be created.
+     * @returns The object.
+     */
+    static toObjectMultiple<T>(
+        array: T[] = [],
+        propertyName?: string,
+        result: Record<string, T[]> = {},
+    ): Record<string, T[]> {
+        for (const entry of array) {
+            const key = propertyName ? entry[propertyName] : entry;
+            if (result[key] === undefined) {
+                result[key] = [];
+            }
+
+            result[key].push(entry);
+        }
+
+        return result;
+    }
+
     /**
      * Flatten the first dimension of a multi-dimensional array.
      *
@@ -91,6 +147,42 @@ export class CoreArray {
 
             return matches && matches.length;
         });
+    }
+
+    /**
+     * Merge two arrays, removing duplicate values.
+     *
+     * @param array1 The first array.
+     * @param array2 The second array.
+     * @param [key] Key of the property that must be unique. If not specified, the whole entry.
+     * @returns Merged array.
+     */
+    static mergeWithoutDuplicates<T>(array1: T[], array2: T[], key?: string): T[] {
+        return CoreArray.unique(array1.concat(array2), key) as T[];
+    }
+
+    /**
+     * Gets the index of the first string that matches a regular expression.
+     *
+     * @param array Array to search.
+     * @param regex RegExp to apply to each string.
+     * @returns Index of the first string that matches the RegExp. -1 if not found.
+     */
+    static indexOfRegexp(array: string[], regex: RegExp): number {
+        if (!array || !array.length) {
+            return -1;
+        }
+
+        for (let i = 0; i < array.length; i++) {
+            const entry = array[i];
+            const matches = entry.match(regex);
+
+            if (matches && matches.length) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
 }

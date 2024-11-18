@@ -45,7 +45,7 @@ import { CoreSync } from '@services/sync';
 import { CoreText } from '@singletons/text';
 import { AddonModForumHelper } from '../../services/forum-helper';
 import { AddonModForumOffline } from '../../services/forum-offline';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreForms } from '@singletons/form';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
@@ -58,6 +58,8 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CorePopovers } from '@services/popovers';
 import { CoreLoadings } from '@services/loadings';
 import { CoreWSFile } from '@services/ws';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -65,7 +67,7 @@ import { CoreWSFile } from '@services/ws';
 @Component({
     selector: 'addon-mod-forum-post',
     templateUrl: 'post.html',
-    styleUrls: ['post.scss'],
+    styleUrl: 'post.scss',
 })
 export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges {
 
@@ -504,7 +506,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         }
 
         // Use prepare post for edition to avoid re-uploading all files.
-        let filesToKeep = files.filter((file): file is CoreWSFile => !CoreUtils.isFileEntry(file));
+        let filesToKeep = files.filter((file): file is CoreWSFile => !CoreFileUtils.isFileEntry(file));
         let removedFiles: { filepath: string; filename: string }[] | undefined;
 
         if (previousAttachments.length && !filesToKeep.length) {
@@ -553,7 +555,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             return { attachments, saveOffline: false };
         } catch (error) {
             // Cannot upload them in online, save them in offline.
-            if (!this.forum.id || CoreUtils.isWebServiceError(error)) {
+            if (!this.forum.id || CoreWSError.isWebServiceError(error)) {
                 // Cannot store them in offline. Reject.
                 throw error;
             }
@@ -599,7 +601,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                 }));
             }
 
-            await CoreUtils.ignoreErrors(Promise.all(promises));
+            await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
             // Reset data.
             this.setFormData();

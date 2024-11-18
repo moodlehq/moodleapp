@@ -19,6 +19,8 @@ import { AddonModQuizAccessRuleDelegate } from '@addons/mod/quiz/services/access
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '@addons/mod/quiz/services/quiz';
 import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/classes/compile-init-component';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a quiz access rule created using a site plugin.
@@ -27,6 +29,11 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-site-plugins-quiz-access-rule',
     templateUrl: 'core-siteplugins-quiz-access-rule.html',
     styles: [':host { display: contents; }'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCompileHtmlComponentModule,
+    ],
 })
 export class CoreSitePluginsQuizAccessRuleComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
 

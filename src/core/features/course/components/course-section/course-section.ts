@@ -25,8 +25,9 @@ import { CoreCourseComponentsModule } from '../components.module';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreCourseViewedModulesDBRecord } from '@features/course/services/database/course';
-import { CoreCourseModuleCompletionStatus, sectionContentIsModule } from '@features/course/services/course';
+import { sectionContentIsModule } from '@features/course/services/course';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
+import { CoreCourseModuleCompletionStatus } from '@features/course/constants';
 
 /**
  * Component to display course section.

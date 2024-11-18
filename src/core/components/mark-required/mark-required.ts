@@ -31,7 +31,7 @@ import { Translate } from '@singletons';
 @Component({
     selector: '[core-mark-required]',
     templateUrl: 'core-mark-required.html',
-    styleUrls: ['mark-required.scss'],
+    styleUrl: 'mark-required.scss',
 })
 export class CoreMarkRequiredComponent implements AfterViewInit {
 

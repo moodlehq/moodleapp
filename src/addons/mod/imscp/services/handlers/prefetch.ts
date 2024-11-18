@@ -22,7 +22,7 @@ import {
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModImscp } from '../imscp';
@@ -61,7 +61,7 @@ export class AddonModImscpPrefetchHandlerService extends CoreCourseResourcePrefe
      */
     async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         // If not found, use undefined so module description is used.
-        const imscp = await CoreUtils.ignoreErrors(AddonModImscp.getImscp(courseId, module.id));
+        const imscp = await CorePromiseUtils.ignoreErrors(AddonModImscp.getImscp(courseId, module.id));
 
         return this.getIntroFilesFromInstance(module, imscp);
     }

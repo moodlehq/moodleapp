@@ -17,7 +17,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { Component, OnInit, Input } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
-import { CoreFile } from '@services/file';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { ModalController, Translate } from '@singletons';
 import { CoreSharedFilesComponentsModule } from '../components.module';
 
@@ -58,7 +58,7 @@ export class CoreSharedFilesListModalComponent implements OnInit {
      */
     calculateTitle(path?: string): void {
         if (path) {
-            this.title = CoreFile.getFileAndDirectoryFromPath(path).name;
+            this.title = CoreFileUtils.getFileAndDirectoryFromPath(path).name;
         } else {
             this.title = Translate.instant('core.sharedfiles.sharedfiles');
         }

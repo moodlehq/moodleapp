@@ -24,7 +24,7 @@ import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile } from '@services/ws';
 import { ModalController, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -55,6 +55,8 @@ import { CoreFormFields, CoreForms } from '@singletons/form';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_LESSON_COMPONENT, AddonModLessonJumpTo } from '../../constants';
 import { CoreModals } from '@services/modals';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Page that allows attempting and reviewing a lesson.
@@ -62,7 +64,7 @@ import { CoreModals } from '@services/modals';
 @Component({
     selector: 'page-addon-mod-lesson-player',
     templateUrl: 'player.html',
-    styleUrls: ['player.scss'],
+    styleUrl: 'player.scss',
 })
 export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
@@ -169,7 +171,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         if (this.question && !this.eolData && !this.processData && this.originalData) {
             // Question shown. Check if there is any change.
-            if (!CoreUtils.basicLeftCompare(this.questionForm.getRawValue(), this.originalData, 3)) {
+            if (!CoreObject.basicLeftCompare(this.questionForm.getRawValue(), this.originalData, 3)) {
                 await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
             }
         }
@@ -213,7 +215,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
                 throw error;
             }
 
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // WebService returned an error, cannot perform the action.
                 throw error;
             }
@@ -355,7 +357,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             return true;
         } catch (error) {
 
-            if (this.review && this.retakeToReview && CoreUtils.isWebServiceError(error)) {
+            if (this.review && this.retakeToReview && CoreWSError.isWebServiceError(error)) {
                 // The user cannot review the retake. Unmark the retake as being finished in sync.
                 await AddonModLessonSync.deleteRetakeFinishedInSync(this.lesson!.id);
             }
@@ -384,7 +386,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         if (this.offline && CoreNetwork.isOnline()) {
             // Offline mode but the app is online. Try to sync the data.
-            const result = await CoreUtils.ignoreErrors(
+            const result = await CorePromiseUtils.ignoreErrors(
                 AddonModLessonSync.syncLesson(lesson.id, true, true),
             );
 

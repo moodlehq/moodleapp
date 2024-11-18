@@ -27,7 +27,6 @@ import { CoreCourseOptionsDelegate } from '@features/course/services/course-opti
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
-import { CoreCoursesProvider } from '@features/courses/services/courses';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
@@ -38,7 +37,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWS } from '@services/ws';
 import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
@@ -89,6 +88,7 @@ import { CorePath } from '@singletons/path';
 import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 import { CoreSitePluginsEnrolHandler } from '../classes/handlers/enrol-handler';
 import { CORE_SITE_PLUGINS_COMPONENT } from '../constants';
+import { CORE_COURSES_MY_COURSES_CHANGED_EVENT } from '@features/courses/constants';
 
 /**
  * Helper service to provide functionalities regarding site plugins. It basically has the features to load and register site
@@ -102,7 +102,7 @@ import { CORE_SITE_PLUGINS_COMPONENT } from '../constants';
 @Injectable({ providedIn: 'root' })
 export class CoreSitePluginsInitService {
 
-    protected logger: CoreLogger;
+    protected logger = CoreLogger.getInstance('CoreSitePluginsInit');
     protected courseRestrictHandlers: Record<string, {
         plugin: CoreSitePluginsPlugin;
         handlerName: string;
@@ -112,10 +112,6 @@ export class CoreSitePluginsInitService {
 
     protected static readonly HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
 
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreSitePluginsInit');
-    }
-
     /**
      * Initialize.
      */
@@ -123,7 +119,7 @@ export class CoreSitePluginsInitService {
         // Fetch the plugins on login.
         CoreEvents.on(CoreEvents.LOGIN, async (data) => {
             try {
-                const plugins = await CoreUtils.ignoreErrors(CoreSitePlugins.getPlugins(data.siteId));
+                const plugins = await CorePromiseUtils.ignoreErrors(CoreSitePlugins.getPlugins(data.siteId));
 
                 // Plugins fetched, check that site hasn't changed.
                 if (data.siteId !== CoreSites.getCurrentSiteId() || !plugins?.length) {
@@ -144,7 +140,7 @@ export class CoreSitePluginsInitService {
         });
 
         // Re-load plugins restricted for courses when the list of user courses changes.
-        CoreEvents.on(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, (data) => {
+        CoreEvents.on(CORE_COURSES_MY_COURSES_CHANGED_EVENT, (data) => {
             if (data.siteId && data.siteId === CoreSites.getCurrentSiteId() && data.added.length) {
                 this.reloadCourseRestrictHandlers();
             }
@@ -183,14 +179,14 @@ export class CoreSitePluginsInitService {
         const componentId = uniqueName + '#main';
 
         // Remove the CSS files for this handler that aren't used anymore. Don't block the call for this.
-        const files = await CoreUtils.ignoreErrors(
+        const files = await CorePromiseUtils.ignoreErrors(
             CoreFilepool.getFilesByComponent(site.getId(), CORE_SITE_PLUGINS_COMPONENT, componentId),
         );
 
         files?.forEach((file) => {
             if (file.url !== url) {
                 // It's not the current file, delete it.
-                CoreUtils.ignoreErrors(CoreFilepool.removeFileByUrl(site.getId(), file.url));
+                CorePromiseUtils.ignoreErrors(CoreFilepool.removeFileByUrl(site.getId(), file.url));
             }
         });
 
@@ -367,7 +363,7 @@ export class CoreSitePluginsInitService {
         if (plugin.parsedHandlers) {
             // Register all the handlers.
             const parsedHandlers = plugin.parsedHandlers;
-            await CoreUtils.allPromises(Object.keys(parsedHandlers).map(async (name) => {
+            await CorePromiseUtils.allPromises(Object.keys(parsedHandlers).map(async (name) => {
                 await this.registerHandler(plugin, name, parsedHandlers[name]);
             }));
         }
@@ -381,7 +377,7 @@ export class CoreSitePluginsInitService {
     protected async loadSitePlugins(plugins: CoreSitePluginsPlugin[]): Promise<void> {
         this.courseRestrictHandlers = {};
 
-        await CoreUtils.allPromises(plugins.map(async (plugin) => {
+        await CorePromiseUtils.allPromises(plugins.map(async (plugin) => {
             const pluginPromise = this.loadSitePlugin(plugin);
             CoreSitePlugins.registerSitePluginPromise(plugin.component, pluginPromise);
 
@@ -433,7 +429,7 @@ export class CoreSitePluginsInitService {
         }
 
         // Styles have been loaded, now treat the CSS.
-        CoreUtils.ignoreErrors(
+        CorePromiseUtils.ignoreErrors(
             CoreFilepool.treatCSSCode(siteId, fileUrl, cssCode, CORE_SITE_PLUGINS_COMPONENT, uniqueName, version),
         );
     }

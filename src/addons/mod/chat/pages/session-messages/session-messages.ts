@@ -17,7 +17,7 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModChat } from '../../services/chat';
 import { AddonModChatFormattedSessionMessage, AddonModChatHelper } from '../../services/chat-helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -48,7 +48,7 @@ export class AddonModChatSessionMessagesPage implements OnInit {
 
     constructor() {
         this.logView = CoreTime.once(async () => {
-            await CoreUtils.ignoreErrors(AddonModChat.logViewSessions(this.cmId, {
+            await CorePromiseUtils.ignoreErrors(AddonModChat.logViewSessions(this.cmId, {
                 start: this.sessionStart,
                 end: this.sessionEnd,
             }));
@@ -159,7 +159,9 @@ export class AddonModChatSessionMessagesPage implements OnInit {
      */
     async refreshMessages(refresher: HTMLIonRefresherElement): Promise<void> {
         try {
-            await CoreUtils.ignoreErrors(AddonModChat.invalidateSessionMessages(this.chatId, this.sessionStart, this.groupId));
+            await CorePromiseUtils.ignoreErrors(
+                AddonModChat.invalidateSessionMessages(this.chatId, this.sessionStart, this.groupId),
+            );
 
             await this.fetchMessages();
         } finally {

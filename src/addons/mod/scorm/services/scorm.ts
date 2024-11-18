@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DownloadStatus } from '@/core/constants';
+import { CoreCacheUpdateFrequency, DownloadStatus } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFilepool } from '@services/filepool';
@@ -24,13 +23,12 @@ import { CoreSync } from '@services/sync';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreWS, CoreWSExternalFile, CoreWSExternalWarning, CoreWSFile, CoreWSPreSets } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CorePath } from '@singletons/path';
 import { AddonModScormOffline } from './scorm-offline';
-import { AddonModScormAutoSyncEventData } from './scorm-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
     ADDON_MOD_SCORM_COMPONENT,
@@ -43,8 +41,8 @@ import {
     ADDON_MOD_SCORM_LAUNCH_NEXT_SCO_EVENT,
     ADDON_MOD_SCORM_LAUNCH_PREV_SCO_EVENT,
     ADDON_MOD_SCORM_UPDATE_TOC_EVENT,
-    ADDON_MOD_SCORM_DATA_AUTO_SYNCED,
 } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 // Private constants.
 const VALID_STATUSES = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'];
@@ -555,7 +553,7 @@ export class AddonModScormProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptCountCacheKey(scormId, userId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_SCORM_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -810,12 +808,12 @@ export class AddonModScormProvider {
         response.data.forEach((sco) => {
             data[sco.scoid] = {
                 scoid: sco.scoid,
-                defaultdata: <Record<string, AddonModScormDataValue>> CoreUtils.objectToKeyValueMap(
+                defaultdata: <Record<string, AddonModScormDataValue>> CoreObject.toKeyValueMap(
                     sco.defaultdata,
                     'element',
                     'value',
                 ),
-                userdata: <Record<string, AddonModScormDataValue>> CoreUtils.objectToKeyValueMap(sco.userdata, 'element', 'value'),
+                userdata: <Record<string, AddonModScormDataValue>> CoreObject.toKeyValueMap(sco.userdata, 'element', 'value'),
             };
 
         });
@@ -851,7 +849,7 @@ export class AddonModScormProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getScosCacheKey(scormId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_SCORM_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -1093,7 +1091,7 @@ export class AddonModScormProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getScormDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_SCORM_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1116,7 +1114,7 @@ export class AddonModScormProvider {
         }
 
         if (response.options) {
-            const scormOptions = CoreUtils.objectToKeyValueMap(response.options, 'name', 'value');
+            const scormOptions = CoreObject.toKeyValueMap(response.options, 'name', 'value');
 
             if (scormOptions.scormstandard) {
                 currentScorm.scormStandard = Number(scormOptions.scormstandard);
@@ -1638,7 +1636,7 @@ export class AddonModScormProvider {
 
         if (isOutdated === undefined) {
             // Calculate if it's outdated.
-            const data = await CoreUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, component, scorm.coursemodule));
+            const data = await CorePromiseUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, component, scorm.coursemodule));
 
             if (!data) {
                 // Package not found, not downloaded.
@@ -1653,7 +1651,7 @@ export class AddonModScormProvider {
 
         } else if (isOutdated) {
             // The package is outdated, but maybe the file hasn't changed.
-            const extra = await CoreUtils.ignoreErrors(CoreFilepool.getPackageExtra(siteId, component, scorm.coursemodule));
+            const extra = await CorePromiseUtils.ignoreErrors(CoreFilepool.getPackageExtra(siteId, component, scorm.coursemodule));
 
             if (!extra) {
                 // Package not found, not downloaded.
@@ -2081,7 +2079,6 @@ declare module '@singletons/events' {
         [ADDON_MOD_SCORM_UPDATE_TOC_EVENT]: AddonModScormCommonEventData;
         [ADDON_MOD_SCORM_GO_OFFLINE_EVENT]: AddonModScormCommonEventData;
         [ADDON_MOD_SCORM_DATA_SENT_EVENT]: AddonModScormCommonEventData;
-        [ADDON_MOD_SCORM_DATA_AUTO_SYNCED]: AddonModScormAutoSyncEventData;
     }
 
 }

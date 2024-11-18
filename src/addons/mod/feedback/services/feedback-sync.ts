@@ -21,21 +21,20 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModFeedback, AddonModFeedbackWSFeedback } from './feedback';
 import { AddonModFeedbackOffline, AddonModFeedbackOfflineResponse } from './feedback-offline';
 import { AddonModFeedbackPrefetchHandler, AddonModFeedbackPrefetchHandlerService } from './handlers/prefetch';
-import { ADDON_MOD_FEEDBACK_COMPONENT } from '../constants';
+import { ADDON_MOD_FEEDBACK_AUTO_SYNCED, ADDON_MOD_FEEDBACK_COMPONENT } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync feedbacks.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProvider<AddonModFeedbackSyncResult> {
-
-    static readonly AUTO_SYNCED = 'addon_mod_feedback_autom_synced';
 
     protected componentTranslatableString = 'feedback';
 
@@ -96,7 +95,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
 
             if (result?.updated) {
                 // Sync successful, send event.
-                CoreEvents.trigger(AddonModFeedbackSyncProvider.AUTO_SYNCED, {
+                CoreEvents.trigger(ADDON_MOD_FEEDBACK_AUTO_SYNCED, {
                     feedbackId: response.feedbackid,
                     warnings: result.warnings,
                 }, siteId);
@@ -163,14 +162,14 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         };
 
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_FEEDBACK_COMPONENT, feedbackId, siteId));
+        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_FEEDBACK_COMPONENT, feedbackId, siteId));
 
         // Get offline responses to be sent.
-        const responses = await CoreUtils.ignoreErrors(AddonModFeedbackOffline.getFeedbackResponses(feedbackId, siteId));
+        const responses = await CorePromiseUtils.ignoreErrors(AddonModFeedbackOffline.getFeedbackResponses(feedbackId, siteId));
 
         if (!responses || !responses.length) {
             // Nothing to sync.
-            await CoreUtils.ignoreErrors(this.setSyncTime(feedbackId, siteId));
+            await CorePromiseUtils.ignoreErrors(this.setSyncTime(feedbackId, siteId));
 
             return result;
         }
@@ -200,7 +199,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
                     Translate.instant('addon.mod_feedback.this_feedback_is_already_submitted'),
                 );
 
-                await CoreUtils.ignoreErrors(this.setSyncTime(feedbackId, siteId));
+                await CorePromiseUtils.ignoreErrors(this.setSyncTime(feedbackId, siteId));
 
                 return result;
             }
@@ -219,7 +218,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         }));
 
         // Execute all the processes in order to solve dependencies.
-        await CoreUtils.executeOrderedPromises(orderedData);
+        await CorePromiseUtils.executeOrderedPromises(orderedData);
 
         if (result.updated) {
             // Data has been sent to server, update data.
@@ -233,7 +232,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         }
 
         // Sync finished, set sync time.
-        await CoreUtils.ignoreErrors(this.setSyncTime(feedbackId, siteId));
+        await CorePromiseUtils.ignoreErrors(this.setSyncTime(feedbackId, siteId));
 
         return result;
     }
@@ -267,7 +266,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
 
             await AddonModFeedbackOffline.deleteFeedbackPageResponses(feedback.id, data.page, siteId);
         } catch (error) {
-            if (!CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, reject.
                 throw error;
             }
@@ -296,9 +295,22 @@ export const AddonModFeedbackSync = makeSingleton(AddonModFeedbackSyncProvider);
 export type AddonModFeedbackSyncResult = CoreSyncResult;
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to ADDON_MOD_FEEDBACK_AUTO_SYNCED event.
  */
 export type AddonModFeedbackAutoSyncData = {
     feedbackId: number;
     warnings: string[];
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_MOD_FEEDBACK_AUTO_SYNCED]: AddonModFeedbackAutoSyncData;
+    }
+
+}

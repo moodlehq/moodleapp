@@ -18,7 +18,7 @@ import { IonContent } from '@ionic/angular';
 import { CoreCourseModuleMainResourceComponent } from './main-resource-component';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourse } from '../services/course';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourseContentsPage } from '../pages/contents/contents';
 import { CoreSites } from '@services/sites';
@@ -100,7 +100,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
             return;
         }
 
-        await CoreUtils.ignoreErrors(Promise.all([
+        await CorePromiseUtils.ignoreErrors(Promise.all([
             this.invalidateContent(),
             this.showCompletion ? CoreCourse.invalidateModule(this.module.id) : undefined,
         ]));
@@ -165,7 +165,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
         try {
             if (refresh && this.showCompletion) {
-                await CoreUtils.ignoreErrors(this.fetchModule());
+                await CorePromiseUtils.ignoreErrors(this.fetchModule());
             }
 
             await this.fetchContent(refresh, sync, showErrors);

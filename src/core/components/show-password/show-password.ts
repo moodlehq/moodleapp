@@ -16,7 +16,7 @@ import { Component, AfterViewInit, Input, ContentChild, ViewEncapsulation } from
 import { IonInput } from '@ionic/angular';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreLogger } from '@singletons/logger';
 
 /**
@@ -79,7 +79,7 @@ export class CoreShowPasswordComponent implements AfterViewInit {
         }
 
         // eslint-disable-next-line deprecation/deprecation
-        const input = await CoreUtils.ignoreErrors(this.ionInput.getInputElement());
+        const input = await CorePromiseUtils.ignoreErrors(this.ionInput.getInputElement());
         if (!input) {
             return;
         }

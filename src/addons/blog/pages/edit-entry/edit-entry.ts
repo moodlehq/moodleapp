@@ -41,12 +41,13 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreTimeUtils } from '@services/utils/time';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 @Component({
     selector: 'addon-blog-edit-entry',
@@ -59,7 +60,7 @@ import { CoreTimeUtils } from '@services/utils/time';
         CoreTagComponentsModule,
     ],
 })
-export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
+export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
 
     @ViewChild('editEntryForm') formElement!: ElementRef;
 
@@ -257,7 +258,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
 
             return selectedEntry;
         } catch (error) {
-            if (!params.filters || CoreUtils.isWebServiceError(error)) {
+            if (!params.filters || CoreWSError.isWebServiceError(error)) {
                 // Cannot get the entry, reject.
                 throw error;
             }
@@ -323,7 +324,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
                 const filters: AddonBlogFilter | undefined = CoreNavigator.getRouteParam('filters');
                 const entry = this.entry && 'attachment' in this.entry
                     ? this.entry
-                    : await CoreUtils.ignoreErrors(this.getEntry({ filters, lastModified, entryId: this.entry.id }));
+                    : await CorePromiseUtils.ignoreErrors(this.getEntry({ filters, lastModified, entryId: this.entry.id }));
 
                 const removedFiles = CoreFileUploader.getFilesToDelete(entry?.attachmentfiles ?? [], this.files);
 
@@ -335,7 +336,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
 
                 return await this.saveEntry({ attachmentsId: attachmentsid });
             } catch (error) {
-                if (CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     // It's a WebService error, the user cannot send the message so don't store it.
                     CoreDomUtils.showErrorModalDefault(error, 'Error updating entry.');
 
@@ -360,7 +361,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
             const attachmentsId = await this.uploadOrStoreFiles({ created });
             await this.saveEntry({ created, attachmentsId });
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
                 CoreDomUtils.showErrorModalDefault(error, 'Error creating entry.');
 

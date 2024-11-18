@@ -14,7 +14,7 @@
 
 import { Component, Input, OnInit, OnChanges, SimpleChange, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreAnimations } from '@components/animations';
 import { Translate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
@@ -47,7 +47,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-loading',
     templateUrl: 'core-loading.html',
-    styleUrls: ['loading.scss'],
+    styleUrl: 'loading.scss',
     animations: [CoreAnimations.SHOW_HIDE],
 })
 export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, AsyncDirective, OnDestroy {

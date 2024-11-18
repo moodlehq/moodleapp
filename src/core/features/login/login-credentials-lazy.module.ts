@@ -36,4 +36,4 @@ const routes: Routes = [
         CoreLoginCredentialsPage,
     ],
 })
-export class CoreLoginCredentialsLazyModule {}
+export default class CoreLoginCredentialsLazyModule {}

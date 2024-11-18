@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ADDON_CALENDAR_COMPONENT } from '@addons/calendar/constants';
-import { AddonCalendarEventDBRecord, EVENTS_TABLE } from '@addons/calendar/services/database/calendar';
+import { ADDON_CALENDAR_COMPONENT, ADDON_CALENDAR_EVENTS_TABLE } from '@addons/calendar/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreSiteSchema } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreReminderData, CoreRemindersService } from '../reminders';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreReminderData } from '../reminders';
+import { AddonCalendarEventDBRecord } from '@addons/calendar/services/database/calendar';
+import { REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
 
 /**
  * Database variables for CoreRemindersService service.
@@ -87,7 +88,7 @@ const migrateFromCalendarRemindersV1 = async (db: SQLiteDB): Promise<void> => {
     // Migrate reminders. New format @since 4.0.
     const oldTable = 'addon_calendar_reminders';
 
-    const tableExists = await CoreUtils.promiseWorks(db.tableExists(oldTable));
+    const tableExists = await CorePromiseUtils.promiseWorks(db.tableExists(oldTable));
     if (!tableExists) {
         return;
     }
@@ -100,7 +101,7 @@ const migrateFromCalendarRemindersV1 = async (db: SQLiteDB): Promise<void> => {
         // Get the event to compare the reminder time with the event time.
         if (!events[record.eventid]) {
             try {
-                events[record.eventid] = await db.getRecord(EVENTS_TABLE, { id: record.eventid });
+                events[record.eventid] = await db.getRecord(ADDON_CALENDAR_EVENTS_TABLE, { id: record.eventid });
             } catch {
                 // Event not found in local DB, shouldn't happen. Ignore the reminder.
                 return;
@@ -113,7 +114,7 @@ const migrateFromCalendarRemindersV1 = async (db: SQLiteDB): Promise<void> => {
 
         if (!reminderTime || reminderTime === -1) {
             // Default reminder.
-            reminderTime = CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE;
+            reminderTime = REMINDERS_DEFAULT_REMINDER_TIMEBEFORE;
         } else if (reminderTime > event.timestart) {
             // Reminder is after the event, ignore it.
             return;
@@ -144,7 +145,7 @@ const migrateFromCalendarRemindersV1 = async (db: SQLiteDB): Promise<void> => {
 const migrateFromCalendarRemindersV2 = async (db: SQLiteDB): Promise<void> => {
     const oldTable = 'addon_calendar_reminders_2';
 
-    const tableExists = await CoreUtils.promiseWorks(db.tableExists(oldTable));
+    const tableExists = await CorePromiseUtils.promiseWorks(db.tableExists(oldTable));
     if (!tableExists) {
         return;
     }
@@ -157,7 +158,7 @@ const migrateFromCalendarRemindersV2 = async (db: SQLiteDB): Promise<void> => {
         // Get the event to compare the reminder time with the event time.
         if (!events[record.eventid]) {
             try {
-                events[record.eventid] = await db.getRecord(EVENTS_TABLE, { id: record.eventid });
+                events[record.eventid] = await db.getRecord(ADDON_CALENDAR_EVENTS_TABLE, { id: record.eventid });
             } catch {
                 // Event not found in local DB, shouldn't happen. Ignore the reminder.
                 return;
@@ -165,7 +166,7 @@ const migrateFromCalendarRemindersV2 = async (db: SQLiteDB): Promise<void> => {
         }
         const event = events[record.eventid];
 
-        const reminderTime = record.time || CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE;
+        const reminderTime = record.time || REMINDERS_DEFAULT_REMINDER_TIMEBEFORE;
 
         if (uniqueReminder[record.eventid] === undefined) {
             uniqueReminder[record.eventid] = [];

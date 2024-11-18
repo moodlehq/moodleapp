@@ -14,7 +14,6 @@
 
 import { Injectable, Type } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreTagFeedComponent } from '@features/tag/components/feed/feed';
 import { CoreTagAreaHandler } from '@features/tag/services/tag-area-delegate';
 import { CoreTagFeedElement, CoreTagHelper } from '@features/tag/services/tag-helper';
 import { CoreSitesReadingStrategy } from '@services/sites';
@@ -68,11 +67,11 @@ export class AddonModBookTagAreaHandlerService implements CoreTagAreaHandler {
     }
 
     /**
-     * Get the component to use to display items.
-     *
-     * @returns The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
-    getComponent(): Type<unknown> | Promise<Type<unknown>> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { CoreTagFeedComponent } = await import('@features/tag/components/feed/feed');
+
         return CoreTagFeedComponent;
     }
 

@@ -23,17 +23,35 @@ import {
     AddonMessagesOfflineConversationMessagesDBRecordFormatted,
     AddonMessagesOfflineMessagesDBRecordFormatted,
 } from './messages-offline';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreEvents } from '@singletons/events';
 import { CoreSite } from '@classes/sites/site';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
-import { AddonMessagesSyncEvents, AddonMessagesSyncProvider } from './messages-sync';
 import { CoreWSError } from '@classes/errors/wserror';
 import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons/notifications/services/notifications';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import {
+    ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT,
+    ADDON_MESSAGES_LIMIT_CONTACTS,
+    ADDON_MESSAGES_LIMIT_INITIAL_USER_SEARCH,
+    ADDON_MESSAGES_LIMIT_MESSAGES,
+    ADDON_MESSAGES_LIMIT_SEARCH,
+    ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT,
+    ADDON_MESSAGES_NEW_MESSAGE_EVENT,
+    ADDON_MESSAGES_OPEN_CONVERSATION_EVENT,
+    ADDON_MESSAGES_POLL_INTERVAL,
+    ADDON_MESSAGES_PUSH_SIMULATION_COMPONENT,
+    ADDON_MESSAGES_READ_CHANGED_EVENT,
+    ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT,
+    ADDON_MESSAGES_UPDATE_CONVERSATION_LIST_EVENT,
+    AddonMessagesMessageConversationType,
+    AddonMessagesMessagePrivacy,
+    AddonMessagesUpdateConversationAction,
+} from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 declare module '@singletons/events' {
 
@@ -43,22 +61,15 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [AddonMessagesProvider.NEW_MESSAGE_EVENT]: AddonMessagesNewMessagedEventData;
-        [AddonMessagesProvider.READ_CHANGED_EVENT]: AddonMessagesReadChangedEventData;
-        [AddonMessagesProvider.OPEN_CONVERSATION_EVENT]: AddonMessagesOpenConversationEventData;
-        [AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT]: AddonMessagesUpdateConversationListEventData;
-        [AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT]: AddonMessagesMemberInfoChangedEventData;
-        [AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT]: AddonMessagesUnreadConversationCountsEventData;
-        [AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT]: AddonMessagesContactRequestCountEventData;
-        [AddonMessagesSyncProvider.AUTO_SYNCED]: AddonMessagesSyncEvents;
+        [ADDON_MESSAGES_NEW_MESSAGE_EVENT]: AddonMessagesNewMessagedEventData;
+        [ADDON_MESSAGES_READ_CHANGED_EVENT]: AddonMessagesReadChangedEventData;
+        [ADDON_MESSAGES_OPEN_CONVERSATION_EVENT]: AddonMessagesOpenConversationEventData;
+        [ADDON_MESSAGES_UPDATE_CONVERSATION_LIST_EVENT]: AddonMessagesUpdateConversationListEventData;
+        [ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT]: AddonMessagesMemberInfoChangedEventData;
+        [ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT]: AddonMessagesUnreadConversationCountsEventData;
+        [ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT]: AddonMessagesContactRequestCountEventData;
     }
 
-}
-
-export const enum AddonMessagesUpdateConversationAction {
-    MUTE = 'mute',
-    FAVOURITE = 'favourite',
-    DELETE = 'delete',
 }
 
 /**
@@ -69,27 +80,87 @@ export class AddonMessagesProvider {
 
     protected static readonly ROOT_CACHE_KEY = 'mmaMessages:';
 
-    static readonly NEW_MESSAGE_EVENT = 'addon_messages_new_message_event';
-    static readonly READ_CHANGED_EVENT = 'addon_messages_read_changed_event';
-    static readonly OPEN_CONVERSATION_EVENT = 'addon_messages_open_conversation_event'; // Notify a conversation should be opened.
-    static readonly UPDATE_CONVERSATION_LIST_EVENT = 'addon_messages_update_conversation_list_event';
-    static readonly MEMBER_INFO_CHANGED_EVENT = 'addon_messages_member_changed_event';
-    static readonly UNREAD_CONVERSATION_COUNTS_EVENT = 'addon_messages_unread_conversation_counts_event';
-    static readonly CONTACT_REQUESTS_COUNT_EVENT = 'addon_messages_contact_requests_count_event';
-    static readonly POLL_INTERVAL = 10000;
-    static readonly PUSH_SIMULATION_COMPONENT = 'AddonMessagesPushSimulation';
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_NEW_MESSAGE_EVENT instead.
+     */
+    static readonly NEW_MESSAGE_EVENT = ADDON_MESSAGES_NEW_MESSAGE_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_READ_CHANGED_EVENT instead.
+     */
+    static readonly READ_CHANGED_EVENT = ADDON_MESSAGES_READ_CHANGED_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_OPEN_CONVERSATION_EVENT instead.
+     */
+    static readonly OPEN_CONVERSATION_EVENT = ADDON_MESSAGES_OPEN_CONVERSATION_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_UPDATE_CONVERSATION_LIST_EVENT instead.
+     */
+    static readonly UPDATE_CONVERSATION_LIST_EVENT = ADDON_MESSAGES_UPDATE_CONVERSATION_LIST_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT instead.
+     */
+    static readonly MEMBER_INFO_CHANGED_EVENT = ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT instead.
+     */
+    static readonly UNREAD_CONVERSATION_COUNTS_EVENT = ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT instead.
+     */
+    static readonly CONTACT_REQUESTS_COUNT_EVENT = ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_POLL_INTERVAL instead.
+     */
+    static readonly POLL_INTERVAL = ADDON_MESSAGES_POLL_INTERVAL;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_PUSH_SIMULATION_COMPONENT instead.
+     */
+    static readonly PUSH_SIMULATION_COMPONENT = ADDON_MESSAGES_PUSH_SIMULATION_COMPONENT;
 
-    static readonly MESSAGE_PRIVACY_COURSEMEMBER = 0; // Privacy setting for being messaged by anyone within courses user is member.
-    static readonly MESSAGE_PRIVACY_ONLYCONTACTS = 1; // Privacy setting for being messaged only by contacts.
-    static readonly MESSAGE_PRIVACY_SITE = 2; // Privacy setting for being messaged by anyone on the site.
-    static readonly MESSAGE_CONVERSATION_TYPE_INDIVIDUAL = 1; // An individual conversation.
-    static readonly MESSAGE_CONVERSATION_TYPE_GROUP = 2; // A group conversation.
-    static readonly MESSAGE_CONVERSATION_TYPE_SELF = 3; // A self conversation.
-    static readonly LIMIT_CONTACTS = 50;
-    static readonly LIMIT_MESSAGES = 50;
-    static readonly LIMIT_INITIAL_USER_SEARCH = 3;
-    static readonly LIMIT_SEARCH = 50;
+    /**
+     * @deprecated since 5.0. Use AddonMessagesMessagePrivacy.COURSEMEMBER instead.
+     */
+    static readonly MESSAGE_PRIVACY_COURSEMEMBER = AddonMessagesMessagePrivacy.COURSEMEMBER;
+    /**
+     * @deprecated since 5.0. Use AddonMessagesMessagePrivacy.ONLYCONTACTS instead.
+     */
+    static readonly MESSAGE_PRIVACY_ONLYCONTACTS = AddonMessagesMessagePrivacy.ONLYCONTACTS;
+    /**
+     * @deprecated since 5.0. Use AddonMessagesMessagePrivacy.SITE instead.
+     */
+    static readonly MESSAGE_PRIVACY_SITE = AddonMessagesMessagePrivacy.SITE;
+    /**
+     * @deprecated since 5.0. Use AddonMessagesMessageConversationType.INDIVIDUAL instead.
+     */
+    static readonly MESSAGE_CONVERSATION_TYPE_INDIVIDUAL = AddonMessagesMessageConversationType.INDIVIDUAL;
+    /**
+     * @deprecated since 5.0. Use AddonMessagesMessageConversationType.GROUP instead.
+     */
+    static readonly MESSAGE_CONVERSATION_TYPE_GROUP = AddonMessagesMessageConversationType.GROUP;
+    /**
+     * @deprecated since 5.0. Use AddonMessagesMessageConversationType.SELF instead.
+     */
+    static readonly MESSAGE_CONVERSATION_TYPE_SELF = AddonMessagesMessageConversationType.SELF;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_LIMIT_CONTACTS instead.
+     */
+    static readonly LIMIT_CONTACTS = ADDON_MESSAGES_LIMIT_CONTACTS;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_LIMIT_MESSAGES instead.
+     */
+    static readonly LIMIT_MESSAGES = ADDON_MESSAGES_LIMIT_MESSAGES;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_LIMIT_INITIAL_USER_SEARCH instead.
+     */
+    static readonly LIMIT_INITIAL_USER_SEARCH = ADDON_MESSAGES_LIMIT_INITIAL_USER_SEARCH;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_LIMIT_SEARCH instead.
+     */
+    static readonly LIMIT_SEARCH = ADDON_MESSAGES_LIMIT_SEARCH;
 
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_NEW_MESSAGE_EVENT instead.
+     */
     static readonly NOTIFICATION_PREFERENCES_KEY = 'message_provider_moodle_instantmessage';
 
     protected logger: CoreLogger;
@@ -147,7 +218,7 @@ export class AddonMessagesProvider {
         } finally {
             const data: AddonMessagesMemberInfoChangedEventData = { userId, userBlocked: true };
 
-            CoreEvents.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+            CoreEvents.trigger(ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT, data, site.id);
         }
     }
 
@@ -169,14 +240,14 @@ export class AddonMessagesProvider {
 
         await site.write('core_message_confirm_contact_request', params);
 
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             this.invalidateAllMemberInfo(userId, site),
             this.invalidateContactsCache(site.id),
             this.invalidateUserContacts(site.id),
             this.refreshContactRequestsCount(site.id),
         ]).finally(() => {
             const data: AddonMessagesMemberInfoChangedEventData = { userId, contactRequestConfirmed: true };
-            CoreEvents.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+            CoreEvents.trigger(ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT, data, site.id);
         });
     }
 
@@ -212,7 +283,7 @@ export class AddonMessagesProvider {
 
         await this.invalidateAllMemberInfo(userId, site).finally(() => {
             const data: AddonMessagesMemberInfoChangedEventData = { userId, contactRequestCreated: true };
-            CoreEvents.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+            CoreEvents.trigger(ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT, data, site.id);
         });
     }
 
@@ -234,12 +305,12 @@ export class AddonMessagesProvider {
 
         await site.write('core_message_decline_contact_request', params);
 
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             this.invalidateAllMemberInfo(userId, site),
             this.refreshContactRequestsCount(site.id),
         ]).finally(() => {
             const data: AddonMessagesMemberInfoChangedEventData = { userId, contactRequestDeclined: true };
-            CoreEvents.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+            CoreEvents.trigger(ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT, data, site.id);
         });
     }
 
@@ -373,8 +444,8 @@ export class AddonMessagesProvider {
         conversation.lastmessagedate = lastMessage ? lastMessage.timecreated : undefined;
         conversation.sentfromcurrentuser = lastMessage ? lastMessage.useridfrom == userId : undefined;
 
-        if (conversation.type != AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
-            const isIndividual = conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL;
+        if (conversation.type != AddonMessagesMessageConversationType.GROUP) {
+            const isIndividual = conversation.type == AddonMessagesMessageConversationType.INDIVIDUAL;
 
             const otherUser = conversation.members.find((member) =>
                 (isIndividual && member.id != userId) || (!isIndividual && member.id == userId));
@@ -628,7 +699,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForBlockedContacts(userId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
         };
 
         return site.read('core_message_get_blocked_users', params, preSets);
@@ -648,7 +719,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForContacts(),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
         };
 
         const contacts = await site.read<AddonMessagesGetContactsWSResponse>('core_message_get_contacts', undefined, preSets);
@@ -679,14 +750,14 @@ export class AddonMessagesProvider {
      * Get the list of user contacts.
      *
      * @param limitFrom Position of the first contact to fetch.
-     * @param limitNum Number of contacts to fetch. Default is AddonMessagesProvider.LIMIT_CONTACTS.
+     * @param limitNum Number of contacts to fetch. Default is ADDON_MESSAGES_LIMIT_CONTACTS.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with the list of user contacts.
      * @since 3.6
      */
     async getUserContacts(
         limitFrom: number = 0,
-        limitNum: number = AddonMessagesProvider.LIMIT_CONTACTS,
+        limitNum: number = ADDON_MESSAGES_LIMIT_CONTACTS,
         siteId?: string,
     ): Promise<{contacts: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
         const site = await CoreSites.getSite(siteId);
@@ -699,7 +770,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForUserContacts(),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
         };
 
         const contacts = await site.read<AddonMessagesGetUserContactsWSResponse>('core_message_get_user_contacts', params, preSets);
@@ -723,14 +794,14 @@ export class AddonMessagesProvider {
      * Get the contact request sent to the current user.
      *
      * @param limitFrom Position of the first contact request to fetch.
-     * @param limitNum Number of contact requests to fetch. Default is AddonMessagesProvider.LIMIT_CONTACTS.
+     * @param limitNum Number of contact requests to fetch. Default is ADDON_MESSAGES_LIMIT_CONTACTS.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with the list of contact requests.
      * @since 3.6
      */
     async getContactRequests(
         limitFrom: number = 0,
-        limitNum: number = AddonMessagesProvider.LIMIT_CONTACTS,
+        limitNum: number = ADDON_MESSAGES_LIMIT_CONTACTS,
         siteId?: string,
     ): Promise<{requests: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
         const site = await CoreSites.getSite(siteId);
@@ -743,7 +814,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForContactRequests(),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
         };
 
         const requests = await site.read<AddonMessagesGetContactRequestsWSResponse>(
@@ -791,7 +862,7 @@ export class AddonMessagesProvider {
         };
 
         // Notify the new count so all badges are updated.
-        CoreEvents.trigger(AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT, data , site.id);
+        CoreEvents.trigger(ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT, data , site.id);
 
         return data.count;
 
@@ -935,11 +1006,11 @@ export class AddonMessagesProvider {
     ): Promise<{members: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
         const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
-        limitTo = limitTo ?? AddonMessagesProvider.LIMIT_MESSAGES;
+        limitTo = limitTo ?? ADDON_MESSAGES_LIMIT_MESSAGES;
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForConversationMembers(userId, conversationId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         const params: AddonMessagesGetConversationMembersWSParams = {
@@ -983,7 +1054,7 @@ export class AddonMessagesProvider {
 
         options.userId = options.userId || site.getUserId();
         options.limitFrom = options.limitFrom || 0;
-        options.limitTo = options.limitTo ?? AddonMessagesProvider.LIMIT_MESSAGES;
+        options.limitTo = options.limitTo ?? ADDON_MESSAGES_LIMIT_MESSAGES;
         options.timeFrom = options.timeFrom || 0;
         options.newestFirst = options.newestFirst ?? true;
 
@@ -1076,7 +1147,7 @@ export class AddonMessagesProvider {
         const params: AddonMessagesGetConversationsWSParams = {
             userid: userId,
             limitfrom: limitFrom,
-            limitnum: AddonMessagesProvider.LIMIT_MESSAGES + 1,
+            limitnum: ADDON_MESSAGES_LIMIT_MESSAGES + 1,
         };
 
         if (forceCache) {
@@ -1091,7 +1162,7 @@ export class AddonMessagesProvider {
         if (favourites !== undefined && favourites != null) {
             params.favourites = !!favourites;
         }
-        if (site.isVersionGreaterEqualThan('3.7') && type != AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
+        if (site.isVersionGreaterEqualThan('3.7') && type != AddonMessagesMessageConversationType.GROUP) {
             // Add self conversation to the list.
             params.mergeself = true;
         }
@@ -1112,12 +1183,12 @@ export class AddonMessagesProvider {
 
         // Format the conversations, adding some calculated fields.
         const conversations = response.conversations
-            .slice(0, AddonMessagesProvider.LIMIT_MESSAGES)
+            .slice(0, ADDON_MESSAGES_LIMIT_MESSAGES)
             .map((conversation) => this.formatConversation(conversation, userId!));
 
         return {
             conversations,
-            canLoadMore: response.conversations.length > AddonMessagesProvider.LIMIT_MESSAGES,
+            canLoadMore: response.conversations.length > ADDON_MESSAGES_LIMIT_MESSAGES,
         };
     }
 
@@ -1144,9 +1215,9 @@ export class AddonMessagesProvider {
 
         const counts = {
             favourites: result.favourites,
-            individual: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL],
-            group: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP],
-            self: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_SELF] || 0,
+            individual: result.types[AddonMessagesMessageConversationType.INDIVIDUAL],
+            group: result.types[AddonMessagesMessageConversationType.GROUP],
+            self: result.types[AddonMessagesMessageConversationType.SELF] || 0,
         };
 
         return counts;
@@ -1189,7 +1260,7 @@ export class AddonMessagesProvider {
         const params: AddonMessagesGetMessagesWSParams = {
             useridto: site.getUserId(),
             useridfrom: userId,
-            limitnum: AddonMessagesProvider.LIMIT_MESSAGES,
+            limitnum: ADDON_MESSAGES_LIMIT_MESSAGES,
         };
 
         if (lfReceivedUnread > 0 || lfReceivedRead > 0 || lfSentUnread > 0 || lfSentRead > 0) {
@@ -1212,13 +1283,13 @@ export class AddonMessagesProvider {
         result.messages = result.messages.concat(sent);
         const hasSent = sent.length > 0;
 
-        if (result.messages.length > AddonMessagesProvider.LIMIT_MESSAGES) {
+        if (result.messages.length > ADDON_MESSAGES_LIMIT_MESSAGES) {
             // Sort messages and get the more recent ones.
             result.canLoadMore = true;
             result.messages = this.sortMessages(result['messages']);
-            result.messages = result.messages.slice(-AddonMessagesProvider.LIMIT_MESSAGES);
+            result.messages = result.messages.slice(-ADDON_MESSAGES_LIMIT_MESSAGES);
         } else {
-            result.canLoadMore = result.messages.length == AddonMessagesProvider.LIMIT_MESSAGES && (!hasReceived || !hasSent);
+            result.canLoadMore = result.messages.length == ADDON_MESSAGES_LIMIT_MESSAGES && (!hasReceived || !hasSent);
         }
 
         if (excludePending) {
@@ -1289,7 +1360,7 @@ export class AddonMessagesProvider {
         const params: AddonMessagesGetMessagesWSParams = {
             useridto: currentUserId,
             useridfrom: 0,
-            limitnum: AddonMessagesProvider.LIMIT_MESSAGES,
+            limitnum: ADDON_MESSAGES_LIMIT_MESSAGES,
         };
 
         const preSets: CoreSiteWSPreSets = {
@@ -1371,7 +1442,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForMemberInfo(userId, otherUserId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
         };
         const params: AddonMessagesGetMemberInfoWSParams = {
             referenceuserid: userId,
@@ -1410,7 +1481,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getMessagePreferencesCacheKey(),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         const data = await site.read<AddonMessagesGetUserMessagePreferencesWSResponse>(
@@ -1572,9 +1643,9 @@ export class AddonMessagesProvider {
 
             counts = {
                 favourites: result.favourites,
-                individual: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL],
-                group: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP],
-                self: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_SELF] || 0,
+                individual: result.types[AddonMessagesMessageConversationType.INDIVIDUAL],
+                group: result.types[AddonMessagesMessageConversationType.GROUP],
+                self: result.types[AddonMessagesMessageConversationType.SELF] || 0,
             };
 
         } else {
@@ -1592,7 +1663,7 @@ export class AddonMessagesProvider {
         }
 
         // Notify the new counts so all views are updated.
-        CoreEvents.trigger(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, counts, site.id);
+        CoreEvents.trigger(ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT, counts, site.id);
 
         return counts;
     }
@@ -1617,7 +1688,7 @@ export class AddonMessagesProvider {
         const params: AddonMessagesGetMessagesWSParams = {
             read: false,
             limitfrom: 0,
-            limitnum: AddonMessagesProvider.LIMIT_MESSAGES,
+            limitnum: ADDON_MESSAGES_LIMIT_MESSAGES,
             useridto: site.getUserId(),
             useridfrom: 0,
         };
@@ -1863,7 +1934,7 @@ export class AddonMessagesProvider {
      * @returns Promise resolved when done.
      */
     protected async invalidateAllMemberInfo(userId: number, site: CoreSite): Promise<void> {
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             this.invalidateMemberInfo(userId, site.id),
             this.invalidateUserContacts(site.id),
             this.invalidateBlockedContactsCache(site.id),
@@ -1881,7 +1952,7 @@ export class AddonMessagesProvider {
                 site.id,
                 undefined,
                 true,
-            ).then((conversation) => CoreUtils.allPromises([
+            ).then((conversation) => CorePromiseUtils.allPromises([
                 this.invalidateConversation(conversation.id),
                 this.invalidateConversationMembers(conversation.id, site.id),
             ])).catch(() => {
@@ -2243,13 +2314,13 @@ export class AddonMessagesProvider {
 
         await site.write('core_message_delete_contacts', params, preSets);
 
-        return CoreUtils.allPromises([
+        return CorePromiseUtils.allPromises([
             this.invalidateUserContacts(site.id),
             this.invalidateAllMemberInfo(userId, site),
             this.invalidateContactsCache(site.id),
         ]).then(() => {
             const data: AddonMessagesMemberInfoChangedEventData = { userId, contactRemoved: true };
-            CoreEvents.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+            CoreEvents.trigger(ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT, data, site.id);
 
             return;
         });
@@ -2296,7 +2367,7 @@ export class AddonMessagesProvider {
      * @param query The query string.
      * @param userId The user ID. If not defined, current user.
      * @param limitFrom Position of the first result to get. Defaults to 0.
-     * @param limitNum Number of results to get. Defaults to AddonMessagesProvider.LIMIT_SEARCH.
+     * @param limitNum Number of results to get. Defaults to ADDON_MESSAGES_LIMIT_SEARCH.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with the results.
      */
@@ -2304,7 +2375,7 @@ export class AddonMessagesProvider {
         query: string,
         userId?: number,
         limitFrom: number = 0,
-        limitNum: number = AddonMessagesProvider.LIMIT_SEARCH,
+        limitNum: number = ADDON_MESSAGES_LIMIT_SEARCH,
         siteId?: string,
     ): Promise<{messages: AddonMessagesMessageAreaContact[]; canLoadMore: boolean}> {
         const site = await CoreSites.getSite(siteId);
@@ -2349,7 +2420,7 @@ export class AddonMessagesProvider {
      *
      * @param query Text to search for.
      * @param limitFrom Position of the first found user to fetch.
-     * @param limitNum Number of found users to fetch. Defaults to AddonMessagesProvider.LIMIT_SEARCH.
+     * @param limitNum Number of found users to fetch. Defaults to ADDON_MESSAGES_LIMIT_SEARCH.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Resolved with two lists of found users: contacts and non-contacts.
      * @since 3.6
@@ -2357,7 +2428,7 @@ export class AddonMessagesProvider {
     async searchUsers(
         query: string,
         limitFrom: number = 0,
-        limitNum: number = AddonMessagesProvider.LIMIT_SEARCH,
+        limitNum: number = ADDON_MESSAGES_LIMIT_SEARCH,
         siteId?: string,
     ): Promise<{
             contacts: AddonMessagesConversationMember[];
@@ -2459,7 +2530,7 @@ export class AddonMessagesProvider {
                 message: result,
             };
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
                 throw error;
             }
@@ -2590,7 +2661,7 @@ export class AddonMessagesProvider {
                 message: result,
             };
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
                 throw error;
             }
@@ -2827,7 +2898,7 @@ export class AddonMessagesProvider {
         } finally {
             const data: AddonMessagesMemberInfoChangedEventData = { userId, userUnblocked: true };
 
-            CoreEvents.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+            CoreEvents.trigger(ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT, data, site.id);
         }
     }
 

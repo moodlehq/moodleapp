@@ -14,7 +14,7 @@
 
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { CoreUserProfile } from '@features/user/services/user';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     AddonCompetency,
     AddonCompetencyDataForCourseCompetenciesPageCompetency,
@@ -70,7 +70,7 @@ export class AddonCompetencyCourseCompetenciesSource
      * Invalidate course cache.
      */
     async invalidateCache(): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonCompetency.invalidateCourseCompetencies(this.COURSE_ID, this.USER_ID));
+        await CorePromiseUtils.ignoreErrors(AddonCompetency.invalidateCourseCompetencies(this.COURSE_ID, this.USER_ID));
     }
 
     /**

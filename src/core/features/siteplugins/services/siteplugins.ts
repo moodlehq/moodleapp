@@ -14,16 +14,15 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreConstants } from '@/core/constants';
+import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourses } from '@features/courses/services/courses';
-import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -35,6 +34,7 @@ import { CoreEnrolAction, CoreEnrolInfoIcon } from '@features/enrol/services/enr
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreUserProfileHandlerType } from '@features/user/services/user-delegate';
 import { CORE_SITE_PLUGINS_COMPONENT, CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '../constants';
+import { CoreObject } from '@singletons/object';
 
 /**
  * Service to provide functionalities regarding site plugins.
@@ -101,7 +101,7 @@ export class CoreSitePluginsProvider {
             appcustomurlscheme: CoreConstants.CONFIG.customurlscheme,
             appisdesktop: false,
             appismobile: CorePlatform.isMobile(),
-            appiswide: CoreApp.isWide(),
+            appiswide: CorePlatform.isWide(),
             appplatform: 'browser',
         };
 
@@ -157,13 +157,13 @@ export class CoreSitePluginsProvider {
             data = Object.assign(data, initResult.jsResult || {});
 
             // Now add some data returned by the init WS call.
-            data.INIT_TEMPLATES = CoreUtils.objectToKeyValueMap(initResult.templates, 'id', 'html');
+            data.INIT_TEMPLATES = CoreObject.toKeyValueMap(initResult.templates, 'id', 'html');
             data.INIT_OTHERDATA = initResult.otherdata;
         }
 
         if (contentResult) {
             // Now add the data returned by the content WS call.
-            data.CONTENT_TEMPLATES = CoreUtils.objectToKeyValueMap(contentResult.templates, 'id', 'html');
+            data.CONTENT_TEMPLATES = CoreObject.toKeyValueMap(contentResult.templates, 'id', 'html');
             data.CONTENT_OTHERDATA = contentResult.otherdata;
         }
 
@@ -178,7 +178,7 @@ export class CoreSitePluginsProvider {
      * @returns Cache key.
      */
     getCallWSCacheKey(method: string, data: Record<string, unknown>): string {
-        return this.getCallWSCommonCacheKey(method) + ':' + CoreUtils.sortAndStringify(data);
+        return this.getCallWSCommonCacheKey(method) + ':' + CoreObject.sortAndStringify(data);
     }
 
     /**
@@ -220,18 +220,18 @@ export class CoreSitePluginsProvider {
         const data: CoreSitePluginsGetContentWSParams = {
             component: component,
             method: method,
-            args: CoreUtils.objectToArrayOfObjects(argsToSend, 'name', 'value', true),
+            args: CoreObject.toArrayOfObjects(argsToSend, 'name', 'value', true),
         };
 
         preSets = preSets || {};
         preSets.cacheKey = this.getContentCacheKey(component, method, args);
-        preSets.updateFrequency = preSets.updateFrequency ?? CoreSite.FREQUENCY_OFTEN;
+        preSets.updateFrequency = preSets.updateFrequency ?? CoreCacheUpdateFrequency.OFTEN;
 
         const result = await site.read<CoreSitePluginsGetContentWSResponse>('tool_mobile_get_content', data, preSets);
 
         let otherData: Record<string, unknown> = {};
         if (result.otherdata) {
-            otherData = <Record<string, unknown>> CoreUtils.objectToKeyValueMap(result.otherdata, 'name', 'value');
+            otherData = <Record<string, unknown>> CoreObject.toKeyValueMap(result.otherdata, 'name', 'value');
 
             // Try to parse all properties that could be JSON encoded strings.
             for (const name in otherData) {
@@ -256,7 +256,7 @@ export class CoreSitePluginsProvider {
      */
     protected getContentCacheKey(component: string, method: string, args: Record<string, unknown>): string {
         return CoreSitePluginsProvider.ROOT_CACHE_KEY + 'content:' + component + ':' + method +
-            ':' + CoreUtils.sortAndStringify(args);
+            ':' + CoreObject.sortAndStringify(args);
     }
 
     /**
@@ -347,7 +347,7 @@ export class CoreSitePluginsProvider {
      * @returns Plugin list ws info.
      */
     getCurrentSitePluginList(): CoreSitePluginsWSPlugin[] {
-        return CoreUtils.objectToArray(this.sitePlugins).map((plugin) => plugin.plugin);
+        return CoreObject.toArray(this.sitePlugins).map((plugin) => plugin.plugin);
     }
 
     /**
@@ -508,7 +508,7 @@ export class CoreSitePluginsProvider {
             for (const i in useOtherData) {
                 const name = useOtherData[i];
 
-                if (typeof otherData[name] == 'object' && otherData[name] !== null) {
+                if (typeof otherData[name] === 'object' && otherData[name] !== null) {
                     // Stringify objects.
                     args[name] = JSON.stringify(otherData[name]);
                 } else {
@@ -518,7 +518,7 @@ export class CoreSitePluginsProvider {
         } else {
             // Add all the data to args.
             for (const name in otherData) {
-                if (typeof otherData[name] == 'object' && otherData[name] !== null) {
+                if (typeof otherData[name] === 'object' && otherData[name] !== null) {
                     // Stringify objects.
                     args[name] = JSON.stringify(otherData[name]);
                 } else {

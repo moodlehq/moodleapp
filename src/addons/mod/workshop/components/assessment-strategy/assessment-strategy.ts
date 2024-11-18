@@ -22,7 +22,7 @@ import { CoreFileSession } from '@services/file-session';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreFormFields, CoreForms } from '@singletons/form';
@@ -43,6 +43,9 @@ import {
 } from '@addons/mod/workshop/constants';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
+import { CoreObject } from '@singletons/object';
 
 /**
  * Component that displays workshop assessment strategy form.
@@ -186,7 +189,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
 
                 // Override assessment plugins values.
                 this.data.assessment.form.current = AddonModWorkshop.parseFields(
-                    CoreUtils.objectToArrayOfObjects(offlineData, 'name', 'value'),
+                    CoreObject.toArrayOfObjects(offlineData, 'name', 'value'),
                 );
 
                 // Override offline files.
@@ -317,7 +320,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
                     saveOffline,
                 );
             } catch (error) {
-                if (CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     throw error;
                 }
 
@@ -384,7 +387,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
                 promises.push(AddonModWorkshop.invalidateAssessmentData(this.workshop.id, this.assessmentId));
             }
 
-            await CoreUtils.ignoreErrors(Promise.all(promises));
+            await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
             CoreEvents.trigger(ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED, {
                 workshopId: this.workshop.id,

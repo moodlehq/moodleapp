@@ -17,7 +17,7 @@ import { Validators, FormControl } from '@angular/forms';
 
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-profilefield-component';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 
 /**
  * Directive to render a checkbox user profile field.
@@ -25,7 +25,7 @@ import { CoreUtils } from '@services/utils/utils';
 @Component({
     selector: 'addon-user-profile-field-checkbox',
     templateUrl: 'addon-user-profile-field-checkbox.html',
-    styleUrls: ['./checkbox.scss'],
+    styleUrl: './checkbox.scss',
 })
 export class AddonUserProfileFieldCheckboxComponent extends CoreUserProfileFieldBaseComponent<boolean> {
 

@@ -33,4 +33,4 @@ const routes: Routes = [
         CoreMainMenuReloadPage,
     ],
 })
-export class CoreMainMenuReloadLazyModule {}
+export default class CoreMainMenuReloadLazyModule {}

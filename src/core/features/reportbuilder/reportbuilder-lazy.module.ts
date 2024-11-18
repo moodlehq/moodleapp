@@ -41,4 +41,4 @@ const routes: Routes = [
         CoreReportBuilderReportPage,
     ],
 })
-export class CoreReportBuilderLazyModule {}
+export default class CoreReportBuilderLazyModule {}

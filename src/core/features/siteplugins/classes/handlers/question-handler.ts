@@ -15,7 +15,6 @@
 import { Type } from '@angular/core';
 
 import { CoreQuestionBaseHandler } from '@features/question/classes/base-question-handler';
-import { CoreSitePluginsQuestionComponent } from '@features/siteplugins/components/question/question';
 
 /**
  * Handler to display a question site plugin.
@@ -29,7 +28,9 @@ export class CoreSitePluginsQuestionHandler extends CoreQuestionBaseHandler {
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { CoreSitePluginsQuestionComponent } = await import('@features/siteplugins/components/question/question');
+
         return CoreSitePluginsQuestionComponent;
     }
 

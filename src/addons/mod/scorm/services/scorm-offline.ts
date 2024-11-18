@@ -18,7 +18,7 @@ import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
@@ -45,6 +45,7 @@ import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
 import { ADDON_MOD_SCORM_COMPONENT } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to handle offline SCORM.
@@ -508,7 +509,7 @@ export class AddonModScormOfflineProvider {
             fullName = site.getInfo()?.fullname || '';
             userName = site.getInfo()?.username || '';
         } else {
-            const profile = await CoreUtils.ignoreErrors(CoreUser.getProfile(userId));
+            const profile = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(userId));
 
             fullName = profile?.fullname || '';
             userName = profile?.username || '';

@@ -14,13 +14,14 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { AddonBadges } from '../badges';
 import { makeSingleton } from '@singletons';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CoreNavigator } from '@services/navigator';
 import { AddonBadgesHelper } from '../badges-helper';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler for badges push notifications clicks.
@@ -72,7 +73,7 @@ export class AddonBadgesPushClickHandlerService implements CorePushNotifications
         }
 
         // No hash, open the list of user badges.
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             AddonBadges.invalidateUserBadges(
                 0,
                 Number(notification.usertoid),

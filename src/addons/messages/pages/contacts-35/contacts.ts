@@ -15,7 +15,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import {
-    AddonMessagesProvider,
     AddonMessagesGetContactsWSResponse,
     AddonMessagesSearchContactsContact,
     AddonMessagesGetContactsContact,
@@ -29,6 +28,7 @@ import { CoreScreen } from '@services/screen';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT } from '@addons/messages/constants';
 
 /**
  * Page that displays the list of contacts.
@@ -36,7 +36,7 @@ import { CoreKeyboard } from '@singletons/keyboard';
 @Component({
     selector: 'addon-messages-contacts',
     templateUrl: 'contacts.html',
-    styleUrls: ['../../messages-common.scss'],
+    styleUrl: '../../messages-common.scss',
 })
 export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 
@@ -73,7 +73,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 
         // Refresh the list when a contact request is confirmed.
         this.memberInfoObserver = CoreEvents.on(
-            AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT,
+            ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT,
             (data) => {
                 if (data.contactRequestConfirmed) {
                     this.refreshData();

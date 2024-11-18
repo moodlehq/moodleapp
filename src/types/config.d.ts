@@ -15,7 +15,7 @@
 import { CoreColorScheme, CoreZoomLevel } from '@features/settings/services/settings-helper';
 import { CoreMainMenuLocalizedCustomItem } from '@features/mainmenu/services/mainmenu';
 import { CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
-import { OpenFileAction } from '@services/utils/utils';
+import { OpenFileAction } from '@singletons/opener';
 import { CoreLoginSiteFinderSettings, CoreLoginSiteSelectorListMethod } from '@features/login/services/login-helper';
 import { CoreDatabaseConfiguration } from '@classes/database/database-table';
 import { ToastDuration } from '@services/toasts';

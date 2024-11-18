@@ -27,7 +27,7 @@ import { CoreContentLinksDelegate } from '@features/contentlinks/services/conten
 const routes: Routes = [
     {
         path: POLICY_PAGE_NAME,
-        loadChildren: () => import('./policy-lazy.module').then(m => m.CorePolicyLazyModule),
+        loadChildren: () => import('./policy-lazy.module'),
     },
 ];
 

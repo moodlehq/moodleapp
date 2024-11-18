@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreCourseAnyCourseData, CoreCourses } from '@features/courses/services/courses';
 import { CoreSite  } from '@classes/sites/site';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
@@ -25,6 +25,7 @@ import { asyncObservable } from '@/core/utils/rxjs';
 import { map } from 'rxjs/operators';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 import { firstValueFrom } from 'rxjs';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 const ROOT_CACHE_KEY = 'mmaCourseCompletion:';
 
@@ -173,7 +174,7 @@ export class AddonCourseCompletionProvider {
             const preSets = {
                 ...(options.preSets ?? {}),
                 cacheKey: this.getCompletionCacheKey(courseId, userId),
-                updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+                updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
                 cacheErrors: ['notenroled'],
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
             };
@@ -283,7 +284,7 @@ export class AddonCourseCompletionProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WS returned an error, plugin is not enabled.
                 return false;
             }

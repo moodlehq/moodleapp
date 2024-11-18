@@ -20,9 +20,8 @@ import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreSite } from '@classes/sites/site';
-import { CoreConstants, DownloadStatus } from '@/core/constants';
+import { CoreCacheUpdateFrequency, CoreConstants, DownloadStatus } from '@/core/constants';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 
@@ -39,7 +38,6 @@ import { CoreError } from '@classes/errors/error';
 import {
     CoreCourseAnyCourseData,
     CoreCourses,
-    CoreCoursesProvider,
 } from '../../courses/services/courses';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSError } from '@classes/errors/wserror';
@@ -47,8 +45,6 @@ import { CoreCourseHelper, CoreCourseModuleData, CoreCourseModuleCompletionData 
 import { CoreCourseFormatDelegate } from './format-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreCourseLogCronHandler } from './handlers/log-cron';
-import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
-import { CoreCourseAutoSyncData, CoreCourseSyncProvider } from './sync';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreCourseModuleDelegate } from './module-delegate';
@@ -65,8 +61,20 @@ import { CoreLoadings } from '@services/loadings';
 import { CoreArray } from '@singletons/array';
 import { CoreText } from '@singletons/text';
 import { ArrayElement } from '@/core/utils/types';
-
-const ROOT_CACHE_KEY = 'mmCourse:';
+import { CORE_COURSES_MY_COURSES_UPDATED_EVENT, CoreCoursesMyCoursesUpdatedEventAction } from '@features/courses/constants';
+import {
+    CoreCourseAccessDataType,
+    CoreCourseModuleCompletionStatus,
+    CoreCourseModuleCompletionTracking,
+    CORE_COURSE_ALL_COURSES_CLEARED,
+    CORE_COURSE_ALL_SECTIONS_ID,
+    CORE_COURSE_COMPONENT,
+    CORE_COURSE_CORE_MODULES,
+    CORE_COURSE_PROGRESS_UPDATED_EVENT,
+    CORE_COURSE_STEALTH_MODULES_SECTION_ID,
+} from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreObject } from '@singletons/object';
 
 export type CoreCourseProgressUpdated = { progress: number; courseId: number };
 
@@ -78,57 +86,16 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [CoreCourseSyncProvider.AUTO_SYNCED]: CoreCourseAutoSyncData;
-        [CoreCourseProvider.PROGRESS_UPDATED]: CoreCourseProgressUpdated;
+        [CORE_COURSE_PROGRESS_UPDATED_EVENT]: CoreCourseProgressUpdated;
     }
 
 }
-
-/**
- * Course Module completion status enumeration.
- */
-export const enum CoreCourseModuleCompletionStatus {
-    COMPLETION_INCOMPLETE = 0,
-    COMPLETION_COMPLETE = 1,
-    COMPLETION_COMPLETE_PASS = 2,
-    COMPLETION_COMPLETE_FAIL = 3,
-}
-
-/**
- * @deprecated since 4.3 Not used anymore.
- */
-export const enum CoreCourseCompletionMode {
-    FULL = 'full',
-    BASIC = 'basic',
-}
-
-/**
- * Completion tracking valid values.
- */
-export const enum CoreCourseModuleCompletionTracking {
-    COMPLETION_TRACKING_NONE = 0,
-    COMPLETION_TRACKING_MANUAL = 1,
-    COMPLETION_TRACKING_AUTOMATIC = 2,
-}
-
-export const CoreCourseAccessDataType = {
-    ACCESS_GUEST: 'courses_access_guest', // eslint-disable-line @typescript-eslint/naming-convention
-    ACCESS_DEFAULT: 'courses_access_default', // eslint-disable-line @typescript-eslint/naming-convention
-} as const;
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export type CoreCourseAccessDataType = typeof CoreCourseAccessDataType[keyof typeof CoreCourseAccessDataType];
 
 /**
  * Service that provides some features regarding a course.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreCourseProvider {
-
-    static readonly ALL_SECTIONS_ID = -2;
-    static readonly STEALTH_MODULES_SECTION_ID = -1;
-    static readonly ALL_COURSES_CLEARED = -1;
-    static readonly PROGRESS_UPDATED = 'progress_updated';
 
     /**
      * @deprecated since 4.4 Not used anymore. Use CoreCourseAccessDataType instead.
@@ -139,18 +106,40 @@ export class CoreCourseProvider {
      */
     static readonly ACCESS_DEFAULT = CoreCourseAccessDataType.ACCESS_DEFAULT;
 
-    static readonly COMPONENT = 'CoreCourse';
+    /**
+     * @deprecated since 5.0 Not used anymore. Use COURSE_ALL_SECTIONS_ID instead.
+     */
+    static readonly ALL_SECTIONS_ID = CORE_COURSE_ALL_SECTIONS_ID;
+    /**
+     * @deprecated since 5.0 Not used anymore. Use COURSE_STEALTH_MODULES_SECTION_ID instead.
+     */
+    static readonly STEALTH_MODULES_SECTION_ID = CORE_COURSE_STEALTH_MODULES_SECTION_ID;
+    /**
+     * @deprecated since 5.0 Not used anymore. Use COURSE_ALL_COURSES_CLEARED instead.
+     */
+    static readonly ALL_COURSES_CLEARED = CORE_COURSE_ALL_COURSES_CLEARED;
+    /**
+     * @deprecated since 5.0 Not used anymore. Use COURSE_PROGRESS_UPDATED instead.
+     */
+    static readonly PROGRESS_UPDATED = CORE_COURSE_PROGRESS_UPDATED_EVENT;
 
-    static readonly CORE_MODULES = [
-        'assign', 'bigbluebuttonbn', 'book', 'chat', 'choice', 'data', 'feedback', 'folder', 'forum', 'glossary', 'h5pactivity',
-        'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop',
-    ];
+    /**
+     * @deprecated since 5.0 Not used anymore. Use COURSE_COMPONENT instead.
+     */
+    static readonly COMPONENT = CORE_COURSE_COMPONENT;
+
+    /**
+     * @deprecated since 5.0 Not used anymore. Use COURSE_CORE_MODULES instead.
+     */
+    static readonly CORE_MODULES = CORE_COURSE_CORE_MODULES;
 
     protected logger: CoreLogger;
     protected statusTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreCourseStatusDBRecord>>>;
     protected viewedModulesTables: LazyMap<
         AsyncInstance<CoreDatabaseTable<CoreCourseViewedModulesDBRecord, CoreCourseViewedModulesDBPrimaryKeys, never>>
     >;
+
+    protected static readonly ROOT_CACHE_KEY = 'mmCourse:';
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreCourseProvider');
@@ -187,7 +176,7 @@ export class CoreCourseProvider {
         CorePlatform.resume.subscribe(() => {
             // Run the handler the app is open to keep user in online status.
             setTimeout(() => {
-                CoreUtils.ignoreErrors(
+                CorePromiseUtils.ignoreErrors(
                     CoreCronDelegate.forceCronHandlerExecution(CoreCourseLogCronHandler.name),
                 );
             }, 1000);
@@ -196,7 +185,7 @@ export class CoreCourseProvider {
         CoreEvents.on(CoreEvents.LOGIN, () => {
             setTimeout(() => {
                 // Ignore errors here, since probably login is not complete: it happens on token invalid.
-                CoreUtils.ignoreErrors(
+                CorePromiseUtils.ignoreErrors(
                     CoreCronDelegate.forceCronHandlerExecution(CoreCourseLogCronHandler.name),
                 );
             }, 1000);
@@ -254,7 +243,7 @@ export class CoreCourseProvider {
      * @returns Whether it's an automatic completion that hasn't been completed yet.
      */
     isIncompleteAutomaticCompletion(completion: CoreCourseModuleCompletionData): boolean {
-        return completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC &&
+        return completion.tracking === CoreCourseModuleCompletionTracking.AUTOMATIC &&
             completion.state === CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE;
     }
 
@@ -271,7 +260,7 @@ export class CoreCourseProvider {
         }
 
         const course = await CoreCourses.getCourseByField('id', courseId, site.id);
-        const formatOptions = CoreUtils.objectToKeyValueMap(
+        const formatOptions = CoreObject.toKeyValueMap(
             course.courseformatoptions ?? [],
             'name',
             'value',
@@ -292,7 +281,7 @@ export class CoreCourseProvider {
 
         await this.statusTables[site.getId()].delete();
         this.triggerCourseStatusChanged(
-            CoreCourseProvider.ALL_COURSES_CLEARED,
+            CORE_COURSE_ALL_COURSES_CLEARED,
             DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED,
             site.id,
         );
@@ -364,7 +353,7 @@ export class CoreCourseProvider {
             throw Error('WS core_completion_get_activities_completion_status failed');
         }
 
-        const completionStatus = CoreUtils.arrayToObject(data.statuses, 'cmid');
+        const completionStatus = CoreArray.toObject(data.statuses, 'cmid');
         if (!includeOffline) {
             return completionStatus;
         }
@@ -379,7 +368,7 @@ export class CoreCourseProvider {
                     const onlineCompletion = completionStatus[offlineCompletion.cmid];
 
                     // If the activity uses manual completion, override the value with the offline one.
-                    if (onlineCompletion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_MANUAL) {
+                    if (onlineCompletion.tracking === CoreCourseModuleCompletionTracking.MANUAL) {
                         onlineCompletion.state = offlineCompletion.completed;
                         onlineCompletion.offline = true;
                     }
@@ -401,7 +390,7 @@ export class CoreCourseProvider {
      * @returns Cache key.
      */
     protected getActivitiesCompletionCacheKey(courseId: number, userId: number): string {
-        return ROOT_CACHE_KEY + 'activitiescompletion:' + courseId + ':' + userId;
+        return CoreCourseProvider.ROOT_CACHE_KEY + 'activitiescompletion:' + courseId + ':' + userId;
     }
 
     /**
@@ -423,7 +412,7 @@ export class CoreCourseProvider {
             js: (record) => ids.includes(record.cmId),
         });
 
-        return CoreUtils.arrayToObject(entries, 'cmId');
+        return CoreArray.toObject(entries, 'cmId');
     }
 
     /**
@@ -456,7 +445,7 @@ export class CoreCourseProvider {
             };
             const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getCourseBlocksCacheKey(courseId),
-                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                updateFrequency: CoreCacheUpdateFrequency.RARELY,
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
             };
 
@@ -473,7 +462,7 @@ export class CoreCourseProvider {
      * @returns Cache key.
      */
     protected getCourseBlocksCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'courseblocks:' + courseId;
+        return CoreCourseProvider.ROOT_CACHE_KEY + 'courseblocks:' + courseId;
     }
 
     /**
@@ -582,7 +571,7 @@ export class CoreCourseProvider {
 
             const preSets: CoreSiteWSPreSets = {
                 omitExpires: preferCache,
-                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                updateFrequency: CoreCacheUpdateFrequency.RARELY,
             };
 
             if (includeStealth) {
@@ -670,7 +659,7 @@ export class CoreCourseProvider {
         let foundModule: CoreCourseGetContentsWSModule | undefined;
 
         const foundSection = sections.find((section) => {
-            if (section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID &&
+            if (section.id != CORE_COURSE_STEALTH_MODULES_SECTION_ID &&
                 sectionId !== undefined &&
                 sectionId != section.id
             ) {
@@ -736,7 +725,7 @@ export class CoreCourseProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getModuleCacheKey(moduleId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
         const response = await site.read<CoreCourseGetCourseModuleWSResponse>('core_course_get_course_module', params, preSets);
@@ -797,7 +786,7 @@ export class CoreCourseProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getModuleBasicInfoByInstanceCacheKey(instanceId, moduleName),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -821,7 +810,7 @@ export class CoreCourseProvider {
      * @returns Cache key.
      */
     protected getModuleBasicInfoByInstanceCacheKey(instanceId: number, moduleName: string): string {
-        return ROOT_CACHE_KEY + 'moduleByInstance:' + moduleName + ':' + instanceId;
+        return CoreCourseProvider.ROOT_CACHE_KEY + 'moduleByInstance:' + moduleName + ':' + instanceId;
     }
 
     /**
@@ -831,7 +820,7 @@ export class CoreCourseProvider {
      * @returns Cache key.
      */
     protected getModuleCacheKey(moduleId: number): string {
-        return ROOT_CACHE_KEY + 'module:' + moduleId;
+        return CoreCourseProvider.ROOT_CACHE_KEY + 'module:' + moduleId;
     }
 
     /**
@@ -841,7 +830,7 @@ export class CoreCourseProvider {
      * @returns Cache key.
      */
     protected getModuleByModNameCacheKey(modName: string): string {
-        return ROOT_CACHE_KEY + 'module:modName:' + modName;
+        return CoreCourseProvider.ROOT_CACHE_KEY + 'module:modName:' + modName;
     }
 
     /**
@@ -1008,7 +997,7 @@ export class CoreCourseProvider {
         const preSets: CoreSiteWSPreSets = {
             ...options.preSets,
             cacheKey: this.getSectionsCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -1070,7 +1059,7 @@ export class CoreCourseProvider {
      * @returns Cache key.
      */
     protected getSectionsCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'sections:' + courseId;
+        return CoreCourseProvider.ROOT_CACHE_KEY + 'sections:' + courseId;
     }
 
     /**
@@ -1289,9 +1278,9 @@ export class CoreCourseProvider {
         if (!response.status) {
             throw Error('WS core_course_view_course failed.');
         } else {
-            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+            CoreEvents.trigger(CORE_COURSES_MY_COURSES_UPDATED_EVENT, {
                 courseId: courseId,
-                action: CoreCoursesProvider.ACTION_VIEW,
+                action: CoreCoursesMyCoursesUpdatedEventAction.VIEW,
             }, site.getId());
         }
     }
@@ -1331,14 +1320,14 @@ export class CoreCourseProvider {
             const result = await this.markCompletedManuallyOnline(cmId, completed, siteId);
 
             // Data sent to server, if there is some offline data delete it now.
-            await CoreUtils.ignoreErrors(CoreCourseOffline.deleteManualCompletion(cmId, siteId));
+            await CorePromiseUtils.ignoreErrors(CoreCourseOffline.deleteManualCompletion(cmId, siteId));
 
             // Invalidate module now, completion has changed.
             await this.invalidateModule(cmId, siteId);
 
             return result;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 throw error;
             } else {
@@ -1409,7 +1398,7 @@ export class CoreCourseProvider {
      */
     isCoreModule(moduleName: string): boolean {
         // If core modules are removed for a certain version we should check the version of the site.
-        return CoreCourseProvider.CORE_MODULES.includes(moduleName);
+        return CORE_COURSE_CORE_MODULES.includes(moduleName);
     }
 
     /**
@@ -1437,10 +1426,12 @@ export class CoreCourseProvider {
             return;
         }
 
+        const { CoreSitePlugins } = await import('@features/siteplugins/services/siteplugins');
+
         const loading = await CoreLoadings.show();
 
         // Wait for site plugins to be fetched.
-        await CoreUtils.ignoreErrors(CoreSitePlugins.waitFetchPlugins());
+        await CorePromiseUtils.ignoreErrors(CoreSitePlugins.waitFetchPlugins());
 
         if (!('format' in course) || course.format === undefined) {
             const result = await CoreCourseHelper.getCourse(course.id);

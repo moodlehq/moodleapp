@@ -15,7 +15,7 @@
 import { EnvironmentConfig } from '@/types/config';
 import { Injectable } from '@angular/core';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
-import { CoreApp } from '@services/app';
+import { CoreAppDB } from './app-db';
 import { APP_SCHEMA, ConfigDBEntry, CONFIG_TABLE_NAME } from '@services/database/config';
 import { makeSingleton } from '@singletons';
 import { CoreConstants } from '../constants';
@@ -73,15 +73,11 @@ export class CoreConfigProvider {
      * Initialize database.
      */
     async initializeDatabase(): Promise<void> {
-        try {
-            await CoreApp.createTablesFromSchema(APP_SCHEMA);
-        } catch {
-            // Ignore errors.
-        }
+        await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
         const table = new CoreDatabaseTableProxy<ConfigDBEntry, 'name'>(
             { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
-            CoreApp.getDB(),
+            CoreAppDB.getDB(),
             CONFIG_TABLE_NAME,
             ['name'],
         );
@@ -129,7 +125,7 @@ export class CoreConfigProvider {
      * @returns Resolves upon success along with the config data. Reject on failure.
      */
     async getFromDB<T>(name: string): Promise<T> {
-        const db = CoreApp.getDB();
+        const db = CoreAppDB.getDB();
         const record = await db.getRecord<ConfigDBEntry>(CONFIG_TABLE_NAME, { name });
 
         return record.value;

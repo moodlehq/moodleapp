@@ -24,7 +24,7 @@ import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 @Component({
     selector: 'core-sheet-modal',
     templateUrl: 'sheet-modal.html',
-    styleUrls: ['sheet-modal.scss'],
+    styleUrl: 'sheet-modal.scss',
 })
 export class CoreSheetModalComponent<T extends CoreModalComponent> implements AfterViewInit {
 

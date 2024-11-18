@@ -17,7 +17,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { AddonMessageOutputAirnotifier, AddonMessageOutputAirnotifierDevice } from '../../services/airnotifier';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays the list of devices.
@@ -112,7 +112,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
      * Fetch devices. The purpose is to store the updated data, it won't be reflected in the view.
      */
     protected async updateDevices(): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonMessageOutputAirnotifier.invalidateUserDevices());
+        await CorePromiseUtils.ignoreErrors(AddonMessageOutputAirnotifier.invalidateUserDevices());
 
         await AddonMessageOutputAirnotifier.getUserDevices();
     }
@@ -124,7 +124,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
      */
     async refreshDevices(refresher: HTMLIonRefresherElement): Promise<void> {
         try {
-            await CoreUtils.ignoreErrors(AddonMessageOutputAirnotifier.invalidateUserDevices());
+            await CorePromiseUtils.ignoreErrors(AddonMessageOutputAirnotifier.invalidateUserDevices());
 
             await this.fetchDevices();
         } finally {

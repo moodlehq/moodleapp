@@ -20,7 +20,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModH5PActivity } from '../h5pactivity';
 import { ADDON_MOD_H5PACTIVITY_PAGE_NAME } from '../../constants';
@@ -115,7 +115,7 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
             canViewAllAttempts = await AddonModH5PActivity.canGetUsersAttempts(siteId);
 
             if (canViewAllAttempts) {
-                const accessInfo = await CoreUtils.ignoreErrors(AddonModH5PActivity.getAccessInformation(id, {
+                const accessInfo = await CorePromiseUtils.ignoreErrors(AddonModH5PActivity.getAccessInformation(id, {
                     cmId,
                     siteId,
                 }));

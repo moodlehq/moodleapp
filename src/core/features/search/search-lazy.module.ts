@@ -50,4 +50,4 @@ function buildRoutes(injector: Injector): Routes {
         },
     ],
 })
-export class CoreSearchLazyModule {}
+export default class CoreSearchLazyModule {}

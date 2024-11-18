@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreApp } from '@services/app';
+import { CoreAppDB } from '@services/app-db';
 import { CoreConfig } from '@services/config';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreFilepool } from '@services/filepool';
@@ -25,7 +25,7 @@ import { CoreStorage } from '@services/storage';
  */
 export default async function(): Promise<void> {
     await Promise.all([
-        CoreApp.initializeDatabase(),
+        CoreAppDB.initializeDatabase(),
         CoreConfig.initializeDatabase(),
         CoreCronDelegate.initializeDatabase(),
         CoreFilepool.initializeDatabase(),

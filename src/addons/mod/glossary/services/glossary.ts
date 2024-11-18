@@ -22,7 +22,7 @@ import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -37,6 +37,9 @@ import {
     ADDON_MOD_GLOSSARY_LIMIT_CATEGORIES,
     ADDON_MOD_GLOSSARY_LIMIT_ENTRIES,
 } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Service that provides some features for glossaries.
@@ -72,7 +75,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCourseGlossariesCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -133,7 +136,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByAuthorCacheKey(glossaryId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -177,7 +180,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByCategoryCacheKey(glossaryId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -247,7 +250,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByDateCacheKey(glossaryId, order),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -305,7 +308,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByLetterCacheKey(glossaryId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -319,7 +322,7 @@ export class AddonModGlossaryProvider {
 
         if (limit === ADDON_MOD_GLOSSARY_LIMIT_ENTRIES) {
             // Store entries in background, don't block the user for this.
-            CoreUtils.ignoreErrors(this.storeEntries(glossaryId, result.entries, from, site.getId()));
+            CorePromiseUtils.ignoreErrors(this.storeEntries(glossaryId, result.entries, from, site.getId()));
         }
 
         return result;
@@ -379,7 +382,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesBySearchCacheKey(glossaryId, query, fullSearch),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -457,7 +460,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCategoriesCacheKey(glossaryId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -514,7 +517,7 @@ export class AddonModGlossaryProvider {
         };
         const preSets = {
             cacheKey: this.getEntryCacheKey(entryId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_GLOSSARY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -528,7 +531,7 @@ export class AddonModGlossaryProvider {
                 const data = await this.getStoredDataForEntry(entryId, site.getId());
 
                 if (data.from !== undefined) {
-                    const response = await CoreUtils.ignoreErrors(
+                    const response = await CorePromiseUtils.ignoreErrors(
                         this.getEntryFromList(data.glossaryId, entryId, data.from, false, options),
                     );
 
@@ -702,9 +705,9 @@ export class AddonModGlossaryProvider {
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         const glossary = await this.getGlossary(courseId, moduleId);
 
-        await CoreUtils.ignoreErrors(this.invalidateGlossaryEntries(glossary));
+        await CorePromiseUtils.ignoreErrors(this.invalidateGlossaryEntries(glossary));
 
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             this.invalidateCourseGlossaries(courseId),
             this.invalidateCategories(glossary.id),
         ]);
@@ -750,7 +753,7 @@ export class AddonModGlossaryProvider {
             }
         });
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -872,7 +875,7 @@ export class AddonModGlossaryProvider {
 
             return entryId;
         } catch (error) {
-            if (otherOptions.allowOffline && !CoreUtils.isWebServiceError(error)) {
+            if (otherOptions.allowOffline && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             }
@@ -908,7 +911,7 @@ export class AddonModGlossaryProvider {
             concept: concept,
             definition: definition,
             definitionformat: 1,
-            options: CoreUtils.objectToArrayOfObjects(options || {}, 'name', 'value'),
+            options: CoreObject.toArrayOfObjects(options || {}, 'name', 'value'),
         };
 
         if (attachId) {
@@ -952,7 +955,7 @@ export class AddonModGlossaryProvider {
             concept: concept,
             definition: definition,
             definitionformat: 1,
-            options: CoreUtils.objectToArrayOfObjects(options || {}, 'name', 'value'),
+            options: CoreObject.toArrayOfObjects(options || {}, 'name', 'value'),
         };
 
         if (attachId) {

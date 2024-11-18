@@ -19,7 +19,7 @@ import { CoreSites } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTabsOutletComponent, CoreTabsOutletTab } from '@components/tabs-outlet/tabs-outlet';
 import { CoreMainMenuHomeDelegate, CoreMainMenuHomeHandlerToDisplay } from '../../services/home-delegate';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 
 /**
@@ -62,7 +62,7 @@ export class CoreMainMenuHomePage implements OnInit {
     initHandlers(handlers: CoreMainMenuHomeHandlerToDisplay[]): void {
         // Re-build the list of tabs.
         const loaded = CoreMainMenuHomeDelegate.areHandlersLoaded();
-        const handlersMap = CoreUtils.arrayToObject(handlers, 'title');
+        const handlersMap = CoreArray.toObject(handlers, 'title');
         const newTabs = handlers.map((handler): CoreTabsOutletTab => {
             const tab = this.tabs.find(tab => tab.title == handler.title);
 

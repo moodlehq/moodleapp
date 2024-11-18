@@ -26,7 +26,7 @@ import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate, NgZone } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CorePath } from '@singletons/path';
@@ -67,7 +67,7 @@ import { CorePopovers } from '@services/popovers';
 @Component({
     selector: 'addon-mod-wiki-index',
     templateUrl: 'addon-mod-wiki-index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
@@ -228,7 +228,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
             if (sync) {
                 // Try to synchronize the wiki.
-                await CoreUtils.ignoreErrors(this.syncActivity(showErrors));
+                await CorePromiseUtils.ignoreErrors(this.syncActivity(showErrors));
             }
 
             if (this.pageWarning) {
@@ -496,7 +496,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             return; // Shouldn't happen.
         }
 
-        await CoreUtils.ignoreErrors(AddonModWiki.logPageView(pageId, this.wiki.id));
+        await CorePromiseUtils.ignoreErrors(AddonModWiki.logPageView(pageId, this.wiki.id));
 
         this.analyticsLogEvent('mod_wiki_view_page', {
             name: this.currentPageObj?.title,

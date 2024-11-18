@@ -17,11 +17,11 @@ import { CoreEnrolAction, CoreEnrolSelfHandler, CoreEnrolInfoIcon } from '@featu
 import { Translate, makeSingleton } from '@singletons';
 import { AddonEnrolSelf } from './self';
 import { CorePasswordModalResponse } from '@components/password-modal/password-modal';
-import { CoreCoursesProvider } from '@features/courses/services/courses';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEnrol, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
 import { CoreModals } from '@services/modals';
 import { CoreLoadings } from '@services/loadings';
+import { CORE_COURSES_ENROL_INVALID_KEY } from '@features/courses/constants';
 
 /**
  * Enrol handler.
@@ -122,7 +122,7 @@ export class AddonEnrolSelfHandlerService implements CoreEnrolSelfHandler {
             try {
                 response.validated = await AddonEnrolSelf.selfEnrol(method.courseid, password, method.id);
             } catch (error) {
-                if (error && error.errorcode === CoreCoursesProvider.ENROL_INVALID_KEY) {
+                if (error && error.errorcode === CORE_COURSES_ENROL_INVALID_KEY) {
                     response.validated = false;
                     response.error = error.message;
                 } else {

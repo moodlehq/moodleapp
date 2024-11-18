@@ -14,7 +14,8 @@
 
 import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
-import { CoreCourse, CoreCourseProvider, sectionContentIsModule } from '@features/course/services/course';
+import { CORE_COURSE_ALL_COURSES_CLEARED, CORE_COURSE_ALL_SECTIONS_ID } from '@features/course/constants';
+import { CoreCourse, sectionContentIsModule } from '@features/course/services/course';
 import {
     CoreCourseHelper,
     CoreCourseModuleData,
@@ -181,7 +182,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         // Listen for changes in course status.
         this.courseStatusObserver = CoreEvents.on(CoreEvents.COURSE_STATUS_CHANGED, (data) => {
-            if (data.courseId === this.courseId || data.courseId === CoreCourseProvider.ALL_COURSES_CLEARED) {
+            if (data.courseId === this.courseId || data.courseId === CORE_COURSE_ALL_COURSES_CLEARED) {
                 this.updateCourseStatus(data.status);
             }
         }, CoreSites.getCurrentSiteId());
@@ -723,7 +724,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         }
 
         await Promise.all(sections.map(async (section) => {
-            if (section.id === CoreCourseProvider.ALL_SECTIONS_ID) {
+            if (section.id === CORE_COURSE_ALL_SECTIONS_ID) {
                 return;
             }
 

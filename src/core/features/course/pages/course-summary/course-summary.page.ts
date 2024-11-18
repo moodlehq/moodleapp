@@ -21,7 +21,6 @@ import {
     CoreCourseCustomField,
     CoreCourses,
     CoreCourseSearchedData,
-    CoreCoursesProvider,
     CoreEnrolledCourseData,
 } from '@features/courses/services/courses';
 import {
@@ -31,7 +30,7 @@ import {
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { ActionSheetController, ModalController, NgZone, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { Subscription } from 'rxjs';
 import { CoreColors } from '@singletons/colors';
@@ -42,6 +41,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreEnrolHelper } from '@features/enrol/services/enrol-helper';
 import { CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 import { CoreEnrol, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
+import { CORE_COURSES_MY_COURSES_UPDATED_EVENT, CoreCoursesMyCoursesUpdatedEventAction } from '@features/courses/constants';
 
 /**
  * Page that shows the summary of a course including buttons to enrol and other available options.
@@ -49,7 +49,7 @@ import { CoreEnrol, CoreEnrolEnrolmentMethod } from '@features/enrol/services/en
 @Component({
     selector: 'page-core-course-summary',
     templateUrl: 'course-summary.html',
-    styleUrls: ['course-summary.scss'],
+    styleUrl: 'course-summary.scss',
 })
 export class CoreCourseSummaryPage implements OnInit, OnDestroy {
 
@@ -174,7 +174,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         await this.loadMenuHandlers(refresh);
 
         // After loading menu handlers, admOptions should be available.
-        this.isTeacher = await CoreUtils.ignoreErrors(CoreCourseHelper.guessIsTeacher(this.courseId, this.course), false);
+        this.isTeacher = await CorePromiseUtils.ignoreErrors(CoreCourseHelper.guessIsTeacher(this.courseId, this.course), false);
 
         this.dataLoaded = true;
     }
@@ -204,7 +204,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
             // Ignore errors.
         }
 
-        const courseByField = await CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', this.courseId));
+        const courseByField = await CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', this.courseId));
         if (courseByField) {
             if (this.course) {
                 this.course.customfields = courseByField.customfields;
@@ -391,10 +391,10 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
 
         await this.refreshData().finally(() => {
             // My courses have been updated, trigger event.
-            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+            CoreEvents.trigger(CORE_COURSES_MY_COURSES_UPDATED_EVENT, {
                 courseId: this.courseId,
                 course: this.course,
-                action: CoreCoursesProvider.ACTION_ENROL,
+                action: CoreCoursesMyCoursesUpdatedEventAction.ENROL,
             }, CoreSites.getCurrentSiteId());
         });
 
@@ -440,7 +440,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         }
 
         // Check if user is enrolled in the course.
-        await CoreUtils.ignoreErrors(CoreCourses.invalidateUserCourses());
+        await CorePromiseUtils.ignoreErrors(CoreCourses.invalidateUserCourses());
 
         try {
             await CoreCourses.getUserCourse(this.courseId);

@@ -17,6 +17,11 @@
  */
 export class CoreMath {
 
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
+
     /**
      * Clamp a value between a minimum and a maximum.
      *

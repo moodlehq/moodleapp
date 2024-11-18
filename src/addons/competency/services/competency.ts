@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreSite } from '@classes/sites/site';
@@ -19,7 +20,7 @@ import { CoreCommentsArea } from '@features/comments/services/comments';
 import { CoreCourseSummary } from '@features/course/services/course';
 import { CoreUserSummary } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 
 const ROOT_CACHE_KEY = 'mmaCompetency:';
@@ -188,7 +189,7 @@ export class AddonCompetencyProvider {
             return false;
         }
 
-        return CoreUtils.promiseWorks(this.getCourseCompetencies(courseId, undefined, siteId));
+        return CorePromiseUtils.promiseWorks(this.getCourseCompetencies(courseId, undefined, siteId));
     }
 
     /**
@@ -208,7 +209,7 @@ export class AddonCompetencyProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getLearningPlansCacheKey(userId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         const response = await site.read<AddonCompetencyDataForPlansPageWSResponse>('tool_lp_data_for_plans_page', params, preSets);
@@ -232,7 +233,7 @@ export class AddonCompetencyProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getLearningPlanCacheKey(planId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         return site.read('tool_lp_data_for_plan_page', params, preSets);
@@ -260,7 +261,7 @@ export class AddonCompetencyProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCompetencyInPlanCacheKey(planId, competencyId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         return site.read(
@@ -298,7 +299,7 @@ export class AddonCompetencyProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCompetencyInCourseCacheKey(courseId, competencyId, userId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         if (ignoreCache) {
@@ -334,7 +335,7 @@ export class AddonCompetencyProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCompetencySummaryCacheKey(competencyId, userId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         if (ignoreCache) {
@@ -400,7 +401,7 @@ export class AddonCompetencyProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCourseCompetenciesCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         if (ignoreCache) {

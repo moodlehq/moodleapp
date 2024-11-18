@@ -27,7 +27,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-download-refresh',
     templateUrl: 'core-download-refresh.html',
-    styleUrls: ['download-refresh.scss'],
+    styleUrl: 'download-refresh.scss',
     animations: [CoreAnimations.SHOW_HIDE],
 })
 export class CoreDownloadRefreshComponent implements OnInit {

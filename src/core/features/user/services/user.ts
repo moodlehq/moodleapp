@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreCountries } from '@singletons/countries';
 import { CoreUserOffline } from './user-offline';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite } from '@classes/sites/site';
@@ -28,7 +28,8 @@ import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
 import { CoreUrl } from '@singletons/url';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreConstants } from '@/core/constants';
+import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 const ROOT_CACHE_KEY = 'mmUser:';
 
@@ -223,7 +224,7 @@ export class CoreUserProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getParticipantsListCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         if (ignoreCache) {
@@ -291,7 +292,7 @@ export class CoreUserProvider {
      * @returns Starting week day.
      */
     async getStartingWeekDay(): Promise<number> {
-        const preference = await CoreUtils.ignoreErrors(this.getUserPreference('calendar_startwday'));
+        const preference = await CorePromiseUtils.ignoreErrors(this.getUserPreference('calendar_startwday'));
 
         if (preference && !isNaN(Number(preference))) {
             return Number(preference);
@@ -362,7 +363,7 @@ export class CoreUserProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserCacheKey(userId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
         let users: CoreUserData[] | CoreUserCourseProfile[] | undefined;
 
@@ -398,7 +399,7 @@ export class CoreUserProvider {
 
         const user: CoreUserData | CoreUserCourseProfile = users[0];
         if (user.country) {
-            user.country = CoreUtils.getCountryName(user.country);
+            user.country = CoreCountries.getCountryName(user.country);
         }
         this.storeUser(user.id, user.fullname, user.profileimageurl);
 
@@ -415,7 +416,7 @@ export class CoreUserProvider {
     async getUserPreference(name: string, siteId?: string): Promise<string | null> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const preference = await CoreUtils.ignoreErrors(CoreUserOffline.getPreference(name, siteId));
+        const preference = await CorePromiseUtils.ignoreErrors(CoreUserOffline.getPreference(name, siteId));
 
         if (preference && !CoreNetwork.isOnline()) {
             // Offline, return stored value.
@@ -463,7 +464,7 @@ export class CoreUserProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserPreferenceCacheKey(name),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         const result = await site.read<CoreUserGetUserPreferencesWSResponse>('core_user_get_user_preferences', params, preSets);
@@ -547,7 +548,7 @@ export class CoreUserProvider {
         }
 
         // Retrieving one participant will fail if browsing users is disabled by capabilities.
-        return CoreUtils.promiseWorks(this.getParticipants(courseId, 0, 1, siteId));
+        return CorePromiseUtils.promiseWorks(this.getParticipants(courseId, 0, 1, siteId));
     }
 
     /**
@@ -791,7 +792,7 @@ export class CoreUserProvider {
             // Update preference and invalidate data.
             await Promise.all([
                 CoreUserOffline.setPreference(name, value, value),
-                CoreUtils.ignoreErrors(this.invalidateUserPreference(name)),
+                CorePromiseUtils.ignoreErrors(this.invalidateUserPreference(name)),
             ]);
         } catch (error) {
             // Preference not saved online. Update the offline one.

@@ -17,7 +17,6 @@ import { Injectable, Type } from '@angular/core';
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { makeSingleton } from '@singletons';
-import { AddonQtypeDdwtosComponent } from '../../component/ddwtos';
 
 /**
  * Handler to support drag-and-drop words into sentences question type.
@@ -42,7 +41,9 @@ export class AddonQtypeDdwtosHandlerService implements CoreQuestionHandler {
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonQtypeDdwtosComponent } = await import('../../component/ddwtos');
+
         return AddonQtypeDdwtosComponent;
     }
 

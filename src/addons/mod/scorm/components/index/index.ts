@@ -22,7 +22,7 @@ import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModScormPrefetchHandler } from '../../services/handlers/prefetch';
@@ -50,6 +50,7 @@ import {
     ADDON_MOD_SCORM_PAGE_NAME,
 } from '../../constants';
 import { CoreWait } from '@singletons/wait';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Component that displays a SCORM entry page.
@@ -57,7 +58,7 @@ import { CoreWait } from '@singletons/wait';
 @Component({
     selector: 'addon-mod-scorm-index',
     templateUrl: 'addon-mod-scorm-index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
@@ -188,7 +189,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
         if (sync) {
             // Try to synchronize the SCORM.
-            await CoreUtils.ignoreErrors(this.syncActivity(showErrors));
+            await CorePromiseUtils.ignoreErrors(this.syncActivity(showErrors));
         }
 
         const [syncTime, accessInfo] = await Promise.all([
@@ -339,8 +340,8 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         this.grade = AddonModScorm.calculateScormGrade(scorm, onlineAttempts);
 
         // Add the attempts to the SCORM in array format in ASC order, and format the grades.
-        this.onlineAttempts = CoreUtils.objectToArray(onlineAttempts);
-        this.offlineAttempts = CoreUtils.objectToArray(offlineAttempts);
+        this.onlineAttempts = CoreObject.toArray(onlineAttempts);
+        this.offlineAttempts = CoreObject.toArray(offlineAttempts);
         this.onlineAttempts.sort((a, b) => a.num - b.num);
         this.offlineAttempts.sort((a, b) => a.num - b.num);
 
@@ -363,7 +364,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
             return; // Shouldn't happen.
         }
 
-        await CoreUtils.ignoreErrors(AddonModScorm.logView(this.scorm.id));
+        await CorePromiseUtils.ignoreErrors(AddonModScorm.logView(this.scorm.id));
 
         this.analyticsLogEvent('mod_scorm_view_scorm');
     }
@@ -516,7 +517,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         await AddonModScormHelper.confirmDownload(scorm, isOutdated);
         // Invalidate WS data if SCORM is outdated.
         if (isOutdated) {
-            await CoreUtils.ignoreErrors(AddonModScorm.invalidateAllScormData(scorm.id));
+            await CorePromiseUtils.ignoreErrors(AddonModScorm.invalidateAllScormData(scorm.id));
         }
 
         try {
@@ -626,7 +627,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
         if (!result.updated && this.dataSent) {
             // The user sent data to server, but not in the sync process. Check if we need to fetch data.
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 AddonModScormSync.prefetchAfterUpdate(AddonModScormPrefetchHandler.instance, this.module, this.courseId),
             );
         }

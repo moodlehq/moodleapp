@@ -19,7 +19,6 @@ import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '@features/user/services/user-profile-field-delegate';
 import { CoreFormFields } from '@singletons/form';
 import { makeSingleton } from '@singletons';
-import { AddonUserProfileFieldDatetimeComponent } from '../../component/datetime';
 import moment from 'moment-timezone';
 
 /**
@@ -67,14 +66,13 @@ export class AddonUserProfileFieldDatetimeHandlerService implements CoreUserProf
     }
 
     /**
-     * Return the Component to use to display the user profile field.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @returns The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
-    getComponent(): Type<unknown> | Promise<Type<unknown>> {
-        return AddonUserProfileFieldDatetimeComponent;
-    }
+        async getComponent(): Promise<Type<unknown>> {
+            const { AddonUserProfileFieldDatetimeComponent } = await import('../../component/datetime');
+
+            return AddonUserProfileFieldDatetimeComponent;
+        }
 
 }
 

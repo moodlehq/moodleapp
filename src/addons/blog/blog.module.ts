@@ -37,7 +37,7 @@ import { AddonBlogSyncCronHandler } from './services/handlers/sync-cron';
 const routes: Routes = [
     {
         path: ADDON_BLOG_MAINMENU_PAGE_NAME,
-        loadChildren: () => import('@addons/blog/blog-lazy.module').then(m => m.AddonBlogLazyModule),
+        loadChildren: () => import('@addons/blog/blog-lazy.module'),
     },
 ];
 

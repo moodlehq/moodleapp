@@ -16,7 +16,7 @@ import { Component } from '@angular/core';
 
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-profilefield-component';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 
 /**
  * Directive to render a text user profile field.

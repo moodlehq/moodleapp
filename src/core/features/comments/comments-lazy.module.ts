@@ -33,4 +33,4 @@ const routes: Routes = [
         CoreCommentsViewerPage,
     ],
 })
-export class CoreCommentsLazyModule {}
+export default class CoreCommentsLazyModule {}
