@@ -30,4 +30,4 @@ const routes: Routes = [
         RouterModule.forChild(routes),
     ],
 })
-export class AddonBadgeLazyModule {}
+export default class AddonBadgeLazyModule {}

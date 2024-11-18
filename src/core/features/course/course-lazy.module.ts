@@ -22,7 +22,7 @@ import { CoreCourseIndexPage } from '@features/course/pages/index';
 import { CoreCourseListModTypePage } from '@features/course/pages/list-mod-type/list-mod-type';
 import { CoreCourseModulePreviewPage } from '@features/course/pages/module-preview/module-preview';
 import { CoreCourseHelper } from './services/course-helper';
-import { COURSE_INDEX_PATH } from './constants';
+import { CORE_COURSE_INDEX_PATH } from './constants';
 
 /**
  * Build module routes.
@@ -35,7 +35,7 @@ function buildRoutes(injector: Injector): Routes {
 
     return [
         {
-            path: COURSE_INDEX_PATH,
+            path: CORE_COURSE_INDEX_PATH,
             children: [
                 {
                     path: '',
@@ -83,4 +83,4 @@ function buildRoutes(injector: Injector): Routes {
         },
     ],
 })
-export class CoreCourseLazyModule {}
+export default class CoreCourseLazyModule {}

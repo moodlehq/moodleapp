@@ -31,7 +31,7 @@ import { CoreSites } from '@services/sites';
 @Component({
     selector: 'addon-mod-url-index',
     templateUrl: 'addon-mod-url-index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 

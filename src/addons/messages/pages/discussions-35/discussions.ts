@@ -19,10 +19,9 @@ import {
     AddonMessages,
     AddonMessagesDiscussion,
     AddonMessagesMessageAreaContact,
-    AddonMessagesProvider,
 } from '../../services/messages';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { ActivatedRoute, Params } from '@angular/router';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
@@ -33,6 +32,8 @@ import { CoreScreen } from '@services/screen';
 import { CorePlatform } from '@services/platform';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { ADDON_MESSAGES_NEW_MESSAGE_EVENT, ADDON_MESSAGES_READ_CHANGED_EVENT } from '@addons/messages/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays the list of discussions.
@@ -40,7 +41,7 @@ import { CoreKeyboard } from '@singletons/keyboard';
 @Component({
     selector: 'addon-messages-discussions',
     templateUrl: 'discussions.html',
-    styleUrls: ['../../messages-common.scss'],
+    styleUrl: '../../messages-common.scss',
 })
 export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
 
@@ -75,7 +76,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
 
         // Update discussions when new message is received.
         this.newMessagesObserver = CoreEvents.on(
-            AddonMessagesProvider.NEW_MESSAGE_EVENT,
+            ADDON_MESSAGES_NEW_MESSAGE_EVENT,
             (data) => {
                 if (data.userId && this.discussions) {
                     const discussion = this.discussions.find((disc) => disc.message?.user === data.userId);
@@ -97,7 +98,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
 
         // Update discussions when a message is read.
         this.readChangedObserver = CoreEvents.on(
-            AddonMessagesProvider.READ_CHANGED_EVENT,
+            ADDON_MESSAGES_READ_CHANGED_EVENT,
             (data) => {
                 if (data.userId && this.discussions) {
                     const discussion = this.discussions.find((disc) => disc.message?.user === data.userId);
@@ -170,7 +171,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
             promises.push(AddonMessages.invalidateUnreadConversationCounts(this.siteId));
         }
 
-        await CoreUtils.allPromises(promises).finally(() => this.fetchData().finally(() => {
+        await CorePromiseUtils.allPromises(promises).finally(() => this.fetchData().finally(() => {
             if (refresher) {
                 refresher?.complete();
             }

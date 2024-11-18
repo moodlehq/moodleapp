@@ -31,8 +31,8 @@ import { CoreError } from '@classes/errors/error';
 import { CorePath } from '@singletons/path';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreFilepool } from '@services/filepool';
-import { DownloadStatus } from '@/core/constants';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreCacheUpdateFrequency, DownloadStatus } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to provide H5P functionalities.
@@ -103,7 +103,7 @@ export class CoreH5PProvider {
         const state = await CoreFilepool.getFileStateByUrl(site.getId(), customCssUrl);
         if (state === DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED) {
             // File not downloaded, URL has changed or first time. Delete previously downloaded file.
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 CoreFilepool.removeFilesByComponent(site.getId(), CoreH5PProvider.CUSTOM_CSS_COMPONENT, 1),
             );
         }
@@ -145,7 +145,7 @@ export class CoreH5PProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getTrustedH5PFileCacheKey(url),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         if (ignoreCache) {

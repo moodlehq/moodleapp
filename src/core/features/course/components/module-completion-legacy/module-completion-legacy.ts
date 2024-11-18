@@ -18,7 +18,7 @@ import { CoreUser } from '@features/user/services/user';
 import {
     CoreCourseModuleCompletionStatus,
     CoreCourseModuleCompletionTracking,
-} from '@features/course/services/course';
+} from '@features/course/constants';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { Translate } from '@singletons';
 import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classes/module-completion';
@@ -39,7 +39,7 @@ import { ContextLevel } from '@/core/constants';
 @Component({
     selector: 'core-course-module-completion-legacy',
     templateUrl: 'core-course-module-completion-legacy.html',
-    styleUrls: ['module-completion-legacy.scss'],
+    styleUrl: 'module-completion-legacy.scss',
 })
 export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleCompletionBaseComponent
     implements OnInit, OnDestroy {
@@ -76,7 +76,7 @@ export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleC
         let langKey: string | undefined;
         let image: string | undefined;
 
-        if (this.completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_MANUAL) {
+        if (this.completion.tracking === CoreCourseModuleCompletionTracking.MANUAL) {
             if (this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE) {
                 image = 'completion-manual-n';
                 langKey = 'core.completion-alt-manual-n';
@@ -84,7 +84,7 @@ export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleC
                 image = 'completion-manual-y';
                 langKey = 'core.completion-alt-manual-y';
             }
-        } else if (this.completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC) {
+        } else if (this.completion.tracking === CoreCourseModuleCompletionTracking.AUTOMATIC) {
             if (this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE) {
                 image = 'completion-auto-n';
                 langKey = 'core.completion-alt-auto-n';

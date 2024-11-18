@@ -28,7 +28,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ModalController, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModQuizAutoSave } from '../../classes/auto-save';
@@ -617,7 +617,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
-        await CoreUtils.ignoreErrors(AddonModQuiz.logViewAttempt(this.attempt.id, page, this.preflightData, this.offline));
+        await CorePromiseUtils.ignoreErrors(AddonModQuiz.logViewAttempt(this.attempt.id, page, this.preflightData, this.offline));
 
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.VIEW_ITEM,
@@ -636,7 +636,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             AddonModQuiz.logViewAttemptSummary(this.attempt.id, this.preflightData, this.quiz.id),
         );
 
@@ -735,7 +735,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             // Some data has changed, reload the navigation.
             const modal = await CoreLoadings.show();
 
-            await CoreUtils.ignoreErrors(this.loadNavigation());
+            await CorePromiseUtils.ignoreErrors(this.loadNavigation());
 
             modal.dismiss();
             this.reloadNavigation = false;

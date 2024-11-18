@@ -18,7 +18,7 @@ import { FormBuilder, FormGroup, ValidatorFn, AbstractControl, ValidationErrors 
 import { CoreNetwork } from '@services/network';
 import { CoreConfig } from '@services/config';
 import { CoreSites, CoreSiteCheckResponse, CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import {
     CoreLoginHelper,
@@ -49,6 +49,8 @@ import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreModals } from '@services/modals';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreCountries } from '@singletons/countries';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -172,12 +174,15 @@ export class CoreLoginSitePage implements OnInit {
      * @returns Referrer URL, undefined if no URL to use.
      */
     protected async consumeInstallReferrerUrl(): Promise<string | undefined> {
-        const url = await CoreUtils.ignoreErrors(CoreUtils.timeoutPromise(CoreReferrer.consumeInstallReferrerUrl(), 1000));
+        const url = await CorePromiseUtils.ignoreErrors(
+            CorePromiseUtils.timeoutPromise(CoreReferrer.consumeInstallReferrerUrl(), 1000),
+        );
+
         if (!url) {
             return;
         }
 
-        const hasSites = (await CoreUtils.ignoreErrors(CoreSites.getSites(), [])).length > 0;
+        const hasSites = (await CorePromiseUtils.ignoreErrors(CoreSites.getSites(), [])).length > 0;
         if (hasSites) {
             // There are sites stored already, don't use the referrer URL since it's an update or a backup was restored.
             return;
@@ -219,7 +224,7 @@ export class CoreLoginSitePage implements OnInit {
             site.title = name && alias ? name + ' (' + alias + ')' : name + alias;
 
             const country = this.siteFinderSettings.displaycountry && site.countrycode ?
-                CoreUtils.getCountryName(site.countrycode) : '';
+                CoreCountries.getCountryName(site.countrycode) : '';
             const city = this.siteFinderSettings.displaycity && site.city ?
                 site.city : '';
 

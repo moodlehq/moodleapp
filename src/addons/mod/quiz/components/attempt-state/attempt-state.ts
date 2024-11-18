@@ -22,7 +22,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'addon-mod-quiz-attempt-state',
     templateUrl: 'attempt-state.html',
-    styleUrls: ['attempt-state.scss'],
+    styleUrl: 'attempt-state.scss',
 })
 export class AddonModQuizAttemptStateComponent implements OnChanges {
 

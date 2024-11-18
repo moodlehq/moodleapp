@@ -14,27 +14,25 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreWSExternalFile, CoreWSExternalWarning, CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModWikiPageDBRecord } from './database/wiki';
 import { AddonModWikiOffline } from './wiki-offline';
-import { AddonModWikiAutoSyncData, AddonModWikiManualSyncData } from './wiki-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_WIKI_AUTO_SYNCED,
     ADDON_MOD_WIKI_COMPONENT,
-    ADDON_MOD_WIKI_MANUAL_SYNCED,
     ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
 } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service that provides some features for wikis.
@@ -138,7 +136,7 @@ export class AddonModWikiProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getPageContentsCacheKey(pageId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_WIKI_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -211,7 +209,7 @@ export class AddonModWikiProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubwikiFilesCacheKey(wikiId, groupId, userId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_WIKI_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -281,7 +279,7 @@ export class AddonModWikiProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubwikiPagesCacheKey(wikiId, groupId, userId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_WIKI_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -329,7 +327,7 @@ export class AddonModWikiProvider {
         };
         const preSets = {
             cacheKey: this.getSubwikisCacheKey(wikiId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_WIKI_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -387,7 +385,7 @@ export class AddonModWikiProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getWikiDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_WIKI_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -678,7 +676,7 @@ export class AddonModWikiProvider {
         const storeOffline = async (): Promise<number> => {
             if (options.wikiId && options.subwikiId) {
                 // We have wiki ID, check if there's already an online page with this title and subwiki.
-                const used = await CoreUtils.ignoreErrors(this.isTitleUsed(options.wikiId, options.subwikiId, title, {
+                const used = await CorePromiseUtils.ignoreErrors(this.isTitleUsed(options.wikiId, options.subwikiId, title, {
                     cmId: options.cmId,
                     readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
                     siteId: options.siteId,
@@ -721,7 +719,7 @@ export class AddonModWikiProvider {
             // Try to create it in online.
             return await this.newPageOnline(title, content, options);
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that the page cannot be added.
                 throw error;
             }
@@ -898,8 +896,6 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [ADDON_MOD_WIKI_PAGE_CREATED_EVENT]: AddonModWikiPageCreatedData;
-        [ADDON_MOD_WIKI_AUTO_SYNCED]: AddonModWikiAutoSyncData;
-        [ADDON_MOD_WIKI_MANUAL_SYNCED]: AddonModWikiManualSyncData;
     }
 
 }

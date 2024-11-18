@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreCourseAccessDataType } from '@features/course/services/course';
+import { CoreCourseAccessDataType } from '@features/course/constants';
 import {
     CoreCourseAccess,
     CoreCourseOptionsHandler,

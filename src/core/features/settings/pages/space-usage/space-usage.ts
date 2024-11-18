@@ -15,11 +15,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 import { CoreSettingsHelper } from '../../services/settings-helper';
 import { CoreAccountsList } from '@features/login/services/login-helper';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays the space usage settings.
@@ -94,7 +95,7 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
         // Calculate total usage.
         let totalSize = 0;
 
-        const sites = await CoreUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
+        const sites = await CorePromiseUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
         const sitesWithUsage = await Promise.all(sites.map((site) => this.getSiteWithUsage(site)));
 
         let siteUrl = '';
@@ -128,7 +129,7 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
             }
         });
 
-        this.accountsList.otherSites = CoreUtils.objectToArray(otherSites);
+        this.accountsList.otherSites = CoreObject.toArray(otherSites);
         this.accountsList.count = sites.length;
 
         this.totalSpaceUsage = totalSize;

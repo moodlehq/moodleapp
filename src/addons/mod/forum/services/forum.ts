@@ -25,7 +25,7 @@ import { CoreFileEntry } from '@services/file-helper';
 import { CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import {
     CoreStatusWithWarningsWSResponse,
     CoreWSExternalFile,
@@ -49,6 +49,10 @@ import {
     AddonModForumSortorder,
     AddonModForumType,
 } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
+import { CoreObject } from '@singletons/object';
 
 declare module '@singletons/events' {
 
@@ -218,7 +222,7 @@ export class AddonModForumProvider {
             message: message,
 
             // eslint-disable-next-line max-len
-            options: CoreUtils.objectToArrayOfObjects<AddonModForumAddDiscussionWSOptionsArray[0], AddonModForumAddDiscussionWSOptionsObject>(
+            options: CoreObject.toArrayOfObjects<AddonModForumAddDiscussionWSOptionsArray[0], AddonModForumAddDiscussionWSOptionsObject>(
                 options || {},
                 'name',
                 'value',
@@ -429,7 +433,7 @@ export class AddonModForumProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getForumDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_FORUM_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -458,7 +462,7 @@ export class AddonModForumProvider {
         };
         const preSets = {
             cacheKey: this.getDiscussionPostDataCacheKey(forumId, discussionId, postId),
-            updateFrequency: CoreSite.FREQUENCY_USUALLY,
+            updateFrequency: CoreCacheUpdateFrequency.USUALLY,
             component: ADDON_MOD_FORUM_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -732,7 +736,7 @@ export class AddonModForumProvider {
         let sortOrderValue: number | null = null;
 
         if (this.isDiscussionListSortingAvailable()) {
-            const preferenceValue = await CoreUtils.ignoreErrors(
+            const preferenceValue = await CorePromiseUtils.ignoreErrors(
                 CoreUser.getUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER),
             );
 
@@ -930,7 +934,7 @@ export class AddonModForumProvider {
                             promises.push(this.invalidateDiscussionPosts(discussion.discussion, forum.id));
                         });
 
-                        return CoreUtils.allPromises(promises);
+                        return CorePromiseUtils.allPromises(promises);
                     }),
             );
         });
@@ -939,7 +943,7 @@ export class AddonModForumProvider {
             promises.push(CoreUser.invalidateUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER));
         }
 
-        return CoreUtils.allPromises(promises);
+        return CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -971,7 +975,7 @@ export class AddonModForumProvider {
             promises.push(site.invalidateWsCacheForKeyStartingWith(this.getForumDiscussionDataCacheKey(forumId, discussionId)));
         }
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -1111,7 +1115,7 @@ export class AddonModForumProvider {
 
             return true;
         } catch (error) {
-            if (allowOffline && !CoreUtils.isWebServiceError(error)) {
+            if (allowOffline && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             } else {
@@ -1144,7 +1148,7 @@ export class AddonModForumProvider {
             subject: subject,
             message: message,
 
-            options: CoreUtils.objectToArrayOfObjects<
+            options: CoreObject.toArrayOfObjects<
             AddonModForumAddDiscussionPostWSOptionsArray[0],
             AddonModForumAddDiscussionPostWSOptionsObject
             >(
@@ -1274,7 +1278,7 @@ export class AddonModForumProvider {
             }
         });
 
-        CoreUser.storeUsers(CoreUtils.objectToArray(users));
+        CoreUser.storeUsers(CoreObject.toArray(users));
     }
 
     /**
@@ -1329,7 +1333,7 @@ export class AddonModForumProvider {
             subject: subject,
             message: message,
 
-            options: CoreUtils.objectToArrayOfObjects<
+            options: CoreObject.toArrayOfObjects<
             AddonModForumUpdateDiscussionPostWSOptionsArray[0],
             AddonModForumUpdateDiscussionPostWSOptionsObject
             >(

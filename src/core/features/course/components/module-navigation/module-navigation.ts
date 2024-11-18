@@ -21,7 +21,7 @@ import { CoreLoadings } from '@services/loadings';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 /**
@@ -33,7 +33,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 @Component({
     selector: 'core-course-module-navigation',
     templateUrl: 'core-course-module-navigation.html',
-    styleUrls: ['module-navigation.scss'],
+    styleUrl: 'module-navigation.scss',
 })
 export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
 
@@ -170,7 +170,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
         const modal = await CoreLoadings.show();
 
         // Re-calculate module in case a new module was made visible.
-        await CoreUtils.ignoreErrors(this.setNextAndPreviousModules(CoreSitesReadingStrategy.PREFER_NETWORK, next, !next));
+        await CorePromiseUtils.ignoreErrors(this.setNextAndPreviousModules(CoreSitesReadingStrategy.PREFER_NETWORK, next, !next));
 
         modal.dismiss();
 

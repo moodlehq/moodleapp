@@ -17,14 +17,14 @@ import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreCommentsOffline } from './comments-offline';
-import { CoreCommentsSyncAutoSyncData, CoreCommentsSyncProvider } from './comments-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ContextLevel } from '@/core/constants';
+import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 const ROOT_CACHE_KEY = 'mmComments:';
 
@@ -38,7 +38,6 @@ declare module '@singletons/events' {
     export interface CoreEventsData {
         [CoreCommentsProvider.REFRESH_COMMENTS_EVENT]: CoreCommentsRefreshCommentsEventData;
         [CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT]: CoreCommentsCountChangedEventData;
-        [CoreCommentsSyncProvider.AUTO_SYNCED]: CoreCommentsSyncAutoSyncData;
     }
 
 }
@@ -106,7 +105,7 @@ export class CoreCommentsProvider {
         try {
             return await this.addCommentOnline(content, contextLevel, instanceId, component, itemId, area, siteId);
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
                 throw error;
             }
@@ -150,7 +149,7 @@ export class CoreCommentsProvider {
         const commentsResponse = await this.addCommentsOnline(comments, siteId);
 
         // A comment was added, invalidate them.
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             this.invalidateCommentsData(contextLevel, instanceId, component, itemId, area, siteId),
         );
 
@@ -295,7 +294,7 @@ export class CoreCommentsProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the comment so don't store it.
                 throw error;
             }
@@ -334,7 +333,7 @@ export class CoreCommentsProvider {
 
         await site.write('core_comment_delete_comments', data);
 
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             this.invalidateCommentsData(contextLevel, instanceId, component, itemId, area, siteId),
         );
     }
@@ -422,7 +421,7 @@ export class CoreCommentsProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCommentsCacheKey(contextLevel, instanceId, component, itemId, area),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
         const response = await site.read<CoreCommentsGetCommentsWSResponse>('core_comment_get_comments', params, preSets);
 
@@ -524,7 +523,7 @@ export class CoreCommentsProvider {
     ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             // This is done with starting with to avoid conflicts with previous keys that were including page.
             site.invalidateWsCacheForKeyStartingWith(this.getCommentsCacheKey(
                 contextLevel,

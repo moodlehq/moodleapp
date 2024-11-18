@@ -29,7 +29,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { NgZone, Translate } from '@singletons';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -62,6 +62,8 @@ import {
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreToasts } from '@services/toasts';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreObject } from '@singletons/object';
 
 type SortType = 'flat-newest' | 'flat-oldest' | 'nested';
 
@@ -73,7 +75,7 @@ type Post = AddonModForumPost & { children?: Post[] };
 @Component({
     selector: 'page-addon-mod-forum-discussion',
     templateUrl: 'discussion.html',
-    styleUrls: ['discussion.scss'],
+    styleUrl: 'discussion.scss',
 })
 export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDestroy, CanLeave {
 
@@ -414,7 +416,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         try {
             if (sync) {
                 // Try to synchronize the forum.
-                await CoreUtils.ignoreErrors(this.syncDiscussion(!!showErrors));
+                await CorePromiseUtils.ignoreErrors(this.syncDiscussion(!!showErrors));
             }
 
             const response = await AddonModForum.getDiscussionPosts(this.discussionId, { cmId: this.cmId });
@@ -462,7 +464,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             await Promise.all(convertPromises);
 
             // Convert back to array.
-            onlinePosts = CoreUtils.objectToArray(onlinePostsMap);
+            onlinePosts = CoreObject.toArray(onlinePostsMap);
 
             let posts = offlineReplies.concat(onlinePosts);
 
@@ -689,7 +691,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         this.forumId && promises.push(AddonModForum.invalidateAccessInformation(this.forumId));
         this.forumId && promises.push(AddonModForum.invalidateCanAddDiscussion(this.forumId));
 
-        await CoreUtils.ignoreErrors(CoreUtils.allPromises(promises));
+        await CorePromiseUtils.allPromisesIgnoringErrors(promises);
 
         await this.fetchPosts(sync, showErrors);
     }
@@ -872,7 +874,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @param logAnalytics Whether to log analytics too or not.
      */
     protected async logDiscussionView(logAnalytics = false): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonModForum.logDiscussionView(this.discussionId, this.forumId || -1));
+        await CorePromiseUtils.ignoreErrors(AddonModForum.logDiscussionView(this.discussionId, this.forumId || -1));
 
         if (logAnalytics) {
             CoreAnalytics.logEvent({

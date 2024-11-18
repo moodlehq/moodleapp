@@ -19,7 +19,7 @@ import { CoreBlockBaseComponent } from '@features/block/classes/base-block-compo
 import { CoreSites } from '@services/sites';
 import { ContextLevel, CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUrl } from '@singletons/url';
@@ -106,7 +106,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
         });
 
         // Sort the modnames alphabetically.
-        modFullNames = CoreUtils.sortValues(modFullNames);
+        modFullNames = CoreObject.sortValues(modFullNames);
         for (const modName in modFullNames) {
             const iconModName = modName === 'resources' ? 'page' : modName;
 

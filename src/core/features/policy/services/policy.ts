@@ -21,7 +21,7 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { POLICY_PAGE_NAME, SITE_POLICY_PAGE_NAME } from '../constants';
-import { CoreSite } from '@classes/sites/site';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
  * Service that provides some common features regarding policies.
@@ -140,7 +140,7 @@ export class CorePolicyService {
         };
         const preSets = {
             cacheKey: this.getUserAcceptancesCacheKey(userId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 

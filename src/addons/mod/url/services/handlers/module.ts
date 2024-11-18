@@ -21,7 +21,7 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreNavigationOptions } from '@services/navigator';
 import { CoreLoadings } from '@services/loadings';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModUrl } from '../url';
 import { AddonModUrlHelper } from '../url-helper';
@@ -215,7 +215,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
                 return true;
             } else {
                 // Not handled by the app, check the display type.
-                const url = await CoreUtils.ignoreErrors(AddonModUrl.getUrl(module.course, module.id));
+                const url = await CorePromiseUtils.ignoreErrors(AddonModUrl.getUrl(module.course, module.id));
                 const displayType = AddonModUrl.getFinalDisplayType(url);
 
                 return displayType === CoreConstants.RESOURCELIB_DISPLAY_OPEN ||

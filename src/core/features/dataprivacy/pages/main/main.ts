@@ -24,7 +24,7 @@ import { CoreModals } from '@services/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 
@@ -102,11 +102,11 @@ export class CoreDataPrivacyMainPage implements OnInit {
      * @param refresher Refresher.
      */
     async refreshContent(refresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             CoreDataPrivacy.invalidateAll(),
         );
 
-        await CoreUtils.ignoreErrors(this.fetchContent());
+        await CorePromiseUtils.ignoreErrors(this.fetchContent());
 
         refresher?.complete();
     }

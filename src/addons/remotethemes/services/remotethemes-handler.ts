@@ -22,7 +22,7 @@ import { CoreWS } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreStyleHandler, CoreStylesService } from '@features/styles/services/styles';
 import { CoreLogger } from '@singletons/logger';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 const COMPONENT = 'mmaRemoteStyles';
 
@@ -89,7 +89,7 @@ export class AddonRemoteThemesHandlerService implements CoreStyleHandler {
 
         if (style != '') {
             // Treat the CSS.
-            CoreUtils.ignoreErrors(
+            CorePromiseUtils.ignoreErrors(
                 CoreFilepool.treatCSSCode(siteId, infos.mobilecssurl, style, COMPONENT, 1),
             );
         }

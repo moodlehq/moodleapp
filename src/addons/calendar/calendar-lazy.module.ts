@@ -25,7 +25,7 @@ import { CoreEditorComponentsModule } from '@features/editor/components/componen
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { AddonCalendarMainMenuHandlerService } from './services/handlers/mainmenu';
+import { ADDON_CALENDAR_PAGE_NAME } from './constants';
 
 /**
  * Build module routes.
@@ -37,7 +37,7 @@ function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: 'index',
-            data: { mainMenuTabRoot: AddonCalendarMainMenuHandlerService.PAGE_NAME },
+            data: { mainMenuTabRoot: ADDON_CALENDAR_PAGE_NAME },
             component: AddonCalendarIndexPage,
         },
         {
@@ -86,4 +86,4 @@ function buildRoutes(injector: Injector): Routes {
         },
     ],
 })
-export class AddonCalendarLazyModule {}
+export default class AddonCalendarLazyModule {}

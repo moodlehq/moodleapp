@@ -62,4 +62,4 @@ const routes: Routes = [
         CoreGradesCoursesPage,
     ],
 })
-export class CoreGradesCoursesLazyModule {}
+export default class CoreGradesCoursesLazyModule {}

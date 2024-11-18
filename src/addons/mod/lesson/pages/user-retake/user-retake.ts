@@ -20,7 +20,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreErrorHelper } from '@services/error-helper';
 import { Translate } from '@singletons';
 import {
     AddonModLesson,
@@ -35,6 +35,7 @@ import { AddonModLessonAnswerData, AddonModLessonHelper } from '../../services/l
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_LESSON_COMPONENT } from '../../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays a retake made by a certain user.
@@ -42,7 +43,7 @@ import { ADDON_MOD_LESSON_COMPONENT } from '../../constants';
 @Component({
     selector: 'page-addon-mod-lesson-user-retake',
     templateUrl: 'user-retake.html',
-    styleUrls: ['user-retake.scss'],
+    styleUrl: 'user-retake.scss',
 })
 export class AddonModLessonUserRetakePage implements OnInit {
 
@@ -102,7 +103,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
             this.performLogView();
         } catch (error) {
             this.selectedRetake = this.previousSelectedRetake ?? this.selectedRetake;
-            CoreDomUtils.showErrorModal(CoreUtils.addDataNotDownloadedError(error, 'Error getting attempt.'));
+            CoreDomUtils.showErrorModal(CoreErrorHelper.addDataNotDownloadedError(error, 'Error getting attempt.'));
         } finally {
             this.loaded = true;
         }
@@ -161,7 +162,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
             }
 
             // Get the profile image of the user.
-            const user = await CoreUtils.ignoreErrors(CoreUser.getProfile(student.id, this.courseId, true));
+            const user = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(student.id, this.courseId, true));
 
             this.student = student;
             this.student.profileimageurl = user?.profileimageurl;
@@ -188,7 +189,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
             promises.push(AddonModLesson.invalidateUserRetakesForUser(this.lesson.id, this.userId));
         }
 
-        await CoreUtils.ignoreErrors(Promise.all(promises));
+        await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
         await this.fetchData();
     }

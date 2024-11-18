@@ -20,20 +20,18 @@ import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreCategoryData, CoreCourses, CoreCourseSearchedData, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import {
-    AddonCalendarProvider,
     AddonCalendarGetCalendarAccessInformationWSResponse,
     AddonCalendarEvent,
-    AddonCalendarEventType,
     AddonCalendar,
     AddonCalendarSubmitCreateUpdateFormDataWSParams,
 } from '../../services/calendar';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarEventTypeOption, AddonCalendarHelper } from '../../services/calendar-helper';
-import { AddonCalendarSync, AddonCalendarSyncProvider } from '../../services/calendar-sync';
+import { AddonCalendarSync } from '../../services/calendar-sync';
 import { CoreSite } from '@classes/sites/site';
 import { Translate } from '@singletons';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
@@ -42,12 +40,20 @@ import { CoreError } from '@classes/errors/error';
 import { CoreNavigator } from '@services/navigator';
 import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
-import { CoreReminders, CoreRemindersService, CoreRemindersUnits } from '@features/reminders/services/reminders';
+import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
 import moment from 'moment-timezone';
-import { ADDON_CALENDAR_COMPONENT } from '@addons/calendar/constants';
+import {
+    ADDON_CALENDAR_COMPONENT,
+    ADDON_CALENDAR_EDIT_EVENT_EVENT,
+    ADDON_CALENDAR_NEW_EVENT_EVENT,
+    ADDON_CALENDAR_SYNC_ID,
+    AddonCalendarEventType,
+} from '@addons/calendar/constants';
 import { ContextLevel } from '@/core/constants';
 import { CorePopovers } from '@services/popovers';
 import { CoreLoadings } from '@services/loadings';
+import { REMINDERS_DISABLED, CoreRemindersUnits } from '@features/reminders/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -55,7 +61,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-addon-calendar-edit-event',
     templateUrl: 'edit-event.html',
-    styleUrls: ['edit-event.scss'],
+    styleUrl: 'edit-event.scss',
 })
 export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
@@ -159,7 +165,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         try {
             const [types, accessInfo] = await Promise.all([
                 AddonCalendar.getAllowedEventTypes(this.courseId),
-                CoreUtils.ignoreErrors(AddonCalendar.getAccessInformation(this.courseId), {
+                CorePromiseUtils.ignoreErrors(AddonCalendar.getAccessInformation(this.courseId), {
                     canmanageentries: false,
                     canmanageownentries: false,
                     canmanagegroupentries: false,
@@ -179,7 +185,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
                 // Editing an event, get the event data. Wait for sync first.
                 const eventId = this.eventId;
 
-                promises.push(AddonCalendarSync.waitForSync(AddonCalendarSyncProvider.SYNC_ID).then(async () => {
+                promises.push(AddonCalendarSync.waitForSync(ADDON_CALENDAR_SYNC_ID).then(async () => {
                     // Do not block if the scope is already destroyed.
                     if (!this.isDestroyed && this.eventId) {
                         CoreSync.blockOperation(ADDON_CALENDAR_COMPONENT, eventId);
@@ -363,7 +369,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
             this.form.controls.repeateditall.setValue(1);
         }
 
-        if (event.eventtype == AddonCalendarEventType.GROUP && courseId) {
+        if (event.eventtype === AddonCalendarEventType.GROUP && courseId) {
             await this.loadGroups(courseId);
         }
     }
@@ -489,12 +495,12 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
             repeat: formData.repeat,
         };
 
-        if (formData.eventtype == AddonCalendarEventType.COURSE) {
+        if (formData.eventtype === AddonCalendarEventType.COURSE) {
             data.courseid = formData.courseid;
-        } else if (formData.eventtype == AddonCalendarEventType.GROUP) {
+        } else if (formData.eventtype === AddonCalendarEventType.GROUP) {
             data.groupcourseid = formData.groupcourseid;
             data.groupid = formData.groupid;
-        } else if (formData.eventtype == AddonCalendarEventType.CATEGORY) {
+        } else if (formData.eventtype === AddonCalendarEventType.CATEGORY) {
             data.categoryid = formData.categoryid;
         }
 
@@ -560,13 +566,13 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         if (this.eventId && this.eventId > 0) {
             // Editing an event.
             CoreEvents.trigger(
-                AddonCalendarProvider.EDIT_EVENT_EVENT,
+                ADDON_CALENDAR_EDIT_EVENT_EVENT,
                 { eventId: this.eventId },
                 this.currentSite.getId(),
             );
         } else {
             CoreEvents.trigger(
-                AddonCalendarProvider.NEW_EVENT_EVENT,
+                ADDON_CALENDAR_NEW_EVENT_EVENT,
                 {
                     eventId: event.id,
                     oldEventId: this.eventId,
@@ -617,7 +623,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
         // Check if default reminders are enabled.
         const defaultTime = await CoreReminders.getDefaultNotificationTime(this.currentSite.getId());
-        if (defaultTime === CoreRemindersService.DISABLED) {
+        if (defaultTime === REMINDERS_DISABLED) {
             return;
         }
 

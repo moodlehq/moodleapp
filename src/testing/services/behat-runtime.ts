@@ -33,7 +33,7 @@ import { Swiper } from 'swiper';
 import { LocalNotificationsMock } from '@features/emulator/services/local-notifications';
 import { GetClosureArgs } from '@/core/utils/types';
 import { CoreIframeComponent } from '@components/iframe/iframe';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Behat runtime servive with public API.
@@ -888,7 +888,7 @@ export class TestingBehatRuntimeService {
      * @returns Promise resolved when toast has been dismissed.
      */
     async waitToastDismiss(): Promise<void> {
-        await CoreUtils.ignoreErrors(ToastController.dismiss());
+        await CorePromiseUtils.ignoreErrors(ToastController.dismiss());
     }
 
 }

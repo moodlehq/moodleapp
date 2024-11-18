@@ -17,7 +17,7 @@ import { Component, OnInit } from '@angular/core';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     AddonModH5PActivity,
     AddonModH5PActivityData,
@@ -33,7 +33,7 @@ import { ADDON_MOD_H5PACTIVITY_COMPONENT } from '../../constants';
 @Component({
     selector: 'page-addon-mod-h5pactivity-attempt-results',
     templateUrl: 'attempt-results.html',
-    styleUrls: ['attempt-results.scss'],
+    styleUrl: 'attempt-results.scss',
 })
 export class AddonModH5PActivityAttemptResultsPage implements OnInit {
 
@@ -54,7 +54,7 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
                 return;
             }
 
-            await CoreUtils.ignoreErrors(AddonModH5PActivity.logViewReport(
+            await CorePromiseUtils.ignoreErrors(AddonModH5PActivity.logViewReport(
                 this.h5pActivity.id,
                 { attemptId: this.attemptId },
             ));
@@ -153,7 +153,7 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
             promises.push(AddonModH5PActivity.invalidateAttemptResults(this.h5pActivity.id, this.attemptId));
         }
 
-        await CoreUtils.ignoreErrors(Promise.all(promises));
+        await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
         await this.fetchData();
     }

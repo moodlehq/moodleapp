@@ -43,7 +43,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 
 import { CoreCompile } from '@features/compile/services/compile';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWS } from '@services/ws';
 import { CoreDom } from '@singletons/dom';
 
@@ -192,7 +192,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
         }
 
         if (this.stylesPath && !this.cssCode) {
-            this.cssCode = await CoreUtils.ignoreErrors(CoreWS.getText(this.stylesPath));
+            this.cssCode = await CorePromiseUtils.ignoreErrors(CoreWS.getText(this.stylesPath));
         }
 
         // Prepend all CSS rules with :host to avoid conflicts.

@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreRatingInfo } from '@features/rating/services/rating';
@@ -23,20 +22,21 @@ import { CoreNetwork } from '@services/network';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModDataFieldsDelegate } from './data-fields-delegate';
 import { AddonModDataOffline } from './data-offline';
-import { AddonModDataAutoSyncData } from './data-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_DATA_AUTO_SYNCED,
     ADDON_MOD_DATA_COMPONENT,
     ADDON_MOD_DATA_ENTRIES_PER_PAGE,
     ADDON_MOD_DATA_ENTRY_CHANGED,
     AddonModDataAction,
 } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 declare module '@singletons/events' {
 
@@ -46,7 +46,6 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [ADDON_MOD_DATA_AUTO_SYNCED]: AddonModDataAutoSyncData;
         [ADDON_MOD_DATA_ENTRY_CHANGED]: AddonModDataEntryChangedEventData;
     }
 }
@@ -126,7 +125,7 @@ export class AddonModDataProvider {
 
             return result;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 throw error;
             }
@@ -215,7 +214,7 @@ export class AddonModDataProvider {
                 sent: true,
             };
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 throw error;
             }
@@ -252,7 +251,7 @@ export class AddonModDataProvider {
      */
     protected checkFields(fields: AddonModDataField[], contents: AddonModDataSubfieldData[]): AddonModDataFieldNotification[] {
         const notifications: AddonModDataFieldNotification[] = [];
-        const contentsIndexed = CoreUtils.arrayToObjectMultiple(contents, 'fieldid');
+        const contentsIndexed = CoreArray.toObjectMultiple(contents, 'fieldid');
 
         // App is offline, check required fields.
         fields.forEach((field) => {
@@ -310,7 +309,7 @@ export class AddonModDataProvider {
         try {
             await this.deleteEntryOnline(entryId, siteId);
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 throw error;
             }
@@ -426,7 +425,7 @@ export class AddonModDataProvider {
 
             return result;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 throw error;
             }
@@ -543,7 +542,7 @@ export class AddonModDataProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getDatabaseDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_DATA_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -663,7 +662,7 @@ export class AddonModDataProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesCacheKey(dataId, options.groupId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_DATA_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -721,7 +720,7 @@ export class AddonModDataProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntryCacheKey(dataId, entryId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_DATA_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -742,7 +741,7 @@ export class AddonModDataProvider {
      */
     protected formatEntryContents(entry: AddonModDataEntryWS): AddonModDataEntry {
         return Object.assign(entry, {
-            contents: CoreUtils.arrayToObject(entry.contents, 'fieldid'),
+            contents: CoreArray.toObject(entry.contents, 'fieldid'),
         });
     }
 
@@ -773,7 +772,7 @@ export class AddonModDataProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFieldsCacheKey(dataId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_DATA_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -826,7 +825,7 @@ export class AddonModDataProvider {
 
         promises.push(this.invalidateFiles(moduleId, siteId));
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**

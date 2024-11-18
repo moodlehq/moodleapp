@@ -18,7 +18,7 @@ import { Coordinates } from '@awesome-cordova-plugins/geolocation';
 import { CoreApp } from '@services/app';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { Geolocation, makeSingleton } from '@singletons';
-import { CoreUtils } from './utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CorePlatform } from './platform';
 import { CoreSilentError } from '@classes/errors/silenterror';
 import { CoreSubscriptions } from '@singletons/subscriptions';
@@ -154,7 +154,7 @@ export class CoreGeolocationProvider {
      */
     protected isCordovaPermissionDeniedError(error?: CoreAnyError | GeolocationPositionError): boolean {
         return !!error &&
-            typeof error == 'object' &&
+            typeof error === 'object' &&
             'code' in error &&
             'PERMISSION_DENIED' in error &&
             error.code === error.PERMISSION_DENIED;
@@ -169,7 +169,7 @@ export class CoreGeolocationProvider {
         const diagnostic = CoreNative.plugin('diagnostic');
 
         if (diagnostic) {
-            return CoreUtils.promiseWorks(diagnostic.getLocationAuthorizationStatus());
+            return CorePromiseUtils.promiseWorks(diagnostic.getLocationAuthorizationStatus());
         }
 
         return false;

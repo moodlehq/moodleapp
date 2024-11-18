@@ -15,7 +15,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreUrl } from '@singletons/url';
 import { CoreTagCloud, CoreTagCollection, CoreTagCloudTag, CoreTag } from '@features/tag/services/tag';
 import { Translate } from '@singletons';
@@ -32,7 +32,7 @@ import { CoreSites } from '@services/sites';
 @Component({
     selector: 'page-core-tag-search',
     templateUrl: 'search.html',
-    styleUrls: ['search.scss'],
+    styleUrl: 'search.scss',
 })
 export class CoreTagSearchPage implements OnInit {
 
@@ -129,7 +129,7 @@ export class CoreTagSearchPage implements OnInit {
      * @param refresher Refresher event.
      */
     refreshData(refresher?: HTMLIonRefresherElement): void {
-        CoreUtils.allPromises([
+        CorePromiseUtils.allPromises([
             CoreTag.invalidateTagCollections(),
             CoreTag.invalidateTagCloud(this.collectionId, undefined, undefined, this.query),
         ]).finally(() => this.fetchData().finally(() => {

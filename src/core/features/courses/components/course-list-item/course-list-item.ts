@@ -14,7 +14,7 @@
 
 import { DownloadStatus } from '@/core/constants';
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
-import { CoreCourseProvider, CoreCourse } from '@features/course/services/course';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
@@ -23,13 +23,20 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreColors } from '@singletons/colors';
 import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreCourseListItem, CoreCourses, CoreCoursesProvider } from '../../services/courses';
+import { CoreCourseListItem, CoreCourses } from '../../services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CoreEnrolHelper } from '@features/enrol/services/enrol-helper';
 import { CoreDownloadStatusTranslatable } from '@components/download-refresh/download-refresh';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CorePopovers } from '@services/popovers';
 import { CoreLoadings } from '@services/loadings';
+import {
+    CORE_COURSES_MY_COURSES_UPDATED_EVENT,
+    CoreCoursesMyCoursesUpdatedEventAction,
+    CORE_COURSES_STATE_HIDDEN,
+    CORE_COURSES_STATE_FAVOURITE,
+} from '@features/courses/constants';
+import { CORE_COURSE_ALL_COURSES_CLEARED, CORE_COURSE_PROGRESS_UPDATED_EVENT } from '@features/course/constants';
 
 /**
  * This directive is meant to display an item for a list of courses.
@@ -41,7 +48,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'core-courses-course-list-item',
     templateUrl: 'core-courses-course-list-item.html',
-    styleUrls: ['course-list-item.scss'],
+    styleUrl: 'course-list-item.scss',
 })
 export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, OnChanges {
 
@@ -79,7 +86,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
         const siteId = CoreSites.getCurrentSiteId();
-        this.progressObserver = CoreEvents.on(CoreCourseProvider.PROGRESS_UPDATED, (data) => {
+        this.progressObserver = CoreEvents.on(CORE_COURSE_PROGRESS_UPDATED_EVENT, (data) => {
             if (!this.course || this.course.id !== data.courseId || !('progress' in this.course)) {
                 return;
             }
@@ -197,7 +204,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
 
         // Listen for status change in course.
         this.courseStatusObserver = CoreEvents.on(CoreEvents.COURSE_STATUS_CHANGED, (data: CoreEventCourseStatusChanged) => {
-            if (data.courseId == this.course.id || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
+            if (data.courseId == this.course.id || data.courseId == CORE_COURSE_ALL_COURSES_CLEARED) {
                 this.updateCourseStatus(data.status);
             }
         }, CoreSites.getCurrentSiteId());
@@ -356,11 +363,11 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
             this.course.hidden = hide;
 
             (<CoreEnrolledCourseDataWithExtraInfoAndOptions> this.course).hidden = hide;
-            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+            CoreEvents.trigger(CORE_COURSES_MY_COURSES_UPDATED_EVENT, {
                 courseId: this.course.id,
                 course: this.course,
-                action: CoreCoursesProvider.ACTION_STATE_CHANGED,
-                state: CoreCoursesProvider.STATE_HIDDEN,
+                action: CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED,
+                state: CORE_COURSES_STATE_HIDDEN,
                 value: hide,
             }, CoreSites.getCurrentSiteId());
 
@@ -385,11 +392,11 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
             await CoreCourses.setFavouriteCourse(this.course.id, favourite);
 
             this.course.isfavourite = favourite;
-            CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
+            CoreEvents.trigger(CORE_COURSES_MY_COURSES_UPDATED_EVENT, {
                 courseId: this.course.id,
                 course: this.course,
-                action: CoreCoursesProvider.ACTION_STATE_CHANGED,
-                state: CoreCoursesProvider.STATE_FAVOURITE,
+                action: CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED,
+                state: CORE_COURSES_STATE_FAVOURITE,
                 value: favourite,
             }, CoreSites.getCurrentSiteId());
 

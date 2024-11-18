@@ -16,7 +16,7 @@ import { Params } from '@angular/router';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { CoreUser } from '@features/user/services/user';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import {
     AddonModForum,
     AddonModForumCanAddDiscussion,
@@ -27,6 +27,7 @@ import {
 import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '../services/forum-offline';
 import { ADDON_MOD_FORUM_DISCUSSIONS_PER_PAGE, AddonModForumType } from '../constants';
 import { CoreSites } from '@services/sites';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource<AddonModForumDiscussionItem> {
 
@@ -157,7 +158,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
     async loadGroupInfo(forumId: number): Promise<void> {
         [this.groupInfo, this.allPartsPermissions] = await Promise.all([
             CoreGroups.getActivityGroupInfo(this.CM_ID, false),
-            CoreUtils.ignoreErrors(AddonModForum.canAddDiscussionToAll(forumId, { cmId: this.CM_ID })),
+            CorePromiseUtils.ignoreErrors(AddonModForum.canAddDiscussionToAll(forumId, { cmId: this.CM_ID })),
         ]);
 
         this.supportsChangeGroup = AddonModForum.isGetDiscussionPostsAvailable();
@@ -245,7 +246,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
             canLoadMore = response.canLoadMore;
             this.errorLoadingDiscussions = false;
         } catch (error) {
-            if (page > 0 || CoreUtils.isWebServiceError(error)) {
+            if (page > 0 || CoreWSError.isWebServiceError(error)) {
                 throw error;
             }
 

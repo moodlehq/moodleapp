@@ -25,7 +25,6 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
-import { CoreUtils, OpenFileAction } from '@services/utils/utils';
 import { NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import {
@@ -35,6 +34,8 @@ import {
 import { AddonModResourceHelper } from '../../services/resource-helper';
 import { CorePlatform } from '@services/platform';
 import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { OpenFileAction } from '@singletons/opener';
 
 /**
  * Component that displays a resource.
@@ -42,7 +43,7 @@ import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
 @Component({
     selector: 'addon-mod-resource-index',
     templateUrl: 'addon-mod-resource-index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 
@@ -175,7 +176,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
                 this.readableSize = CoreText.bytesToSize(this.module.contentsinfo.filessize, 1);
                 this.timemodified = this.module.contentsinfo.lastmodified * 1000;
             } else {
-                mimetype = await CoreUtils.getMimeTypeFromUrl(CoreFileHelper.getFileUrl(contents[0]));
+                mimetype = await CoreMimetypeUtils.getMimeTypeFromUrl(CoreFileHelper.getFileUrl(contents[0]));
                 this.readableSize = CoreText.bytesToSize(contents[0].filesize, 1);
                 this.timemodified = contents[0].timemodified * 1000;
             }
@@ -191,7 +192,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
      * @inheritdoc
      */
     protected async logActivity(): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonModResource.logView(this.module.instance));
+        await CorePromiseUtils.ignoreErrors(AddonModResource.logView(this.module.instance));
 
         this.analyticsLogEvent('mod_resource_view_resource');
     }

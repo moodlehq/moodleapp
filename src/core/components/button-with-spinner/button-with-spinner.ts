@@ -27,7 +27,7 @@ import { CoreAnimations } from '@components/animations';
 @Component({
     selector: 'core-button-with-spinner',
     templateUrl: 'core-button-with-spinner.html',
-    styleUrls: ['button-with-spinner.scss'],
+    styleUrl: 'button-with-spinner.scss',
     animations: [CoreAnimations.SHOW_HIDE],
 })
 export class CoreButtonWithSpinnerComponent {

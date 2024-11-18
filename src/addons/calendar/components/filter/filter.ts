@@ -14,13 +14,13 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreEnrolledCourseData } from '@features/courses/services/courses';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { ModalController } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { AddonCalendarEventType, AddonCalendarProvider } from '../../services/calendar';
-import { AddonCalendarFilter, AddonCalendarEventIcons } from '../../services/calendar-helper';
+import { AddonCalendarFilter } from '@addons/calendar/services/calendar-helper';
 import { ALL_COURSES_ID } from '@features/courses/services/courses-helper';
 import { CoreSharedModule } from '@/core/shared.module';
+import { ADDON_CALENDAR_FILTER_CHANGED_EVENT, AddonCalendarEventIcons, AddonCalendarEventType } from '@addons/calendar/constants';
 
 /**
  * Component to display the events filter that includes events types and a list of courses.
@@ -54,7 +54,7 @@ export class AddonCalendarFilterComponent implements OnInit {
     sortedCourses: CoreEnrolledCourseData[] = [];
 
     constructor() {
-        CoreUtils.enumKeys(AddonCalendarEventType).forEach((name) => {
+        CoreObject.enumKeys(AddonCalendarEventType).forEach((name) => {
             const value = AddonCalendarEventType[name];
             this.typeIcons[value] = AddonCalendarEventIcons[name];
             this.types.push(value);
@@ -95,7 +95,7 @@ export class AddonCalendarFilterComponent implements OnInit {
 
         this.filter.filtered = !!this.filter.courseId || this.types.some((name) => !this.filter[name]);
 
-        CoreEvents.trigger(AddonCalendarProvider.FILTER_CHANGED_EVENT, this.filter);
+        CoreEvents.trigger(ADDON_CALENDAR_FILTER_CHANGED_EVENT, this.filter);
     }
 
     /**

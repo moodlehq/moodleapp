@@ -42,7 +42,7 @@ import { canLeaveGuard } from '@guards/can-leave';
         },
         {
             path: 'edit/:id',
-            loadComponent: () => import('./pages/edit-entry/edit-entry').then(c => c.AddonBlogEditEntryPage),
+            loadComponent: () => import('./pages/edit-entry/edit-entry'),
             canDeactivate: [canLeaveGuard],
         },
         ...buildTabMainRoutes(injector, {
@@ -71,4 +71,4 @@ import { canLeaveGuard } from '@guards/can-leave';
         },
     ],
 })
-export class AddonBlogLazyModule {}
+export default class AddonBlogLazyModule {}

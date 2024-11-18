@@ -16,7 +16,6 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
-    AddonMessagesProvider,
     AddonMessagesConversationMember,
     AddonMessagesMessageAreaContact,
     AddonMessages,
@@ -26,6 +25,11 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreKeyboard } from '@singletons/keyboard';
+import {
+    ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT,
+    ADDON_MESSAGES_LIMIT_SEARCH,
+    ADDON_MESSAGES_LIMIT_INITIAL_USER_SEARCH,
+} from '@addons/messages/constants';
 
 /**
  * Page for searching users.
@@ -74,7 +78,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
     constructor() {
         // Update block status of a user.
         this.memberInfoObserver = CoreEvents.on(
-            AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT,
+            ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT,
             (data) => {
                 if (!data.userBlocked && !data.userUnblocked) {
                     // The block status has not changed, ignore.
@@ -139,7 +143,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
         let canLoadMoreMessages = false;
 
         if (!loadMore || loadMore == 'contacts' || loadMore == 'noncontacts') {
-            const limitNum = loadMore ? AddonMessagesProvider.LIMIT_SEARCH : AddonMessagesProvider.LIMIT_INITIAL_USER_SEARCH;
+            const limitNum = loadMore ? ADDON_MESSAGES_LIMIT_SEARCH : ADDON_MESSAGES_LIMIT_INITIAL_USER_SEARCH;
             let limitFrom = 0;
             if (loadMore == 'contacts') {
                 limitFrom = this.contacts.results.length;

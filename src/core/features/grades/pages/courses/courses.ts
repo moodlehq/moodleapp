@@ -22,7 +22,7 @@ import { CoreGrades } from '@features/grades/services/grades';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 
 /**
@@ -66,8 +66,8 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      * @param refresher Refresher.
      */
     async refreshCourses(refresher: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreGrades.invalidateCoursesGradesData());
-        await CoreUtils.ignoreErrors(this.courses.reload());
+        await CorePromiseUtils.ignoreErrors(CoreGrades.invalidateCoursesGradesData());
+        await CorePromiseUtils.ignoreErrors(this.courses.reload());
 
         refresher?.complete();
     }

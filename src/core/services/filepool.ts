@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Md5 } from 'ts-md5/dist/md5';
 
-import { CoreApp } from '@services/app';
+import { CoreAppDB } from '@services/app-db';
 import { CoreNetwork } from '@services/network';
 import { CoreEventPackageStatusChanged, CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
@@ -27,7 +27,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
-import { CoreUtils, CoreUtilsOpenFileOptions } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreError } from '@classes/errors/error';
 import { DownloadStatus } from '@/core/constants';
 import { ApplicationInit, makeSingleton, NgZone, Translate } from '@singletons';
@@ -59,6 +59,8 @@ import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreAnalytics, CoreAnalyticsEventType } from './analytics';
 import { convertTextToHTMLElement } from '../utils/create-html-element';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener, CoreOpenerOpenFileOptions } from '@singletons/opener';
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.
@@ -175,15 +177,11 @@ export class CoreFilepoolProvider {
      * Initialize database.
      */
     async initializeDatabase(): Promise<void> {
-        try {
-            await CoreApp.createTablesFromSchema(APP_SCHEMA);
-        } catch (e) {
-            // Ignore errors.
-        }
+        await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
         const queueTable = new CoreDatabaseTableProxy<CoreFilepoolQueueDBRecord, CoreFilepoolQueueDBPrimaryKeys>(
             { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
-            CoreApp.getDB(),
+            CoreAppDB.getDB(),
             QUEUE_TABLE_NAME,
             [...QUEUE_TABLE_PRIMARY_KEYS],
         );
@@ -577,7 +575,7 @@ export class CoreFilepoolProvider {
 
         if (timemodified > 0 && !entry.timemodified) {
             // Entry is not outdated but it doesn't have timemodified. Update it.
-            await CoreUtils.ignoreErrors(this.filesTables[siteId].update({ timemodified }, { fileId: entry.fileId }));
+            await CorePromiseUtils.ignoreErrors(this.filesTables[siteId].update({ timemodified }, { fileId: entry.fileId }));
 
             entry.timemodified = timemodified;
         }
@@ -652,7 +650,7 @@ export class CoreFilepoolProvider {
         ]);
 
         // Notify now.
-        const filesLinksMap = CoreUtils.arrayToObjectMultiple(filesLinks, 'fileId');
+        const filesLinksMap = CoreArray.toObjectMultiple(filesLinks, 'fileId');
 
         filesEntries.forEach(entry => this.notifyFileDeleted(siteId, entry.fileId, filesLinksMap[entry.fileId] || []));
     }
@@ -887,7 +885,7 @@ export class CoreFilepoolProvider {
             }
         });
 
-        return CoreUtils.allPromises(promises);
+        return CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -1092,7 +1090,7 @@ export class CoreFilepoolProvider {
 
         const finishSuccessfulDownload = (url: string): string => {
             if (component !== undefined) {
-                CoreUtils.ignoreErrors(this.addFileLink(siteId, fileId, component, componentId));
+                CorePromiseUtils.ignoreErrors(this.addFileLink(siteId, fileId, component, componentId));
             }
 
             if (!alreadyDownloaded) {
@@ -1632,7 +1630,7 @@ export class CoreFilepoolProvider {
     ): Promise<string> {
         const addToQueue = (fileUrl: string): void => {
             // Add the file to queue if needed and ignore errors.
-            CoreUtils.ignoreErrors(this.addToQueueIfNeeded(
+            CorePromiseUtils.ignoreErrors(this.addToQueueIfNeeded(
                 siteId,
                 fileUrl,
                 component,
@@ -2270,7 +2268,7 @@ export class CoreFilepoolProvider {
 
             await Promise.all([
                 this.filesTables[siteId].update({ fileId: newFileId }, { fileId: buggedFileId }),
-                CoreUtils.ignoreErrors(this.linksTables[siteId].update({ fileId: newFileId }, { fileId: buggedFileId })),
+                CorePromiseUtils.ignoreErrors(this.linksTables[siteId].update({ fileId: newFileId }, { fileId: buggedFileId })),
             ]);
 
             fileEntry.fileId = newFileId;
@@ -2718,11 +2716,11 @@ export class CoreFilepoolProvider {
             await this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress, entry);
 
             // Success, we add links and remove from queue.
-            CoreUtils.ignoreErrors(this.addFileLinks(siteId, fileId, links));
+            CorePromiseUtils.ignoreErrors(this.addFileLinks(siteId, fileId, links));
 
             // Wait for the item to be removed from queue before resolving the promise.
             // If the item could not be removed from queue we still resolve the promise.
-            await CoreUtils.ignoreErrors(this.removeFromQueue(siteId, fileId));
+            await CorePromiseUtils.ignoreErrors(this.removeFromQueue(siteId, fileId));
 
             this.treatQueueDeferred(siteId, fileId, true);
             this.notifyFileDownloaded(siteId, fileId, links);
@@ -2765,7 +2763,7 @@ export class CoreFilepoolProvider {
             if (dropFromQueue) {
                 this.logger.debug('Item dropped from queue due to error: ' + fileUrl, errorObject);
 
-                await CoreUtils.ignoreErrors(this.removeFromQueue(siteId, fileId));
+                await CorePromiseUtils.ignoreErrors(this.removeFromQueue(siteId, fileId));
 
                 this.treatQueueDeferred(siteId, fileId, false, errorMessage);
                 this.notifyFileDownloadError(siteId, fileId, links);
@@ -2844,7 +2842,7 @@ export class CoreFilepoolProvider {
         this.notifyFileDeleted(siteId, fileId, links);
 
         if (fileUrl) {
-            await CoreUtils.ignoreErrors(CorePluginFileDelegate.fileDeleted(fileUrl, path, siteId));
+            await CorePromiseUtils.ignoreErrors(CorePluginFileDelegate.fileDeleted(fileUrl, path, siteId));
         }
     }
 
@@ -2952,18 +2950,18 @@ export class CoreFilepoolProvider {
      *     - The file cannot be streamed.
      * If the file is big and can be streamed, the promise returned by this function will be rejected.
      */
-    async shouldDownloadFileBeforeOpen(url: string, size: number, options: CoreUtilsOpenFileOptions = {}): Promise<boolean> {
+    async shouldDownloadFileBeforeOpen(url: string, size: number, options: CoreOpenerOpenFileOptions = {}): Promise<boolean> {
         if (size >= 0 && size <= CoreFilepoolProvider.DOWNLOAD_THRESHOLD) {
             // The file is small, download it.
             return true;
         }
 
-        if (CoreUtils.shouldOpenWithDialog(options)) {
+        if (CoreOpener.shouldOpenWithDialog(options)) {
             // Open with dialog needs a local file.
             return true;
         }
 
-        const mimetype = await CoreUtils.getMimeTypeFromUrl(url);
+        const mimetype = await CoreMimetypeUtils.getMimeTypeFromUrl(url);
 
         // If the file is streaming (audio or video), return false.
         return !CoreMimetypeUtils.isStreamedMimetype(mimetype);

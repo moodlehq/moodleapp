@@ -22,7 +22,7 @@ import {
 } from '@features/search/services/global-search';
 import { CoreEvents } from '@singletons/events';
 import { ModalController } from '@singletons';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
 
@@ -31,7 +31,7 @@ type Filter<T=unknown> = T & { checked: boolean };
 @Component({
     selector: 'core-search-global-search-filters',
     templateUrl: 'global-search-filters.html',
-    styleUrls: ['./global-search-filters.scss'],
+    styleUrl: './global-search-filters.scss',
     standalone: true,
     imports: [
         CoreSharedModule,
@@ -151,7 +151,7 @@ export class CoreSearchGlobalSearchFiltersComponent implements OnInit {
      * @param refresher Refresher.
      */
     async refreshFilters(refresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(Promise.all([
+        await CorePromiseUtils.ignoreErrors(Promise.all([
             CoreSearchGlobalSearch.invalidateSearchAreas(),
             CoreCourses.invalidateUserCourses(),
         ]));

@@ -21,7 +21,7 @@ import { CoreModals } from '@services/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 
 /**
  * Page that displays a module preview.
@@ -29,7 +29,7 @@ import { CoreUtils } from '@services/utils/utils';
 @Component({
     selector: 'page-core-course-module-preview',
     templateUrl: 'module-preview.html',
-    styleUrls: ['module-preview.scss'],
+    styleUrl: 'module-preview.scss',
 })
 export class CoreCourseModulePreviewPage implements OnInit {
 

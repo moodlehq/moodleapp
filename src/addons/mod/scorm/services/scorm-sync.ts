@@ -19,7 +19,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModScormPrefetchHandler } from './handlers/prefetch';
@@ -91,7 +91,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
             // It can't be added because the last offline attempt is incomplete, delete it.
             this.logger.debug(`Try to delete attempt ${attempt} because it cannot be created as a new attempt.`);
 
-            await CoreUtils.ignoreErrors(AddonModScormOffline.deleteAttempt(scormId, attempt, siteId));
+            await CorePromiseUtils.ignoreErrors(AddonModScormOffline.deleteAttempt(scormId, attempt, siteId));
 
             // eslint-disable-next-line id-blacklist
             warnings.push(Translate.instant('addon.mod_scorm.warningofflinedatadeleted', { number: attempt }));
@@ -159,7 +159,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
             return;
         }
 
-        await CoreUtils.allPromises(times.map((time, index) => {
+        await CorePromiseUtils.allPromises(times.map((time, index) => {
             const attempt = newAttempts[time];
 
             return AddonModScormOffline.changeAttemptNumber(scormId, attempt, lastOffline + index + 1, siteId);
@@ -204,7 +204,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
             }
         }
 
-        await CoreUtils.ignoreErrors(this.setSyncTime(scorm.id, siteId));
+        await CorePromiseUtils.ignoreErrors(this.setSyncTime(scorm.id, siteId));
 
         if (!initialCount) {
             return result;
@@ -324,7 +324,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
 
             } catch (error) {
                 // Moving the new attempts failed (it shouldn't happen). Let's undo the new attempts move.
-                await CoreUtils.allPromises(successful.map((attempt) => {
+                await CorePromiseUtils.allPromises(successful.map((attempt) => {
                     const newNumber = lastOnline + newAttempts.indexOf(attempt) + 1;
 
                     return AddonModScormOffline.changeAttemptNumber(scormId, newNumber, attempt, siteId);
@@ -369,7 +369,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         } catch {
             // Error getting user data from the site. We'll have to build it ourselves.
             // Let's try to get cached data about the attempt.
-            userData = await CoreUtils.ignoreErrors(
+            userData = await CorePromiseUtils.ignoreErrors(
                 AddonModScorm.getScormUserData(scormId, attempt, { cmId, siteId }),
                 <AddonModScormUserDataMap> {},
             );
@@ -528,12 +528,12 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
                 await AddonModScorm.saveTracksOnline(scormId, scoId, attempt, tracks, siteId);
 
                 // Sco data successfully sent. Mark them as synced. This is needed because some SCOs sync might fail.
-                await CoreUtils.ignoreErrors(AddonModScormOffline.markAsSynced(scormId, attempt, scoId, siteId));
+                await CorePromiseUtils.ignoreErrors(AddonModScormOffline.markAsSynced(scormId, attempt, scoId, siteId));
 
                 somethingSynced = true;
             });
 
-            await CoreUtils.allPromises(promises);
+            await CorePromiseUtils.allPromises(promises);
         } catch (error) {
             if (somethingSynced) {
                 // Some SCOs have been synced and some not.
@@ -549,7 +549,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         }
 
         // Attempt has been sent. Let's delete it from local.
-        await CoreUtils.ignoreErrors(AddonModScormOffline.deleteAttempt(scormId, attempt, siteId));
+        await CorePromiseUtils.ignoreErrors(AddonModScormOffline.deleteAttempt(scormId, attempt, siteId));
     }
 
     /**
@@ -610,7 +610,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         let lastOnlineWasFinished = false;
 
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_SCORM_COMPONENT, scorm.id, siteId));
+        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_SCORM_COMPONENT, scorm.id, siteId));
 
         // Get attempts data. We ignore cache for online attempts, so this call will fail if offline or server down.
         const attemptsData = await AddonModScorm.getAttemptCount(scorm.id, {
@@ -761,7 +761,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
 
                 if (!hasDataToSend) {
                     // Nothing to sync, delete the attempt.
-                    return CoreUtils.ignoreErrors(AddonModScormOffline.deleteAttempt(scormId, attempt, siteId));
+                    return CorePromiseUtils.ignoreErrors(AddonModScormOffline.deleteAttempt(scormId, attempt, siteId));
                 }
 
                 // There are elements to sync. We need to check if it's possible to sync them or not.
@@ -850,3 +850,16 @@ export type AddonModScormAutoSyncEventData = CoreSyncResult & {
     scormId: number;
     attemptFinished: boolean;
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_MOD_SCORM_DATA_AUTO_SYNCED]: AddonModScormAutoSyncEventData;
+    }
+
+}

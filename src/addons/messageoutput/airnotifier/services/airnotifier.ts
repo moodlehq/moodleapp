@@ -16,14 +16,13 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
-import { CoreConstants } from '@/core/constants';
-import { CoreSite } from '@classes/sites/site';
+import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreOpener } from '@singletons/opener';
 import { CorePath } from '@singletons/path';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 
@@ -102,7 +101,7 @@ export class AddonMessageOutputAirnotifierProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSystemConfiguredCacheKey(),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -136,7 +135,7 @@ export class AddonMessageOutputAirnotifierProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserDevicesCacheKey(),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         if (ignoreCache) {
@@ -223,7 +222,7 @@ export class AddonMessageOutputAirnotifierProvider {
                             );
 
                             // Don't try auto-login, admins cannot use it.
-                            CoreUtils.openInBrowser(url, {
+                            CoreOpener.openInBrowser(url, {
                                 showBrowserWarning: false,
                             });
                         },

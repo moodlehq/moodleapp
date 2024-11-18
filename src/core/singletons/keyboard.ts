@@ -25,6 +25,11 @@ export class CoreKeyboard {
     protected static keyboardOpening = false;
     protected static keyboardClosing = false;
 
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
+
     /**
      * Closes the keyboard.
      */
@@ -51,7 +56,7 @@ export class CoreKeyboard {
      */
     static onKeyboardShow(keyboardHeight: number): void {
         document.body.classList.add('keyboard-is-open');
-        this.setKeyboardShown(true);
+        CoreKeyboard.setKeyboardShown(true);
         // Error on iOS calculating size.
         // More info: https://github.com/ionic-team/ionic-plugin-keyboard/issues/276 .
         CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, keyboardHeight);
@@ -62,7 +67,7 @@ export class CoreKeyboard {
      */
     static onKeyboardHide(): void {
         document.body.classList.remove('keyboard-is-open');
-        this.setKeyboardShown(false);
+        CoreKeyboard.setKeyboardShown(false);
         CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, 0);
     }
 

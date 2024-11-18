@@ -25,13 +25,13 @@ import { Injectable, Type } from '@angular/core';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { AddonModAssignSubmissionFileComponent } from '../component/file';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import type { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler for file submission plugin.
@@ -101,7 +101,9 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
     /**
      * @inheritdoc
      */
-    getComponent(): Type<AddonModAssignSubmissionPluginBaseComponent> {
+    async getComponent(): Promise<Type<AddonModAssignSubmissionPluginBaseComponent>> {
+        const { AddonModAssignSubmissionFileComponent } = await import('../component/file');
+
         return AddonModAssignSubmissionFileComponent;
     }
 
@@ -116,7 +118,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         siteId?: string,
     ): Promise<void> {
 
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             AddonModAssignHelper.deleteStoredSubmissionFiles(
                 assign.id,
                 AddonModAssignSubmissionFileHandlerService.FOLDER_NAME,
@@ -174,7 +176,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
     ): Promise<boolean> {
-        const offlineData = await CoreUtils.ignoreErrors(
+        const offlineData = await CorePromiseUtils.ignoreErrors(
             // Check if there's any offline data.
             AddonModAssignOffline.getSubmission(assign.id, submission.userid),
             undefined,
@@ -240,7 +242,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
 
         // Data has changed, we need to upload new files and re-upload all the existing files.
         const currentFiles = CoreFileSession.getFiles(ADDON_MOD_ASSIGN_COMPONENT, assign.id);
-        const error = CoreUtils.hasRepeatedFilenames(currentFiles);
+        const error = CoreFileUtils.hasRepeatedFilenames(currentFiles);
 
         if (error) {
             throw error;
@@ -302,7 +304,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
 
         if (filesData.offline) {
             // Has offline files, get them and add them to the list.
-            const storedFiles = <FileEntry[]> await CoreUtils.ignoreErrors(
+            const storedFiles = <FileEntry[]> await CorePromiseUtils.ignoreErrors(
                 AddonModAssignHelper.getStoredSubmissionFiles(
                     assign.id,
                     AddonModAssignSubmissionFileHandlerService.FOLDER_NAME,

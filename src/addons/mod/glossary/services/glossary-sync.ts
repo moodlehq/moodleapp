@@ -22,7 +22,7 @@ import { CoreRatingSync } from '@features/rating/services/rating-sync';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModGlossary } from './glossary';
@@ -30,9 +30,8 @@ import { AddonModGlossaryHelper } from './glossary-helper';
 import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from './glossary-offline';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreFileEntry } from '@services/file-helper';
-import { ADDON_MOD_GLOSSARY_COMPONENT } from '../constants';
-
-export const GLOSSARY_AUTO_SYNCED = 'addon_mod_glossary_auto_synced';
+import { ADDON_MOD_GLOSSARY_COMPONENT, GLOSSARY_AUTO_SYNCED } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync glossaries.
@@ -174,17 +173,17 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
         const syncId = this.getGlossarySyncId(glossaryId, userId);
 
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_GLOSSARY_COMPONENT, glossaryId, siteId));
+        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_GLOSSARY_COMPONENT, glossaryId, siteId));
 
         // Get offline responses to be sent.
-        const entries = await CoreUtils.ignoreErrors(
+        const entries = await CorePromiseUtils.ignoreErrors(
             AddonModGlossaryOffline.getGlossaryOfflineEntries(glossaryId, siteId, userId),
             <AddonModGlossaryOfflineEntry[]> [],
         );
 
         if (!entries.length) {
             // Nothing to sync.
-            await CoreUtils.ignoreErrors(this.setSyncTime(syncId, siteId));
+            await CorePromiseUtils.ignoreErrors(this.setSyncTime(syncId, siteId));
 
             return result;
         } else if (!CoreNetwork.isOnline()) {
@@ -208,7 +207,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
 
                 await this.deleteAddEntry(glossaryId, data.concept, data.timecreated, siteId);
             } catch (error) {
-                if (!CoreUtils.isWebServiceError(error)) {
+                if (!CoreWSError.isWebServiceError(error)) {
                     // Couldn't connect to server, reject.
                     throw error;
                 }
@@ -235,7 +234,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
         }
 
         // Sync finished, set sync time.
-        await CoreUtils.ignoreErrors(this.setSyncTime(syncId, siteId));
+        await CorePromiseUtils.ignoreErrors(this.setSyncTime(syncId, siteId));
 
         return result;
     }
@@ -256,7 +255,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
         let updated = false;
         const warnings: string[] = [];
 
-        await CoreUtils.allPromises(results.map(async (result) => {
+        await CorePromiseUtils.allPromises(results.map(async (result) => {
             if (result.updated.length) {
                 updated = true;
 
@@ -310,7 +309,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
 
         if (entry.attachments.offline) {
             // Has offline files.
-            const storedFiles = await CoreUtils.ignoreErrors(
+            const storedFiles = await CorePromiseUtils.ignoreErrors(
                 AddonModGlossaryHelper.getStoredFiles(glossaryId, entry.concept, entry.timecreated, siteId),
                 [], // Folder not found, no files to add.
             );

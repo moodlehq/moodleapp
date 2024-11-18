@@ -16,11 +16,11 @@ import { Injectable } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFile } from '@services/file';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreText } from '@singletons/text';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { CoreWSFile } from '@services/ws';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWS, CoreWSFile } from '@services/ws';
 
 import extToMime from '@/assets/exttomime.json';
 import mimeToExt from '@/assets/mimetoext.json';
@@ -168,11 +168,11 @@ export class CoreMimetypeUtilsProvider {
      * @returns The embedded HTML string.
      */
     getEmbeddedHtml(file: CoreFileEntry, path?: string): string {
-        const filename = CoreUtils.isFileEntry(file) ? (file as FileEntry).name : file.filename;
-        const extension = !CoreUtils.isFileEntry(file) && file.mimetype
+        const filename = CoreFileUtils.isFileEntry(file) ? (file as FileEntry).name : file.filename;
+        const extension = !CoreFileUtils.isFileEntry(file) && file.mimetype
             ? this.getExtension(file.mimetype)
             : (filename && this.getFileExtension(filename));
-        const mimeType = !CoreUtils.isFileEntry(file) && file.mimetype
+        const mimeType = !CoreFileUtils.isFileEntry(file) && file.mimetype
             ? file.mimetype
             : (extension && this.getMimeType(extension));
 
@@ -185,7 +185,7 @@ export class CoreMimetypeUtilsProvider {
             // @todo linting: See if this can be removed
             (file as { embedType?: string }).embedType = embedType;
 
-            path = path ?? (CoreUtils.isFileEntry(file) ? CoreFile.getFileEntryURL(file) : CoreFileHelper.getFileUrl(file));
+            path = path ?? (CoreFileUtils.isFileEntry(file) ? CoreFile.getFileEntryURL(file) : CoreFileHelper.getFileUrl(file));
             path = path && CoreFile.convertFileSrc(path);
 
             switch (embedType) {
@@ -424,10 +424,10 @@ export class CoreMimetypeUtilsProvider {
         let mimetype: string | undefined = '';
         let extension: string | undefined = '';
 
-        if (typeof obj == 'object' && CoreUtils.isFileEntry(obj)) {
+        if (typeof obj === 'object' && CoreFileUtils.isFileEntry(obj)) {
             // It's a FileEntry. Don't use the file function because it's asynchronous and the type isn't reliable.
             filename = obj.name;
-        } else if (typeof obj == 'object') {
+        } else if (typeof obj === 'object') {
             filename = obj.filename || '';
             mimetype = obj.mimetype || '';
         } else {
@@ -536,6 +536,30 @@ export class CoreMimetypeUtilsProvider {
         }
 
         return this.getFileIconForType(icon);
+    }
+
+    /**
+     * Get the mimetype of a file given its URL. It'll try to guess it using the URL, if that fails then it'll
+     * perform a HEAD request to get it. It's done in this order because pluginfile.php can return wrong mimetypes.
+     * This function is in here instead of MimetypeUtils to prevent circular dependencies.
+     *
+     * @param url The URL of the file.
+     * @returns Promise resolved with the mimetype.
+     */
+    async getMimeTypeFromUrl(url: string): Promise<string> {
+        // First check if it can be guessed from the URL.
+        const extension = CoreMimetypeUtils.guessExtensionFromUrl(url);
+        const mimetype = extension && CoreMimetypeUtils.getMimeType(extension);
+
+        // Ignore PHP extension for now, it could be serving a file.
+        if (mimetype && extension !== 'php') {
+            return mimetype;
+        }
+
+        // Can't be guessed, get the remote mimetype.
+        const remoteMimetype = await CoreWS.getRemoteFileMimeType(url);
+
+        return remoteMimetype || mimetype || '';
     }
 
     /**

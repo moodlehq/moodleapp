@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ContextLevel } from '@/core/constants';
+import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreSite } from '@classes/sites/site';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
@@ -23,10 +22,12 @@ import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonBlogOffline, AddonBlogOfflineEntry } from './blog-offline';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 const ROOT_CACHE_KEY = 'addonBlog:';
 
@@ -62,7 +63,7 @@ export class AddonBlogProvider {
      * @returns Cache key.
      */
     getEntriesCacheKey(filter: AddonBlogFilter = {}): string {
-        return ROOT_CACHE_KEY + CoreUtils.sortAndStringify(filter);
+        return ROOT_CACHE_KEY + CoreObject.sortAndStringify(filter);
     }
 
     /**
@@ -76,14 +77,14 @@ export class AddonBlogProvider {
         const site = await CoreSites.getSite(options?.siteId);
 
         const data: CoreBlogGetEntriesWSParams = {
-            filters: CoreUtils.objectToArrayOfObjects(filter, 'name', 'value'),
+            filters: CoreObject.toArrayOfObjects(filter, 'name', 'value'),
             page: options?.page ?? 0,
             perpage: AddonBlogProvider.ENTRIES_PER_PAGE,
         };
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesCacheKey(filter),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             ...CoreSites.getReadingStrategyPreSets(options?.readingStrategy),
         };
 
@@ -121,7 +122,7 @@ export class AddonBlogProvider {
         try {
             await this.addEntryOnline(params, siteId);
         } catch (error) {
-            if (!CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return await storeOffline();
             }
@@ -177,7 +178,7 @@ export class AddonBlogProvider {
         try {
             await this.updateEntryOnline(params, siteId);
         } catch (error) {
-            if (!CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return await storeOffline();
             }
@@ -230,9 +231,9 @@ export class AddonBlogProvider {
             }
 
             await this.deleteEntryOnline(params, siteId);
-            await CoreUtils.ignoreErrors(AddonBlogOffline.unmarkEntryAsRemoved(params.entryid));
+            await CorePromiseUtils.ignoreErrors(AddonBlogOffline.unmarkEntryAsRemoved(params.entryid));
         } catch (error) {
-            if (!CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return await AddonBlogOffline.markEntryAsRemoved({ id: params.entryid, subject }, siteId);
             }
@@ -289,7 +290,7 @@ export class AddonBlogProvider {
         const site = await CoreSites.getSite(siteId);
 
         const data: AddonBlogViewEntriesWSParams = {
-            filters: CoreUtils.objectToArrayOfObjects(filter, 'name', 'value'),
+            filters: CoreObject.toArrayOfObjects(filter, 'name', 'value'),
         };
 
         return site.write('core_blog_view_entries', data);
@@ -312,7 +313,7 @@ export class AddonBlogProvider {
         const tags = options?.find(option => option.name === 'tags')?.value as string | undefined;
         const publishState = options?.find(option => option.name === 'publishstate')?.value as AddonBlogPublishState
             ?? AddonBlogPublishState.draft;
-        const user = await CoreUtils.ignoreErrors(CoreUser.getProfile(offlineEntry.userid, courseId, true));
+        const user = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(offlineEntry.userid, courseId, true));
         const folder = 'id' in offlineEntry && offlineEntry.id ? { id: offlineEntry.id } : { created: offlineEntry.created };
         const offlineFiles = await AddonBlogOffline.getOfflineFiles(folder);
         const optionsFiles = this.getAttachmentFilesFromOptions(options);
@@ -376,7 +377,7 @@ export class AddonBlogProvider {
         }
 
         entry.summary = CoreFileHelper.replacePluginfileUrls(entry.summary, entry.summaryfiles || []);
-        entry.user = await CoreUtils.ignoreErrors(CoreUser.getProfile(entry.userid, entry.courseid, true));
+        entry.user = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(entry.userid, entry.courseid, true));
     }
 
     /**

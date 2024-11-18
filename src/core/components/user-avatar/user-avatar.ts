@@ -15,7 +15,7 @@
 import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange } from '@angular/core';
 
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { USER_PROFILE_PICTURE_UPDATED, CoreUserBasicData } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
@@ -33,7 +33,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-user-avatar',
     templateUrl: 'core-user-avatar.html',
-    styleUrls: ['user-avatar.scss'],
+    styleUrl: 'user-avatar.scss',
 })
 export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
 

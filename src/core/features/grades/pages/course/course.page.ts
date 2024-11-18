@@ -24,7 +24,7 @@ import {
     CoreGradesHelper,
 } from '@features/grades/services/grades-helper';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { Translate } from '@singletons';
@@ -43,7 +43,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 @Component({
     selector: 'page-core-grades-course',
     templateUrl: 'course.html',
-    styleUrls: ['course.scss'],
+    styleUrl: 'course.scss',
 })
 export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
@@ -185,8 +185,8 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      * @param refresher Refresher.
      */
     async refreshGrades(refresher: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreGrades.invalidateCourseGradesData(this.courseId, this.userId));
-        await CoreUtils.ignoreErrors(this.fetchGrades());
+        await CorePromiseUtils.ignoreErrors(CoreGrades.invalidateCourseGradesData(this.courseId, this.userId));
+        await CorePromiseUtils.ignoreErrors(this.fetchGrades());
 
         refresher?.complete();
     }
@@ -261,7 +261,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      * Log view.
      */
     protected async performLogView(): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreGrades.logCourseGradesView(this.courseId, this.userId));
+        await CorePromiseUtils.ignoreErrors(CoreGrades.logCourseGradesView(this.courseId, this.userId));
 
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.VIEW_ITEM,

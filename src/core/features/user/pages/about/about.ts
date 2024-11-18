@@ -16,7 +16,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     CoreUser,
@@ -25,7 +25,6 @@ import {
     USER_PROFILE_REFRESHED,
     USER_PROFILE_SERVER_TIMEZONE,
 } from '@features/user/services/user';
-import { CoreUserHelper } from '@features/user/services/user-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreSite } from '@classes/sites/site';
@@ -34,6 +33,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreLoadings } from '@services/loadings';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Page that displays info about a user.
@@ -41,7 +41,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-core-user-about',
     templateUrl: 'about.html',
-    styleUrls: ['about.scss'],
+    styleUrl: 'about.scss',
 })
 export class CoreUserAboutPage implements OnInit, OnDestroy {
 
@@ -203,7 +203,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async refreshUser(event?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreUser.invalidateUserCache(this.userId));
+        await CorePromiseUtils.ignoreErrors(CoreUser.invalidateUserCache(this.userId));
 
         await this.fetchUser();
 
@@ -275,7 +275,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
         }
 
         if (this.user.timezone) {
-            this.user.timezone = CoreUserHelper.translateLegacyTimezone(this.user.timezone);
+            this.user.timezone = CoreTime.translateLegacyTimezone(this.user.timezone);
         }
     }
 

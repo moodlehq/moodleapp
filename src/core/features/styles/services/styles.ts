@@ -17,7 +17,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { Md5 } from 'ts-md5';
@@ -373,7 +373,7 @@ export class CoreStylesService {
             this.disableStyleElementByName(siteIdentifier, sourceName, disabled);
         }
 
-        await CoreUtils.allPromises(this.styleHandlers.map(async (handler) => {
+        await CorePromiseUtils.allPromises(this.styleHandlers.map(async (handler) => {
             await this.setStyle(siteIdentifier, handler, disabled);
         }));
 
@@ -392,7 +392,7 @@ export class CoreStylesService {
         // Create the style and add it to the header.
         this.createStyleElements(CoreStylesService.TMP_SITE_ID, true);
 
-        await CoreUtils.allPromises(this.styleHandlers.map(async (handler) => {
+        await CorePromiseUtils.allPromises(this.styleHandlers.map(async (handler) => {
             await this.setStyle(CoreStylesService.TMP_SITE_ID, handler, false, config);
         }));
 
@@ -405,7 +405,7 @@ export class CoreStylesService {
      * @returns Promise resolved when loaded.
      */
     protected async preloadCurrentSite(): Promise<void> {
-        const siteId = await CoreUtils.ignoreErrors(CoreSites.getStoredCurrentSiteId());
+        const siteId = await CorePromiseUtils.ignoreErrors(CoreSites.getStoredCurrentSiteId());
 
         if (!siteId) {
             // No current site stored.
@@ -423,7 +423,7 @@ export class CoreStylesService {
     protected async preloadSites(): Promise<void> {
         const ids = await CoreSites.getSitesIds();
 
-        await CoreUtils.allPromises(ids.map((siteId) => this.addSite(siteId)));
+        await CorePromiseUtils.allPromises(ids.map((siteId) => this.addSite(siteId)));
     }
 
     /**

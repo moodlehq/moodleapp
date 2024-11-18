@@ -31,7 +31,7 @@ import { CoreViewer } from '@features/viewer/services/viewer';
 @Component({
     selector: 'page-core-mainmenu-more',
     templateUrl: 'more.html',
-    styleUrls: ['more.scss'],
+    styleUrl: 'more.scss',
 })
 export class CoreMainMenuMorePage implements OnInit, OnDestroy {
 

@@ -21,7 +21,7 @@ import { CoreUserTours } from '@features/usertours/services/user-tours';
 @Component({
     selector: 'core-swipe-navigation-tour',
     templateUrl: 'core-swipe-navigation-tour.html',
-    styleUrls: ['swipe-navigation-tour.scss'],
+    styleUrl: 'swipe-navigation-tour.scss',
 })
 export class CoreSwipeNavigationTourComponent {
 

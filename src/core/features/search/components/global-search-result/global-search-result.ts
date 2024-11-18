@@ -19,7 +19,7 @@ import { CoreSearchGlobalSearchResult, CoreSearchGlobalSearchResultContext } fro
 @Component({
     selector: 'core-search-global-search-result',
     templateUrl: 'global-search-result.html',
-    styleUrls: ['./global-search-result.scss'],
+    styleUrl: './global-search-result.scss',
 })
 export class CoreSearchGlobalSearchResultComponent implements OnChanges {
 

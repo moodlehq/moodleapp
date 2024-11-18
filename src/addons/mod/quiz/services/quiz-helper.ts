@@ -20,7 +20,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 import {
@@ -43,6 +43,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreModals } from '@services/modals';
 import { CoreLoadings } from '@services/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Helper service that provides some features for quiz.
@@ -474,7 +475,7 @@ export class AddonModQuizHelperProvider {
 
                     if (options.offline) {
                         // Get current page stored in local.
-                        const storedAttempt = await CoreUtils.ignoreErrors(
+                        const storedAttempt = await CorePromiseUtils.ignoreErrors(
                             AddonModQuizOffline.getAttemptById(attempt.id),
                         );
 
@@ -502,7 +503,7 @@ export class AddonModQuizHelperProvider {
 
             return attempt;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService returned an error, assume the preflight failed.
                 AddonModQuizAccessRuleDelegate.notifyPreflightCheckFailed(
                     rules,

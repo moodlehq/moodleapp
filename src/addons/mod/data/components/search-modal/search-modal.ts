@@ -18,7 +18,7 @@ import { CoreTag } from '@features/tag/services/tag';
 import { CoreSites } from '@services/sites';
 import { CoreFormFields, CoreForms } from '@singletons/form';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { ModalController } from '@singletons';
 import {
     AddonModDataField,
@@ -89,7 +89,7 @@ export class AddonModDataSearchModalComponent implements OnInit {
         this.searchForm.addControl('firstname', this.fb.control(this.advancedIndexed['firstname'] || ''));
         this.searchForm.addControl('lastname', this.fb.control(this.advancedIndexed['lastname'] || ''));
 
-        this.fieldsArray = CoreUtils.objectToArray(this.fields);
+        this.fieldsArray = CoreObject.toArray(this.fields);
         this.advancedSearch = this.renderAdvancedSearchFields();
     }
 

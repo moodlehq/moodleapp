@@ -37,4 +37,4 @@ const routes: Routes = [
         AddonNotesListPage,
     ],
 })
-export class AddonNotesLazyModule {}
+export default class AddonNotesLazyModule {}

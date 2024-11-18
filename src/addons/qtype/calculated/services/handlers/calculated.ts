@@ -17,9 +17,8 @@ import { Injectable, Type } from '@angular/core';
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { makeSingleton } from '@singletons';
-import { AddonQtypeCalculatedComponent } from '../../component/calculated';
 
 /**
  * Handler to support calculated question type.
@@ -41,7 +40,9 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonQtypeCalculatedComponent } = await import('../../component/calculated');
+
         return AddonQtypeCalculatedComponent;
     }
 
@@ -132,8 +133,8 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
-        return CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') &&
-            CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'unit');
+        return CoreObject.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') &&
+            CoreObject.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'unit');
     }
 
     /**

@@ -23,7 +23,7 @@ import { CoreSites, CoreLoginSiteInfo, CoreSiteBasicInfo } from '@services/sites
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreConstants } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreError } from '@classes/errors/error';
@@ -61,6 +61,9 @@ import { CoreSiteError, CoreSiteErrorDebug } from '@classes/errors/siteerror';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreLoadings } from '@services/loadings';
 import { CoreErrorHelper } from '@services/error-helper';
+import { CoreSSO } from '@singletons/sso';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener } from '@singletons/opener';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -131,7 +134,7 @@ export class CoreLoginHelperProvider {
         const currentSite = CoreSites.getCurrentSite();
 
         if (
-            !CoreApp.isSSOAuthenticationOngoing() &&
+            !CoreSSO.isSSOAuthenticationOngoing() &&
             currentSite?.isLoggedOut() &&
             CoreNavigator.isCurrent('/login/reconnect')
         ) {
@@ -171,7 +174,7 @@ export class CoreLoginHelperProvider {
     async forgottenPasswordClicked(siteUrl: string, username: string, siteConfig?: CoreSitePublicConfigResponse): Promise<void> {
         if (siteConfig && siteConfig.forgottenpasswordurl) {
             // URL set, open it.
-            CoreUtils.openInApp(siteConfig.forgottenpasswordurl);
+            CoreOpener.openInApp(siteConfig.forgottenpasswordurl);
 
             return;
         }
@@ -305,18 +308,6 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Get fixed site or sites.
-     *
-     * @returns Fixed site or list of fixed sites.
-     * @deprecated since 4.2. Use CoreConstants.CONFIG.sites or getAvailableSites() instead.
-     */
-    getFixedSites(): string | CoreLoginSiteInfo[] {
-        const notStagingSites = CoreConstants.CONFIG.sites.filter(site => !site.staging);
-
-        return notStagingSites.length === 1 ? notStagingSites[0].url : notStagingSites;
-    }
-
-    /**
      * Get Available sites (includes staging sites if are enabled). It doesn't include demo mode site.
      *
      * @returns Available sites.
@@ -384,7 +375,7 @@ export class CoreLoginHelperProvider {
      * @returns Valid identity providers.
      */
     async getValidIdentityProvidersForSite(site: CoreUnauthenticatedSite): Promise<CoreSiteIdentityProvider[]> {
-        const siteConfig = await CoreUtils.ignoreErrors(site.getPublicConfig());
+        const siteConfig = await CorePromiseUtils.ignoreErrors(site.getPublicConfig());
         if (!siteConfig) {
             return [];
         }
@@ -481,18 +472,6 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Check if the app is configured to use several fixed URLs.
-     *
-     * @returns Whether there are several fixed URLs.
-     * @deprecated since 4.2. Use CoreConstants.CONFIG.sites.length > 1 instead.
-     */
-    async hasSeveralFixedSites(): Promise<boolean> {
-        const sites = await this.getAvailableSites();
-
-        return sites.length > 1;
-    }
-
-    /**
      * Given a site public config, check if email signup is disabled.
      *
      * @param config Site public config.
@@ -519,16 +498,6 @@ export class CoreLoginHelperProvider {
         const regEx = new RegExp('(,|^)' + feature + '(,|$)', 'g');
 
         return !!disabledFeatures.match(regEx);
-    }
-
-    /**
-     * Check if the app is configured to use a fixed URL (only 1).
-     *
-     * @returns Whether there is 1 fixed URL.
-     * @deprecated since 4.2. Use isSingleFixedSite instead.
-     */
-    isFixedUrlSet(): boolean {
-        return CoreConstants.CONFIG.sites.filter(site => !site.staging).length === 1;
     }
 
     /**
@@ -659,7 +628,7 @@ export class CoreLoginHelperProvider {
             });
 
             // Always open it in browser because the user might have the session stored in there.
-            CoreUtils.openInBrowser(loginUrl, { showBrowserWarning: false });
+            CoreOpener.openInBrowser(loginUrl, { showBrowserWarning: false });
             CoreApp.closeApp();
 
             return true;
@@ -696,12 +665,12 @@ export class CoreLoginHelperProvider {
             this.logger.debug('openBrowserForSSOLogin loginUrl:', loginUrl);
 
             if (this.isSSOEmbeddedBrowser(typeOfLogin)) {
-                CoreUtils.openInApp(loginUrl, {
+                CoreOpener.openInApp(loginUrl, {
                     clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
                     closebuttoncaption: Translate.instant('core.login.cancel'),
                 });
             } else {
-                CoreUtils.openInBrowser(loginUrl, { showBrowserWarning: false });
+                CoreOpener.openInBrowser(loginUrl, { showBrowserWarning: false });
                 CoreApp.closeApp();
             }
         } catch (error) {
@@ -723,7 +692,7 @@ export class CoreLoginHelperProvider {
 
         await alert.onDidDismiss();
 
-        CoreUtils.openInApp(siteUrl + '/login/change_password.php');
+        CoreOpener.openInApp(siteUrl + '/login/change_password.php');
     }
 
     /**
@@ -732,7 +701,7 @@ export class CoreLoginHelperProvider {
      * @param siteUrl URL of the site.
      */
     openForgottenPassword(siteUrl: string): void {
-        CoreUtils.openInApp(siteUrl + '/login/forgot_password.php');
+        CoreOpener.openInApp(siteUrl + '/login/forgot_password.php');
     }
 
     /**
@@ -827,20 +796,20 @@ export class CoreLoginHelperProvider {
         launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
 
         const passport = Math.random() * 1000;
-        let loginUrl = launchUrl + '?service=' + service;
 
-        loginUrl += '&passport=' + passport;
-        loginUrl += '&urlscheme=' + CoreConstants.CONFIG.customurlscheme;
+        const additionalParams = Object.assign(urlParams || {}, {
+            service,
+            passport,
+            urlscheme: CoreConstants.CONFIG.customurlscheme,
+        });
 
-        if (urlParams) {
-            loginUrl = CoreUrl.addParamsToUrl(loginUrl, urlParams);
-        }
+        const loginUrl = CoreUrl.addParamsToUrl(launchUrl, additionalParams);
 
-        // Store the siteurl and passport in CoreConfigProvider for persistence.
-        // We are "configuring" the app to wait for an SSO. CoreConfigProvider shouldn't be used as a temporary storage.
+        // Store the siteurl and passport in CoreConfig for persistence.
+        // We are "configuring" the app to wait for an SSO. CoreConfig shouldn't be used as a temporary storage.
         await CoreConfig.set(CoreConstants.LOGIN_LAUNCH_DATA, JSON.stringify(<StoredLoginLaunchData> {
-            siteUrl: siteUrl,
-            passport: passport,
+            siteUrl,
+            passport,
             ...redirectData,
             ssoUrlParams: urlParams || {},
         }));
@@ -908,7 +877,7 @@ export class CoreLoginHelperProvider {
                     return;
                 }
 
-                await CoreUtils.ignoreErrors(CoreNavigator.navigate('/login/reconnect', {
+                await CorePromiseUtils.ignoreErrors(CoreNavigator.navigate('/login/reconnect', {
                     params: {
                         siteId,
                         ...redirectData,
@@ -1008,7 +977,7 @@ export class CoreLoginHelperProvider {
     async openInBrowserFallback(siteUrl: string, debug?: CoreSiteErrorDebug): Promise<void> {
         CoreEvents.trigger(APP_UNSUPPORTED_CHURN, { siteUrl, debug });
 
-        await CoreUtils.openInBrowser(siteUrl, { showBrowserWarning: false });
+        await CoreOpener.openInBrowser(siteUrl, { showBrowserWarning: false });
     }
 
     /**
@@ -1364,7 +1333,7 @@ export class CoreLoginHelperProvider {
      * @returns Promise resolved with account list.
      */
     async getAccountsList(): Promise<CoreAccountsList> {
-        const sites = await CoreUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
+        const sites = await CorePromiseUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
 
         const accountsList: CoreAccountsList = {
             sameSite: [],
@@ -1382,7 +1351,7 @@ export class CoreLoginHelperProvider {
 
         // Add site counter and classify sites.
         await Promise.all(sites.map(async (site) => {
-            site.badge = await CoreUtils.ignoreErrors(CorePushNotifications.getSiteCounter(site.id)) || 0;
+            site.badge = await CorePromiseUtils.ignoreErrors(CorePushNotifications.getSiteCounter(site.id)) || 0;
 
             if (site.id === currentSiteId) {
                 accountsList.currentSite = site;
@@ -1399,7 +1368,7 @@ export class CoreLoginHelperProvider {
             return;
         }));
 
-        accountsList.otherSites = CoreUtils.objectToArray(otherSites);
+        accountsList.otherSites = CoreObject.toArray(otherSites);
 
         return accountsList;
     }
@@ -1451,8 +1420,8 @@ export class CoreLoginHelperProvider {
      *
      * @returns Reconnect page route module.
      */
-    async getReconnectRouteModule(): Promise<LazyRoutesModule> {
-        return import('@features/login/login-reconnect-lazy.module').then(m => m.CoreLoginReconnectLazyModule);
+    getReconnectRouteModule(): LazyRoutesModule {
+        return import('@features/login/login-reconnect-lazy.module');
     }
 
     /**
@@ -1460,8 +1429,8 @@ export class CoreLoginHelperProvider {
      *
      * @returns Credentials page route module.
      */
-    async getCredentialsRouteModule(): Promise<LazyRoutesModule> {
-        return import('@features/login/login-credentials-lazy.module').then(m => m.CoreLoginCredentialsLazyModule);
+    getCredentialsRouteModule(): LazyRoutesModule {
+        return import('@features/login/login-credentials-lazy.module');
     }
 
     /**

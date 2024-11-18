@@ -23,6 +23,8 @@ export const ADDON_MOD_FEEDBACK_MULTICHOICE_ADJUST_SEP = '<<<<<';
 export const ADDON_MOD_FEEDBACK_MULTICHOICE_HIDENOSELECT = 'h';
 export const ADDON_MOD_FEEDBACK_MULTICHOICERATED_VALUE_SEP = '####';
 
+export const ADDON_MOD_FEEDBACK_AUTO_SYNCED = 'addon_mod_feedback_autom_synced';
+
 export const ADDON_MOD_FEEDBACK_PER_PAGE = 20;
 
 /**

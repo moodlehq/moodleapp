@@ -11,24 +11,26 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Injectable } from '@angular/core';
-import { makeSingleton } from '@singletons';
 
 /**
  * Service that stores error logs in memory.
  */
-@Injectable({ providedIn: 'root' })
-export class CoreErrorLogsService {
+export class CoreErrorLogs {
 
-    protected errorLogs: CoreSettingsErrorLog[] = [];
+    protected static errorLogs: CoreSettingsErrorLog[] = [];
+
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
 
     /**
      * Retrieve error logs displayed in the DOM.
      *
      * @returns Error logs
      */
-    getErrorLogs(): CoreSettingsErrorLog[] {
-        return this.errorLogs;
+    static getErrorLogs(): CoreSettingsErrorLog[] {
+        return CoreErrorLogs.errorLogs;
     }
 
     /**
@@ -36,13 +38,11 @@ export class CoreErrorLogsService {
      *
      * @param error Error.
      */
-    addErrorLog(error: CoreSettingsErrorLog): void {
-        this.errorLogs.push(error);
+    static addErrorLog(error: CoreSettingsErrorLog): void {
+        CoreErrorLogs.errorLogs.push(error);
     }
 
 }
-
-export const CoreErrorLogs = makeSingleton(CoreErrorLogsService);
 
 export type CoreSettingsErrorLog = {
     data?: unknown;

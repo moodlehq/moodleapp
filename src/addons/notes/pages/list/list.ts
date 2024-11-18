@@ -16,7 +16,7 @@ import { CoreConstants } from '@/core/constants';
 import { AddonNotesAddModalReturn } from '@addons/notes/components/add/add-modal';
 import { AddonNotes, AddonNotesNoteFormatted, AddonNotesPublishState } from '@addons/notes/services/notes';
 import { AddonNotesOffline } from '@addons/notes/services/notes-offline';
-import { AddonNotesSync, AddonNotesSyncProvider } from '@addons/notes/services/notes-sync';
+import { AddonNotesSync } from '@addons/notes/services/notes-sync';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreAnimations } from '@components/animations';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
@@ -27,12 +27,13 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
 import { CoreToasts, ToastDuration } from '@services/toasts';
 import { CoreModals } from '@services/modals';
+import { ADDON_NOTES_AUTO_SYNCED } from '@addons/notes/services/constants';
 
 /**
  * Page that displays a list of notes.
@@ -77,7 +78,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
         }
 
         // Refresh data if notes are synchronized automatically.
-        this.syncObserver = CoreEvents.on(AddonNotesSyncProvider.AUTO_SYNCED, (data) => {
+        this.syncObserver = CoreEvents.on(ADDON_NOTES_AUTO_SYNCED, (data) => {
             if (data.courseId == this.courseId) {
                 // Show the sync warnings.
                 this.showSyncWarnings(data.warnings);
@@ -312,7 +313,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
      * Log view.
      */
     protected async performLogView(): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonNotes.logView(this.courseId, this.userId));
+        await CorePromiseUtils.ignoreErrors(AddonNotes.logView(this.courseId, this.userId));
 
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.VIEW_ITEM_LIST,

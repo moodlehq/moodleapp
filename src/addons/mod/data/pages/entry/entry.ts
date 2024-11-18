@@ -22,7 +22,7 @@ import { CoreGroups, CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModDataComponentsCompileModule } from '../../components/components-compile.module';
 import {
@@ -43,6 +43,7 @@ import {
     AddonModDataTemplateType,
     AddonModDataTemplateMode,
 } from '../../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays the view entry page.
@@ -50,7 +51,7 @@ import {
 @Component({
     selector: 'page-addon-mod-data-entry',
     templateUrl: 'entry.html',
-    styleUrls: ['../../data.scss'],
+    styleUrl: '../../data.scss',
 })
 export class AddonModDataEntryPage implements OnInit, OnDestroy {
 
@@ -182,7 +183,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
             this.title = this.database.name || this.title;
 
             this.fieldsArray = await AddonModData.getFields(this.database.id, { cmId: this.moduleId });
-            this.fields = CoreUtils.arrayToObject(this.fieldsArray, 'id');
+            this.fields = CoreArray.toObject(this.fieldsArray, 'id');
 
             await this.setEntryFromOffset();
 
@@ -432,7 +433,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
             return;
         }
 
-        await CoreUtils.ignoreErrors(AddonModData.logView(this.database.id));
+        await CorePromiseUtils.ignoreErrors(AddonModData.logView(this.database.id));
 
         // Store module viewed because this page also updates recent accessed items block.
         CoreCourse.storeModuleViewed(this.courseId, this.moduleId);

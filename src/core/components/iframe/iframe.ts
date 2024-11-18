@@ -33,7 +33,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-iframe',
     templateUrl: 'core-iframe.html',
-    styleUrls: ['iframe.scss'],
+    styleUrl: 'iframe.scss',
 })
 export class CoreIframeComponent implements OnChanges, OnDestroy {
 

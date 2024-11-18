@@ -42,4 +42,4 @@ const routes: Routes = [
         CoreSharedFilesChooseSitePage,
     ],
 })
-export class CoreSharedFilesLazyModule {}
+export default class CoreSharedFilesLazyModule {}

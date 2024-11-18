@@ -16,19 +16,18 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { makeSingleton } from '@singletons';
 import { CoreUserOffline } from './user-offline';
 import { CoreUser } from './user';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync user preferences.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
-
-    static readonly AUTO_SYNCED = 'core_user_autom_synced';
 
     constructor() {
         super('CoreUserSync');
@@ -79,7 +78,7 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
 
         const preferences = await CoreUserOffline.getChangedPreferences(siteId);
 
-        await CoreUtils.allPromises(preferences.map(async (preference) => {
+        await CorePromiseUtils.allPromises(preferences.map(async (preference) => {
             const onlineValue = await CoreUser.getUserPreferenceOnline(preference.name, siteId);
 
             if (onlineValue !== null && preference.onlinevalue != onlineValue) {
@@ -90,7 +89,7 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
             try {
                 await CoreUser.setUserPreference(preference.name, preference.value, siteId);
             } catch (error) {
-                if (CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     const warning = CoreErrorHelper.getErrorMessageFromError(error);
                     if (warning) {
                         warnings.push(warning);

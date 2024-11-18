@@ -20,7 +20,7 @@ import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifi
 import { CoreLoadings } from '@services/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
 
 /**

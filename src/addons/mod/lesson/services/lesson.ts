@@ -14,22 +14,19 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModLessonPasswordDBRecord, PASSWORD_TABLE_NAME } from './database/lesson';
 import { AddonModLessonOffline, AddonModLessonPageAttemptRecord } from './lesson-offline';
-import { AddonModLessonAutoSyncData } from './lesson-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_LESSON_AUTO_SYNCED,
     ADDON_MOD_LESSON_COMPONENT,
     ADDON_MOD_LESSON_DATA_SENT_EVENT,
     ADDON_MOD_LESSON_OTHER_ANSWERS,
@@ -38,6 +35,10 @@ import {
     AddonModLessonPageSubtype,
 } from '../constants';
 import { CoreGradeType } from '@features/grades/constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreObject } from '@singletons/object';
+import { CoreArray } from '@singletons/array';
 
 declare module '@singletons/events' {
 
@@ -48,7 +49,6 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [ADDON_MOD_LESSON_DATA_SENT_EVENT]: AddonModLessonDataSentData;
-        [ADDON_MOD_LESSON_AUTO_SYNCED]: AddonModLessonAutoSyncData;
     }
 
 }
@@ -288,7 +288,7 @@ export class AddonModLessonProvider {
         const validPages = {};
         let pageId = accessInfo.firstpageid;
 
-        viewedPagesIds = CoreUtils.mergeArraysWithoutDuplicates(viewedPagesIds, viewedContentPagesIds);
+        viewedPagesIds = CoreArray.mergeWithoutDuplicates(viewedPagesIds, viewedContentPagesIds);
 
         // Filter out the following pages:
         // - End of Cluster
@@ -400,11 +400,11 @@ export class AddonModLessonProvider {
         // The name was changed to "answer_editor" in 3.7. Before it was just "answer". Support both cases.
         if (data['answer_editor[text]'] !== undefined) {
             studentAnswer = data['answer_editor[text]'];
-        } else if (typeof data.answer_editor == 'object') {
+        } else if (typeof data.answer_editor === 'object') {
             studentAnswer = (<{text: string}> data.answer_editor).text;
         } else if (data['answer[text]'] !== undefined) {
             studentAnswer = data['answer[text]'];
-        } else if (typeof data.answer == 'object') {
+        } else if (typeof data.answer === 'object') {
             studentAnswer = (<{text: string}> data.answer).text;
         } else {
             studentAnswer = data.answer;
@@ -1016,7 +1016,7 @@ export class AddonModLessonProvider {
             siteId: options.siteId,
         };
 
-        const gradeInfo = await CoreUtils.ignoreErrors(this.lessonGrade(lesson, retake, newOptions));
+        const gradeInfo = await CorePromiseUtils.ignoreErrors(this.lessonGrade(lesson, retake, newOptions));
 
         // Retake marked, now return the response.
         return this.processEolPage(lesson, courseId, options, gradeInfo);
@@ -1160,7 +1160,7 @@ export class AddonModLessonProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAccessInformationCacheKey(lessonId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
             component: ADDON_MOD_LESSON_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -1196,7 +1196,7 @@ export class AddonModLessonProvider {
 
         const [online, offline] = await Promise.all([
             this.getContentPagesViewedOnline(lessonId, retake, options),
-            CoreUtils.ignoreErrors(
+            CorePromiseUtils.ignoreErrors(
                 AddonModLessonOffline.getRetakeAttemptsForType(lessonId, retake, type, options.siteId),
             ),
         ]);
@@ -1409,7 +1409,7 @@ export class AddonModLessonProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getLessonDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_LESSON_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1488,7 +1488,7 @@ export class AddonModLessonProvider {
 
             if (validatePassword) {
                 // Invalidate the data and reject.
-                await CoreUtils.ignoreErrors(this.invalidateLessonWithPassword(lessonId, site.id));
+                await CorePromiseUtils.ignoreErrors(this.invalidateLessonWithPassword(lessonId, site.id));
 
                 throw new CoreError(Translate.instant('addon.mod_lesson.loginfail'));
             }
@@ -1710,7 +1710,7 @@ export class AddonModLessonProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getPagesCacheKey(lessonId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_LESSON_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -1888,7 +1888,7 @@ export class AddonModLessonProvider {
                 // Tell student how many questions they have seen, how many are required and their grade.
                 const retake = accessInfo.attemptscount;
 
-                const gradeInfo = await CoreUtils.ignoreErrors(this.lessonGrade(lesson, retake, options));
+                const gradeInfo = await CorePromiseUtils.ignoreErrors(this.lessonGrade(lesson, retake, options));
                 if (gradeInfo?.attempts) {
                     if (gradeInfo.nquestions < lesson.minquestions) {
                         this.addMessage(messages, 'addon.mod_lesson.numberofpagesviewednotice', {
@@ -1946,7 +1946,7 @@ export class AddonModLessonProvider {
 
         const [online, offline] = await Promise.all([
             this.getQuestionsAttemptsOnline(lessonId, retake, options),
-            CoreUtils.ignoreErrors(AddonModLessonOffline.getQuestionsAttempts(
+            CorePromiseUtils.ignoreErrors(AddonModLessonOffline.getQuestionsAttempts(
                 lessonId,
                 retake,
                 options.correct,
@@ -2059,7 +2059,7 @@ export class AddonModLessonProvider {
         };
         const preSets = {
             cacheKey: this.getRetakesOverviewCacheKey(lessonId, groupId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
             component: ADDON_MOD_LESSON_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -2273,7 +2273,7 @@ export class AddonModLessonProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserRetakeCacheKey(lessonId, userId, retake),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_LESSON_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -3089,7 +3089,7 @@ export class AddonModLessonProvider {
         const params: AddonModLessonProcessPageWSParams = {
             lessonid: lessonId,
             pageid: pageId,
-            data: CoreUtils.objectToArrayOfObjects<ProcessPageData>(data, 'name', 'value', true),
+            data: CoreObject.toArrayOfObjects<ProcessPageData>(data, 'name', 'value', true),
             review: !!options.review,
         };
 

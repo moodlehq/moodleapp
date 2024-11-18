@@ -19,7 +19,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreGroups } from '@services/groups';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import {
@@ -70,7 +70,7 @@ export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPr
      * @inheritdoc
      */
     async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
-        const feedback = await CoreUtils.ignoreErrors(AddonModFeedback.getFeedback(courseId, module.id));
+        const feedback = await CorePromiseUtils.ignoreErrors(AddonModFeedback.getFeedback(courseId, module.id));
 
         return this.getIntroFilesFromInstance(module, feedback);
     }

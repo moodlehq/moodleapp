@@ -24,7 +24,7 @@ import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/fil
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { makeSingleton, Translate, Camera, ActionSheetController } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
@@ -46,6 +46,7 @@ import { CorePlatform } from '@services/platform';
 import { Chooser } from '@features/native/plugins';
 import { CoreToasts } from '@services/toasts';
 import { CoreLoadings } from '@services/loadings';
+import { CoreFileUtils } from '@singletons/file-utils';
 
 /**
  * Helper service to upload files.
@@ -210,7 +211,7 @@ export class CoreFileUploaderHelperProvider {
         options?: CoreFileUploaderOptions,
     ): Promise<FileEntry> {
 
-        const fileName = options?.fileName || CoreFile.getFileAndDirectoryFromPath(path).name;
+        const fileName = options?.fileName || CoreFileUtils.getFileAndDirectoryFromPath(path).name;
 
         // Check that size isn't too large.
         if (maxSize !== undefined && maxSize != -1) {
@@ -283,7 +284,7 @@ export class CoreFileUploaderHelperProvider {
      * @returns File name, undefined if cannot get it.
      */
     protected getChosenFileNameFromPath(result: ChooserResult): string | undefined {
-        const nameAndDir = CoreFile.getFileAndDirectoryFromPath(result.uri);
+        const nameAndDir = CoreFileUtils.getFileAndDirectoryFromPath(result.uri);
 
         if (!nameAndDir.name) {
             return;
@@ -634,8 +635,8 @@ export class CoreFileUploaderHelperProvider {
         };
 
         if (fromAlbum) {
-            const imageSupported = !mimetypes || CoreUtils.indexOfRegexp(mimetypes, /^image\//) > -1;
-            const videoSupported = !mimetypes || CoreUtils.indexOfRegexp(mimetypes, /^video\//) > -1;
+            const imageSupported = !mimetypes || CoreArray.indexOfRegexp(mimetypes, /^image\//) > -1;
+            const videoSupported = !mimetypes || CoreArray.indexOfRegexp(mimetypes, /^video\//) > -1;
 
             options.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
             options.popoverOptions = {

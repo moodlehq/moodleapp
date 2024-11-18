@@ -76,6 +76,36 @@ export const DownloadStatus = {
 export type DownloadStatus = typeof DownloadStatus[keyof typeof DownloadStatus];
 /* eslint-enable @typescript-eslint/naming-convention, @typescript-eslint/no-redeclare */
 
+// Constants for cache update frequency.
+export const CoreCacheUpdateFrequency = {
+    USUALLY: 0, // eslint-disable-line @typescript-eslint/naming-convention
+    OFTEN: 1, // eslint-disable-line @typescript-eslint/naming-convention
+    SOMETIMES: 2, // eslint-disable-line @typescript-eslint/naming-convention
+    RARELY: 3, // eslint-disable-line @typescript-eslint/naming-convention
+} as const;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type CoreCacheUpdateFrequency = typeof CoreCacheUpdateFrequency[keyof typeof CoreCacheUpdateFrequency];
+
+export const MINIMUM_MOODLE_VERSION = '3.5';
+
+// Versions of Moodle releases.
+export const MOODLE_RELEASES = {
+    '3.5': 2018051700,
+    '3.6': 2018120300,
+    '3.7': 2019052000,
+    '3.8': 2019111800,
+    '3.9': 2020061500,
+    '3.10': 2020110900,
+    '3.11': 2021051700,
+    '4.0': 2022041900,
+    '4.1': 2022112800,
+    '4.2': 2023042400,
+    '4.3': 2023100900,
+    '4.4': 2024042200,
+    '4.5': 2024100700,
+    '5.0': 2024100800, // @todo [5.0] replace with right value when released. Using a tmp value to be able to test new things.
+};
+
 /**
  * Static class to contain all the core constants.
  */

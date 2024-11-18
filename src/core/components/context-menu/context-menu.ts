@@ -16,7 +16,7 @@ import { Component, Input, OnInit, OnDestroy, ElementRef, ChangeDetectorRef } fr
 import { Subject, Subscription } from 'rxjs';
 import { auditTime } from 'rxjs/operators';
 import { CorePopovers } from '@services/popovers';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';

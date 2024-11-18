@@ -40,7 +40,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-combobox',
     templateUrl: 'core-combobox.html',
-    styleUrls: ['combobox.scss'],
+    styleUrl: 'combobox.scss',
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,

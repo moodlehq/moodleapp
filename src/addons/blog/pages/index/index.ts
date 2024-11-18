@@ -36,7 +36,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
@@ -93,7 +93,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
         this.isOnline.set(CoreNetwork.isOnline());
 
         this.logView = CoreTime.once(async () => {
-            await CoreUtils.ignoreErrors(AddonBlog.logView(this.filter));
+            await CorePromiseUtils.ignoreErrors(AddonBlog.logView(this.filter));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
@@ -113,7 +113,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
 
         this.entryUpdateObserver = CoreEvents.on(ADDON_BLOG_ENTRY_UPDATED, async () => {
             this.loaded.set(false);
-            await CoreUtils.ignoreErrors(this.refresh());
+            await CorePromiseUtils.ignoreErrors(this.refresh());
             this.loaded.set(true);
         });
 
@@ -123,7 +123,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
             }
 
             this.loaded.set(false);
-            await CoreUtils.ignoreErrors(this.refresh(false));
+            await CorePromiseUtils.ignoreErrors(this.refresh(false));
             this.loaded.set(true);
         });
 
@@ -375,7 +375,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
      * @param refresher Refresher instance.
      */
     async refresh(sync = true, refresher?: HTMLIonRefresherElement): Promise<void> {
-        const promises = this.entries.map((entry) => {
+        const promises = this.entries.map(async (entry) => {
             if (this.isOnlineEntry(entry)) {
                 return CoreComments.invalidateCommentsData(
                     ContextLevel.USER,
@@ -399,7 +399,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
 
         }
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
         await this.fetchEntries(true, false, sync);
         refresher?.complete();
     }

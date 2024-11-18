@@ -19,5 +19,7 @@ export const ADDON_MOD_GLOSSARY_ENTRY_ADDED = 'addon_mod_glossary_entry_added';
 export const ADDON_MOD_GLOSSARY_ENTRY_UPDATED = 'addon_mod_glossary_entry_updated';
 export const ADDON_MOD_GLOSSARY_ENTRY_DELETED = 'addon_mod_glossary_entry_deleted';
 
+export const GLOSSARY_AUTO_SYNCED = 'addon_mod_glossary_auto_synced';
+
 export const ADDON_MOD_GLOSSARY_LIMIT_ENTRIES = 25;
 export const ADDON_MOD_GLOSSARY_LIMIT_CATEGORIES = 10;

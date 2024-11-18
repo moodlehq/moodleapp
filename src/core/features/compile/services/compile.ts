@@ -42,12 +42,12 @@ import { makeSingleton } from '@singletons';
 import { effectWithInjectionContext, modelWithInjectionContext } from '@/core/utils/signals';
 
 // Import core services.
-import { getCoreServices } from '@/core/core.module';
+import { getCoreExportedObjects, getCoreServices } from '@/core/core.module';
 import { getBlockServices } from '@features/block/block.module';
 import { getCommentsServices } from '@features/comments/comments.module';
 import { getContentLinksExportedObjects, getContentLinksServices } from '@features/contentlinks/contentlinks.module';
 import { getCourseExportedObjects, getCourseServices, getCourseStandaloneComponents } from '@features/course/course.module';
-import { getCoursesServices } from '@features/courses/courses.module';
+import { getCoursesExportedObjects, getCoursesServices } from '@features/courses/courses.module';
 import { getEditorServices } from '@features/editor/editor.module';
 import { getEnrolServices } from '@features/enrol/enrol.module';
 import { getFileUploadedServices } from '@features/fileuploader/fileuploader.module';
@@ -55,7 +55,7 @@ import { getFilterServices } from '@features/filter/filter.module';
 import { getGradesServices } from '@features/grades/grades.module';
 import { getH5PServices } from '@features/h5p/h5p.module';
 import { getLoginServices } from '@features/login/login.module';
-import { getMainMenuServices } from '@features/mainmenu/mainmenu.module';
+import { getMainMenuExportedObjects, getMainMenuServices } from '@features/mainmenu/mainmenu.module';
 import { getNativeServices } from '@features/native/native.module';
 import { getPushNotificationsServices } from '@features/pushnotifications/pushnotifications.module';
 import { getQuestionServices } from '@features/question/question.module';
@@ -73,37 +73,42 @@ import { getXAPIServices } from '@features/xapi/xapi.module';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { CoreConstants, DownloadStatus } from '@/core/constants';
 import moment from 'moment-timezone';
 import { Md5 } from 'ts-md5/dist/md5';
 
 // Import core classes that can be useful for site plugins.
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreArray } from '@singletons/array';
+import { CoreCache } from '@classes/cache';
 import { CoreColors } from '@singletons/colors';
+import { CoreCountries } from '@singletons/countries';
+import { CoreDelegate } from '@classes/delegate';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreForms } from '@singletons/form';
+import { CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreMedia } from '@singletons/media';
+import { CoreNetwork } from '@services/network';
 import { CoreObject } from '@singletons/object';
+import { CoreOpener } from '@singletons/opener';
 import { CorePath } from '@singletons/path';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreSSO } from '@singletons/sso';
 import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
+import { CoreUtils } from '@singletons/utils';
 import { CoreWait } from '@singletons/wait';
 import { CoreWindow } from '@singletons/window';
-import { CoreCache } from '@classes/cache';
-import { CoreDelegate } from '@classes/delegate';
-import { CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
 import { getCoreErrorsExportedObjects } from '@classes/errors/errors';
-import { CoreNetwork } from '@services/network';
 
 // Import all core modules that define components, directives and pipes.
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { CoreCourseDirectivesModule } from '@features/course/directives/directives.module';
 import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
-import { CoreSitePluginsDirectivesModule } from '@features/siteplugins/directives/directives.module';
 import { CoreUserComponentsModule } from '@features/user/components/components.module';
 import { CoreQuestionComponentsModule } from '@features/question/components/components.module';
 import { CoreBlockComponentsModule } from '@features/block/components/components.module';
@@ -132,8 +137,11 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 
 import { CoreAutoLogoutService } from '@features/autologout/services/autologout';
-import { CoreSitePluginsProvider } from '@features/siteplugins/services/siteplugins';
-import { getSitePluginsExportedObjects } from '@features/siteplugins/siteplugins.module';
+import {
+    getSitePluginsDirectives,
+    getSitePluginsExportedObjects,
+    getSitePluginsServices,
+} from '@features/siteplugins/siteplugins.module';
 import { CoreError } from '@classes/errors/error';
 
 /**
@@ -161,7 +169,6 @@ export class CoreCompileProvider {
         CoreBlockComponentsModule,
         CoreEditorComponentsModule,
         CoreSearchComponentsModule,
-        CoreSitePluginsDirectivesModule,
     ];
 
     protected readonly LAZY_IMPORTS = [
@@ -170,6 +177,7 @@ export class CoreCompileProvider {
         getModWorkshopComponentModules,
         getCoreStandaloneComponents,
         getCourseStandaloneComponents,
+        getSitePluginsDirectives,
     ];
 
     protected componentId = 0;
@@ -295,9 +303,6 @@ export class CoreCompileProvider {
         // Add some final classes.
         instance['injector'] = injector;
         instance['Validators'] = Validators;
-        instance['CoreConstants'] = CoreConstants;
-        instance['DownloadStatus'] = DownloadStatus;
-        instance['CoreConfigConstants'] = CoreConstants.CONFIG;
         instance['CoreEventsProvider'] = CoreEvents;
         instance['CoreLoggerProvider'] = CoreLogger;
         instance['moment'] = moment;
@@ -314,19 +319,26 @@ export class CoreCompileProvider {
          */
         instance['Network'] = CoreNetwork.instance;
         instance['CoreNetwork'] = CoreNetwork.instance;
-        instance['CorePlatform'] = CorePlatform.instance;
-        instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
         instance['CoreArray'] = CoreArray;
         instance['CoreColors'] = CoreColors;
+        instance['CoreCountries'] = CoreCountries;
         instance['CoreDirectivesRegistry'] = CoreDirectivesRegistry;
         instance['CoreDom'] = CoreDom;
+        instance['CoreFileUtils'] = CoreFileUtils;
         instance['CoreForms'] = CoreForms;
         instance['CoreKeyboard'] = CoreKeyboard;
+        instance['CoreMedia'] = CoreMedia;
         instance['CoreObject'] = CoreObject;
+        instance['CoreOpener'] = CoreOpener;
         instance['CorePath'] = CorePath;
+        instance['CorePlatform'] = CorePlatform.instance;
+        instance['CorePromiseUtils'] = CorePromiseUtils;
+        instance['CoreSSO'] = CoreSSO;
+        instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
         instance['CoreText'] = CoreText;
         instance['CoreTime'] = CoreTime;
         instance['CoreUrl'] = CoreUrl;
+        instance['CoreUtils'] = CoreUtils;
         instance['CoreWait'] = CoreWait;
         instance['CoreWindow'] = CoreWindow;
         instance['CoreCache'] = CoreCache; // @deprecated since 4.4, plugins should use plain objects instead.
@@ -399,6 +411,7 @@ export class CoreCompileProvider {
             getNotesServices(),
             getNotificationsServices(),
             getPrivateFilesServices(),
+            getSitePluginsServices(),
         ]);
 
         const lazyLibraries = services.flat();
@@ -406,7 +419,6 @@ export class CoreCompileProvider {
         return [
             ...lazyLibraries,
             CoreAutoLogoutService,
-            CoreSitePluginsProvider,
             ...this.OTHER_SERVICES,
         ];
     }
@@ -418,8 +430,11 @@ export class CoreCompileProvider {
      */
     protected async getExportedObjects(): Promise<Record<string, unknown>> {
         const objects = await Promise.all([
+            getCoreExportedObjects(),
             getCoreErrorsExportedObjects(),
             getCourseExportedObjects(),
+            getCoursesExportedObjects(),
+            getMainMenuExportedObjects(),
             getContentLinksExportedObjects(),
             getSitePluginsExportedObjects(),
         ]);

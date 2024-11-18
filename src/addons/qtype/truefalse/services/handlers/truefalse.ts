@@ -14,10 +14,9 @@
 
 import { Injectable, Type } from '@angular/core';
 
-import { AddonQtypeMultichoiceComponent } from '@addons/qtype/multichoice/component/multichoice';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { AddonModQuizMultichoiceQuestion } from '@features/question/classes/base-question-component';
 import { makeSingleton } from '@singletons';
 
@@ -33,8 +32,10 @@ export class AddonQtypeTrueFalseHandlerService implements CoreQuestionHandler {
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
         // True/false behaves like a multichoice, use the same component.
+        const { AddonQtypeMultichoiceComponent } = await import('@addons/qtype/multichoice/component/multichoice');
+
         return AddonQtypeMultichoiceComponent;
     }
 
@@ -73,7 +74,7 @@ export class AddonQtypeTrueFalseHandlerService implements CoreQuestionHandler {
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
-        return CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
+        return CoreObject.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     }
 
     /**

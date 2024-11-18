@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModSurvey } from '../survey';
@@ -34,7 +34,7 @@ export class AddonModSurveyPrefetchHandlerLazyService extends AddonModSurveyPref
      * @inheritdoc
      */
     async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
-        const survey = await CoreUtils.ignoreErrors(AddonModSurvey.getSurvey(courseId, module.id));
+        const survey = await CorePromiseUtils.ignoreErrors(AddonModSurvey.getSurvey(courseId, module.id));
 
         return this.getIntroFilesFromInstance(module, survey);
     }

@@ -22,7 +22,7 @@ import { CoreSettingsHelper, CoreColorScheme, CoreZoomLevel } from '../../servic
 import { CoreIframeUtils } from '@services/utils/iframe';
 import { Translate } from '@singletons';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AlertButton } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
@@ -35,7 +35,7 @@ import { CoreNative } from '@features/native/services/native';
 @Component({
     selector: 'page-core-app-settings-general',
     templateUrl: 'general.html',
-    styleUrls: ['general.scss'],
+    styleUrl: 'general.scss',
 })
 export class CoreSettingsGeneralPage {
 
@@ -175,7 +175,7 @@ export class CoreSettingsGeneralPage {
     protected async applyLanguageAndRestart(): Promise<void> {
         // Invalidate cache for all sites to get the content in the right language.
         const sites = await CoreSites.getSitesInstances();
-        await CoreUtils.ignoreErrors(Promise.all(sites.map((site) => site.invalidateWsCache())));
+        await CorePromiseUtils.ignoreErrors(Promise.all(sites.map((site) => site.invalidateWsCache())));
 
         CoreEvents.trigger(CoreEvents.LANGUAGE_CHANGED, this.selectedLanguage);
 

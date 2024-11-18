@@ -27,7 +27,7 @@ import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreFilepool, CoreFilepoolFileActions, CoreFilepoolFileEventData } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreLogger } from '@singletons/logger';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
@@ -203,7 +203,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             this.handleVideoSubtitles(<HTMLVideoElement> this.element);
         }
 
-        const site = await CoreUtils.ignoreErrors(CoreSites.getSite(this.siteId));
+        const site = await CorePromiseUtils.ignoreErrors(CoreSites.getSite(this.siteId));
         const isSiteFile = site?.isSitePluginFileUrl(url);
 
         if (!url || !url.match(/^https?:\/\//i) || CoreUrl.isLocalFileUrl(url) ||
@@ -305,7 +305,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         });
 
         try {
-            await CoreUtils.allPromises(promises);
+            await CorePromiseUtils.allPromises(promises);
 
             this.element.setAttribute('style', inlineStyles);
         } catch (error) {

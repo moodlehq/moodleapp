@@ -21,7 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { Md5 } from 'ts-md5';
 import { AddonModFolder, AddonModFolderFolder } from '../../services/folder';
 import { AddonModFolderFolderFormattedData, AddonModFolderHelper } from '../../services/folder-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_MOD_FOLDER_COMPONENT, ADDON_MOD_FOLDER_PAGE_NAME } from '../../constants';
 
 /**
@@ -121,7 +121,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
      * @inheritdoc
      */
     protected async logActivity(): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonModFolder.logView(this.module.instance));
+        await CorePromiseUtils.ignoreErrors(AddonModFolder.logView(this.module.instance));
 
         this.analyticsLogEvent('mod_folder_view_folder');
     }

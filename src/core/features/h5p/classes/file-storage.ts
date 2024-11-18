@@ -17,7 +17,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CorePath } from '@singletons/path';
 import {
     CoreH5PCore,
@@ -29,6 +29,7 @@ import {
 } from './core';
 import { CONTENTS_LIBRARIES_TABLE_NAME, CONTENT_TABLE_NAME, CoreH5PLibraryCachedAssetsDBRecord } from '../services/database/h5p';
 import { CoreH5PLibraryBeingSaved } from './storage';
+import { CoreFileUtils } from '@singletons/file-utils';
 
 /**
  * Equivalent to Moodle's implementation of H5PFileStorage.
@@ -115,7 +116,7 @@ export class CoreH5PFileStorage {
                     }
 
                     treated[url] = url;
-                    const assetPathFolder = CoreFile.getFileAndDirectoryFromPath(assetPath).directory;
+                    const assetPathFolder = CoreFileUtils.getFileAndDirectoryFromPath(assetPath).directory;
 
                     fileContent = fileContent.replace(
                         new RegExp(CoreText.escapeForRegex(match), 'g'),
@@ -154,7 +155,7 @@ export class CoreH5PFileStorage {
         });
 
         // Ignore errors, maybe there's no cached asset of some type.
-        await CoreUtils.ignoreErrors(CoreUtils.allPromises(promises));
+        await CorePromiseUtils.allPromisesIgnoringErrors(promises);
     }
 
     /**
@@ -300,7 +301,7 @@ export class CoreH5PFileStorage {
     async getContentFolderNameByUrl(fileUrl: string, siteId: string): Promise<string> {
         const path = await CoreFilepool.getFilePathByUrl(siteId, fileUrl);
 
-        const fileAndDir = CoreFile.getFileAndDirectoryFromPath(path);
+        const fileAndDir = CoreFileUtils.getFileAndDirectoryFromPath(path);
 
         return CoreMimetypeUtils.removeExtension(fileAndDir.name);
     }
@@ -418,7 +419,7 @@ export class CoreH5PFileStorage {
         const folderPath = this.getContentFolderPath(folderName, siteId);
 
         // Delete existing content for this package.
-        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(folderPath));
 
         // Copy the new one.
         await CoreFile.moveDir(contentPath, folderPath);

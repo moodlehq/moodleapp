@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreH5P } from '@features/h5p/services/h5p';
@@ -25,15 +24,14 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { makeSingleton, Translate } from '@singletons/index';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreError } from '@classes/errors/error';
-import { AddonModH5PActivityAutoSyncData } from './h5pactivity-sync';
 import { CoreTime } from '@singletons/time';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_H5PACTIVITY_AUTO_SYNCED,
     ADDON_MOD_H5PACTIVITY_COMPONENT,
     ADDON_MOD_H5PACTIVITY_USERS_PER_PAGE,
     AddonModH5PActivityGradeMethod,
 } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
  * Service that provides some features for H5P activity.
@@ -162,7 +160,7 @@ export class AddonModH5PActivityProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAccessInformationCacheKey(id),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
             component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -266,7 +264,7 @@ export class AddonModH5PActivityProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUsersAttemptsCacheKey(id, options),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -362,7 +360,7 @@ export class AddonModH5PActivityProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptResultsCacheKey(id, params.attemptids),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -381,7 +379,7 @@ export class AddonModH5PActivityProvider {
 
             return this.formatAttemptResults(response.attempts[0]);
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 throw error;
             }
 
@@ -427,7 +425,7 @@ export class AddonModH5PActivityProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptResultsCommonCacheKey(id),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -510,7 +508,7 @@ export class AddonModH5PActivityProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getH5PActivityDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_H5PACTIVITY_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -617,7 +615,7 @@ export class AddonModH5PActivityProvider {
 
             const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getUserAttemptsCacheKey(id, params.userids),
-                updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+                updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
                 component: ADDON_MOD_H5PACTIVITY_COMPONENT,
                 componentId: options.cmId,
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -635,7 +633,7 @@ export class AddonModH5PActivityProvider {
 
             return this.formatUserAttempts(response.usersattempts[0]);
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 throw error;
             }
 
@@ -1135,19 +1133,6 @@ export type AddonModH5PActivityGetUsersAttemptsOptions = CoreCourseCommonModWSOp
 export type AddonModH5PActivityGetAllUsersAttemptsOptions = AddonModH5PActivityGetUsersAttemptsOptions & {
     dontFailOnError?: boolean; // If true the function will return the users it's able to retrieve, until a call fails.
 };
-
-declare module '@singletons/events' {
-
-    /**
-     * Augment CoreEventsData interface with events specific to this service.
-     *
-     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
-     */
-    export interface CoreEventsData {
-        [ADDON_MOD_H5PACTIVITY_AUTO_SYNCED]: AddonModH5PActivityAutoSyncData;
-    }
-
-}
 
 /**
  * Data to be sent using xAPI.

@@ -16,7 +16,6 @@ import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild 
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNavigator } from '@services/navigator';
@@ -33,6 +32,7 @@ import { CoreDom } from '@singletons/dom';
 import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/modals';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page to accept a site policy.
@@ -40,7 +40,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-core-policy-site-policy',
     templateUrl: 'site-policy.html',
-    styleUrls: ['site-policy.scss'],
+    styleUrl: 'site-policy.scss',
 })
 export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
@@ -83,7 +83,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
         try {
             this.currentSite = CoreSites.getRequiredCurrentSite();
-            this.siteName = (await CoreUtils.ignoreErrors(this.currentSite.getSiteName(), '')) || '';
+            this.siteName = (await CorePromiseUtils.ignoreErrors(this.currentSite.getSiteName(), '')) || '';
         } catch {
             // Not logged in, stop.
             this.cancel();
@@ -140,7 +140,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
         // Try to get the mime type.
         try {
-            const mimeType = await CoreUtils.getMimeTypeFromUrl(this.sitePoliciesURL);
+            const mimeType = await CoreMimetypeUtils.getMimeTypeFromUrl(this.sitePoliciesURL);
 
             const extension = CoreMimetypeUtils.getExtension(mimeType, this.sitePoliciesURL);
             this.showInline = extension == 'html' || extension == 'htm';
@@ -280,7 +280,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async cancel(): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreSites.logout());
+        await CorePromiseUtils.ignoreErrors(CoreSites.logout());
 
         await CoreNavigator.navigate('/login/sites', { reset: true });
     }
@@ -442,7 +442,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
      */
     protected async finishAcceptingPolicies(): Promise<void> {
         // Invalidate cache since some WS don't return error if site policy is not accepted.
-        await CoreUtils.ignoreErrors(this.currentSite.invalidateWsCache());
+        await CorePromiseUtils.ignoreErrors(this.currentSite.invalidateWsCache());
 
         CoreEvents.trigger(CoreEvents.SITE_POLICY_AGREED, {}, this.siteId);
 

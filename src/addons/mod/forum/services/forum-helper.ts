@@ -20,7 +20,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { makeSingleton, Translate } from '@singletons';
 import {
     AddonModForum,
@@ -32,6 +32,8 @@ import {
 import { AddonModForumDiscussionOptions, AddonModForumOffline, AddonModForumOfflineReply } from './forum-offline';
 import { CoreFileEntry } from '@services/file-helper';
 import { ADDON_MOD_FORUM_ALL_GROUPS, ADDON_MOD_FORUM_COMPONENT } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Service that provides some features for forums.
@@ -106,7 +108,7 @@ export class AddonModForumHelperProvider {
             try {
                 await Promise.all(promises);
             } catch (error) {
-                if (CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     throw error;
                 }
 
@@ -160,7 +162,7 @@ export class AddonModForumHelperProvider {
         if (errors.length == groupIds.length) {
             // All requests have failed.
             for (let i = 0; i < errors.length; i++) {
-                if (CoreUtils.isWebServiceError(errors[i]) || (attachments && attachments.length > 0)) {
+                if (CoreWSError.isWebServiceError(errors[i]) || (attachments && attachments.length > 0)) {
                     // The WebService has thrown an error or offline not supported, reject.
                     throw errors[i];
                 }
@@ -224,7 +226,7 @@ export class AddonModForumHelperProvider {
 
         // Get user data.
         promises.push(
-            CoreUtils.ignoreErrors(
+            CorePromiseUtils.ignoreErrors(
                 CoreUser.instance
                     .getProfile(offlineReply.userid, offlineReply.courseid, true)
                     .then(user => {
@@ -254,8 +256,8 @@ export class AddonModForumHelperProvider {
     async deleteNewDiscussionStoredFiles(forumId: number, timecreated: number, siteId?: string): Promise<void> {
         const folderPath = await AddonModForumOffline.getNewDiscussionFolder(forumId, timecreated, siteId);
 
-        // Ignore any errors, CoreFileProvider.removeDir fails if folder doesn't exist.
-        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
+        // Ignore any errors, CoreFile.removeDir fails if folder doesn't exist.
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
     /**
@@ -270,8 +272,8 @@ export class AddonModForumHelperProvider {
     async deleteReplyStoredFiles(forumId: number, postId: number, siteId?: string, userId?: number): Promise<void> {
         const folderPath = await AddonModForumOffline.getReplyFolder(forumId, postId, siteId, userId);
 
-        // Ignore any errors, CoreFileProvider.removeDir fails if folder doesn't exist.
-        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
+        // Ignore any errors, CoreFile.removeDir fails if folder doesn't exist.
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
     /**

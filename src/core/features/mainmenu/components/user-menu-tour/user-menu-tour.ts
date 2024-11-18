@@ -21,7 +21,7 @@ import { CoreUserTours } from '@features/usertours/services/user-tours';
 @Component({
     selector: 'core-mainmenu-user-menu-tour',
     templateUrl: 'user-menu-tour.html',
-    styleUrls: ['user-menu-tour.scss'],
+    styleUrl: 'user-menu-tour.scss',
 })
 export class CoreMainMenuUserMenuTourComponent {
 

@@ -17,7 +17,7 @@ import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreFile } from '@services/file';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { CoreObject } from '@singletons/object';
 import { CorePath } from '@singletons/path';
@@ -108,7 +108,7 @@ export class AddonBlogOfflineService {
      */
     async getOfflineEntry(filter: { id?: number; created?: number }, siteId?: string): Promise<AddonBlogOfflineEntry | undefined> {
         const site = await CoreSites.getSite(siteId);
-        const record = await CoreUtils.ignoreErrors(
+        const record = await CorePromiseUtils.ignoreErrors(
             site.getDb().getRecord<AddonBlogOfflineEntry>(OFFLINE_BLOG_ENTRIES_TABLE_NAME, filter),
         );
 

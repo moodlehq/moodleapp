@@ -19,8 +19,8 @@ import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler
 import { CoreCourseBlock } from '@features/course/services/course';
 import { Params } from '@angular/router';
 import { makeSingleton } from '@singletons';
-import { AddonCalendarMainMenuHandlerService } from '@addons/calendar/services/handlers/mainmenu';
 import { ContextLevel } from '@/core/constants';
+import { ADDON_CALENDAR_PAGE_NAME } from '@addons/calendar/constants';
 
 /**
  * Block handler.
@@ -46,7 +46,7 @@ export class AddonBlockCalendarMonthHandlerService extends CoreBlockBaseHandler 
             title: 'addon.block_calendarmonth.pluginname',
             class: 'addon-block-calendar-month',
             component: CoreBlockOnlyTitleComponent,
-            link: AddonCalendarMainMenuHandlerService.PAGE_NAME,
+            link: ADDON_CALENDAR_PAGE_NAME,
             linkParams: linkParams,
             navOptions: {
                 preferCurrentTab: false,

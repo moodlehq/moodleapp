@@ -23,7 +23,7 @@ import {
 } from '@angular/core';
 import { IonRouterOutlet, IonTabs, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
 
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { Params } from '@angular/router';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 import { StackDidChangeEvent } from '@ionic/angular/common/directives/navigation/stack-utils';
@@ -49,7 +49,7 @@ import { CorePath } from '@singletons/path';
 @Component({
     selector: 'core-tabs-outlet',
     templateUrl: 'core-tabs-outlet.html',
-    styleUrls: ['../tabs/tabs.scss'],
+    styleUrl: '../tabs/tabs.scss',
 })
 export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutletTab>
     implements AfterViewInit, OnChanges, OnDestroy {

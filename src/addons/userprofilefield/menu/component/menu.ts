@@ -23,7 +23,7 @@ import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-p
 @Component({
     selector: 'addon-user-profile-field-menu',
     templateUrl: 'addon-user-profile-field-menu.html',
-    styleUrls: ['./menu.scss'],
+    styleUrl: './menu.scss',
 })
 export class AddonUserProfileFieldMenuComponent extends CoreUserProfileFieldBaseComponent {
 

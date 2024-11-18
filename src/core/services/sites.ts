@@ -21,8 +21,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreWS } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, MINIMUM_MOODLE_VERSION, MOODLE_RELEASES } from '@/core/constants';
 import {
     CoreSite,
     CoreSiteConfig,
@@ -68,6 +67,10 @@ import { CoreHTMLClasses } from '@singletons/html-classes';
 import { CoreSiteErrorDebug } from '@classes/errors/siteerror';
 import { CoreErrorHelper } from './error-helper';
 import { CoreQueueRunner } from '@classes/queue-runner';
+import { CoreAppDB } from './app-db';
+import { CoreRedirects } from '@singletons/redirects';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener } from '@singletons/opener';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -201,15 +204,11 @@ export class CoreSitesProvider {
      * Initialize database.
      */
     async initializeDatabase(): Promise<void> {
-        try {
-            await CoreApp.createTablesFromSchema(APP_SCHEMA);
-        } catch {
-            // Ignore errors.
-        }
+        await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
         const sitesTable = new CoreDatabaseTableProxy<SiteDBEntry>(
             { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
-            CoreApp.getDB(),
+            CoreAppDB.getDB(),
             SITES_TABLE_NAME,
         );
 
@@ -466,7 +465,7 @@ export class CoreSitesProvider {
 
         if (error.debug?.code === 'codingerror') {
             // This could be caused by a redirect. Check if it's the case.
-            const redirect = await CoreUtils.checkRedirect(siteUrl);
+            const redirect = await CoreRedirects.checkRedirect(siteUrl);
 
             options.message = Translate.instant('core.siteunavailablehelp', { site: siteUrl });
 
@@ -482,7 +481,7 @@ export class CoreSitesProvider {
             options.message = Translate.instant('core.siteunavailablehelp', { site: siteUrl });
             options.debug = {
                 code: 'invalidmoodleversion',
-                details: Translate.instant('core.login.invalidmoodleversion', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+                details: Translate.instant('core.login.invalidmoodleversion', { $a: MINIMUM_MOODLE_VERSION }),
             };
         } else if (error.debug?.code === 'redirecterrordetected') {
             options.critical = false; // Keep checking fallback URLs.
@@ -557,9 +556,9 @@ export class CoreSitesProvider {
             return this.getUserToken(siteUrl, username, password, service, true);
         }
 
-        if (data.errorcode == 'missingparam') {
+        if (data.errorcode === 'missingparam') {
             // It seems the server didn't receive all required params, it could be due to a redirect.
-            const redirect = await CoreUtils.checkRedirect(loginUrl);
+            const redirect = await CoreRedirects.checkRedirect(loginUrl);
 
             if (redirect) {
                 throw this.createCannotConnectLoginError(siteUrl, {
@@ -617,7 +616,7 @@ export class CoreSitesProvider {
             const siteId = this.createSiteID(info.siteurl, info.username);
 
             // Check if the site already exists.
-            const storedSite = await CoreUtils.ignoreErrors(this.getSite(siteId));
+            const storedSite = await CorePromiseUtils.ignoreErrors(this.getSite(siteId));
             let site: CoreSite;
 
             if (storedSite) {
@@ -710,7 +709,7 @@ export class CoreSitesProvider {
                 break;
             default:
                 errorKey = 'core.login.invalidmoodleversion';
-                translateParams = { $a: CoreSite.MINIMUM_MOODLE_VERSION };
+                translateParams = { $a: MINIMUM_MOODLE_VERSION };
                 debug = {
                     code: 'invalidmoodleversion',
                     details: 'Cannot connect to app',
@@ -788,7 +787,7 @@ export class CoreSitesProvider {
         if (info.version) {
             const version = parseInt(info.version, 10);
             if (!isNaN(version)) {
-                if (version >= CoreSite.MOODLE_RELEASES[CoreSite.MINIMUM_MOODLE_VERSION]) {
+                if (version >= MOODLE_RELEASES[MINIMUM_MOODLE_VERSION]) {
                     return this.validateWorkplaceVersion(info);
                 }
             }
@@ -797,7 +796,7 @@ export class CoreSitesProvider {
         // We couldn't validate by version number. Let's try to validate by release number.
         const release = this.getReleaseNumber(info.release || '');
         if (release) {
-            if (release >= CoreSite.MINIMUM_MOODLE_VERSION) {
+            if (release >= MINIMUM_MOODLE_VERSION) {
                 return this.validateWorkplaceVersion(info);
             }
         }
@@ -948,7 +947,7 @@ export class CoreSitesProvider {
                     Translate.instant('core.updaterequired'),
                     Translate.instant('core.download'),
                     Translate.instant(siteId ? 'core.mainmenu.logout' : 'core.cancel'),
-                ).then(() => CoreUtils.openInBrowser(downloadUrl, { showBrowserWarning: false })).catch(() => {
+                ).then(() => CoreOpener.openInBrowser(downloadUrl, { showBrowserWarning: false })).catch(() => {
                     // Do nothing.
                 });
             } else {
@@ -1132,12 +1131,12 @@ export class CoreSitesProvider {
         delete this.sites[siteId];
 
         // DB remove shouldn't fail, but we'll go ahead even if it does.
-        await CoreUtils.ignoreErrors(this.sitesTable.deleteByPrimaryKey({ id: siteId }));
+        await CorePromiseUtils.ignoreErrors(this.sitesTable.deleteByPrimaryKey({ id: siteId }));
 
         // Site deleted from sites list, now delete the folder.
         await site.deleteFolder();
 
-        await CoreUtils.ignoreErrors(CoreNative.plugin('secureStorage')?.deleteCollection(siteId));
+        await CorePromiseUtils.ignoreErrors(CoreNative.plugin('secureStorage')?.deleteCollection(siteId));
 
         CoreEvents.trigger(CoreEvents.SITE_DELETED, site, siteId);
     }
@@ -1198,7 +1197,7 @@ export class CoreSitesProvider {
      * @returns Site.
      */
     async getSiteFromDB(siteId: string): Promise<CoreSite> {
-        const db = CoreApp.getDB();
+        const db = CoreAppDB.getDB();
 
         try {
             const record = await db.getRecord<SiteDBEntry>(SITES_TABLE_NAME, { id: siteId });
@@ -1292,7 +1291,7 @@ export class CoreSitesProvider {
             return !!this.currentSite;
         }
 
-        const siteId = typeof site == 'object' ? site.getId() : site;
+        const siteId = typeof site === 'object' ? site.getId() : site;
 
         return this.currentSite.getId() === siteId;
     }
@@ -1477,7 +1476,7 @@ export class CoreSitesProvider {
 
         promises.push(this.removeStoredCurrentSite());
 
-        await CoreUtils.ignoreErrors(Promise.all(promises));
+        await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
         if (options.removeAccount) {
             await CoreSites.deleteSite(siteId);
@@ -1500,7 +1499,7 @@ export class CoreSitesProvider {
 
         if (CoreSitePlugins.hasSitePluginsLoaded) {
             // The site has site plugins so the app will be restarted. Store the data and logout.
-            CoreApp.storeRedirect(siteId, redirectData);
+            CoreRedirects.storeRedirect(siteId, redirectData);
         }
 
         await this.logout();
@@ -1536,7 +1535,7 @@ export class CoreSitesProvider {
      * Handle auto logout by checking autologout type and time if its required.
      */
     async handleAutoLogout(): Promise<void> {
-        await CoreUtils.ignoreErrors(( async () => {
+        await CorePromiseUtils.ignoreErrors(( async () => {
             const siteId = await this.getStoredCurrentSiteId();
             const site = await this.getSite(siteId);
             const autoLogoutType = Number(site.getStoredConfig('tool_mobile_autologout'));
@@ -2052,12 +2051,12 @@ export class CoreSitesProvider {
         }
 
         try {
-            const db = CoreApp.getDB();
+            const db = CoreAppDB.getDB();
 
             const { siteId } = await db.getRecord<{ siteId: string }>('current_site');
 
             await CoreConfig.set(CORE_SITE_CURRENT_SITE_ID_CONFIG, siteId);
-            await CoreApp.deleteTableSchema('current_site');
+            await CoreAppDB.deleteTableSchema('current_site');
             await db.dropTable('current_site');
         } catch {
             // There was no current site, silence the error.
@@ -2215,6 +2214,47 @@ export class CoreSitesProvider {
             this.afterLoginNavigationQueueRunner.run(data.callback, { priority: data.priority });
         });
         this.afterLoginNavigationQueue = [];
+    }
+
+    /**
+     * Filter the list of site IDs based on a isEnabled function.
+     *
+     * @param siteIds Site IDs to filter.
+     * @param isEnabledFn Function to call for each site. It receives a siteId param and all the params sent to this function
+     *                    after 'checkAll'.
+     * @param checkAll True if it should check all the sites, false if it should check only 1 and treat them all
+     *                 depending on this result.
+     * @returns Promise resolved with the list of enabled sites.
+     */
+    async filterEnabledSites<P extends unknown[]>(
+        siteIds: string[],
+        isEnabledFn: (siteId: string, ...args: P) => boolean | Promise<boolean>,
+        checkAll?: boolean,
+        ...args: P
+    ): Promise<string[]> {
+        const promises: Promise<false | number>[] = [];
+        const enabledSites: string[] = [];
+
+        for (const i in siteIds) {
+            const siteId = siteIds[i];
+            const pushIfEnabled = enabled => enabled && enabledSites.push(siteId);
+            if (checkAll || !promises.length) {
+                promises.push(
+                    Promise
+                        .resolve(isEnabledFn(siteId, ...args))
+                        .then(pushIfEnabled),
+                );
+            }
+        }
+
+        await CorePromiseUtils.allPromisesIgnoringErrors(promises);
+
+        if (!checkAll) {
+            // Checking 1 was enough, so it will either return all the sites or none.
+            return enabledSites.length ? siteIds : [];
+        }
+
+        return enabledSites;
     }
 
 }

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { makeSingleton } from '@singletons';
 import { AddonMessageOutputDelegate } from '@addons/messageoutput/services/messageoutput-delegate';
 import {
@@ -30,25 +30,13 @@ import {
 import { CoreEvents } from '@singletons/events';
 import { AddonNotificationsPushNotification } from './handlers/push-click';
 import { CoreTimeUtils } from '@services/utils/time';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service that provides some helper functions for notifications.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonNotificationsHelperProvider {
-
-    /**
-     * Formats the text of a notification.
-     *
-     * @param notification The notification object.
-     * @returns The notification formatted to render.
-     * @deprecated since 4.2. This function isn't needed anymore.
-     */
-    formatNotificationText(
-        notification: AddonNotificationsNotificationMessageFormatted,
-    ): AddonNotificationsNotificationMessageFormatted {
-        return notification;
-    }
 
     /**
      * Format preferences data.
@@ -65,7 +53,7 @@ export class AddonNotificationsHelperProvider {
 
         formattedPreferences.components.forEach((component) => {
             component.notifications.forEach((notification) => {
-                notification.processorsByName = CoreUtils.arrayToObject(notification.processors, 'name');
+                notification.processorsByName = CoreArray.toObject(notification.processors, 'name');
             });
         });
 
@@ -132,7 +120,7 @@ export class AddonNotificationsHelperProvider {
 
         siteId = 'site' in notification ? notification.site : siteId;
 
-        await CoreUtils.ignoreErrors(AddonNotifications.markNotificationRead(notifId, siteId));
+        await CorePromiseUtils.ignoreErrors(AddonNotifications.markNotificationRead(notifId, siteId));
 
         const time = CoreTimeUtils.timestamp();
         if ('read' in notification) {
@@ -140,7 +128,7 @@ export class AddonNotificationsHelperProvider {
             notification.timeread = time;
         }
 
-        await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
+        await CorePromiseUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
 
         CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {
             id: notifId,

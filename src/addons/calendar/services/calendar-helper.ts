@@ -20,36 +20,30 @@ import {
     AddonCalendarEvent,
     AddonCalendarEventBase,
     AddonCalendarEventToDisplay,
-    AddonCalendarEventType,
     AddonCalendarGetEventsEvent,
-    AddonCalendarProvider,
     AddonCalendarWeek,
     AddonCalendarWeekDay,
 } from './calendar';
 import { CoreConfig } from '@services/config';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreCourse } from '@features/course/services/course';
 import { ContextLevel, CoreConstants } from '@/core/constants';
 import moment from 'moment-timezone';
 import { makeSingleton } from '@singletons';
-import { AddonCalendarSyncInvalidateEvent } from './calendar-sync';
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
 import { CoreCategoryData } from '@features/courses/services/courses';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
-import { ADDON_CALENDAR_COMPONENT } from '../constants';
-
-/**
- * Context levels enumeration.
- */
-export enum AddonCalendarEventIcons {
-    SITE = 'fas-globe',
-    CATEGORY = 'fas-cubes',
-    COURSE = 'fas-graduation-cap',
-    GROUP = 'fas-users',
-    USER = 'fas-user',
-}
+import {
+    ADDON_CALENDAR_COMPONENT,
+    ADDON_CALENDAR_STARTING_WEEK_DAY,
+    AddonCalendarEventIcons,
+    AddonCalendarEventType,
+} from '../constants';
+import { AddonCalendarSyncInvalidateEvent } from './calendar-sync';
+import { REMINDERS_DISABLED, REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service that provides some features regarding lists of courses and categories.
@@ -67,7 +61,7 @@ export class AddonCalendarHelperProvider {
      */
     getEventIcon(eventType: AddonCalendarEventType | string): string {
         if (this.eventTypeIcons.length == 0) {
-            CoreUtils.enumKeys(AddonCalendarEventType).forEach((name) => {
+            CoreObject.enumKeys(AddonCalendarEventType).forEach((name) => {
                 const value = AddonCalendarEventType[name];
                 this.eventTypeIcons[value] = AddonCalendarEventIcons[name];
             });
@@ -322,7 +316,7 @@ export class AddonCalendarHelperProvider {
         const defaultTime = await CoreReminders.getDefaultNotificationTime(siteId);
         let defaultLabel: string | undefined;
 
-        if (defaultTime > CoreRemindersService.DISABLED) {
+        if (defaultTime > REMINDERS_DISABLED) {
             const data = CoreRemindersService.convertSecondsToValueAndUnit(defaultTime);
             defaultLabel = CoreReminders.getUnitValueLabel(data.value, data.unit, true);
         }
@@ -332,7 +326,7 @@ export class AddonCalendarHelperProvider {
                 id: reminder.id,
             };
 
-            if (reminder.timebefore === CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE) {
+            if (reminder.timebefore === REMINDERS_DEFAULT_REMINDER_TIMEBEFORE) {
                 // Default time. Check if default notifications are disabled.
                 if (defaultLabel !== undefined) {
                     formatted.label = defaultLabel;
@@ -418,7 +412,7 @@ export class AddonCalendarHelperProvider {
         const site = await CoreSites.getSite(siteId);
         // Get starting week day user preference, fallback to site configuration.
         let startWeekDayStr = site.getStoredConfig('calendar_startwday') || '1';
-        startWeekDayStr = await CoreConfig.get(AddonCalendarProvider.STARTING_WEEK_DAY, startWeekDayStr);
+        startWeekDayStr = await CoreConfig.get(ADDON_CALENDAR_STARTING_WEEK_DAY, startWeekDayStr);
         const startWeekDay = parseInt(startWeekDayStr, 10);
 
         const today = moment();
@@ -645,7 +639,7 @@ export class AddonCalendarHelperProvider {
                 const repeatedEvents =
                     await AddonCalendar.getLocalEventsByRepeatIdFromLocalDb(eventData.repeatid, site.id);
 
-                await CoreUtils.allPromises(repeatedEvents.map((event) =>
+                await CorePromiseUtils.allPromises(repeatedEvents.map((event) =>
                     AddonCalendar.invalidateEvent(event.id)));
 
                 return;
@@ -666,7 +660,7 @@ export class AddonCalendarHelperProvider {
         }));
 
         try {
-            await CoreUtils.allPromisesIgnoringErrors(promises);
+            await CorePromiseUtils.allPromisesIgnoringErrors(promises);
         } finally {
             const treatedMonths = {};
             const treatedDays = {};
@@ -734,7 +728,7 @@ export class AddonCalendarHelperProvider {
                 }
             });
 
-            await CoreUtils.allPromisesIgnoringErrors(finalPromises);
+            await CorePromiseUtils.allPromisesIgnoringErrors(finalPromises);
         }
     }
 
@@ -784,7 +778,6 @@ export class AddonCalendarHelperProvider {
     }
 
 }
-
 export const AddonCalendarHelper = makeSingleton(AddonCalendarHelperProvider);
 
 /**

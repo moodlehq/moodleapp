@@ -32,7 +32,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreIframeUtils, CoreIframeUtilsProvider } from '@services/utils/iframe';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSite } from '@classes/sites/site';
 import { NgZone, Translate } from '@singletons';
 import { CoreExternalContentDirective } from './external-content';
@@ -58,6 +58,7 @@ import { ContextLevel } from '../constants';
 import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '../transforms/boolean';
 import { CoreViewer } from '@features/viewer/services/viewer';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -422,7 +423,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
      */
     protected async formatContents(): Promise<FormatContentsResult> {
         // Retrieve the site since it might be needed later.
-        const site = await CoreUtils.ignoreErrors(CoreSites.getSite(this.siteId));
+        const site = await CorePromiseUtils.ignoreErrors(CoreSites.getSite(this.siteId));
 
         const siteId = site?.getId();
 
@@ -612,7 +613,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
         if (externalImages.length) {
             // Wait for images to load.
-            const promise = CoreUtils.allPromises(externalImages.map((externalImage) => {
+            const promise = CorePromiseUtils.allPromises(externalImages.map((externalImage) => {
                 if (externalImage.loaded) {
                     // Image has already been loaded, no need to wait.
                     return Promise.resolve();
@@ -622,11 +623,11 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             }));
 
             // Automatically reject the promise after 5 seconds to prevent blocking the user forever.
-            promises.push(CoreUtils.ignoreErrors(CoreUtils.timeoutPromise(promise, 5000)));
+            promises.push(CorePromiseUtils.ignoreErrors(CorePromiseUtils.timeoutPromise(promise, 5000)));
         }
 
         // Run asynchronous operations in the background to avoid blocking rendering.
-        Promise.all(promises).catch(error => CoreUtils.logUnhandledError('Error treating format-text elements', error));
+        Promise.all(promises).catch(error => CoreErrorHelper.logUnhandledError('Error treating format-text elements', error));
 
         return [
             ...videoControllers,

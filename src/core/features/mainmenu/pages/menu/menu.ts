@@ -18,10 +18,10 @@ import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
 
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
-import { CoreMainMenu, CoreMainMenuProvider } from '../../services/mainmenu';
+import { CoreMainMenu } from '../../services/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/mainmenu-delegate';
 import { Router } from '@singletons';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from '@classes/aria-role-tab';
 import { CoreNavigator } from '@services/navigator';
 import { filter } from 'rxjs/operators';
@@ -35,6 +35,11 @@ import { CoreWait } from '@singletons/wait';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreSiteInfoUserHomepage } from '@classes/sites/unauthenticated-site';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import {
+    MAIN_MENU_MORE_PAGE_NAME,
+    MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
+    MAIN_MENU_VISIBILITY_UPDATED_EVENT,
+} from '@features/mainmenu/constants';
 
 const ANIMATION_DURATION = 500;
 
@@ -63,7 +68,7 @@ const ANIMATION_DURATION = 500;
                 animate(`${ANIMATION_DURATION}ms ease-in-out`, style({ transform: 'translateY(0)' })),
             ]),
         ])],
-    styleUrls: ['menu.scss'],
+    styleUrl: 'menu.scss',
 })
 export class CoreMainMenuPage implements OnInit, OnDestroy {
 
@@ -72,7 +77,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     loaded = false;
     showTabs = false;
     tabsPlacement: 'bottom' | 'side' = 'bottom';
-    morePageName = CoreMainMenuProvider.MORE_PAGE_NAME;
+    morePageName = MAIN_MENU_MORE_PAGE_NAME;
     selectedTab?: string;
     isMainScreen = false;
     moreBadge = false;
@@ -124,7 +129,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             this.updateHandlers(previousHandlers);
         });
 
-        this.badgeUpdateObserver = CoreEvents.on(CoreMainMenuProvider.MAIN_MENU_HANDLER_BADGE_UPDATED, (data) => {
+        this.badgeUpdateObserver = CoreEvents.on(MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT, (data) => {
             if (data.siteId == CoreSites.getCurrentSiteId()) {
                 this.updateMoreBadge();
             }
@@ -361,7 +366,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         await CoreWait.wait(ANIMATION_DURATION);
         await CoreWait.nextTick();
 
-        CoreEvents.trigger(CoreMainMenuProvider.MAIN_MENU_VISIBILITY_UPDATED);
+        CoreEvents.trigger(MAIN_MENU_VISIBILITY_UPDATED_EVENT);
     }
 
 }

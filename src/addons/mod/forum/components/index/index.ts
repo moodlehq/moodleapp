@@ -74,7 +74,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'addon-mod-forum-index',
     templateUrl: 'index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
 

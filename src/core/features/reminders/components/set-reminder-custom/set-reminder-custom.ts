@@ -14,7 +14,7 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input } from '@angular/core';
-import { CoreRemindersUnits } from '@features/reminders/services/reminders';
+import { CoreRemindersUnits } from '@features/reminders/constants';
 import { PopoverController } from '@singletons';
 
 /**

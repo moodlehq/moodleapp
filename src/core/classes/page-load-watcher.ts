@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Subscription } from 'rxjs';
 import { AsyncDirective } from './async-directive';
 import { PageLoadsManager } from './page-loads-manager';
@@ -130,7 +130,7 @@ export class PageLoadWatcher {
                     return;
                 }
 
-                this.hasChangesPromises.push(CoreUtils.ignoreErrors(hasMeaningfulChanges(firstValue, value), false));
+                this.hasChangesPromises.push(CorePromiseUtils.ignoreErrors(hasMeaningfulChanges(firstValue, value), false));
             },
             error: (error) => {
                 promisedValue.reject(error);

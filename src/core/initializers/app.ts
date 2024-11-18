@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreApp } from '@services/app';
 import { CoreHTMLClasses } from '@singletons/html-classes';
 
 /**
@@ -19,4 +20,5 @@ import { CoreHTMLClasses } from '@singletons/html-classes';
  */
 export default async function(): Promise<void> {
     CoreHTMLClasses.initialize();
+    CoreApp.initialize();
 }

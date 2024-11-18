@@ -23,13 +23,12 @@ import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CorePath } from '@singletons/path';
 import { CoreConstants } from '../constants';
-import { CoreApp } from './app';
+import { CoreSSO } from '@singletons/sso';
 import { CoreNavigator, CoreRedirectPayload } from './navigator';
 import { CoreSiteCheckResponse, CoreSites } from './sites';
 import { CoreDomUtils } from './utils/dom';
 import { CoreErrorHelper, CoreErrorObject } from './error-helper';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from './utils/utils';
 import { CoreLoadings } from './loadings';
 
 /*
@@ -217,7 +216,7 @@ export class CoreCustomURLSchemesProvider {
             modal.dismiss();
 
             if (data.isSSOToken) {
-                CoreApp.finishSSOAuthentication();
+                CoreSSO.finishSSOAuthentication();
             }
         }
     }
@@ -349,13 +348,13 @@ export class CoreCustomURLSchemesProvider {
             throw new CoreCustomURLSchemesHandleError(null);
         }
 
-        if (CoreApp.isSSOAuthenticationOngoing()) {
+        if (CoreSSO.isSSOAuthenticationOngoing()) {
             // Authentication ongoing, probably duplicated request.
             throw new CoreCustomURLSchemesHandleError('Duplicated');
         }
 
         // App opened using custom URL scheme. Probably an SSO authentication.
-        CoreApp.startSSOAuthentication();
+        CoreSSO.startSSOAuthentication();
         this.logger.debug('App launched by URL with an SSO');
 
         // Delete the sso scheme from the URL.
@@ -494,7 +493,7 @@ export class CoreCustomURLSchemesProvider {
     treatHandleCustomURLError(error: CoreCustomURLSchemesHandleError): void {
         if (error.error == 'Duplicated') {
             // Duplicated request
-        } else if (CoreUtils.isWebServiceError(error.error) && error.data && error.data.isSSOToken) {
+        } else if (CoreWSError.isWebServiceError(error.error) && error.data && error.data.isSSOToken) {
             // An error occurred, display the error and logout the user.
             CoreLoginHelper.treatUserTokenError(error.data.siteUrl, <CoreWSError> error.error);
             CoreSites.logout();

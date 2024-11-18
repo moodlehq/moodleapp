@@ -22,7 +22,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import {
@@ -38,6 +38,8 @@ import {
     ADDON_MOD_FORUM_COMPONENT,
     ADDON_MOD_FORUM_MANUAL_SYNCED,
 } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 declare module '@singletons/events' {
 
@@ -224,12 +226,12 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
 
         // Sync offline logs.
         const syncDiscussions = async (): Promise<AddonModForumSyncResult> => {
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 CoreCourseLogHelper.syncActivity(ADDON_MOD_FORUM_COMPONENT, forumId, siteId),
             );
 
             // Get offline responses to be sent.
-            const discussions = await CoreUtils.ignoreErrors(
+            const discussions = await CorePromiseUtils.ignoreErrors(
                 AddonModForumOffline.getNewDiscussions(forumId, siteId, userId),
                 [] as AddonModForumOfflineDiscussion[],
             );
@@ -272,7 +274,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
                 if (errors.length === groupIds.length) {
                     // All requests have failed, reject if errors were not returned by WS.
                     for (const error of errors) {
-                        if (!CoreUtils.isWebServiceError(error)) {
+                        if (!CoreWSError.isWebServiceError(error)) {
                             throw error;
                         }
                     }
@@ -298,11 +300,11 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
                     AddonModForum.invalidateCanAddDiscussion(forumId, siteId),
                 ];
 
-                await CoreUtils.ignoreErrors(Promise.all(promises));
+                await CorePromiseUtils.ignoreErrors(Promise.all(promises));
             }
 
             // Sync finished, set sync time.
-            await CoreUtils.ignoreErrors(this.setSyncTime(syncId, siteId));
+            await CorePromiseUtils.ignoreErrors(this.setSyncTime(syncId, siteId));
 
             return result;
         };
@@ -350,7 +352,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
             }
         });
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
 
         return { updated, warnings };
     }
@@ -365,7 +367,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
      */
     async syncForumReplies(forumId: number, userId?: number, siteId?: string): Promise<AddonModForumSyncResult> {
         // Get offline forum replies to be sent.
-        const replies = await CoreUtils.ignoreErrors(
+        const replies = await CorePromiseUtils.ignoreErrors(
             AddonModForumOffline.getForumReplies(forumId, siteId, userId),
             [] as AddonModForumOfflineReply[],
         );
@@ -457,7 +459,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
 
         // Get offline responses to be sent.
         const syncReplies = async () => {
-            const replies = await CoreUtils.ignoreErrors(
+            const replies = await CorePromiseUtils.ignoreErrors(
                 AddonModForumOffline.getDiscussionReplies(discussionId, siteId, userId),
                 [] as AddonModForumOfflineReply[],
             );
@@ -489,7 +491,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
 
                     await this.deleteReply(forumId, reply.postid, siteId, userId);
                 } catch (error) {
-                    if (!CoreUtils.isWebServiceError(error)) {
+                    if (!CoreWSError.isWebServiceError(error)) {
                         throw error;
                     }
 
@@ -515,10 +517,10 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
 
             invalidationPromises.push(AddonModForum.invalidateDiscussionPosts(discussionId, forumId, siteId));
 
-            await CoreUtils.ignoreErrors(CoreUtils.allPromises(invalidationPromises));
+            await CorePromiseUtils.allPromisesIgnoringErrors(invalidationPromises);
 
             // Sync finished, set sync time.
-            await CoreUtils.ignoreErrors(this.setSyncTime(syncId, siteId));
+            await CorePromiseUtils.ignoreErrors(this.setSyncTime(syncId, siteId));
 
             // All done, return the warnings.
             return result;
@@ -539,7 +541,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
     protected async deleteNewDiscussion(forumId: number, timecreated: number, siteId?: string, userId?: number): Promise<void> {
         await Promise.all([
             AddonModForumOffline.deleteNewDiscussion(forumId, timecreated, siteId, userId),
-            CoreUtils.ignoreErrors(
+            CorePromiseUtils.ignoreErrors(
                 AddonModForumHelper.deleteNewDiscussionStoredFiles(forumId, timecreated, siteId),
             ),
         ]);
@@ -557,7 +559,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
     protected async deleteReply(forumId: number, postId: number, siteId?: string, userId?: number): Promise<void> {
         await Promise.all([
             AddonModForumOffline.deleteReply(postId, siteId, userId),
-            CoreUtils.ignoreErrors(AddonModForumHelper.deleteReplyStoredFiles(forumId, postId, siteId, userId)),
+            CorePromiseUtils.ignoreErrors(AddonModForumHelper.deleteReplyStoredFiles(forumId, postId, siteId, userId)),
         ]);
     }
 
@@ -648,7 +650,7 @@ export const AddonModForumSync = makeSingleton(AddonModForumSyncProvider);
 export type AddonModForumSyncResult = CoreSyncResult;
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to ADDON_MOD_FORUM_AUTO_SYNCED event.
  */
 export type AddonModForumAutoSyncData = {
     forumId: number;
@@ -658,7 +660,7 @@ export type AddonModForumAutoSyncData = {
 };
 
 /**
- * Data passed to MANUAL_SYNCED event.
+ * Data passed to ADDON_MOD_FORUM_MANUAL_SYNCED event.
  */
 export type AddonModForumManualSyncData = {
     forumId: number;

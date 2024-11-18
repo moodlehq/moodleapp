@@ -25,7 +25,7 @@ import { DomSanitizer, Translate } from '@singletons';
 @Component({
     selector: 'core-progress-bar',
     templateUrl: 'core-progress-bar.html',
-    styleUrls: ['progress-bar.scss'],
+    styleUrl: 'progress-bar.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoreProgressBarComponent implements OnChanges {

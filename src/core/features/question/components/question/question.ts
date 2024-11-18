@@ -22,7 +22,7 @@ import { CoreQuestionDelegate } from '@features/question/services/question-deleg
 
 import { CoreQuestionBehaviourButton, CoreQuestionHelper, CoreQuestionQuestion } from '@features/question/services/question-helper';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreLogger } from '@singletons/logger';
@@ -33,7 +33,7 @@ import { CoreLogger } from '@singletons/logger';
 @Component({
     selector: 'core-question',
     templateUrl: 'core-question.html',
-    styleUrls: ['../../question.scss'],
+    styleUrl: '../../question.scss',
 })
 export class CoreQuestionComponent implements OnInit, AsyncDirective {
 
@@ -87,7 +87,7 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
         }
 
         // Get the component to render the question.
-        this.componentClass = await CoreUtils.ignoreErrors(
+        this.componentClass = await CorePromiseUtils.ignoreErrors(
             CoreQuestionDelegate.getComponentForQuestion(this.question),
         );
 

@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { FileEntry, DirectoryEntry, Entry, Metadata, IFile } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 
@@ -29,6 +29,7 @@ import { CorePlatform } from '@services/platform';
 import { CorePath } from '@singletons/path';
 import { Zip } from '@features/native/plugins';
 import { CoreUrl } from '@singletons/url';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Progress event used when writing a file data into a file.
@@ -79,14 +80,10 @@ export class CoreFileProvider {
 
     static readonly CHUNK_SIZE = 1048576; // 1 MB. Same chunk size as Ionic Native.
 
-    protected logger: CoreLogger;
+    protected logger = CoreLogger.getInstance('CoreFileProvider');
     protected initialized = false;
     protected basePath = '';
     protected isHTMLAPI = false;
-
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreFileProvider');
-    }
 
     /**
      * Sets basePath to use with HTML API. Reserved for core use.
@@ -437,11 +434,11 @@ export class CoreFileProvider {
      *
      * @param filename The file name.
      * @returns The file name normalized.
+     *
+     * @deprecated since 5.0. Not used anymore.
      */
     normalizeFileName(filename: string): string {
-        filename = CoreUrl.decodeURIComponent(filename);
-
-        return filename;
+        return CoreUrl.decodeURIComponent(filename);
     }
 
     /**
@@ -819,7 +816,7 @@ export class CoreFileProvider {
         from = this.removeBasePath(from);
         to = this.removeBasePath(to);
 
-        const toFileAndDir = this.getFileAndDirectoryFromPath(to);
+        const toFileAndDir = CoreFileUtils.getFileAndDirectoryFromPath(to);
 
         if (toFileAndDir.directory && !destDirExists) {
             // Create the target directory if it doesn't exist.
@@ -850,23 +847,10 @@ export class CoreFileProvider {
      *
      * @param path Path to be extracted.
      * @returns Plain object containing the file name and directory.
-     * @description
-     * file.pdf         -> directory: '', name: 'file.pdf'
-     * /file.pdf        -> directory: '', name: 'file.pdf'
-     * path/file.pdf    -> directory: 'path', name: 'file.pdf'
-     * path/            -> directory: 'path', name: ''
-     * path             -> directory: '', name: 'path'
+     * @deprecated since 5.0. Use CoreFileUtils.getFileAndDirectoryFromPath instead.
      */
     getFileAndDirectoryFromPath(path: string): {directory: string; name: string} {
-        const file = {
-            directory: '',
-            name: '',
-        };
-
-        file.directory = path.substring(0, path.lastIndexOf('/'));
-        file.name = path.substring(path.lastIndexOf('/') + 1);
-
-        return file;
+        return CoreFileUtils.getFileAndDirectoryFromPath(path);
     }
 
     /**
@@ -947,7 +931,7 @@ export class CoreFileProvider {
 
         if (destFolder && recreateDir) {
             // Make sure the dest dir doesn't exist already.
-            await CoreUtils.ignoreErrors(this.removeDir(destFolder));
+            await CorePromiseUtils.ignoreErrors(this.removeDir(destFolder));
 
             // Now create the dir, otherwise if any of the ancestor dirs doesn't exist the unzip would fail.
             await this.createDir(destFolder);
@@ -1027,7 +1011,7 @@ export class CoreFileProvider {
         const fileEntry = await this.getExternalFile(from);
 
         // Create the destination dir if it doesn't exist.
-        const dirAndFile = this.getFileAndDirectoryFromPath(to);
+        const dirAndFile = CoreFileUtils.getFileAndDirectoryFromPath(to);
 
         const dirEntry = await this.createDir(dirAndFile.directory);
 
@@ -1138,7 +1122,7 @@ export class CoreFileProvider {
      */
     async clearTmpFolder(): Promise<void> {
         // Ignore errors because the folder might not exist.
-        await CoreUtils.ignoreErrors(this.removeDir(CoreFileProvider.TMPFOLDER));
+        await CorePromiseUtils.ignoreErrors(this.removeDir(CoreFileProvider.TMPFOLDER));
     }
 
     /**
@@ -1162,7 +1146,7 @@ export class CoreFileProvider {
                 if (file.isDirectory) {
                     if (!existingSiteNames.includes(file.name)) {
                         // Site does not exist... delete it.
-                        await CoreUtils.ignoreErrors(this.removeDir(this.getSiteFolder(file.name)));
+                        await CorePromiseUtils.ignoreErrors(this.removeDir(this.getSiteFolder(file.name)));
                     }
                 }
             });
@@ -1303,7 +1287,7 @@ export class CoreFileProvider {
      * @returns The file name.
      */
     getFileName(file: CoreFileEntry): string | undefined {
-        return CoreUtils.isFileEntry(file) ? file.name : file.filename;
+        return CoreFileUtils.isFileEntry(file) ? file.name : file.filename;
     }
 
 }

@@ -36,4 +36,4 @@ const routes: Routes = [
         CoreCoursesDashboardPage,
     ],
 })
-export class CoreCoursesDashboardLazyModule {}
+export default class CoreCoursesDashboardLazyModule {}

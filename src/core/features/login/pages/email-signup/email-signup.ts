@@ -17,7 +17,7 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
-import { CoreCountry, CoreUtils } from '@services/utils/utils';
+import { CoreCountries, CoreCountry } from '@singletons/countries';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { Translate } from '@singletons';
 import { CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
@@ -38,6 +38,8 @@ import { EMAIL_SIGNUP_FEATURE_NAME } from '@features/login/constants';
 import { CoreInputErrorsMessages } from '@components/input-errors/input-errors';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener } from '@singletons/opener';
 
 /**
  * Page to signup using email.
@@ -45,7 +47,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-core-login-email-signup',
     templateUrl: 'email-signup.html',
-    styleUrls: ['../../login.scss'],
+    styleUrl: '../../login.scss',
 })
 export class CoreLoginEmailSignupPage implements OnInit {
 
@@ -189,7 +191,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
                 // Check content verification.
                 if (this.ageDigitalConsentVerification === undefined) {
 
-                    const result = await CoreUtils.ignoreErrors(
+                    const result = await CorePromiseUtils.ignoreErrors(
                         CoreWS.callAjax<IsAgeVerificationEnabledWSResponse>(
                             'core_auth_is_age_digital_consent_verification_enabled',
                             {},
@@ -243,7 +245,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         }
         this.namefieldsErrors = namefieldsErrors;
 
-        this.countries = await CoreUtils.getCountryListSorted();
+        this.countries = await CoreCountries.getCountryListSorted();
     }
 
     /**
@@ -394,7 +396,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * Show contact information on site (we have to display again the age verification form).
      */
     showContactOnSite(): void {
-        CoreUtils.openInBrowser(
+        CoreOpener.openInBrowser(
             CorePath.concatenatePaths(this.site.getURL(), '/login/verify_age_location.php'),
             { showBrowserWarning: false },
         );

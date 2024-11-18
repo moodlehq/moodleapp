@@ -29,6 +29,7 @@ import { getInitializerProviders } from './initializers';
 export async function getCoreServices(): Promise<Type<unknown>[]> {
 
     const { CoreAppProvider } = await import('@services/app');
+    const { CoreAppDBService } = await import('@services/app-db');
     const { CoreConfigProvider } = await import('@services/config');
     const { CoreCronDelegateService } = await import('@services/cron');
     const { CoreCustomURLSchemesProvider } = await import('@services/urlschemes');
@@ -65,6 +66,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
 
     return [
         CoreAppProvider,
+        CoreAppDBService,
         CoreConfigProvider,
         CoreCronDelegateService,
         CoreCustomURLSchemesProvider,
@@ -98,6 +100,32 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
         CoreUtilsProvider,
         CoreWSProvider,
     ];
+}
+
+/**
+ * Get core exported objects.
+ *
+ * @returns Core exported objects.
+ */
+export async function getCoreExportedObjects(): Promise<Record<string, unknown>> {
+    const {
+        CoreConstants,
+        CoreCacheUpdateFrequency,
+        DownloadStatus,
+        MINIMUM_MOODLE_VERSION,
+        MOODLE_RELEASES,
+    } = await import('@/core/constants');
+
+    /* eslint-disable @typescript-eslint/naming-convention */
+    return {
+        CoreConstants,
+        CoreConfigConstants: CoreConstants.CONFIG,
+        CoreCacheUpdateFrequency,
+        DownloadStatus,
+        MINIMUM_MOODLE_VERSION,
+        MOODLE_RELEASES,
+    };
+    /* eslint-enable @typescript-eslint/naming-convention */
 }
 
 @NgModule({

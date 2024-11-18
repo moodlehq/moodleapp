@@ -14,8 +14,15 @@
 
 /**
  * Helpers to interact with Browser APIs.
+ *
+ * This singleton is not necessary to be exported for site plugins.
  */
 export class CoreBrowser {
+
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
 
     /**
      * Check whether the given cookie is set.
@@ -34,9 +41,9 @@ export class CoreBrowser {
      * @returns Whether the development setting is set.
      */
     static hasDevelopmentSetting(name: string): boolean {
-        const setting = this.getDevelopmentSettingKey(name);
+        const setting = CoreBrowser.getDevelopmentSettingKey(name);
 
-        return this.hasCookie(setting) || this.hasLocalStorage(setting);
+        return CoreBrowser.hasCookie(setting) || CoreBrowser.hasLocalStorage(setting);
     }
 
     /**
@@ -84,9 +91,9 @@ export class CoreBrowser {
      * @returns Development setting value.
      */
     static getDevelopmentSetting(name: string): string | null {
-        const setting = this.getDevelopmentSettingKey(name);
+        const setting = CoreBrowser.getDevelopmentSettingKey(name);
 
-        return this.getCookie(setting) ?? this.getLocalStorage(setting);
+        return CoreBrowser.getCookie(setting) ?? CoreBrowser.getLocalStorage(setting);
     }
 
     /**
@@ -96,7 +103,7 @@ export class CoreBrowser {
      * @param value Setting value.
      */
     static setDevelopmentSetting(name: string, value: string): void {
-        const setting = this.getDevelopmentSettingKey(name);
+        const setting = CoreBrowser.getDevelopmentSettingKey(name);
 
         document.cookie = `${setting}=${value};path=/`;
         localStorage.setItem(setting, value);
@@ -108,7 +115,7 @@ export class CoreBrowser {
      * @param name Setting name.
      */
     static clearDevelopmentSetting(name: string): void {
-        const setting = this.getDevelopmentSettingKey(name);
+        const setting = CoreBrowser.getDevelopmentSettingKey(name);
 
         document.cookie = `${setting}=;path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
         localStorage.removeItem(setting);

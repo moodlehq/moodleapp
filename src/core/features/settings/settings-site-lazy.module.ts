@@ -61,4 +61,4 @@ function buildRoutes(injector: Injector): Routes {
         CoreSharedModule,
     ],
 })
-export class CoreettingsSiteLazyModule {}
+export default class CoreettingsSiteLazyModule {}

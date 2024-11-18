@@ -78,4 +78,4 @@ function buildRoutes(injector: Injector): Routes {
         },
     ],
 })
-export class AddonNotificationsLazyModule {}
+export default class AddonNotificationsLazyModule {}

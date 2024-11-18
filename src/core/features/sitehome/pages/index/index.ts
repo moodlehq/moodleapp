@@ -27,7 +27,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreBlockHelper } from '@features/block/services/block-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ContextLevel } from '@/core/constants';
@@ -39,7 +39,7 @@ import { CoreModals } from '@services/modals';
 @Component({
     selector: 'page-core-sitehome-index',
     templateUrl: 'index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
 })
 export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
@@ -67,7 +67,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         }, CoreSites.getCurrentSiteId());
 
         this.logView = CoreTime.once(async () => {
-            await CoreUtils.ignoreErrors(CoreCourse.logView(this.siteHomeId));
+            await CorePromiseUtils.ignoreErrors(CoreCourse.logView(this.siteHomeId));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM,

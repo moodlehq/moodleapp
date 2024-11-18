@@ -31,7 +31,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreSync } from '@services/sync';
 import { AddonModForumDiscussionOptions, AddonModForumOffline } from '@addons/mod/forum/services/forum-offline';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreText } from '@singletons/text';
@@ -53,6 +53,7 @@ import {
 } from '../../constants';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 type NewDiscussionData = {
     subject: string;
@@ -70,7 +71,7 @@ type NewDiscussionData = {
 @Component({
     selector: 'page-addon-mod-forum-new-discussion',
     templateUrl: 'new-discussion.html',
-    styleUrls: ['new-discussion.scss'],
+    styleUrl: 'new-discussion.scss',
 })
 export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLeave {
 
@@ -242,7 +243,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
 
                 // Use the canAddDiscussion WS to check if the user can add attachments and pin discussions.
                 promises.push(
-                    CoreUtils.ignoreErrors(
+                    CorePromiseUtils.ignoreErrors(
                         AddonModForum.instance
                             .canAddDiscussionToAll(this.forumId, { cmId: this.cmId })
                             .then((response) => {
@@ -611,7 +612,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
 
             promises.push(AddonModForumOffline.deleteNewDiscussion(this.forumId, this.timeCreated));
             promises.push(
-                CoreUtils.ignoreErrors(
+                CorePromiseUtils.ignoreErrors(
                     AddonModForumHelper.deleteNewDiscussionStoredFiles(this.forumId, this.timeCreated),
                 ),
             );

@@ -32,7 +32,7 @@ import { CoreSites } from '@services/sites';
 import { CoreFilepool } from '@services/filepool';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreEventFormActionData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreEditorOffline } from '../../services/editor-offline';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
@@ -60,7 +60,7 @@ import { CoreQRScan } from '@services/qrscan';
 @Component({
     selector: 'core-rich-text-editor',
     templateUrl: 'core-editor-rich-text-editor.html',
-    styleUrls: ['rich-text-editor.scss'],
+    styleUrl: 'rich-text-editor.scss',
 })
 export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 

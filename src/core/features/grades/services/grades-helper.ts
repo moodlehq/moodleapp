@@ -22,7 +22,7 @@ import {
     CoreCourseSearchedData,
     CoreCourseUserAdminOrNavOptionIndexed,
 } from '@features/courses/services/courses';
-import { CoreCourse, CoreCourseAccessDataType } from '@features/course/services/course';
+import { CoreCourse } from '@features/course/services/course';
 import {
     CoreGrades,
     CoreGradesGradeItem,
@@ -35,7 +35,7 @@ import {
 } from '@features/grades/services/grades';
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
-import { CoreMenuItem, CoreUtils } from '@services/utils/utils';
+import { CoreMenuItem, CoreUtils } from '@singletons/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton, Translate } from '@singletons';
@@ -45,6 +45,9 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseAccess } from '@features/course/services/course-options-delegate';
 import { CoreLoadings } from '@services/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
+import { CoreCourseAccessDataType } from '@features/course/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreArray } from '@singletons/array';
 
 export const GRADES_PAGE_NAME = 'grades';
 export const GRADES_PARTICIPANTS_PAGE_NAME = 'participant-grades';
@@ -269,7 +272,7 @@ export class CoreGradesHelperProvider {
 
         try {
             const courses = await CoreCourses.getUserCourses(undefined, undefined, CoreSitesReadingStrategy.ONLY_CACHE);
-            const coursesMap = CoreUtils.arrayToObject(courses, 'id');
+            const coursesMap = CoreArray.toObject(courses, 'id');
 
             coursesWereMissing = this.addCourseData(grades, coursesMap);
         } catch {
@@ -280,7 +283,7 @@ export class CoreGradesHelperProvider {
         if (coursesWereMissing) {
             const courses = await CoreCourses.getCoursesByField('ids', grades.map((grade) => grade.courseid).join(','));
             const coursesMap =
-                CoreUtils.arrayToObject(courses as Record<string, unknown>[], 'id') as
+                CoreArray.toObject(courses as Record<string, unknown>[], 'id') as
                     Record<string, CoreEnrolledCourseData> |
                     Record<string, CoreCourseSearchedData>;
 
@@ -468,7 +471,7 @@ export class CoreGradesHelperProvider {
             // Open the item directly.
             const gradeId = item.id;
 
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 CoreNavigator.navigateToSitePath(
                     `/${GRADES_PAGE_NAME}/${courseId}`,
                     { params: { gradeId }, siteId },
@@ -479,7 +482,7 @@ export class CoreGradesHelperProvider {
                 // Cannot get grade items or there's no need to.
                 if (userId && userId != currentUserId) {
                     // View another user grades. Open the grades page directly.
-                    await CoreUtils.ignoreErrors(
+                    await CorePromiseUtils.ignoreErrors(
                         CoreNavigator.navigateToSitePath(`/${GRADES_PAGE_NAME}/${courseId}`, { siteId }),
                     );
                 }

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { SQLiteDBTableSchema } from '@classes/sqlitedb';
-import { CoreAppSchema } from '@services/app';
+import { CoreAppSchema } from '@services/app-db';
 import { CoreSiteSchema } from '@services/sites';
 
 export const TABLE_NAME = 'core_storage';

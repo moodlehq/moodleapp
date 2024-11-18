@@ -17,7 +17,6 @@ import { Injectable } from '@angular/core';
 
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
@@ -31,13 +30,12 @@ import { CoreQuestionDelegate } from '@features/question/services/question-deleg
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-offline';
-import { AddonModQuizAutoSyncData } from './quiz-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
     QUESTION_INVALID_STATE_CLASSES,
@@ -52,9 +50,11 @@ import {
     AddonModQuizGradeMethods,
     AddonModQuizDisplayOptionsAttemptStates,
     ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD,
-    ADDON_MOD_QUIZ_AUTO_SYNCED,
 } from '../constants';
 import { CoreIonicColorNames } from '@singletons/colors';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreObject } from '@singletons/object';
+import { CoreArray } from '@singletons/array';
 
 declare module '@singletons/events' {
 
@@ -65,7 +65,6 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT]: AddonModQuizAttemptFinishedData;
-        [ADDON_MOD_QUIZ_AUTO_SYNCED]: AddonModQuizAutoSyncData;
     }
 
 }
@@ -230,7 +229,7 @@ export class AddonModQuizProvider {
         const params: AddonModQuizGetAttemptDataWSParams = {
             attemptid: attemptId,
             page: page,
-            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreObject.toArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -553,7 +552,7 @@ export class AddonModQuizProvider {
 
         const params: AddonModQuizGetAttemptSummaryWSParams = {
             attemptid: attemptId,
-            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreObject.toArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -632,8 +631,8 @@ export class AddonModQuizProvider {
 
         // Convert the arrays to objects with name -> value.
         return {
-            someoptions: <Record<string, number>> CoreUtils.objectToKeyValueMap(response.someoptions, 'name', 'value'),
-            alloptions: <Record<string, number>> CoreUtils.objectToKeyValueMap(response.alloptions, 'name', 'value'),
+            someoptions: <Record<string, number>> CoreObject.toKeyValueMap(response.someoptions, 'name', 'value'),
+            alloptions: <Record<string, number>> CoreObject.toKeyValueMap(response.alloptions, 'name', 'value'),
             warnings: response.warnings,
         };
     }
@@ -680,7 +679,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFeedbackForGradeCacheKey(quizId, grade),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -820,7 +819,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuizDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_QUIZ_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -955,7 +954,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuizRequiredQtypesCacheKey(quizId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -1119,7 +1118,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserAttemptsCacheKey(quizId, userId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -1643,7 +1642,7 @@ export class AddonModQuizProvider {
         const params: AddonModQuizViewAttemptWSParams = {
             attemptid: attemptId,
             page: page,
-            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreObject.toArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -1698,7 +1697,7 @@ export class AddonModQuizProvider {
     ): Promise<void> {
         const params: AddonModQuizViewAttemptSummaryWSParams = {
             attemptid: attemptId,
-            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreObject.toArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -1788,10 +1787,10 @@ export class AddonModQuizProvider {
 
         const params: AddonModQuizProcessAttemptWSParams = {
             attemptid: attemptId,
-            data: CoreUtils.objectToArrayOfObjects(data, 'name', 'value'),
+            data: CoreObject.toArrayOfObjects(data, 'name', 'value'),
             finishattempt: !!finish,
             timeup: !!timeUp,
-            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreObject.toArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -1837,7 +1836,7 @@ export class AddonModQuizProvider {
         });
 
         // Convert the question array to an object.
-        const questions = CoreUtils.arrayToObject(questionsArray, 'slot');
+        const questions = CoreArray.toObject(questionsArray, 'slot');
 
         return AddonModQuizOffline.processAttempt(quiz, attempt, questions, data, finish, siteId);
     }
@@ -1942,8 +1941,8 @@ export class AddonModQuizProvider {
 
         const params: AddonModQuizSaveAttemptWSParams = {
             attemptid: attemptId,
-            data: CoreUtils.objectToArrayOfObjects(data, 'name', 'value'),
-            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            data: CoreObject.toArrayOfObjects(data, 'name', 'value'),
+            preflightdata: CoreObject.toArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',
@@ -1998,7 +1997,7 @@ export class AddonModQuizProvider {
 
         const params: AddonModQuizStartAttemptWSParams = {
             quizid: quizId,
-            preflightdata: CoreUtils.objectToArrayOfObjects<AddonModQuizPreflightDataWSParam>(
+            preflightdata: CoreObject.toArrayOfObjects<AddonModQuizPreflightDataWSParam>(
                 preflightData,
                 'name',
                 'value',

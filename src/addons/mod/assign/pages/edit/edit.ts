@@ -36,7 +36,7 @@ import {
 import { AddonModAssignHelper } from '../../services/assign-helper';
 import { AddonModAssignOffline } from '../../services/assign-offline';
 import { AddonModAssignSync } from '../../services/assign-sync';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreWSExternalFile } from '@services/ws';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import {
@@ -47,6 +47,7 @@ import {
 } from '../../constants';
 import { CoreToasts, ToastDuration } from '@services/toasts';
 import { CoreLoadings } from '@services/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that allows adding or editing an assigment submission.
@@ -54,7 +55,7 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-addon-mod-assign-edit',
     templateUrl: 'edit.html',
-    styleUrls: ['edit.scss'],
+    styleUrl: 'edit.scss',
 })
 export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 
@@ -232,7 +233,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             }
 
             // Check if there's any offline data for this submission.
-            this.hasOffline = await CoreUtils.promiseWorks(AddonModAssignOffline.getSubmission(this.assign.id, this.userId));
+            this.hasOffline = await CorePromiseUtils.promiseWorks(AddonModAssignOffline.getSubmission(this.assign.id, this.userId));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM,
@@ -343,7 +344,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
                 this.hasOffline,
             );
         } catch (error) {
-            if (this.allowOffline && !this.saveOffline && !CoreUtils.isWebServiceError(error)) {
+            if (this.allowOffline && !this.saveOffline && !CoreWSError.isWebServiceError(error)) {
                 // Cannot submit in online, prepare for offline usage.
                 this.saveOffline = true;
 

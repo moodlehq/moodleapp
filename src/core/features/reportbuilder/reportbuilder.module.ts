@@ -23,7 +23,7 @@ import { CoreReportBuilderHandler, CoreReportBuilderHandlerService } from './ser
 const routes: Routes = [
     {
         path: CoreReportBuilderHandlerService.PAGE_NAME,
-        loadChildren: () => import('./reportbuilder-lazy.module').then(m => m.CoreReportBuilderLazyModule),
+        loadChildren: () => import('./reportbuilder-lazy.module'),
     },
 ];
 

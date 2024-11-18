@@ -14,23 +14,20 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesMenuItem } from '@features/grades/services/grades-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTextFormat, defaultTextFormat } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreStatusWithWarningsWSResponse, CoreWS, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
 import { AddonModWorkshopOffline } from './workshop-offline';
-import { AddonModWorkshopAutoSyncData } from './workshop-sync';
 import {
     ADDON_MOD_WORKSHOP_ASSESSMENT_INVALIDATED,
     ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED,
-    ADDON_MOD_WORKSHOP_AUTO_SYNCED,
     ADDON_MOD_WORKSHOP_COMPONENT,
     ADDON_MOD_WORKSHOP_PER_PAGE,
     ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED,
@@ -42,6 +39,9 @@ import {
     AddonModWorkshopSubmissionType,
 } from '@addons/mod/workshop/constants';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreWSError } from '@classes/errors/wserror';
+import { CoreObject } from '@singletons/object';
 
 declare module '@singletons/events' {
 
@@ -51,7 +51,6 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [ADDON_MOD_WORKSHOP_AUTO_SYNCED]: AddonModWorkshopAutoSyncData;
         [ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED]: AddonModWorkshopSubmissionChangedEventData;
         [ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED]: AddonModWorkshopAssessmentSavedChangedEventData;
         [ADDON_MOD_WORKSHOP_ASSESSMENT_INVALIDATED]: AddonModWorkshopAssessmentInvalidatedChangedEventData;
@@ -218,7 +217,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getWorkshopDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -360,7 +359,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserPlanDataCacheKey(workshopId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -368,7 +367,7 @@ export class AddonModWorkshopProvider {
 
         const response = await site.read<AddonModWorkshopGetUserPlanWSResponse>('mod_workshop_get_user_plan', params, preSets);
 
-        return CoreUtils.arrayToObject(response.userplan.phases, 'code');
+        return CoreArray.toObject(response.userplan.phases, 'code');
     }
 
     /**
@@ -407,7 +406,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubmissionsDataCacheKey(workshopId, userId, groupId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -537,7 +536,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getGradesReportDataCacheKey(workshopId, options.groupId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -711,7 +710,7 @@ export class AddonModWorkshopProvider {
         try {
             return await this.addSubmissionOnline(workshopId, title, content, attachmentsId as number, siteId);
         } catch (error) {
-            if (allowOffline && !CoreUtils.isWebServiceError(error)) {
+            if (allowOffline && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             }
@@ -811,7 +810,7 @@ export class AddonModWorkshopProvider {
         try {
             return await this.updateSubmissionOnline(submissionId, title, content, attachmentsId as number, siteId);
         } catch (error) {
-            if (allowOffline && !CoreUtils.isWebServiceError(error)) {
+            if (allowOffline && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             }
@@ -890,7 +889,7 @@ export class AddonModWorkshopProvider {
         try {
             return await this.deleteSubmissionOnline(submissionId, siteId);
         } catch (error) {
-            if (!CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             }
@@ -1035,7 +1034,7 @@ export class AddonModWorkshopProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssessmentFormDataCacheKey(workshopId, assessmentId, mode),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -1054,7 +1053,7 @@ export class AddonModWorkshopProvider {
             warnings: response.warnings,
             fields: this.parseFields(response.fields),
             current: this.parseFields(response.current),
-            options: CoreUtils.objectToKeyValueMap<string>(response.options, 'name', 'value'),
+            options: CoreObject.toKeyValueMap<string>(response.options, 'name', 'value'),
         };
     }
 
@@ -1162,7 +1161,7 @@ export class AddonModWorkshopProvider {
 
             return true;
         } catch (error) {
-            if (allowOffline && !CoreUtils.isWebServiceError(error)) {
+            if (allowOffline && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             }
@@ -1185,7 +1184,7 @@ export class AddonModWorkshopProvider {
 
         const params: AddonModWorkshopUpdateAssessmentWSParams = {
             assessmentid: assessmentId,
-            data: CoreUtils.objectToArrayOfObjects(inputData, 'name', 'value'),
+            data: CoreObject.toArrayOfObjects(inputData, 'name', 'value'),
         };
 
         const response = await site.write<AddonModWorkshopUpdateAssessmentWSResponse>('mod_workshop_update_assessment', params);
@@ -1239,7 +1238,7 @@ export class AddonModWorkshopProvider {
         try {
             return await this.evaluateSubmissionOnline(submissionId, feedbackText, published, gradeOver, siteId);
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error or offline not supported, reject.
                 throw error;
             }
@@ -1329,7 +1328,7 @@ export class AddonModWorkshopProvider {
         try {
             return await this.evaluateAssessmentOnline(assessmentId, feedbackText, weight, gradingGradeOver, siteId);
         } catch (error) {
-            if (!CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             }
