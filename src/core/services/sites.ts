@@ -27,7 +27,7 @@ import {
     CoreSiteConfig,
 } from '@classes/sites/site';
 import { SQLiteDB, SQLiteDBRecordValues, SQLiteDBTableSchema } from '@classes/sqlitedb';
-import { CoreError } from '@classes/errors/error';
+import { CoreError, CoreErrorDebug } from '@classes/errors/error';
 import { CoreLoginError, CoreLoginErrorOptions } from '@classes/errors/loginerror';
 import { makeSingleton, Translate, Http } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
@@ -64,7 +64,6 @@ import { CoreSiteInfo, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { firstValueFrom } from 'rxjs';
 import { CoreHTMLClasses } from '@singletons/html-classes';
-import { CoreSiteErrorDebug } from '@classes/errors/siteerror';
 import { CoreErrorHelper } from './error-helper';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreAppDB } from './app-db';
@@ -287,14 +286,18 @@ export class CoreSitesProvider {
      *
      * @param siteUrl URL of the site to check.
      * @param protocol Protocol to use first.
+     * @param origin Origin of this check site call.
      * @returns A promise resolved when the site is checked.
      */
-    async checkSite(siteUrl: string, protocol: string = 'https://'): Promise<CoreSiteCheckResponse> {
+    async checkSite(siteUrl: string, protocol: string = 'https://', origin = 'unknown'): Promise<CoreSiteCheckResponse> {
         // The formatURL function adds the protocol if is missing.
         siteUrl = CoreUrl.formatURL(siteUrl);
 
         if (!CoreUrl.isHttpURL(siteUrl)) {
-            throw new CoreError(Translate.instant('core.login.invalidsite'));
+            throw new CoreError(Translate.instant('core.login.invalidsite'), {
+                code: 'invalidprotocol',
+                details: `URL contains an invalid protocol when checking site.<br><br>Origin: ${origin}.<br><br>URL: ${siteUrl}.`,
+            });
         }
 
         if (!CoreNetwork.isOnline()) {
@@ -459,7 +462,7 @@ export class CoreSitesProvider {
             critical: true,
             title: Translate.instant('core.cannotconnect'),
             message: Translate.instant('core.siteunavailablehelp', { site: siteUrl }),
-            supportConfig: error.supportConfig,
+            supportConfig: 'supportConfig' in error ? error.supportConfig : undefined,
             debug: error.debug,
         };
 
@@ -688,7 +691,7 @@ export class CoreSitesProvider {
      * @returns A promise rejected with the error info.
      */
     protected async treatInvalidAppVersion(result: number, siteId?: string): Promise<never> {
-        let debug: CoreSiteErrorDebug | undefined;
+        let debug: CoreErrorDebug | undefined;
         let errorKey: string | undefined;
         let translateParams = {};
 

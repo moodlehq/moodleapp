@@ -38,11 +38,11 @@ export class CoreErrorAccordionService {
      * Render an instance of the component into an HTML string.
      *
      * @param element Root element.
-     * @param errorCode Error code.
      * @param errorDetails Error details.
+     * @param errorCode Error code.
      */
-    async render(element: Element, errorCode: string, errorDetails: string): Promise<void> {
-        const html = this.html(errorCode, errorDetails);
+    async render(element: Element, errorDetails: string, errorCode?: string): Promise<void> {
+        const html = this.html(errorDetails, errorCode);
 
         element.innerHTML = html;
 
@@ -56,15 +56,15 @@ export class CoreErrorAccordionService {
      * @param errorDetails Error details.
      * @returns HTML.
      */
-    private html(errorCode: string, errorDetails: string): string {
+    private html(errorDetails: string, errorCode?: string): string {
         const contentId = CoreForms.uniqueId('error-accordion-content');
-        const errorCodeLabel = Translate.instant('core.errorcode', { errorCode });
+        const errorCodeLabel = errorCode ? Translate.instant('core.errorcode', { errorCode }) : undefined;
         const hideDetailsLabel = Translate.instant('core.errordetailshide');
         const showDetailsLabel = Translate.instant('core.errordetailsshow');
 
         return `
             <div class="core-error-accordion">
-                <h3 class="core-error-accordion--code">${errorCodeLabel}</h3>
+                ${errorCodeLabel ? `<h3 class="core-error-accordion--code">${errorCodeLabel}</h3>` : ''}
                 <div id="${contentId}" class="core-error-accordion--details" role="region" aria-hidden="true">
                     <p>${errorDetails}</p>
                 </div>

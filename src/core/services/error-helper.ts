@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreAnyError, CoreError } from '@classes/errors/error';
+import { CoreAnyError, CoreError, CoreErrorDebug } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { AlertButton } from '@ionic/angular';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreText } from '@singletons/text';
 
 /**
  * Provider to provide some helper functions regarding files and packages.
@@ -128,6 +129,39 @@ export class CoreErrorHelperService {
         }
 
         return builtMessage;
+    }
+
+    /**
+     * Get the debug info from an error object.
+     *
+     * @param error Error.
+     * @returns Error debug info, undefined if not found.
+     */
+    getDebugInfoFromError(error?: CoreAnyError): CoreErrorDebug | undefined {
+        if (!error || typeof error === 'string') {
+            return;
+        }
+
+        if ('debug' in error) {
+            return error.debug;
+        }
+
+        // Escape the HTML of debug info so it is displayed as it is in the view.
+        const debugMessages: string[] = [];
+        if ('debuginfo' in error && error.debuginfo) {
+            debugMessages.push(CoreText.escapeHTML(error.debuginfo, false));
+        }
+        if ('backtrace' in error && error.backtrace) {
+            debugMessages.push(CoreText.replaceNewLines(
+                CoreText.escapeHTML(error.backtrace, false),
+                '<br>',
+            ));
+        }
+
+        const debugMessage = debugMessages.join('<br><br>');
+        if (debugMessage) {
+            return { details: debugMessage };
+        }
     }
 
     /**

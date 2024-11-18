@@ -39,7 +39,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewInit {
 
     courseId: number | null = null;
-    loadMoreError: string | null = null;
+    loadMoreError = false;
     searchBanner: string | null = null;
     resultsSource = new CoreSearchGlobalSearchResultsSource('', {});
     private filtersObserver?: CoreEventObserver;
@@ -128,7 +128,7 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
      * Clear search results.
      */
     clearSearch(): void {
-        this.loadMoreError = null;
+        this.loadMoreError = false;
 
         this.resultsSource.setQuery('');
         this.resultsSource.reset();
@@ -172,7 +172,7 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
         try {
             await this.resultsSource?.load();
         } catch (error) {
-            this.loadMoreError = CoreDomUtils.getErrorMessage(error);
+            this.loadMoreError = true;
         } finally {
             complete();
         }
