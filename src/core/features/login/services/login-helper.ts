@@ -796,20 +796,20 @@ export class CoreLoginHelperProvider {
         launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
 
         const passport = Math.random() * 1000;
-        let loginUrl = launchUrl + '?service=' + service;
 
-        loginUrl += '&passport=' + passport;
-        loginUrl += '&urlscheme=' + CoreConstants.CONFIG.customurlscheme;
+        const additionalParams = Object.assign(urlParams || {}, {
+            service,
+            passport,
+            urlscheme: CoreConstants.CONFIG.customurlscheme,
+        });
 
-        if (urlParams) {
-            loginUrl = CoreUrl.addParamsToUrl(loginUrl, urlParams);
-        }
+        const loginUrl = CoreUrl.addParamsToUrl(launchUrl, additionalParams);
 
         // Store the siteurl and passport in CoreConfig for persistence.
         // We are "configuring" the app to wait for an SSO. CoreConfig shouldn't be used as a temporary storage.
         await CoreConfig.set(CoreConstants.LOGIN_LAUNCH_DATA, JSON.stringify(<StoredLoginLaunchData> {
-            siteUrl: siteUrl,
-            passport: passport,
+            siteUrl,
+            passport,
             ...redirectData,
             ssoUrlParams: urlParams || {},
         }));
