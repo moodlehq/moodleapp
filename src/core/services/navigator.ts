@@ -220,14 +220,13 @@ export class CoreNavigatorService {
 
         // If we are logged into a different site, log out first.
         if (CoreSites.isLoggedIn() && CoreSites.getCurrentSiteId() !== siteId) {
-            const willReload = await CoreSites.logoutForRedirect(siteId, {
+            await CoreSites.logout({
                 redirectPath: path,
                 redirectOptions: options || {},
+                siteId,
             });
 
-            if (willReload) {
-                return true;
-            }
+            return true;
         }
 
         // If the path doesn't belong to a site, call standard navigation.

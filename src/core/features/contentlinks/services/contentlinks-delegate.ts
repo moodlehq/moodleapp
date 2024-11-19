@@ -216,16 +216,7 @@ export class CoreContentLinksDelegateService {
                             }
 
                             // Site is logged out, authenticate first before treating the URL.
-                            const willReload = await CoreSites.logoutForRedirect(siteId, {
-                                urlToOpen: url,
-                            });
-
-                            if (!willReload) {
-                                // Load the site with the redirect data.
-                                await CoreSites.loadSite(siteId, {
-                                    urlToOpen: url,
-                                });
-                            }
+                            await CoreSites.logout({ urlToOpen: url, siteId });
                         };
                     });
 

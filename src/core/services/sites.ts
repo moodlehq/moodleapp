@@ -141,14 +141,6 @@ export class CoreSitesProvider {
 
             // Remove version classes from body.
             CoreHTMLClasses.removeSiteClasses();
-
-            // Go to sites page when user is logged out.
-            await CoreNavigator.navigate('/login/sites', { reset: true });
-
-            if (CoreSitePlugins.hasSitePluginsLoaded) {
-                // Temporary fix. Reload the page to unload all plugins.
-                window.location.reload();
-            }
         });
 
         CoreEvents.on(CoreEvents.LOGIN, async (data) => {
@@ -964,7 +956,7 @@ export class CoreSitesProvider {
             promise.finally(() => {
                 if (siteId) {
                     // Logout the currentSite and expire the token.
-                    this.logout();
+                    this.internalLogout();
                     this.setSiteLoggedOut(siteId);
                 }
             });
@@ -1123,7 +1115,7 @@ export class CoreSitesProvider {
         this.logger.debug(`Delete site ${siteId}`);
 
         if (this.currentSite !== undefined && this.currentSite.id == siteId) {
-            this.logout();
+            this.internalLogout();
         }
 
         const site = await this.getSite(siteId);
@@ -1457,10 +1449,23 @@ export class CoreSitesProvider {
     /**
      * Logout the user.
      *
-     * @param options Logout options.
-     * @returns Promise resolved when the user is logged out.
+     * @param options Options.
      */
     async logout(options: CoreSitesLogoutOptions = {}): Promise<void> {
+        await CoreNavigator.navigate('/logout', {
+            params: { ...options },
+            reset: true,
+        });
+    }
+
+    /**
+     * Logout the user.
+     * This function is for internal usage, please use CoreSites.logout instead. The reason this function is public is because
+     * it's called from the CoreLoginLogoutPage page.
+     *
+     * @param options Logout options.
+     */
+    async internalLogout(options: InternalLogoutOptions = {}): Promise<void> {
         if (!this.currentSite) {
             return;
         }
@@ -1494,6 +1499,7 @@ export class CoreSitesProvider {
      * @param siteId Site that will be opened after logout.
      * @param redirectData Page/url to open after logout.
      * @returns Promise resolved with boolean: true if app will be reloaded after logout.
+     * @deprecated since 5.0. Use CoreSites.logout instead, it automatically handles redirects.
      */
     async logoutForRedirect(siteId: string, redirectData: CoreRedirectPayload): Promise<boolean> {
         if (!this.currentSite) {
@@ -1505,7 +1511,7 @@ export class CoreSitesProvider {
             CoreRedirects.storeRedirect(siteId, redirectData);
         }
 
-        await this.logout();
+        await this.internalLogout();
 
         return CoreSitePlugins.hasSitePluginsLoaded;
     }
@@ -2480,7 +2486,14 @@ export type CoreSitesLoginTokenResponse = {
 /**
  * Options for logout.
  */
-export type CoreSitesLogoutOptions = {
+export type CoreSitesLogoutOptions = CoreRedirectPayload & InternalLogoutOptions & {
+    siteId?: string; // Site ID to load after logout.
+};
+
+/**
+ * Options for internal logout.
+ */
+type InternalLogoutOptions = {
     forceLogout?: boolean; // If true, site will be marked as logged out, no matter the value tool_mobile_forcelogout.
     removeAccount?: boolean; // If true, site will be removed too after logout.
 };
