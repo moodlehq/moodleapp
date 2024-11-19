@@ -112,9 +112,9 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
         skipFilters?: string[],
         siteId?: string,
     ): Promise<string> {
-
         // Wait for filters to be initialized.
-        const enabled = await this.handlersInitPromise;
+        await this.waitForReady();
+        const enabled = this.hasHandlers(true);
         if (!enabled) {
             // No enabled filters, return the text.
             return text;
@@ -201,7 +201,8 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
     ): Promise<void> {
 
         // Wait for filters to be initialized.
-        const enabled = await this.handlersInitPromise;
+        await this.waitForReady();
+        const enabled = this.hasHandlers(true);
         if (!enabled) {
             return;
         }
@@ -276,7 +277,8 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
      */
     async shouldBeApplied(filters: CoreFilterFilter[], options: CoreFilterFormatTextOptions, site?: CoreSite): Promise<boolean> {
         // Wait for filters to be initialized.
-        const enabled = await this.handlersInitPromise;
+        await this.waitForReady();
+        const enabled = this.hasHandlers(true);
         if (!enabled) {
             return false;
         }
