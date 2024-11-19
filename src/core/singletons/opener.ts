@@ -128,17 +128,27 @@ export class CoreOpener {
             // Error, use the original path.
         }
 
-        const openFile = async (mimetype?: string) => {
-            if (CoreOpener.shouldOpenWithDialog(options)) {
-                await FileOpener.showOpenWithDialog(path, mimetype || '');
-            } else {
-                await FileOpener.open(path, mimetype || '');
+        const openFile = async (path: string, mimetype?: string) => {
+            try {
+                if (CoreOpener.shouldOpenWithDialog(options)) {
+                    await FileOpener.showOpenWithDialog(path, mimetype || '');
+                } else {
+                    await FileOpener.open(path, mimetype || '');
+                }
+            } catch (error) {
+                // If the file contains the % character without encoding the open can fail. Try again encoding it.
+                const encodedPath = encodeURI(path);
+                if (path !== encodedPath) {
+                    return await openFile(encodedPath, mimetype);
+                }
+
+                throw error;
             }
         };
 
         try {
             try {
-                await openFile(mimetype);
+                await openFile(path, mimetype);
             } catch (error) {
                 if (!extension || !error || Number(error.status) !== 9) {
                     throw error;
@@ -150,7 +160,7 @@ export class CoreOpener {
                     throw error;
                 }
 
-                await openFile(deprecatedMimetype);
+                await openFile(path, deprecatedMimetype);
             }
         } catch (error) {
             CoreOpener.logger.error('Error opening file ' + path + ' with mimetype ' + mimetype);
