@@ -432,14 +432,13 @@ export class CoreCustomURLSchemesProvider {
             // Ask the user before changing site.
             await CoreDomUtils.showConfirm(Translate.instant('core.contentlinks.confirmurlothersite'));
 
-            const willReload = await CoreSites.logoutForRedirect(CoreConstants.NO_SITE_ID, {
+            await CoreSites.logout({
+                siteId: CoreConstants.NO_SITE_ID,
                 redirectPath: '/login/credentials',
                 redirectOptions: { params: pageParams },
             });
 
-            if (willReload) {
-                return;
-            }
+            return;
         }
 
         await CoreNavigator.navigateToLoginCredentials(pageParams);

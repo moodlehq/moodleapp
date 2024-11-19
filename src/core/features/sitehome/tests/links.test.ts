@@ -32,6 +32,7 @@ describe('Site Home link handlers', () => {
             isStoredRootURL: () => Promise.resolve({ siteIds: [siteId] }),
             getSite: () => Promise.resolve(new CoreSite(siteId, siteUrl, '')),
             getSiteIdsFromUrl: () => Promise.resolve([siteId]),
+            getCurrentSiteId: () => siteId,
         }));
 
         mockSingleton(CoreLoginHelper, { getAvailableSites: async () => [{ url: siteUrl, name: 'Example Campus' }] });

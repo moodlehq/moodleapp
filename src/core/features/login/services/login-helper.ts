@@ -412,21 +412,18 @@ export class CoreLoginHelperProvider {
      * @returns Promise resolved when done.
      */
     async goToAddSite(setRoot = false, showKeyboard = false): Promise<void> {
-        let path = '/login/sites';
-        let params: Params = { openAddSite: true , showKeyboard };
-
         if (CoreSites.isLoggedIn()) {
-            const willReload = await CoreSites.logoutForRedirect(CoreConstants.NO_SITE_ID, {
-                redirectPath: path,
-                redirectOptions: { params },
+            // Logout first.
+            await CoreSites.logout({
+                siteId: CoreConstants.NO_SITE_ID,
+                redirectPath: '/login/sites',
+                redirectOptions: { params: { openAddSite: true , showKeyboard } },
             });
 
-            if (willReload) {
-                return;
-            }
-        } else {
-            [path, params] = await this.getAddSiteRouteInfo(showKeyboard);
+            return;
         }
+
+        const [path, params] = await this.getAddSiteRouteInfo(showKeyboard);
 
         await CoreNavigator.navigate(path, { params, reset: setRoot });
     }

@@ -41,6 +41,10 @@ const appRoutes: Routes = [
         loadChildren: () => import('./login-lazy.module'),
         canActivate: [redirectGuard],
     },
+    {
+        path: 'logout',
+        loadComponent: () => import('@features/login/pages/logout/logout'),
+    },
 ];
 
 @NgModule({

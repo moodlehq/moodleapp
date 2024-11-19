@@ -16,7 +16,6 @@ import { CoreEvents } from '@singletons/events';
 import { CoreLang, CoreLangProvider } from '@services/lang';
 
 import { mock, mockSingleton } from '@/testing/utils';
-import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { Http } from '@singletons';
 import { of } from 'rxjs';
@@ -34,13 +33,10 @@ describe('CoreSitesProvider', () => {
     });
 
     it('cleans up on logout', async () => {
-        const navigator: CoreNavigatorService = mockSingleton(CoreNavigator, ['navigate']);
-
         CoreSites.initialize();
         CoreEvents.trigger(CoreEvents.LOGOUT);
 
         expect(langProvider.clearCustomStrings).toHaveBeenCalled();
-        expect(navigator.navigate).toHaveBeenCalledWith('/login/sites', { reset: true });
     });
 
     it('adds ionic platform and theme classes', async () => {
