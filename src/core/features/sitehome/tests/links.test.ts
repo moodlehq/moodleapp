@@ -33,6 +33,7 @@ describe('Site Home link handlers', () => {
             getSite: () => Promise.resolve(new CoreSite(siteId, siteUrl, '')),
             getSiteIdsFromUrl: () => Promise.resolve([siteId]),
             getCurrentSiteId: () => siteId,
+            isLoggedIn: () => true,
         }));
 
         mockSingleton(CoreLoginHelper, { getAvailableSites: async () => [{ url: siteUrl, name: 'Example Campus' }] });
