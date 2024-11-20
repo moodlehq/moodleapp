@@ -317,7 +317,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      *
      * @returns Resolved when done.
      */
-    protected async updateHandlers(): Promise<void> {
+    async updateHandlers(): Promise<void> {
         this.handlersLoaded = false;
 
         const enabled = await this.isEnabled();

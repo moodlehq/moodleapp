@@ -16,7 +16,6 @@ import { mock, mockSingleton } from '@/testing/utils';
 import { CoreSite } from '@classes/sites/site';
 import { CorePluginFileDelegateService, CorePluginFileHandler } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreEvents } from '@singletons/events';
 import { CoreUrl } from '@singletons/url';
 
 describe('CorePluginFileDelegate', () => {
@@ -33,8 +32,7 @@ describe('CorePluginFileDelegate', () => {
         pluginFileDelegate = new CorePluginFileDelegateService();
         pluginFileDelegate.registerHandler(new ModFooRevisionHandler());
 
-        CoreEvents.trigger(CoreEvents.LOGIN, { siteId: '42' }, '42');
-        await pluginFileDelegate.waitForReady();
+        await pluginFileDelegate.updateHandlers();
     });
 
     it('removes revision from a URL', () => {
