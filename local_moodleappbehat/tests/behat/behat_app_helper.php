@@ -366,12 +366,15 @@ class behat_app_helper extends behat_base {
      *
      * @param string $script
      * @param bool $blocking
+     * @param string $texttofind If set, when this text is found the operation is considered finished. This is useful for
+     *                           operations that might expect user input before finishing, like a confirm modal.
      * @return mixed Result.
      */
-    protected function zone_js(string $script, bool $blocking = false) {
+    protected function zone_js(string $script, bool $blocking = false, string $texttofind = '') {
         $blockingjson = json_encode($blocking);
+        $locatortofind = !empty($texttofind) ? json_encode((object) ['text' => $texttofind]) : null;
 
-        return $this->runtime_js("runInZone(() => window.behat.$script, $blockingjson)");
+        return $this->runtime_js("runInZone(() => window.behat.$script, $blockingjson, $locatortofind)");
     }
 
     /**
@@ -411,16 +414,14 @@ class behat_app_helper extends behat_base {
             $privatetoken = $usertoken->privatetoken;
         }
 
-        // Generate custom URL.
-        $parsed_url = parse_url($CFG->behat_wwwroot);
-        $site = $parsed_url['host'] ?? '';
-        $site .= isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
-        $site .= $parsed_url['path'] ?? '';
-        $url = $this->get_mobile_url_scheme() . "://$username@$site?token=$token&privatetoken=$privatetoken";
+        $url = $this->generate_custom_url([
+            'username' => $username,
+            'token' => $token,
+            'privatetoken' => $privatetoken,
+            'redirect' => $path,
+        ]);
 
-        if (!empty($path)) {
-            $url .= '&redirect='.urlencode($CFG->behat_wwwroot.$path);
-        } else {
+        if (empty($path)) {
             $successXPath = '//page-core-mainmenu';
         }
 
@@ -434,14 +435,54 @@ class behat_app_helper extends behat_base {
      *
      * @param string $path To navigate.
      * @param string $successXPath The XPath of the element to lookat after navigation.
+     * @param string $username The username to use.
      */
-    protected function open_moodleapp_custom_url(string $path, string $successXPath = '') {
+    protected function open_moodleapp_custom_url(string $path, string $successXPath = '', string $username = '') {
         global $CFG;
 
-        $urlscheme = $this->get_mobile_url_scheme();
-        $url = "$urlscheme://link=" . urlencode($CFG->behat_wwwroot.$path);
+        $url = $this->generate_custom_url([
+            'username' => $username,
+            'redirect' => $path,
+        ]);
 
-        $this->handle_url($url);
+        $this->handle_url($url, $successXPath, $username ? 'This link belongs to another site' : '');
+    }
+
+    /**
+     * Generates a custom URL to be treated by the app.
+     *
+     * @param array $data Data to generate the URL.
+     */
+    protected function generate_custom_url(array $data): string {
+        global $CFG;
+
+        $parsed_url = parse_url($CFG->behat_wwwroot);
+        $parameters = [];
+
+        $url = $this->get_mobile_url_scheme() . '://' . ($parsed_url['scheme'] ?? 'http') . '://';
+        if (!empty($data['username'])) {
+            $url .= $data['username'] . '@';
+        }
+        $url .= $parsed_url['host'] ?? '';
+        $url .= isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+        $url .= $parsed_url['path'] ?? '';
+
+        if (!empty($data['token'])) {
+            $parameters[] = 'token=' . $data['token'];
+            if (!empty($data['privatetoken'])) {
+                $parameters[] = 'privatetoken=' . $data['privatetoken'];
+            }
+        }
+
+        if (!empty($data['redirect'])) {
+            $parameters[] = 'redirect=' . urlencode($data['redirect']);
+        }
+
+        if (!empty($parameters)) {
+            $url .= '?' . implode('&', $parameters);
+        }
+
+        return $url;
     }
 
     /**
@@ -449,9 +490,11 @@ class behat_app_helper extends behat_base {
      *
      * @param string $customurl To navigate.
      * @param string $successXPath The XPath of the element to lookat after navigation.
+     * @param string $texttofind If set, when this text is found the operation is considered finished. This is useful for
+     *                           operations that might expect user input before finishing, like a confirm modal.
      */
-    protected function handle_url(string $customurl, string $successXPath = '') {
-        $result = $this->zone_js("customUrlSchemes.handleCustomURL('$customurl')");
+    protected function handle_url(string $customurl, string $successXPath = '', string $texttofind = '') {
+        $result = $this->zone_js("customUrlSchemes.handleCustomURL('$customurl')", false, $texttofind);
 
         if ($result !== 'OK') {
             throw new DriverException('Error handling url - ' . $customurl . ' - '.$result);

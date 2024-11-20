@@ -604,6 +604,7 @@ class behat_app extends behat_app_helper {
         $data = $data->getColumnsHash()[0];
         $title = array_keys($data)[0];
         $data = (object) $data;
+        $username = $data->user ?? '';
 
         switch ($title) {
             case 'discussion':
@@ -645,7 +646,7 @@ class behat_app extends behat_app_helper {
                 throw new DriverException('Invalid custom link title - ' . $title);
         }
 
-        $this->open_moodleapp_custom_url($pageurl);
+        $this->open_moodleapp_custom_url($pageurl, '', $username);
     }
 
     /**
