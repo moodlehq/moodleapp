@@ -212,7 +212,7 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
      * Called when there are new block handlers available. Informs anyone who subscribed to the
      * observable.
      */
-    updateData(): void {
+    protected updateData(): void {
         this.blocksUpdateObservable.next();
     }
 
