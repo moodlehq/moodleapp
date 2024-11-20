@@ -24,6 +24,7 @@ import { CoreDatabaseTable } from '@classes/database/database-table';
 import { asyncInstance } from '../utils/async-instance';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreBrowser } from '@singletons/browser';
+import { CoreText } from '@singletons/text';
 
 declare module '@singletons/events' {
 
@@ -119,6 +120,30 @@ export class CoreConfigProvider {
     }
 
     /**
+     * Get an app setting with json format
+     *
+     * @param name The config name.
+     * @param defaultValue Default value to use if the entry is not found.
+     * @returns Resolves upon success along with the config data. Reject on failure.
+     */
+    async getJSON<T>(name: string, defaultValue?: T): Promise<T> {
+        try {
+            const configString = await CoreConfig.get<string>(name);
+            if (!configString) {
+                throw new Error('Config not found');
+            }
+
+            return CoreText.parseJSON<T>(configString, defaultValue);
+        } catch (error) {
+            if (defaultValue !== undefined) {
+                return defaultValue;
+            }
+
+            throw error;
+        }
+    }
+
+    /**
      * Get an app setting directly from the database, without using any optimizations..
      *
      * @param name The config name.
@@ -152,10 +177,19 @@ export class CoreConfigProvider {
      *
      * @param name The config name.
      * @param value The config value. Can only store number or strings.
-     * @returns Promise resolved when done.
      */
     async set(name: string, value: number | string): Promise<void> {
         await this.table.insert({ name, value });
+    }
+
+    /**
+     * Set an app setting with json format.
+     *
+     * @param name The config name.
+     * @param value The config value. Can only store objects.
+     */
+    async setJSON(name: string, value: unknown): Promise<void> {
+        await this.set(name, JSON.stringify(value));
     }
 
     /**

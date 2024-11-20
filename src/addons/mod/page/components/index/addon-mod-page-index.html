@@ -19,7 +19,7 @@
     <core-course-module-info [module]="module" [description]="displayDescription && description" [component]="component"
         [componentId]="componentId" [courseId]="courseId" (completionChanged)="onCompletionChange()" />
 
-    <div class="ion-padding">
+    <div class="ion-padding" core-reading-mode>
         <core-format-text [component]="component" [componentId]="componentId" [text]="contents" contextLevel="module"
             [contextInstanceId]="module.id" [courseId]="courseId" />
 

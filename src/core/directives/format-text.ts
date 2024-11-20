@@ -67,7 +67,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
  * Please use this directive if your text needs to be filtered or it can contain links or media (images, audio, video).
  *
  * Example usage:
- * <core-format-text [text]="myText" [component]="component" [componentId]="componentId"></core-format-text>
+ * <core-format-text [text]="myText" [component]="component" [componentId]="componentId" />
  */
 @Directive({
     selector: 'core-format-text',
