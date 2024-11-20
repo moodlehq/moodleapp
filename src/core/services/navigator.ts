@@ -150,6 +150,13 @@ export class CoreNavigatorService {
             ? await NavController.navigateRoot(url, navigationOptions)
             : await NavController.navigateForward(url, navigationOptions);
 
+        // This is done to exit full screen if the user navigate.
+        if (document.exitFullscreen) {
+            await CorePromiseUtils.ignoreErrors(document.exitFullscreen());
+        } else if (document['webkitExitFullscreen']) {
+            document['webkitExitFullscreen']();
+        }
+
         if (options.nextNavigation?.path && navigationResult !== false) {
             if (options.nextNavigation.isSitePath) {
                 return this.navigateToSitePath(options.nextNavigation.path, options.nextNavigation.options);
