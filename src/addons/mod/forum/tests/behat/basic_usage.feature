@@ -276,7 +276,8 @@ Feature: Test basic usage of forum activity in app
     But I should not find "Not sent" in the app
 
   Scenario: New discussion offline & Sync Forum
-    Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    And I press "Test forum name" in the app
     When I switch network connection to offline
     And I press "Add discussion topic" in the app
     And I set the following fields to these values in the app:

@@ -238,8 +238,9 @@ Feature: Test basic usage of survey activity in app
     Given the following "activities" exist:
       | activity | name                           | intro        | template | course | idnumber | groupmode |
       | survey   | Test survey critical incidents | Test survey1 | 5        | C1     | survey1  | 0         |
-    Given I entered the survey activity "Test survey critical incidents" on course "Course 1" as "student1" in the app
-    And I switch network connection to offline
+    And I entered the course "Course 1" as "student1" in the app
+    And I press "Test survey critical incidents" in the app
+    When I switch network connection to offline
     And I press "Submit" in the app
     And I press "OK" in the app
     Then I should see "This Survey has offline data to be synchronised."

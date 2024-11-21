@@ -52,7 +52,8 @@ Feature: Test basic usage of glossary in app
 
   Scenario: Navigate to glossary terms by link (auto-linking)
     Given the "glossary" filter is "on"
-    And I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
+    And I entered the course "Course 1" as "student1" in the app
+    And I press "Test glossary" in the app
     Then the header should be "Test glossary" in the app
     And I should find "Eggplant" in the app
     And I should find "Cucumber" in the app
