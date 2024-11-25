@@ -3,9 +3,9 @@ Feature: It navigates properly using deep links.
 
   Background:
     Given the following "users" exist:
-      | username |
-      | student1 |
-      | student2 |
+      | username | firstname | lastname |
+      | student1 | david     | student  |
+      | student2 | pau       | student2 |
     And the following "courses" exist:
       | fullname | shortname |
       | Course 1 | C1        |
@@ -20,7 +20,6 @@ Feature: It navigates properly using deep links.
       | forum      | user     | name        | message       |
       | Test forum | student1 | Forum topic | Forum message |
     And the following config values are set as admin:
-      | forcelogout     | 1 | tool_mobile |
       | defaulthomepage | 0 |             |
 
   Scenario: Receive a push notification
@@ -78,3 +77,98 @@ Feature: It navigates properly using deep links.
     When I go back in the app
     Then I should find "Site home" in the app
     But I should not find "Test forum" in the app
+
+  Scenario: Open a deep link in a different account not stored in the app
+    Given I entered the app as "student1"
+    When I open a custom link in the app for:
+      | discussion  | user     |
+      | Forum topic | student2 |
+    Then I should find "This link belongs to another site" in the app
+
+    When I press "OK" in the app
+    And I wait the app to restart
+    Then the header should be "Log in" in the app
+
+    When I set the following fields to these values in the app:
+      | Password | student2 |
+    And I press "Log in" near "Lost password?" in the app
+    Then I should find "Forum topic" in the app
+    And I should find "Forum message" in the app
+
+    When I go back to the root page in the app
+    And I press the user menu button in the app
+    Then I should find "pau student2" in the app
+
+  Scenario: Open a deep link in a different account stored in the app
+    Given I entered the app as "student2"
+    And I entered the app as "student1"
+    When I open a custom link in the app for:
+      | discussion  | user     |
+      | Forum topic | student2 |
+    Then I should find "This link belongs to another site" in the app
+
+    When I press "OK" in the app
+    And I wait the app to restart
+    Then I should find "Forum topic" in the app
+    And I should find "Forum message" in the app
+
+    When I go back to the root page in the app
+    And I press the user menu button in the app
+    Then I should find "pau student2" in the app
+
+  Scenario: Open a deep link in a different account stored in the app but logged out
+    Given I entered the app as "student2"
+    And I press the user menu button in the app
+    And I press "Log out" in the app
+    And I wait the app to restart
+    And I entered the app as "student1"
+    When I open a custom link in the app for:
+      | discussion  | user     |
+      | Forum topic | student2 |
+    Then I should find "This link belongs to another site" in the app
+
+    When I press "OK" in the app
+    And I wait the app to restart
+    Then the header should be "Reconnect" in the app
+    And I should find "pau student2" in the app
+
+    When I set the following fields to these values in the app:
+      | Password | student2 |
+    And I press "Log in" near "Lost password?" in the app
+    Then I should find "Forum topic" in the app
+    And I should find "Forum message" in the app
+
+    When I go back to the root page in the app
+    And I press the user menu button in the app
+    Then I should find "pau student2" in the app
+
+  Scenario: Open a deep link in a different account when there is unsaved data
+    Given I entered the app as "student2"
+    And I entered the forum activity "Test forum" on course "Course 1" as "student1" in the app
+    When I press "Add discussion topic" in the app
+    And I set the following fields to these values in the app:
+      | Subject | My happy subject |
+      | Message | An awesome message |
+    And I open a custom link in the app for:
+      | discussion  | user     |
+      | Forum topic | student2 |
+    Then I should find "This link belongs to another site" in the app
+
+    When I press "OK" in the app
+    Then I should find "Are you sure you want to leave this page?" in the app
+
+    When I press "Cancel" in the app
+    Then I should not find "Forum message" in the app
+
+    When I open a custom link in the app for:
+      | discussion  | user     |
+      | Forum topic | student2 |
+    And I press "OK" in the app
+    And I press "OK" in the app
+    And I wait the app to restart
+    Then I should find "Forum topic" in the app
+    And I should find "Forum message" in the app
+
+    When I go back to the root page in the app
+    And I press the user menu button in the app
+    Then I should find "pau student2" in the app

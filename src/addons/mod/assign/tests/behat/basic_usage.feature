@@ -132,7 +132,8 @@ Feature: Test basic usage of assignment activity in app
     Then I should find "No attempt" in the app
 
   Scenario: Add submission offline (online text) & Submit for grading offline & Sync submissions
-    Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    And I press "assignment1" in the app
     When I press "Add submission" in the app
     And I switch network connection to offline
     And I set the field "Online text submissions" to "Submission test" in the app
@@ -150,7 +151,8 @@ Feature: Test basic usage of assignment activity in app
     But I should not find "This Assignment has offline data to be synchronised." in the app
 
   Scenario: Edit an offline submission before synchronising it
-    Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    And I press "assignment1" in the app
     When I press "Add submission" in the app
     And I switch network connection to offline
     And I set the field "Online text submissions" to "Submission test original offline" in the app
@@ -178,8 +180,9 @@ Feature: Test basic usage of assignment activity in app
 
   @lms_from4.5
   Scenario: Remove submission offline and syncrhonize it
-    Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
-    And I press "Add submission" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    And I press "assignment1" in the app
+    When I press "Add submission" in the app
     And I set the field "Online text submissions" to "Submission test" in the app
     And I press "Save" in the app
     Then I should find "Draft (not submitted)" in the app
@@ -223,7 +226,8 @@ Feature: Test basic usage of assignment activity in app
 
   @lms_from4.5
   Scenario: Add submission offline after removing a submission offline
-    Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    And I press "assignment1" in the app
     When I press "Add submission" in the app
     And I set the field "Online text submissions" to "Submission test online" in the app
     And I press "Save" in the app

@@ -280,9 +280,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async cancel(): Promise<void> {
-        await CorePromiseUtils.ignoreErrors(CoreSites.logout());
-
-        await CoreNavigator.navigate('/login/sites', { reset: true });
+        await CoreSites.logout();
     }
 
     /**

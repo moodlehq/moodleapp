@@ -21,7 +21,8 @@ Feature: Test basic usage of choice activity in app
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
       | choice   | Test single choice name | Test single choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 0             | 0           | 1           |
-    And I entered the choice activity "Test single choice name" on course "Course 1" as "student1" in the app
+    And I entered the course "Course 1" as "student1" in the app
+    And I press "Test single choice name" in the app
     When I select "Option 1" in the app
     And I select "Option 2" in the app
     And I press "Save my choice" in the app
@@ -74,7 +75,8 @@ Feature: Test basic usage of choice activity in app
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
       | choice   | Test single choice name | Test single choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 0             | 0           | 1           |
-    And I entered the choice activity "Test single choice name" on course "Course 1" as "student1" in the app
+    And I entered the course "Course 1" as "student1" in the app
+    And I press "Test single choice name" in the app
     When I select "Option 1" in the app
     And I switch network connection to offline
     And I select "Option 2" in the app
