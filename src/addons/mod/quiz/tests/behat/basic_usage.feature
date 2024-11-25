@@ -75,7 +75,7 @@ Feature: Attempt a quiz in app
       | TF13     | 11   |
 
     # TODO rewrite using generators.
-    And I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
+    And I am on the "Quiz 2" "mod_quiz > question bank" page logged in as teacher1
     And I add a "Embedded answers (Cloze)" question filling the form with:
       | Question name        | multianswer                                     |
       | Question text        | {1:SHORTANSWER:=Berlin} is the capital of Germany.  |
