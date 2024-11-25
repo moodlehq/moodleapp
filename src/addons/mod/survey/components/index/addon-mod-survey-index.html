@@ -55,7 +55,7 @@
 
                 <!-- Subquestion -->
                 <ng-container *ngIf="question.parent !== 0">
-                    <ion-radio-group [(ngModel)]="answers[question.name]" [required]="question.required" [name]="question.name">
+                    <ion-radio-group [(ngModel)]="answers[question.name]" [required]="!!question.required" [name]="question.name">
                         <ion-row class="ion-align-items-center ion-padding-horizontal" [class.even]="isEven">
 
                             <ion-col size="7">
@@ -71,7 +71,7 @@
                                 <ion-radio [value]="value + 1" [attr.aria-label]="question.num + '. '+question.text + ': ' + option" />
                             </ion-col>
                             <ion-col class="ion-hide-md-up" size="5">
-                                <ion-select class="ion-padding" [(ngModel)]="answers[question.name]" [required]="question.required"
+                                <ion-select class="ion-padding" [(ngModel)]="answers[question.name]" [required]="!!question.required"
                                     [attr.aria-labelledby]="'addon-mod_survey-'+question.name" interface="action-sheet"
                                     [name]="question.name" [cancelText]="'core.cancel' | translate"
                                     [interfaceOptions]="{header: question.text}">
@@ -94,7 +94,7 @@
                             </span>
                         </ion-col>
                         <ion-col size="5">
-                            <ion-select class="ion-padding" [(ngModel)]="answers[question.name]" [required]="question.required"
+                            <ion-select class="ion-padding" [(ngModel)]="answers[question.name]" [required]="!!question.required"
                                 [attr.aria-labelledby]="'addon-mod_survey-'+question.name" interface="action-sheet" [name]="question.name"
                                 [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: question.text}">
                                 <ion-select-option [value]="question.required ? '-1' : '0'" selected [disabled]="question.required">
@@ -109,7 +109,7 @@
 
                     <ion-item *ngIf="question.type === 0" class="ion-text-wrap" [class.even]="isEven">
                         <ion-textarea labelPlacement="floating" [(ngModel)]="answers[question.name]" [name]="question.name"
-                            [required]="question.required">
+                            [required]="!!question.required">
                             <p slot="label" [core-mark-required]="question.required">
                                 <strong>{{question.num}}.</strong> {{ question.text }}
                             </p>

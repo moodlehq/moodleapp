@@ -5,7 +5,7 @@
     <ion-modal [keepContentsMounted]="true">
         <ng-template>
             <ion-datetime id="datetime" [formControlName]="'f_'+field.id" [max]="maxDate" [min]="minDate"
-                [disabled]="searchMode && searchFields && !searchFields['f_'+field.id+'_z']" presentation="date"
+                [disabled]="!!searchMode && !!searchFields && !searchFields['f_'+field.id+'_z']" presentation="date"
                 [showDefaultButtons]="true" />
         </ng-template>
     </ion-modal>

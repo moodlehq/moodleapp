@@ -34,7 +34,7 @@
                             </p>
                         </ion-label>
                         <core-button-with-spinner [loading]="device.updating" slot="end">
-                            <ion-toggle [(ngModel)]="device.enable" (ngModelChange)="enableDevice(device, device.enable)"
+                            <ion-toggle [(ngModel)]="device.enable" (ngModelChange)="enableDevice(device, !!device.enable)"
                                 [attr.aria-labelledby]="'device-'+ device.id " />
                         </core-button-with-spinner>
                     </ion-item>
