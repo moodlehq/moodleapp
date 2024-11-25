@@ -311,7 +311,7 @@
                         <!-- Outcomes. -->
                         <ion-item class="ion-text-wrap" *ngFor="let outcome of gradeInfo!.outcomes">
                             <ion-select *ngIf="canSaveGrades && outcome.itemNumber" [(ngModel)]="outcome.selectedId"
-                                interface="action-sheet" [disabled]="gradeInfo!.disabled" [cancelText]="'core.cancel' | translate"
+                                interface="action-sheet" [disabled]="!!gradeInfo!.disabled" [cancelText]="'core.cancel' | translate"
                                 [interfaceOptions]="{header: outcome.name }">
                                 <p class="item-heading" slot="label">{{ outcome.name }}</p>
                                 <ion-select-option *ngFor="let grade of outcome.options" [value]="grade.value">
