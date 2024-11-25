@@ -17,7 +17,7 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
-        [courseId]="courseId" [hasDataToSync]="buttonText && hasOffline" (completionChanged)="onCompletionChange()" />
+        [courseId]="courseId" [hasDataToSync]="!!buttonText && hasOffline" (completionChanged)="onCompletionChange()" />
 
     <!-- Access rules description messages. -->
     <ion-card *ngIf="gradeMethodReadable || accessRules.length || syncTime">
