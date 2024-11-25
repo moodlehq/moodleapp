@@ -136,19 +136,39 @@ export class TestingBehatRuntimeService {
      * Run an operation inside the angular zone and return result.
      *
      * @param operation Operation callback.
+     * @param blocking Whether the operation is blocking or not.
+     * @param locatorToFind If set, when this locator is found the operation is considered finished. This is useful for
+     *                      operations that might expect user input before finishing, like a confirm modal.
      * @returns OK if successful, or ERROR: followed by message.
      */
-    async runInZone(operation: () => unknown, blocking: boolean = false): Promise<string> {
+    async runInZone(
+        operation: () => unknown,
+        blocking: boolean = false,
+        locatorToFind?: TestingBehatElementLocator,
+    ): Promise<string> {
         const blockKey = blocking && TestingBehatBlocking.block();
+        let interval: number | undefined;
 
         try {
-            await NgZone.run(operation);
+            await new Promise<void>((resolve, reject) => {
+                Promise.resolve(NgZone.run(operation)).then(resolve).catch(reject);
+
+                if (locatorToFind) {
+                    interval = window.setInterval(() => {
+                        if (TestingBehatDomUtils.findElementBasedOnText(locatorToFind, { onlyClickable: false })) {
+                            clearInterval(interval);
+                            resolve();
+                        }
+                    }, 500);
+                }
+            });
 
             return 'OK';
         } catch (error) {
             return 'ERROR: ' + error.message;
         } finally {
             blockKey && TestingBehatBlocking.unblock(blockKey);
+            window.clearInterval(interval);
         }
     }
 

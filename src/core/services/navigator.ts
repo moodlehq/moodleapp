@@ -195,7 +195,7 @@ export class CoreNavigatorService {
     async navigateToSiteHome(options: Omit<CoreNavigationOptions, 'reset'> & { siteId?: string } = {}): Promise<boolean> {
         const siteId = options.siteId ?? CoreSites.getCurrentSiteId();
         const landingPagePath = CoreSites.isLoggedIn() && CoreSites.getCurrentSiteId() === siteId ?
-            this.getLandingTabPage() : 'main';
+            this.getLandingTabPage() : '';
 
         return this.navigateToSitePath(landingPagePath, {
             ...options,
@@ -220,14 +220,12 @@ export class CoreNavigatorService {
 
         // If we are logged into a different site, log out first.
         if (CoreSites.isLoggedIn() && CoreSites.getCurrentSiteId() !== siteId) {
-            const willReload = await CoreSites.logoutForRedirect(siteId, {
-                redirectPath: path,
-                redirectOptions: options || {},
+            await CoreSites.logout({
+                ...this.getRedirectDataForSitePath(path, options),
+                siteId,
             });
 
-            if (willReload) {
-                return true;
-            }
+            return true;
         }
 
         // If the path doesn't belong to a site, call standard navigation.
@@ -243,10 +241,7 @@ export class CoreNavigatorService {
             const modal = await CoreLoadings.show();
 
             try {
-                const loggedIn = await CoreSites.loadSite(siteId, {
-                    redirectPath: path,
-                    redirectOptions: options,
-                });
+                const loggedIn = await CoreSites.loadSite(siteId, this.getRedirectDataForSitePath(path, options));
 
                 if (!loggedIn) {
                     // User has been redirected to the login page and will be redirected to the site path after login.
@@ -262,6 +257,31 @@ export class CoreNavigatorService {
 
         // User is logged in, navigate to the site path.
         return this.navigateToMainMenuPath(path, navigationOptions);
+    }
+
+    /**
+     * Get the redirect data to use when navigating to a site path.
+     *
+     * @param path Site path.
+     * @param options Navigation options.
+     * @returns Redirect data.
+     */
+    protected getRedirectDataForSitePath(path: string, options: CoreNavigationOptions = {}): CoreRedirectPayload {
+        if (!path || path.match(/^\/?main\/?$/)) {
+            // Navigating to main, obtain the redirect from the navigation parameters (if any).
+            // If there is no redirect path or url to open, use 'main' to open the site's main menu.
+            return {
+                redirectPath: !options.params?.redirectPath && !options.params?.urlToOpen ? 'main' : options.params?.redirectPath,
+                redirectOptions: options.params?.redirectOptions,
+                urlToOpen: options.params?.urlToOpen,
+            };
+        }
+
+        // Use the path to navigate as the redirect path.
+        return {
+            redirectPath: path,
+            redirectOptions: options || {},
+        };
     }
 
     /**
@@ -546,6 +566,11 @@ export class CoreNavigatorService {
             preferCurrentTab: true,
             ...options,
         };
+
+        if (!path || path.match(/^\/?main\/?$/)) {
+            // Navigating to main, nothing else to do.
+            return this.navigate('/main', options);
+        }
 
         path = path.replace(/^(\.|\/main)?\//, '');
 

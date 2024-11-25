@@ -49,8 +49,9 @@ Feature: Users can only review attempts that are allowed to be reviewed
       | 1    | True     |
 
   Scenario: Can review only when the attempt is allowed to be reviewed
-    Given I entered the quiz activity "Quiz review after immed" on course "Course 1" as "student1" in the app
-    And I press "Attempt 1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    And I press "Quiz review after immed" in the app
+    When I press "Attempt 1" in the app
     Then I should not be able to press "Review" in the app
 
     When I go back in the app

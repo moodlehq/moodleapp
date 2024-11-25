@@ -19,6 +19,7 @@ import { CoreUrl } from '@singletons/url';
 import { makeSingleton } from '@singletons';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Interface that all handlers must implement.
@@ -208,24 +209,24 @@ export class CoreContentLinksDelegateService {
                         // Wrap the action function in our own function to treat logged out sites.
                         const actionFunction = action.action;
                         action.action = async (siteId) => {
-                            const site = await CoreSites.getSite(siteId);
+                            if (!CoreSites.isLoggedIn()) {
+                                // Not logged in, load site first.
+                                const loggedIn = await CoreSites.loadSite(siteId, { urlToOpen: url });
+                                if (loggedIn) {
+                                    await CoreNavigator.navigateToSiteHome({ params: { urlToOpen: url } });
+                                }
 
-                            if (!site.isLoggedOut()) {
-                                // Call the action now.
-                                return actionFunction(siteId);
+                                return;
                             }
 
-                            // Site is logged out, authenticate first before treating the URL.
-                            const willReload = await CoreSites.logoutForRedirect(siteId, {
-                                urlToOpen: url,
-                            });
+                            if (siteId !== CoreSites.getCurrentSiteId()) {
+                                // Different site, logout and login first before treating the URL because token could be expired.
+                                await CoreSites.logout({ urlToOpen: url, siteId });
 
-                            if (!willReload) {
-                                // Load the site with the redirect data.
-                                await CoreSites.loadSite(siteId, {
-                                    urlToOpen: url,
-                                });
+                                return;
                             }
+
+                            actionFunction(siteId);
                         };
                     });
 

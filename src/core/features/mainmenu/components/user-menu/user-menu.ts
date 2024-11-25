@@ -18,7 +18,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreSite } from '@classes/sites/site';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { CoreFilter } from '@features/filter/services/filter';
-import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
@@ -33,8 +32,9 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { ModalController, Translate } from '@singletons';
+import { ModalController } from '@singletons';
 import { Subscription } from 'rxjs';
+import { CoreLoginHelper } from '@features/login/services/login-helper';
 
 /**
  * Component to display a user menu.
@@ -208,12 +208,6 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event
      */
     async logout(event: Event): Promise<void> {
-        if (CoreNavigator.currentRouteCanBlockLeave()) {
-            await CoreDomUtils.showAlert(undefined, Translate.instant('core.cannotlogoutpageblocks'));
-
-            return;
-        }
-
         if (this.removeAccountOnLogout) {
             // Ask confirm.
             const siteName = this.siteName ?
@@ -242,12 +236,6 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event
      */
     async switchAccounts(event: Event): Promise<void> {
-        if (CoreNavigator.currentRouteCanBlockLeave()) {
-            await CoreDomUtils.showAlert(undefined, Translate.instant('core.cannotlogoutpageblocks'));
-
-            return;
-        }
-
         const thisModal = await ModalController.getTop();
 
         event.preventDefault();
