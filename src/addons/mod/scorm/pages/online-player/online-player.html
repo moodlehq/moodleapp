@@ -1,0 +1,23 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate" />
+        </ion-buttons>
+        <ion-title>
+            <h1>
+                <core-format-text *ngIf="scorm" [text]="scorm.name" contextLevel="module" [contextInstanceId]="cmId"
+                    [courseId]="courseId" />
+            </h1>
+        </ion-title>
+        <!-- Add empty ion-buttons to let iframe add the full screen button -->
+        <ion-buttons slot="end" />
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <core-iframe *ngIf="loaded" id="scorm_object" [src]="src" [iframeWidth]="scormWidth" [iframeHeight]="scormHeight"
+            [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true" />
+
+        <p *ngIf="!src && errorMessage">{{ errorMessage | translate }}</p>
+    </core-loading>
+</ion-content>

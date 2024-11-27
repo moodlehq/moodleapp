@@ -29,6 +29,10 @@ const routes: Routes = [
         path: ':courseId/:cmId/player',
         component: AddonModScormPlayerPage,
     },
+    {
+        path: ':courseId/:cmId/online-player',
+        loadComponent: () => import('./pages/online-player/online-player'),
+    },
 ];
 
 @NgModule({

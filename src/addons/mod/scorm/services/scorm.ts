@@ -963,6 +963,32 @@ export class AddonModScormProvider {
     }
 
     /**
+     * Given a SCORM and a SCO, returns the full launch URL for the SCO to be used in an online player.
+     *
+     * @param scorm SCORM.
+     * @param sco SCO.
+     * @param options Other options.
+     * @returns The URL.
+     */
+    async getScoSrcForOnlinePlayer(
+        scorm: AddonModScormScorm,
+        sco: AddonModScormWSSco,
+        options: AddonModScormGetScoSrcForOnlinePlayerOptions = {},
+    ): Promise<string> {
+        const site = await CoreSites.getSite(options.siteId);
+
+        // Use online player.
+        return CoreUrl.addParamsToUrl(CorePath.concatenatePaths(site.getURL(), '/mod/scorm/player.php'), {
+            a: scorm.id,
+            scoid: sco.id,
+            display: 'popup',
+            mode: options.mode,
+            currentorg: options.organization,
+            newattempt: options.newAttempt ? 'on' : 'off',
+        });
+    }
+
+    /**
      * Get the path to the folder where a SCORM is downloaded.
      *
      * @param moduleUrl Module URL (returned by get_course_contents).
@@ -985,7 +1011,7 @@ export class AddonModScormProvider {
     getScormFileList(scorm: AddonModScormScorm): CoreWSFile[] {
         const files: CoreWSFile[] = [];
 
-        if (!this.isScormUnsupported(scorm) && !scorm.warningMessage) {
+        if (!this.useOnlinePlayer(scorm) && !scorm.warningMessage) {
             files.push({
                 fileurl: this.getPackageUrl(scorm),
                 filepath: '/',
@@ -1360,22 +1386,6 @@ export class AddonModScormProvider {
     }
 
     /**
-     * Check if a SCORM is unsupported in the app. If it's not, returns the error code to show.
-     *
-     * @param scorm SCORM to check.
-     * @returns String with error code if unsupported, undefined if supported.
-     */
-    isScormUnsupported(scorm: AddonModScormScorm): string | undefined {
-        if (!this.isScormValidVersion(scorm)) {
-            return 'addon.mod_scorm.errorinvalidversion';
-        } else if (!this.isScormDownloadable(scorm)) {
-            return 'addon.mod_scorm.errornotdownloadable';
-        } else if (!this.isValidPackageUrl(this.getPackageUrl(scorm))) {
-            return 'addon.mod_scorm.errorpackagefile';
-        }
-    }
-
-    /**
      * Check if it's a valid SCORM 1.2.
      *
      * @param scorm SCORM to check.
@@ -1696,6 +1706,17 @@ export class AddonModScormProvider {
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             siteId: options.siteId,
         });
+    }
+
+    /**
+     * Check if a SCORM should use an online player.
+     *
+     * @param scorm SCORM to check.
+     * @returns True if it should use an online player.
+     */
+    useOnlinePlayer(scorm: AddonModScormScorm): boolean {
+        return !this.isScormValidVersion(scorm) || !this.isScormDownloadable(scorm) ||
+            !this.isValidPackageUrl(this.getPackageUrl(scorm));
     }
 
 }
@@ -2064,6 +2085,16 @@ export type AddonModScormCommonEventData = {
 export type AddonModScormScoIcon = {
     icon: string;
     description: string;
+};
+
+/**
+ * Options to pass to getScoSrcForOnlinePlayer.
+ */
+export type AddonModScormGetScoSrcForOnlinePlayerOptions = {
+    siteId?: string;
+    mode?: string; // Navigation mode.
+    organization?: string; // Organization ID.
+    newAttempt?: boolean; // Whether to start a new attempt.
 };
 
 declare module '@singletons/events' {

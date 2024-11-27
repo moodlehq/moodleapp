@@ -23,7 +23,7 @@ import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { AddonModScorm, AddonModScormScorm } from '../scorm';
 import { AddonModScormSync } from '../scorm-sync';
 import { ADDON_MOD_SCORM_COMPONENT } from '../../constants';
@@ -177,10 +177,9 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
 
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const result = AddonModScorm.isScormUnsupported(scorm);
-
-        if (result) {
-            throw new CoreError(Translate.instant(result));
+        if (AddonModScorm.useOnlinePlayer(scorm)) {
+            // Shouldn't happen, if scorm uses online player it shouldn't be downloaded.
+            throw new CoreError('This SCORM cannot be downloaded.');
         }
 
         // First verify that the file needs to be downloaded.
@@ -270,7 +269,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
     async getDownloadSize(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreFileSizeSum> {
         const scorm = await this.getScorm(module, courseId);
 
-        if (AddonModScorm.isScormUnsupported(scorm)) {
+        if (AddonModScorm.useOnlinePlayer(scorm)) {
             return { size: -1, total: false };
         } else if (!scorm.packagesize) {
             // We don't have package size, try to calculate it.
@@ -353,7 +352,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
             return false;
         }
 
-        if (AddonModScorm.isScormUnsupported(scorm)) {
+        if (AddonModScorm.useOnlinePlayer(scorm)) {
             return false;
         }
 
