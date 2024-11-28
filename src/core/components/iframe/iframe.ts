@@ -64,6 +64,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
     initialized = false;
 
+    protected fullScreenInitialized = false;
     protected iframe?: HTMLIFrameElement;
     protected style?: HTMLStyleElement;
     protected orientationObs?: CoreEventObserver;
@@ -87,36 +88,6 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
         this.initialized = true;
 
-        if (this.showFullscreenOnToolbar || this.autoFullscreenOnRotate) {
-            // Leave fullscreen when navigating.
-            this.navSubscription = Router.events
-                .pipe(filter(event => event instanceof NavigationStart))
-                .subscribe(async () => {
-                    if (this.fullscreen) {
-                        this.toggleFullscreen(false);
-                    }
-                });
-
-            const shadow =
-                this.elementRef.nativeElement.closest('.ion-page')?.querySelector('ion-header ion-toolbar')?.shadowRoot;
-            if (shadow) {
-                this.style = document.createElement('style');
-                shadow.appendChild(this.style);
-            }
-
-            if (this.autoFullscreenOnRotate) {
-                this.toggleFullscreen(CoreScreen.isLandscape);
-
-                this.orientationObs = CoreEvents.on(CoreEvents.ORIENTATION_CHANGE, (data) => {
-                    if (this.isInHiddenPage()) {
-                        return;
-                    }
-
-                    this.toggleFullscreen(data.orientation == CoreScreenOrientation.LANDSCAPE);
-                });
-            }
-        }
-
         // Show loading only with external URLs.
         this.loading = !this.src || !CoreUrl.isLocalFileUrl(this.src);
 
@@ -125,6 +96,72 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
                 this.loading = false;
             }, CoreIframeComponent.loadingTimeout);
         }
+    }
+
+    /**
+     * Configure fullscreen based on the inputs.
+     */
+    protected configureFullScreen(): void {
+        if (!this.showFullscreenOnToolbar && !this.autoFullscreenOnRotate) {
+            // Full screen disabled, stop watchers if enabled.
+            this.navSubscription?.unsubscribe();
+            this.orientationObs?.off();
+            this.style?.remove();
+            this.navSubscription = undefined;
+            this.orientationObs = undefined;
+            this.style = undefined;
+            this.fullScreenInitialized = true;
+
+            return;
+        }
+
+        if (!this.navSubscription) {
+            // Leave fullscreen when navigating.
+            this.navSubscription = Router.events
+                .pipe(filter(event => event instanceof NavigationStart))
+                .subscribe(async () => {
+                    if (this.fullscreen) {
+                        this.toggleFullscreen(false);
+                    }
+                });
+        }
+
+        if (!this.style) {
+            const shadow = this.elementRef.nativeElement.closest('.ion-page')?.querySelector('ion-header ion-toolbar')?.shadowRoot;
+            if (shadow) {
+                this.style = document.createElement('style');
+                shadow.appendChild(this.style);
+            }
+        }
+
+        if (!this.autoFullscreenOnRotate) {
+            this.orientationObs?.off();
+            this.orientationObs = undefined;
+            this.fullScreenInitialized = true;
+
+            return;
+        }
+
+        if (this.orientationObs) {
+            this.fullScreenInitialized = true;
+
+            return;
+        }
+
+        if (!this.fullScreenInitialized) {
+            // Only change full screen value if it's being initialized.
+            this.toggleFullscreen(CoreScreen.isLandscape);
+        }
+
+        this.orientationObs = CoreEvents.on(CoreEvents.ORIENTATION_CHANGE, (data) => {
+            if (this.isInHiddenPage()) {
+                return;
+            }
+
+            this.toggleFullscreen(data.orientation == CoreScreenOrientation.LANDSCAPE);
+        });
+
+        this.fullScreenInitialized = true;
     }
 
     /**
@@ -170,6 +207,10 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         }
 
         if (!changes.src) {
+            if (changes.showFullscreenOnToolbar || changes.autoFullscreenOnRotate) {
+                this.configureFullScreen();
+            }
+
             return;
         }
 
@@ -212,6 +253,9 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         // Now that the URL has been set, initialize the iframe. Wait for the iframe to the added to the DOM.
         setTimeout(() => {
             this.init();
+            if (changes.showFullscreenOnToolbar || changes.autoFullscreenOnRotate) {
+                this.configureFullScreen();
+            }
         });
     }
 
@@ -229,6 +273,12 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         this.orientationObs?.off();
         this.navSubscription?.unsubscribe();
         window.removeEventListener('message', this.messageListenerFunction);
+
+        if (this.fullscreen) {
+            // Make sure to leave fullscreen mode when the iframe is destroyed. This can happen if there's a race condition
+            // between clicking back button and some code toggling the fullscreen on.
+            this.toggleFullscreen(false);
+        }
     }
 
     /**

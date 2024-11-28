@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -31,6 +31,8 @@ import { Subscription } from 'rxjs';
 import { CoreNetwork } from '@services/network';
 import { NgZone, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
+import { CoreWait } from '@singletons/wait';
+import { CoreIframeComponent } from '@components/iframe/iframe';
 
 /**
  * Page that allows playing a SCORM in online, served from the server.
@@ -45,6 +47,8 @@ import { CoreError } from '@classes/errors/error';
 })
 export default class AddonModScormOnlinePlayerPage implements OnInit, OnDestroy {
 
+    @ViewChild(CoreIframeComponent) iframe?: CoreIframeComponent;
+
     scorm!: AddonModScormScorm; // The SCORM object.
     loaded = false; // Whether the data has been loaded.
     src?: string; // Iframe src.
@@ -53,6 +57,7 @@ export default class AddonModScormOnlinePlayerPage implements OnInit, OnDestroy 
     scormHeight?: number; // Height applied to scorm iframe.
     cmId!: number; // Course module ID.
     courseId!: number; // Course ID.
+    enableFullScreenOnRotate = false;
 
     protected mode!: AddonModScormMode; // Mode to play the SCORM.
     protected moduleUrl!: string; // Module URL.
@@ -73,9 +78,9 @@ export default class AddonModScormOnlinePlayerPage implements OnInit, OnDestroy 
 
                 if (!isOnline && wasOnline) {
                     // User lost connection while playing an online package. Show an error.
-                    CoreDomUtils.showErrorModal(new CoreError(Translate.instant('core.course.changesofflinemaybelost'))); // , {
-                        // title: Translate.instant('core.youreoffline'),
-                    // }));
+                    CoreDomUtils.showErrorModal(new CoreError(Translate.instant('core.course.changesofflinemaybelost'), {
+                        title: Translate.instant('core.youreoffline'),
+                    }));
 
                     return;
                 }
@@ -114,7 +119,6 @@ export default class AddonModScormOnlinePlayerPage implements OnInit, OnDestroy 
         } finally {
             this.loaded = true;
         }
-
     }
 
     /**
@@ -273,6 +277,23 @@ export default class AddonModScormOnlinePlayerPage implements OnInit, OnDestroy 
         // Empty src when leaving the state so unload event is triggered in the iframe.
         this.src = '';
         CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'scorm' });
+    }
+
+    /**
+     * SCORM iframe has been loaded.
+     */
+    async iframeLoaded(): Promise<void> {
+        // When using online player, some packages don't calculate the right height. Sending a 'resize' event doesn't fix it, but
+        // changing the iframe size makes the SCORM recalculate the size.
+        // Wait 1 second (to let inner iframes load) and then force full screen to make the SCORM recalculate the size.
+        await CoreWait.wait(1000);
+
+        if (this.isDestroyed) {
+            return;
+        }
+
+        this.iframe?.toggleFullscreen(true);
+        this.enableFullScreenOnRotate = true;
     }
 
 }
