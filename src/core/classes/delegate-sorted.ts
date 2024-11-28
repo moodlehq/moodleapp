@@ -76,7 +76,7 @@ export class CoreSortedDelegate<
      * @inheritdoc
      */
     hasHandlers(enabled = false): boolean {
-        return enabled ? !!this.sortedHandlers.length : !!this.handlers.length;
+        return enabled ? !!this.sortedHandlers.length : !!Object.keys(this.handlers).length;
     }
 
     /**
