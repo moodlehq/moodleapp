@@ -16,7 +16,7 @@
 <ion-content>
     <core-loading [hideUntil]="loaded">
         <core-iframe *ngIf="loaded" id="scorm_object" [src]="src" [iframeWidth]="scormWidth" [iframeHeight]="scormHeight"
-            [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true" />
+            [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="enableFullScreenOnRotate" (loaded)="iframeLoaded()" />
 
         <p *ngIf="!src && errorMessage">{{ errorMessage | translate }}</p>
     </core-loading>
