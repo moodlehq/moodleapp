@@ -739,6 +739,48 @@ export class CoreDom {
         return css.replace(regExp, prefix + ' $1 $2');
     }
 
+    /**
+     * Formats a size to be used as width/height of an element.
+     * If the size is already valid (like '500px' or '50%') it won't be modified.
+     * Returned size will have a format like '500px'.
+     *
+     * @param size Size to format.
+     * @returns Formatted size. If size is not valid, returns an empty string.
+     */
+    static formatSizeUnits(size: string | number): string {
+        // Check for valid pixel units.
+        if (typeof size === 'string') {
+            size = size.replace(/ /g, ''); // Trim and remove all spaces.
+            if (CoreDom.hasValidSizeUnits(size) || size === 'auto' || size === 'initial' || size === 'inherit') {
+                // It seems to be a valid size.
+                return size;
+            }
+
+            // It's important to use parseInt instead of Number because Number('') is 0 instead of NaN.
+            size = parseInt(size, 10);
+        }
+
+        if (!isNaN(size)) {
+            return `${size}px`;
+        }
+
+        return '';
+    }
+
+    /**
+     * Check if a size has valid pixel units.
+     *
+     * @param size Size to check.
+     * @returns Whether the size has valid pixel units.
+     */
+    protected static hasValidSizeUnits(size: string): boolean {
+        const validUnits = ['px', '%', 'em', 'rem', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'ch', 'vw', 'vh', 'vmin', 'vmax'];
+
+        const units = size.match('^[0-9]*\\.?[0-9]+(' + validUnits.join('|') + ')$');
+
+        return !!units && units.length > 1;
+    }
+
 }
 
 /**

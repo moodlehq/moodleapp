@@ -57,6 +57,7 @@ import { ADDON_MOD_LESSON_COMPONENT, AddonModLessonJumpTo } from '../../constant
 import { CoreModals } from '@services/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Page that allows attempting and reviewing a lesson.
@@ -349,8 +350,8 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             await Promise.all(promises);
 
             this.mediaFile = this.lesson.mediafiles?.[0];
-            this.lessonWidth = this.lesson.slideshow ? CoreDomUtils.formatPixelsSize(this.lesson.mediawidth!) : '';
-            this.lessonHeight = this.lesson.slideshow ? CoreDomUtils.formatPixelsSize(this.lesson.mediaheight!) : '';
+            this.lessonWidth = this.lesson.slideshow ? CoreDom.formatSizeUnits(this.lesson.mediawidth!) : '';
+            this.lessonHeight = this.lesson.slideshow ? CoreDom.formatSizeUnits(this.lesson.mediaheight!) : '';
 
             await this.launchRetake(this.currentPage);
 
