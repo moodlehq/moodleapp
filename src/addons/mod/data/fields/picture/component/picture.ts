@@ -16,7 +16,7 @@ import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { Component } from '@angular/core';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 import { CoreFile } from '@services/file';
 import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
@@ -136,8 +136,8 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginBa
                 }
             }, 1);
 
-            this.width = CoreDomUtils.formatPixelsSize(this.field.param1);
-            this.height = CoreDomUtils.formatPixelsSize(this.field.param2);
+            this.width = CoreDom.formatSizeUnits(this.field.param1);
+            this.height = CoreDom.formatSizeUnits(this.field.param2);
         }
     }
 
