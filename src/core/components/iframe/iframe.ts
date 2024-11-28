@@ -29,6 +29,7 @@ import { filter } from 'rxjs/operators';
 import { NavigationStart } from '@angular/router';
 import { CoreSites } from '@services/sites';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreDom } from '@singletons/dom';
 
 @Component({
     selector: 'core-iframe',
@@ -162,10 +163,10 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      */
     async ngOnChanges(changes: {[name: string]: SimpleChange }): Promise<void> {
         if (changes.iframeWidth) {
-            this.iframeWidth = (this.iframeWidth && CoreDomUtils.formatPixelsSize(this.iframeWidth)) || '100%';
+            this.iframeWidth = (this.iframeWidth && CoreDom.formatSizeUnits(this.iframeWidth)) || '100%';
         }
         if (changes.iframeHeight) {
-            this.iframeHeight = (this.iframeHeight && CoreDomUtils.formatPixelsSize(this.iframeHeight)) || '100%';
+            this.iframeHeight = (this.iframeHeight && CoreDom.formatSizeUnits(this.iframeHeight)) || '100%';
         }
 
         if (!changes.src) {
