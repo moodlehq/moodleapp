@@ -57,6 +57,7 @@ import { CoreLoadings } from '@services/loadings';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreHTMLClasses } from '@singletons/html-classes';
+import { CoreDom } from '@singletons/dom';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -350,23 +351,10 @@ export class CoreDomUtilsProvider {
      *
      * @param size Size to format.
      * @returns Formatted size. If size is not valid, returns an empty string.
+     * @deprecated since 5.0. Use CoreDom.formatSizeUnits directly instead.
      */
     formatPixelsSize(size: string | number): string {
-        if (typeof size == 'string' && (size.indexOf('px') > -1 || size.indexOf('%') > -1 || size == 'auto' || size == 'initial')) {
-            // It seems to be a valid size.
-            return size;
-        }
-
-        if (typeof size == 'string') {
-            // It's important to use parseInt instead of Number because Number('') is 0 instead of NaN.
-            size = parseInt(size, 10);
-        }
-
-        if (!isNaN(size)) {
-            return size + 'px';
-        }
-
-        return '';
+        return CoreDom.formatSizeUnits(size);
     }
 
     /**
