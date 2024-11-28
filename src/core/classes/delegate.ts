@@ -214,7 +214,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @returns True if there's any registered handler, false otherwise.
      */
     hasHandlers(enabled = false): boolean {
-        return enabled ? !!this.enabledHandlers.length : !!this.handlers.length;
+        return enabled ? !!Object.keys(this.enabledHandlers).length : !!Object.keys(this.handlers).length;
     }
 
     /**
