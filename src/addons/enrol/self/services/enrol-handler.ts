@@ -88,9 +88,9 @@ export class AddonEnrolSelfHandlerService implements CoreEnrolSelfHandler {
         if (!info.enrolpassword) {
             try {
                 await CoreDomUtils.showConfirm(
-                    Translate.instant('addon.enrol_self.confirmselfenrol') + '<br>' +
-                    Translate.instant('addon.enrol_self.nopassword'),
+                    Translate.instant('addon.enrol_self.confirmselfenrol'),
                     method.name,
+                    Translate.instant('core.courses.enrolme'),
                 );
             } catch {
                 // User cancelled.
