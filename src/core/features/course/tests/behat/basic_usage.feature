@@ -468,7 +468,7 @@ Feature: Test basic usage of one course in app
     And I press "Available courses" in the app
     And I press "Course 1" in the app
     And I press "Enrol me" in the app
-    And I press "OK" in the app
+    And I press "Enrol me" in the app
     And I wait loading to finish in the app
     Then the header should be "Course 1" in the app
     And I should find "Test forum name" in the app
