@@ -256,7 +256,6 @@
   "addon.enrol_guest.passwordinvalid": "enrol_guest",
   "addon.enrol_self.confirmselfenrol": "local_moodlemobileapp",
   "addon.enrol_self.errorselfenrol": "local_moodlemobileapp",
-  "addon.enrol_self.nopassword": "enrol_self",
   "addon.enrol_self.password": "enrol_self",
   "addon.enrol_self.pluginname": "enrol_self",
   "addon.messageoutput_airnotifier.processorsettingsdesc": "local_moodlemobileapp",
