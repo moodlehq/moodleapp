@@ -21,6 +21,9 @@ import { CoreH5P } from '../services/h5p';
 import { CoreH5PCore, CoreH5PDisplayOptions, CoreH5PLocalization } from './core';
 import { CoreError } from '@classes/errors/error';
 import { CorePath } from '@singletons/path';
+import { CorePluginFileTreatDownloadedFileOptions } from '@services/plugin-file-delegate';
+import { CoreH5PMissingDependenciesError } from './errors/missing-dependencies-error';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Equivalent to Moodle's H5P helper class.
@@ -89,13 +92,13 @@ export class CoreH5PHelper {
 
         // Add core stylesheets.
         CoreH5PCore.STYLES.forEach((style) => {
-            settings.core!.styles.push(libUrl + style);
+            settings.core?.styles.push(libUrl + style);
             cssRequires.push(libUrl + style);
         });
 
         // Add core JavaScript.
         CoreH5PCore.getScripts().forEach((script) => {
-            settings.core!.scripts.push(script);
+            settings.core?.scripts.push(script);
             jsRequires.push(script);
         });
 
@@ -163,19 +166,22 @@ export class CoreH5PHelper {
      *
      * @param fileUrl The file URL used to download the file.
      * @param file The file entry of the downloaded file.
-     * @param siteId Site ID. If not defined, current site.
-     * @param onProgress Function to call on progress.
+     * @param options Options.
      * @returns Promise resolved when done.
      */
-    static async saveH5P(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: CoreH5PSaveOnProgress): Promise<void> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
+    static async saveH5P(
+        fileUrl: string,
+        file: FileEntry,
+        options: CorePluginFileTreatDownloadedFileOptions<ProgressEvent | { message: string }> = {},
+    ): Promise<void> {
+        const siteId = options.siteId || CoreSites.getCurrentSiteId();
 
         // Notify that the unzip is starting.
-        onProgress && onProgress({ message: 'core.unzipping' });
+        options.onProgress && options.onProgress({ message: 'core.unzipping' });
 
         const queueId = siteId + ':saveH5P:' + fileUrl;
 
-        await CoreH5P.queueRunner.run(queueId, () => CoreH5PHelper.performSave(fileUrl, file, siteId, onProgress));
+        await CoreH5P.queueRunner.run(queueId, () => CoreH5PHelper.performSave(fileUrl, file, { ...options, siteId }));
     }
 
     /**
@@ -183,40 +189,54 @@ export class CoreH5PHelper {
      *
      * @param fileUrl The file URL used to download the file.
      * @param file The file entry of the downloaded file.
-     * @param siteId Site ID. If not defined, current site.
-     * @param onProgress Function to call on progress.
+     * @param options Options.
      * @returns Promise resolved when done.
      */
     protected static async performSave(
         fileUrl: string,
         file: FileEntry,
-        siteId?: string,
-        onProgress?: CoreH5PSaveOnProgress,
+        options: CorePluginFileTreatDownloadedFileOptions<ProgressEvent | { message: string }> = {},
     ): Promise<void> {
 
         const folderName = CoreMimetypeUtils.removeExtension(file.name);
         const destFolder = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
 
         // Unzip the file.
-        await CoreFile.unzipFile(CoreFile.getFileEntryURL(file), destFolder, onProgress);
+        await CoreFile.unzipFile(CoreFile.getFileEntryURL(file), destFolder, options.onProgress);
 
         try {
             // Notify that the unzip is starting.
-            onProgress && onProgress({ message: 'core.storingfiles' });
+            options.onProgress && options.onProgress({ message: 'core.storingfiles' });
 
             // Read the contents of the unzipped dir, process them and store them.
             const contents = await CoreFile.getDirectoryContents(destFolder);
 
-            const filesData = await CoreH5P.h5pValidator.processH5PFiles(destFolder, contents, siteId);
+            const filesData = await CoreH5P.h5pValidator.processH5PFiles(destFolder, contents, options.siteId);
 
-            const content = await CoreH5P.h5pStorage.savePackage(filesData, folderName, fileUrl, false, siteId);
+            const content = await CoreH5P.h5pStorage.savePackage(filesData, folderName, fileUrl, false, options.siteId);
 
             // Create the content player.
-            const contentData = await CoreH5P.h5pCore.loadContent(content.id, undefined, siteId);
+            const contentData = await CoreH5P.h5pCore.loadContent(content.id, undefined, options.siteId);
 
             const embedType = CoreH5PCore.determineEmbedType(contentData.embedType, contentData.library.embedTypes);
 
-            await CoreH5P.h5pPlayer.createContentIndex(content.id!, fileUrl, contentData, embedType, siteId);
+            await CoreH5P.h5pPlayer.createContentIndex(content.id!, fileUrl, contentData, embedType, options.siteId);
+        } catch (error) {
+            if (error instanceof CoreH5PMissingDependenciesError) {
+                // Store the missing dependencies to avoid re-downloading the file every time.
+                await CorePromiseUtils.ignoreErrors(CoreH5P.h5pFramework.storeMissingDependencies(
+                    fileUrl,
+                    error.missingDependencies,
+                    {
+                        component: options.component,
+                        componentId: options.componentId,
+                        fileTimemodified: options.timemodified,
+                        siteId: options.siteId,
+                    },
+                ));
+            }
+
+            throw error;
         } finally {
             // Remove tmp folder.
             try {
@@ -264,5 +284,3 @@ export type CoreH5PCoreSettings = {
     loadedJs?: string[];
     loadedCss?: string[];
 };
-
-export type CoreH5PSaveOnProgress = (event?: ProgressEvent | { message: string }) => void;

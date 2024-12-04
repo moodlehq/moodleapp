@@ -1,10 +1,13 @@
 {
     "activitydisabled": "Your organisation has disabled this activity in the mobile app.",
+    "activitynotavailableoffline": "This activity is not available offline.",
     "activitynotyetviewableremoteaddon": "Your organisation installed a plugin that is not yet supported.",
+    "activityrequiresconnection": "This activity is only available with an internet connection. If your device is offline, you will not be able to access it.",
     "allsections": "All sections",
     "aria:sectionprogress": "Section progress:",
     "availablespace": "You currently have about {{available}} free space.",
     "cannotdeletewhiledownloading": "Files cannot be deleted while the activity is being downloaded. Please wait for the download to finish.",
+    "changesofflinemaybelost": "Any changes you make to this activity while offline may not be saved.<br><br>Connect your device to the internet to avoid losing your progress.",
     "communicationroomlink": "Chat to course participants",
     "completion_automatic:done": "Done:",
     "completion_automatic:failed": "Failed:",
