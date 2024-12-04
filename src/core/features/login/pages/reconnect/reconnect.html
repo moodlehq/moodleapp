@@ -31,16 +31,8 @@
 
             <div class="ion-text-wrap ion-text-center core-login-info-box">
                 <div class="core-login-site">
-                    <div class="core-login-site-logo" *ngIf="!showUserAvatar">
-                        <!-- Show site logo or a default image. -->
-                        <img *ngIf="logoUrl" [src]="logoUrl" role="presentation" onError="this.src='assets/img/login_logo.png'" alt=""
-                            core-external-content [siteId]="siteId">
-                        <img *ngIf="!logoUrl" src="assets/img/login_logo.png" role="presentation" alt="">
-                    </div>
+                    <core-site-logo siteNameMode="p" [showLogo]="!showUserAvatar" [site]="site" />
 
-                    <p *ngIf="siteInfo?.siteName" class="ion-no-margin ion-no-padding core-sitename">
-                        <core-format-text [text]="siteInfo?.siteName" [filter]="false" />
-                    </p>
                     <p class="core-siteurl" *ngIf="displaySiteUrl">{{site.siteUrl}}</p>
                 </div>
 

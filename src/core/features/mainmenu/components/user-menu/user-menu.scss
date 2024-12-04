@@ -22,23 +22,17 @@
     }
 }
 
-.core-usermenu-sitename {
-    font: var(--mdl-typography-subtitle-font-lg);
-}
+core-site-logo {
+    --core-site-logo-margin-bottom: 8px;
+    --core-site-logo-max-height: var(--core-user-menu-site-logo-max-height);
 
-img.core-usermenu-site-logo {
-    margin-bottom: 8px;
-    max-height: var(--core-user-menu-site-logo-max-height);
+    --core-site-logo-sitename-font: var(--mdl-typography-subtitle-font-lg);
+    --core-site-logo-sitename-margin-bottom: 2px;
 }
-
-img.image-not-found {
-    display: none;
-}
-
 
 @if ($core-user-hide-sitename) {
-    .core-usermenu-sitename {
-        display: none;
+    core-site-logo {
+        --core-site-logo-sitename-display: none;
     }
 }
 

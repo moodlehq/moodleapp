@@ -97,6 +97,17 @@ describe('CoreFormatTextDirective', () => {
 
     it('should get filters from server and format text', async () => {
         // Arrange
+        const site = mock(new CoreSite('25', 'https://mysite.com', 'token'), {
+            getId: () => site.id,
+        });
+
+        mockSingleton(CoreSites, {
+            getSite: () => Promise.resolve(site),
+            getCurrentSite: () => site,
+            getCurrentSiteId: () => site.id,
+        });
+
+        // Arrange
         mockSingleton(CoreFilterHelper, {
             getFiltersAndFormatText: () => Promise.resolve({
                 text: 'Formatted text',
@@ -124,7 +135,7 @@ describe('CoreFormatTextDirective', () => {
             ContextLevel.COURSE,
             42,
             expect.anything(),
-            undefined,
+            '25',
         );
     });
 

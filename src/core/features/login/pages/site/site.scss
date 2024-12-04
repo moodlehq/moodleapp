@@ -99,7 +99,8 @@
 }
 
 @include media-breakpoint-up(md) {
-    ion-content .core-login-site-logo {
+    ion-content .core-login-site-logo,
+    ion-content core-site-logo {
         margin-top: 20%;
         &.hidden {
             margin-top: 0;

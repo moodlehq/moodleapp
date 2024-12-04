@@ -57,8 +57,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
     credForm!: FormGroup;
     site!: CoreUnauthenticatedSite;
-    siteName?: string;
-    logoUrl?: string;
     authInstructions?: string;
     canSignup?: boolean;
     pageLoaded = false;
@@ -104,11 +102,9 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             }
 
             this.site = CoreSitesFactory.makeUnauthenticatedSite(siteUrl, this.siteConfig);
-            this.logoUrl = this.site.getLogoUrl(this.siteConfig);
             this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
             this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.site, this.siteConfig);
             this.displaySiteUrl = this.site.shouldDisplayInformativeLinks();
-            this.siteName = await this.site.getSiteName();
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -220,8 +216,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         if (this.site.isDemoModeSite()) {
             this.showScanQR = false;
         } else {
-            this.siteName = this.siteConfig.sitename;
-            this.logoUrl = this.site.getLogoUrl(this.siteConfig);
             this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
         }
 

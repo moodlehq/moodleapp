@@ -1,0 +1,22 @@
+:host {
+    display: block;
+}
+
+.core-logo-container {
+    margin-bottom: var(--core-site-logo-margin-bottom, 0px);
+}
+
+img.core-logo {
+    max-height: var(--core-site-logo-max-height);
+    max-width: var(--core-site-logo-max-width, 100%);
+
+
+    width: var(--core-site-logo-width, auto);
+    margin: var(--core-site-logo-margin, 0px);
+}
+
+.core-logo-sitename {
+    display: var(--core-site-logo-sitename-display, block);
+    font: var(--core-site-logo-sitename-font);
+    margin-bottom: var(--core-site-logo-sitename-margin-bottom, 0px);
+}

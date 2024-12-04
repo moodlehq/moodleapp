@@ -22,6 +22,7 @@ import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/hand
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 import { resolveHomeRoutes } from '@features/mainmenu/mainmenu-home-routing.module';
 import { CoreMainMenuHomePage } from '@features/mainmenu/pages/home/home';
+import { CoreSiteLogoComponent } from '@/core/components/site-logo/site-logo';
 
 /**
  * Build module routes.
@@ -49,6 +50,7 @@ function buildRoutes(injector: Injector): Routes {
     imports: [
         CoreSharedModule,
         CoreMainMenuComponentsModule,
+        CoreSiteLogoComponent,
     ],
     providers: [
         { provide: ROUTES, multi: true, useFactory: buildRoutes, deps: [Injector] },
