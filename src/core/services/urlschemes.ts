@@ -52,10 +52,10 @@ export class CoreCustomURLSchemesProvider {
      * @returns Error.
      */
     protected createInvalidSchemeError(url: string, data?: CoreCustomURLSchemesParams): CoreCustomURLSchemesHandleError {
-        const defaultError = new CoreError(Translate.instant('core.login.invalidsite'), {
+        const defaultError = new CoreError(Translate.instant('core.login.invalidsite'), { debug: {
             code: 'invalidurlscheme',
             details: `Error when treating a URL scheme, it seems the URL is not valid.<br><br>URL: ${url}`,
-        });
+        } });
 
         return new CoreCustomURLSchemesHandleError(defaultError, data);
     }
@@ -399,11 +399,11 @@ export class CoreCustomURLSchemesProvider {
             // Error decoding the parameter.
             this.logger.error('Error decoding parameter received for login SSO');
 
-            throw new CoreCustomURLSchemesHandleError(new CoreError(Translate.instant('core.login.invalidsite'), {
+            throw new CoreCustomURLSchemesHandleError(new CoreError(Translate.instant('core.login.invalidsite'), { debug: {
                 code: 'errordecodingparameter',
                 details: `Error when trying to decode base 64 string.<br><br>URL: ${originalUrl}<br><br>Text to decode: ${url}` +
                     `<br><br>Error: ${CoreErrorHelper.getErrorMessageFromError(err)}`,
-            }));
+            } }));
         }
 
         const data: CoreCustomURLSchemesParams = await CoreLoginHelper.validateBrowserSSOLogin(url);
@@ -529,10 +529,10 @@ export class CoreCustomURLSchemesProvider {
             CoreLoginHelper.treatUserTokenError(error.data.siteUrl, <CoreWSError> error.error);
             CoreSites.logout();
         } else {
-            CoreDomUtils.showErrorModal(error.error ?? new CoreError(Translate.instant('core.login.invalidsite'), {
+            CoreDomUtils.showErrorModal(error.error ?? new CoreError(Translate.instant('core.login.invalidsite'), { debug: {
                 code: 'unknownerror',
                 details: 'Unknown error when treating a URL scheme.',
-            }));
+            } }));
         }
     }
 
