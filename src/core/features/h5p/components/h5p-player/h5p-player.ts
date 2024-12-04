@@ -41,6 +41,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     @Input() src?: string; // The URL of the player to display the H5P package.
     @Input() component?: string; // Component.
     @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
+    @Input() fileTimemodified?: number; // The timemodified of the package file.
 
     showPackage = false;
     state?: string;
@@ -122,6 +123,12 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         try {
+            // Check if the package has missing dependencies. If so, it cannot be downloaded.
+            const missingDependencies = await CoreH5P.h5pFramework.getMissingDependenciesForFile(this.urlParams.url);
+            if (missingDependencies.length > 0) {
+                throw CoreH5P.h5pFramework.buildMissingDependenciesErrorFromDBRecords(missingDependencies);
+            }
+
             // Get the file size and ask the user to confirm.
             const size = await CorePluginFileDelegate.getFileSize({ fileurl: this.urlParams.url }, this.siteId);
 
@@ -149,6 +156,12 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     protected async attemptDownloadInBg(): Promise<void> {
         if (!this.urlParams || !this.src || !this.siteCanDownload || !CoreH5P.canGetTrustedH5PFileInSite() ||
                 !CoreNetwork.isOnline()) {
+            return;
+        }
+
+        // Check if the package has missing dependencies. If so, it cannot be downloaded.
+        const missingDependencies = await CoreH5P.h5pFramework.getMissingDependenciesForFile(this.urlParams.url);
+        if (missingDependencies.length > 0) {
             return;
         }
 

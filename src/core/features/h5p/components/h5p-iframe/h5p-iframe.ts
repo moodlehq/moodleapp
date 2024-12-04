@@ -49,6 +49,9 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     @Input({ transform: toBoolean }) enableInAppFullscreen = false; // Whether to enable our custom in-app fullscreen feature.
     @Input() saveFreq?: number; // Save frequency (in seconds) if enabled.
     @Input() state?: string; // Initial content state.
+    @Input() component?: string; // Component the file is linked to.
+    @Input() componentId?: string | number; // Component ID.
+    @Input() fileTimemodified?: number; // The timemodified of the file.
     @Output() onIframeUrlSet = new EventEmitter<{src: string; online: boolean}>();
     @Output() onIframeLoaded = new EventEmitter<void>();
 
@@ -181,7 +184,12 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
 
                 const file = await CoreFile.getFile(path);
 
-                await CoreH5PHelper.saveH5P(this.fileUrl!, file, this.siteId);
+                await CoreH5PHelper.saveH5P(this.fileUrl!, file, {
+                    siteId: this.siteId,
+                    component: this.component,
+                    componentId: this.componentId,
+                    timemodified: this.fileTimemodified,
+                });
 
                 // File treated. Try to get the index file URL again.
                 const url = await CoreH5P.h5pPlayer.getContentIndexFileUrl(
