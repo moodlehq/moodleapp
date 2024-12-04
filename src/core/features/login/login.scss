@@ -29,20 +29,20 @@
         margin-bottom: 32px;
 
         .core-login-site {
-            .core-login-site-logo {
+            .core-login-site-logo,
+            core-site-logo {
+                --core-site-logo-maxheight: 104px;
+                --core-site-logo-sitename-margin-bottom: 8px;
+                --core-site-logo-sitename-font: var(--mdl-typography-subtitle-font-lg);
+
                 width: 90%;
                 max-width: 300px;
                 margin: 0px auto;
-
-                img {
-                    max-width: 100%;
-                    max-height: 104px;
-                }
             }
 
-            .core-sitename {
-                font-size: 1.2rem;
-                margin-bottom: 8px;
+            .core-login-site-logo img {
+                max-width: 100%;
+                max-height: 104px;
             }
 
             .core-siteurl {
@@ -89,8 +89,11 @@
     }
 
     @if ($core-fixed-url) {
-        .core-sitename, .core-siteurl {
+        .core-siteurl {
             display: none;
+        }
+        core-site-logo {
+            --core-site-logo-sitename-display: none;
         }
     }
 

@@ -163,7 +163,7 @@ export class CoreUnauthenticatedSite {
     }
 
     /**
-     * Check whether the app should use the local logo instead of the remote one.
+     * Check whether the app should use the local logo instead or the remote one.
      *
      * @returns Whether local logo is forced.
      */
@@ -180,10 +180,10 @@ export class CoreUnauthenticatedSite {
     getLogoUrl(config?: CoreSitePublicConfigResponse): string | undefined {
         config = config ?? this.publicConfig;
         if (!config || this.forcesLocalLogo()) {
-            return 'assets/img/login_logo.png';
+            return;
         }
 
-        return config.logourl || config.compactlogourl || 'assets/img/login_logo.png';
+        return config.logourl || config.compactlogourl || undefined;
     }
 
     /**

@@ -1,0 +1,13 @@
+<div class="core-logo-container" *ngIf="showLogo && logoLoaded">
+    <img *ngIf="siteLogo" [src]="siteLogo" class="core-logo" [alt]="siteName" core-external-content (error)="imageError()">
+    <img *ngIf="!siteLogo" [src]="fallbackLogo" class="core-logo" [alt]="siteName">
+</div>
+
+<p *ngIf="siteNameMode === 'p' && siteName" class="ion-margin-top ion-no-padding core-logo-sitename">
+    <core-format-text [text]="siteName" [filter]="false" contextLevel="system" [contextInstanceId]="0" />
+</p>
+<core-format-text *ngIf="siteNameMode === '' && siteName" [text]="siteName" contextLevel="system" [contextInstanceId]="0"
+    class="core-logo-sitename" />
+<h2 *ngIf="siteNameMode === 'h2' && siteName" class="ion-margin-top ion-no-padding core-logo-sitename">
+    <core-format-text [text]="siteName" [filter]="false" contextLevel="system" [contextInstanceId]="0" />
+</h2>

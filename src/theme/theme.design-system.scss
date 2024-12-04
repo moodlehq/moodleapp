@@ -236,9 +236,9 @@
     --core-mainpage-headerlogo-maxheight: calc(var(--core-header-toolbar-height) - 16px);
 
     @if ($core-dashboard-logo) {
-        --core-mainpage-headerlogo-display: inline;
+        --core-mainpage-headerlogo-display: block;
     } @else {
-        --core-mainpage-sitename-display: inline;
+        --core-mainpage-sitename-display: block;
     }
 }
 
