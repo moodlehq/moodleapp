@@ -1,0 +1,19 @@
+:host {
+    display: block;
+}
+
+.core-logo-container {
+    display: var(--core-site-logo-display, block);
+    margin-bottom: var(--core-site-logo-margin-bottom, 0px);
+}
+
+img.core-logo {
+    max-height: var(--core-site-logo-maxheight);
+    max-width: 100%;
+}
+
+.core-logo-sitename {
+    display: var(--core-site-logo-sitename-display, block);
+    font: var(--core-site-logo-sitename-font);
+    margin-bottom: var(--core-site-logo-sitename-margin-bottom, 0px);
+}
