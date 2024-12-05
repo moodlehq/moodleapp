@@ -235,6 +235,19 @@ export class CoreH5PProvider {
     }
 
     /**
+     * Given an H5P URL, check if it's a trusted URL.
+     *
+     * @param fileUrl File URL to check.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Whether it's a trusted URL.
+     */
+    async isTrustedUrl(fileUrl: string, siteId?: string): Promise<boolean> {
+        const site = await CoreSites.getSite(siteId);
+
+        return site.containsUrl(fileUrl) && !!fileUrl.match(/pluginfile\.php\/([^/]+\/)?[^/]+\/core_h5p\/export\//i);
+    }
+
+    /**
      * Treat an H5P url before sending it to WS.
      *
      * @param url H5P file URL.

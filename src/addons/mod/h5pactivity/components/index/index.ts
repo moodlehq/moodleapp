@@ -53,6 +53,11 @@ import {
     ADDON_MOD_H5PACTIVITY_STATE_ID,
     ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
 } from '../../constants';
+import { CoreH5PMissingDependenciesError } from '@features/h5p/classes/errors/missing-dependencies-error';
+import { CoreToasts, ToastDuration } from '@services/toasts';
+import { Subscription } from 'rxjs';
+import { NgZone, Translate } from '@singletons';
+import { CoreError } from '@classes/errors/error';
 
 /**
  * Component that displays an H5P activity entry page.
@@ -89,8 +94,11 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     isOpeningPage = false;
     canViewAllAttempts = false;
     saveStateEnabled = false;
+    hasMissingDependencies = false;
     saveFreq?: number;
     contentState?: string;
+    isOnline: boolean;
+    triedToPlay = false;
 
     protected fetchContentDefaultError = 'addon.mod_h5pactivity.errorgetactivity';
     protected syncEventName = ADDON_MOD_H5PACTIVITY_AUTO_SYNCED;
@@ -98,6 +106,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     protected observer?: CoreEventObserver;
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
     protected checkCompletionAfterLog = false; // It's called later, when the user plays the package.
+    protected onlineObserver: Subscription;
 
     constructor(
         protected content?: IonContent,
@@ -111,6 +120,39 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         // Listen for messages from the iframe.
         this.messageListenerFunction = (event) => this.onIframeMessage(event);
         window.addEventListener('message', this.messageListenerFunction);
+
+        this.isOnline = CoreNetwork.isOnline();
+        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            NgZone.run(() => {
+                this.networkChanged();
+            });
+        });
+    }
+
+    /**
+     * React to a network status change.
+     */
+    protected networkChanged(): void {
+        const wasOnline = this.isOnline;
+        this.isOnline = CoreNetwork.isOnline();
+
+        if (this.playing && !this.fileUrl && !this.isOnline && wasOnline && this.trackComponent) {
+            // User lost connection while playing an online package with tracking. Show an error.
+            CoreDomUtils.showErrorModal(new CoreError(Translate.instant('core.course.changesofflinemaybelost'), {
+                title: Translate.instant('core.youreoffline'),
+            }));
+
+            return;
+        }
+
+        if (this.isOnline && this.triedToPlay) {
+            // User couldn't play the package because he was offline, but he reconnected. Try again.
+            this.triedToPlay = false;
+            this.play();
+
+            return;
+        }
     }
 
     /**
@@ -164,7 +206,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             );
         }
 
-        if (!this.siteCanDownload || this.state === DownloadStatus.DOWNLOADED) {
+        if (!this.siteCanDownload || this.state === DownloadStatus.DOWNLOADED || this.hasMissingDependencies) {
             // Cannot download the file or already downloaded, play the package directly.
             this.play();
 
@@ -219,12 +261,18 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             return;
         }
 
-        this.deployedFile = await AddonModH5PActivity.getDeployedFile(this.h5pActivity, {
+        const deployedFile = await AddonModH5PActivity.getDeployedFile(this.h5pActivity, {
             displayOptions: this.displayOptions,
             siteId: this.siteId,
         });
 
-        this.fileUrl = CoreFileHelper.getFileUrl(this.deployedFile);
+        this.hasMissingDependencies = await AddonModH5PActivity.hasMissingDependencies(this.module.id, deployedFile);
+        if (this.hasMissingDependencies) {
+            return;
+        }
+
+        this.deployedFile = deployedFile;
+        this.fileUrl = CoreFileHelper.getFileUrl(deployedFile);
 
         // Listen for changes in the state.
         const eventName = await CoreFilepool.getFileEventNameByUrl(this.site.getId(), this.fileUrl);
@@ -362,6 +410,20 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
                 return;
             }
 
+            if (error instanceof CoreH5PMissingDependenciesError) {
+                // Cannot be played offline, use online player.
+                this.hasMissingDependencies = true;
+                this.fileUrl = undefined;
+                this.play();
+
+                CoreToasts.show({
+                    message: Translate.instant('core.course.activityrequiresconnection'),
+                    duration: ToastDuration.LONG,
+                });
+
+                return;
+            }
+
             CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
         }
     }
@@ -448,6 +510,16 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             return;
         }
 
+        if (!this.fileUrl && !this.isOnline) {
+            this.triedToPlay = true;
+
+            CoreDomUtils.showErrorModal(new CoreError(Translate.instant('core.connectandtryagain'), {
+                title: Translate.instant('core.course.activitynotavailableoffline'),
+            }));
+
+            return;
+        }
+
         this.playing = true;
 
         // Mark the activity as viewed.
@@ -456,6 +528,11 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         this.checkCompletion();
 
         this.analyticsLogEvent('mod_h5pactivity_view_h5pactivity');
+
+        if (!this.fileUrl && this.trackComponent) {
+            // User is playing the package in online, invalidate attempts to fetch latest data.
+            AddonModH5PActivity.invalidateUserAttempts(this.h5pActivity.id, CoreSites.getCurrentSiteUserId());
+        }
     }
 
     /**
@@ -466,6 +543,11 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         const userId = CoreSites.getCurrentSiteUserId();
 
         try {
+            if (!this.fileUrl && this.trackComponent && this.h5pActivity) {
+                // User is playing the package in online, invalidate attempts to fetch latest data.
+                await AddonModH5PActivity.invalidateUserAttempts(this.h5pActivity.id, CoreSites.getCurrentSiteUserId());
+            }
+
             await CoreNavigator.navigateToSitePath(
                 `${ADDON_MOD_H5PACTIVITY_PAGE_NAME}/${this.courseId}/${this.module.id}/userattempts/${userId}`,
             );
@@ -732,6 +814,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         super.ngOnDestroy();
 
         this.observer?.off();
+        this.onlineObserver.unsubscribe();
 
         // Wait a bit to make sure all messages have been received.
         setTimeout(() => {

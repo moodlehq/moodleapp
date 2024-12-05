@@ -144,6 +144,12 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
             siteId: siteId,
         });
 
+        // If we already detected that the file has missing dependencies there's no need to download it again.
+        const missingDependencies = await AddonModH5PActivity.getMissingDependencies(module.id, deployedFile, siteId);
+        if (missingDependencies.length > 0) {
+            throw CoreH5P.h5pFramework.buildMissingDependenciesErrorFromDBRecords(missingDependencies);
+        }
+
         if (AddonModH5PActivity.isSaveStateEnabled(h5pActivity)) {
             // If the file needs to be downloaded, delete the states because it means the package has changed or user deleted it.
             const fileState = await CoreFilepool.getFileStateByUrl(siteId, CoreFileHelper.getFileUrl(deployedFile));
@@ -252,6 +258,19 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
                 siteId,
             },
         );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async removeFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
+        // Remove files and delete any missing dependency stored to force recalculating them.
+        await Promise.all([
+            super.removeFiles(module, courseId),
+            CorePromiseUtils.ignoreErrors(
+                CoreH5P.h5pFramework.deleteMissingDependenciesForComponent(ADDON_MOD_H5PACTIVITY_COMPONENT, module.id),
+            ),
+        ]);
     }
 
 }

@@ -32,6 +32,9 @@ import {
     AddonModH5PActivityGradeMethod,
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreFileHelper } from '@services/file-helper';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreH5PMissingDependencyDBRecord } from '@features/h5p/services/database/h5p';
 
 /**
  * Service that provides some features for H5P activity.
@@ -572,6 +575,45 @@ export class AddonModH5PActivityProvider {
     }
 
     /**
+     * Get missing dependencies for a certain H5P activity.
+     *
+     * @param componentId Component ID.
+     * @param deployedFile File to check.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Missing dependencies, empty if no missing dependencies.
+     */
+    async getMissingDependencies(
+        componentId: number,
+        deployedFile: CoreWSFile,
+        siteId?: string,
+    ): Promise<CoreH5PMissingDependencyDBRecord[]> {
+        const fileUrl = CoreFileHelper.getFileUrl(deployedFile);
+
+        const missingDependencies =
+            await CoreH5P.h5pFramework.getMissingDependenciesForComponent(ADDON_MOD_H5PACTIVITY_COMPONENT, componentId, siteId);
+        if (!missingDependencies.length) {
+            return [];
+        }
+
+        // The activity had missing dependencies, but the package could have changed (e.g. the teacher fixed it).
+        // Check which of the dependencies apply to the current package.
+        const fileId = await CoreH5P.h5pFramework.getFileIdForMissingDependencies(fileUrl, siteId);
+
+        const filteredMissingDependencies = missingDependencies.filter(dependency =>
+            dependency.fileid === fileId && dependency.filetimemodified === deployedFile.timemodified);
+        if (filteredMissingDependencies.length > 0) {
+            return filteredMissingDependencies;
+        }
+
+        // Package has changed, delete previous missing dependencies.
+        await CorePromiseUtils.ignoreErrors(
+            CoreH5P.h5pFramework.deleteMissingDependenciesForComponent(ADDON_MOD_H5PACTIVITY_COMPONENT, componentId, siteId),
+        );
+
+        return [];
+    }
+
+    /**
      * Get cache key for attemps WS calls.
      *
      * @param id Instance ID.
@@ -656,6 +698,20 @@ export class AddonModH5PActivityProvider {
             }
         }
 
+    }
+
+    /**
+     * Check if a package has missing dependencies.
+     *
+     * @param componentId Component ID.
+     * @param deployedFile File to check.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Whether the package has missing dependencies.
+     */
+    async hasMissingDependencies(componentId: number, deployedFile: CoreWSFile, siteId?: string): Promise<boolean> {
+        const missingDependencies = await this.getMissingDependencies(componentId, deployedFile, siteId);
+
+        return missingDependencies.length > 0;
     }
 
     /**

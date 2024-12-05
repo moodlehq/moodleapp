@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreError } from '@classes/errors/error';
+import { CoreH5PMissingDependenciesError } from './errors/missing-dependencies-error';
 import { FileEntry, DirectoryEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFile, CoreFileFormat } from '@services/file';
 import { Translate } from '@singletons';
@@ -269,10 +269,10 @@ export class CoreH5PValidator {
             const libString = Object.keys(missingLibraries)[0];
             const missingLibrary = missingLibraries[libString];
 
-            throw new CoreError(Translate.instant('core.h5p.missingdependency', { $a: {
+            throw new CoreH5PMissingDependenciesError(Translate.instant('core.h5p.missingdependency', { $a: {
                 lib: missingLibrary.libString,
                 dep: libString,
-            } }));
+            } }), Object.values(missingLibraries));
         }
 
         return { librariesJsonData, mainJsonData, contentJsonData };

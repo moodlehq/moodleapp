@@ -286,10 +286,10 @@ export class CoreSitesProvider {
         siteUrl = CoreUrl.formatURL(siteUrl);
 
         if (!CoreUrl.isHttpURL(siteUrl)) {
-            throw new CoreError(Translate.instant('core.login.invalidsite'), {
+            throw new CoreError(Translate.instant('core.login.invalidsite'), { debug: {
                 code: 'invalidprotocol',
                 details: `URL contains an invalid protocol when checking site.<br><br>Origin: ${origin}.<br><br>URL: ${siteUrl}.`,
-            });
+            } });
         }
 
         if (!CoreNetwork.isOnline()) {

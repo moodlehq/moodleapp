@@ -24,19 +24,28 @@ import { CoreErrorObject } from '@services/error-helper';
  */
 export class CoreError extends Error {
 
+    title?: string;
     debug?: CoreErrorDebug;
 
-    constructor(message?: string, debug?: CoreErrorDebug) {
+    constructor(message?: string, options: CoreErrorOptions = {}) {
         super(message);
 
         // Fix prototype chain: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#support-for-newtarget
         this.name = new.target.name;
         Object.setPrototypeOf(this, new.target.prototype);
 
-        this.debug = debug;
+        this.title = options.title;
+        this.debug = options.debug;
     }
 
 }
+
+export type CoreErrorOptions = {
+    // Error title. By default, 'Error'.
+    title?: string;
+    // Debugging information.
+    debug?: CoreErrorDebug;
+};
 
 /**
  * Debug information of the error.

@@ -1,3 +1,5 @@
+@use "theme/globals" as *;
+
 :host {
     --core-h5p-placeholder-bg-color: var(--gray-300);
     --core-h5p-placeholder-text-color: var(--ion-text-color);

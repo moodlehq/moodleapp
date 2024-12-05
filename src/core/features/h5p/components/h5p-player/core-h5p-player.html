@@ -9,4 +9,5 @@
     </div>
 </div>
 
-<core-h5p-iframe *ngIf="showPackage" [fileUrl]="urlParams!.url" [displayOptions]="displayOptions" [onlinePlayerUrl]="src" />
+<core-h5p-iframe *ngIf="showPackage" [fileUrl]="urlParams!.url" [displayOptions]="displayOptions" [onlinePlayerUrl]="src"
+    [component]="component" [componentId]="componentId" [fileTimemodified]="fileTimemodified" />

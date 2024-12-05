@@ -24,15 +24,19 @@ export const LIBRARIES_TABLE_NAME = 'h5p_libraries'; // Installed libraries.
 export const LIBRARY_DEPENDENCIES_TABLE_NAME = 'h5p_library_dependencies'; // Library dependencies.
 export const CONTENTS_LIBRARIES_TABLE_NAME = 'h5p_contents_libraries'; // Which library is used in which content.
 export const LIBRARIES_CACHEDASSETS_TABLE_NAME = 'h5p_libraries_cachedassets'; // H5P cached library assets.
+export const MISSING_DEPENDENCIES_TABLE_NAME = 'h5p_missing_dependencies'; // Information about missing dependencies.
+export const MISSING_DEPENDENCIES_PRIMARY_KEYS = ['fileid', 'machinename', 'majorversion', 'minorversion'] as const;
+
 export const SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreH5PProvider',
-    version: 2,
+    version: 3,
     canBeCleared: [
         CONTENT_TABLE_NAME,
         LIBRARIES_TABLE_NAME,
         LIBRARY_DEPENDENCIES_TABLE_NAME,
         CONTENTS_LIBRARIES_TABLE_NAME,
         LIBRARIES_CACHEDASSETS_TABLE_NAME,
+        MISSING_DEPENDENCIES_TABLE_NAME,
     ],
     tables: [
         {
@@ -243,6 +247,46 @@ export const SITE_SCHEMA: CoreSiteSchema = {
                 },
             ],
         },
+        {
+            name: MISSING_DEPENDENCIES_TABLE_NAME,
+            columns: [
+                {
+                    name: 'fileid',
+                    type: 'TEXT',
+                },
+                {
+                    name: 'machinename',
+                    type: 'TEXT',
+                },
+                {
+                    name: 'majorversion',
+                    type: 'INTEGER',
+                },
+                {
+                    name: 'minorversion',
+                    type: 'INTEGER',
+                },
+                {
+                    name: 'requiredby',
+                    type: 'TEXT',
+                    notNull: true,
+                },
+                {
+                    name: 'filetimemodified',
+                    type: 'INTEGER',
+                    notNull: true,
+                },
+                {
+                    name: 'component',
+                    type: 'TEXT',
+                },
+                {
+                    name: 'componentId',
+                    type: 'TEXT',
+                },
+            ],
+            primaryKeys: [...MISSING_DEPENDENCIES_PRIMARY_KEYS],
+        },
     ],
     async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
         if (oldVersion >= 2) {
@@ -320,3 +364,19 @@ export type CoreH5PLibraryCachedAssetsDBRecord = {
     hash: string; // The hash to identify the cached asset.
     foldername: string; // Name of the folder that contains the contents.
 };
+
+/**
+ * Structure of missing dependency data stored in DB.
+ */
+export type CoreH5PMissingDependencyDBRecord = {
+    fileid: string; // Identifier of the package that has a missing dependency. It will be part of the file url.
+    filetimemodified: number; // Time when the file was last modified.
+    machinename: string; // Machine name of the missing dependency.
+    majorversion: number; // Major version of the missing dependency.
+    minorversion: number; // Minor version of the missing dependency.
+    requiredby: string; // LibString of the library that requires the missing dependency.
+    component?: string; // Component related to the package.
+    componentId?: string | number; // Component ID related to the package.
+};
+
+export type CoreH5PMissingDependencyDBPrimaryKeys = typeof MISSING_DEPENDENCIES_PRIMARY_KEYS[number];
