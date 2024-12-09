@@ -637,8 +637,8 @@ export class CoreSite extends CoreAuthenticatedSite {
     /**
      * @inheritdoc
      */
-    protected getDisabledFeatures(): string | undefined {
-        return this.config ? this.getStoredConfig('tool_mobile_disabledfeatures') : super.getDisabledFeatures();
+    protected getSiteDisabledFeatures(): string | undefined {
+        return this.config ? this.getStoredConfig('tool_mobile_disabledfeatures') : super.getSiteDisabledFeatures();
     }
 
     /**
