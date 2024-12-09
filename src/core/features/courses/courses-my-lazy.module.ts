@@ -20,6 +20,7 @@ import { CoreBlockComponentsModule } from '@features/block/components/components
 
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 import { CoreCoursesMyPage } from '@features/courses/pages/my/my';
+import { CoreSiteLogoComponent } from '@/core/components/site-logo/site-logo';
 
 const routes: Routes = [
     {
@@ -34,6 +35,7 @@ const routes: Routes = [
         CoreSharedModule,
         CoreBlockComponentsModule,
         CoreMainMenuComponentsModule,
+        CoreSiteLogoComponent,
     ],
     declarations: [
         CoreCoursesMyPage,

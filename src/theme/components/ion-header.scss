@@ -69,15 +69,8 @@ ion-header.header-md {
             display: inline !important;
         }
 
-        h1 {
-            .core-header-logo {
-                max-height: var(--core-mainpage-headerlogo-maxheight);
-                display: var( --core-mainpage-headerlogo-display);
-            }
-
-            .core-header-sitename {
-                display: var(--core-mainpage-sitename-display);
-            }
+        h1 core-site-logo {
+            --core-site-logo-max-height: var(--core-mainpage-headerlogo-maxheight);
         }
 
         h1, h2, .subheading {
