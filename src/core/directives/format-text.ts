@@ -120,14 +120,14 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         this.element.innerHTML = this.emptyText;
 
         this.element.addEventListener('click', (event) => this.elementClicked(event));
-
-        this.siteId = this.siteId || CoreSites.getCurrentSiteId();
     }
 
     /**
      * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
+        this.siteId = this.siteId || CoreSites.getCurrentSiteId();
+
         if (changes.text || changes.filter || changes.contextLevel || changes.contextInstanceId) {
             this.formatAndRenderContents();
 
@@ -450,7 +450,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         let formatted: string;
         let filters: CoreFilterFilter[] = [];
 
-        if (filter) {
+        if (filter && siteId) {
             const filterResult = await CoreFilterHelper.getFiltersAndFormatText(
                 this.text || '',
                 this.contextLevel || ContextLevel.SYSTEM,

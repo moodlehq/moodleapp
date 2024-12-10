@@ -48,7 +48,6 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
 
     @ViewChild(CoreBlockComponent) block!: CoreBlockComponent;
 
-    siteName = '';
     downloadCoursesEnabled = false;
     userId: number;
     loadedBlock?: Partial<CoreCourseBlock>;
@@ -66,8 +65,6 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async () => {
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-            await this.loadSiteName();
-
         }, CoreSites.getCurrentSiteId());
 
         this.userId = CoreSites.getCurrentSiteUserId();
@@ -97,8 +94,6 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
         this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
         CoreSites.loginNavigationFinished();
-
-        await this.loadSiteName();
 
         this.loadContent(true);
     }
@@ -154,14 +149,6 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
         this.onReadyPromise.resolve();
 
         this.logView();
-    }
-
-    /**
-     * Load the site name.
-     */
-    protected async loadSiteName(): Promise<void> {
-        const site = CoreSites.getRequiredCurrentSite();
-        this.siteName = await site.getSiteName() || '';
     }
 
     /**

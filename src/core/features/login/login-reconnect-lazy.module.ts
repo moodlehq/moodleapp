@@ -18,6 +18,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreLoginComponentsModule } from '@features/login/components/components.module';
 import { CoreLoginReconnectPage } from '@features/login/pages/reconnect/reconnect';
+import { CoreSiteLogoComponent } from '@/core/components/site-logo/site-logo';
 
 const routes: Routes = [
     {
@@ -31,6 +32,7 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         CoreLoginComponentsModule,
+        CoreSiteLogoComponent,
     ],
     declarations: [
         CoreLoginReconnectPage,
