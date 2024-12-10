@@ -50,9 +50,7 @@ import { CoreSiteLogoComponent } from '@/core/components/site-logo/site-logo';
 })
 export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
-    siteId?: string;
     siteInfo?: CoreSiteInfo;
-    siteName?: string;
     siteUrl?: string;
     displaySiteUrl = false;
     handlers: CoreUserProfileHandlerData[] = [];
@@ -63,6 +61,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     displayContactSupport = false;
     removeAccountOnLogout = false;
 
+    protected siteId?: string;
+    protected siteName?: string;
     protected subscription!: Subscription;
 
     /**

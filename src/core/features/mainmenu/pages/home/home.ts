@@ -16,7 +16,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver } from '@singletons/events';
 import { CoreTabsOutletComponent, CoreTabsOutletTab } from '@components/tabs-outlet/tabs-outlet';
 import { CoreMainMenuHomeDelegate, CoreMainMenuHomeHandlerToDisplay } from '../../services/home-delegate';
 import { CoreArray } from '@singletons/array';
@@ -44,16 +44,9 @@ export class CoreMainMenuHomePage implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        await this.loadSiteName();
-
         this.subscription = CoreMainMenuHomeDelegate.getHandlersObservable().subscribe((handlers) => {
             handlers && this.initHandlers(handlers);
         });
-
-        // Refresh the enabled flags if site is updated.
-        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async () => {
-            await this.loadSiteName();
-        }, CoreSites.getCurrentSiteId());
     }
 
     /**
@@ -90,14 +83,6 @@ export class CoreMainMenuHomePage implements OnInit {
         setTimeout(() => {
             this.loaded = loaded;
         }, 50);
-    }
-
-    /**
-     * Load the site name.
-     */
-    protected async loadSiteName(): Promise<void> {
-        const site = CoreSites.getRequiredCurrentSite();
-        this.siteName = await site.getSiteName() || '';
     }
 
     /**
