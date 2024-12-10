@@ -3,16 +3,15 @@
 }
 
 .core-logo-container {
-    margin-bottom: var(--core-site-logo-margin-bottom, 0px);
-}
-
-img.core-logo {
-    max-height: var(--core-site-logo-max-height);
     max-width: var(--core-site-logo-max-width, 100%);
 
 
     width: var(--core-site-logo-width, auto);
     margin: var(--core-site-logo-margin, 0px);
+}
+
+img.core-logo {
+    max-height: var(--core-site-logo-max-height);
 }
 
 .core-logo-sitename {
