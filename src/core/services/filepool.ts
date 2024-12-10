@@ -748,19 +748,13 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileUrl The file URL.
-     * @param options Extra options (revision, timemodified, isexternalfile, repositorytype).
-     * @param filePath Filepath to download the file to. If defined, no extension will be added.
-     * @param onProgress Function to call on progress.
-     * @param poolFileObject When set, the object will be updated, a new entry will not be created.
+     * @param options Extra options.
      * @returns Resolved with internal URL on success, rejected otherwise.
      */
     protected async downloadForPoolByUrl(
         siteId: string,
         fileUrl: string,
-        options: CoreFilepoolFileOptions = {},
-        filePath?: string,
-        onProgress?: CoreFilepoolOnProgressCallback,
-        poolFileObject?: CoreFilepoolFileEntry,
+        options: DownloadForPoolOptions = {},
     ): Promise<string> {
         const fileId = this.getFileIdByUrl(fileUrl);
 
@@ -771,10 +765,10 @@ export class CoreFilepoolProvider {
         }
 
         const extension = CoreMimetypeUtils.guessExtensionFromUrl(fileUrl);
-        const addExtension = filePath === undefined;
-        const path = filePath || (await this.getFilePath(siteId, fileId, extension, fileUrl));
+        const addExtension = options.filePath === undefined;
+        const path = options.filePath || (await this.getFilePath(siteId, fileId, extension, fileUrl));
 
-        if (poolFileObject && poolFileObject.fileId !== fileId) {
+        if (options.poolFileObject && options.poolFileObject.fileId !== fileId) {
             this.logger.error('Invalid object to update passed');
 
             throw new CoreError('Invalid object to update passed.');
@@ -794,9 +788,15 @@ export class CoreFilepoolProvider {
                 throw new CoreError(Translate.instant('core.cannotdownloadfiles'));
             }
 
-            const entry = await CoreWS.downloadFile(fileUrl, path, addExtension, onProgress);
+            const entry = await CoreWS.downloadFile(fileUrl, path, addExtension, options.onProgress);
             const fileEntry = entry;
-            await CorePluginFileDelegate.treatDownloadedFile(fileUrl, fileEntry, siteId, onProgress);
+            await CorePluginFileDelegate.treatDownloadedFile(fileUrl, fileEntry, {
+                siteId,
+                onProgress: options.onProgress,
+                component: options.component,
+                componentId: options.componentId,
+                timemodified: options.timemodified,
+            });
 
             await this.addFileToPool(siteId, fileId, {
                 downloadTime: Date.now(),
@@ -1126,7 +1126,14 @@ export class CoreFilepoolProvider {
             alreadyDownloaded = false;
 
             try {
-                const url = await this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress);
+                const url = await this.downloadForPoolByUrl(siteId, fileUrl, {
+                    ...options,
+                    filePath,
+                    onProgress,
+                    component,
+                    componentId,
+                    timemodified: options.timemodified,
+                });
 
                 return finishSuccessfulDownload(url);
             } catch (error) {
@@ -1220,7 +1227,7 @@ export class CoreFilepoolProvider {
      * @param timemodified The timemodified of the file.
      * @returns Promise resolved with the file data to use.
      */
-    protected async fixPluginfileURL(siteId: string, fileUrl: string, timemodified: number = 0): Promise<CoreWSFile> {
+    async fixPluginfileURL(siteId: string, fileUrl: string, timemodified: number = 0): Promise<CoreWSFile> {
         const file = await CorePluginFileDelegate.getDownloadableFile({ fileurl: fileUrl, timemodified });
         const site = await CoreSites.getSite(siteId);
 
@@ -2713,7 +2720,15 @@ export class CoreFilepoolProvider {
         const onProgress = this.getQueueOnProgress(siteId, fileId);
 
         try {
-            await this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress, entry);
+            await this.downloadForPoolByUrl(siteId, fileUrl, {
+                ...options,
+                filePath,
+                onProgress,
+                poolFileObject: entry,
+                component: item.linksUnserialized?.[0]?.component,
+                componentId: item.linksUnserialized?.[0]?.componentId,
+                timemodified: options.timemodified,
+            });
 
             // Success, we add links and remove from queue.
             CorePromiseUtils.ignoreErrors(this.addFileLinks(siteId, fileId, links));
@@ -2752,12 +2767,12 @@ export class CoreFilepoolProvider {
                 dropFromQueue = true;
             }
 
-            let errorMessage: string | undefined;
+            let error = errorObject;
             // Some Android devices restrict the amount of usable storage using quotas.
             // If this quota would be exceeded by the download, it throws an exception.
             // We catch this exception here, and report a meaningful error message to the user.
             if (errorObject instanceof FileTransferError && errorObject.exception && errorObject.exception.includes('EDQUOT')) {
-                errorMessage = 'core.course.insufficientavailablequota';
+                error = new Error(Translate.instant('core.course.insufficientavailablequota'));
             }
 
             if (dropFromQueue) {
@@ -2765,11 +2780,11 @@ export class CoreFilepoolProvider {
 
                 await CorePromiseUtils.ignoreErrors(this.removeFromQueue(siteId, fileId));
 
-                this.treatQueueDeferred(siteId, fileId, false, errorMessage);
+                this.treatQueueDeferred(siteId, fileId, false, error);
                 this.notifyFileDownloadError(siteId, fileId, links);
             } else {
                 // We considered the file as legit but did not get it, failure.
-                this.treatQueueDeferred(siteId, fileId, false, errorMessage);
+                this.treatQueueDeferred(siteId, fileId, false, error);
                 this.notifyFileDownloadError(siteId, fileId, links);
 
                 throw errorObject;
@@ -3124,12 +3139,12 @@ export class CoreFilepoolProvider {
      * @param resolve True if promise should be resolved, false if it should be rejected.
      * @param error String identifier for error message, if rejected.
      */
-    protected treatQueueDeferred(siteId: string, fileId: string, resolve: boolean, error?: string): void {
+    protected treatQueueDeferred(siteId: string, fileId: string, resolve: boolean, error?: Error | string): void {
         if (siteId in this.queueDeferreds && fileId in this.queueDeferreds[siteId]) {
             if (resolve) {
                 this.queueDeferreds[siteId][fileId].resolve();
             } else {
-                this.queueDeferreds[siteId][fileId].reject(new Error(error));
+                this.queueDeferreds[siteId][fileId].reject(typeof error === 'string' ? new Error(error) : error);
             }
             delete this.queueDeferreds[siteId][fileId];
         }
@@ -3241,3 +3256,15 @@ type CoreFilepoolPromisedValue = CorePromisedValue<void> & {
 
 type AnchorOrMediaElement =
     HTMLAnchorElement | HTMLImageElement | HTMLAudioElement | HTMLVideoElement | HTMLSourceElement | HTMLTrackElement;
+
+/**
+ * Options for downloadForPoolByUrl.
+ */
+type DownloadForPoolOptions = CoreFilepoolFileOptions & {
+    filePath?: string; // Filepath to download the file to. If defined, no extension will be added.
+    onProgress?: CoreFilepoolOnProgressCallback; // Function to call on progress.
+    poolFileObject?: CoreFilepoolFileEntry; // When set, the object will be updated, a new entry will not be created.
+    component?: string; // The component to link the file to.
+    componentId?: string | number; // An ID to use in conjunction with the component.
+    timemodified?: number; // The time the file was modified.
+};

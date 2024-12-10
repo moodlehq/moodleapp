@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreError, CoreErrorDebug } from '@classes/errors/error';
+import { CoreError, CoreErrorOptions } from '@classes/errors/error';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 
 /**
@@ -20,13 +20,11 @@ import { CoreUserSupportConfig } from '@features/user/classes/support/support-co
  */
 export class CoreSiteError extends CoreError {
 
-    debug?: CoreErrorDebug;
     supportConfig?: CoreUserSupportConfig;
 
     constructor(options: CoreSiteErrorOptions) {
-        super(options.message);
+        super(options.message, { title: options.title, debug: options.debug });
 
-        this.debug = options.debug;
         this.supportConfig = options.supportConfig;
     }
 
@@ -43,11 +41,8 @@ export class CoreSiteError extends CoreError {
 
 }
 
-export type CoreSiteErrorOptions = {
+export type CoreSiteErrorOptions = CoreErrorOptions & {
     message: string;
-
-    // Debugging information.
-    debug?: CoreErrorDebug;
 
     // Configuration to use to contact site support. If this attribute is present, it means
     // that the error warrants contacting support.
