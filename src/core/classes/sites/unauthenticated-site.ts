@@ -413,7 +413,22 @@ export class CoreUnauthenticatedSite {
      *
      * @returns Disabled features.
      */
-    protected getDisabledFeatures(): string | undefined {
+    protected getDisabledFeatures(): string {
+        const siteDisabledFeatures = this.getSiteDisabledFeatures() || undefined; // If empty string, use undefined.
+        const appDisabledFeatures = CoreConstants.CONFIG.disabledFeatures;
+
+        return [
+            ...(siteDisabledFeatures?.split(',') || []),
+            ...(appDisabledFeatures?.split(',') || []),
+        ].join(',');
+    }
+
+    /**
+     * Get disabled features string configured in the site.
+     *
+     * @returns Disabled features.
+     */
+    protected getSiteDisabledFeatures(): string | undefined {
         return this.publicConfig?.tool_mobile_disabledfeatures;
     }
 
