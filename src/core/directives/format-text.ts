@@ -92,8 +92,12 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     @Input({ transform: toBoolean }) wsNotFiltered = false; // If true it means the WS didn't filter the text for some reason.
     @Input({ transform: toBoolean }) captureLinks = true; // Whether links should tried to be opened inside the app.
     @Input({ transform: toBoolean }) openLinksInApp = false; // Whether links should be opened in InAppBrowser.
-    @Input({ transform: toBoolean }) hideIfEmpty = false; // If true, the tag will contain nothing if text is empty.
     @Input({ transform: toBoolean }) disabled = false; // If disabled, autoplay elements will be disabled.
+
+    /**
+     * @deprecated since 5.0. Not used anymore.
+     */
+    @Input() hideIfEmpty = false; // If true, the tag will contain nothing if text is empty.
 
     @Output() afterRender = new EventEmitter<void>(); // Called when the data is rendered.
     @Output() filterContentRenderingComplete = new EventEmitter<void>(); // Called when the filters have finished rendering content.
@@ -101,10 +105,11 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
     protected element: HTMLElement;
     protected elementControllers: ElementController[] = [];
-    protected emptyText = '';
     protected domPromises: CoreCancellablePromise<void>[] = [];
     protected domElementPromise?: CoreCancellablePromise<void>;
     protected externalContentInstances: CoreExternalContentDirective[] = [];
+
+    protected static readonly EMPTY_TEXT = '&nbsp;';
 
     constructor(
         element: ElementRef,
@@ -116,8 +121,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         this.element = element.nativeElement;
         this.element.classList.add('core-loading'); // Hide contents until they're treated.
 
-        this.emptyText = this.hideIfEmpty ? '' : '&nbsp;';
-        this.element.innerHTML = this.emptyText;
+        this.element.innerHTML = CoreFormatTextDirective.EMPTY_TEXT;
 
         this.element.addEventListener('click', (event) => this.elementClicked(event));
     }
@@ -365,7 +369,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         this.externalContentInstances = [];
 
         if (!this.text) {
-            this.element.innerHTML = this.emptyText; // Remove current contents.
+            this.element.innerHTML = CoreFormatTextDirective.EMPTY_TEXT; // Remove current contents.
 
             await this.finishRender();
 
