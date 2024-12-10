@@ -53,6 +53,7 @@ export interface EnvironmentConfig {
     enableonboarding: boolean;
     forceColorScheme: CoreColorScheme;
     forceLoginLogo: boolean;
+    showTopLogo: 'online' | 'offline' | 'hidden';
     ioswebviewscheme: string;
     appstores: Record<string, string>;
     displayqroncredentialscreen?: boolean;

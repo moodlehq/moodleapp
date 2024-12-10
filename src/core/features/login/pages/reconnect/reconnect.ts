@@ -49,7 +49,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
     credForm: FormGroup;
     site!: CoreSite;
-    logoUrl?: string;
     displaySiteUrl = false;
     showForgottenPassword = true;
     showUserAvatar = false;
@@ -202,7 +201,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
         }
 
         this.isBrowserSSO = CoreLoginHelper.isSSOLoginNeeded(this.siteConfig.typeoflogin);
-        this.logoUrl = this.site.getLogoUrl();
 
         await CoreSites.checkApplication(this.siteConfig);
     }
