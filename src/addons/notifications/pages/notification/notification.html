@@ -49,7 +49,7 @@
 
         <div collapsible-footer appearOnBottom *ngIf="loaded && actions && actions.length > 0" slot="fixed">
             <div class="list-item-limited-width adaptable-buttons-row">
-                <ion-button expand="block" (click)="action.action()" *ngFor="let action of actions">
+                <ion-button expand="block" (click)="action.action(action.sites[0])" *ngFor="let action of actions">
                     <ion-icon slot="start" name="{{action.icon}}" aria-hidden="true" />
                     {{ action.message | translate }}
                 </ion-button>
