@@ -807,7 +807,9 @@ export class CoreSitesProvider {
      * @returns Either VALID_VERSION, WORKPLACE_APP or MOODLE_APP.
      */
     protected validateWorkplaceVersion(info: CoreSiteInfoResponse): number {
-        const isWorkplace = !!info.functions && info.functions.some((func) => func.name == 'tool_program_get_user_programs');
+        const isWorkplace = !!info.functions && info.functions.some((func) =>
+            func.name === 'tool_program_get_user_programs' ||
+            func.name === 'tool_catalogue_get_user_catalogue');
 
         const isWPEnabled = this.isWorkplaceEnabled();
 
