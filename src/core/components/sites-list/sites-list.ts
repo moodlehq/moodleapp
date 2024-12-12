@@ -45,7 +45,7 @@ export class CoreSitesListComponent<T extends CoreSiteBasicInfo> {
 
     @Input({ required: true }) accountsList!: CoreAccountsList<T>;
     @Input({ transform: toBoolean }) sitesClickable = false; // Whether the sites are clickable.
-    @Input({ transform: toBoolean }) currentSiteClickable = false; // If set, specify a different clickable value for current site.
+    @Input({ transform: toBoolean }) currentSiteClickable?: boolean; // If set, set a different clickable value for current site.
     @Output() onSiteClicked = new EventEmitter<T>();
 
     @ContentChild('siteItem') siteItemTemplate?: TemplateRef<{site: T; isCurrentSite: boolean}>;

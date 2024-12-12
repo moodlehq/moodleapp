@@ -91,7 +91,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Input({ transform: toBoolean }) wsNotFiltered = false; // If true it means the WS didn't filter the text for some reason.
     @Input({ transform: toBoolean }) captureLinks = true; // Whether links should tried to be opened inside the app.
-    @Input({ transform: toBoolean }) openLinksInApp = false; // Whether links should be opened in InAppBrowser.
+    @Input({ transform: toBoolean }) openLinksInApp?: boolean; // Whether links should be opened in InAppBrowser.
     @Input({ transform: toBoolean }) disabled = false; // If disabled, autoplay elements will be disabled.
 
     /**
