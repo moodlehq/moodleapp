@@ -107,6 +107,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
     protected checkCompletionAfterLog = false; // It's called later, when the user plays the package.
     protected onlineObserver: Subscription;
+    protected offlineErrorAlert: HTMLIonAlertElement | null = null;
 
     constructor(
         protected content?: IonContent,
@@ -133,15 +134,23 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     /**
      * React to a network status change.
      */
-    protected networkChanged(): void {
+    protected async networkChanged(): Promise<void> {
         const wasOnline = this.isOnline;
         this.isOnline = CoreNetwork.isOnline();
 
+        if (this.isOnline && this.offlineErrorAlert) {
+            // Back online, dismiss the offline error alert.
+            this.offlineErrorAlert.dismiss();
+            this.offlineErrorAlert = null;
+        }
+
         if (this.playing && !this.fileUrl && !this.isOnline && wasOnline && this.trackComponent) {
             // User lost connection while playing an online package with tracking. Show an error.
-            CoreDomUtils.showErrorModal(new CoreError(Translate.instant('core.course.changesofflinemaybelost'), {
-                title: Translate.instant('core.youreoffline'),
-            }));
+            this.offlineErrorAlert = await CoreDomUtils.showErrorModal(
+                new CoreError(Translate.instant('core.course.changesofflinemaybelost'), {
+                    title: Translate.instant('core.youreoffline'),
+                }),
+            );
 
             return;
         }
