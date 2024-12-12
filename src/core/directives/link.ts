@@ -39,7 +39,11 @@ export class CoreLinkDirective implements OnInit {
 
     @Input() href?: string | SafeUrl; // Link URL.
     @Input({ transform: toBoolean }) capture = false; // If the link needs to be captured by the app.
-    @Input({ transform: toBoolean }) inApp = false; // True to open in embedded browser, false to open in system browser.
+    /**
+     * True to force open in embedded browser, false to force open in system browser, undefined to determine it based on
+     * forceOpenLinksIn setting and data-open-in attribute.
+     */
+    @Input({ transform: toBoolean }) inApp?: boolean;
     @Input({ transform: toBoolean }) autoLogin = true; // Whether to try to use auto-login.
     @Input({ transform: toBoolean }) showBrowserWarning = true; // Whether to show a warning before opening browser.
 

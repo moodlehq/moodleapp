@@ -58,7 +58,7 @@ export interface EnvironmentConfig {
     appstores: Record<string, string>;
     displayqroncredentialscreen?: boolean;
     displayqronsitescreen?: boolean;
-    forceOpenLinksIn: 'app' | 'browser';
+    forceOpenLinksIn?: 'app' | 'browser';
     iOSDefaultOpenFileAction?: OpenFileAction;
     customMainMenuItems?: CoreMainMenuLocalizedCustomItem[];
     feedbackFormUrl?: string | false;
