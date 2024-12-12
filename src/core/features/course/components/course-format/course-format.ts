@@ -98,7 +98,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() initialBlockInstanceId?: number; // The instance to focus.
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
-    @Input({ transform: toBoolean }) isGuest = false; // If user is accessing using an ACCESS_GUEST enrolment method.
+    @Input({ transform: toBoolean }) isGuest?: boolean; // If user is accessing using an ACCESS_GUEST enrolment method.
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @ViewChildren(CoreDynamicComponent) dynamicComponents?: QueryList<CoreDynamicComponent<any>>;
