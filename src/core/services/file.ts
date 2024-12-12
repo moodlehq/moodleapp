@@ -152,7 +152,7 @@ export class CoreFileProvider {
         try {
             return <FileEntry> await File.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(path));
         } catch (error) {
-            if (error && error.code === FileError.NOT_FOUND_ERR) {
+            if (error && (error.code === FileError.NOT_FOUND_ERR || error.code === FileError.ENCODING_ERR)) {
                 // Cannot read some files if the path contains the % character and it's not an encoded char. Try encoding it.
                 const encodedPath = encodeURI(path);
                 if (encodedPath !== path) {
@@ -178,7 +178,7 @@ export class CoreFileProvider {
         try {
             return await File.resolveDirectoryUrl(this.addBasePathIfNeeded(path));
         } catch (error) {
-            if (error && error.code === FileError.NOT_FOUND_ERR) {
+            if (error && (error.code === FileError.NOT_FOUND_ERR || error.code === FileError.ENCODING_ERR)) {
                 // Cannot read some files if the path contains the % character and it's not an encoded char. Try encoding it.
                 const encodedPath = encodeURI(path);
                 if (encodedPath !== path) {
