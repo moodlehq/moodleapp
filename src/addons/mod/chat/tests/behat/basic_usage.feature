@@ -1,4 +1,4 @@
-@addon_mod_chat @app @javascript
+@addon_mod_chat @app @javascript @lms_upto4.5
 Feature: Test basic usage of chat in app
   As a student
   I need basic chat functionality to work
