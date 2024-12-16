@@ -44,8 +44,10 @@ body.core-reading-mode-enabled {
         [core-reading-mode] {
             zoom: var(--reading-mode-zoom, 1);
             &> * {
+                --ion-item-background: var(--reading-mode-background, --ion-background-color);
                 --text-color: var(--reading-mode-text-color, --text-color);
                 --color: var(--reading-mode-text-color, --text-color);
+                --subdued-text-color: var(--text-color);
                 color: var(--text-color);
             }
         }
