@@ -28,6 +28,7 @@ import { CoreModals } from '@services/modals';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreCollapsibleHeaderDirective } from './collapsible-header';
+import { CoreLogger } from '@singletons/logger';
 
 /**
  * Directive to add the reading mode to the selected html tag.
@@ -48,6 +49,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
     protected enabled = false;
     protected contentEl?: HTMLIonContentElement;
     protected header?: CoreCollapsibleHeaderDirective;
+    protected logger = CoreLogger.getInstance('CoreReadingModeDirective');
 
     constructor(
         element: ElementRef,
@@ -72,9 +74,14 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         const page = CoreDom.closest(this.element, '.ion-page');
         this.contentEl = page?.querySelector('ion-content') ?? undefined;
 
-        const toolbar = page?.querySelector('ion-header ion-toolbar ion-buttons[slot="end"]');
+        const buttonsContainer = page?.querySelector<HTMLIonButtonsElement>('ion-header ion-toolbar ion-buttons[slot="end"]');
 
-        if (!toolbar || toolbar.querySelector('.core-text-viewer-button')) {
+        if (!buttonsContainer) {
+            this.logger.warn('The header was not found, or it didn\'t have any ion-buttons on slot end.');
+
+            return;
+        }
+        if (buttonsContainer.querySelector('.core-text-viewer-button')) {
             return;
         }
 
@@ -96,7 +103,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         const src = CoreIcons.getIconSrc('font-awesome', 'solid', iconName);
         // Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
         button.innerHTML = `<ion-icon name="fas-${iconName}" aria-hidden="true" src="${src}"></ion-icon>`;
-        toolbar.appendChild(button);
+        buttonsContainer.appendChild(button);
 
         button.addEventListener('click', (e: Event) => {
             if (!this.element.innerHTML) {
