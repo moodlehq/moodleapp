@@ -26,6 +26,8 @@ import { CoreWait } from '@singletons/wait';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreModals } from '@services/modals';
 import { CoreViewer } from '@features/viewer/services/viewer';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreCollapsibleHeaderDirective } from './collapsible-header';
 
 /**
  * Directive to add the reading mode to the selected html tag.
@@ -45,6 +47,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
     protected renamedStyles: HTMLElement[] = [];
     protected enabled = false;
     protected contentEl?: HTMLIonContentElement;
+    protected header?: CoreCollapsibleHeaderDirective;
 
     constructor(
         element: ElementRef,
@@ -76,6 +79,11 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         }
 
         this.contentEl?.classList.add('core-reading-mode-content');
+        
+        const header = CoreDirectivesRegistry.resolve(page?.querySelector('ion-header'), CoreCollapsibleHeaderDirective);
+        if (header) {
+            this.header = header;
+        }
 
         const label = Translate.instant('core.viewer.enterreadingmode');
         const button = document.createElement('ion-button');
@@ -113,6 +121,8 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
     protected async enterReadingMode(): Promise<void> {
         this.enabled = true;
         CoreViewer.loadReadingModeSettings();
+
+        this.header?.setEnabled(false);
 
         document.body.classList.add('core-reading-mode-enabled');
 
@@ -153,6 +163,8 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
         this.enabled = false;
         document.body.classList.remove('core-reading-mode-enabled');
 
+        this.header?.setEnabled(true);
+
         // Enable all styles in element.
         this.disabledStyles.forEach((style) => {
             style.disabled = false;
@@ -181,7 +193,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
 
         const exit = await CoreModals.openModal({
             component: CoreReadingModeSettingsModalComponent,
-            initialBreakpoint: 1,
+            initialBreakpoint: 0.5,
             breakpoints: [0, 1],
             cssClass: 'core-modal-auto-height',
         });
