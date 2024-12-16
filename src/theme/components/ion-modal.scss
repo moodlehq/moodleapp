@@ -124,17 +124,12 @@ ion-modal {
     }
 
     &.core-modal-auto-height {
+        --height: auto;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
 
-        &::part(content) {
-            position: relative;
-            display: block;
-            contain: content;
-        }
-
-        .inner-content {
+        .content-auto-height {
             max-height: 80vh;
             overflow: auto;
         }

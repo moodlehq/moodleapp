@@ -193,7 +193,7 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
 
         const exit = await CoreModals.openModal({
             component: CoreReadingModeSettingsModalComponent,
-            initialBreakpoint: 0.5,
+            initialBreakpoint: 1,
             breakpoints: [0, 1],
             cssClass: 'core-modal-auto-height',
         });

@@ -7,7 +7,7 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<div class="content-auto-height">
     <ion-item lines="none">
         <ion-label class="flex-row">
             <div id="readingmode-range-label">{{ 'core.settings.fontsize' | translate }}</div>
@@ -29,7 +29,7 @@
     </ion-item>
     <ion-item>
         <ion-label>
-            Theme
+            {{ 'core.viewer.theme' | translate }}
         </ion-label>
     </ion-item>
     <ion-radio-group [(ngModel)]="settings.theme" (ionChange)="onSettingChange()">
@@ -50,4 +50,4 @@
         <ion-icon name="fas-book-open-reader" slot="start" aria-hidden="true" class="icon-slash" />
         {{ 'core.viewer.exitreadingmode' | translate }}
     </ion-button>
-</ion-content>
+</div>
