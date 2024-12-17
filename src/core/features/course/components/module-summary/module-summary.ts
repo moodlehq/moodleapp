@@ -180,7 +180,8 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         this.courseId = this.courseId || this.module.course;
         this.moduleNameTranslated = CoreCourse.translateModuleName(this.module.modname, this.module.modplural);
 
-        this.blog = await AddonBlog.isPluginEnabled();
+        this.blog = !CoreSites.getCurrentSite()?.isFeatureDisabled('CoreCourseOptionsDelegate_AddonBlog') &&
+            await AddonBlog.isPluginEnabled();
 
         try {
             await Promise.all([
