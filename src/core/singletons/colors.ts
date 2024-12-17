@@ -42,9 +42,23 @@ export enum CoreIonicColorNames {
  */
 export class CoreColors {
 
+    protected static readonly BLACK_TRANSPARENT_COLORS =
+        ['rgba(0, 0, 0, 0)', 'transparent', '#00000000', '#0000', 'hsl(0, 0%, 0%, 0)'];
+
     // Avoid creating singleton instances.
     private constructor() {
         // Nothing to do.
+    }
+
+    /**
+     * Check if a color is valid.
+     * Accepted formats are rgb, rgba, hsl, hsla, hex and named colors.
+     *
+     * @param color Color in any format.
+     * @returns Whether color is valid.
+     */
+    static isValid(color: string): boolean {
+        return CoreColors.getColorRGBA(color).length >= 3;
     }
 
     /**
@@ -58,23 +72,30 @@ export class CoreColors {
     }
 
     /**
-     * Returns the same color % darker.
+     * Returns the same color % darker. Returned color is always hex, unless the color isn't valid.
      *
      * @param color Color to get darker.
      * @returns Darker Hex RGB color.
      */
     static darker(color: string, percent: number = 48): string {
         const inversePercent = 1 - (percent / 100);
-        const components = CoreColors.hexToRGB(color);
-        components.red = Math.floor(components.red * inversePercent);
-        components.green = Math.floor(components.green * inversePercent);
-        components.blue = Math.floor(components.blue * inversePercent);
 
-        return CoreColors.RGBToHex(components);
+        const rgba = CoreColors.getColorRGBA(color);
+        if (rgba.length < 3) {
+            return color; // Color not valid, return original value.
+        }
+
+        const red = Math.floor(rgba[0] * inversePercent);
+        const green = Math.floor(rgba[1] * inversePercent);
+        const blue = Math.floor(rgba[2] * inversePercent);
+
+        return rgba[3] !== undefined ?
+            CoreColors.getColorHex(`rgba(${red}, ${green}, ${blue}, ${rgba[3]})`) :
+            CoreColors.getColorHex(`rgb(${red}, ${green}, ${blue})`);
     }
 
     /**
-     * Returns the same color % lighter.
+     * Returns the same color % lighter. Returned color is always hex, unless the color isn't valid.
      *
      * @param color Color to get lighter.
      * @returns Lighter Hex RGB color.
@@ -83,12 +104,18 @@ export class CoreColors {
         percent = percent / 100;
         const inversePercent = 1 - percent;
 
-        const components = CoreColors.hexToRGB(color);
-        components.red = Math.floor(255 * percent + components.red * inversePercent);
-        components.green = Math.floor(255 * percent + components.green * inversePercent);
-        components.blue = Math.floor(255 * percent + components.blue * inversePercent);
+        const rgba = CoreColors.getColorRGBA(color);
+        if (rgba.length < 3) {
+            return color; // Color not valid, return original value.
+        }
 
-        return CoreColors.RGBToHex(components);
+        const red = Math.floor(255 * percent + rgba[0] * inversePercent);
+        const green = Math.floor(255 * percent + rgba[1] * inversePercent);
+        const blue = Math.floor(255 * percent + rgba[2] * inversePercent);
+
+        return rgba[3] !== undefined ?
+            CoreColors.getColorHex(`rgba(${red}, ${green}, ${blue}, ${rgba[3]})`) :
+            CoreColors.getColorHex(`rgb(${red}, ${green}, ${blue})`);
     }
 
     /**
@@ -99,19 +126,24 @@ export class CoreColors {
      */
     static getColorHex(color: string): string {
         const rgba = CoreColors.getColorRGBA(color);
-        if (rgba.length === 0) {
+        if (rgba.length < 3) {
             return '';
         }
 
-        const hex = [0,1,2].map(
+        let hex = [0,1,2].map(
             (idx) => CoreColors.componentToHex(rgba[idx]),
         ).join('');
+
+        if (rgba.length > 3) {
+            hex += CoreColors.componentToHex(Math.round(rgba[3] * 255));
+        }
 
         return '#' + hex;
     }
 
     /**
      * Returns RGBA color from any color format.
+     * Only works with RGB, RGBA, HSL, HSLA, hex and named colors.
      *
      * @param color Color in any format.
      * @returns Red, green, blue and alpha.
@@ -119,15 +151,28 @@ export class CoreColors {
     static getColorRGBA(color: string): number[] {
         if (!color.match(/rgba?\(.*\)/)) {
             // Convert the color to RGB format.
+            // Use backgroundColor instead of color because it detects invalid colors like rgb(0, 80) or #0F.
+            const originalColor = color;
             const d = document.createElement('span');
-            d.style.color = color;
+            d.style.backgroundColor = color;
             document.body.appendChild(d);
 
-            color = getComputedStyle(d).color;
+            color = getComputedStyle(d).backgroundColor;
             document.body.removeChild(d);
+
+            // Check that the color is valid. Some invalid colors return rgba(0, 0, 0, 0).
+            if (
+                !color.match(/rgba?\(.*\)/) ||
+                (color === 'rgba(0, 0, 0, 0)' && !CoreColors.BLACK_TRANSPARENT_COLORS.includes(originalColor))
+            ) {
+                return [];
+            }
         }
 
-        const matches = color.match(/\d+[^.]|\d*\.\d*/g) || [];
+        const matches = color.match(/\d+(\.\d+)?|\.\d+/g) || [];
+        if (matches.length < 3) {
+            return [];
+        }
 
         return matches.map((a, index) => index < 3 ? parseInt(a, 10) : parseFloat(a));
     }
@@ -139,9 +184,12 @@ export class CoreColors {
      * @returns Luma number based on SMPTE C, Rec. 709 weightings.
      */
     protected static luma(color: string): number {
-        const rgb = CoreColors.hexToRGB(color);
+        const rgba = CoreColors.getColorRGBA(color);
+        if (rgba.length < 3) {
+            return 0; // Color not valid.
+        }
 
-        return (rgb.red * 0.2126) + (rgb.green * 0.7152) + (rgb.blue * 0.0722);
+        return (rgba[0] * 0.2126) + (rgba[1] * 0.7152) + (rgba[2] * 0.0722);
     }
 
     /**
@@ -149,36 +197,16 @@ export class CoreColors {
      *
      * @param color Hexadec RGB Color.
      * @returns RGB color components.
+     * @deprecated since 5.0. Use getColorRGBA instead.
      */
     static hexToRGB(color: string): ColorComponents {
-        if (color.charAt(0) == '#') {
-            color = color.substring(1);
-        }
-
-        if (color.length === 3) {
-            color = color.charAt(0) + color.charAt(0) + color.charAt(1) + color.charAt(1) + color.charAt(2) + color.charAt(2);
-        } else if (color.length !== 6) {
-            throw('Invalid hex color: ' + color);
-        }
+        const rgba = CoreColors.getColorRGBA(color);
 
         return {
-            red: parseInt(color.substring(0, 2), 16),
-            green: parseInt(color.substring(2, 4), 16),
-            blue: parseInt(color.substring(4, 6), 16),
+            red: rgba[0] ?? 0,
+            green: rgba[1] ?? 0,
+            blue: rgba[2] ?? 0,
         };
-
-    }
-
-    /**
-     * Converts RGB components to Hex string.
-     *
-     * @param color Color components.
-     * @returns RGB color in string.
-     */
-    protected static RGBToHex(color: ColorComponents): string {
-        return '#' + CoreColors.componentToHex(color.red) +
-            CoreColors.componentToHex(color.green) +
-            CoreColors.componentToHex(color.blue);
 
     }
 
