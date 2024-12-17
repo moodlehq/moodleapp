@@ -781,6 +781,44 @@ export class CoreDom {
         return !!units && units.length > 1;
     }
 
+    /**
+     * Search the ion-header of the page.
+     * This function is usually used to find the header of a page to add buttons.
+     *
+     * @returns The header element if found.
+     */
+    static async findIonHeaderFromElement(element: HTMLElement): Promise<HTMLElement | null> {
+        await CoreDom.waitToBeInDOM(element);
+        let parentPage: HTMLElement | null = element;
+
+        while (parentPage && parentPage.parentElement) {
+            const content = parentPage.closest<HTMLIonContentElement>('ion-content');
+            if (content) {
+                // Sometimes ion-page class is not yet added by the ViewController, wait for content to render.
+                await content.componentOnReady();
+            }
+
+            parentPage = parentPage.parentElement.closest('.ion-page, .ion-page-hidden, .ion-page-invisible');
+
+            // Check if the page has a header. If it doesn't, search the next parent page.
+            let header  = parentPage?.querySelector<HTMLIonHeaderElement>(':scope > ion-header');
+
+            if (header && getComputedStyle(header).display !== 'none') {
+                return header;
+            }
+
+            // Find using content if any.
+            header = content?.parentElement?.querySelector<HTMLIonHeaderElement>(':scope > ion-header');
+
+            if (header && getComputedStyle(header).display !== 'none') {
+                return header;
+            }
+        }
+
+        // Header not found, reject.
+        throw Error('Header not found.');
+    }
+
 }
 
 /**

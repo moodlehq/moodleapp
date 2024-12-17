@@ -47,7 +47,6 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
     protected hiddenElements: HTMLElement[] = [];
     protected renamedStyles: HTMLElement[] = [];
     protected enabled = false;
-    protected contentEl?: HTMLIonContentElement;
     protected header?: CoreCollapsibleHeaderDirective;
     protected logger = CoreLogger.getInstance('CoreReadingModeDirective');
 
@@ -64,7 +63,12 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
     async ngAfterViewInit(): Promise<void> {
         await this.viewportPromise;
         await CoreWait.nextTick();
-        this.addTextViewerButton();
+        await this.addTextViewerButton();
+
+        this.enabled = document.body.classList.contains('core-reading-mode-enabled');
+        if (this.enabled) {
+            await this.enterReadingMode();
+        }
     }
 
     /**
@@ -72,24 +76,26 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
      */
     protected async addTextViewerButton(): Promise<void> {
         const page = CoreDom.closest(this.element, '.ion-page');
-        this.contentEl = page?.querySelector('ion-content') ?? undefined;
+        const contentEl = page?.querySelector('ion-content') ?? undefined;
 
-        const buttonsContainer = page?.querySelector<HTMLIonButtonsElement>('ion-header ion-toolbar ion-buttons[slot="end"]');
-
-        if (!buttonsContainer) {
+        const header = await CoreDom.findIonHeaderFromElement(this.element);
+        const buttonsContainer = header?.querySelector<HTMLIonButtonsElement>('ion-toolbar ion-buttons[slot="end"]');
+        if (!buttonsContainer || !contentEl) {
             this.logger.warn('The header was not found, or it didn\'t have any ion-buttons on slot end.');
 
             return;
         }
+
+        contentEl.classList.add('core-reading-mode-content');
+
         if (buttonsContainer.querySelector('.core-text-viewer-button')) {
+
             return;
         }
 
-        this.contentEl?.classList.add('core-reading-mode-content');
-        
-        const header = CoreDirectivesRegistry.resolve(page?.querySelector('ion-header'), CoreCollapsibleHeaderDirective);
-        if (header) {
-            this.header = header;
+        const collapsibleHeader = CoreDirectivesRegistry.resolve(header, CoreCollapsibleHeaderDirective);
+        if (collapsibleHeader) {
+            this.header = collapsibleHeader;
         }
 
         const label = Translate.instant('core.viewer.enterreadingmode');
@@ -118,7 +124,6 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
             } else {
                 this.showReadingSettings();
             }
-
         });
     }
 
@@ -214,8 +219,14 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.disableReadingMode();
         this.viewportPromise?.cancel();
+
+        if (this.enabled && document.body.querySelectorAll('[core-reading-mode]')) {
+            // Do not disable if there are more instances of the directive in the DOM.
+
+            return;
+        }
+        this.disableReadingMode();
     }
 
 }
