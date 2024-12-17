@@ -14,7 +14,6 @@
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar';
-import { CoreMainMenuPage } from '@features/mainmenu/pages/menu/menu';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
@@ -88,10 +87,6 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     protected launchNextObserver?: CoreEventObserver;
     protected launchPrevObserver?: CoreEventObserver;
     protected goOfflineObserver?: CoreEventObserver;
-
-    constructor(
-        protected mainMenuPage: CoreMainMenuPage,
-    ) {}
 
     /**
      * @inheritdoc
@@ -311,8 +306,6 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
     /**
      * Fetch data needed to play the SCORM.
-     *
-     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         if (!this.scorm) {

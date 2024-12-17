@@ -17,7 +17,7 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
-        [courseId]="courseId" [hasDataToSync]="!errorMessage && hasOffline" (completionChanged)="onCompletionChange()" />
+        [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()" />
 
     <!-- Warning message. -->
     <ion-card class="core-info-card" *ngIf="scorm && scorm.warningMessage">
@@ -162,21 +162,8 @@
 
     <div collapsible-footer *ngIf="!showLoading" slot="fixed">
         <div class="list-item-limited-width" *ngIf="scorm && !scorm.warningMessage">
-            <!-- Open in browser button. -->
-            <ng-container *ngIf="errorMessage">
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p class="text-danger">{{ errorMessage | translate }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-button class="ion-margin ion-text-wrap" expand="block" [href]="module.url" core-link [showBrowserWarning]="false">
-                    {{ 'core.openinbrowser' | translate }}
-                    <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
-                </ion-button>
-            </ng-container>
-
             <!-- Warning that user doesn't have any more attempts. -->
-            <ion-card *ngIf="!errorMessage && attemptsLeft === 0" class="core-danger-card">
+            <ion-card *ngIf="attemptsLeft === 0" class="core-danger-card">
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <p>{{ 'addon.mod_scorm.exceededmaxattempts' | translate }}</p>
@@ -184,7 +171,16 @@
                 </ion-item>
             </ion-card>
 
-            <ng-container *ngIf="!errorMessage && (!scorm.lastattemptlock || attemptsLeft > 0)">
+            <ion-card *ngIf="useOnlinePlayer && !isOnline" class="core-warning-card">
+                <ion-item class="ion-text-wrap">
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        {{ 'core.course.activitynotavailableoffline' | translate }} {{ 'core.needinternettoaccessit' | translate }}
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+
+            <ng-container *ngIf="(!scorm.lastattemptlock || attemptsLeft > 0) && (!useOnlinePlayer || isOnline)">
                 <!-- Open SCORM in app form -->
                 <ng-container *ngIf="!downloading && !skip">
                     <!-- Create new attempt -->
