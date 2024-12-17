@@ -89,7 +89,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         try {
-            const header = await this.searchHeader();
+            const header = await CoreDom.findIonHeaderFromElement(this.element);
             if (header) {
                 // Search the right buttons container (start, end or any).
                 let selector = 'ion-buttons';
@@ -190,43 +190,6 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
         this.createdMainContextMenuElement = componentRef.location.nativeElement;
 
         return componentRef.instance;
-    }
-
-    /**
-     * Search the ion-header where the buttons should be added.
-     *
-     * @returns Promise resolved with the header element.
-     */
-    protected async searchHeader(): Promise<HTMLIonHeaderElement> {
-        await CoreDom.waitToBeInDOM(this.element);
-        let parentPage: HTMLElement | null = this.element;
-
-        while (parentPage && parentPage.parentElement) {
-            const content = parentPage.closest<HTMLIonContentElement>('ion-content');
-            if (content) {
-                // Sometimes ion-page class is not yet added by the ViewController, wait for content to render.
-                await content.componentOnReady();
-            }
-
-            parentPage = parentPage.parentElement.closest('.ion-page, .ion-page-hidden, .ion-page-invisible');
-
-            // Check if the page has a header. If it doesn't, search the next parent page.
-            let header  = parentPage?.querySelector<HTMLIonHeaderElement>(':scope > ion-header');
-
-            if (header && getComputedStyle(header).display !== 'none') {
-                return header;
-            }
-
-            // Find using content if any.
-            header = content?.parentElement?.querySelector<HTMLIonHeaderElement>(':scope > ion-header');
-
-            if (header && getComputedStyle(header).display !== 'none') {
-                return header;
-            }
-        }
-
-        // Header not found, reject.
-        throw Error('Header not found.');
     }
 
     /**

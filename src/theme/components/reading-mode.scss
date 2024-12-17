@@ -37,7 +37,8 @@ body.core-reading-mode-enabled {
         }
     }
 
-    ion-content.core-reading-mode-content {
+    ion-content.core-reading-mode-content,
+    ion-content.core-reading-mode-content core-split-view ion-content {
         --background: var(--reading-mode-background, --ion-background-color);
         background: var(--background);
 
