@@ -101,7 +101,7 @@ export class CoreBlockComponent implements OnChanges, OnDestroy {
     }
 
     /**
-     * On destroy of the component, clear up any subscriptions.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.blockSubscription?.unsubscribe();

@@ -191,9 +191,9 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @returns Function returned value or default value.
      */
     protected hasFunction(handlerName: string, fnName: string, onlyEnabled: boolean = true): boolean {
-        const handler = onlyEnabled ? this.enabledHandlers[handlerName] : this.handlers[handlerName];
+        const handler = this.getHandler(handlerName, onlyEnabled);
 
-        return handler && typeof handler[fnName] == 'function';
+        return handler && typeof handler[fnName] === 'function';
     }
 
     /**
@@ -204,7 +204,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @returns If the handler is registered or not.
      */
     hasHandler(name: string, enabled: boolean = false): boolean {
-        return enabled ? this.enabledHandlers[name] !== undefined : this.handlers[name] !== undefined;
+        return this.getHandler(name, enabled) !== undefined;
     }
 
     /**
