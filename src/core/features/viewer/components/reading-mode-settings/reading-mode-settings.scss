@@ -1,0 +1,55 @@
+@use "theme/globals" as *;
+
+ion-button ion-icon.zoom-decrease {
+    font-size: 1.5em;
+}
+
+ion-button ion-icon.zoom-increase {
+    font-size: 2em;
+}
+
+ion-radio.reading-theme {
+
+    &::part(label) {
+        margin: 0px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .preview {
+        width: 40px;
+        height: 40px;
+        border-radius: 100%;
+        @include margin(4px, 16px, 4px, 2px);
+        text-align: center;
+        line-height: 40px;
+        font-size: #{dynamic-font(16px)};
+        font-weight: bold;
+        border: 1px solid var(--stroke);
+
+        &.auto {
+            background: linear-gradient(to right, #{$background-color-dark} 50%, #{$background-color} 50%);
+            color: #{$text-color};
+            &::first-letter {
+                color: #{$text-color-dark};
+            }
+        }
+        &.light {
+            background-color: #{$background-color};
+            color: #{$text-color};
+        }
+        &.dark {
+            background-color: #{$background-color-dark};
+            color: #{$text-color-dark};
+        }
+        &.sepia {
+            background-color: var(--core-reading-mode-sepia-background);
+            color: var(--core-reading-mode-sepia-text-color);
+
+        }
+        &.hcm {
+            background-color: black;
+            color: white;
+        }
+    }
+}

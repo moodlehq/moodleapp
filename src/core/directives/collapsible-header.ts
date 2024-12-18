@@ -100,6 +100,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
     constructor(el: ElementRef) {
         this.collapsedHeader = el.nativeElement;
+        CoreDirectivesRegistry.register(this.collapsedHeader, this);
     }
 
     /**

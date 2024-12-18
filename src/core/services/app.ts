@@ -346,7 +346,8 @@ export class CoreAppProvider {
      */
     setSystemUIColors(): void {
         this.setStatusBarColor();
-        this.setAndroidNavigationBarColor();    }
+        this.setAndroidNavigationBarColor();
+    }
 
     /**
      * Set StatusBar color depending on platform.
