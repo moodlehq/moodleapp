@@ -120,7 +120,7 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
                 );
 
                 // My overview block should always be in main blocks, but check side blocks too just in case.
-                this.loadedBlock = blocks.mainBlocks.concat(blocks.sideBlocks).find((block) => block.name == 'myoverview');
+                this.loadedBlock = blocks.mainBlocks.concat(blocks.sideBlocks).find((block) => block.name === 'myoverview');
                 this.hasSideBlocks = supportsMyParam && CoreBlockDelegate.hasSupportedBlock(blocks.sideBlocks);
 
                 await CoreWait.nextTicks(2);
