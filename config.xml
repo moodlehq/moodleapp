@@ -78,6 +78,9 @@
             <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
             <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
         </config-file>
+        <config-file parent="/resources/style" target="app/src/main/res/values/themes.xml">
+            <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+        </config-file>
     </platform>
     <platform name="ios">
         <resource-file src="GoogleService-Info.plist" />
