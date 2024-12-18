@@ -1,0 +1,60 @@
+
+html {
+    --core-reading-mode-sepia-background: #f4ecd8;
+    --core-reading-mode-sepia-text-color: #5b4636;
+}
+
+body.core-reading-mode-enabled {
+    .core-text-viewer-button {
+        --core-header-buttons-background: var(--stroke);
+    }
+
+    &.core-reading-mode-theme-light {
+        --reading-mode-background: #{$background-color};
+        --reading-mode-text-color: #{$text-color};
+    }
+
+    &.core-reading-mode-theme-dark {
+        --reading-mode-background: #{$background-color-dark};
+        --reading-mode-text-color: #{$text-color-dark};
+    }
+
+    &.core-reading-mode-theme-sepia {
+        --reading-mode-background: var(--core-reading-mode-sepia-background);
+        --reading-mode-text-color: var(--core-reading-mode-sepia-text-color);
+    }
+
+    &.core-reading-mode-theme-hcm {
+        --reading-mode-background: #000000;
+        --reading-mode-text-color: #ffffff;
+    }
+
+    &.core-reading-mode-multimedia-hidden {
+        ion-content.core-reading-mode-content {
+            img, video, iframe {
+                display: none !important;
+            }
+        }
+    }
+
+    ion-content.core-reading-mode-content,
+    ion-content.core-reading-mode-content core-split-view ion-content {
+        --background: var(--reading-mode-background, --ion-background-color);
+        background: var(--background);
+
+        [core-reading-mode] {
+            zoom: var(--reading-mode-zoom, 1);
+            &> * {
+                --ion-item-background: var(--reading-mode-background, --ion-background-color);
+                --text-color: var(--reading-mode-text-color, --text-color);
+                --color: var(--reading-mode-text-color, --text-color);
+                --subdued-text-color: var(--text-color);
+                color: var(--text-color);
+            }
+        }
+
+        .hide-on-reading-mode {
+            display: none !important;
+        }
+    }
+}

@@ -122,4 +122,16 @@ ion-modal {
             justify-content: space-between;
         }
     }
+
+    &.core-modal-auto-height {
+        --height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+
+        .content-auto-height {
+            max-height: 80vh;
+            overflow: auto;
+        }
+    }
 }

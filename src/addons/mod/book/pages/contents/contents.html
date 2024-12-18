@@ -24,7 +24,7 @@
         <div class="safe-area-padding-horizontal core-swipe-slides-container">
             <core-swipe-slides [manager]="manager" [options]="swiperOpts">
                 <ng-template let-chapter="item" let-active="active">
-                    <div class="ion-padding">
+                    <div class="ion-padding" core-reading-mode>
                         <core-format-text [component]="component" [componentId]="cmId" [text]="chapter.content" contextLevel="module"
                             [contextInstanceId]="cmId" [courseId]="courseId" [disabled]="!active" />
                         <div class="ion-margin-top" *ngIf="chapter.tags?.length > 0">
