@@ -49,7 +49,6 @@ export class CoreWindow {
      *
      * @param url URL to open.
      * @param name Name of the browsing context into which to load the URL.
-     * @returns Promise resolved when done.
      */
     static async open(url: string, name?: string): Promise<void> {
         if (CoreUrl.isLocalFileUrl(url)) {
