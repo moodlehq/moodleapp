@@ -1633,6 +1633,23 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Removes the OAuth ID for a given site.
+     *
+     * @param siteId The ID of the site to update.
+     */
+    async removeSiteOauthId(siteId: string): Promise<void> {
+        const site = await this.getSite(siteId);
+
+        site.setOAuthId(undefined);
+
+        const newData: Partial<SiteDBEntry> = {
+            oauthId: null,
+        };
+
+        await this.sitesTable.update(newData, { id: siteId });
+    }
+
+    /**
      * Updates a site's info.
      *
      * @param siteId Site's ID.
