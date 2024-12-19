@@ -403,6 +403,21 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Finds an identity provider from a list of providers based on the given OAuth ID.
+     *
+     * @param providers Array of identity providers.
+     * @param oauthId The OAuth ID to match against the providers' URLs.
+     * @returns The identity provider that matches the given OAuth ID, or undefined if no match is found.
+     */
+    findIdentityProvider(providers: CoreSiteIdentityProvider[], oauthId?: number): CoreSiteIdentityProvider | undefined {
+        if (!oauthId) {
+            return;
+        }
+
+        return providers.find(provider => Number(CoreUrl.extractUrlParams(provider.url).id) === oauthId);
+    }
+
+    /**
      * Go to the page to add a new site.
      * If a fixed URL is configured, go to credentials instead.
      *

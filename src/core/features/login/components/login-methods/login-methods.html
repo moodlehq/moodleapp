@@ -21,9 +21,6 @@
 <!-- Identity providers. -->
 <ion-list *ngIf="identityProviders.length" class="core-login-identity-providers">
     <h2 class="item-heading">{{ 'core.login.potentialidps' | translate }}</h2>
-    <ion-button [fill]="'outline'" *ngFor="let provider of identityProviders" class="ion-text-wrap ion-margin core-oauth-provider"
-        (click)="oauthClicked(provider)" [ariaLabel]="provider.name" expand="block">
-        <img *ngIf="provider.iconurl" [src]="provider.iconurl" alt="" width="32" height="32" slot="start" aria-hidden="true">
-        <ion-label>{{ provider.name }}</ion-label>
-    </ion-button>
+    <core-identity-provider *ngFor="let provider of identityProviders" [provider]="provider" [launchurl]="siteConfig?.launchurl"
+        [redirectData]="redirectData" [siteUrl]="siteUrl" />
 </ion-list>

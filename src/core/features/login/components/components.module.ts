@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreLoginMethodsComponent } from './login-methods/login-methods';
 import { CoreLoginExceededAttemptsComponent } from '@features/login/components/exceeded-attempts/exceeded-attempts';
+import { CoreLoginIdentityProviderComponent } from './identity-provider/identity-provider';
 
 @NgModule({
     declarations: [
@@ -24,6 +25,7 @@ import { CoreLoginExceededAttemptsComponent } from '@features/login/components/e
     ],
     imports: [
         CoreSharedModule,
+        CoreLoginIdentityProviderComponent,
     ],
     exports: [
         CoreLoginExceededAttemptsComponent,
