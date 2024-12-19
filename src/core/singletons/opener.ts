@@ -82,7 +82,6 @@ export class CoreOpener {
      *
      * @param path The local path of the file to be open.
      * @param options Options.
-     * @returns Promise resolved when done.
      */
     static async openFile(path: string, options: CoreOpenerOpenFileOptions = {}): Promise<void> {
         // Convert the path to a native path if needed.
