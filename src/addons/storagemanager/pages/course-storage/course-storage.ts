@@ -35,6 +35,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Page that displays the amount of file storage used by each activity on the course, and allows
@@ -137,11 +138,16 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             this.accordionGroupChange();
         }
 
-        await Promise.all([
-            this.initSizes(),
-            this.initCoursePrefetch(),
-            this.initModulePrefetch(),
-        ]);
+        try {
+            await Promise.all([
+                this.updateSizes(this.sections, Number(this.accordionMultipleValue[0])),
+                this.initCoursePrefetch(),
+                this.initModulePrefetch(),
+            ]);
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        }
+
         this.changeDetectorRef.markForCheck();
     }
 
@@ -268,43 +274,84 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             // Update the status.
             this.updateModuleStatus(moduleFound, status);
         }, CoreSites.getCurrentSiteId());
-
-        // The download status of a section might have been changed from within a module page.
-        this.updateSizes(this.sections);
-    }
-
-    /**
-     * Init section, course and modules sizes.
-     */
-    protected async initSizes(): Promise<void> {
-        await this.updateSizes(this.sections);
     }
 
     /**
      * Update the sizes of some sections and modules.
      *
-     * @param sections Modules.
+     * @param sections Sections.
+     * @param prioritizedSectionId ID of section to prioritize.
      */
-    protected async updateSizes(sections: AddonStorageManagerCourseSection[]): Promise<void> {
+    protected async updateSizes(sections: AddonStorageManagerCourseSection[], prioritizedSectionId?: number): Promise<void> {
         this.calculatingSize = true;
+        this.totalSize = 0;
         CoreCourseHelper.flattenSections(sections).forEach((section) => {
+            section.totalSize = 0;
             section.calculatingSize = true;
         });
 
         this.changeDetectorRef.markForCheck();
 
-        // Update only affected module sections.
-        const modules = CoreCourse.getSectionsModules(sections);
+        // Treat the prioritized section first (if any).
+        const prioritizedIndex = prioritizedSectionId ? sections.findIndex(section => section.id === prioritizedSectionId) : -1;
+        let calculateError;
+        if (prioritizedIndex !== -1) {
+            try {
+                await this.calculateSectionSizeAndStatus(sections[prioritizedIndex]);
+
+                this.changeDetectorRef.markForCheck();
+            } catch (error) {
+                // Store the error, but continue calculating the rest of sections.
+                calculateError = error;
+            }
+        }
+
+        // Treat the rest of sections now.
+        try {
+            await CorePromiseUtils.allPromises(sections.filter((section, index) => index !== prioritizedIndex)
+                .map((section) => this.calculateSectionSizeAndStatus(section)));
+        } catch (error) {
+            calculateError = error;
+        }
+
+        // Update total size.
+        this.sections.forEach((section) => {
+            this.totalSize += section.totalSize;
+        });
+        this.calculatingSize = false;
+
+        // Mark course as not downloaded if course size is 0.
+        if (this.totalSize === 0 && !calculateError) {
+            this.markCourseAsNotDownloaded();
+        }
+
+        this.changeDetectorRef.markForCheck();
+
+        if (calculateError) {
+            throw calculateError;
+        }
+    }
+
+    /**
+     * Calculate section size and status.
+     *
+     * @param section Section.
+     */
+    protected async calculateSectionSizeAndStatus(section: AddonStorageManagerCourseSection): Promise<void> {
+        const modules = CoreCourse.getSectionsModules([section]);
+
+        /* After doing some testing in Android and iOS to compare calculating size and status in parallel vs in series, the
+           results depend on the amount and type of activities downloaded. In general, it seems that doing it in series makes
+           it load a bit faster the first time the page is opened, while doing it in parallel makes it faster the second time
+           (without killing the app). Since the first time is usually slower, prioritize making that load faster. */
         await Promise.all(modules.map(async (module) => {
             await this.calculateModuleSize(module);
         }));
 
+        await this.calculateSectionsStatus([section]);
+
+        // Update the section size and the total size.
         const updateSectionSize = (section: AddonStorageManagerCourseSection): void => {
-            section.totalSize = 0;
-            section.calculatingSize = true;
-
-            this.changeDetectorRef.markForCheck();
-
             section.contents.forEach((modOrSubsection) => {
                 if (!sectionContentIsModule(modOrSubsection)) {
                     updateSectionSize(modOrSubsection);
@@ -318,23 +365,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             this.changeDetectorRef.markForCheck();
         };
 
-        // Update section and total sizes.
-        this.totalSize = 0;
-        this.sections.forEach((section) => {
-            updateSectionSize(section);
-            this.totalSize += section.totalSize;
-        });
-        this.calculatingSize = false;
-
-        // Mark course as not downloaded if course size is 0.
-        if (this.totalSize === 0) {
-            this.markCourseAsNotDownloaded();
-        }
-
-        this.changeDetectorRef.markForCheck();
-
-        await this.calculateSectionsStatus(sections);
-        this.changeDetectorRef.markForCheck();
+        updateSectionSize(section);
     }
 
     /**
