@@ -1611,7 +1611,6 @@ export class CoreSitesProvider {
      * @param siteId Site Id.
      * @param token User's new token.
      * @param privateToken User's private token.
-     * @returns A promise resolved when the site is updated.
      */
     async updateSiteTokenBySiteId(siteId: string, token: string, privateToken: string = ''): Promise<void> {
         const site = await this.getSite(siteId);
