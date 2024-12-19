@@ -195,6 +195,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      * Check if the user authenticated in the site using an OAuth method.
      *
      * @returns Whether the user authenticated in the site using an OAuth method.
+     * @deprecated since 5.0. Use getOAuthId instead.
      */
     isOAuth(): boolean {
         return this.oauthId != null && this.oauthId !== undefined;

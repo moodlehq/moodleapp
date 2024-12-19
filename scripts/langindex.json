@@ -2168,6 +2168,7 @@
   "core.login.missingfirstname": "moodle",
   "core.login.missinglastname": "moodle",
   "core.login.mobileservicesnotenabled": "local_moodlemobileapp",
+  "core.login.morewaystologin": "local_moodlemobileapp",
   "core.login.mustconfirm": "moodle",
   "core.login.newaccount": "moodle",
   "core.login.notloggedin": "local_moodlemobileapp",

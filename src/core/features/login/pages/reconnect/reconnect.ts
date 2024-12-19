@@ -34,6 +34,7 @@ import { CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-sit
 import { ALWAYS_SHOW_LOGIN_FORM_CHANGED, FORGOTTEN_PASSWORD_FEATURE_NAME } from '@features/login/constants';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreLoadings } from '@services/loadings';
+import { CoreLoginMethodsComponent, CoreLoginMethodsCurrentLogin } from '@features/login/components/login-methods/login-methods';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -46,6 +47,17 @@ import { CoreLoadings } from '@services/loadings';
 export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
     @ViewChild('reconnectForm') formElement?: ElementRef;
+    @ViewChild(CoreLoginMethodsComponent) set loginMethods(loginMethods: CoreLoginMethodsComponent) {
+        if (loginMethods && !this.currentLogin) {
+            loginMethods.extractCurrentLogin().then(login => {
+                this.currentLogin = login;
+
+                return;
+            }).catch(() => {
+                // Ignore errors.
+            });
+        }
+    }
 
     credForm: FormGroup;
     site!: CoreSite;
@@ -53,6 +65,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     showForgottenPassword = true;
     showUserAvatar = false;
     isBrowserSSO = false;
+    currentLogin?: CoreLoginMethodsCurrentLogin;
     isLoggedOut: boolean;
     siteId!: string;
     siteInfo?: CoreSiteBasicInfo;
@@ -252,16 +265,21 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
         const modal = await CoreLoadings.show();
 
+        const url = this.site.getURL();
+
         try {
             // Start the authentication process.
-            const data = await CoreSites.getUserToken(this.site.getURL(), this.username, password);
+            const data = await CoreSites.getUserToken(url, this.username, password);
 
-            await CoreSites.updateSiteToken(this.site.getURL(), this.username, data.token, data.privateToken);
+            await CoreSites.updateSiteToken(url, this.username, data.token, data.privateToken);
 
             CoreForms.triggerFormSubmittedEvent(this.formElement, true);
 
+            // Unset oAuthID if it's set.
+            await CoreSites.removeSiteOauthId(this.siteId);
+
             // Update site info too.
-            await CoreSites.updateSiteInfoByUrl(this.site.getURL(), this.username);
+            await CoreSites.updateSiteInfoByUrl(url, this.username);
 
             // Reset fields so the data is not in the view anymore.
             this.credForm.controls['password'].reset();
@@ -271,7 +289,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
                 params: this.redirectData,
             });
         } catch (error) {
-            CoreLoginHelper.treatUserTokenError(this.site.getURL(), error, this.username, password);
+            CoreLoginHelper.treatUserTokenError(url, error, this.username, password);
 
             if (error.loggedout) {
                 this.cancel();

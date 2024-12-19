@@ -1,0 +1,7 @@
+<ion-button class="ion-text-wrap ion-margin core-oauth-provider" (click)="openOAuth()" [ariaLabel]="provider.name" expand="block"
+    fill="outline">
+    @if (provider.iconurl) {
+    <img [src]="provider.iconurl" alt="" width="32" height="32" slot="start" aria-hidden="true" (error)="provider.iconurl = ''" />
+    }
+    <ion-label>{{ provider.name }}</ion-label>
+</ion-button>
