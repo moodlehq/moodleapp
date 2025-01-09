@@ -19,8 +19,8 @@ import {
     CoreDataPrivacyGetAccessInformationWSResponse,
     CoreDataPrivacyRequest,
 } from '@features/dataprivacy/services/dataprivacy';
-import { CoreLoadings } from '@services/loadings';
-import { CoreModals } from '@services/modals';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreDomUtils } from '@services/utils/dom';

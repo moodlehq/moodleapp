@@ -21,10 +21,10 @@ import {
     CoreDataPrivacyGetAccessInformationWSResponse,
 } from '@features/dataprivacy/services/dataprivacy';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 
 import { ModalController } from '@singletons';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Component that displays the new request page.

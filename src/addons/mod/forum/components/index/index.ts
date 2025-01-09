@@ -65,9 +65,9 @@ import {
     AddonModForumType,
 } from '@addons/mod/forum/constants';
 import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
-import { CoreToasts } from '@services/toasts';
-import { CorePopovers } from '@services/popovers';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts } from '@services/overlays/toasts';
+import { CorePopovers } from '@services/overlays/popovers';
+import { CoreLoadings } from '@services/overlays/loadings';
 /**
  * Component that displays a forum entry page.
  */

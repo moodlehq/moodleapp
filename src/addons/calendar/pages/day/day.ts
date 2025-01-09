@@ -46,7 +46,7 @@ import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-sourc
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import {
     ADDON_CALENDAR_AUTO_SYNCED,
     ADDON_CALENDAR_DELETED_EVENT_EVENT,

@@ -20,7 +20,7 @@ import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/logi
 import { CoreNavigator } from '@services/navigator';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreAnimations } from '@components/animations';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Page that displays the list of sites stored in the device.

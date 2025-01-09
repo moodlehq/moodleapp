@@ -26,8 +26,8 @@ import { Subscription } from 'rxjs';
 import { CORE_DATAPRIVACY_FEATURE_NAME, CORE_DATAPRIVACY_PAGE_NAME } from '@features/dataprivacy/constants';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDataPrivacy } from '@features/dataprivacy/services/dataprivacy';
-import { CoreModals } from '@services/modals';
-import { CoreLoadings } from '@services/loadings';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Page to view user acceptances.

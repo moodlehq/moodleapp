@@ -60,8 +60,8 @@ import {
     AddonModForumType,
 } from '../../constants';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreToasts } from '@services/toasts';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts } from '@services/overlays/toasts';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
 

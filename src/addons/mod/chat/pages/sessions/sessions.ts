@@ -25,7 +25,7 @@ import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { AddonModChat } from '@addons/mod/chat/services/chat';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Page that displays list of chat sessions.

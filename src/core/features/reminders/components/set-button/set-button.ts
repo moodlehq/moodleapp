@@ -14,10 +14,10 @@
 
 import { CoreReminderData, CoreReminders } from '@features/reminders/services/reminders';
 import { Component, Input, OnInit } from '@angular/core';
-import { CorePopovers } from '@services/popovers';
+import { CorePopovers } from '@services/overlays/popovers';
 import { Translate } from '@singletons';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreToasts } from '@services/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
 import { REMINDERS_DISABLED } from '@features/reminders/constants';
 
 /**

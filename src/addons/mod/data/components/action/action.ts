@@ -26,7 +26,7 @@ import {
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
 import { AddonModDataOffline } from '../../services/data-offline';
-import { CorePopovers } from '@services/popovers';
+import { CorePopovers } from '@services/overlays/popovers';
 import { AddonModDataActionsMenuItem } from '../actionsmenu/actionsmenu';
 import {
     ADDON_MOD_DATA_ENTRY_CHANGED,

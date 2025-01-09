@@ -35,7 +35,7 @@ import { CoreMimetypeUtils } from './mimetype';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNative } from '@features/native/services/native';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreFileUtils } from '@singletons/file-utils';
 

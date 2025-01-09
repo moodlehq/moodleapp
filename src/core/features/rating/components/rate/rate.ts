@@ -24,10 +24,10 @@ import {
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Component that displays the user rating select.

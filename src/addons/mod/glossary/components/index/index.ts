@@ -58,7 +58,7 @@ import {
     ADDON_MOD_GLOSSARY_PAGE_NAME,
     GLOSSARY_AUTO_SYNCED,
 } from '../../constants';
-import { CorePopovers } from '@services/popovers';
+import { CorePopovers } from '@services/overlays/popovers';
 
 /**
  * Component that displays a glossary entry page.

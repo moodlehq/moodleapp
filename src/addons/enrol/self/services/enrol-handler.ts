@@ -19,8 +19,8 @@ import { AddonEnrolSelf } from './self';
 import { CorePasswordModalResponse } from '@components/password-modal/password-modal';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEnrol, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
-import { CoreModals } from '@services/modals';
-import { CoreLoadings } from '@services/loadings';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CORE_COURSES_ENROL_INVALID_KEY } from '@features/courses/constants';
 
 /**

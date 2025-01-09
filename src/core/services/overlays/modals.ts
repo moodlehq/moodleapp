@@ -22,7 +22,7 @@ import { AngularFrameworkDelegate, makeSingleton, ModalController, Router } from
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { Subscription, filter } from 'rxjs';
 import { Md5 } from 'ts-md5';
-import { fixOverlayAriaHidden } from '../utils/fix-aria-hidden';
+import { fixOverlayAriaHidden } from '../../utils/fix-aria-hidden';
 import { ModalOptions } from '@ionic/angular';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreWSError } from '@classes/errors/wserror';

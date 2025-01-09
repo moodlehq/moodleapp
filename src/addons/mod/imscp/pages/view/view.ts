@@ -27,7 +27,7 @@ import { CoreErrorHelper } from '@services/error-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { AddonModImscp, AddonModImscpImscp, AddonModImscpTocItem } from '../../services/imscp';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 
 /**
  * Page that displays a IMSCP content.

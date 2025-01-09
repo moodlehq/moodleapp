@@ -69,7 +69,7 @@ import {
     ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS,
 } from '../../constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**

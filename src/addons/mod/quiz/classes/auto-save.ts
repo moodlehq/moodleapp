@@ -18,7 +18,7 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
 import { CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuiz, AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '../services/quiz';
-import { CorePopovers } from '@services/popovers';
+import { CorePopovers } from '@services/overlays/popovers';
 
 /**
  * Class to support auto-save in quiz. Every certain seconds, it will check if there are changes in the current page answers

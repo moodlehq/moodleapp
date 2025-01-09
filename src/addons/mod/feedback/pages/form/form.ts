@@ -42,7 +42,7 @@ import {
     ADDON_MOD_FEEDBACK_PAGE_NAME,
     AddonModFeedbackIndexTabName,
 } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreError } from '@classes/errors/error';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';

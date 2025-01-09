@@ -18,7 +18,7 @@ import {
     CoreRemindersService,
     CoreReminderValueAndUnit,
 } from '@features/reminders/services/reminders';
-import { CorePopovers } from '@services/popovers';
+import { CorePopovers } from '@services/overlays/popovers';
 import { CoreWait } from '@singletons/wait';
 import { PopoverController } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';

@@ -30,8 +30,8 @@ import { CoreScreen } from '@services/screen';
 import { Subscription } from 'rxjs';
 import { CoreDom } from '@singletons/dom';
 import { CoreWait } from '@singletons/wait';
-import { CoreModals } from '@services/modals';
-import { CoreLoadings } from '@services/loadings';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**

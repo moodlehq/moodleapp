@@ -27,7 +27,7 @@ import { DomSanitizer } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
 import { CoreDom } from '@singletons/dom';
 import { toBoolean } from '../transforms/boolean';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Directive to open a link in external browser or in the app.

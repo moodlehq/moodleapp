@@ -31,8 +31,8 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
-import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CoreModals } from '@services/modals';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
+import { CoreModals } from '@services/overlays/modals';
 import { ADDON_NOTES_AUTO_SYNCED } from '@addons/notes/services/constants';
 
 /**

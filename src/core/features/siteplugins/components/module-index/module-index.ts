@@ -28,7 +28,7 @@ import {
     CoreSitePluginsContent,
     CoreSitePluginsCourseModuleHandlerData,
 } from '@features/siteplugins/services/siteplugins';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreUtils } from '@singletons/utils';
 import { CoreSitePluginsPluginContentComponent, CoreSitePluginsPluginContentLoadedData } from '../plugin-content/plugin-content';
 import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';

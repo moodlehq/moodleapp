@@ -17,7 +17,7 @@ import { Directive, Input, OnInit, ElementRef } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreOpenerOpenFileOptions } from '@singletons/opener';
 
 /**

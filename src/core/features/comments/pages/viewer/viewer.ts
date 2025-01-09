@@ -42,8 +42,8 @@ import moment from 'moment-timezone';
 import { Subscription } from 'rxjs';
 import { CoreAnimations } from '@components/animations';
 import { CoreKeyboard } from '@singletons/keyboard';
-import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CORE_COMMENTS_AUTO_SYNCED } from '@features/comments/constants';
 
 /**

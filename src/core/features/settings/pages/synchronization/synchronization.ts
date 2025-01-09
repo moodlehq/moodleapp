@@ -25,7 +25,7 @@ import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/logi
 import { CoreNetwork } from '@services/network';
 import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
-import { CoreToasts } from '@services/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
 
 /**
  * Page that displays the synchronization settings.

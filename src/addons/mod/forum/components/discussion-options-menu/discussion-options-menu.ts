@@ -19,9 +19,9 @@ import { PopoverController } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModForum, AddonModForumDiscussion } from '../../services/forum';
 import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT } from '../../constants';
-import { CoreToasts } from '@services/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * This component is meant to display a popover with the discussion options.

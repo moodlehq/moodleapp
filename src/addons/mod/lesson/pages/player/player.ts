@@ -54,7 +54,7 @@ import { AddonModLessonSync } from '../../services/lesson-sync';
 import { CoreFormFields, CoreForms } from '@singletons/form';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_LESSON_COMPONENT, AddonModLessonJumpTo } from '../../constants';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreDom } from '@singletons/dom';

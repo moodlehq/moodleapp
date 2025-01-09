@@ -15,7 +15,7 @@
 import { CoreContentLinksAction } from '../services/contentlinks-delegate';
 import { CoreContentLinksHandlerBase } from './base-handler';
 import { CoreSites } from '@services/sites';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 
 /**

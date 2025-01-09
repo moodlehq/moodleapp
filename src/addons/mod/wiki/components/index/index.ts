@@ -58,8 +58,8 @@ import {
     ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
     ADDON_MOD_WIKI_PAGE_NAME,
 } from '../../constants';
-import { CoreModals } from '@services/modals';
-import { CorePopovers } from '@services/popovers';
+import { CoreModals } from '@services/overlays/modals';
+import { CorePopovers } from '@services/overlays/popovers';
 
 /**
  * Component that displays a wiki entry page.
