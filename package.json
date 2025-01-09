@@ -72,7 +72,7 @@
         "@awesome-cordova-plugins/sqlite": "^6.9.0",
         "@awesome-cordova-plugins/status-bar": "^6.9.0",
         "@awesome-cordova-plugins/web-intent": "^6.9.0",
-        "@ionic/angular": "^8.3.1",
+        "@ionic/angular": "^8.4.1",
         "@ionic/cordova-builders": "^11.0.0",
         "@moodlehq/cordova-plugin-advanced-http": "3.3.1-moodle.1",
         "@moodlehq/cordova-plugin-camera": "7.0.0-moodle.1",
@@ -182,7 +182,7 @@
         "vinyl": "^3.0.0"
     },
     "engines": {
-        "node": ">=18.18.2 <19"
+        "node": ">=v20.18 <21"
     },
     "cordova": {
         "platforms": [
