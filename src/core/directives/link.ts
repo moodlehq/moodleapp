@@ -140,7 +140,7 @@ export class CoreLinkDirective implements OnInit {
             try {
                 await CoreCustomURLSchemes.handleCustomURL(href);
             } catch (error) {
-                CoreCustomURLSchemes.treatHandleCustomURLError(error);
+                CoreCustomURLSchemes.treatHandleCustomURLError(error, href, 'CoreLinkDirective');
             }
 
             return;
