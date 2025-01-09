@@ -241,7 +241,8 @@ ion-content.limited-width > :not([slot]) {
     min-height: 100%;
 }
 
-.core-anchor, core-format-text a {
+.core-anchor,
+core-format-text a {
     color: var(--core-link-color);
     cursor: pointer;
     text-decoration: underline;
@@ -262,7 +263,8 @@ ion-content.limited-width > :not([slot]) {
 
 // Text formats.
 // Highlight text.
-mark, .matchtext {
+mark,
+.matchtext {
     background-color: var(--text-hightlight-background-color);
 }
 
