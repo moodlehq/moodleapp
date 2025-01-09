@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, HostBinding } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreLoadings } from '@services/loadings';
 import { CoreText } from '@singletons/text';
@@ -43,6 +43,10 @@ export class AddonBlockTimelineEventsComponent implements OnInit {
     @Output() loadMore = new EventEmitter(); // Notify that more events should be loaded.
 
     colorizeIcons = false;
+
+    @HostBinding('attr.data-course-id') protected get courseId(): number | null {
+        return this.course?.id ?? null;
+    }
 
     /**
      * @inheritdoc
