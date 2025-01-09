@@ -117,11 +117,11 @@
     </core-empty-box>
 
     <!-- List of courses. -->
-    <div class="safe-area-padding" *ngIf="hasCourses">
+    <div class="safe-area-padding core-course-list" *ngIf="hasCourses">
         <ion-grid class="ion-no-padding" [class.core-no-grid]="layout !== 'card'" [class.list-item-limited-width]="layout !== 'card'">
             <ion-row class="ion-no-padding">
                 <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding" size="12" size-sm="6" size-md="6" size-lg="4"
-                    size-xl="3">
+                    size-xl="3" [attr.data-course-id]="course.id">
                     <core-courses-course-list-item [course]="course" class="core-courseoverview" [showDownload]="downloadCourseEnabled"
                         [layout]="layout" />
                 </ion-col>

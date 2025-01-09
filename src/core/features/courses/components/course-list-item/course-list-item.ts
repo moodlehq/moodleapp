@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreUser } from '@features/user/services/user';
@@ -43,7 +43,7 @@ import { CORE_COURSE_ALL_COURSES_CLEARED, CORE_COURSE_PROGRESS_UPDATED_EVENT } f
  *
  * Example usage:
  *
- * <core-courses-course-list-item [course]="course"></core-courses-course-list-item>
+ * <core-courses-course-list-item [course]="course" />
  */
 @Component({
     selector: 'core-courses-course-list-item',
@@ -82,6 +82,10 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
 
     protected element: HTMLElement;
     protected progressObserver: CoreEventObserver;
+
+    @HostBinding('attr.data-course-id') protected get courseId(): number {
+        return this.course.id;
+    }
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;

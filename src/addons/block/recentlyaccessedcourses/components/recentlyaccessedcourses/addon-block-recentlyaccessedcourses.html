@@ -12,7 +12,7 @@
     <!-- List of courses. -->
     <div [hidden]="courses.length === 0" [id]="scrollElementId" class="core-horizontal-scroll"
         (scroll)="scrollControls.updateScrollPosition()">
-        <div (onResize)="scrollControls.updateScrollPosition()" class="flex-row">
+        <div (onResize)="scrollControls.updateScrollPosition()" class="flex-row core-course-list">
             <div class="safe-area-pseudo-padding-start"></div>
             <ng-container *ngFor="let course of courses">
                 <core-courses-course-list-item [course]="course" class="core-recentlyaccessedcourses" layout="summarycard" />
