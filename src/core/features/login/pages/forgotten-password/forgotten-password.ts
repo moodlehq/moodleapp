@@ -25,7 +25,7 @@ import { CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from '@classes/
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreSitesFactory } from '@services/sites-factory';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Page to recover a forgotten password.

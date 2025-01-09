@@ -40,7 +40,7 @@ import {
     ADDON_MOD_FEEDBACK_MULTICHOICE_HIDENOSELECT,
     ADDON_MOD_FEEDBACK_PAGE_NAME,
 } from '../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreText } from '@singletons/text';
 
 const MODE_RESPONSETIME = 1;

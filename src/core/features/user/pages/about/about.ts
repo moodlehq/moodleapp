@@ -32,7 +32,7 @@ import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuplo
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreTime } from '@singletons/time';
 
 /**

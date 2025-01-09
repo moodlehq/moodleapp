@@ -19,7 +19,7 @@ import {
 import { Component, OnInit } from '@angular/core';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';

@@ -47,8 +47,8 @@ import {
     AddonModDataTemplateType,
     AddonModDataTemplateMode,
 } from '../constants';
-import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Service that provides helper functions for datas.

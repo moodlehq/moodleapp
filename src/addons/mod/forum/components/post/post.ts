@@ -53,10 +53,10 @@ import { AddonModForumSharedPostFormData } from '../../pages/discussion/discussi
 import { CoreDom } from '@singletons/dom';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, ADDON_MOD_FORUM_COMPONENT } from '../../constants';
-import { CoreToasts } from '@services/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CorePopovers } from '@services/popovers';
-import { CoreLoadings } from '@services/loadings';
+import { CorePopovers } from '@services/overlays/popovers';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreWSFile } from '@services/ws';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';

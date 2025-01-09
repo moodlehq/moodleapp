@@ -14,7 +14,7 @@
 
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSFile } from '@services/ws';
 

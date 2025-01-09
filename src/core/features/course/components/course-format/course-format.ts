@@ -52,7 +52,7 @@ import { CoreDom } from '@singletons/dom';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ContextLevel } from '@/core/constants';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockComponentsModule } from '@features/block/components/components.module';
 import { CoreSites } from '@services/sites';

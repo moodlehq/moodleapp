@@ -41,9 +41,9 @@ import { CoreReminders } from '@features/reminders/services/reminders';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CorePlatform } from '@services/platform';
 import { CoreConfig } from '@services/config';
-import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CorePopovers } from '@services/popovers';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
+import { CorePopovers } from '@services/overlays/popovers';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreUrl } from '@singletons/url';
 import {
     ADDON_CALENDAR_AUTO_SYNCED,

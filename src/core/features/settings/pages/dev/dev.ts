@@ -30,7 +30,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreText } from '@singletons/text';
 
 /**

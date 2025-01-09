@@ -20,7 +20,7 @@ import {
     CoreRatingInfoItem,
     CoreRatingProvider,
 } from '@features/rating/services/rating';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreSites } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 

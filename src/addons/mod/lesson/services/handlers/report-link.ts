@@ -22,7 +22,7 @@ import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Handler to treat links to lesson report.

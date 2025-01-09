@@ -25,7 +25,7 @@ import { CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CorePath } from '@singletons/path';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Page to capture media in browser.

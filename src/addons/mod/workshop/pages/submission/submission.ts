@@ -55,7 +55,7 @@ import {
     AddonModWorkshopAction,
     AddonModWorkshopPhase,
 } from '@addons/mod/workshop/constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Page that displays a workshop submission.

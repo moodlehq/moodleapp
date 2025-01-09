@@ -21,7 +21,7 @@ import { makeSingleton } from '@singletons';
 import { AddonModWiki } from '../wiki';
 import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 import { AddonModWikiEditLinkHandlerService } from '@addons/mod/wiki/services/handlers/edit-link';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Handler to treat links to edit a wiki page.

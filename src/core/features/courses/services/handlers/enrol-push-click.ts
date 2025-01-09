@@ -17,7 +17,7 @@ import { Params } from '@angular/router';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@singletons/utils';

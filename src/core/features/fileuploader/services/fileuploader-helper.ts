@@ -44,8 +44,8 @@ import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 import { Chooser } from '@features/native/plugins';
-import { CoreToasts } from '@services/toasts';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts } from '@services/overlays/toasts';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreFileUtils } from '@singletons/file-utils';
 
 /**

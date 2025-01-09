@@ -44,8 +44,8 @@ import { CoreDom } from '@singletons/dom';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreText } from '@singletons/text';
 import { CoreWait } from '@singletons/wait';
-import { CoreModals } from '@services/modals';
-import { CoreLoadings } from '@services/loadings';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreLoadings } from '@services/overlays/loadings';
 import {
     ADDON_MESSAGES_AUTO_SYNCED,
     ADDON_MESSAGES_LIMIT_MESSAGES,

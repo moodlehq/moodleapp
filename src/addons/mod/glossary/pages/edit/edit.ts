@@ -40,7 +40,7 @@ import { AddonModGlossaryHelper } from '../../services/glossary-helper';
 import { AddonModGlossaryOffline } from '../../services/glossary-offline';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_GLOSSARY_COMPONENT } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Page that displays the edit form.

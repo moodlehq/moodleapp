@@ -29,7 +29,7 @@ import { CoreSiteCheckResponse, CoreSites } from './sites';
 import { CoreDomUtils } from './utils/dom';
 import { CoreErrorHelper, CoreErrorObject } from './error-helper';
 import { CoreUrl } from '@singletons/url';
-import { CoreLoadings } from './loadings';
+import { CoreLoadings } from './overlays/loadings';
 
 /*
  * Provider to handle custom URL schemes.

@@ -22,7 +22,7 @@ import { Md5 } from 'ts-md5';
 import { AddonModWiki } from '../wiki';
 import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 import { AddonModWikiPageOrMapLinkHandlerService } from '@addons/mod/wiki/services/handlers/page-or-map-link';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Handler to treat links to a wiki page or the wiki map.

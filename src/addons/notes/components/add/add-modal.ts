@@ -20,8 +20,8 @@ import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Component that displays a text area for composing a note.

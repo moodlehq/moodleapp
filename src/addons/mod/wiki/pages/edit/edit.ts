@@ -32,7 +32,7 @@ import { AddonModWikiOffline } from '../../services/wiki-offline';
 import { AddonModWikiSync } from '../../services/wiki-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_PAGE_CREATED_EVENT, ADDON_MOD_WIKI_RENEW_LOCK_TIME } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreFileHelper } from '@services/file-helper';
 
 /**

@@ -22,10 +22,10 @@ import {
 import { makeSingleton } from '@singletons';
 import { AddonEnrolGuest } from './guest';
 import { CorePasswordModalResponse } from '@components/password-modal/password-modal';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreEnrol, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 
 /**
  * Enrol handler.

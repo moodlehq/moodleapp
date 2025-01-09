@@ -40,8 +40,8 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
-import { CorePopovers } from '@services/popovers';
-import { CoreLoadings } from '@services/loadings';
+import { CorePopovers } from '@services/overlays/popovers';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { Subscription } from 'rxjs';
 
 /**

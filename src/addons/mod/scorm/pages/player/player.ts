@@ -42,7 +42,7 @@ import {
     ADDON_MOD_SCORM_UPDATE_TOC_EVENT,
 } from '../../constants';
 import { CoreWait } from '@singletons/wait';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 
 /**
  * Page that allows playing a SCORM.

@@ -52,7 +52,7 @@ import {
     ADDON_MOD_FORUM_NEW_DISCUSSION_EVENT,
 } from '../../constants';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 type NewDiscussionData = {

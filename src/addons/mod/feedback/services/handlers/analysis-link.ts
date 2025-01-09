@@ -20,7 +20,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_FEEDBACK_PAGE_NAME, AddonModFeedbackIndexTabName } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Content links handler for a feedback analysis.

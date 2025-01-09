@@ -24,7 +24,7 @@ import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
 import { CorePath } from '@singletons/path';
 import { CoreCourses } from '../courses';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**

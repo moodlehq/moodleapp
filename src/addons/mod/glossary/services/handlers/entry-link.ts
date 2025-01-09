@@ -22,7 +22,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModGlossary } from '../glossary';
 import { ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Handler to treat links to glossary entries.

@@ -15,12 +15,12 @@
 import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { AddonPrivateFiles, AddonPrivateFilesGetUserInfoWSResult } from './privatefiles';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreToasts } from '@services/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
 
 /**
  * Service that provides some helper functions regarding private and site files.

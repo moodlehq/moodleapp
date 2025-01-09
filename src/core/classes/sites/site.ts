@@ -54,7 +54,7 @@ import { CoreSiteInfo } from './unauthenticated-site';
 import { CoreAuthenticatedSite, CoreAuthenticatedSiteOptionalData, CoreSiteWSPreSets, WSObservable } from './authenticated-site';
 import { firstValueFrom } from 'rxjs';
 import { CorePlatform } from '@services/platform';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**

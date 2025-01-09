@@ -28,7 +28,7 @@ import { CoreConstants } from '@/core/constants';
 import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons/notifications/services/notifications';
 import { CorePlatform } from '@services/platform';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { ADDON_MESSAGES_NOTIFICATION_PREFERENCES_KEY, AddonMessagesMessagePrivacy } from '@addons/messages/constants';
 
 /**

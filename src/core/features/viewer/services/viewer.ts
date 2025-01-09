@@ -16,7 +16,7 @@ import { ContextLevel } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { ModalOptions } from '@ionic/angular';
 import { CoreConfig } from '@services/config';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';

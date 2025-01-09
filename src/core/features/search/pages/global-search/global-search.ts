@@ -29,7 +29,7 @@ import {
 } from '@features/search/services/global-search';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 @Component({

@@ -20,7 +20,7 @@ import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/servic
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreNavigationOptions } from '@services/navigator';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModUrl } from '../url';

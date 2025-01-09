@@ -32,7 +32,7 @@ import {
     AddonModBBBRecordingPlaybackTypes,
 } from '../../services/bigbluebuttonbn';
 import { ADDON_MOD_BBB_COMPONENT } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';

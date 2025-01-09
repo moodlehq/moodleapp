@@ -33,7 +33,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
 import { CoreText } from '@singletons/text';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 

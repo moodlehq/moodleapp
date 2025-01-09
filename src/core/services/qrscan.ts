@@ -17,7 +17,7 @@ import { makeSingleton } from '@singletons';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CorePromisedValue } from '@classes/promised-value';
 import { QRScanner } from '@features/native/plugins';
-import { CoreModals } from './modals';
+import { CoreModals } from './overlays/modals';
 import { CorePlatform } from './platform';
 import { Subscription } from 'rxjs';
 import { CoreCustomURLSchemes } from './urlschemes';

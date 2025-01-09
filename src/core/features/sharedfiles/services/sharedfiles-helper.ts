@@ -30,7 +30,7 @@ import { SHAREDFILES_PAGE_NAME } from '../constants';
 import { CoreSharedFilesChooseSitePage } from '../pages/choose-site/choose-site';
 import { CoreError } from '@classes/errors/error';
 import { CorePlatform } from '@services/platform';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 
 /**
  * Helper service to share files with the app.

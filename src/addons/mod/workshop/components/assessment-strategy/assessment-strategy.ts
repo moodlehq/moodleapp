@@ -42,7 +42,7 @@ import {
     AddonModWorkshopOverallFeedbackMode,
 } from '@addons/mod/workshop/constants';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';

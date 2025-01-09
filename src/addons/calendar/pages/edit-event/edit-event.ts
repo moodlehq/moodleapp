@@ -50,8 +50,8 @@ import {
     AddonCalendarEventType,
 } from '@addons/calendar/constants';
 import { ContextLevel } from '@/core/constants';
-import { CorePopovers } from '@services/popovers';
-import { CoreLoadings } from '@services/loadings';
+import { CorePopovers } from '@services/overlays/popovers';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { REMINDERS_DISABLED, CoreRemindersUnits } from '@features/reminders/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 

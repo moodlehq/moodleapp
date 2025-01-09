@@ -29,7 +29,7 @@ import { NgZone } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreSettingsHandlersSource } from '@features/settings/classes/settings-handlers-source';
-import { CoreToasts } from '@services/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
 
 /**
  * Page that displays the list of site settings pages.

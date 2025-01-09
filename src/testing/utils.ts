@@ -27,7 +27,7 @@ import { CoreNetwork } from '@services/network';
 import { CorePlatform } from '@services/platform';
 import { CoreDB } from '@services/db';
 import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';

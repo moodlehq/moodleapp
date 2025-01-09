@@ -35,7 +35,7 @@ import { CoreEditorComponentsModule } from '@features/editor/components/componen
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreTagComponentsModule } from '@features/tag/components/components.module';
 import { CanLeave } from '@guards/can-leave';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';

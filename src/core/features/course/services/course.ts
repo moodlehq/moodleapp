@@ -57,7 +57,7 @@ import { asyncObservable } from '@/core/utils/rxjs';
 import { firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreArray } from '@singletons/array';
 import { CoreText } from '@singletons/text';
 import { ArrayElement } from '@/core/utils/types';

@@ -28,7 +28,7 @@ import { CoreForms } from '@singletons/form';
 import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreFileUtils } from '@singletons/file-utils';
 
 /**

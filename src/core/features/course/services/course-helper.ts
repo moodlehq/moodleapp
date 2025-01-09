@@ -73,8 +73,8 @@ import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreEnrol } from '@features/enrol/services/enrol';
 import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 import { LazyRoutesModule } from '@/app/app-routing.module';
-import { CoreModals } from '@services/modals';
-import { CoreLoadings } from '@services/loadings';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreLoadings } from '@services/overlays/loadings';
 import {
     CoreCourseModuleCompletionTracking,
     CoreCourseModuleCompletionStatus,

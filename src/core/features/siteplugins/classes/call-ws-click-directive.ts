@@ -20,7 +20,7 @@ import { Translate } from '@singletons';
 import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { CoreSitePluginsCallWSBaseDirective } from './call-ws-directive';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Base class for directives to call a WS when the element is clicked.

@@ -44,7 +44,7 @@ import {
     AddonModWorkshopAction,
     AddonModWorkshopSubmissionType,
 } from '@addons/mod/workshop/constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreDom } from '@singletons/dom';
 
 /**

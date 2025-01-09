@@ -24,7 +24,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModH5PActivity } from '../h5pactivity';
 import { ADDON_MOD_H5PACTIVITY_PAGE_NAME } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Handler to treat links to H5P activity report.

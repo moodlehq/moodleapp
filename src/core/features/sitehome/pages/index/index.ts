@@ -31,7 +31,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ContextLevel } from '@/core/constants';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 
 /**
  * Page that displays site home index.

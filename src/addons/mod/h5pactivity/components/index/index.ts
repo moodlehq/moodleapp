@@ -54,7 +54,7 @@ import {
     ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
 } from '../../constants';
 import { CoreH5PMissingDependenciesError } from '@features/h5p/classes/errors/missing-dependencies-error';
-import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { Subscription } from 'rxjs';
 import { NgZone, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';

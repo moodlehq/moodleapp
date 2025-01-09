@@ -20,8 +20,8 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonReportInsights } from '../insights';
-import { CoreToasts } from '@services/toasts';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts } from '@services/overlays/toasts';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 // Bulk actions supported, along with the related lang string.
 const BULK_ACTIONS = {

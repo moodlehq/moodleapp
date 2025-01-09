@@ -45,8 +45,8 @@ import {
     ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT,
     ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
 } from '../../constants';
-import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**

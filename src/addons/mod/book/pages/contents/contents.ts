@@ -37,7 +37,7 @@ import {
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { ADDON_MOD_BOOK_COMPONENT, AddonModBookNavStyle } from '../../constants';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 
 /**
  * Page that displays a book contents.

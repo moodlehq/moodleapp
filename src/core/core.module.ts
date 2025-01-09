@@ -36,7 +36,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreDbProvider } = await import('@services/db');
     const { CoreDomUtilsProvider } = await import('@services/utils/dom');
     const { CoreErrorHelperService } = await import('@services/error-helper');
-    const { CoreToastsService } = await import('@services/toasts');
+    const { CoreToastsService } = await import('@services/overlays/toasts');
     const { CoreFileHelperProvider } = await import('@services/file-helper');
     const { CoreFilepoolProvider } = await import('@services/filepool');
     const { CoreFileProvider } = await import('@services/file');
@@ -49,7 +49,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreMimetypeUtilsProvider } = await import('@services/utils/mimetype');
     const { CoreNavigatorService } = await import('@services/navigator');
     const { CorePluginFileDelegateService } = await import('@services/plugin-file-delegate');
-    const { CorePopoversService } = await import('@services/popovers');
+    const { CorePopoversService } = await import('@services/overlays/popovers');
     const { CoreScreenService } = await import('@services/screen');
     const { CoreSitesProvider } = await import('@services/sites');
     const { CoreSyncProvider } = await import('@services/sync');
@@ -62,7 +62,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreWSProvider } = await import('@services/ws');
     const { CorePlatformService } = await import('@services/platform');
     const { CoreQRScanService } = await import('@services/qrscan');
-    const { CoreLoadingsService } = await import('@services/loadings');
+    const { CoreLoadingsService } = await import('@services/overlays/loadings');
 
     return [
         CoreAppProvider,

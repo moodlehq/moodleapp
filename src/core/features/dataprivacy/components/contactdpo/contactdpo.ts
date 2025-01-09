@@ -19,11 +19,11 @@ import { CoreDataPrivacy } from '@features/dataprivacy/services/dataprivacy';
 import { CoreUser } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 import { ModalController } from '@singletons';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Component that displays the contact DPO page.

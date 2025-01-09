@@ -51,7 +51,7 @@ import {
     AddonModDataTemplateType,
     AddonModDataTemplateMode,
 } from '../../constants';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
 

@@ -48,12 +48,12 @@ import { CorePasswordModalParams, CorePasswordModalResponse } from '@components/
 import { CoreErrorLogs } from '@singletons/error-logs';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreWait } from '@singletons/wait';
-import { CoreToasts, ToastDuration, ShowToastOptions } from '../toasts';
+import { CoreToasts, ToastDuration, ShowToastOptions } from '../overlays/toasts';
 import { fixOverlayAriaHidden } from '@/core/utils/fix-aria-hidden';
-import { CoreModals, OpenModalOptions } from '@services/modals';
-import { CorePopovers, OpenPopoverOptions } from '@services/popovers';
+import { CoreModals, OpenModalOptions } from '@services/overlays/modals';
+import { CorePopovers, OpenPopoverOptions } from '@services/overlays/popovers';
 import { CoreViewer } from '@features/viewer/services/viewer';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreHTMLClasses } from '@singletons/html-classes';

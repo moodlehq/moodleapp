@@ -38,7 +38,7 @@ import {
 } from '../../services/survey-sync';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Component that displays a survey.
