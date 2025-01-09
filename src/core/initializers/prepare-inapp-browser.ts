@@ -41,7 +41,7 @@ export default function(): void {
         if (CoreCustomURLSchemes.isCustomURL(url)) {
             // Close the browser if it's a valid SSO URL.
             CoreCustomURLSchemes.handleCustomURL(url).catch((error) => {
-                CoreCustomURLSchemes.treatHandleCustomURLError(error);
+                CoreCustomURLSchemes.treatHandleCustomURLError(error, url, 'InAppBrowser');
             });
             CoreOpener.closeInAppBrowser();
 

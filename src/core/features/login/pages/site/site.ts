@@ -564,7 +564,7 @@ export class CoreLoginSitePage implements OnInit {
                     // An error ocurred, but it's an authentication URL and we have the site URL.
                     this.treatErrorInAuthenticationCustomURL(text, error);
                 } else {
-                    CoreCustomURLSchemes.treatHandleCustomURLError(error);
+                    CoreCustomURLSchemes.treatHandleCustomURLError(error, text, 'CoreLoginSitePage');
                 }
             }
 
@@ -630,7 +630,7 @@ export class CoreLoginSitePage implements OnInit {
             '<br><br>' + Translate.instant('core.login.youcanstillconnectwithcredentials'),
         );
 
-        CoreCustomURLSchemes.treatHandleCustomURLError(error);
+        CoreCustomURLSchemes.treatHandleCustomURLError(error, customURL, 'CoreLoginSitePage');
     }
 
     /**
