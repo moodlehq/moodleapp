@@ -72,6 +72,10 @@ export class CoreLoginMethodsComponent implements OnInit {
                 // The identity provider set in the site will be shown at the top.
                 const oAuthId = this.site.getOAuthId();
                 this.currentLoginProvider = CoreLoginHelper.findIdentityProvider(this.identityProviders, oAuthId);
+
+                // Remove the identity provider from the array.
+                this.identityProviders = this.identityProviders.filter((provider) =>
+                    provider.url !== this.currentLoginProvider?.url);
             }
 
             // If still false or credentials screen.
@@ -97,20 +101,15 @@ export class CoreLoginMethodsComponent implements OnInit {
     }
 
     /**
-     * Get the current login, removing the identity provider from the list.
+     * Get the current login.
      *
      * @returns Current login.
      */
-    async extractCurrentLogin(): Promise<CoreLoginMethodsCurrentLogin | undefined> {
+    async getCurrentLogin(): Promise<CoreLoginMethodsCurrentLogin | undefined> {
         await this.isReady;
-
         if (!this.currentLoginProvider) {
             return;
         }
-
-        // Remove the identity provider from the array.
-        this.identityProviders = this.identityProviders.filter((provider) =>
-            provider.url !== this.currentLoginProvider?.url);
 
         const showOther = !!(this.showLoginForm || this.isBrowserSSO) &&
             !!(this.loginMethods.length || this.identityProviders.length || this.showScanQR);
