@@ -42,7 +42,7 @@ export default async function(): Promise<void> {
 
             CoreEvents.trigger(CoreEvents.APP_LAUNCHED_URL, { url });
             CoreCustomURLSchemes.handleCustomURL(url).catch((error) => {
-                CoreCustomURLSchemes.treatHandleCustomURLError(error);
+                CoreCustomURLSchemes.treatHandleCustomURLError(error, url, 'handleOpenURL');
             });
         });
     };

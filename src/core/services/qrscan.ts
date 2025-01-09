@@ -77,7 +77,7 @@ export class CoreQRScanService {
             try {
                 await CoreCustomURLSchemes.handleCustomURL(text);
             } catch (error) {
-                CoreCustomURLSchemes.treatHandleCustomURLError(error);
+                CoreCustomURLSchemes.treatHandleCustomURLError(error, text, 'CoreQRScanService');
             }
 
             return;

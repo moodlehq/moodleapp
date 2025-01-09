@@ -520,8 +520,10 @@ export class CoreCustomURLSchemesProvider {
      * Treat error returned by handleCustomURL.
      *
      * @param error Error data.
+     * @param url The URL that caused the error.
+     * @param origin Origin of the treat handle error call.
      */
-    treatHandleCustomURLError(error: CoreCustomURLSchemesHandleError): void {
+    treatHandleCustomURLError(error: CoreCustomURLSchemesHandleError, url = '', origin = 'unknown'): void {
         if (error.error === 'Duplicated') {
             // Duplicated request
         } else if (CoreWSError.isWebServiceError(error.error) && error.data && error.data.isSSOToken) {
@@ -531,7 +533,7 @@ export class CoreCustomURLSchemesProvider {
         } else {
             CoreDomUtils.showErrorModal(error.error ?? new CoreError(Translate.instant('core.login.invalidsite'), { debug: {
                 code: 'unknownerror',
-                details: 'Unknown error when treating a URL scheme.',
+                details: `Unknown error when treating a URL scheme.<br><br>Origin: ${origin}.<br><br>URL: ${url}.`,
             } }));
         }
     }
