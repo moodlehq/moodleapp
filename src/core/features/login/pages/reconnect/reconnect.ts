@@ -49,7 +49,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     @ViewChild('reconnectForm') formElement?: ElementRef;
     @ViewChild(CoreLoginMethodsComponent) set loginMethods(loginMethods: CoreLoginMethodsComponent) {
         if (loginMethods && !this.currentLogin) {
-            loginMethods.extractCurrentLogin().then(login => {
+            loginMethods.getCurrentLogin().then(login => {
                 this.currentLogin = login;
 
                 return;
