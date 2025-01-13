@@ -69,7 +69,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     isLoggedOut: boolean;
     siteId!: string;
     siteInfo?: CoreSiteBasicInfo;
-    showScanQR = false;
     showLoading = true;
     reconnectAttempts = 0;
     supportConfig?: CoreUserSupportConfig;
