@@ -41,7 +41,6 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreWSError } from '@classes/errors/wserror';
-import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
@@ -412,7 +411,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
 
         if ((!this.entry && this.hasDataChangedForNewEntry) || (this.entry && this.hasDataChangedForEdit)) {
             // Modified, confirm user wants to go back.
-            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
         CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());

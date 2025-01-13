@@ -303,7 +303,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     async canLeave(): Promise<boolean> {
         if (AddonModForumHelper.hasPostDataChanged(this.formData, this.originalData)) {
             // Show confirmation if some data has been modified.
-            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
         // Delete the local files from the tmp folder.

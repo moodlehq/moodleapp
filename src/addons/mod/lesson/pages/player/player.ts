@@ -173,7 +173,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
         if (this.question && !this.eolData && !this.processData && this.originalData) {
             // Question shown. Check if there is any change.
             if (!CoreObject.basicLeftCompare(this.questionForm.getRawValue(), this.originalData, 3)) {
-                await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
+                await CoreAlerts.confirmLeaveWithChanges();
             }
         }
 

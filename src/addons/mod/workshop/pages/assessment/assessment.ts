@@ -172,7 +172,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
         }
 
         // Show confirmation if some data has been modified.
-        await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
+        await CoreAlerts.confirmLeaveWithChanges();
 
         CoreForms.triggerFormCancelledEvent(this.formElement, this.siteId);
 

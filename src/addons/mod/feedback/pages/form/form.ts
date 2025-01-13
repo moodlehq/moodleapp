@@ -160,7 +160,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
             if (this.items && !this.completed && this.originalData) {
                 // Form submitted. Check if there is any change.
                 if (!CoreObject.basicLeftCompare(responses, this.originalData, 3)) {
-                    await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
+                    await CoreAlerts.confirmLeaveWithChanges();
                 }
             }
         }

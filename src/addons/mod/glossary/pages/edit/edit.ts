@@ -187,7 +187,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
         if (this.hasDataChanged()) {
             // Show confirmation if some data has been modified.
-            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
         // Delete the local files from the tmp folder.

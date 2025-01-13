@@ -147,7 +147,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
         // Check if data has changed.
         if (this.hasDataChanged()) {
             // Show confirmation if some data has been modified.
-            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
         if (this.submission?.attachmentfiles) {

@@ -16,7 +16,7 @@ import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreFormFields, CoreForms } from '@singletons/form';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { ModalController, Translate } from '@singletons';
+import { ModalController } from '@singletons';
 import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '../../services/assign';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -50,7 +50,7 @@ export class AddonModAssignEditFeedbackModalComponent {
     async closeModal(): Promise<void> {
         const changed = await this.hasDataChanged();
         if (changed) {
-            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
         CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
