@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDomUtils } from '@services/utils/dom';
 import { Component, OnInit } from '@angular/core';
-
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreAnimations } from '@components/animations';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays the list of sites stored in the device.
@@ -79,7 +79,7 @@ export class CoreLoginSitesPage implements OnInit {
         siteName = await CoreFilter.formatText(siteName, { clean: true, singleLine: true, filter: false }, [], site.id);
 
         try {
-            await CoreDomUtils.showDeleteConfirm('core.login.confirmdeletesite', { sitename: siteName });
+            await CoreAlerts.confirmDelete(Translate.instant('core.login.confirmdeletesite', { sitename: siteName }));
         } catch (error) {
             // User cancelled, stop.
             return;
@@ -95,7 +95,7 @@ export class CoreLoginSitesPage implements OnInit {
                 CoreLoginHelper.goToAddSite(true, true);
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.login.errordeletesite', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.login.errordeletesite') });
         }
     }
 
@@ -117,7 +117,7 @@ export class CoreLoginSitesPage implements OnInit {
                 return;
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading site.');
+            CoreAlerts.showError(error, { default: 'Error loading site.' });
         } finally {
             modal.dismiss();
         }

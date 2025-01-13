@@ -14,8 +14,6 @@
 
 import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreCountries, CoreCountry } from '@singletons/countries';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
@@ -40,6 +38,7 @@ import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page to signup using email.
@@ -135,7 +134,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
     ngOnInit(): void {
         const siteUrl = CoreNavigator.getRouteParam<string>('siteUrl');
         if (!siteUrl) {
-            CoreDomUtils.showErrorModal('Site URL not supplied.');
+            CoreAlerts.showError('Site URL not supplied.');
             CoreNavigator.back();
 
             return;
@@ -208,7 +207,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
             this.completeFormGroup();
         } catch (error) {
             if (this.allRequiredSupported) {
-                CoreDomUtils.showErrorModal(error);
+                CoreAlerts.showError(error);
             }
         }
     }
@@ -265,7 +264,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
             return true;
         } else {
-            CoreDomUtils.showErrorModal(
+            CoreAlerts.showError(
                 Translate.instant(
                     'core.login.signupplugindisabled',
                     { $a: Translate.instant('core.login.auth_email') },
@@ -303,7 +302,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
             if (!errorFound) {
                 // Input not found, show an error modal.
-                CoreDomUtils.showErrorModal('core.errorinvalidform', true);
+                CoreAlerts.showError(Translate.instant('core.errorinvalidform'));
             }
 
             return;
@@ -351,7 +350,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
                 // Show alert and ho back.
                 const message = Translate.instant('core.login.emailconfirmsent', { $a: params.email });
-                CoreDomUtils.showAlert(Translate.instant('core.success'), message);
+                CoreAlerts.show({ header: Translate.instant('core.success'), message });
                 CoreNavigator.back();
             } else {
                 this.recaptchaComponent?.expireRecaptchaAnswer();
@@ -363,13 +362,13 @@ export class CoreLoginEmailSignupPage implements OnInit {
                         error = Translate.instant('core.login.recaptchaincorrect');
                     }
 
-                    CoreDomUtils.showErrorModal(error);
+                    CoreAlerts.showError(error);
                 } else {
-                    CoreDomUtils.showErrorModal('core.login.usernotaddederror', true);
+                    CoreAlerts.showError(Translate.instant('core.login.usernotaddederror'));
                 }
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.login.usernotaddederror', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.login.usernotaddederror') });
         } finally {
             modal.dismiss();
         }
@@ -413,7 +412,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         e.stopPropagation();
 
         if (!this.ageVerificationForm.valid) {
-            CoreDomUtils.showErrorModal('core.errorinvalidform', true);
+            CoreAlerts.showError(Translate.instant('core.errorinvalidform'));
 
             return;
         }
@@ -442,7 +441,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
             }
         } catch {
             // Something wrong, redirect to the site.
-            CoreDomUtils.showErrorModal('There was an error verifying your age, please try again using the browser.');
+            CoreAlerts.showError('There was an error verifying your age, please try again using the browser.');
         } finally {
             modal.dismiss();
         }

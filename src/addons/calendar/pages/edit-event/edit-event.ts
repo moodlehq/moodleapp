@@ -18,7 +18,6 @@ import { CoreEvents } from '@singletons/events';
 import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@singletons/utils';
 import { CoreCategoryData, CoreCourses, CoreCourseSearchedData, CoreEnrolledCourseData } from '@features/courses/services/courses';
@@ -54,6 +53,7 @@ import { CorePopovers } from '@services/overlays/popovers';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { REMINDERS_DISABLED, CoreRemindersUnits } from '@features/reminders/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -253,7 +253,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
             this.eventTypes = eventTypes;
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting data.');
+            CoreAlerts.showError(error, { default: 'Error getting data.' });
             this.error = true;
         }
     }
@@ -421,7 +421,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
             this.groupControl.setValue(null);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting data.');
+            CoreAlerts.showError(error, { default: 'Error getting data.' });
         }
 
         modal.dismiss();
@@ -475,7 +475,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
         if (error) {
             // Show error and stop.
-            CoreDomUtils.showErrorModal(Translate.instant(error));
+            CoreAlerts.showError(Translate.instant(error));
 
             return;
         }
@@ -548,7 +548,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
             this.returnToList(event);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error sending data.');
+            CoreAlerts.showError(error, { default: 'Error sending data.' });
         }
 
         modal.dismiss();
@@ -593,7 +593,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     async canLeave(): Promise<boolean> {
         if (AddonCalendarHelper.hasEventDataChanged(this.form.value, this.originalData)) {
             // Show confirmation if some data has been modified.
-            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
         }
 
         CoreForms.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());

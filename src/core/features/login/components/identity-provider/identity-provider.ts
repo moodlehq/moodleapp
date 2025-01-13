@@ -15,9 +15,9 @@
 import { Component, Input } from '@angular/core';
 import { CoreSiteIdentityProvider } from '@classes/sites/unauthenticated-site';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreRedirectPayload } from '@services/navigator';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 @Component({
     selector: 'core-identity-provider',
@@ -46,7 +46,7 @@ export class CoreLoginIdentityProviderComponent {
         );
 
         if (!result) {
-            CoreDomUtils.showErrorModal('Invalid data.');
+            CoreAlerts.showError('Invalid data.');
         }
     }
 

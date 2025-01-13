@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import {
     AddonCompetencyDataForPlanPageCompetency,
@@ -30,6 +29,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreSites } from '@services/sites';
 import { CoreTime } from '@singletons/time';
 import { ContextLevel } from '@/core/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the list of competencies of a learning plan.
@@ -111,7 +111,7 @@ export class AddonCompetencyCompetenciesPage implements AfterViewInit, OnDestroy
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting competencies data.');
+            CoreAlerts.showError(error, { default: 'Error getting competencies data.' });
         }
     }
 

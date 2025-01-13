@@ -15,8 +15,6 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Type } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CoreSites } from '@services/sites';
-
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreForms } from '@singletons/form';
 import { ModalController, Translate } from '@singletons';
 import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-delegate';
@@ -24,6 +22,7 @@ import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '../../service
 import { CoreDom } from '@singletons/dom';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Modal that renders the access rules for a quiz.
@@ -107,7 +106,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
             }));
 
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading rules');
+            CoreAlerts.showError(error, { default: 'Error loading rules' });
         } finally {
             this.loaded = true;
         }
@@ -130,7 +129,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
 
             if (!hasScrolled) {
                 // Input not found, show an error modal.
-                CoreDomUtils.showErrorModal('core.errorinvalidform', true);
+                CoreAlerts.showError(Translate.instant('core.errorinvalidform'));
             }
         } else {
             CoreForms.triggerFormSubmittedEvent(this.formElement, false, this.siteId);

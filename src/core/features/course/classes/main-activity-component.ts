@@ -19,10 +19,11 @@ import { CoreCourseModuleMainResourceComponent } from './main-resource-component
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourse } from '../services/course';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourseContentsPage } from '../pages/contents/contents';
 import { CoreSites } from '@services/sites';
 import { CoreSyncResult } from '@services/sync';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 /**
  * Template class to easily create CoreCourseModuleMainComponent of activities.
@@ -177,7 +178,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
                 return await this.refreshContent(sync);
             }
 
-            CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
+            CoreAlerts.showError(error, { default: Translate.instant(this.fetchContentDefaultError) });
         } finally {
             this.showLoading = false;
         }
@@ -216,13 +217,13 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
             const result = await this.sync();
 
             if (result.warnings.length) {
-                CoreDomUtils.showAlert(undefined, result.warnings[0]);
+                CoreAlerts.show({ message: result.warnings[0] });
             }
 
             return this.hasSyncSucceed(result);
         } catch (error) {
             if (showErrors) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.errorsync') });
             }
 
             return false;

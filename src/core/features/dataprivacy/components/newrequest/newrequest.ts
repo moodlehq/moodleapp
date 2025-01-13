@@ -20,11 +20,11 @@ import {
     CoreDataPrivacyDataRequestType,
     CoreDataPrivacyGetAccessInformationWSResponse,
 } from '@features/dataprivacy/services/dataprivacy';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 
 import { ModalController } from '@singletons';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays the new request page.
@@ -115,7 +115,7 @@ export class CoreDataPrivacyNewRequestComponent implements OnInit {
                 ModalController.dismiss(true);
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error sending data privacy request');
+            CoreAlerts.showError(error, { default: 'Error sending data privacy request' });
         } finally {
             modal.dismiss();
         }

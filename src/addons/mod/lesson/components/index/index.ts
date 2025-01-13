@@ -22,7 +22,6 @@ import { CoreUser } from '@features/user/services/user';
 import { IonContent, IonInput } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreForms } from '@singletons/form';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -52,6 +51,7 @@ import {
     ADDON_MOD_LESSON_DATA_SENT_EVENT,
     ADDON_MOD_LESSON_PAGE_NAME,
 } from '../../constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays a lesson entry page.
@@ -126,7 +126,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         try {
             await this.setGroup(groupId);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting report.');
+            CoreAlerts.showError(error, { default: 'Error getting report.' });
         } finally {
             this.reportLoaded = true;
         }
@@ -464,7 +464,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (!this.groupInfo) {
             this.fetchReportData().catch((error) => {
-                CoreDomUtils.showErrorModalDefault(error, 'Error getting report.');
+                CoreAlerts.showError(error, { default: 'Error getting report.' });
             });
         }
 
@@ -613,7 +613,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
                 // Error downloading but there is something offline, allow continuing it.
                 this.playLesson(continueLast);
             } else {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
             }
         } finally {
             this.showSpinner = false;
@@ -632,7 +632,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         const password = passwordEl?.value;
         if (!password) {
-            CoreDomUtils.showErrorModal('addon.mod_lesson.emptypassword', true);
+            CoreAlerts.showError(Translate.instant('addon.mod_lesson.emptypassword'));
 
             return;
         }
@@ -652,7 +652,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             // Log view now that we have the password.
             this.logActivity();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         } finally {
             this.showLoading = false;
 

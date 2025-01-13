@@ -21,7 +21,6 @@ import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -45,6 +44,7 @@ import {
     AddonModWorkshopPhase,
 } from '@addons/mod/workshop/constants';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a workshop assessment.
@@ -144,7 +144,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
             this.profile = CoreNavigator.getRouteParam<CoreUserProfile>('profile');
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             CoreNavigator.back();
 
@@ -172,7 +172,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
         }
 
         // Show confirmation if some data has been modified.
-        await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+        await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
 
         CoreForms.triggerFormCancelledEvent(this.formElement, this.siteId);
 
@@ -272,7 +272,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
                 this.evaluateByProfile = await CoreUser.getProfile(this.assessment.gradinggradeoverby, this.courseId, true);
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             this.loaded = true;
         }
@@ -403,7 +403,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
                 CoreEvents.trigger(ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED, data, this.siteId);
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Cannot save assessment evaluation');
+            CoreAlerts.showError(error, { default: 'Cannot save assessment evaluation' });
         } finally {
             modal.dismiss();
         }

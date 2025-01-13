@@ -29,11 +29,11 @@ import {
 import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { ModalController } from '@singletons';
+import { ModalController, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSiteLogoComponent } from '@/core/components/site-logo/site-logo';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component to display a user menu.
@@ -192,7 +192,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
                 '';
 
             try {
-                await CoreDomUtils.showDeleteConfirm('core.login.confirmdeletesite', { sitename: siteName });
+                await CoreAlerts.confirmDelete(Translate.instant('core.login.confirmdeletesite', { sitename: siteName }));
             } catch (error) {
                 // User cancelled, stop.
                 return;

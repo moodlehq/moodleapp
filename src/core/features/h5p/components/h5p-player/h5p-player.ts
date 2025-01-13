@@ -17,7 +17,6 @@ import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChang
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { DownloadStatus } from '@/core/constants';
@@ -27,6 +26,9 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { CoreH5PDisplayOptions } from '../../classes/core';
 import { BehaviorSubject } from 'rxjs';
+import { CoreErrorHelper } from '@services/error-helper';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 /**
  * Component to render an H5P package.
@@ -117,7 +119,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
      */
     async download(): Promise<void> {
         if (!CoreNetwork.isOnline()) {
-            CoreDomUtils.showErrorModal('core.networkerrormsg', true);
+            CoreAlerts.showError(Translate.instant('core.networkerrormsg'));
 
             return;
         }
@@ -132,18 +134,18 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
             // Get the file size and ask the user to confirm.
             const size = await CorePluginFileDelegate.getFileSize({ fileurl: this.urlParams.url }, this.siteId);
 
-            await CoreDomUtils.confirmDownloadSize({ size: size, total: true });
+            await CoreAlerts.confirmDownloadSize({ size: size, total: true });
 
             // User confirmed, add to the queue.
             await CoreFilepool.addToQueueByUrl(this.siteId, this.urlParams.url, this.component, this.componentId);
 
         } catch (error) {
-            if (CoreDomUtils.isCanceledError(error)) {
+            if (CoreErrorHelper.isCanceledError(error)) {
                 // User cancelled, stop.
                 return;
             }
 
-            CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
             this.calculateState();
         }
     }

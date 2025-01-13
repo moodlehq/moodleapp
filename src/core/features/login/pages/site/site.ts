@@ -19,7 +19,6 @@ import { CoreNetwork } from '@services/network';
 import { CoreConfig } from '@services/config';
 import { CoreSites, CoreSiteCheckResponse, CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
 import { CoreUtils } from '@singletons/utils';
-import { CoreDomUtils } from '@services/utils/dom';
 import {
     CoreLoginHelper,
     CoreLoginSiteFinderSettings,
@@ -51,6 +50,7 @@ import { CoreQRScan } from '@services/qrscan';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCountries } from '@singletons/countries';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -301,13 +301,13 @@ export class CoreLoginSitePage implements OnInit {
         CoreKeyboard.close();
 
         if (!url) {
-            CoreDomUtils.showErrorModal('core.login.siteurlrequired', true);
+            CoreAlerts.showError(Translate.instant('core.login.siteurlrequired'));
 
             return;
         }
 
         if (!CoreNetwork.isOnline()) {
-            CoreDomUtils.showErrorModal('core.networkerrormsg', true);
+            CoreAlerts.showError(Translate.instant('core.networkerrormsg'));
 
             return;
         }
@@ -418,7 +418,7 @@ export class CoreLoginSitePage implements OnInit {
      * @param error Error to display.
      */
     protected async showLoginIssue(url: string, error: CoreError): Promise<void> {
-        let errorMessage = CoreDomUtils.getErrorMessage(error);
+        let errorMessage = CoreAlerts.getErrorMessage(error);
         let debug: CoreErrorDebug | undefined;
         let errorTitle: string | undefined;
         let site: CoreUnauthenticatedSite | undefined;
@@ -470,7 +470,7 @@ export class CoreLoginSitePage implements OnInit {
                 ),
         ].filter(button => !!button);
 
-        const alertElement = await CoreDomUtils.showAlertWithOptions({
+        const alertElement = await CoreAlerts.show({
             header: errorTitle ?? Translate.instant('core.cannotconnect'),
             message: errorMessage ?? Translate.instant('core.sitenotfoundhelp'),
             buttons: buttons as AlertButton[],
@@ -575,7 +575,7 @@ export class CoreLoginSitePage implements OnInit {
         const scheme = CoreUrl.getUrlProtocol(text);
 
         if (scheme && scheme != 'http' && scheme != 'https') {
-            CoreDomUtils.showErrorModal(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
+            CoreAlerts.showError(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
 
             return;
         }
@@ -587,7 +587,7 @@ export class CoreLoginSitePage implements OnInit {
 
             this.connect(text);
         } else {
-            CoreDomUtils.showErrorModal('core.errorurlschemeinvalidsite', true);
+            CoreAlerts.showError(Translate.instant('core.errorurlschemeinvalidsite'));
         }
     }
 

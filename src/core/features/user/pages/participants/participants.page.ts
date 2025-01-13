@@ -13,8 +13,6 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -25,6 +23,7 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the list of course participants.
@@ -52,8 +51,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
                 CoreUserParticipantsPage,
             );
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -151,7 +149,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
         try {
             await this.fetchParticipants(false);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading more participants');
+            CoreAlerts.showError(error, { default: 'Error loading more participants' });
 
             this.fetchMoreParticipantsFailed = true;
         }
@@ -166,7 +164,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
         try {
             await this.fetchParticipants(true);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading participants');
+            CoreAlerts.showError(error, { default: 'Error loading participants' });
 
             this.participants.reset();
         }

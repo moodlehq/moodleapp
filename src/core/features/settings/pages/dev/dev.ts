@@ -32,6 +32,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreText } from '@singletons/text';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the developer options.
@@ -261,7 +262,7 @@ export class CoreSettingsDevPage implements OnInit {
             this.previousEnableStagingSites = enabled;
         } catch (error) {
             this.enableStagingSites = !enabled;
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 

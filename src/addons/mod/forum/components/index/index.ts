@@ -38,7 +38,6 @@ import {
 } from '@addons/mod/forum/services/forum-sync';
 import { CoreSites } from '@services/sites';
 import { CoreUser } from '@features/user/services/user';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreScreen } from '@services/screen';
@@ -68,6 +67,7 @@ import { CoreSearchGlobalSearch } from '@features/search/services/global-search'
 import { CoreToasts } from '@services/overlays/toasts';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 /**
  * Component that displays a forum entry page.
  */
@@ -475,7 +475,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
             await discussions.load();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_forum.errorgetforum', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_forum.errorgetforum') });
 
             this.fetchFailed = true;
         } finally {
@@ -618,7 +618,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 await CoreUser.setUserPreference(ADDON_MOD_FORUM_PREFERENCE_SORTORDER, sortOrder.value.toFixed(0));
                 await this.showLoadingAndFetch();
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'Error updating preference.');
+                CoreAlerts.showError(error, { default: 'Error updating preference.' });
             }
         }
     }
@@ -679,7 +679,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                 this.discussions?.reload(),
             ]);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.errorloadingcontent') });
         } finally {
             modal.dismiss();
         }

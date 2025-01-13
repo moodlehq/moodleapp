@@ -21,7 +21,6 @@ import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSFile } from '@services/ws';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@singletons/opener';
 import { CoreConstants, DownloadStatus } from '@/core/constants';
@@ -34,6 +33,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CorePlatform } from './platform';
 import { CorePath } from '@singletons/path';
 import { CoreText } from '@singletons/text';
+import { CorePrompts } from './overlays/prompts';
 
 /**
  * Provider to provide some helper functions regarding files and packages.
@@ -446,14 +446,11 @@ export class CoreFileHelperProvider {
         const okButton = Translate.instant(onlyDownload ? 'core.downloadfile' : 'core.openfile');
 
         try {
-            const dontShowAgain = await CoreDomUtils.showPrompt(
-                message,
-                undefined,
-                Translate.instant('core.dontshowagain'),
-                'checkbox',
-                { okText: okButton },
-                { cssClass: 'core-alert-force-on-top' },
-            );
+            const dontShowAgain = await CorePrompts.show(message, 'checkbox', {
+                placeholderOrLabel: Translate.instant('core.dontshowagain'),
+                buttons: { okText: okButton },
+                cssClass: 'core-alert-force-on-top',
+            });
 
             if (dontShowAgain) {
                 CoreConfig.set(configKey, 1);

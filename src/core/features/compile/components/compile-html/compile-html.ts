@@ -46,6 +46,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWS } from '@services/ws';
 import { CoreDom } from '@singletons/dom';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * This component has a behaviour similar to $compile for AngularJS. Given an HTML code, it will compile it so all its
@@ -164,7 +165,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
             this.loaded = true;
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             this.loaded = true;
         } finally {

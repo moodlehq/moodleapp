@@ -26,8 +26,8 @@ import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe
 import { CoreContentLinksAction, CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
+import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 
 /**
@@ -60,7 +60,7 @@ export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
         try {
             notification = this.getNotification();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;

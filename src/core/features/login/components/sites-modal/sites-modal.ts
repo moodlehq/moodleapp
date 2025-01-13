@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDomUtils } from '@services/utils/dom';
 import { Component, OnInit } from '@angular/core';
-
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreAnimations } from '@components/animations';
-import { ModalController } from '@singletons';
+import { ModalController, Translate } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Modal that displays a list of sites to be able to enter or delete a site.
@@ -85,7 +84,7 @@ export class CoreLoginSitesModalComponent implements OnInit {
         siteName = await CoreFilter.formatText(siteName, { clean: true, singleLine: true, filter: false }, [], site.id);
 
         try {
-            await CoreDomUtils.showDeleteConfirm('core.login.confirmdeletesite', { sitename: siteName });
+            await CoreAlerts.confirmDelete(Translate.instant('core.login.confirmdeletesite', { sitename: siteName }));
         } catch {
             // User cancelled, stop.
             return;
@@ -96,7 +95,7 @@ export class CoreLoginSitesModalComponent implements OnInit {
 
             this.showDelete = false;
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.login.errordeletesite', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.login.errordeletesite') });
         }
     }
 

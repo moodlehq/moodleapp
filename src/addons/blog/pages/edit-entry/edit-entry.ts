@@ -40,7 +40,6 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSError } from '@classes/errors/wserror';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -48,6 +47,7 @@ import { CoreForms } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 @Component({
     selector: 'addon-blog-edit-entry',
@@ -164,7 +164,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
                     this.associatedCourse = course;
                 }
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'Error getting associations, they may not be displayed correctly.');
+                CoreAlerts.showError(error, { default: 'Error getting associations, they may not be displayed correctly.' });
             }
 
             return;
@@ -204,7 +204,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
                 this.associatedModule = await CoreCourse.getModule(this.modId);
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error retrieving data.');
+            CoreAlerts.showError(error, { default: 'Error retrieving data.' });
             this.forceLeave = true;
             CoreNavigator.back();
 
@@ -338,7 +338,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
             } catch (error) {
                 if (CoreWSError.isWebServiceError(error)) {
                     // It's a WebService error, the user cannot send the message so don't store it.
-                    CoreDomUtils.showErrorModalDefault(error, 'Error updating entry.');
+                    CoreAlerts.showError(error, { default: 'Error updating entry.' });
 
                     return;
                 }
@@ -363,7 +363,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
         } catch (error) {
             if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
-                CoreDomUtils.showErrorModalDefault(error, 'Error creating entry.');
+                CoreAlerts.showError(error, { default: 'Error creating entry.' });
 
                 return;
             }
@@ -412,7 +412,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
 
         if ((!this.entry && this.hasDataChangedForNewEntry) || (this.entry && this.hasDataChangedForEdit)) {
             // Modified, confirm user wants to go back.
-            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
         }
 
         CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());

@@ -19,11 +19,11 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModLesson } from '../lesson';
 import { ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler to treat links to lesson grade.
@@ -84,7 +84,7 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
                 });
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             modal.dismiss();
         }

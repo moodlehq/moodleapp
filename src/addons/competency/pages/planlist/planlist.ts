@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreNavigator } from '@services/navigator';
 import { AddonCompetencyPlanFormatted, AddonCompetencyPlansSource } from '@addons/competency/classes/competency-plans-source';
@@ -23,6 +22,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreSites } from '@services/sites';
 import { Translate } from '@singletons';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the list of learning plans.
@@ -76,7 +76,7 @@ export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting learning plans data.');
+            CoreAlerts.showError(error, { default: 'Error getting learning plans data.' });
         }
     }
 

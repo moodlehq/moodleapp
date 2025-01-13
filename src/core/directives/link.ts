@@ -17,7 +17,6 @@ import { SafeUrl } from '@angular/platform-browser';
 
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CoreOpener } from '@singletons/opener';
 import { CoreConstants } from '@/core/constants';
@@ -28,6 +27,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreDom } from '@singletons/dom';
 import { toBoolean } from '../transforms/boolean';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Directive to open a link in external browser or in the app.
@@ -169,7 +169,7 @@ export class CoreLinkDirective implements OnInit {
         try {
             await CoreOpener.openFile(path);
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 

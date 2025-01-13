@@ -14,13 +14,13 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContentLinksDelegate, CoreContentLinksAction } from './contentlinks-delegate';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreModals } from '@services/overlays/modals';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Service that provides some features regarding content links.
@@ -160,7 +160,7 @@ export class CoreContentLinksHelperProvider {
             } else {
                 try {
                     // Not current site or more than one site. Ask for confirmation.
-                    await CoreDomUtils.showConfirm(Translate.instant('core.contentlinks.confirmurlothersite'));
+                    await CoreAlerts.confirm(Translate.instant('core.contentlinks.confirmurlothersite'));
                     if (action.sites?.length == 1) {
                         await action.action(action.sites[0]);
                     } else {

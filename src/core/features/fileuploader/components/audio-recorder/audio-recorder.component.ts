@@ -21,7 +21,6 @@ import { Mp3MediaRecorder } from 'mp3-mediarecorder';
 import { map, shareReplay, tap } from 'rxjs/operators';
 import { initAudioEncoderMessage } from '@features/fileuploader/utils/worker-messages';
 import { SafeUrl } from '@angular/platform-browser';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CAPTURE_ERROR_NO_MEDIA_FILES, CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreFileUploaderAudioRecording } from '@features/fileuploader/services/fileuploader';
 import { CoreFile, CoreFileProvider } from '@services/file';
@@ -29,6 +28,7 @@ import { CorePath } from '@singletons/path';
 import { CoreNative } from '@features/native/services/native';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreFileUploaderAudioHistogramComponent } from '../audio-histogram/audio-histogram';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 @Component({
     selector: 'core-fileuploader-audio-recorder',
@@ -112,7 +112,7 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
 
             media.recorder.start();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 
@@ -123,7 +123,7 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
         try {
             this.media$.value?.recorder.stop();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 
@@ -134,7 +134,7 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
         try {
             this.media$.value?.recorder.pause();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 
@@ -145,7 +145,7 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
         try {
             this.media$.value?.recorder.resume();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 
@@ -182,7 +182,7 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
                 type: 'audio/mpeg',
             });
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 
@@ -272,7 +272,7 @@ function recorderAudioRecording(): OperatorFunction<AudioRecorderMedia | null, A
         let audioChunks: Blob[] = [];
         let previousRecorder: Mp3MediaRecorder | undefined;
         const onDataAvailable = event => audioChunks.push(event.data);
-        const onError = event => CoreDomUtils.showErrorModal(event.error);
+        const onError = event => CoreAlerts.showError(event.error);
         const onStop = () => {
             const blob = new Blob(audioChunks, { type: 'audio/mpeg' });
 

@@ -16,7 +16,6 @@ import { Component, OnInit } from '@angular/core';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     AddonModH5PActivity,
@@ -26,6 +25,7 @@ import {
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { AddonModH5PActivityGradeMethod } from '../../constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays all users that can attempt an H5P activity.
@@ -74,8 +74,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -111,7 +110,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading attempts.');
+            CoreAlerts.showError(error, { default: 'Error loading attempts.' });
         } finally {
             this.loaded = true;
         }
@@ -192,7 +191,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
         try {
             await this.fetchUsers(false);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading more users');
+            CoreAlerts.showError(error, { default: 'Error loading more users' });
 
             this.fetchMoreUsersFailed = true;
         }

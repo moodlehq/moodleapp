@@ -13,13 +13,13 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigator } from '@services/navigator';
 import { ActivatedRoute } from '@angular/router';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
 import { AddonBadges, AddonBadgesBadgeClass } from '../../services/badges';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a badge class.
@@ -71,7 +71,7 @@ export class AddonBadgesBadgeClassPage implements OnInit {
 
             this.logView(this.badge);
         } catch (message) {
-            CoreDomUtils.showErrorModalDefault(message, 'Error getting badge data.');
+            CoreAlerts.showError(message, { default: 'Error getting badge data.' });
         }
     }
 

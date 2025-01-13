@@ -21,7 +21,6 @@ import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreObject } from '@singletons/object';
 import { NgZone, Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -53,6 +52,7 @@ import { CoreWait } from '@singletons/wait';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNetwork } from '@services/network';
 import { Subscription } from 'rxjs';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays a SCORM entry page.
@@ -463,7 +463,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         try {
             await this.loadOrganizationToc(this.scorm, this.currentOrganization.identifier);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
+            CoreAlerts.showError(error, { default: Translate.instant(this.fetchContentDefaultError) });
         }
     }
 
@@ -549,10 +549,9 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
             }
         } catch (error) {
             if (!this.isDestroyed) {
-                CoreDomUtils.showErrorModalDefault(
-                    error,
-                    Translate.instant('addon.mod_scorm.errordownloadscorm', { name: scorm.name }),
-                );
+                CoreAlerts.showError(error, {
+                    default: Translate.instant('addon.mod_scorm.errordownloadscorm', { name: scorm.name }),
+                });
             }
         }
     }

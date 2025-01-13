@@ -20,7 +20,6 @@ import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFormFields, CoreForms } from '@singletons/form';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -48,6 +47,7 @@ import {
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that allows adding or editing an assigment submission.
@@ -101,8 +101,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.isBlind = !!CoreNavigator.getRouteNumberParam('blindId');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -126,7 +125,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
         // Check if data has changed.
         const changed = await this.hasDataChanged();
         if (changed) {
-            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
         }
 
         // Nothing has changed or user confirmed to leave. Clear temporary data from plugins.
@@ -246,7 +245,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
                 url: `/mod/assign/view.php?action=editsubmission&id=${this.moduleId}`,
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting assigment data.');
+            CoreAlerts.showError(error, { default: 'Error getting assigment data.' });
 
             // Leave the player.
             this.leaveWithoutCheck();
@@ -376,7 +375,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             await this.saveSubmission();
             this.leaveWithoutCheck();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error saving submission.');
+            CoreAlerts.showError(error, { default: 'Error saving submission.' });
         }
     }
 

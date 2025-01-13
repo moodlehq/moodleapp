@@ -25,7 +25,6 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreErrorObject } from '@services/error-helper';
 import { CoreOpener } from '@singletons/opener';
 import { Translate } from '@singletons';
@@ -33,6 +32,7 @@ import { CoreTime } from '@singletons/time';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 @Component({
     selector: 'core-report-builder-report-detail',
@@ -105,7 +105,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
     async getReport(): Promise<void> {
         try {
             if (!this.reportId) {
-                CoreDomUtils.showErrorModal(new CoreError('No report found'));
+                CoreAlerts.showError(new CoreError('No report found'));
                 CoreNavigator.back();
 
                 return;
@@ -116,7 +116,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
             const report = await CoreReportBuilder.loadReport(parseInt(this.reportId), page,this.perPage ?? REPORT_ROWS_LIMIT);
 
             if (!report) {
-                CoreDomUtils.showErrorModal(new CoreError('No report found'));
+                CoreAlerts.showError(new CoreError('No report found'));
                 CoreNavigator.back();
 
                 return;
@@ -157,7 +157,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
                 ],
             };
 
-            await CoreDomUtils.showErrorModal(errorConfig);
+            await CoreAlerts.showError(errorConfig);
         }
     }
 
@@ -228,7 +228,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
                 canLoadMoreRows: newReport.data.totalrowcount > report.data.rows.length + newReport.data.rows.length,
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading more reports');
+            CoreAlerts.showError(error, { default: 'Error loading more reports' });
 
             this.updateState({ canLoadMoreRows: false, errorLoadingRows: true });
         }

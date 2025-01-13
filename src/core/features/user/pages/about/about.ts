@@ -15,7 +15,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
@@ -34,6 +33,7 @@ import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreTime } from '@singletons/time';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays info about a user.
@@ -64,7 +64,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
         try {
             this.site = CoreSites.getRequiredCurrentSite();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -122,7 +122,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
 
             await this.checkUserImageUpdated();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.user.errorloaduser', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.user.errorloaduser') });
         }
     }
 
@@ -190,7 +190,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
 
             this.refreshUser();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         } finally {
             modal?.dismiss();
         }

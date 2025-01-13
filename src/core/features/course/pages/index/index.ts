@@ -25,12 +25,12 @@ import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/service
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CORE_COURSE_CONTENTS_PAGE_NAME, CORE_COURSE_PROGRESS_UPDATED_EVENT } from '@features/course/constants';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { CoreColors } from '@singletons/colors';
 import { CorePath } from '@singletons/path';
 import { CoreSites } from '@services/sites';
 import { CoreWait } from '@singletons/wait';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -119,7 +119,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         try {
             this.course = CoreNavigator.getRequiredRouteParam('course');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
             this.loaded = true;
 

@@ -17,7 +17,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CoreNetwork } from '@services/network';
 import { CoreSiteBasicInfo, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSite } from '@classes/sites/site';
@@ -35,6 +34,7 @@ import { ALWAYS_SHOW_LOGIN_FORM_CHANGED, FORGOTTEN_PASSWORD_FEATURE_NAME } from 
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreLoginMethodsComponent, CoreLoginMethodsCurrentLogin } from '@features/login/components/login-methods/login-methods';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -152,7 +152,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
             this.showLoading = false;
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             return this.cancel();
         }
@@ -251,13 +251,13 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
         const password = this.credForm.value.password;
 
         if (!password) {
-            CoreDomUtils.showErrorModal('core.login.passwordrequired', true);
+            CoreAlerts.showError(Translate.instant('core.login.passwordrequired'));
 
             return;
         }
 
         if (!CoreNetwork.isOnline()) {
-            CoreDomUtils.showErrorModal('core.networkerrormsg', true);
+            CoreAlerts.showError(Translate.instant('core.networkerrormsg'));
 
             return;
         }
