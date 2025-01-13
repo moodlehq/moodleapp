@@ -29,10 +29,10 @@ import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreText } from '@singletons/text';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Page that displays the developer options.
@@ -225,7 +225,7 @@ export class CoreSettingsDevPage implements OnInit {
      * Invalidate app caches.
      */
     async invalidateCaches(): Promise<void> {
-        const success = await CoreDomUtils.showOperationModals('Invalidating caches', false, async () => {
+        const success = await CoreLoadings.showOperationModals('Invalidating caches', false, async () => {
             await CoreCacheManager.invalidate();
 
             return true;

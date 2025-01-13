@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSearchGlobalSearchResultsSource } from '@features/search/classes/global-search-results-source';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@singletons/utils';
@@ -31,6 +30,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
 import { CoreModals } from '@services/overlays/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 @Component({
     selector: 'page-core-search-global-search',
@@ -103,7 +103,7 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
             return;
         }
 
-        await CoreDomUtils.showOperationModals('core.searching', true, async () => {
+        await CoreLoadings.showOperationModals('core.searching', true, async () => {
             await this.resultsSource.reload();
             await CorePromiseUtils.ignoreErrors(
                 CoreSearchGlobalSearch.logViewResults(this.resultsSource.getQuery(), this.resultsSource.getFilters()),
@@ -150,7 +150,7 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
         });
 
         if (!this.resultsSource.hasEmptyQuery() && this.resultsSource.isDirty()) {
-            await CoreDomUtils.showOperationModals('core.searching', true, () => this.resultsSource.reload());
+            await CoreLoadings.showOperationModals('core.searching', true, () => this.resultsSource.reload());
         }
     }
 

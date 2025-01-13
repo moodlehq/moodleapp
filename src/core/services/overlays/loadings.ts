@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { Translate, makeSingleton } from '@singletons';
+import { CoreAlerts } from './alerts';
 
 /**
  * Handles application loading.
@@ -58,6 +59,28 @@ export class CoreLoadingsService {
         await loading.present();
 
         return loading;
+    }
+
+    /**
+     * Show a loading modal whilst an operation is running, and an error modal if it fails.
+     *
+     * @param text Loading dialog text.
+     * @param needsTranslate Whether the 'text' needs to be translated.
+     * @param operation Operation.
+     * @returns Operation result.
+     */
+    async showOperationModals<T>(text: string, needsTranslate: boolean, operation: () => Promise<T>): Promise<T | null> {
+        const modal = await this.show(text, needsTranslate);
+
+        try {
+            return await operation();
+        } catch (error) {
+            CoreAlerts.showError(error);
+
+            return null;
+        } finally {
+            modal.dismiss();
+        }
     }
 
     /**
