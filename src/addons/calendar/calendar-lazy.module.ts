@@ -26,6 +26,7 @@ import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/comp
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { ADDON_CALENDAR_PAGE_NAME } from './constants';
+import { canLeaveGuard } from '@guards/can-leave';
 
 /**
  * Build module routes.
@@ -55,6 +56,7 @@ function buildRoutes(injector: Injector): Routes {
         {
             path: 'edit/:eventId',
             component: AddonCalendarEditEventPage,
+            canDeactivate: [canLeaveGuard],
         },
         ...buildTabMainRoutes(injector, {
             redirectTo: 'index',
