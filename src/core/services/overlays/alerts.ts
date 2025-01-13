@@ -71,8 +71,7 @@ export class CoreAlertsService {
     confirm<T>(message: string, options: CoreAlertsConfirmOptions = {}): Promise<T> {
         return new Promise<T>((resolve, reject): void => {
             const { okText, cancelText, ...alertOptions } = options;
-
-            (<AlertOptions> alertOptions).buttons = [
+            const buttons = [
                 {
                     text: cancelText || Translate.instant('core.cancel'),
                     role: 'cancel',
@@ -88,11 +87,17 @@ export class CoreAlertsService {
                 },
             ];
 
+            let cssClass = alertOptions.cssClass || '';
             if (!alertOptions.header) {
-                options.cssClass = (options.cssClass || '') + ' core-nohead';
+                cssClass = cssClass + ' core-nohead';
             }
 
-            this.show(options);
+            this.show({
+                ...alertOptions,
+                message,
+                buttons,
+                cssClass,
+            });
         });
     }
 
@@ -129,11 +134,11 @@ export class CoreAlertsService {
                 },
             ];
 
-            if (!options.header) {
-                options.cssClass = (options.cssClass || '') + ' core-nohead';
+            if (!alertOptions.header) {
+                alertOptions.cssClass = (alertOptions.cssClass || '') + ' core-nohead';
             }
 
-            this.show(options);
+            this.show(alertOptions);
         });
     }
 

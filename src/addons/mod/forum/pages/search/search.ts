@@ -26,12 +26,12 @@ import {
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 @Component({
     selector: 'page-addon-mod-forum-search',
@@ -104,7 +104,7 @@ export class AddonModForumSearchPage implements OnInit {
             return;
         }
 
-        await CoreDomUtils.showOperationModals('core.searching', true, async () => {
+        await CoreLoadings.showOperationModals('core.searching', true, async () => {
             await this.resultsSource.reload();
             await CorePromiseUtils.ignoreErrors(
                 CoreSearchGlobalSearch.logViewResults(this.resultsSource.getQuery(), this.resultsSource.getFilters()),

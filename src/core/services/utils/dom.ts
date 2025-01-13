@@ -794,19 +794,10 @@ export class CoreDomUtilsProvider {
      * @param needsTranslate Whether the 'text' needs to be translated.
      * @param operation Operation.
      * @returns Operation result.
+     * @deprecated since 5.0. Use CoreLoadings.showOperationModals instead.
      */
     async showOperationModals<T>(text: string, needsTranslate: boolean, operation: () => Promise<T>): Promise<T | null> {
-        const modal = await CoreLoadings.show(text, needsTranslate);
-
-        try {
-            return await operation();
-        } catch (error) {
-            CoreAlerts.showError(error);
-
-            return null;
-        } finally {
-            modal.dismiss();
-        }
+        return CoreLoadings.showOperationModals(text, needsTranslate, operation);
     }
 
     /**
