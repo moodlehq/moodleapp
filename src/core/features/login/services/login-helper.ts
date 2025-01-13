@@ -1269,7 +1269,7 @@ export class CoreLoginHelperProvider {
             (CoreConstants.CONFIG.displayqroncredentialscreen !== undefined &&
                 !!CoreConstants.CONFIG.displayqroncredentialscreen)) {
 
-            return qrCodeType == CoreSiteQRCodeType.QR_CODE_LOGIN;
+            return qrCodeType === CoreSiteQRCodeType.QR_CODE_LOGIN;
         }
 
         return false;
