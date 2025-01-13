@@ -21,7 +21,6 @@ import { CoreFileUploaderHandlerResult } from '@features/fileuploader/services/f
 import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { AlertController, ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
@@ -31,6 +30,7 @@ import { CoreSharedFilesChooseSitePage } from '../pages/choose-site/choose-site'
 import { CoreError } from '@classes/errors/error';
 import { CorePlatform } from '@services/platform';
 import { CoreModals } from '@services/overlays/modals';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Helper service to share files with the app.
@@ -224,7 +224,7 @@ export class CoreSharedFilesHelperProvider {
 
             if (!siteIds.length) {
                 // No sites stored, show error and delete the file.
-                CoreDomUtils.showErrorModal('core.sharedfiles.errorreceivefilenosites', true);
+                CoreAlerts.showError(Translate.instant('core.sharedfiles.errorreceivefilenosites'));
 
                 return this.removeSharedFile(fileEntry, !path);
             } else if (siteIds.length == 1) {
@@ -263,10 +263,13 @@ export class CoreSharedFilesHelperProvider {
         try {
             await CoreSharedFiles.storeFileInSite(fileEntry, newName, siteId);
         } catch (error) {
-            CoreDomUtils.showErrorModal(error || 'Error moving file.');
+            CoreAlerts.showError(error || 'Error moving file.');
         } finally {
             this.removeSharedFile(fileEntry, isInbox);
-            CoreDomUtils.showAlertTranslated('core.success', 'core.sharedfiles.successstorefile');
+            CoreAlerts.show({
+                header: Translate.instant('core.success'),
+                message: Translate.instant('core.sharedfiles.successstorefile'),
+            });
         }
     }
 

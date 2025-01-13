@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreScreen } from '@services/screen';
@@ -22,6 +21,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the tag index.
@@ -139,7 +139,7 @@ export class CoreTagIndexPage implements OnInit {
             this.logView();
 
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading tag index');
+            CoreAlerts.showError(error, { default: 'Error loading tag index' });
         }
     }
 

@@ -19,7 +19,6 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
@@ -34,6 +33,7 @@ import {
 } from '../../services/assign-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_ASSIGN_AUTO_SYNCED, ADDON_MOD_ASSIGN_GRADED_EVENT, ADDON_MOD_ASSIGN_MANUAL_SYNCED } from '../../constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a list of submissions of an assignment.
@@ -107,8 +107,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
                 AddonModAssignSubmissionListPage,
             );
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -184,7 +183,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
                 url: `/mod/assign/view.php?id=${this.assign.cmid}&action=grading`,
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting assigment data.');
+            CoreAlerts.showError(error, { default: 'Error getting assigment data.' });
         }
     }
 

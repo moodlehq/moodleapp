@@ -27,7 +27,6 @@ import { CoreCourseOptionsDelegate } from '@features/course/services/course-opti
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreSite } from '@classes/sites/site';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 import { IonSearchbar } from '@ionic/angular';
@@ -43,6 +42,8 @@ import {
     CORE_COURSES_STATE_FAVOURITE,
     CORE_COURSES_STATE_HIDDEN,
 } from '@features/courses/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
     ['all', 'inprogress', 'future', 'past', 'favourite', 'allincludinghidden', 'hidden', 'custom'];
@@ -504,7 +505,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             await CoreCourseHelper.prefetchCourses(this.filteredCourses, this.prefetchCoursesData);
         } catch (error) {
             if (!this.isDestroyed) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.course.errordownloadingcourse') });
                 this.prefetchCoursesData.icon = initialIcon;
             }
         }
@@ -566,7 +567,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                         throw error; // Pass the error to the caller so it's treated there.
                     }
 
-                    CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
+                    CoreAlerts.showError(error, { default: this.fetchContentDefaultError });
                 } finally {
                     if (!alreadyLoading) {
                         // Only set loaded to true if there was no other data being loaded.

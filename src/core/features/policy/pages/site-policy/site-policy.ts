@@ -15,7 +15,6 @@
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNavigator } from '@services/navigator';
@@ -33,6 +32,7 @@ import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page to accept a site policy.
@@ -132,7 +132,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
         try {
             this.sitePoliciesURL = await CorePolicy.getSitePoliciesURL(this.siteId);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting site policy.');
+            CoreAlerts.showError(error, { default: 'Error getting site policy.' });
             this.cancel();
 
             return;
@@ -199,7 +199,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
             this.setCurrentPolicy(policy);
             this.policyLoaded = true;
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting site policy.');
+            CoreAlerts.showError(error, { default: 'Error getting site policy.' });
             this.cancel();
         }
     }
@@ -368,7 +368,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
             if (!errorFound) {
                 // Input not found, show an error modal.
-                CoreDomUtils.showErrorModal('core.policy.mustagreetocontinue', true);
+                CoreAlerts.showError(Translate.instant('core.policy.mustagreetocontinue'));
             }
 
             return;
@@ -387,7 +387,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
             await this.finishAcceptingPolicies();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error accepting site policies.');
+            CoreAlerts.showError(error, { default: 'Error accepting site policies.' });
         } finally {
             modal.dismiss();
         }
@@ -412,7 +412,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
             if (policy.optional) {
                 if (control.value === null || control.value === undefined) {
                     // Not answered, this code shouldn't be reached. Display error.
-                    CoreDomUtils.showErrorModal('core.policy.mustagreetocontinue', true);
+                    CoreAlerts.showError(Translate.instant('core.policy.mustagreetocontinue'));
 
                     return;
                 }
@@ -421,7 +421,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
             } else {
                 if (!control.value) {
                     // Not answered, this code shouldn't be reached. Display error.
-                    CoreDomUtils.showErrorModal('core.policy.mustagreetocontinue', true);
+                    CoreAlerts.showError(Translate.instant('core.policy.mustagreetocontinue'));
 
                     return;
                 }

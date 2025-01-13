@@ -28,7 +28,6 @@ import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -59,6 +58,7 @@ import {
     GLOSSARY_AUTO_SYNCED,
 } from '../../constants';
 import { CorePopovers } from '@services/overlays/popovers';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays a glossary entry page.
@@ -339,7 +339,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             await entries.load();
         } catch (error) {
             this.loadMoreError = true;
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentries', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_glossary.errorloadingentries') });
         } finally {
             infiniteComplete && infiniteComplete();
         }

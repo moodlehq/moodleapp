@@ -31,6 +31,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 @Component({
     selector: 'page-addon-mod-forum-search',
@@ -82,7 +83,7 @@ export class AddonModForumSearchPage implements OnInit {
             this.resultsSource.setFilters(filters);
             this.ready.resolve();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;

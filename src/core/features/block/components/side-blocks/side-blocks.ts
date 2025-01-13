@@ -14,7 +14,6 @@
 
 import { Component, ViewChildren, Input, OnInit, QueryList, ElementRef } from '@angular/core';
 import { ModalController } from '@singletons';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse, CoreCourseBlock } from '@features/course/services/course';
 import { CoreBlockHelper } from '../../services/block-helper';
 import { CoreBlockComponent } from '../block/block';
@@ -25,6 +24,7 @@ import { ContextLevel } from '@/core/constants';
 import { CoreWait } from '@singletons/wait';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockComponentsModule } from '../components.module';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays the list of side blocks.
@@ -103,8 +103,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
                 this.blocks = blocks.sideBlocks;
             }
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             this.blocks = [];
         }
 

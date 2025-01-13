@@ -26,10 +26,10 @@ import { CoreConstants } from '../constants';
 import { CoreSSO } from '@singletons/sso';
 import { CoreNavigator, CoreRedirectPayload } from './navigator';
 import { CoreSiteCheckResponse, CoreSites } from './sites';
-import { CoreDomUtils } from './utils/dom';
 import { CoreErrorHelper, CoreErrorObject } from './error-helper';
 import { CoreUrl } from '@singletons/url';
 import { CoreLoadings } from './overlays/loadings';
+import { CoreAlerts } from './overlays/alerts';
 
 /*
  * Provider to handle custom URL schemes.
@@ -218,7 +218,7 @@ export class CoreCustomURLSchemesProvider {
                     const treated = await CoreContentLinksHelper.handleLink(data.redirect, username);
 
                     if (!treated) {
-                        CoreDomUtils.showErrorModal('core.contentlinks.errornoactions', true);
+                        CoreAlerts.showError(Translate.instant('core.contentlinks.errornoactions'));
                     }
                 }
 
@@ -430,7 +430,7 @@ export class CoreCustomURLSchemesProvider {
 
         if (CoreSites.isLoggedIn()) {
             // Ask the user before changing site.
-            await CoreDomUtils.showConfirm(Translate.instant('core.contentlinks.confirmurlothersite'));
+            await CoreAlerts.confirm(Translate.instant('core.contentlinks.confirmurlothersite'));
 
             await CoreSites.logout({
                 siteId: CoreConstants.NO_SITE_ID,
@@ -531,7 +531,7 @@ export class CoreCustomURLSchemesProvider {
             CoreLoginHelper.treatUserTokenError(error.data.siteUrl, <CoreWSError> error.error);
             CoreSites.logout();
         } else {
-            CoreDomUtils.showErrorModal(error.error ?? new CoreError(Translate.instant('core.login.invalidsite'), { debug: {
+            CoreAlerts.showError(error.error ?? new CoreError(Translate.instant('core.login.invalidsite'), { debug: {
                 code: 'unknownerror',
                 details: `Unknown error when treating a URL scheme.<br><br>Origin: ${origin}.<br><br>URL: ${url}.`,
             } }));

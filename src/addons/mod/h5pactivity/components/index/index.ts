@@ -28,7 +28,6 @@ import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSFile } from '@services/ws';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
@@ -58,6 +57,8 @@ import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { Subscription } from 'rxjs';
 import { NgZone, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
+import { CoreErrorHelper } from '@services/error-helper';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays an H5P activity entry page.
@@ -146,7 +147,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
         if (this.playing && !this.fileUrl && !this.isOnline && wasOnline && this.trackComponent) {
             // User lost connection while playing an online package with tracking. Show an error.
-            this.offlineErrorAlert = await CoreDomUtils.showErrorModal(
+            this.offlineErrorAlert = await CoreAlerts.showError(
                 new CoreError(Translate.instant('core.course.changesofflinemaybelost'), {
                     title: Translate.instant('core.youreoffline'),
                 }),
@@ -398,14 +399,14 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         }
 
         if (!CoreNetwork.isOnline()) {
-            CoreDomUtils.showErrorModal('core.networkerrormsg', true);
+            CoreAlerts.showError(Translate.instant('core.networkerrormsg'));
 
             return;
         }
 
         try {
             // Confirm the download if needed.
-            await CoreDomUtils.confirmDownloadSize({ size: this.deployedFile.filesize || 0, total: true });
+            await CoreAlerts.confirmDownloadSize({ size: this.deployedFile.filesize || 0, total: true });
 
             await this.downloadDeployedFile();
 
@@ -414,7 +415,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             }
 
         } catch (error) {
-            if (CoreDomUtils.isCanceledError(error) || this.isDestroyed) {
+            if (CoreErrorHelper.isCanceledError(error) || this.isDestroyed) {
                 // User cancelled or view destroyed, stop.
                 return;
             }
@@ -433,7 +434,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
                 return;
             }
 
-            CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
         }
     }
 
@@ -450,7 +451,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
                 this.play();
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
         }
     }
 
@@ -522,7 +523,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         if (!this.fileUrl && !this.isOnline) {
             this.triedToPlay = true;
 
-            CoreDomUtils.showErrorModal(new CoreError(Translate.instant('core.connectandtryagain'), {
+            CoreAlerts.showError(new CoreError(Translate.instant('core.connectandtryagain'), {
                 title: Translate.instant('core.course.activitynotavailableoffline'),
             }));
 
@@ -697,7 +698,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
                 }
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error sending tracking data.');
+            CoreAlerts.showError(error, { default: 'Error sending tracking data.' });
         }
     }
 
@@ -757,7 +758,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
             this.hasOffline = !sent;
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error sending tracking data.');
+            CoreAlerts.showError(error, { default: 'Error sending tracking data.' });
         }
     }
 
@@ -778,7 +779,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
                 },
             );
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error sending tracking data.');
+            CoreAlerts.showError(error, { default: 'Error sending tracking data.' });
         }
     }
 

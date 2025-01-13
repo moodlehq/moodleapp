@@ -19,9 +19,9 @@ import { CorePushNotificationsClickHandler } from '@features/pushnotifications/s
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler for enrol push notifications clicks.
@@ -72,7 +72,7 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
 
             await CoreNavigator.navigateToSitePath(page, { params, siteId: notification.site });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting course.');
+            CoreAlerts.showError(error, { default: 'Error getting course.' });
         } finally {
             modal.dismiss();
         }

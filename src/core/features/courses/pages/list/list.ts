@@ -16,7 +16,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfo } from '@features/courses/services/courses-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourseBasicSearchedData, CoreCourses } from '../../services/courses';
 import { CoreTime } from '@singletons/time';
@@ -27,6 +26,7 @@ import {
     CoreCoursesMyCoursesUpdatedEventAction,
     CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT,
 } from '@features/courses/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 type CoreCoursesListMode = 'search' | 'all' | 'my';
 
@@ -212,7 +212,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
             this.logView();
         } catch (error) {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
-            !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
+            !this.isDestroyed && CoreAlerts.showError(error, { default: Translate.instant('core.courses.errorloadcourses') });
         }
 
     }
@@ -337,7 +337,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
             this.logSearch?.();
         } catch (error) {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
-            !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorsearching', true);
+            !this.isDestroyed && CoreAlerts.showError(error, { default: Translate.instant('core.courses.errorsearching') });
         }
     }
 

@@ -34,6 +34,7 @@ import { CoreViewer } from '@features/viewer/services/viewer';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { AddonModQuizNavigationQuestion } from '@addons/mod/quiz/components/navigation-modal/navigation-modal';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Service with some common functions to handle questions.
@@ -794,7 +795,7 @@ export class CoreQuestionHelperProvider {
         const now = Date.now();
         if (now - this.lastErrorShown > 500) {
             this.lastErrorShown = now;
-            CoreDomUtils.showErrorModalDefault(error || '', 'addon.mod_quiz.errorparsequestions', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_quiz.errorparsequestions') });
         }
 
         onAbort?.emit();

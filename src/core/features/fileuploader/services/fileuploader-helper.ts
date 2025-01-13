@@ -21,7 +21,6 @@ import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/file';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
 import { CoreArray } from '@singletons/array';
@@ -47,6 +46,7 @@ import { Chooser } from '@features/native/plugins';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreFileUtils } from '@singletons/file-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Helper service to upload files.
@@ -139,15 +139,13 @@ export class CoreFileUploaderHelperProvider {
             CoreFileUploaderProvider.LIMITED_SIZE_WARNING : limitedThreshold;
 
         if (size < 0) {
-            return CoreDomUtils.showConfirm(Translate.instant('core.fileuploader.confirmuploadunknownsize'));
+            return CoreAlerts.confirm(Translate.instant('core.fileuploader.confirmuploadunknownsize'));
         } else if (size >= wifiThreshold || (CoreNetwork.isNetworkAccessLimited() && size >= limitedThreshold)) {
             const readableSize = CoreText.bytesToSize(size, 2);
 
-            return CoreDomUtils.showConfirm(
-                Translate.instant('core.fileuploader.confirmuploadfile', { size: readableSize }),
-            );
+            return CoreAlerts.confirm(Translate.instant('core.fileuploader.confirmuploadfile', { size: readableSize }));
         } else if (alwaysConfirm) {
-            return CoreDomUtils.showConfirm(Translate.instant('core.areyousure'));
+            return CoreAlerts.confirm(Translate.instant('core.areyousure'));
         }
     }
 
@@ -375,7 +373,7 @@ export class CoreFileUploaderHelperProvider {
 
                     if (!allowOffline && !CoreNetwork.isOnline()) {
                         // Not allowed, show error.
-                        CoreDomUtils.showErrorModal('core.fileuploader.errormustbeonlinetoupload', true);
+                        CoreAlerts.showError(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
 
                         return false;
                     }
@@ -415,10 +413,7 @@ export class CoreFileUploaderHelperProvider {
 
                         return true;
                     } catch (error) {
-                        CoreDomUtils.showErrorModalDefault(
-                            error,
-                            Translate.instant('core.fileuploader.errorreadingfile'),
-                        );
+                        CoreAlerts.showError(error, { default: Translate.instant('core.fileuploader.errorreadingfile') });
 
                         return false;
                     }
@@ -466,7 +461,7 @@ export class CoreFileUploaderHelperProvider {
                 cssClass: 'core-toast-success',
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.fileuploader.errorreadingfile', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.fileuploader.errorreadingfile') });
 
             throw error;
         }
@@ -774,13 +769,14 @@ export class CoreFileUploaderHelperProvider {
         options: CoreFileUploaderOptions,
         siteId?: string,
     ): Promise<CoreWSUploadFileResult> {
-        const errorStr = Translate.instant('core.error');
-        const retryStr = Translate.instant('core.retry');
         const uploadingStr = Translate.instant('core.fileuploader.uploading');
         const errorUploading = async (error): Promise<CoreWSUploadFileResult> => {
             // Allow the user to retry.
             try {
-                await CoreDomUtils.showConfirm(error, errorStr, retryStr);
+                await CoreAlerts.confirm(error, {
+                    header: Translate.instant('core.error'),
+                    okText: Translate.instant('core.retry'),
+                });
             } catch (error) {
                 // User cancelled. Delete the file if needed.
                 if (options.deleteAfterUpload) {

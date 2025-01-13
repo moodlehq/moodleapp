@@ -22,10 +22,10 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { AlertButton } from '@ionic/angular';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLang } from '@services/lang';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreOpener } from '@singletons/opener';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handle site support.
@@ -79,7 +79,7 @@ export class CoreUserSupportService {
 
         buttons.push(Translate.instant('core.close'));
 
-        CoreDomUtils.showAlertWithOptions({
+        CoreAlerts.show({
             header: Translate.instant('core.help'),
             message,
             buttons,
@@ -139,7 +139,7 @@ export class CoreUserSupportService {
             }
 
             browser.close();
-            CoreDomUtils.showAlert(undefined, appSuccessMessage);
+            CoreAlerts.show({ message: appSuccessMessage });
         });
 
         CoreEvents.once(CoreEvents.IAB_EXIT, () => subscription.unsubscribe());

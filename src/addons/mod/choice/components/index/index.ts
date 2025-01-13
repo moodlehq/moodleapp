@@ -18,7 +18,6 @@ import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { IonContent } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -42,6 +41,7 @@ import {
     AddonModChoiceShowResults,
 } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays a choice.
@@ -370,7 +370,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
 
         // Only show confirm if choice doesn't allow update.
         if (!this.choice.allowupdate) {
-            await CoreDomUtils.showConfirm(Translate.instant('core.areyousure'));
+            await CoreAlerts.confirm(Translate.instant('core.areyousure'));
         }
 
         const responses: number[] = [];
@@ -401,7 +401,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
 
             await this.dataUpdated(online);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_choice.cannotsubmit', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_choice.cannotsubmit') });
         } finally {
             modal.dismiss();
         }
@@ -416,7 +416,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         try {
-            await CoreDomUtils.showDeleteConfirm();
+            await CoreAlerts.confirmDelete(Translate.instant('core.areyousure'));
         } catch {
             // User cancelled.
             return;
@@ -434,7 +434,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             // Refresh the data. Don't call dataUpdated because deleting an answer doesn't mark the choice as outdated.
             await this.refreshContent(false);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_choice.cannotsubmit', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_choice.cannotsubmit') });
         } finally {
             modal.dismiss();
         }

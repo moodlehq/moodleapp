@@ -25,7 +25,7 @@ import { CorePasswordModalResponse } from '@components/password-modal/password-m
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreEnrol, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
-import { CoreModals } from '@services/overlays/modals';
+import { CorePrompts } from '@services/overlays/prompts';
 
 /**
  * Enrol handler.
@@ -119,7 +119,7 @@ export class AddonEnrolGuestHandlerService implements CoreEnrolGuestHandler {
         };
 
         try {
-            const response = await CoreModals.promptPassword<CorePasswordModalResponse>({
+            const response = await CorePrompts.promptPassword<CorePasswordModalResponse>({
                 title: method.name,
                 validator: validatePassword,
             });

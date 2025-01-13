@@ -75,6 +75,7 @@ import {
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 export type CoreCourseProgressUpdated = { progress: number; courseId: number };
 
@@ -1470,11 +1471,11 @@ export class CoreCourseProvider {
             return;
         } catch {
             // The site plugin failed to load. The user needs to restart the app to try loading it again.
-            const message = Translate.instant('core.courses.errorloadplugins');
-            const reload = Translate.instant('core.courses.reload');
-            const ignore = Translate.instant('core.courses.ignore');
+            await CoreAlerts.confirm(Translate.instant('core.courses.errorloadplugins'), {
+                okText: Translate.instant('core.courses.reload'),
+                cancelText: Translate.instant('core.courses.ignore'),
+            });
 
-            await CoreDomUtils.showConfirm(message, '', reload, ignore);
             window.location.reload();
         } finally {
             loading.dismiss();

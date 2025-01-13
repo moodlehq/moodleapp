@@ -21,7 +21,6 @@ import { IonContent } from '@ionic/angular';
 import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@singletons/utils';
 import { NgZone, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -47,6 +46,7 @@ import { CoreError } from '@classes/errors/error';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays feedback form.
@@ -109,7 +109,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
             this.preview = !!CoreNavigator.getRouteBooleanParam('preview');
             this.fromIndex = !!CoreNavigator.getRouteBooleanParam('fromIndex');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             CoreNavigator.back();
 
@@ -119,7 +119,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
         await this.fetchData();
 
         if (!this.access || this.access.isempty && (!this.access.canedititems && !this.access.canviewreports)) {
-            CoreDomUtils.showErrorModal(Translate.instant('core.nopermissiontoaccesspage'));
+            CoreAlerts.showError(Translate.instant('core.nopermissiontoaccesspage'));
 
             CoreNavigator.back();
 
@@ -160,7 +160,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
             if (this.items && !this.completed && this.originalData) {
                 // Form submitted. Check if there is any change.
                 if (!CoreObject.basicLeftCompare(responses, this.originalData, 3)) {
-                    await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+                    await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
                 }
             }
         }
@@ -200,7 +200,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
             await this.fetchFeedbackPageData(page);
         } catch (message) {
-            CoreDomUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(message, { default: Translate.instant('core.course.errorgetmodule') });
             this.forceLeave = true;
             CoreNavigator.back();
         } finally {
@@ -405,7 +405,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
                 await this.fetchFeedbackPageData(response.jumpto);
             }
         } catch (message) {
-            CoreDomUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(message, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             this.feedbackLoaded = true;
         }

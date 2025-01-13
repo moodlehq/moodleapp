@@ -19,10 +19,10 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler to treat links to lesson report.
@@ -111,7 +111,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
                 { params, siteId },
             );
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error processing link.');
+            CoreAlerts.showError(error, { default: 'Error processing link.' });
         } finally {
             modal.dismiss();
         }
@@ -150,7 +150,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
                 { params, siteId },
             );
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error processing link.');
+            CoreAlerts.showError(error, { default: 'Error processing link.' });
         } finally {
             modal.dismiss();
         }

@@ -20,7 +20,6 @@ import {
     AddonMessagesDiscussion,
     AddonMessagesMessageAreaContact,
 } from '../../services/messages';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@singletons/utils';
 import { ActivatedRoute, Params } from '@angular/router';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
@@ -34,6 +33,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { ADDON_MESSAGES_NEW_MESSAGE_EVENT, ADDON_MESSAGES_READ_CHANGED_EVENT } from '@addons/messages/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the list of discussions.
@@ -207,7 +207,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
         try {
             await Promise.all(promises);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.messages.errorwhileretrievingdiscussions') });
         }
 
         this.loaded = true;
@@ -241,7 +241,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
             this.search.showResults = true;
             this.search.results = searchResults.messages;
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingmessages', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.messages.errorwhileretrievingmessages') });
         }
 
         this.loaded = true;

@@ -17,11 +17,11 @@ import { CoreEnrolAction, CoreEnrolSelfHandler, CoreEnrolInfoIcon } from '@featu
 import { Translate, makeSingleton } from '@singletons';
 import { AddonEnrolSelf } from './self';
 import { CorePasswordModalResponse } from '@components/password-modal/password-modal';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEnrol, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
-import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CORE_COURSES_ENROL_INVALID_KEY } from '@features/courses/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CorePrompts } from '@services/overlays/prompts';
 
 /**
  * Enrol handler.
@@ -87,11 +87,10 @@ export class AddonEnrolSelfHandlerService implements CoreEnrolSelfHandler {
         // Don't allow self access if it requires a password if not supported.
         if (!info.enrolpassword) {
             try {
-                await CoreDomUtils.showConfirm(
-                    Translate.instant('addon.enrol_self.confirmselfenrol'),
-                    method.name,
-                    Translate.instant('core.courses.enrolme'),
-                );
+                await CoreAlerts.confirm(Translate.instant('addon.enrol_self.confirmselfenrol'), {
+                    header: method.name,
+                    okText: Translate.instant('core.courses.enrolme'),
+                });
             } catch {
                 // User cancelled.
                 return false;
@@ -126,7 +125,7 @@ export class AddonEnrolSelfHandlerService implements CoreEnrolSelfHandler {
                     response.validated = false;
                     response.error = error.message;
                 } else {
-                    CoreDomUtils.showErrorModalDefault(error, 'addon.enrol_self.errorselfenrol', true);
+                    CoreAlerts.showError(error, { default: Translate.instant('addon.enrol_self.errorselfenrol') });
 
                     throw error;
                 }
@@ -147,7 +146,7 @@ export class AddonEnrolSelfHandlerService implements CoreEnrolSelfHandler {
 
         if (!response.validated) {
             try {
-                const response = await CoreModals.promptPassword({
+                const response = await CorePrompts.promptPassword({
                     validator: validatePassword,
                     title: method.name,
                     placeholder: 'addon.enrol_self.password',

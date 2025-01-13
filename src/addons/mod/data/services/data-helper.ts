@@ -49,6 +49,7 @@ import {
 } from '../constants';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Service that provides helper functions for datas.
@@ -164,7 +165,7 @@ export class AddonModDataHelperProvider {
                 // Approve/disapprove entry.
                 await AddonModData.approveEntry(dataId, entryId, approve, courseId, siteId);
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'addon.mod_data.errorapproving', true);
+                CoreAlerts.showError(error, { default: Translate.instant('addon.mod_data.errorapproving') });
 
                 throw error;
             }
@@ -856,7 +857,7 @@ export class AddonModDataHelperProvider {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         try {
-            await CoreDomUtils.showDeleteConfirm('addon.mod_data.confirmdeleterecord');
+            await CoreAlerts.confirmDelete(Translate.instant('addon.mod_data.confirmdeleterecord'));
 
             const modal = await CoreLoadings.show();
 
@@ -869,7 +870,7 @@ export class AddonModDataHelperProvider {
                     await AddonModData.deleteEntry(dataId, entryId, courseId, siteId);
                 }
             } catch (message) {
-                CoreDomUtils.showErrorModalDefault(message, 'addon.mod_data.errordeleting', true);
+                CoreAlerts.showError(message, { default: Translate.instant('addon.mod_data.errordeleting') });
 
                 modal.dismiss();
 

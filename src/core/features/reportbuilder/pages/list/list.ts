@@ -19,11 +19,11 @@ import { CoreReportBuilderReportsSource } from '@features/reportbuilder/classes/
 import { CoreReportBuilder, CoreReportBuilderReport, REPORTS_LIST_LIMIT } from '@features/reportbuilder/services/reportbuilder';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreTime } from '@singletons/time';
 import { BehaviorSubject } from 'rxjs';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 @Component({
     selector: 'core-report-builder-list',
@@ -50,7 +50,7 @@ export class CoreReportBuilderListPage implements AfterViewInit, OnDestroy {
             const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreReportBuilderReportsSource, []);
             this.reports = new CoreListItemsManager(source, CoreReportBuilderListPage);
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
         }
     }
@@ -63,7 +63,7 @@ export class CoreReportBuilderListPage implements AfterViewInit, OnDestroy {
             await this.fetchReports(true);
             this.updateState({ loaded: true });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading reports');
+            CoreAlerts.showError(error, { default: 'Error loading reports' });
 
             this.reports.reset();
         }
@@ -100,7 +100,7 @@ export class CoreReportBuilderListPage implements AfterViewInit, OnDestroy {
         try {
             await this.fetchReports(false);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading more reports');
+            CoreAlerts.showError(error, { default: 'Error loading more reports' });
 
             this.updateState({ loadMoreError: true });
         }

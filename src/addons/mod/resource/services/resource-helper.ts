@@ -22,7 +22,6 @@ import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { makeSingleton, Translate } from '@singletons';
 import { CorePath } from '@singletons/path';
@@ -33,6 +32,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { ADDON_MOD_RESOURCE_COMPONENT } from '../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreOpenerOpenFileOptions } from '@singletons/opener';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Service that provides helper functions for resources.
@@ -220,7 +220,7 @@ export class AddonModResourceHelperProvider {
                 url: `/mod/resource/view.php?id=${module.id}`,
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_resource.errorwhileloadingthecontent', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_resource.errorwhileloadingthecontent') });
         } finally {
             modal.dismiss();
         }

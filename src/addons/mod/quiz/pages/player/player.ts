@@ -27,7 +27,6 @@ import { CoreQuestionBehaviourButton, CoreQuestionHelper } from '@features/quest
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ModalController, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -56,6 +55,7 @@ import { ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT, AddonModQuizAttemptStates, ADDON
 import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that allows attempting a quiz.
@@ -124,7 +124,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.moduleUrl = CoreNavigator.getRouteParam('moduleUrl');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             CoreNavigator.back();
 
@@ -178,7 +178,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             // Save attempt failed. Show confirmation.
             modal.dismiss();
 
-            await CoreDomUtils.showConfirm(Translate.instant('addon.mod_quiz.confirmleavequizonerror'));
+            await CoreAlerts.confirm(Translate.instant('addon.mod_quiz.confirmleavequizonerror'));
 
             CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
         } finally {
@@ -219,7 +219,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         try {
             // Confirm that the user really wants to do it.
-            await CoreDomUtils.showConfirm(Translate.instant('core.areyousure'));
+            await CoreAlerts.confirm(Translate.instant('core.areyousure'));
 
             modal = await CoreLoadings.show('core.sending', true);
 
@@ -253,7 +253,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
                 }
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error performing action.');
+            CoreAlerts.showError(error, { default: 'Error performing action.' });
         } finally {
             modal?.dismiss();
         }
@@ -303,7 +303,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
                 modal.dismiss();
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorsaveattempt', true);
+                CoreAlerts.showError(error, { default: Translate.instant('addon.mod_quiz.errorsaveattempt') });
                 modal.dismiss();
 
                 return;
@@ -330,7 +330,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
                 this.autoSave.startCheckChangesProcess(this.quiz, this.attempt, this.preflightData, this.offline);
             }
 
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquestions', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_quiz.errorgetquestions') });
         } finally {
             this.loaded = true;
 
@@ -437,11 +437,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
                     `;
                 }
 
-                await CoreDomUtils.showConfirm(
-                    message,
-                    Translate.instant('addon.mod_quiz.submitallandfinish'),
-                    Translate.instant('core.submit'),
-                );
+                await CoreAlerts.confirm(message, {
+                    header: Translate.instant('addon.mod_quiz.submitallandfinish'),
+                    okText: Translate.instant('core.submit'),
+                });
             }
 
             modal = await CoreLoadings.show('core.sending', true);
@@ -471,8 +470,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             }
         } catch (error) {
             // eslint-disable-next-line promise/catch-or-return
-            CoreDomUtils
-                .showErrorModalDefault(error, 'addon.mod_quiz.errorsaveattempt', true)
+            CoreAlerts
+                .showError(error, { default: Translate.instant('addon.mod_quiz.errorsaveattempt') })
                 .then(async alert => {
                     await alert?.onWillDismiss();
 
@@ -882,7 +881,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             // Quiz data has been loaded, try to start or continue.
             await this.startOrContinueAttempt();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquiz', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_quiz.errorgetquiz') });
         } finally {
             this.loaded = true;
         }

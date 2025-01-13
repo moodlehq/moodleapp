@@ -24,8 +24,6 @@ import { Subscription, filter } from 'rxjs';
 import { Md5 } from 'ts-md5';
 import { fixOverlayAriaHidden } from '../../utils/fix-aria-hidden';
 import { ModalOptions } from '@ionic/angular';
-import { CoreCanceledError } from '@classes/errors/cancelederror';
-import { CoreWSError } from '@classes/errors/wserror';
 import { CorePasswordModalResponse, CorePasswordModalParams } from '@components/password-modal/password-modal';
 
 /**
@@ -188,28 +186,12 @@ export class CoreModalsService {
      *
      * @param passwordParams Params to show the modal.
      * @returns Entered password, error and validation.
+     * @deprecated since 5.0. Use CorePrompts.promptPassword instead.
      */
     async promptPassword<T extends CorePasswordModalResponse>(passwordParams?: CorePasswordModalParams): Promise<T> {
-        const { CorePasswordModalComponent } =
-            await import('@/core/components/password-modal/password-modal.module');
+        const { CorePrompts } = await import('./prompts');
 
-        const modalData = await CoreModals.openModal<T>(
-            {
-                cssClass: 'core-password-modal',
-                showBackdrop: true,
-                backdropDismiss: true,
-                component: CorePasswordModalComponent,
-                componentProps: passwordParams,
-            },
-        );
-
-        if (modalData === undefined) {
-            throw new CoreCanceledError();
-        } else if (modalData instanceof CoreWSError) {
-            throw modalData;
-        }
-
-        return modalData;
+        return CorePrompts.promptPassword(passwordParams);
     }
 
 }

@@ -34,7 +34,6 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreArray } from '@singletons/array';
@@ -43,6 +42,8 @@ import { CoreTime } from '@singletons/time';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { Subscription } from 'rxjs';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays the list of blog entries.
@@ -236,7 +237,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
                 const result = await AddonBlogSync.syncEntriesForSite(CoreSites.getCurrentSiteId());
 
                 if (result.warnings && result.warnings.length) {
-                    CoreDomUtils.showAlert(undefined, result.warnings[0]);
+                    CoreAlerts.show({ message: result.warnings[0] });
                 }
 
                 if (result.updated) {
@@ -244,7 +245,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
                 }
             } catch (error) {
                 if (showSyncErrors) {
-                    CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
+                    CoreAlerts.showError(error, { default: Translate.instant('core.errorsync') });
                 }
             }
         }
@@ -281,7 +282,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
             this.pageLoaded++;
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.blog.errorloadentries', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.blog.errorloadentries') });
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
         } finally {
             this.loaded.set(true);
@@ -338,7 +339,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
             this.filter.userid = !enabled ? undefined : this.currentUserId;
             await this.fetchEntries(true);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.blog.errorloadentries', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.blog.errorloadentries') });
             this.onlyMyEntries = !enabled;
             this.filter.userid = !enabled ? this.currentUserId : undefined;
         } finally {
@@ -418,7 +419,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
      */
     async deleteEntry(entryToRemove: AddonBlogOfflinePostFormatted | AddonBlogPostFormatted): Promise<void> {
         try {
-            await CoreDomUtils.showDeleteConfirm('addon.blog.blogdeleteconfirm', { $a: entryToRemove.subject });
+            await CoreAlerts.confirmDelete(Translate.instant('addon.blog.blogdeleteconfirm', { $a: entryToRemove.subject }));
         } catch {
             return;
         }
@@ -434,7 +435,7 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
 
             CoreEvents.trigger(ADDON_BLOG_ENTRY_UPDATED);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.blog.errorloadentries', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.blog.errorloadentries') });
         } finally {
             loading.dismiss();
         }

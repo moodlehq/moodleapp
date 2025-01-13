@@ -16,11 +16,11 @@ import { Component, OnInit } from '@angular/core';
 import { ContextLevel } from '@/core/constants';
 import { AddonCompetencySummary, AddonCompetency } from '@addons/competency/services/competency';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/constants';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the competency summary.
@@ -71,8 +71,7 @@ export class AddonCompetencyCompetencySummaryPage implements OnInit {
             this.contextLevel = CoreNavigator.getRouteParam<ContextLevel>('contextLevel');
             this.contextInstanceId = CoreNavigator.getRouteNumberParam('contextInstanceId');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -103,7 +102,7 @@ export class AddonCompetencyCompetencySummaryPage implements OnInit {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting competency summary data.');
+            CoreAlerts.showError(error, { default: 'Error getting competency summary data.' });
         }
     }
 

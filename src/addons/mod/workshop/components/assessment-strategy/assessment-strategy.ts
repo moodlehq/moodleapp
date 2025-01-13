@@ -21,7 +21,6 @@ import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -46,6 +45,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays workshop assessment strategy form.
@@ -148,7 +148,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
                 );
             } catch (error) {
                 this.componentClass = undefined;
-                CoreDomUtils.showErrorModalDefault(error, 'Error loading assessment.');
+                CoreAlerts.showError(error, { default: 'Error loading assessment.' });
             } finally {
                 this.assessmentStrategyLoaded = true;
             }
@@ -400,7 +400,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
                 CoreFileUploader.clearTmpFiles(files);
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error saving assessment.');
+            CoreAlerts.showError(error, { default: 'Error saving assessment.' });
         } finally {
             modal.dismiss();
         }

@@ -18,7 +18,6 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreFileHelper } from '@services/file-helper';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUrl } from '@singletons/url';
 import { CoreText } from '@singletons/text';
@@ -29,6 +28,8 @@ import { CorePlatform } from '@services/platform';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@singletons/opener';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 /**
  * Component to handle a remote file. Shows the file name, icon (depending on mimetype) and a button
@@ -169,7 +170,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
                 }
             }, undefined, options);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
         }
     }
 
@@ -204,7 +205,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
 
         if (!CoreNetwork.isOnline() && (!openAfterDownload || (openAfterDownload &&
                 !CoreFileHelper.isStateDownloaded(this.state)))) {
-            CoreDomUtils.showErrorModal('core.networkerrormsg', true);
+            CoreAlerts.showError(Translate.instant('core.networkerrormsg'));
 
             return;
         }
@@ -214,7 +215,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
             try {
                 await this.openFile();
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
             }
         } else {
             try {
@@ -222,7 +223,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
                 const size = await CorePluginFileDelegate.getFileSize(this.file, this.siteId);
 
                 if (size) {
-                    await CoreDomUtils.confirmDownloadSize({ size: size, total: true });
+                    await CoreAlerts.confirmDownloadSize({ size: size, total: true });
                 }
 
                 // User confirmed, add the file to queue.
@@ -244,11 +245,11 @@ export class CoreFileComponent implements OnInit, OnDestroy {
                         this.file,
                     );
                 } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+                    CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
                     this.calculateState();
                 }
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
             }
         }
     }

@@ -23,10 +23,10 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { Subscription } from 'rxjs';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page to display the main data privacy page.
@@ -90,7 +90,7 @@ export class CoreDataPrivacyMainPage implements OnInit {
                 request.canCancel = CoreDataPrivacy.canCancelRequest(request);
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error fetching data privacy information', true);
+            CoreAlerts.showError(error, { default: 'Error fetching data privacy information' });
         } finally {
             this.loaded = true;
         }
@@ -167,11 +167,10 @@ export class CoreDataPrivacyMainPage implements OnInit {
     async cancelRequest(requestId: number): Promise<void> {
 
         try {
-            await CoreDomUtils.showConfirm(
-                Translate.instant('core.dataprivacy.cancelrequestconfirmation'),
-                Translate.instant('core.dataprivacy.cancelrequest'),
-                Translate.instant('core.dataprivacy.cancelrequest'),
-            );
+            await CoreAlerts.confirm(Translate.instant('core.dataprivacy.cancelrequestconfirmation'), {
+                header: Translate.instant('core.dataprivacy.cancelrequest'),
+                okText: Translate.instant('core.dataprivacy.cancelrequest'),
+            });
         } catch {
             return;
         }
@@ -183,7 +182,7 @@ export class CoreDataPrivacyMainPage implements OnInit {
 
             await this.refreshContent();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error cancelling data privacy request');
+            CoreAlerts.showError(error, { default: 'Error cancelling data privacy request' });
         } finally {
             modal.dismiss();
         }

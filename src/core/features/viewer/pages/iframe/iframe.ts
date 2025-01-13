@@ -14,7 +14,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page to display a URL in an iframe.
@@ -37,8 +37,7 @@ export class CoreViewerIframePage implements OnInit {
             this.title = CoreNavigator.getRequiredRouteParam('title');
             this.url = CoreNavigator.getRequiredRouteParam('url');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;

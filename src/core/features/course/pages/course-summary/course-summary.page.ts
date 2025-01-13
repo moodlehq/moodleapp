@@ -16,7 +16,6 @@ import { Component, OnDestroy, OnInit, Input, ViewChild, ElementRef } from '@ang
 import { ActionSheetButton } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import {
     CoreCourseCustomField,
     CoreCourses,
@@ -42,6 +41,7 @@ import { CoreEnrolHelper } from '@features/enrol/services/enrol-helper';
 import { CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 import { CoreEnrol, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
 import { CORE_COURSES_MY_COURSES_UPDATED_EVENT, CoreCoursesMyCoursesUpdatedEventAction } from '@features/courses/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that shows the summary of a course including buttons to enrol and other available options.
@@ -123,7 +123,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
             try {
                 this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             } catch (error) {
-                CoreDomUtils.showErrorModal(error);
+                CoreAlerts.showError(error);
                 CoreNavigator.back();
                 this.closeModal(); // Just in case.
 
@@ -155,7 +155,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting enrolment data');
+            CoreAlerts.showError(error, { default: 'Error getting enrolment data' });
         }
 
         await this.setCourseColor();
@@ -342,11 +342,10 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
     async browserEnrol(): Promise<void> {
         // Send user to browser to enrol. Warn the user first.
         try {
-            await CoreDomUtils.showConfirm(
-                Translate.instant('core.courses.browserenrolinstructions'),
-                Translate.instant('core.courses.completeenrolmentbrowser'),
-                Translate.instant('core.openinbrowser'),
-            );
+            await CoreAlerts.confirm(Translate.instant('core.courses.browserenrolinstructions'), {
+                header: Translate.instant('core.courses.completeenrolmentbrowser'),
+                okText: Translate.instant('core.openinbrowser'),
+            });
         } catch {
             // User canceled.
             return;

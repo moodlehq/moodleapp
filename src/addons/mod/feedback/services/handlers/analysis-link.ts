@@ -17,10 +17,10 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_FEEDBACK_PAGE_NAME, AddonModFeedbackIndexTabName } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Content links handler for a feedback analysis.
@@ -65,7 +65,7 @@ export class AddonModFeedbackAnalysisLinkHandlerService extends CoreContentLinks
                         },
                     );
                 } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'Error opening link.');
+                    CoreAlerts.showError(error, { default: 'Error opening link.' });
                 } finally {
                     modal.dismiss();
                 }

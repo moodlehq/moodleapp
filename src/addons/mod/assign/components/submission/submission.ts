@@ -39,7 +39,6 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CoreMenuItem, CoreUtils } from '@singletons/utils';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../../services/assign-helper';
-import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreText } from '@singletons/text';
 import { CoreCourse, CoreCourseModuleGradeInfo, CoreCourseModuleGradeOutcome } from '@features/course/services/course';
@@ -71,6 +70,7 @@ import {
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays an assignment submission.
@@ -296,7 +296,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
         if (modified) {
             // Modified, confirm user wants to go back.
-            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
 
             await this.discardDrafts();
         }
@@ -315,7 +315,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         }
 
         if (!CoreNetwork.isOnline()) {
-            CoreDomUtils.showErrorModal('core.networkerrormsg', true);
+            CoreAlerts.showError(Translate.instant('core.networkerrormsg'));
 
             return;
         }
@@ -363,7 +363,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 await this.invalidateAndRefresh(true);
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.error') });
         } finally {
             modal.dismiss();
         }
@@ -388,12 +388,11 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     async goToEdit(afterCopyPrevious = false): Promise<void> {
         if (!afterCopyPrevious && this.assign?.timelimit && (!this.userSubmission || !this.userSubmission.timestarted)) {
             try {
-                await CoreDomUtils.showConfirm(
+                await CoreAlerts.confirm(
                     Translate.instant('addon.mod_assign.confirmstart', {
                         $a: CoreTime.formatTime(this.assign.timelimit),
                     }),
-                    undefined,
-                    Translate.instant('addon.mod_assign.beginassignment'),
+                    { okText: Translate.instant('addon.mod_assign.beginassignment') },
                 );
             } catch {
                 return; // User canceled.
@@ -421,7 +420,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             'addon.mod_assign.removesubmissionconfirmwithtimelimit' :
             'addon.mod_assign.removesubmissionconfirm';
         try {
-            await CoreDomUtils.showDeleteConfirm(message);
+            await CoreAlerts.confirmDelete(Translate.instant(message));
         } catch {
             return;
         }
@@ -445,7 +444,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 CoreSites.getCurrentSiteId(),
             );
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error removing submission.');
+            CoreAlerts.showError(error, { default: 'Error removing submission.' });
         } finally {
             modal.dismiss();
         }
@@ -650,7 +649,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
             await Promise.all(promises);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting assigment data.');
+            CoreAlerts.showError(error, { default: 'Error getting assigment data.' });
         } finally {
             this.loaded = true;
         }
@@ -936,14 +935,14 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         }
 
         if (this.assign.requiresubmissionstatement && !acceptStatement) {
-            CoreDomUtils.showErrorModal('addon.mod_assign.acceptsubmissionstatement', true);
+            CoreAlerts.showError(Translate.instant('addon.mod_assign.acceptsubmissionstatement'));
 
             return;
         }
 
         try {
             // Ask for confirmation. @todo plugin precheck_submission
-            await CoreDomUtils.showConfirm(Translate.instant('addon.mod_assign.confirmsubmission'));
+            await CoreAlerts.confirm(Translate.instant('addon.mod_assign.confirmsubmission'));
 
             const modal = await CoreLoadings.show('core.sending', true);
 
@@ -963,7 +962,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                     userId: this.currentUserId,
                 }, this.siteId);
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.error') });
             } finally {
                 modal.dismiss();
             }

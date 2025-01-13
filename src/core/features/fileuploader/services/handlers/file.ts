@@ -13,13 +13,12 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderHandlerResult } from '../fileuploader-delegate';
 import { CoreFileUploaderHelper } from '../fileuploader-helper';
 import { CoreFileUploader } from '../fileuploader';
 import { makeSingleton, Translate } from '@singletons';
 import { CorePlatform } from '@services/platform';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler to upload any type of file.
@@ -102,7 +101,7 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
                     // Verify that the mimetype of the file is supported, in case the accept attribute isn't supported.
                     const error = CoreFileUploader.isInvalidMimetype(mimetypes, file.name, file.type);
                     if (error) {
-                        CoreDomUtils.showErrorModal(error);
+                        CoreAlerts.showError(error);
 
                         return;
                     }
@@ -119,10 +118,7 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
 
                         CoreFileUploaderHelper.fileUploaded(result);
                     } catch (error) {
-                        CoreDomUtils.showErrorModalDefault(
-                            error,
-                            Translate.instant('core.fileuploader.errorreadingfile'),
-                        );
+                        CoreAlerts.showError(error, { default: Translate.instant('core.fileuploader.errorreadingfile') });
                     }
                 });
 

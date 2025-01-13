@@ -20,8 +20,8 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@singletons/utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a module preview.
@@ -52,8 +52,7 @@ export class CoreCourseModulePreviewPage implements OnInit {
             this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModuleData>('module');
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;

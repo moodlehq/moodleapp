@@ -22,7 +22,6 @@ import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile } from '@services/ws';
@@ -58,6 +57,7 @@ import { CoreModals } from '@services/overlays/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreDom } from '@singletons/dom';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that allows attempting and reviewing a lesson.
@@ -131,7 +131,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             this.currentPage = CoreNavigator.getRouteNumberParam('pageId');
             this.retakeToReview = CoreNavigator.getRouteNumberParam('retake');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             CoreNavigator.back();
 
@@ -173,7 +173,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
         if (this.question && !this.eolData && !this.processData && this.originalData) {
             // Question shown. Check if there is any change.
             if (!CoreObject.basicLeftCompare(this.questionForm.getRawValue(), this.originalData, 3)) {
-                await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+                await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
             }
         }
 
@@ -258,7 +258,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
         try {
             await this.loadPage(pageId);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading page');
+            CoreAlerts.showError(error, { default: 'Error loading page' });
         } finally {
             this.loaded = true;
         }
@@ -363,7 +363,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
                 await AddonModLessonSync.deleteRetakeFinishedInSync(this.lesson!.id);
             }
 
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
             this.forceLeave = true;
             CoreNavigator.back();
 
@@ -406,7 +406,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
                 }
 
                 // Retake hasn't changed, show the warning and finish the retake in offline.
-                CoreDomUtils.showAlert(undefined, result.warnings[0]);
+                CoreAlerts.show({ message: result.warnings[0] });
             }
 
             this.offline = false;
@@ -546,7 +546,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
             this.lessonPages = pages.map((entry) => entry.page);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading menu.');
+            CoreAlerts.showError(error, { default: 'Error loading menu.' });
         } finally {
             this.loadingMenu = false;
         }
@@ -763,7 +763,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
             this.logContinuePageLoaded();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error processing page');
+            CoreAlerts.showError(error, { default: 'Error processing page' });
         } finally {
             this.loaded = true;
         }
@@ -782,7 +782,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
         try {
             await this.loadPage(pageId);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading page');
+            CoreAlerts.showError(error, { default: 'Error loading page' });
         } finally {
             this.loaded = true;
         }
@@ -818,7 +818,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
         try {
             await this.finishRetake(true);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error finishing attempt');
+            CoreAlerts.showError(error, { default: 'Error finishing attempt' });
         } finally {
             this.loaded = true;
         }

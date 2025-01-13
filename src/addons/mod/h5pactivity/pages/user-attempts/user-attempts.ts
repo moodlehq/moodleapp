@@ -17,7 +17,6 @@ import { Component, OnInit } from '@angular/core';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     AddonModH5PActivity,
@@ -27,6 +26,7 @@ import {
 } from '../../services/h5pactivity';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays user attempts of a certain user.
@@ -79,8 +79,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
             this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
             this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getCurrentSiteUserId();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -118,7 +117,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading attempts.');
+            CoreAlerts.showError(error, { default: 'Error loading attempts.' });
         } finally {
             this.loaded = true;
         }

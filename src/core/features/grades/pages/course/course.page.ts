@@ -14,8 +14,6 @@
 
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { AfterViewInit, Component, ElementRef, OnDestroy } from '@angular/core';
-
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreGrades } from '@features/grades/services/grades';
 import {
     CoreGradesFormattedTableColumn,
@@ -36,6 +34,7 @@ import { CoreGradesCoursesSource } from '@features/grades/classes/grades-courses
 import { CoreDom } from '@singletons/dom';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a course grades.
@@ -95,8 +94,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                     break;
             }
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -212,7 +210,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                 }
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading course');
+            CoreAlerts.showError(error, { default: 'Error loading course' });
 
             this.columns = [];
             this.rows = [];

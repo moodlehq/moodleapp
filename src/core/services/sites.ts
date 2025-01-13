@@ -19,7 +19,6 @@ import { timeout } from 'rxjs/operators';
 import { CoreApp, CoreStoreConfig } from '@services/app';
 import { CoreEvents } from '@singletons/events';
 import { CoreWS } from '@services/ws';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreConstants, MINIMUM_MOODLE_VERSION, MOODLE_RELEASES } from '@/core/constants';
 import {
@@ -70,6 +69,7 @@ import { CoreAppDB } from './app-db';
 import { CoreRedirects } from '@singletons/redirects';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
+import { CoreAlerts } from './overlays/alerts';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -939,20 +939,22 @@ export class CoreSitesProvider {
 
             if (downloadUrl != null) {
                 // Do not block interface.
-                promise = CoreDomUtils.showConfirm(
+                promise = CoreAlerts.confirm(
                     Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
-                    Translate.instant('core.updaterequired'),
-                    Translate.instant('core.download'),
-                    Translate.instant(siteId ? 'core.mainmenu.logout' : 'core.cancel'),
+                    {
+                        header: Translate.instant('core.updaterequired'),
+                        okText: Translate.instant('core.download'),
+                        cancelText: Translate.instant(siteId ? 'core.mainmenu.logout' : 'core.cancel'),
+                    },
                 ).then(() => CoreOpener.openInBrowser(downloadUrl, { showBrowserWarning: false })).catch(() => {
                     // Do nothing.
                 });
             } else {
                 // Do not block interface.
-                promise = CoreDomUtils.showAlert(
-                    Translate.instant('core.updaterequired'),
-                    Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
-                ).then((alert) => alert.onWillDismiss());
+                promise = CoreAlerts.show({
+                    header: Translate.instant('core.updaterequired'),
+                    message: Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
+                }).then((alert) => alert.onWillDismiss());
             }
 
             promise.finally(() => {

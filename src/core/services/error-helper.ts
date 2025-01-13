@@ -18,6 +18,9 @@ import { makeSingleton, Translate } from '@singletons';
 import { AlertButton } from '@ionic/angular';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreText } from '@singletons/text';
+import { CoreCanceledError } from '@classes/errors/cancelederror';
+import { CoreSilentError } from '@classes/errors/silenterror';
+import { CoreNetworkError } from '@classes/errors/network-error';
 
 /**
  * Provider to provide some helper functions regarding files and packages.
@@ -209,6 +212,57 @@ export class CoreErrorHelperService {
         const element = doc.body.querySelector<HTMLElement>('.errorbox .errormessage');
 
         return element?.innerText.trim() ?? '';
+    }
+
+    /**
+     * Check whether an error is an error caused because the user canceled an action.
+     *
+     * @param error Error to check.
+     * @returns Whether it's a canceled error.
+     */
+    isCanceledError(error: CoreAnyError): boolean {
+        return error instanceof CoreCanceledError;
+    }
+
+    /**
+     * Check whether an error is a network error.
+     *
+     * @param error Error to check.
+     * @returns Whether it's a network error.
+     */
+    isNetworkError(error: CoreAnyError): boolean {
+        if (error instanceof CoreNetworkError) {
+            return true;
+        }
+
+        const errorMessage = this.getErrorMessageFromError(error);
+
+        return errorMessage === Translate.instant('core.networkerrormsg') ||
+            errorMessage === Translate.instant('core.fileuploader.errormustbeonlinetoupload');
+    }
+
+    /**
+     * Check whether an error is a silent error that shouldn't be displayed to the user.
+     *
+     * @param error Error to check.
+     * @returns Whether it's a silent error.
+     */
+    isSilentError(error: CoreAnyError): boolean {
+        return error instanceof CoreSilentError;
+    }
+
+    /**
+     * Given a message, check if it's a site unavailable error.
+     *
+     * @param message Message text.
+     * @returns Whether the message is a site unavailable error.
+     */
+    isSiteUnavailableErrorMessage(message: string): boolean {
+        let siteUnavailableMessage = Translate.instant('core.siteunavailablehelp', { site: 'SITEURLPLACEHOLDER' });
+        siteUnavailableMessage = CoreText.escapeForRegex(siteUnavailableMessage);
+        siteUnavailableMessage = siteUnavailableMessage.replace('SITEURLPLACEHOLDER', '.*');
+
+        return new RegExp(siteUnavailableMessage).test(message);
     }
 
     /**

@@ -15,7 +15,6 @@
 import { Component, ViewChild, OnInit, OnDestroy, forwardRef, ChangeDetectorRef } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@singletons/utils';
 import { CoreCourses, CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import {
@@ -48,6 +47,8 @@ import {
 } from '@features/course/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays the contents of a course.
@@ -96,7 +97,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
         try {
             this.course = CoreNavigator.getRequiredRouteParam<CoreCourseAnyCourseData>('course');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -167,7 +168,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
             this.showLoadingAndRefresh(false, false);
 
             if (data.warnings && data.warnings[0]) {
-                CoreDomUtils.showAlert(undefined, data.warnings[0].message);
+                CoreAlerts.show({ message: data.warnings[0].message });
             }
         });
     }
@@ -198,7 +199,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
                 this.course.displayname || this.course.fullname,
             ));
             if (result?.warnings?.length) {
-                CoreDomUtils.showAlert(undefined, result.warnings[0].message);
+                CoreAlerts.show({ message: result.warnings[0].message });
             }
         }
 
@@ -208,7 +209,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
                 this.loadCourseFormatOptions(),
             ]);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.couldnotloadsectioncontent') });
         }
     }
 

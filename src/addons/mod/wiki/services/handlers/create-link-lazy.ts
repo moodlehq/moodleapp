@@ -17,12 +17,12 @@ import { ActivatedRoute } from '@angular/router';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModWiki } from '../wiki';
 import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 import { AddonModWikiCreateLinkHandlerService } from '@addons/mod/wiki/services/handlers/create-link';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler to treat links to create a wiki page.
@@ -132,7 +132,7 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
                 },
             );
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_wiki.errorloadingpage', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_wiki.errorloadingpage') });
         } finally {
             modal.dismiss();
         }

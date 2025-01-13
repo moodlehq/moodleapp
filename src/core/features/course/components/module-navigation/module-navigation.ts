@@ -20,9 +20,10 @@ import { IonContent } from '@ionic/angular';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 /**
  * Component to show a button to go to the next resource/activity.
@@ -177,9 +178,8 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
         const module = next ? this.nextModule : this.previousModule;
         if (!module) {
             // It seems the module was hidden. Show a message.
-            CoreDomUtils.instance.showErrorModal(
-                next ? 'core.course.nextactivitynotfound' : 'core.course.previousactivitynotfound',
-                true,
+            CoreAlerts.showError(
+                Translate.instant(next ? 'core.course.nextactivitynotfound' : 'core.course.previousactivitynotfound'),
             );
 
             return;

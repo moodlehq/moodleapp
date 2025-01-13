@@ -18,11 +18,11 @@ import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/suppo
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreSites } from '@services/sites';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CoreOpener } from '@singletons/opener';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 let lastInAppUrl: string | null = null;
 
@@ -51,7 +51,7 @@ export default function(): void {
         if (isExternalApp && url.includes('://token=')) {
             // It's an SSO token for another app. Close the IAB and show an error.
             CoreOpener.closeInAppBrowser();
-            CoreDomUtils.showErrorModal(new CoreSiteError({
+            CoreAlerts.showError(new CoreSiteError({
                 supportConfig: CoreSites.getCurrentSite()
                     ? CoreUserAuthenticatedSupportConfig.forCurrentSite()
                     : new CoreUserNullSupportConfig(),

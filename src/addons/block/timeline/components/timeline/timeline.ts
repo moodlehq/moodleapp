@@ -17,7 +17,6 @@ import { CoreSites } from '@services/sites';
 import { ICoreBlockComponent } from '@features/block/classes/base-block-component';
 import { AddonBlockTimeline } from '../../services/timeline';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
@@ -30,6 +29,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 import { AddonBlockTimelineEventsComponent } from '../events/events';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component to render a timeline block.
@@ -211,9 +211,7 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
             catchError(error => {
                 // An error ocurred in the function, log the error and just resolve the observable so the workflow continues.
                 this.logger.error(error);
-
-                // Error getting data, fail.
-                CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
+                CoreAlerts.showError(error, { default: this.fetchContentDefaultError });
 
                 return of([] as AddonBlockTimelineSection[]);
             }),

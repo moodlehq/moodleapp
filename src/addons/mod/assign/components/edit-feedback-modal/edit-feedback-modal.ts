@@ -14,7 +14,6 @@
 
 import { Component, Input, ViewChild, ElementRef } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFormFields, CoreForms } from '@singletons/form';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ModalController, Translate } from '@singletons';
@@ -22,6 +21,7 @@ import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } 
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModAssignComponentsModule } from '../components.module';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Modal that allows editing a feedback plugin.
@@ -50,7 +50,7 @@ export class AddonModAssignEditFeedbackModalComponent {
     async closeModal(): Promise<void> {
         const changed = await this.hasDataChanged();
         if (changed) {
-            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
         }
 
         CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());

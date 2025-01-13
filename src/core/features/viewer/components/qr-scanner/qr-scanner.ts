@@ -14,8 +14,9 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { CoreErrorHelper } from '@services/error-helper';
+import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreQRScan } from '@services/qrscan';
-import { CoreDomUtils } from '@services/utils/dom';
 import { ModalController, Translate } from '@singletons';
 
 /**
@@ -48,9 +49,9 @@ export class CoreViewerQRScannerComponent implements OnInit, OnDestroy {
 
             this.closeModal(text);
         } catch (error) {
-            if (!CoreDomUtils.isCanceledError(error)) {
+            if (!CoreErrorHelper.isCanceledError(error)) {
                 // Show error and stop scanning.
-                CoreDomUtils.showErrorModalDefault(error, 'An error occurred.');
+                CoreAlerts.showError(error, { default: 'An error occurred.' });
                 CoreQRScan.stopScanQR();
             }
 

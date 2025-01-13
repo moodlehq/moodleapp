@@ -15,13 +15,13 @@
 import { AddonNotes, AddonNotesPublishState } from '@addons/notes/services/notes';
 import { Component, ViewChild, ElementRef, Input } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays a text area for composing a note.
@@ -71,7 +71,7 @@ export class AddonNotesAddComponent {
                 });
             });
         } catch (error){
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             this.processing = false;
         } finally {
             loadingModal.dismiss();

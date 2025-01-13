@@ -26,7 +26,6 @@ import {
     AddonMessagesOffline,
     AddonMessagesOfflineAnyMessagesFormatted,
 } from '../../services/messages-offline';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUser } from '@features/user/services/user';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { Translate } from '@singletons';
@@ -49,6 +48,7 @@ import {
     AddonMessagesMessageConversationType,
     AddonMessagesUpdateConversationAction,
 } from '@addons/messages/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 const enum AddonMessagesGroupConversationOptionNames {
     FAVOURITES = 'favourites',
@@ -381,7 +381,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             // Load the data for the expanded option.
             await this.fetchDataForExpandedOption();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.messages.errorwhileretrievingdiscussions') });
         }
         this.loaded = true;
     }
@@ -611,7 +611,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         try {
             await this.fetchDataForOption(option, true);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.messages.errorwhileretrievingdiscussions') });
             option.loadMoreError = true;
         }
 
@@ -793,7 +793,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
         // Pass getCounts=true to update the counts everytime the user expands an option.
         this.expandOption(option, true).catch((error) => {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingdiscussions', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.messages.errorwhileretrievingdiscussions') });
         });
     }
 

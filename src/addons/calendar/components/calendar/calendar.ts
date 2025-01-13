@@ -27,7 +27,6 @@ import {
 } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreArray } from '@singletons/array';
 import {
@@ -54,6 +53,7 @@ import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { toBoolean } from '@/core/transforms/boolean';
 import { ADDON_CALENDAR_UNDELETED_EVENT_EVENT } from '@addons/calendar/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays a calendar.
@@ -204,7 +204,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.calendar.errorloadevents') });
         }
 
         this.loaded = true;
@@ -358,7 +358,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
             this.swipeSlidesComponent.slideToItem(item);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.calendar.errorloadevents') });
         } finally {
             this.loaded = true;
         }

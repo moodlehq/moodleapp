@@ -21,7 +21,6 @@ import { IonContent } from '@ionic/angular';
 import { CoreGroups, CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModDataComponentsCompileModule } from '../../components/components-compile.module';
@@ -44,6 +43,8 @@ import {
     AddonModDataTemplateMode,
 } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays the view entry page.
@@ -156,8 +157,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
             const sortBy = Number(CoreNavigator.getRouteParam('sortBy'));
             this.sortBy = isNaN(sortBy) ? this.sortBy : sortBy;
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -236,7 +236,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
                 return this.refreshAllData(isPtr);
             }
 
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             this.content?.scrollToTop();
             this.entryLoaded = true;

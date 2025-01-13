@@ -12,20 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDomUtilsProvider } from '@services/utils/dom';
 import { AlertController, Translate } from '@singletons';
-
 import { mock, mockSingleton, mockTranslate } from '@/testing/utils';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreSites } from '@services/sites';
-import { OverlayEventDetail } from '@ionic/core';
+import { CoreAlertsService } from '@services/overlays/alerts';
 
-describe('CoreDomUtilsProvider', () => {
+describe('CoreAlertsService', () => {
 
-    let domUtils: CoreDomUtilsProvider;
+    let alertsService: CoreAlertsService;
 
     beforeEach(() => {
-        domUtils = new CoreDomUtilsProvider();
+        alertsService = new CoreAlertsService();
     });
 
     it('shows site unavailable errors', async () => {
@@ -46,7 +44,7 @@ describe('CoreDomUtilsProvider', () => {
         mockSingleton(CoreSites, mock({ isLoggedIn: () => true }));
 
         // Act.
-        await domUtils.showErrorModal(new CoreSiteError({ message }));
+        await alertsService.showError(new CoreSiteError({ message }));
 
         // Assert.
         expect(mockAlert.present).toHaveBeenCalled();
@@ -55,32 +53,6 @@ describe('CoreDomUtilsProvider', () => {
             header: Translate.instant('core.connectionlost'),
             buttons: [Translate.instant('core.ok')],
         });
-    });
-
-    it('ignores alert inputs on cancel', async () => {
-        // Arrange.
-        const mockAlert = mock<HTMLIonAlertElement>({
-            present: () => Promise.resolve(),
-            onWillDismiss: () => Promise.resolve({
-                data: {
-                    values: {
-                        'textarea-prompt': 'Not empty!',
-                    },
-                },
-                role: 'cancel',
-            } as OverlayEventDetail<any>), // eslint-disable-line @typescript-eslint/no-explicit-any
-        });
-
-        mockSingleton(AlertController, mock({ create: () => Promise.resolve(mockAlert) }));
-
-        // Act.
-        const result = await domUtils.showTextareaPrompt('Age', 'How old are you?', [
-            { text: 'Cancel', role: 'cancel' },
-            { text: 'Save' },
-        ]);
-
-        // Assert.
-        expect(result).toBeUndefined();
     });
 
 });

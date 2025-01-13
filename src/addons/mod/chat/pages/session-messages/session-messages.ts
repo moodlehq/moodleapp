@@ -16,13 +16,13 @@ import { Component, OnInit } from '@angular/core';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModChat } from '../../services/chat';
 import { AddonModChatFormattedSessionMessage, AddonModChatHelper } from '../../services/chat-helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreTime } from '@singletons/time';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays list of chat session messages.
@@ -75,8 +75,7 @@ export class AddonModChatSessionMessagesPage implements OnInit {
             this.chatId = CoreNavigator.getRequiredRouteNumberParam('chatId');
             this.groupId = CoreNavigator.getRouteNumberParam('groupId') || 0;
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -119,7 +118,7 @@ export class AddonModChatSessionMessagesPage implements OnInit {
 
             this.messages[this.messages.length - 1].showTail = true;
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.errorloadingcontent') });
         } finally {
             this.loaded = true;
         }

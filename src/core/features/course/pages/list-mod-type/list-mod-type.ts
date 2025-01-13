@@ -14,7 +14,6 @@
 
 import { Component, OnInit } from '@angular/core';
 
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse, CoreCourseWSSection, sectionContentIsModule } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
@@ -23,6 +22,7 @@ import { CoreConstants } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays all modules of a certain type in a course.
@@ -77,7 +77,7 @@ export class CoreCourseListModTypePage implements OnInit {
             this.courseId = CoreNavigator.getRequiredRouteParam('courseId');
             this.modName = CoreNavigator.getRequiredRouteParam('modName');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -111,7 +111,7 @@ export class CoreCourseListModTypePage implements OnInit {
             this.lastShownSectionIndex = -1;
             this.showMoreActivities();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting data');
+            CoreAlerts.showError(error, { default: 'Error getting data' });
         }
     }
 
