@@ -337,7 +337,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
         // Check if data has changed.
         if (this.hasDataChanged()) {
-            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
         CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());

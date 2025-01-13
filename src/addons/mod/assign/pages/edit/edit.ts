@@ -125,7 +125,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
         // Check if data has changed.
         const changed = await this.hasDataChanged();
         if (changed) {
-            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
         // Nothing has changed or user confirmed to leave. Clear temporary data from plugins.

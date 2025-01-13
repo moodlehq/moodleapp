@@ -662,7 +662,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
 
         if (AddonModForumHelper.hasPostDataChanged(this.newDiscussion, this.originalData)) {
             // Show confirmation if some data has been modified.
-            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
         // Delete the local files from the tmp folder.

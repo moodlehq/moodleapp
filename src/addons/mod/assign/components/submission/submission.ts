@@ -296,7 +296,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
         if (modified) {
             // Modified, confirm user wants to go back.
-            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
 
             await this.discardDrafts();
         }

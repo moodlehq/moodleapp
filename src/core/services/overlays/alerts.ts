@@ -70,7 +70,7 @@ export class CoreAlertsService {
      */
     confirm<T>(message: string, options: CoreAlertsConfirmOptions = {}): Promise<T> {
         return new Promise<T>((resolve, reject): void => {
-            const { okText, cancelText, ...alertOptions } = options;
+            const { okText, cancelText, isDestructive, ...alertOptions } = options;
             const buttons = [
                 {
                     text: cancelText || Translate.instant('core.cancel'),
@@ -81,6 +81,7 @@ export class CoreAlertsService {
                 },
                 {
                     text: okText || Translate.instant('core.ok'),
+                    role: isDestructive ? 'destructive' : undefined,
                     handler: (data: T) => {
                         resolve(data);
                     },
@@ -111,34 +112,22 @@ export class CoreAlertsService {
     async confirmDelete(message: string, options: Omit<AlertOptions, 'message'|'buttons'> = {}): Promise<void> {
         message = await CoreLang.filterMultilang(message);
 
-        const alertOptions: AlertOptions = {
+        await this.confirm(message, {
             ...options,
-            message,
-        };
+            okText: Translate.instant('core.delete'),
+            isDestructive: true,
+        });
+    }
 
-        return new Promise((resolve, reject): void => {
-            alertOptions.buttons = [
-                {
-                    text: Translate.instant('core.cancel'),
-                    role: 'cancel',
-                    handler: () => {
-                        reject(new CoreCanceledError());
-                    },
-                },
-                {
-                    text: Translate.instant('core.delete'),
-                    role: 'destructive',
-                    handler: () => {
-                        resolve();
-                    },
-                },
-            ];
-
-            if (!alertOptions.header) {
-                alertOptions.cssClass = (alertOptions.cssClass || '') + ' core-nohead';
-            }
-
-            this.show(alertOptions);
+    /**
+     * Show a confirmation modal to confirm leaving a page with unsaves changes.
+     *
+     * @returns Promise resolved if the user confirms and rejected with a canceled error if he cancels.
+     */
+    async confirmLeaveWithChanges(): Promise<void> {
+        await this.confirm(Translate.instant('core.confirmleavepagedescription'), {
+            header: Translate.instant('core.confirmleavepagetitle'),
+            okText: Translate.instant('core.leave'),
         });
     }
 
@@ -504,6 +493,7 @@ export const CoreAlerts = makeSingleton(CoreAlertsService);
 export type CoreAlertsConfirmOptions = Omit<AlertOptions, 'message'|'buttons'> & {
     okText?: string; // Text of the OK button. By default, 'OK'.
     cancelText?: string; // Text of the Cancel button. By default, 'Cancel'.
+    isDestructive?: boolean; // Whether confirming is destructive (will remove data), so the button will have a danger color.
 };
 
 /**

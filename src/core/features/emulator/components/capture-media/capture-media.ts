@@ -18,7 +18,7 @@ import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTimeUtils } from '@services/utils/time';
-import { ModalController, Translate } from '@singletons';
+import { ModalController } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
@@ -235,7 +235,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     async cancel(): Promise<void> {
         if (this.hasCaptured) {
             try {
-                await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
+                await CoreAlerts.confirmLeaveWithChanges();
             } catch {
                 // Canceled.
                 return;

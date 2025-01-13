@@ -593,7 +593,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     async canLeave(): Promise<boolean> {
         if (AddonCalendarHelper.hasEventDataChanged(this.form.value, this.originalData)) {
             // Show confirmation if some data has been modified.
-            await CoreAlerts.confirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
         CoreForms.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());
