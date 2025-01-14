@@ -67,8 +67,6 @@ export class CoreLoginMethodsComponent implements OnInit {
             }
 
             if (this.site) {
-                this.showScanQR = CoreLoginHelper.displayQRInSiteScreen();
-
                 // The identity provider set in the site will be shown at the top.
                 const oAuthId = this.site.getOAuthId();
                 this.currentLoginProvider = CoreLoginHelper.findIdentityProvider(this.identityProviders, oAuthId);
@@ -78,13 +76,34 @@ export class CoreLoginMethodsComponent implements OnInit {
                     provider.url !== this.currentLoginProvider?.url);
             }
 
-            // If still false or credentials screen.
-            if (!this.site || !this.showScanQR) {
-                this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
-            }
+            await this.setShowScanQR();
         }
 
         this.isReady.resolve();
+    }
+
+    /**
+     * Set if should show the scan QR code button.
+     */
+    async setShowScanQR(): Promise<void> {
+        if (this.site) {
+            if (this.site.isDemoModeSite()) {
+                this.showScanQR = false;
+
+                return;
+            }
+
+            this.showScanQR = CoreLoginHelper.displayQRInSiteScreen();
+
+            if (this.showScanQR) {
+                return;
+            }
+        }
+
+        // If still false or credentials screen.
+        if (this.siteConfig) {
+            this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
+        }
     }
 
     /**
