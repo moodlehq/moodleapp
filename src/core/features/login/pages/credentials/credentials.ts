@@ -62,7 +62,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     pageLoaded = false;
     isBrowserSSO = false;
     showForgottenPassword = true;
-    showScanQR = false;
     loginAttempts = 0;
     supportConfig?: CoreUserSupportConfig;
     exceededAttemptsHTML?: SafeHtml | string | null;
@@ -211,12 +210,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.canSignup = false;
 
             return;
-        }
-
-        if (this.site.isDemoModeSite()) {
-            this.showScanQR = false;
-        } else {
-            this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
         }
 
         this.canSignup = this.siteConfig.registerauth == 'email' && !this.site.isFeatureDisabled(EMAIL_SIGNUP_FEATURE_NAME);
