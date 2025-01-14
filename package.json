@@ -81,6 +81,7 @@
         "@moodlehq/cordova-plugin-inappbrowser": "6.0.0-moodle.1",
         "@moodlehq/cordova-plugin-intent": "2.2.0-moodle.3",
         "@moodlehq/cordova-plugin-ionic-webview": "5.0.0-moodle.5",
+        "@moodlehq/cordova-plugin-media-capture": "5.0.0-moodle.1",
         "@moodlehq/cordova-plugin-qrscanner": "3.0.1-moodle.5",
         "@moodlehq/cordova-plugin-statusbar": "4.0.0-moodle.3",
         "@moodlehq/cordova-plugin-zip": "3.1.0-moodle.1",
@@ -106,7 +107,6 @@
         "cordova-plugin-geolocation": "^5.0.0",
         "cordova-plugin-ionic-keyboard": "^2.2.0",
         "cordova-plugin-local-notification": "1.0.0",
-        "cordova-plugin-media-capture": "^5.0.0",
         "cordova-plugin-network-information": "^3.0.0",
         "cordova-plugin-prevent-override": "^1.0.1",
         "cordova-plugin-screen-orientation": "^3.0.4",
@@ -201,6 +201,7 @@
             "@moodlehq/cordova-plugin-inappbrowser": {},
             "@moodlehq/cordova-plugin-intent": {},
             "@moodlehq/cordova-plugin-ionic-webview": {},
+            "@moodlehq/cordova-plugin-media-capture": {},
             "@moodlehq/cordova-plugin-qrscanner": {},
             "@moodlehq/cordova-plugin-statusbar": {},
             "@moodlehq/cordova-plugin-zip": {},
@@ -227,7 +228,6 @@
             "cordova-plugin-local-notification": {
                 "ANDROID_SUPPORT_V4_VERSION": "26.+"
             },
-            "cordova-plugin-media-capture": {},
             "cordova-plugin-moodleapp": {},
             "cordova-plugin-network-information": {},
             "cordova-plugin-prevent-override": {},
