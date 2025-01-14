@@ -132,9 +132,9 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
      */
     protected async enterReadingMode(): Promise<void> {
         this.enabled = true;
-        CoreViewer.loadReadingModeSettings();
+        await CoreViewer.loadReadingModeSettings();
 
-        this.header?.setEnabled(false);
+        await this.header?.setEnabled(false);
 
         document.body.classList.add('core-reading-mode-enabled');
 
@@ -172,10 +172,10 @@ export class CoreReadingModeDirective implements AfterViewInit, OnDestroy {
      * Disable the reading mode.
      */
     protected async disableReadingMode(): Promise<void> {
+        await this.header?.setEnabled(true);
+
         this.enabled = false;
         document.body.classList.remove('core-reading-mode-enabled');
-
-        this.header?.setEnabled(true);
 
         // Enable all styles in element.
         this.disabledStyles.forEach((style) => {
