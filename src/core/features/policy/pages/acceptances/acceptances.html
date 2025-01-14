@@ -66,12 +66,12 @@
 <ng-template #policyTabletTemplate let-policy="policy" let-isPreviousVersion="isPreviousVersion">
     <tr [class.core-policy-previous-version]="isPreviousVersion">
         <td class="core-policy-title">
-            <ion-icon *ngIf="isPreviousVersion" name="fam-arrow-turn-down-right" aria-hidden="true" />
+            <ion-icon *ngIf="isPreviousVersion" name="moodle-level" aria-hidden="true" />
             <ion-icon *ngIf="!isPreviousVersion && policy.previousVersions.length" name="fas-chevron-right" flip-rtl
                 (ariaButtonClick)="toggle($event, policy)" class="expandable-status-icon"
                 [class.expandable-status-icon-expanded]="policy.expanded" [attr.aria-expanded]="policy.expanded"
                 [attr.aria-label]="(policy.expanded ? 'core.collapse' : 'core.expand') | translate" />
-            <ion-icon *ngIf="!isPreviousVersion && !policy.previousVersions.length" name="fas-circle" color="secondary"
+            <ion-icon *ngIf="!isPreviousVersion && !policy.previousVersions.length" name="moodle-item" color="secondary"
                 class="core-policy-icon-bullet" aria-hidden="true" />
 
             <a href="#" (click)="viewFullPolicy($event, policy)">{{ policy.name }}</a>
@@ -180,7 +180,7 @@
 <ng-template #policyMobileTemplate let-policy="policy" let-isPreviousVersion="isPreviousVersion">
     <ion-item class="ion-text-wrap core-policy-title">
         <div slot="start">
-            <ion-icon *ngIf="isPreviousVersion" name="fam-arrow-turn-down-right" aria-hidden="true" />
+            <ion-icon *ngIf="isPreviousVersion" name="moodle-level" aria-hidden="true" />
             <ion-icon name="fas-chevron-right" flip-rtl (ariaButtonClick)="toggle($event, policy)" class="expandable-status-icon"
                 [class.expandable-status-icon-expanded]="policy.expanded" [attr.aria-expanded]="policy.expanded"
                 [attr.aria-label]="(policy.expanded ? 'core.collapse' : 'core.expand') | translate"
