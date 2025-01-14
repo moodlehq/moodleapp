@@ -14,7 +14,6 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreUser } from '@features/user/services/user';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
@@ -28,6 +27,7 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays an issued badge.
@@ -141,7 +141,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
 
             this.logView(badge);
         } catch (message) {
-            CoreDomUtils.showErrorModalDefault(message, 'Error getting badge data.');
+            CoreAlerts.showError(message, { default: 'Error getting badge data.' });
         }
     }
 

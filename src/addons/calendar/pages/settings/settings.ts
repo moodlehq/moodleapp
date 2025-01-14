@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CorePopovers } from '@services/popovers';
+import { CorePopovers } from '@services/overlays/popovers';
 import {
     CoreReminders,
     CoreRemindersService,

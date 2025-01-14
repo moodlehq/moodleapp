@@ -15,7 +15,6 @@
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -26,6 +25,7 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the list of calendar events.
@@ -112,7 +112,7 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
 
             this.logView();
         } catch (message) {
-            CoreDomUtils.showErrorModalDefault(message, 'Error loading badges');
+            CoreAlerts.showError(message, { default: 'Error loading badges' });
 
             this.badges.reset();
         }

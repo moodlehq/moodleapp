@@ -33,7 +33,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**

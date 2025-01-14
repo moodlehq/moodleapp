@@ -19,12 +19,12 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModH5PActivity } from '../h5pactivity';
 import { ADDON_MOD_H5PACTIVITY_PAGE_NAME } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler to treat links to H5P activity report.
@@ -65,7 +65,7 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
                         await this.openUserAttempts(module.id, module.course, instanceId, siteId, userId);
                     }
                 } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'Error processing link.');
+                    CoreAlerts.showError(error, { default: 'Error processing link.' });
                 } finally {
                     modal.dismiss();
                 }

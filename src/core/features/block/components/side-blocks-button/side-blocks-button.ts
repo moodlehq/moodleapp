@@ -16,7 +16,7 @@ import { Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreDom } from '@singletons/dom';
 import { CoreBlockSideBlocksTourComponent } from '../side-blocks-tour/side-blocks-tour';
 import { ContextLevel } from '@/core/constants';

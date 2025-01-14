@@ -21,7 +21,6 @@ import { CoreConfig } from '@services/config';
 import { CoreEvents, CoreEventSessionExpiredData, CoreEventSiteData } from '@singletons/events';
 import { CoreSites, CoreLoginSiteInfo, CoreSiteBasicInfo } from '@services/sites';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreObject } from '@singletons/object';
 import { CoreConstants } from '@/core/constants';
@@ -59,11 +58,13 @@ import {
 import { LazyRoutesModule } from '@/app/app-routing.module';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreQRScan } from '@services/qrscan';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSSO } from '@singletons/sso';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CorePrompts } from '@services/overlays/prompts';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -644,7 +645,7 @@ export class CoreLoginHelperProvider {
 
             return true;
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error opening browser');
+            CoreAlerts.showError(error, { default: 'Error opening browser' });
         } finally {
             modal.dismiss();
         }
@@ -685,7 +686,7 @@ export class CoreLoginHelperProvider {
                 CoreApp.closeApp();
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error opening browser');
+            CoreAlerts.showError(error, { default: 'Error opening browser' });
         } finally {
             modal.dismiss();
         }
@@ -698,7 +699,11 @@ export class CoreLoginHelperProvider {
      * @param error Error message.
      */
     async openChangePassword(siteUrl: string, error: string): Promise<void> {
-        const alert = await CoreDomUtils.showAlert(Translate.instant('core.notice'), error, undefined, 3000);
+        const alert = await CoreAlerts.show({
+            header: Translate.instant('core.notice'),
+            message: error,
+            autoCloseTime: 3000,
+        });
 
         await alert.onDidDismiss();
 
@@ -897,7 +902,7 @@ export class CoreLoginHelperProvider {
             // Error checking site.
             if (currentSite.isLoggedOut()) {
                 // Site is logged out, show error and logout the user.
-                CoreDomUtils.showErrorModalDefault(error, 'core.networkerrormsg', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.networkerrormsg') });
                 CoreSites.logout();
             }
         } finally {
@@ -960,7 +965,7 @@ export class CoreLoginHelperProvider {
     async showAppUnsupportedModal(siteUrl: string, site?: CoreUnauthenticatedSite, debug?: CoreErrorDebug): Promise<void> {
         const siteName = await site?.getSiteName() ?? siteUrl;
 
-        await CoreDomUtils.showAlertWithOptions({
+        await CoreAlerts.show({
             header: Translate.instant('core.login.unsupportedsite'),
             message: Translate.instant('core.login.unsupportedsitemessage', { site: siteName }),
             buttons: [
@@ -994,7 +999,7 @@ export class CoreLoginHelperProvider {
     protected showInvalidLoginModal(error: CoreError): void {
         const errorDetails = error instanceof CoreSiteError ? error.debug?.details : null;
 
-        CoreDomUtils.showErrorModal(errorDetails ?? error.message);
+        CoreAlerts.showError(errorDetails ?? error.message);
     }
 
     /**
@@ -1005,7 +1010,7 @@ export class CoreLoginHelperProvider {
     protected showWorkplaceNoticeModal(message: string): void {
         const link = CoreApp.getAppStoreUrl({ android: 'com.moodle.workplace', ios: 'id1470929705' });
 
-        CoreDomUtils.showDownloadAppNoticeModal(message, link);
+        CoreAlerts.showDownloadAppNotice(message, link);
     }
 
     /**
@@ -1020,7 +1025,7 @@ export class CoreLoginHelperProvider {
 
         const link = CoreApp.getAppStoreUrl(storesConfig);
 
-        CoreDomUtils.showDownloadAppNoticeModal(message, link);
+        CoreAlerts.showDownloadAppNotice(message, link);
     }
 
     /**
@@ -1032,7 +1037,7 @@ export class CoreLoginHelperProvider {
      * @param password User password. If not set the button to resend email will not be shown.
      */
     protected async showNotConfirmedModal(siteUrl: string, email?: string, username?: string, password?: string): Promise<void> {
-        const title = Translate.instant('core.login.mustconfirm');
+        const header = Translate.instant('core.login.mustconfirm');
         let message: string;
         let canResend = false;
         if (email) {
@@ -1048,17 +1053,18 @@ export class CoreLoginHelperProvider {
 
         if (!canResend) {
             // Just display an informative alert.
-            await CoreDomUtils.showAlert(title, message);
+            await CoreAlerts.show({ header, message });
 
             return;
         }
 
-        const okText = Translate.instant('core.login.resendemail');
-        const cancelText = Translate.instant('core.close');
-
         try {
             // Ask the user if he wants to resend the email.
-            await CoreDomUtils.showConfirm(message, title, okText, cancelText);
+            await CoreAlerts.confirm(message, {
+                header,
+                okText: Translate.instant('core.login.resendemail'),
+                cancelText: Translate.instant('core.close'),
+            });
 
             // Call the WS to resend the confirmation email.
             const modal = await CoreLoadings.show('core.sending', true);
@@ -1081,12 +1087,12 @@ export class CoreLoginHelperProvider {
                 }
 
                 const message = Translate.instant('core.login.emailconfirmsentsuccess');
-                CoreDomUtils.showAlert(Translate.instant('core.success'), message);
+                CoreAlerts.show({ header: Translate.instant('core.success'), message });
             } finally {
                 modal.dismiss();
             }
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 
@@ -1154,7 +1160,7 @@ export class CoreLoginHelperProvider {
                 this.showInvalidLoginModal(error);
                 break;
             default:
-                CoreDomUtils.showErrorModal(error);
+                CoreAlerts.showError(error);
                 break;
         }
     }
@@ -1291,13 +1297,11 @@ export class CoreLoginHelperProvider {
         const header = Translate.instant('core.login.faqwhereisqrcode');
 
         try {
-            const dontShowAgain = await CoreDomUtils.showPrompt(
-                message,
+            const dontShowAgain = await CorePrompts.show(message, 'checkbox', {
                 header,
-                Translate.instant('core.dontshowagain'),
-                'checkbox',
-                { okText: Translate.instant('core.next'), cancelText: Translate.instant('core.cancel') },
-            );
+                placeholderOrLabel: Translate.instant('core.dontshowagain'),
+                buttons: { okText: Translate.instant('core.next'), cancelText: Translate.instant('core.cancel') },
+            });
 
             if (dontShowAgain) {
                 CoreConfig.set(FAQ_QRCODE_INFO_DONE, 1);
@@ -1323,9 +1327,9 @@ export class CoreLoginHelperProvider {
         const scheme = CoreUrl.getUrlProtocol(text);
 
         if (scheme && scheme != 'http' && scheme != 'https') {
-            CoreDomUtils.showErrorModal(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
+            CoreAlerts.showError(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
         } else {
-            CoreDomUtils.showErrorModal('core.login.errorqrnoscheme', true);
+            CoreAlerts.showError(Translate.instant('core.login.errorqrnoscheme'));
         }
     }
 

@@ -20,7 +20,6 @@ import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
@@ -32,8 +31,9 @@ import { AddonModWikiOffline } from '../../services/wiki-offline';
 import { AddonModWikiSync } from '../../services/wiki-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_PAGE_CREATED_EVENT, ADDON_MOD_WIKI_RENEW_LOCK_TIME } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreFileHelper } from '@services/file-helper';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that allows adding or editing a wiki page.
@@ -244,7 +244,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
             return true;
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting wiki data.');
+            CoreAlerts.showError(error, { default: 'Error getting wiki data.' });
             fetchFailed = true;
 
             // Go back.
@@ -254,7 +254,10 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
         } finally {
             if (!canEdit && !fetchFailed) {
                 // Cannot edit, show alert and go back.
-                CoreDomUtils.showAlert(Translate.instant('core.notice'), Translate.instant('addon.mod_wiki.cannoteditpage'));
+                CoreAlerts.show({
+                    header: Translate.instant('core.notice'),
+                    message: Translate.instant('addon.mod_wiki.cannoteditpage'),
+                });
                 this.forceLeavePage();
             }
         }
@@ -334,7 +337,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
         // Check if data has changed.
         if (this.hasDataChanged()) {
-            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
         CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
@@ -386,10 +389,10 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
             if (!title) {
                 // Title is mandatory, stop.
                 modal.dismiss();
-                CoreDomUtils.showAlert(
-                    Translate.instant('core.notice'),
-                    Translate.instant('addon.mod_wiki.titleshouldnotbeempty'),
-                );
+                CoreAlerts.show({
+                    header: Translate.instant('core.notice'),
+                    message: Translate.instant('addon.mod_wiki.titleshouldnotbeempty'),
+                });
 
                 return;
             }
@@ -453,7 +456,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
             this.goToPage(title);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error saving wiki data.');
+            CoreAlerts.showError(error, { default: 'Error saving wiki data.' });
         } finally {
             modal.dismiss();
         }

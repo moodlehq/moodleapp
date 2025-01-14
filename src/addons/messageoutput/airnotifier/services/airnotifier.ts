@@ -21,10 +21,10 @@ import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreOpener } from '@singletons/opener';
 import { CorePath } from '@singletons/path';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CorePrompts } from '@services/overlays/prompts';
 
 const ROOT_CACHE_KEY = 'mmaMessageOutputAirnotifier:';
 
@@ -200,34 +200,35 @@ export class AddonMessageOutputAirnotifierProvider {
             }
 
             // Warn the admin.
-            const dontShowAgain = await CoreDomUtils.showPrompt(
+            const dontShowAgain = await CorePrompts.show(
                 Translate.instant('addon.messageoutput_airnotifier.pushdisabledwarning'),
-                undefined,
-                Translate.instant('core.dontshowagain'),
                 'checkbox',
-                [
-                    {
-                        text: Translate.instant('core.ok'),
-                    },
-                    {
-                        text: Translate.instant('core.goto', { $a: Translate.instant('core.settings.settings') }),
-                        handler: (data, resolve) => {
-                            resolve(data[0]);
-
-                            const url = CorePath.concatenatePaths(
-                                site.getURL(),
-                                site.isVersionGreaterEqualThan('3.11') ?
-                                    'message/output/airnotifier/checkconfiguration.php' :
-                                    'admin/message.php',
-                            );
-
-                            // Don't try auto-login, admins cannot use it.
-                            CoreOpener.openInBrowser(url, {
-                                showBrowserWarning: false,
-                            });
+                {
+                    placeholderOrLabel: Translate.instant('core.dontshowagain'),
+                    buttons: [
+                        {
+                            text: Translate.instant('core.ok'),
                         },
-                    },
-                ],
+                        {
+                            text: Translate.instant('core.goto', { $a: Translate.instant('core.settings.settings') }),
+                            handler: (data, resolve) => {
+                                resolve(data[0]);
+
+                                const url = CorePath.concatenatePaths(
+                                    site.getURL(),
+                                    site.isVersionGreaterEqualThan('3.11') ?
+                                        'message/output/airnotifier/checkconfiguration.php' :
+                                        'admin/message.php',
+                                );
+
+                                // Don't try auto-login, admins cannot use it.
+                                CoreOpener.openInBrowser(url, {
+                                    showBrowserWarning: false,
+                                });
+                            },
+                        },
+                    ],
+                },
             );
 
             if (dontShowAgain) {

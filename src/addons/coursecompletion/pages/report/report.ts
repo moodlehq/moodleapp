@@ -19,12 +19,12 @@ import {
 import { Component, OnInit } from '@angular/core';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreTime } from '@singletons/time';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the course completion report.
@@ -69,8 +69,7 @@ export class AddonCourseCompletionReportPage implements OnInit {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getCurrentSiteUserId();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -102,7 +101,7 @@ export class AddonCourseCompletionReportPage implements OnInit {
                 // Not enrolled error, probably a teacher.
                 this.tracked = false;
             } else {
-                CoreDomUtils.showErrorModalDefault(error, 'addon.coursecompletion.couldnotloadreport', true);
+                CoreAlerts.showError(error, { default: Translate.instant('addon.coursecompletion.couldnotloadreport') });
             }
         }
     }
@@ -131,7 +130,7 @@ export class AddonCourseCompletionReportPage implements OnInit {
 
             await this.refreshCompletion();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         } finally {
             modal.dismiss();
         }

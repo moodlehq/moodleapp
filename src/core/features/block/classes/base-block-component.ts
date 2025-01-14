@@ -14,7 +14,6 @@
 
 import { OnInit, Input, Component, Optional, Inject, OnChanges, SimpleChanges } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreArray } from '@singletons/array';
 import { CoreText } from '@singletons/text';
 import { CoreCourseBlock } from '../../course/services/course';
@@ -23,6 +22,8 @@ import { ContextLevel } from '@/core/constants';
 import { CoreNavigationOptions } from '@services/navigator';
 import { AsyncDirective } from '@classes/async-directive';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 /**
  * Template class to easily create components for blocks.
@@ -122,7 +123,7 @@ export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ICore
             this.logger.error(error);
 
             // Error getting data, fail.
-            CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
+            CoreAlerts.showError(error, { default: Translate.instant(this.fetchContentDefaultError) });
         }
 
         this.loaded = true;

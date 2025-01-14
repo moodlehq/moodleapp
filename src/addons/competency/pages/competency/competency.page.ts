@@ -17,7 +17,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourseModuleSummary } from '@features/course/services/course';
 import { CoreUserSummary } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import {
     AddonCompetencyDataForUserCompetencySummaryWSResponse,
@@ -41,6 +40,7 @@ import { AddonCompetencyCourseCompetenciesSource } from '@addons/competency/clas
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the competency information.
@@ -86,8 +86,7 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
 
             this.competencies = new AddonCompetencyCompetenciesSwipeManager(source);
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -163,7 +162,7 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting competency data.');
+            CoreAlerts.showError(error, { default: 'Error getting competency data.' });
         }
     }
 

@@ -26,7 +26,6 @@ import { CoreTag } from '@features/tag/services/tag';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -40,8 +39,9 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_GLOSSARY_COMPONENT, ADDON_MOD_GLOSSARY_ENTRY_UPDATED, ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a glossary entry.
@@ -126,7 +126,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
                 onlineEntryId = Number(this.entrySlug);
             }
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             this.goBack();
 
             return;
@@ -185,7 +185,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
         const glossaryId = this.glossary?.id;
         const cancelled = await CorePromiseUtils.promiseFails(
-            CoreDomUtils.showConfirm(Translate.instant('addon.mod_glossary.areyousuredelete')),
+            CoreAlerts.confirm(Translate.instant('addon.mod_glossary.areyousuredelete')),
         );
 
         if (!glossaryId || cancelled) {
@@ -224,7 +224,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
             await this.goBack();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errordeleting', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_glossary.errordeleting') });
         } finally {
             modal.dismiss();
         }
@@ -274,7 +274,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentry', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_glossary.errorloadingentry') });
         }
     }
 
@@ -298,7 +298,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
             this.canEdit = true;
             this.canDelete = true;
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentry', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_glossary.errorloadingentry') });
         }
     }
 

@@ -24,7 +24,6 @@ import {
     CoreWSExternalWarning,
     CoreWSUploadFileResult,
 } from '@services/ws';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreOpener, CoreOpenerOpenInBrowserOptions } from '@singletons/opener';
@@ -54,8 +53,9 @@ import { CoreSiteInfo } from './unauthenticated-site';
 import { CoreAuthenticatedSite, CoreAuthenticatedSiteOptionalData, CoreSiteWSPreSets, WSObservable } from './authenticated-site';
 import { firstValueFrom } from 'rxjs';
 import { CorePlatform } from '@services/platform';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Class that represents a site (combination of site + user).
@@ -509,12 +509,11 @@ export class CoreSite extends CoreAuthenticatedSite {
 
         if (alertMessage) {
             // Show an alert first.
-            const alert = await CoreDomUtils.showAlert(
-                Translate.instant('core.notice'),
-                alertMessage,
-                undefined,
-                3000,
-            );
+            const alert = await CoreAlerts.show({
+                header: Translate.instant('core.notice'),
+                message: alertMessage,
+                autoCloseTime: 3000,
+            });
 
             await alert.onDidDismiss();
             options.showBrowserWarning = false; // A warning already shown, no need to show another.

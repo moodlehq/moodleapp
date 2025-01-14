@@ -15,12 +15,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModFeedback, AddonModFeedbackWSFeedback } from '../../services/feedback';
 import { AddonModFeedbackHelper, AddonModFeedbackNonRespondent } from '../../services/feedback-helper';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays feedback non respondents.
@@ -70,8 +71,7 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -102,7 +102,7 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
 
             this.logView();
         } catch (message) {
-            CoreDomUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(message, { default: Translate.instant('core.course.errorgetmodule') });
 
             if (!refresh) {
                 // Some call failed on first fetch, go back.
@@ -162,7 +162,7 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
         try {
             await this.loadGroupUsers(groupId);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             infiniteComplete && infiniteComplete();
         }

@@ -19,7 +19,6 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -28,8 +27,10 @@ import { CoreForms } from '@singletons/form';
 import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreFileUtils } from '@singletons/file-utils';
+import { Translate } from '@singletons';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component to handle a local file. Only files inside the app folder can be managed.
@@ -191,7 +192,7 @@ export class CoreLocalFileComponent implements OnInit {
             await CoreFile.getFile(newPath);
 
             // There's a file with this name, show error and stop.
-            CoreDomUtils.showErrorModal('core.errorfileexistssamename', true);
+            CoreAlerts.showError(Translate.instant('core.errorfileexistssamename'));
         } catch {
             try {
                 // File doesn't exist, move it.
@@ -204,7 +205,7 @@ export class CoreLocalFileComponent implements OnInit {
                 this.loadFileBasicData(this.file);
                 this.onRename.emit({ file: this.file });
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errorrenamefile', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.errorrenamefile') });
             }
         } finally {
             modal.dismiss();
@@ -224,7 +225,7 @@ export class CoreLocalFileComponent implements OnInit {
 
         try {
             // Ask confirmation.
-            await CoreDomUtils.showDeleteConfirm('core.confirmdeletefile');
+            await CoreAlerts.confirmDelete(Translate.instant('core.confirmdeletefile'));
 
             modal = await CoreLoadings.show('core.deleting', true);
 
@@ -232,7 +233,7 @@ export class CoreLocalFileComponent implements OnInit {
 
             this.onDelete.emit();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.errordeletefile', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.errordeletefile') });
         } finally {
             modal?.dismiss();
         }

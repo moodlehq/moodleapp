@@ -17,7 +17,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreConfig } from '@services/config';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { NgZone, Translate } from '@singletons';
@@ -25,7 +24,8 @@ import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/logi
 import { CoreNetwork } from '@services/network';
 import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
-import { CoreToasts } from '@services/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the synchronization settings.
@@ -142,7 +142,7 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
                 return;
             }
 
-            CoreDomUtils.showErrorModalDefault(error, 'core.settings.sitesyncfailed', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.settings.sitesyncfailed') });
         }
     }
 
@@ -170,10 +170,10 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
      * Show information about sync actions.
      */
     showInfo(): void {
-        CoreDomUtils.showAlert(
-            Translate.instant('core.help'),
-            Translate.instant('core.settings.synchronizenowhelp'),
-        );
+        CoreAlerts.show({
+            header: Translate.instant('core.help'),
+            message: Translate.instant('core.settings.synchronizenowhelp'),
+        });
     }
 
     /**

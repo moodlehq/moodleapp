@@ -30,7 +30,6 @@ import { ContextLevel, CoreConstants } from '@/core/constants';
 import { CoreNavigator } from '@services/navigator';
 import { NgZone, Translate } from '@singletons';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUser } from '@features/user/services/user';
 import { CoreText } from '@singletons/text';
 import { CoreError } from '@classes/errors/error';
@@ -42,9 +41,10 @@ import moment from 'moment-timezone';
 import { Subscription } from 'rxjs';
 import { CoreAnimations } from '@components/animations';
 import { CoreKeyboard } from '@singletons/keyboard';
-import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CORE_COMMENTS_AUTO_SYNCED } from '@features/comments/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays comments.
@@ -134,7 +134,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                 Translate.instant('core.comments.comments');
             this.courseId = CoreNavigator.getRouteNumberParam('courseId');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             CoreNavigator.back();
 
@@ -198,9 +198,12 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         } catch (error) {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
             if (error && this.componentName == 'assignsubmission_comments') {
-                CoreDomUtils.showAlertTranslated('core.notice', 'core.comments.commentsnotworking');
+                CoreAlerts.show({
+                    header: Translate.instant('core.notice'),
+                    message: Translate.instant('core.comments.commentsnotworking'),
+                });
             } else {
-                CoreDomUtils.showErrorModalDefault(error, Translate.instant('core.error') + ': get_comments');
+                CoreAlerts.showError(error, { default: Translate.instant('core.error') + ': get_comments' });
             }
         } finally {
             this.commentsLoaded = true;
@@ -276,7 +279,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
     private showSyncWarnings(warnings: string[]): void {
         const message = CoreText.buildMessage(warnings);
         if (message) {
-            CoreDomUtils.showAlert(undefined, message);
+            CoreAlerts.show({ message });
         }
     }
 
@@ -298,7 +301,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             this.showSyncWarnings(result?.warnings || []);
         } catch (error) {
             if (showErrors) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.errorsync') });
             }
 
             throw new CoreError(error);
@@ -359,7 +362,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                 await this.loadOfflineData();
             }
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         } finally {
             loadingModal.dismiss();
             this.sending = false;
@@ -394,10 +397,9 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         };
 
         try {
-            await CoreDomUtils.showDeleteConfirm('core.comments.deletecommentbyon', {
-                $a:
-                    { user: comment.fullname || '', time: time },
-            });
+            await CoreAlerts.confirmDelete(Translate.instant('core.comments.deletecommentbyon', {
+                $a: { user: comment.fullname || '', time: time },
+            }));
         } catch {
             // User cancelled, nothing to do.
             return;
@@ -436,7 +438,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                 duration: ToastDuration.LONG,
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Delete comment failed.');
+            CoreAlerts.showError(error, { default: 'Delete comment failed.' });
         }
     }
 

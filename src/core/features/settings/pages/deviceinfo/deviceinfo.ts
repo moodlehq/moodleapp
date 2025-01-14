@@ -23,7 +23,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Subscription } from 'rxjs';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreConfig } from '@services/config';
-import { CoreToasts } from '@services/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreNetwork } from '@services/network';

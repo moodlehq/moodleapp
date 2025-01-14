@@ -13,11 +13,10 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { AddonMessageOutputAirnotifier, AddonMessageOutputAirnotifierDevice } from '../../services/airnotifier';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the list of devices.
@@ -50,7 +49,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
             const devices = await AddonMessageOutputAirnotifier.getUserDevices();
             this.formatDevices(devices);
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         } finally {
             this.loaded = true;
         }
@@ -148,7 +147,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
             this.updateDevicesAfterDelay();
         } catch (error) {
             // Show error and revert change.
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             device.enable = !device.enable;
         } finally {
             device.updating = false;

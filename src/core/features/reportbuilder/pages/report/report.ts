@@ -14,7 +14,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreReportBuilderReportDetail } from '@features/reportbuilder/services/reportbuilder';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
 
 @Component({

@@ -59,6 +59,7 @@ import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '../transforms/boolean';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -671,7 +672,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
                 if (confirmMessage) {
                     try {
-                        await CoreDomUtils.showConfirm(Translate.instant(confirmMessage));
+                        await CoreAlerts.confirm(Translate.instant(confirmMessage));
                     } catch {
                         return;
                     }

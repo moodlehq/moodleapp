@@ -16,9 +16,8 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CanLeave } from '@guards/can-leave';
-import { CoreDomUtils } from '@services/utils/dom';
-import { Translate } from '@singletons';
 import { AddonModH5PActivityIndexComponent } from '../../components/index';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays an H5P activity.
@@ -45,7 +44,7 @@ export class AddonModH5PActivityIndexPage extends CoreCourseModuleMainActivityPa
 
         if (!this.canLeaveSafely) {
             try {
-                await CoreDomUtils.showConfirm(Translate.instant('core.confirmleaveunknownchanges'));
+                await CoreAlerts.confirmLeaveWithChanges();
 
                 return true;
             } catch {

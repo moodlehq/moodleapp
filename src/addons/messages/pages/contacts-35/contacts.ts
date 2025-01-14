@@ -20,7 +20,6 @@ import {
     AddonMessagesGetContactsContact,
     AddonMessages,
 } from '../../services/messages';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { ActivatedRoute } from '@angular/router';
 import { Translate } from '@singletons';
@@ -29,6 +28,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT } from '@addons/messages/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the list of contacts.
@@ -163,7 +163,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 
             this.clearSearch();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingcontacts', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.messages.errorwhileretrievingcontacts') });
         }
     }
 
@@ -233,7 +233,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 
             this.contacts.search = this.sortUsers(result);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingcontacts', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.messages.errorwhileretrievingcontacts') });
         }
     }
 

@@ -21,13 +21,14 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreSettingsHelper, CoreSiteSpaceUsage } from '@features/settings/services/settings-helper';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreErrorHelper } from '@services/error-helper';
 
 /**
  * Page that displays downloaded courses and allows the user to delete them.
@@ -113,9 +114,9 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
         event.stopPropagation();
 
         try {
-            await CoreDomUtils.showDeleteConfirm('addon.storagemanager.confirmdeletecourses');
+            await CoreAlerts.confirmDelete(Translate.instant('addon.storagemanager.confirmdeletecourses'));
         } catch (error) {
-            if (!CoreDomUtils.isCanceledError(error)) {
+            if (!CoreErrorHelper.isCanceledError(error)) {
                 throw error;
             }
 
@@ -132,7 +133,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
                 await this.setDownloadedCourses(this.downloadedCourses.filter((course) => !deletedCourseIds.includes(course.id)));
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, Translate.instant('core.errordeletefile'));
+            CoreAlerts.showError(error, { default: Translate.instant('core.errordeletefile') });
         } finally {
             modal.dismiss();
         }
@@ -149,12 +150,9 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
         event.stopPropagation();
 
         try {
-            await CoreDomUtils.showDeleteConfirm(
-                'addon.storagemanager.confirmdeletedatafrom',
-                { name: course.title },
-            );
+            await CoreAlerts.confirmDelete(Translate.instant('addon.storagemanager.confirmdeletedatafrom', { name: course.title }));
         } catch (error) {
-            if (!CoreDomUtils.isCanceledError(error)) {
+            if (!CoreErrorHelper.isCanceledError(error)) {
                 throw error;
             }
 
@@ -170,7 +168,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
                 await this.setDownloadedCourses(CoreArray.withoutItem(this.downloadedCourses, course));
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, Translate.instant('core.errordeletefile'));
+            CoreAlerts.showError(error, { default: Translate.instant('core.errordeletefile') });
         } finally {
             modal.dismiss();
         }

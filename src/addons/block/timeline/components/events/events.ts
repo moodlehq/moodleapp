@@ -14,7 +14,7 @@
 
 import { Component, Input, Output, EventEmitter, OnInit, HostBinding } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreText } from '@singletons/text';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { AddonBlockTimelineDayEvents } from '@addons/block/timeline/classes/section';

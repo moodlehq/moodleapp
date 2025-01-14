@@ -41,10 +41,10 @@ import { Push } from '@features/native/plugins';
 import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
-import { CoreDomUtils } from './utils/dom';
 import { CoreSites } from './sites';
 import { CoreNavigator } from './navigator';
 import { CoreWait } from '@singletons/wait';
+import { CoreAlerts } from './overlays/alerts';
 
 /**
  * Service to handle local notifications.
@@ -160,7 +160,7 @@ export class CoreLocalNotificationsProvider {
                 return;
             }
 
-            CoreDomUtils.showAlertWithOptions({
+            CoreAlerts.show({
                 header: Translate.instant('core.turnonexactalarms'),
                 message: Translate.instant('core.exactalarmsturnedoffmessage'),
                 buttons: [

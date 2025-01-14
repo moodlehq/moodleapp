@@ -24,16 +24,16 @@ import { IonContent } from '@ionic/angular';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
-import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CoreModals } from '@services/modals';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
+import { CoreModals } from '@services/overlays/modals';
 import { ADDON_NOTES_AUTO_SYNCED } from '@addons/notes/services/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a list of notes.
@@ -70,7 +70,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.userId = CoreNavigator.getRouteNumberParam('userId');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             CoreNavigator.back();
 
@@ -139,7 +139,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         } finally {
             let canDelete = this.notes && this.notes.length > 0;
             if (canDelete && this.type == 'personal') {
@@ -236,7 +236,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
         try {
             this.logViewDelete(note);
 
-            await CoreDomUtils.showDeleteConfirm('addon.notes.deleteconfirm');
+            await CoreAlerts.confirmDelete(Translate.instant('addon.notes.deleteconfirm'));
             try {
                 await AddonNotes.deleteNote(note, this.courseId);
                 this.showDelete = false;
@@ -250,7 +250,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
                 });
 
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'Delete note failed.');
+                CoreAlerts.showError(error, { default: 'Delete note failed.' });
             }
         } catch {
             // User cancelled, nothing to do.
@@ -291,7 +291,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
             this.showSyncWarnings(result.warnings);
         } catch (error) {
             if (showSyncErrors) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.errorsync') });
             }
         }
     }
@@ -305,7 +305,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
         const message = CoreText.buildMessage(warnings);
 
         if (message) {
-            CoreDomUtils.showAlert(undefined, message);
+            CoreAlerts.show({ message });
         }
     }
 

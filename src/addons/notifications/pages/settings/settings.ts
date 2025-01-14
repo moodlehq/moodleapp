@@ -17,7 +17,6 @@ import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CoreConfig } from '@services/config';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreUser } from '@features/user/services/user';
 import { AddonMessageOutputDelegate, AddonMessageOutputHandlerData } from '@addons/messageoutput/services/messageoutput-delegate';
@@ -40,7 +39,8 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays notifications settings.
@@ -127,7 +127,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
                 return;
             }
 
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         } finally {
             this.preferencesLoaded = true;
         }
@@ -255,7 +255,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
             this.updatePreferencesAfterDelay();
         } catch (error) {
             // Show error and revert change.
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             processor[state].checked = !processor[state].checked;
         } finally {
             processorState.updating = false;
@@ -294,7 +294,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
             this.updatePreferencesAfterDelay();
         } catch (error) {
             // Show error and revert change.
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             processor.enabled = !processor.enabled;
         } finally {
             processor.updating = false;
@@ -321,7 +321,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
             this.updatePreferencesAfterDelay();
         } catch (error) {
             // Show error and revert change.
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             this.preferences.enableall = !this.preferences.enableall;
         } finally {
             modal.dismiss();

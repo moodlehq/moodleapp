@@ -51,9 +51,11 @@ import {
     AddonModDataTemplateType,
     AddonModDataTemplateMode,
 } from '../../constants';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 
@@ -436,7 +438,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
             this.logSearch?.();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             this.showLoading = false;
         }
@@ -484,7 +486,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         try {
             await this.fetchEntriesData();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         }
     }
 

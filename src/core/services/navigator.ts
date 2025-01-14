@@ -32,7 +32,7 @@ import { CorePlatform } from '@services/platform';
 import { filter } from 'rxjs/operators';
 import { CorePromisedValue } from '@classes/promised-value';
 import { BehaviorSubject } from 'rxjs';
-import { CoreLoadings } from './loadings';
+import { CoreLoadings } from './overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**

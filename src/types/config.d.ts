@@ -18,7 +18,7 @@ import { CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
 import { OpenFileAction } from '@singletons/opener';
 import { CoreLoginSiteFinderSettings, CoreLoginSiteSelectorListMethod } from '@features/login/services/login-helper';
 import { CoreDatabaseConfiguration } from '@classes/database/database-table';
-import { ToastDuration } from '@services/toasts';
+import { ToastDuration } from '@services/overlays/toasts';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 

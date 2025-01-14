@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@singletons/utils';
 import { makeSingleton, Translate } from '@singletons';
 import {
@@ -34,6 +33,7 @@ import {
 import { AddonModScormOffline } from './scorm-offline';
 import { AddonModScormMode } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 // List of elements we want to ignore when copying attempts (they're calculated).
 const elementsToIgnore = [
@@ -72,7 +72,7 @@ export class AddonModScormHelperProvider {
             scorm.packagesize = size;
         }
 
-        return CoreDomUtils.confirmDownloadSize({ size: size, total: true });
+        return CoreAlerts.confirmDownloadSize({ size: size, total: true });
     }
 
     /**

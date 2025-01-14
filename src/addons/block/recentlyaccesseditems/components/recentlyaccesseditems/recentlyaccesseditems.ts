@@ -20,7 +20,7 @@ import {
     AddonBlockRecentlyAccessedItemsItemCalculatedData,
 } from '../../services/recentlyaccesseditems';
 import { CoreText } from '@singletons/text';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreUtils } from '@singletons/utils';
 import { CoreSharedModule } from '@/core/shared.module';
 

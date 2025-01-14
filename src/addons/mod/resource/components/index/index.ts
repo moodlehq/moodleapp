@@ -22,7 +22,6 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreNetwork } from '@services/network';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
 import { NgZone, Translate } from '@singletons';
@@ -36,6 +35,7 @@ import { CorePlatform } from '@services/platform';
 import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { OpenFileAction } from '@singletons/opener';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays a resource.
@@ -214,10 +214,9 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             if (downloadable) {
                 if (this.currentStatus === DownloadStatus.OUTDATED && !this.isOnline && !this.isExternalFile) {
                     // Warn the user that the file isn't updated.
-                    const alert = await CoreDomUtils.showAlert(
-                        undefined,
-                        Translate.instant('addon.mod_resource.resourcestatusoutdatedconfirm'),
-                    );
+                    const alert = await CoreAlerts.show({
+                        message: Translate.instant('addon.mod_resource.resourcestatusoutdatedconfirm'),
+                    });
 
                     await alert.onWillDismiss();
                 }

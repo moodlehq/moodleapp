@@ -17,7 +17,6 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@singletons/utils';
@@ -40,8 +39,9 @@ import {
     ADDON_MOD_FEEDBACK_MULTICHOICE_HIDENOSELECT,
     ADDON_MOD_FEEDBACK_PAGE_NAME,
 } from '../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreText } from '@singletons/text';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 const MODE_RESPONSETIME = 1;
 const MODE_COURSE = 2;
@@ -216,7 +216,7 @@ export class AddonModFeedbackHelperProvider {
                 },
             );
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error opening link.');
+            CoreAlerts.showError(error, { default: 'Error opening link.' });
         } finally {
             modal.dismiss();
         }

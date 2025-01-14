@@ -19,8 +19,8 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSiteBasicInfo } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFileUtils } from '@singletons/file-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page to display the list of sites to choose one to store a shared file.
@@ -51,7 +51,7 @@ export class CoreSharedFilesChooseSitePage implements OnInit {
             this.filePath = CoreNavigator.getRequiredRouteParam('filePath');
             this.isInbox = !!CoreNavigator.getRouteBooleanParam('isInbox');
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error reading file.');
+            CoreAlerts.showError(error, { default: 'Error reading file.' });
             CoreNavigator.back();
 
             return;
@@ -68,7 +68,7 @@ export class CoreSharedFilesChooseSitePage implements OnInit {
                 this.loadSites(),
             ]);
         } catch {
-            CoreDomUtils.showErrorModal('Error reading file.');
+            CoreAlerts.showError('Error reading file.');
             CoreNavigator.back();
         } finally {
             this.loaded = true;

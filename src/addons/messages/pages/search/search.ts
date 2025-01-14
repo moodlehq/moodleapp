@@ -20,7 +20,6 @@ import {
     AddonMessagesMessageAreaContact,
     AddonMessages,
 } from '../../services/messages';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -30,6 +29,8 @@ import {
     ADDON_MESSAGES_LIMIT_SEARCH,
     ADDON_MESSAGES_LIMIT_INITIAL_USER_SEARCH,
 } from '@addons/messages/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 /**
  * Page for searching users.
@@ -225,7 +226,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
                 }
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.messages.errorwhileretrievingusers', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.messages.errorwhileretrievingusers') });
 
             if (loadMore == 'messages') {
                 this.messages.loadMoreError = true;

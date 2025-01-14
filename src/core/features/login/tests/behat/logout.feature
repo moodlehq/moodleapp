@@ -87,12 +87,13 @@ Feature: Test different cases of logout and switch account
       | Message | An awesome message |
     And I press the user menu button in the app
     And I press "Log out" in the app
-    Then I should find "Are you sure you want to leave this page?" in the app
+    Then I should find "Leave page?" in the app
+    And I should find "Unsaved changes will be lost." in the app
 
     # Check that the app continues working fine if the user cancels the logout.
     When I press "Cancel" in the app
     And I press "Forum topic 1" in the app
-    And I press "OK" in the app
+    And I press "Leave" in the app
     Then I should find "Forum message 1" in the app
 
     When I press "Forum topic 2" in the app
@@ -105,7 +106,7 @@ Feature: Test different cases of logout and switch account
       | Message | An awesome message |
     And I press the user menu button in the app
     And I press "Log out" in the app
-    And I press "OK" in the app
+    And I press "Leave" in the app
     And I wait the app to restart
     Then the header should be "Accounts" in the app
 
@@ -135,12 +136,13 @@ Feature: Test different cases of logout and switch account
     And I press the user menu button in the app
     And I press "Switch account" in the app
     And I press "pau student2" in the app
-    Then I should find "Are you sure you want to leave this page?" in the app
+    Then I should find "Leave page?" in the app
+    And I should find "Unsaved changes will be lost." in the app
 
     # Check that the app continues working fine if the user cancels the switch account.
     When I press "Cancel" in the app
     And I press "Forum topic 1" in the app
-    And I press "OK" in the app
+    And I press "Leave" in the app
     Then I should find "Forum message 1" in the app
 
     When I press "Forum topic 2" in the app
@@ -154,7 +156,7 @@ Feature: Test different cases of logout and switch account
     And I press the user menu button in the app
     And I press "Switch account" in the app
     And I press "pau student2" in the app
-    And I press "OK" in the app
+    And I press "Leave" in the app
     And I wait the app to restart
     And I press the user menu button in the app
     Then I should find "pau student2" in the app

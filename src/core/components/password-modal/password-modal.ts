@@ -17,7 +17,7 @@ import { Component, ViewChild, ElementRef, Input } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 
 /**
  * Modal that asks the password.

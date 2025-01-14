@@ -23,7 +23,6 @@ import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreWSError } from '@classes/errors/wserror';
 import { Translate } from '@singletons';
@@ -44,8 +43,9 @@ import {
     AddonModWorkshopAction,
     AddonModWorkshopSubmissionType,
 } from '@addons/mod/workshop/constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreDom } from '@singletons/dom';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the workshop edit submission.
@@ -112,7 +112,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
             this.access = CoreNavigator.getRequiredRouteParam<AddonModWorkshopGetWorkshopAccessInformationWSResponse>('access');
             this.submissionId = CoreNavigator.getRouteNumberParam('submissionId') || 0;
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             CoreNavigator.back();
 
@@ -147,7 +147,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
         // Check if data has changed.
         if (this.hasDataChanged()) {
             // Show confirmation if some data has been modified.
-            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
         if (this.submission?.attachmentfiles) {
@@ -235,7 +235,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
         } catch (error) {
             this.loaded = false;
 
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
 
             this.forceLeavePage();
         }
@@ -339,7 +339,10 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
         const inputData = this.getInputData();
 
         if (!inputData.title) {
-            CoreDomUtils.showAlertTranslated('core.notice', 'addon.mod_workshop.submissionrequiredtitle');
+            CoreAlerts.show({
+                header: Translate.instant('core.notice'),
+                message: Translate.instant('addon.mod_workshop.submissionrequiredtitle'),
+            });
 
             throw new CoreError(Translate.instant('addon.mod_workshop.submissionrequiredtitle'));
         }
@@ -348,7 +351,10 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
         const noFiles = !inputData.attachmentfiles.length;
 
         if ((this.textRequired && noText) || (this.fileRequired && noFiles) || (noText && noFiles)) {
-            CoreDomUtils.showAlertTranslated('core.notice', 'addon.mod_workshop.submissionrequiredcontent');
+            CoreAlerts.show({
+                header: Translate.instant('core.notice'),
+                message: Translate.instant('addon.mod_workshop.submissionrequiredcontent'),
+            });
 
             throw new CoreError(Translate.instant('addon.mod_workshop.submissionrequiredcontent'));
         }
@@ -483,7 +489,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
                 CoreFileUploader.clearTmpFiles(inputData.attachmentfiles);
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Cannot save submission');
+            CoreAlerts.showError(error, { default: 'Cannot save submission' });
         } finally {
             modal.dismiss();
         }

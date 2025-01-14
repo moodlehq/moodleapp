@@ -16,13 +16,12 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { AddonCalendar } from '../../services/calendar';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarSync } from '../../services/calendar-sync';
 import { AddonCalendarFilter, AddonCalendarHelper } from '../../services/calendar-helper';
-import { NgZone } from '@singletons';
+import { NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { ActivatedRoute, Params } from '@angular/router';
@@ -30,7 +29,7 @@ import { AddonCalendarCalendarComponent } from '../../components/calendar/calend
 import { AddonCalendarUpcomingEventsComponent } from '../../components/upcoming-events/upcoming-events';
 import { CoreNavigator } from '@services/navigator';
 import { CoreConstants } from '@/core/constants';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import {
     ADDON_CALENDAR_AUTO_SYNCED,
     ADDON_CALENDAR_DELETED_EVENT_EVENT,
@@ -41,6 +40,7 @@ import {
     ADDON_CALENDAR_NEW_EVENT_EVENT,
     ADDON_CALENDAR_UNDELETED_EVENT_EVENT,
 } from '@addons/calendar/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the calendar events.
@@ -207,7 +207,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             try {
                 const result = await AddonCalendarSync.syncEvents();
                 if (result.warnings && result.warnings.length) {
-                    CoreDomUtils.showAlert(undefined, result.warnings[0]);
+                    CoreAlerts.show({ message: result.warnings[0] });
                 }
 
                 if (result.updated) {
@@ -222,7 +222,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
                 }
             } catch (error) {
                 if (showErrors) {
-                    CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
+                    CoreAlerts.showError(error, { default: Translate.instant('core.errorsync') });
                 }
             }
         }
@@ -255,7 +255,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
             await Promise.all(promises);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.calendar.errorloadevents') });
         }
 
         this.loaded = true;

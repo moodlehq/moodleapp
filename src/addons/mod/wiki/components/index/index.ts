@@ -25,7 +25,6 @@ import { CoreNetwork } from '@services/network';
 import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate, NgZone } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -58,8 +57,9 @@ import {
     ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
     ADDON_MOD_WIKI_PAGE_NAME,
 } from '../../constants';
-import { CoreModals } from '@services/modals';
-import { CorePopovers } from '@services/popovers';
+import { CoreModals } from '@services/overlays/modals';
+import { CorePopovers } from '@services/overlays/popovers';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays a wiki entry page.
@@ -870,7 +870,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
             if (this.isCurrentView && syncEventData.warnings && syncEventData.warnings.length) {
                 // Show warnings.
-                CoreDomUtils.showAlert(undefined, syncEventData.warnings[0]);
+                CoreAlerts.show({ message: syncEventData.warnings[0] });
             }
 
             // Check if current page was created or discarded.

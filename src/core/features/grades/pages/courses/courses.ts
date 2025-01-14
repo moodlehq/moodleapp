@@ -21,9 +21,9 @@ import { CoreGradesCoursesSource } from '@features/grades/classes/grades-courses
 import { CoreGrades } from '@features/grades/services/grades';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays courses grades (main menu option).
@@ -79,7 +79,7 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
         try {
             await this.courses.load();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading courses');
+            CoreAlerts.showError(error, { default: 'Error loading courses' });
         }
     }
 

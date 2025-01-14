@@ -18,14 +18,14 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { AddonModChatSessionFormatted, AddonModChatSessionsSource } from '../../classes/chat-sessions-source';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { AddonModChat } from '@addons/mod/chat/services/chat';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays list of chat sessions.
@@ -73,8 +73,7 @@ export class AddonModChatSessionsPage implements OnInit, AfterViewInit, OnDestro
 
             this.sessions = new CoreListItemsManager(source, AddonModChatSessionsPage);
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -119,7 +118,7 @@ export class AddonModChatSessionsPage implements OnInit, AfterViewInit, OnDestro
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.errorloadingcontent') });
         }
     }
 
@@ -132,7 +131,7 @@ export class AddonModChatSessionsPage implements OnInit, AfterViewInit, OnDestro
         try {
             await this.sessions.reload();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.errorloadingcontent') });
         } finally {
             modal.dismiss();
         }

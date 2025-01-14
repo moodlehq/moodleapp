@@ -14,9 +14,10 @@
 
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreLoadings } from '@services/loadings';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreWSFile } from '@services/ws';
+import { Translate } from '@singletons';
 
 /**
  * Directive to allow downloading and open a file. When the item with this directive is clicked, the file will be
@@ -54,7 +55,7 @@ export class CoreDownloadFileDirective implements OnInit {
             try {
                 await CoreFileHelper.downloadAndOpenFile(this.file, this.component, this.componentId);
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
             } finally {
                 modal.dismiss();
             }

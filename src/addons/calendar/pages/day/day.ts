@@ -16,7 +16,6 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import {
     AddonCalendar,
@@ -46,7 +45,7 @@ import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-sourc
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import {
     ADDON_CALENDAR_AUTO_SYNCED,
     ADDON_CALENDAR_DELETED_EVENT_EVENT,
@@ -59,6 +58,7 @@ import {
     AddonCalendarEventType,
 } from '@addons/calendar/constants';
 import { CoreObject } from '@singletons/object';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the calendar events for a certain day.
@@ -277,7 +277,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.calendar.errorloadevents') });
         }
 
         this.loaded = true;
@@ -343,7 +343,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             const result = await AddonCalendarSync.syncEvents();
 
             if (result.warnings && result.warnings.length) {
-                CoreDomUtils.showAlert(undefined, result.warnings[0]);
+                CoreAlerts.show({ message: result.warnings[0] });
             }
 
             if (result.updated) {
@@ -357,7 +357,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             }
         } catch (error) {
             if (showErrors) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.errorsync') });
             }
         }
     }
@@ -454,7 +454,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
             this.swipeSlidesComponent.slideToItem(currentDay);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.calendar.errorloadevents') });
         } finally {
             this.loaded = true;
         }

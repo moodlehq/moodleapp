@@ -21,7 +21,6 @@ import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { DownloadStatus } from '@/core/constants';
@@ -31,6 +30,7 @@ import { CoreH5PCore, CoreH5PDisplayOptions } from '../../classes/core';
 import { CoreH5PHelper } from '../../classes/helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component to render an iframe with an H5P package.
@@ -147,8 +147,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
                 this.iframeSrc = CoreUrl.addParamsToUrl(src, { preventredirect: false });
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading H5P package.', true);
-
+            CoreAlerts.showError(error, { default: 'Error loading H5P package.' });
         } finally {
             CoreH5PHelper.addResizerScript();
             this.onIframeUrlSet.emit({ src: this.iframeSrc!, online: !!localUrl });

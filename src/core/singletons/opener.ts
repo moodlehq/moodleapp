@@ -27,9 +27,9 @@ import { CorePromiseUtils } from './promise-utils';
 import { CoreUrl } from './url';
 import { CoreLogger } from './logger';
 import { CoreConfig } from '@services/config';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEvents } from '@singletons/events';
 import { CoreColors } from './colors';
+import { CorePrompts } from '@services/overlays/prompts';
 
 /**
  * Singleton with helper functions to handler open files and urls.
@@ -65,12 +65,9 @@ export class CoreOpener {
             .replace(/token=[^&#]+/gi, 'token=secret')
             .replace(/tokenpluginfile\.php\/[^/]+/gi, 'tokenpluginfile.php/secret');
 
-        const dontShowAgain = await CoreDomUtils.showPrompt(
-            Translate.instant('core.warnopeninbrowser', { url }),
-            undefined,
-            Translate.instant('core.dontshowagain'),
-            'checkbox',
-        );
+        const dontShowAgain = await CorePrompts.show(Translate.instant('core.warnopeninbrowser', { url }), 'checkbox', {
+            placeholderOrLabel: Translate.instant('core.dontshowagain'),
+        });
 
         if (dontShowAgain) {
             CoreConfig.set(CoreConstants.SETTINGS_DONT_SHOW_EXTERNAL_LINK_WARN, 1);

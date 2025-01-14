@@ -19,7 +19,7 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModLesson } from '../lesson';

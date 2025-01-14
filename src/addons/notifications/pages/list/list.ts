@@ -14,8 +14,6 @@
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@singletons/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
@@ -35,6 +33,7 @@ import { CoreConfig } from '@services/config';
 import { CoreConstants } from '@/core/constants';
 import { CorePlatform } from '@services/platform';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the list of notifications.
@@ -72,7 +71,7 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
 
             this.notifications = new CoreListItemsManager(source, AddonNotificationsListPage);
         } catch(error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -162,7 +161,7 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
         try {
             await this.fetchNotifications(true);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading notifications');
+            CoreAlerts.showError(error, { default: 'Error loading notifications' });
 
             this.notifications.reset();
         }
@@ -177,7 +176,7 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
         try {
             await this.fetchNotifications(false);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading more notifications');
+            CoreAlerts.showError(error, { default: 'Error loading more notifications' });
 
             this.fetchMoreNotificationsFailed = true;
         }
