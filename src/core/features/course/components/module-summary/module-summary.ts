@@ -27,15 +27,15 @@ import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@singletons/utils';
-import { ModalController, NgZone } from '@singletons';
+import { ModalController, NgZone, Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component to display a module summary modal.
@@ -191,7 +191,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
                 this.fetchCourse(),
             ]);
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
 
         this.loaded = true;
@@ -314,7 +314,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
             // We need to call getDownloadSize, the package might have been updated.
             const size = await CoreCourseModulePrefetchDelegate.getModuleDownloadSize(this.module, this.courseId, true);
 
-            await CoreDomUtils.confirmDownloadSize(size);
+            await CoreAlerts.confirmDownloadSize(size);
 
             await CoreCourseModulePrefetchDelegate.prefetchModule(this.module, this.courseId, true);
 
@@ -323,7 +323,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
             this.prefetchLoading = false;
 
             if (!this.isDestroyed) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
             }
         }
     }
@@ -337,13 +337,15 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         }
 
         if (this.prefetchLoading) {
-            CoreDomUtils.showAlertTranslated(undefined, 'core.course.cannotdeletewhiledownloading');
+            CoreAlerts.show({ message: Translate.instant('core.course.cannotdeletewhiledownloading') });
 
             return;
         }
 
         try {
-            await CoreDomUtils.showDeleteConfirm('addon.storagemanager.confirmdeletedatafrom', { name: this.module.name });
+            await CoreAlerts.confirmDelete(
+                Translate.instant('addon.storagemanager.confirmdeletedatafrom', { name: this.module.name }),
+            );
 
             this.removeFilesLoading = true;
 
@@ -351,7 +353,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
 
         } catch (error) {
             if (!this.isDestroyed &&error) {
-                CoreDomUtils.showErrorModal(error);
+                CoreAlerts.showError(error);
             }
         } finally {
             this.removeFilesLoading = false;

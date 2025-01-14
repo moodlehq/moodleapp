@@ -16,11 +16,11 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreLoadings } from '@services/loadings';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { makeSingleton } from '@singletons';
 import { CoreSites } from '@services/sites';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler to treat links to subsection.
@@ -77,7 +77,7 @@ export class AddonModSubsectionIndexLinkHandlerService extends CoreContentLinksM
 
                     await this.openSubsection(module.section, module.course, siteId);
                 } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'Error opening link.');
+                    CoreAlerts.showError(error, { default: 'Error opening link.' });
                 } finally {
                     modal.dismiss();
                 }

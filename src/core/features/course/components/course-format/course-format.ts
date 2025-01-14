@@ -25,7 +25,6 @@ import {
     ChangeDetectorRef,
     ViewChild,
 } from '@angular/core';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import {
@@ -52,7 +51,7 @@ import { CoreDom } from '@singletons/dom';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ContextLevel } from '@/core/constants';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockComponentsModule } from '@features/block/components/components.module';
 import { CoreSites } from '@services/sites';
@@ -66,6 +65,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infinite-loading';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseSectionComponent, CoreCourseSectionToDisplay } from '../course-section/course-section';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -161,8 +161,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     ngOnInit(): void {
         if (this.course === undefined) {
-            CoreDomUtils.showErrorModal('Course not set');
-
+            CoreAlerts.showError('Course not set');
             CoreNavigator.back();
 
             return;

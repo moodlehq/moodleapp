@@ -21,7 +21,6 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreGroups } from '@services/groups';
 import { CoreFileSizeSum, CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreModals } from '@services/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -33,6 +32,7 @@ import {
 } from '../lesson';
 import { AddonModLessonSync, AddonModLessonSyncResult } from '../lesson-sync';
 import { ADDON_MOD_LESSON_COMPONENT, AddonModLessonJumpTo, AddonModLessonPageSubtype } from '../../constants';
+import { CorePrompts } from '@services/overlays/prompts';
 
 /**
  * Handler to prefetch lessons.
@@ -136,7 +136,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
         }
 
         // Create and show the modal.
-        const response = await CoreModals.promptPassword({
+        const response = await CorePrompts.promptPassword({
             title: 'addon.mod_lesson.enterpassword',
             placeholder: 'core.login.password',
             submit: 'addon.mod_lesson.continue',

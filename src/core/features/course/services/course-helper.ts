@@ -31,7 +31,6 @@ import { CoreConstants, DownloadStatus, ContextLevel } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreArray } from '@singletons/array';
 import {
     CoreCourseAnyCourseData,
@@ -73,8 +72,8 @@ import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreEnrol } from '@features/enrol/services/enrol';
 import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 import { LazyRoutesModule } from '@/app/app-routing.module';
-import { CoreModals } from '@services/modals';
-import { CoreLoadings } from '@services/loadings';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreLoadings } from '@services/overlays/loadings';
 import {
     CoreCourseModuleCompletionTracking,
     CoreCourseModuleCompletionStatus,
@@ -84,6 +83,7 @@ import {
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener, CoreOpenerOpenFileOptions } from '@singletons/opener';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Prefetch info of a module.
@@ -410,7 +410,9 @@ export class CoreCourseHelperProvider {
         const siteId = CoreSites.getCurrentSiteId();
 
         // Confirm the download without checking size because it could take a while.
-        await CoreDomUtils.showConfirm(Translate.instant('core.areyousure'), Translate.instant('core.courses.downloadcourses'));
+        await CoreAlerts.confirm(Translate.instant('core.areyousure'), {
+            header: Translate.instant('core.courses.downloadcourses'),
+        });
 
         const total = courses.length;
         let count = 0;
@@ -499,7 +501,7 @@ export class CoreCourseHelperProvider {
         }
 
         // Show confirm modal if needed.
-        await CoreDomUtils.confirmDownloadSize(sizeSum, undefined, undefined, undefined, undefined, alwaysConfirm);
+        await CoreAlerts.confirmDownloadSize(sizeSum, { alwaysConfirm });
     }
 
     /**
@@ -1426,7 +1428,7 @@ export class CoreCourseHelperProvider {
                 },
             );
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
             modal.dismiss();
@@ -1506,7 +1508,7 @@ export class CoreCourseHelperProvider {
 
             await this.getAndOpenCourse(courseId, params, siteId);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             modal.dismiss();
         }
@@ -1637,7 +1639,7 @@ export class CoreCourseHelperProvider {
         refresh?: boolean,
     ): Promise<void> {
         // Show confirmation if needed.
-        await CoreDomUtils.confirmDownloadSize(size);
+        await CoreAlerts.confirmDownloadSize(size);
 
         // Invalidate content if refreshing and download the data.
         if (refresh) {
@@ -1957,7 +1959,7 @@ export class CoreCourseHelperProvider {
                 : CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE;
             completion.isoverallcomplete = !completion.isoverallcomplete;
 
-            CoreDomUtils.showErrorModalDefault(error, 'core.errorchangecompletion', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.errorchangecompletion') });
         } finally {
             modal.dismiss();
         }

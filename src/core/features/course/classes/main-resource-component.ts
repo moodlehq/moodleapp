@@ -17,8 +17,6 @@ import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, Optional, In
 import { CoreAnyError } from '@classes/errors/error';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-
 import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -33,9 +31,10 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
 import { CoreText } from '@singletons/text';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Result of a resource download.
@@ -208,7 +207,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
                 return await this.refreshContent();
             }
 
-            CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
+            CoreAlerts.showError(error, { default: Translate.instant(this.fetchContentDefaultError) });
         } finally {
             this.showLoading = false;
         }
@@ -275,7 +274,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @param error The specific error.
      */
     protected showErrorDownloadingSomeFiles(error: string | CoreErrorObject): void {
-        CoreDomUtils.showErrorModal(this.getErrorDownloadingSomeFilesMessage(error, true));
+        CoreAlerts.showError(Translate.instant(this.getErrorDownloadingSomeFilesMessage(error)));
     }
 
     /**

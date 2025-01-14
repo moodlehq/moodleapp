@@ -18,10 +18,9 @@ import {
 import { SafeResourceUrl } from '@angular/platform-browser';
 
 import { CoreFile } from '@services/file';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CoreIframeUtils } from '@services/utils/iframe';
-import { DomSanitizer, Router, StatusBar } from '@singletons';
+import { DomSanitizer, Router, StatusBar, Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreScreen, CoreScreenOrientation } from '@services/screen';
 import { Subscription } from 'rxjs';
@@ -30,6 +29,7 @@ import { NavigationStart } from '@angular/router';
 import { CoreSites } from '@services/sites';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreDom } from '@singletons/dom';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 @Component({
     selector: 'core-iframe',
@@ -181,7 +181,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
         this.iframe.addEventListener('error', () => {
             this.loading = false;
-            CoreDomUtils.showErrorModal('core.errorloadingcontent', true);
+            CoreAlerts.showError(Translate.instant('core.errorloadingcontent'));
         });
     }
 

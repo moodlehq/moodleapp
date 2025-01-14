@@ -17,7 +17,6 @@ import { ActivatedRoute } from '@angular/router';
 
 import { CoreSite, CoreSiteConfig } from '@classes/sites/site';
 import { CoreCourse, CoreCourseWSSection, sectionContentIsModule } from '@features/course/services/course';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreCourses } from '@features//courses/services/courses';
@@ -31,7 +30,9 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ContextLevel } from '@/core/constants';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays site home index.
@@ -153,7 +154,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.couldnotloadsectioncontent') });
         }
 
         this.hasBlocks = await CoreBlockHelper.hasCourseBlocks(this.siteHomeId);

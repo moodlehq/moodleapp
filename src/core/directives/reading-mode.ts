@@ -24,7 +24,7 @@ import { CoreIcons } from '@singletons/icons';
 import { CoreDom } from '@singletons/dom';
 import { CoreWait } from '@singletons/wait';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreCollapsibleHeaderDirective } from './collapsible-header';

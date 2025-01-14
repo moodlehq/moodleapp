@@ -15,7 +15,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEvents } from '@singletons/events';
 import {
     AddonModScorm,
@@ -33,6 +32,7 @@ import { NgZone, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreWait } from '@singletons/wait';
 import { CoreIframeComponent } from '@components/iframe/iframe';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that allows playing a SCORM in online, served from the server.
@@ -78,7 +78,7 @@ export default class AddonModScormOnlinePlayerPage implements OnInit, OnDestroy 
 
                 if (!isOnline && wasOnline) {
                     // User lost connection while playing an online package. Show an error.
-                    CoreDomUtils.showErrorModal(new CoreError(Translate.instant('core.course.changesofflinemaybelost'), {
+                    CoreAlerts.showError(new CoreError(Translate.instant('core.course.changesofflinemaybelost'), {
                         title: Translate.instant('core.youreoffline'),
                     }));
 
@@ -101,7 +101,7 @@ export default class AddonModScormOnlinePlayerPage implements OnInit, OnDestroy 
             this.organizationId = CoreNavigator.getRouteParam('organizationId');
             this.initialScoId = CoreNavigator.getRouteNumberParam('scoId');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -221,7 +221,7 @@ export default class AddonModScormOnlinePlayerPage implements OnInit, OnDestroy 
                 newAttempt: this.newAttempt,
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_scorm.errorgetscorm', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_scorm.errorgetscorm') });
         }
     }
 

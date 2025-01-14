@@ -14,7 +14,6 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@singletons/utils';
 import { CoreCategoryData, CoreCourseListItem, CoreCourses } from '../../services/courses';
 import { Translate } from '@singletons';
@@ -27,6 +26,7 @@ import {
     CoreCoursesMyCoursesUpdatedEventAction,
     CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT,
 } from '@features/courses/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a list of categories and the courses in the current category if any.
@@ -152,13 +152,15 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
                     this.categoryCourses = await CoreCourses.getCoursesByField('category', this.categoryId);
                     await this.filterEnrolled();
                 } catch (error) {
-                    !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
+                    !this.isDestroyed && CoreAlerts.showError(error, {
+                        default: Translate.instant('core.courses.errorloadcourses'),
+                    });
                 }
             }
 
             this.logView();
         } catch (error) {
-            !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcategories', true);
+            !this.isDestroyed && CoreAlerts.showError(error, { default: Translate.instant('core.courses.errorloadcategories') });
         }
     }
 

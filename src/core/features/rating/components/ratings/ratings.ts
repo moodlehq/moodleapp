@@ -16,7 +16,7 @@ import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreRating, CoreRatingItemRating } from '@features/rating/services/rating';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreAlerts } from '@services/overlays/alerts';
 import { ModalController } from '@singletons';
 
 /**
@@ -59,7 +59,7 @@ export class CoreRatingRatingsComponent implements OnInit {
                 this.courseId,
             );
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         } finally {
             this.loaded = true;
         }

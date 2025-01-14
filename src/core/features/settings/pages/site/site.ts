@@ -22,14 +22,14 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNetwork } from '@services/network';
 import { Subscription } from 'rxjs';
-import { NgZone } from '@singletons';
+import { NgZone, Translate } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreSettingsHandlersSource } from '@features/settings/classes/settings-handlers-source';
-import { CoreToasts } from '@services/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the list of site settings pages.
@@ -126,7 +126,7 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
             if (this.isDestroyed) {
                 return;
             }
-            CoreDomUtils.showErrorModalDefault(error, 'core.settings.sitesyncfailed', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.settings.sitesyncfailed') });
         }
 
     }

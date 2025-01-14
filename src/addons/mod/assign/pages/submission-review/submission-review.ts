@@ -20,13 +20,13 @@ import { CoreCourse } from '@features/course/services/course';
 import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
-import { CoreDomUtils } from '@services/utils/dom';
 import { AddonModAssignListFilterName, AddonModAssignSubmissionsSource } from '../../classes/submissions-source';
 import { AddonModAssignSubmissionComponent } from '../../components/submission/submission';
 import { AddonModAssign, AddonModAssignAssign } from '../../services/assign';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a submission.
@@ -99,8 +99,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, Ca
 
                 this.submissions.start();
             } catch (error) {
-                CoreDomUtils.showErrorModal(error);
-
+                CoreAlerts.showError(error);
                 CoreNavigator.back();
 
                 return;
@@ -231,7 +230,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, Ca
                 CoreNavigator.back();
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.error') });
         }
     }
 

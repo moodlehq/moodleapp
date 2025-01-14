@@ -22,7 +22,6 @@ import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
@@ -53,6 +52,7 @@ import {
     ADDON_MOD_ASSIGN_WARN_GROUPS_OPTIONAL,
     ADDON_MOD_ASSIGN_WARN_GROUPS_REQUIRED,
 } from '../../constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays an assignment.
@@ -397,8 +397,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         if (syncEventData.warnings && syncEventData.warnings.length) {
-            // Show warnings.
-            CoreDomUtils.showAlert(undefined, syncEventData.warnings[0]);
+            CoreAlerts.show({ message: syncEventData.warnings[0] });
         }
 
         return true;

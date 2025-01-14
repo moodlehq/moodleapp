@@ -17,11 +17,11 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonReportInsights } from '../insights';
-import { CoreToasts } from '@services/toasts';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts } from '@services/overlays/toasts';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 // Bulk actions supported, along with the related lang string.
 const BULK_ACTIONS = {
@@ -57,7 +57,7 @@ export class AddonReportInsightsActionLinkHandlerService extends CoreContentLink
                 try {
                     await AddonReportInsights.sendActionExecuted(params.action, [Number(params.predictionid)], siteId);
                 } catch (error) {
-                    CoreDomUtils.showErrorModal(error);
+                    CoreAlerts.showError(error);
 
                     return;
                 } finally {

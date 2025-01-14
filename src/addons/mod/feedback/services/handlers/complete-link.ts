@@ -18,10 +18,10 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Content links handler for feedback complete questions.
@@ -60,7 +60,7 @@ export class AddonModFeedbackCompleteLinkHandlerService extends CoreContentLinks
                         },
                     );
                 } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'Error opening link.');
+                    CoreAlerts.showError(error, { default: 'Error opening link.' });
                 } finally {
                     modal.dismiss();
                 }

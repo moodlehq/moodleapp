@@ -18,7 +18,6 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { AddonModWorkshopData, AddonModWorkshopGetWorkshopAccessInformationWSResponse } from '../../services/workshop';
 import {
     AddonModWorkshopHelper,
@@ -26,7 +25,8 @@ import {
     AddonModWorkshopSubmissionDataWithOfflineData,
 } from '../../services/workshop-helper';
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays workshop assessment.
@@ -135,7 +135,7 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
 
                     CoreNavigator.navigate(String(this.assessmentId), { params });
                 } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'Cannot load submission');
+                    CoreAlerts.showError(error, { default: 'Cannot load submission' });
                 } finally {
                     modal.dismiss();
                 }

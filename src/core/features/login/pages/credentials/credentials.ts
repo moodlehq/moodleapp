@@ -20,7 +20,6 @@ import { debounceTime } from 'rxjs/operators';
 import { CoreSSO } from '@singletons/sso';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteCheckResponse, CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
 import { CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
@@ -41,7 +40,8 @@ import {
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreKeyboard } from '@singletons/keyboard';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page to enter the user credentials.
@@ -105,7 +105,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.site, this.siteConfig);
             this.displaySiteUrl = this.site.shouldDisplayInformativeLinks();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             return CoreNavigator.back();
         }
@@ -191,9 +191,10 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             // Check if user needs to authenticate in a browser.
             this.isBrowserSSO = CoreLoginHelper.isSSOLoginNeeded(this.siteCheck.code);
         } catch (error) {
-            this.siteCheckError = CoreDomUtils.getErrorMessage(error) || 'Error loading site';
+            const alert = await CoreAlerts.showError(error);
 
-            CoreDomUtils.showErrorModal(error);
+            this.siteCheckError =
+                (typeof alert?.message === 'object' ? alert.message.value : alert?.message) || 'Error loading site';
         } finally {
             this.pageLoaded = true;
         }
@@ -268,18 +269,18 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         const password = this.credForm.value.password;
 
         if (!username) {
-            CoreDomUtils.showErrorModal('core.login.usernamerequired', true);
+            CoreAlerts.showError(Translate.instant('core.login.usernamerequired'));
 
             return;
         }
         if (!password) {
-            CoreDomUtils.showErrorModal('core.login.passwordrequired', true);
+            CoreAlerts.showError(Translate.instant('core.login.passwordrequired'));
 
             return;
         }
 
         if (!CoreNetwork.isOnline()) {
-            CoreDomUtils.showErrorModal('core.networkerrormsg', true);
+            CoreAlerts.showError(Translate.instant('core.networkerrormsg'));
 
             return;
         }

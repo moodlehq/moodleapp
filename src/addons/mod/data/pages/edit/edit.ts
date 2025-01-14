@@ -21,7 +21,6 @@ import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreForms } from '@singletons/form';
 import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
@@ -44,9 +43,10 @@ import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_ENTRY_CHANGED, AddonModDataTemplateType } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreArray } from '@singletons/array';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the view edit page.
@@ -126,7 +126,7 @@ export class AddonModDataEditPage implements OnInit {
             this.entryId = CoreNavigator.getRouteNumberParam('entryId') || undefined;
             this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             CoreNavigator.back();
 
@@ -156,7 +156,7 @@ export class AddonModDataEditPage implements OnInit {
 
         if (changed) {
             // Show confirmation if some data has been modified.
-            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
         // Delete the local files from the tmp folder.
@@ -238,7 +238,7 @@ export class AddonModDataEditPage implements OnInit {
 
                 if (!haveAccess) {
                     // You shall not pass, go back.
-                    CoreDomUtils.showErrorModal('addon.mod_data.noaccess', true);
+                    CoreAlerts.showError(Translate.instant('addon.mod_data.noaccess'));
 
                     // Go back to entry list.
                     this.forceLeave = true;
@@ -251,7 +251,7 @@ export class AddonModDataEditPage implements OnInit {
             this.editFormRender = this.displayEditFields();
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         }
 
         this.loaded = true;
@@ -395,10 +395,9 @@ export class AddonModDataEditPage implements OnInit {
                     this.scrollToFirstError();
 
                     if (updateEntryResult.generalnotifications?.length) {
-                        CoreDomUtils.showAlertWithOptions({
+                        CoreAlerts.show({
                             header: Translate.instant('core.notice'),
                             message: CoreText.buildMessage(updateEntryResult.generalnotifications),
-                            buttons: [Translate.instant('core.ok')],
                         });
                     }
                 }
@@ -406,7 +405,7 @@ export class AddonModDataEditPage implements OnInit {
                 modal.dismiss();
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Cannot edit entry', true);
+            CoreAlerts.showError(error, { default: 'Cannot edit entry' });
         }
     }
 

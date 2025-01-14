@@ -24,7 +24,6 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreTag, CoreTagItem } from '@features/tag/services/tag';
 import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
@@ -37,7 +36,8 @@ import {
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { ADDON_MOD_BOOK_COMPONENT, AddonModBookNavStyle } from '../../constants';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a book contents.
@@ -79,8 +79,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.initialChapterId = CoreNavigator.getRouteNumberParam('chapterId');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -136,7 +135,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
 
             await source.load();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             this.loaded = true;
         }

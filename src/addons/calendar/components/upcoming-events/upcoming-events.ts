@@ -15,7 +15,6 @@
 import { Component, OnDestroy, OnInit, Input, DoCheck, Output, EventEmitter, KeyValueDiffers, KeyValueDiffer } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import {
     AddonCalendarEventToDisplay,
     AddonCalendar,
@@ -29,6 +28,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { ADDON_CALENDAR_UNDELETED_EVENT_EVENT } from '@addons/calendar/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays upcoming events.
@@ -174,7 +174,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.calendar.errorloadevents') });
         }
 
         this.loaded = true;

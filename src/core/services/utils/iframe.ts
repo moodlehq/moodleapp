@@ -35,9 +35,10 @@ import { CoreMimetypeUtils } from './mimetype';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNative } from '@features/native/services/native';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreFileUtils } from '@singletons/file-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 type CoreFrameElement = FrameElement & {
     window?: Window;
@@ -456,7 +457,7 @@ export class CoreIframeUtilsProvider {
             // It's an external link or a local file, check if it can be opened in the app.
             await CoreWindow.open(url, name);
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 
@@ -493,7 +494,7 @@ export class CoreIframeUtilsProvider {
             event?.preventDefault();
             await CoreWindow.open(link.href, link.target);
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 
@@ -565,7 +566,7 @@ export class CoreIframeUtilsProvider {
      * Open help modal for iframes.
      */
     openIframeHelpModal(): void {
-        CoreDomUtils.showAlertWithOptions({
+        CoreAlerts.show({
             header: Translate.instant('core.settings.ioscookies'),
             message: Translate.instant('core.ioscookieshelp'),
             buttons: [
@@ -632,7 +633,7 @@ export class CoreIframeUtilsProvider {
                 if (localUrl) {
                     CoreOpener.openFile(localUrl);
                 } else {
-                    CoreDomUtils.showErrorModal('core.networkerrormsg', true);
+                    CoreAlerts.showError(Translate.instant('core.networkerrormsg'));
                 }
 
                 return;

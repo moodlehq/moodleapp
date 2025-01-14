@@ -17,7 +17,6 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -33,11 +32,12 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreFilepool } from '@services/filepool';
-import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { AddonPrivateFilesFileComponent } from '@addons/privatefiles/components/file/file';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the list of files.
@@ -107,7 +107,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
                 };
             }
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             CoreNavigator.back();
 
@@ -181,7 +181,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
      */
     async uploadFile(): Promise<void> {
         if (!CoreNetwork.isOnline()) {
-            CoreDomUtils.showErrorModal('core.fileuploader.errormustbeonlinetoupload', true);
+            CoreAlerts.showError(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
 
             return;
         }
@@ -196,7 +196,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 
             this.filesLoaded = true;
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.fileuploader.errorwhileuploading', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.fileuploader.errorwhileuploading') });
         }
     }
 
@@ -238,10 +238,10 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
                 this.logView();
             } else {
                 // Unknown root.
-                CoreDomUtils.showErrorModal('addon.privatefiles.couldnotloadfiles', true);
+                CoreAlerts.showError(Translate.instant('addon.privatefiles.couldnotloadfiles'));
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.privatefiles.couldnotloadfiles', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.privatefiles.couldnotloadfiles') });
         }
     }
 
@@ -304,12 +304,11 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 
         if (showConfirmation) {
             try {
-                this.selectedFiles.length === 1
-                ? await CoreDomUtils.showDeleteConfirm(
-                    'core.confirmremoveselectedfile',
-                    { filename: this.selectedFiles[0].filename },
-                )
-                : await CoreDomUtils.showDeleteConfirm('core.confirmremoveselectedfiles');
+                const message =  this.selectedFiles.length === 1 ?
+                    Translate.instant('core.confirmremoveselectedfile', { filename: this.selectedFiles[0].filename }) :
+                    Translate.instant('core.confirmremoveselectedfiles');
+
+                await CoreAlerts.confirmDelete(message);
             } catch {
                 return;
             }
@@ -322,7 +321,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
             await AddonPrivateFiles.deleteFiles(this.selectedFiles);
         } catch (error) {
             loading.dismiss();
-            await CoreDomUtils.showErrorModalDefault(error, 'An error occourred while file was being deleted.');
+            await CoreAlerts.showError(error, { default: 'An error occourred while file was being deleted.' });
             throw error;
         }
 
@@ -396,7 +395,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
             }
 
             if (status === 'deleteOnline') {
-                await CoreDomUtils.showDeleteConfirm('core.confirmremoveselectedfile', { filename: file.filename });
+                await CoreAlerts.confirmDelete(Translate.instant('core.confirmremoveselectedfile', { filename: file.filename }));
                 this.selectedFiles = [file];
 
                 return await this.deleteSelectedFiles();
@@ -450,7 +449,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
         try {
             await CoreFilepool.removeFileByUrl(siteId, file.fileurl);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.errordeletefile', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.errordeletefile') });
         }
     }
 

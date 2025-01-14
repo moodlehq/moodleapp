@@ -18,7 +18,6 @@ import { Subscription } from 'rxjs';
 
 import { CoreSite } from '@classes/sites/site';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreUser, CoreUserProfile, USER_PROFILE_REFRESHED } from '@features/user/services/user';
 import { CoreUserHelper } from '@features/user/services/user-helper';
@@ -37,6 +36,7 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 @Component({
     selector: 'page-core-user-profile',
@@ -106,7 +106,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             this.courseId = CoreNavigator.getRouteNumberParam('courseId');
             this.userId = CoreNavigator.getRequiredRouteNumberParam('userId');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -175,7 +175,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             this.logView(user);
         } catch (error) {
             // Error is null for deleted users, do not show the modal.
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 

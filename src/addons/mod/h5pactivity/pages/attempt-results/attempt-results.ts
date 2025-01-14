@@ -16,7 +16,6 @@ import { Component, OnInit } from '@angular/core';
 
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     AddonModH5PActivity,
@@ -26,6 +25,7 @@ import {
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_H5PACTIVITY_COMPONENT } from '../../constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays results of an attempt.
@@ -78,8 +78,7 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
             this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
             this.attemptId = CoreNavigator.getRequiredRouteNumberParam('attemptId');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -116,7 +115,7 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading attempt.');
+            CoreAlerts.showError(error, { default: 'Error loading attempt.' });
         } finally {
             this.loaded = true;
         }

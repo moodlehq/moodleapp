@@ -22,7 +22,6 @@ import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreCoursesDashboard, CoreCoursesDashboardProvider } from '@features/courses/services/dashboard';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
@@ -31,6 +30,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreWait } from '@singletons/wait';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that shows a my courses.
@@ -133,7 +133,7 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
                     this.loadFallbackBlock();
                 }
             } catch (error) {
-                CoreDomUtils.showErrorModal(error);
+                CoreAlerts.showError(error);
 
                 // Cannot get the blocks, just show the block if needed.
                 this.loadFallbackBlock();

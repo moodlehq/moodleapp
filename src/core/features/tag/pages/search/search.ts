@@ -13,8 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreUrl } from '@singletons/url';
 import { CoreTagCloud, CoreTagCollection, CoreTagCloudTag, CoreTag } from '@features/tag/services/tag';
@@ -25,6 +23,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreSites } from '@services/sites';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays most used tags and allows searching.
@@ -83,7 +82,7 @@ export class CoreTagSearchPage implements OnInit {
                 this.logView();
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading tags.');
+            CoreAlerts.showError(error, { default: 'Error loading tags.' });
         }
     }
 
@@ -155,7 +154,7 @@ export class CoreTagSearchPage implements OnInit {
         CoreKeyboard.close();
 
         return this.fetchTags().catch((error) => {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading tags.');
+            CoreAlerts.showError(error, { default: 'Error loading tags.' });
         }).finally(() => {
             this.searching = false;
         });

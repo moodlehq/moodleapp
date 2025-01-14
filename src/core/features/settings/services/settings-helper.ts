@@ -24,7 +24,6 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreFilter } from '@features/filter/services/filter';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse } from '@features/course/services/course';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
@@ -32,6 +31,7 @@ import { Observable, Subject } from 'rxjs';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreHTMLClasses } from '@singletons/html-classes';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Object with space usage and cache entries that can be erased.
@@ -126,11 +126,9 @@ export class CoreSettingsHelperProvider {
 
         const title = Translate.instant('addon.storagemanager.confirmdeleteallsitedata');
 
-        await CoreDomUtils.showDeleteConfirm(
-            'addon.storagemanager.deleteallsitedatainfo',
-            { name: siteName },
-            { header:  title },
-        );
+        await CoreAlerts.confirmDelete(Translate.instant('addon.storagemanager.deleteallsitedatainfo', { name: siteName }), {
+            header: title,
+        });
 
         const site = await CoreSites.getSite(siteId);
 
@@ -153,7 +151,7 @@ export class CoreSettingsHelperProvider {
                 siteInfo.spaceUsage = 0;
             } else {
                 // Error, recalculate the site usage.
-                CoreDomUtils.showErrorModal('addon.storagemanager.errordeletedownloadeddata', true);
+                CoreAlerts.showError(Translate.instant('addon.storagemanager.errordeletedownloadeddata'));
 
                 siteInfo.spaceUsage = await site.getSpaceUsage();
             }
@@ -473,7 +471,7 @@ export class CoreSettingsHelperProvider {
         const reloadApp = !CoreSites.isLoggedIn();
 
         if (reloadApp) {
-            await CoreDomUtils.showConfirm('Are you sure that you want to enable/disable staging sites?');
+            await CoreAlerts.confirm('Are you sure that you want to enable/disable staging sites?');
         }
 
         await CoreConfig.set('stagingSites', enabled ? 1 : 0);

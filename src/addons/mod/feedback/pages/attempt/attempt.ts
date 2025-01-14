@@ -17,7 +17,6 @@ import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFileHelper } from '@services/file-helper';
 import { AddonModFeedbackAttemptsSource } from '../../classes/feedback-attempts-source';
 import {
@@ -29,6 +28,8 @@ import { AddonModFeedbackAttempt, AddonModFeedbackFormItem, AddonModFeedbackHelp
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_FEEDBACK_COMPONENT } from '../../constants';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays a feedback attempt review.
@@ -89,8 +90,7 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
         try {
             await this.attempts.start();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -156,7 +156,7 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
             this.logView();
         } catch (message) {
             // Some call failed on fetch, go back.
-            CoreDomUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(message, { default: Translate.instant('core.course.errorgetmodule') });
             CoreNavigator.back();
         } finally {
             this.loaded = true;

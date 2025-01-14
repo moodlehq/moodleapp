@@ -21,7 +21,7 @@ import {
     CoreWSPreSetsSplitRequest,
     CoreWSTypeExpected,
 } from '@services/ws';
-import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@singletons/utils';
 import { CoreCacheUpdateFrequency, CoreConstants, MINIMUM_MOODLE_VERSION, MOODLE_RELEASES } from '@/core/constants';

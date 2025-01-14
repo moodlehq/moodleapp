@@ -19,7 +19,6 @@ import { IonContent } from '@ionic/angular';
 import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { NgZone, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -31,8 +30,9 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreWait } from '@singletons/wait';
-import { CoreModals } from '@services/modals';
-import { CoreLoadings } from '@services/loadings';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a chat session.
@@ -108,7 +108,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
             this.startPolling();
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_chat.errorwhileconnecting', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_chat.errorwhileconnecting') });
             CoreNavigator.back();
         } finally {
             this.loaded = true;
@@ -294,7 +294,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
             } catch (error) {
                 // Fail again. Stop polling if needed.
                 this.stopPolling();
-                CoreDomUtils.showErrorModalDefault(error, 'addon.mod_chat.errorwhileretrievingmessages', true);
+                CoreAlerts.showError(error, { default: Translate.instant('addon.mod_chat.errorwhileretrievingmessages') });
 
                 throw error;
             }
@@ -331,7 +331,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
             CoreKeyboard.close();
 
             this.newMessage = text;
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_chat.errorwhilesendingmessage', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_chat.errorwhilesendingmessage') });
         } finally {
             this.sending = false;
         }
@@ -380,7 +380,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
         }
 
         // Modified, confirm user wants to go back.
-        await CoreDomUtils.showConfirm(Translate.instant('addon.mod_chat.confirmloss'));
+        await CoreAlerts.confirm(Translate.instant('addon.mod_chat.confirmloss'));
 
         return true;
     }

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Clipboard, Translate } from '@singletons';
-import { CoreToasts } from '@services/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
 import { Locutus } from './locutus';
 import { CoreError } from '@classes/errors/error';
 import { convertTextToHTMLElement } from '../utils/create-html-element';

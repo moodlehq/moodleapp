@@ -18,7 +18,6 @@ import { CoreError } from '@classes/errors/error';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreErrorHelper } from '@services/error-helper';
 import { Translate } from '@singletons';
@@ -36,6 +35,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_LESSON_COMPONENT } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a retake made by a certain user.
@@ -76,8 +76,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
             this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getCurrentSiteUserId();
             this.retakeNumber = CoreNavigator.getRouteNumberParam('retake');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -103,7 +102,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
             this.performLogView();
         } catch (error) {
             this.selectedRetake = this.previousSelectedRetake ?? this.selectedRetake;
-            CoreDomUtils.showErrorModal(CoreErrorHelper.addDataNotDownloadedError(error, 'Error getting attempt.'));
+            CoreAlerts.showError(CoreErrorHelper.addDataNotDownloadedError(error, 'Error getting attempt.'));
         } finally {
             this.loaded = true;
         }
@@ -171,7 +170,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting data.', true);
+            CoreAlerts.showError(error, { default: Translate.instant('Error getting data.') });
         }
     }
 

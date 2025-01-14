@@ -21,7 +21,6 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
@@ -51,6 +50,7 @@ import {
     AddonModQuizAttemptStates,
 } from '../../constants';
 import { QuestionDisplayOptionsMarks } from '@features/question/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays a quiz entry page.
@@ -167,7 +167,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
                 // If the site doesn't support check updates, continue too because we cannot tell if there's something new.
                 this.openQuiz();
             } else {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
             }
         } finally {
             this.showStatusSpinner = false;
@@ -192,7 +192,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
         if (warnings?.length) {
             // Show warnings and delete them so they aren't shown again.
-            CoreDomUtils.showErrorModal(CoreText.buildMessage(warnings));
+            CoreAlerts.showError(CoreText.buildMessage(warnings));
 
             await AddonModQuizSync.setSyncWarnings(quiz.id, []);
         }

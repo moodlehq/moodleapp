@@ -16,16 +16,16 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef,
 import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTimeUtils } from '@services/utils/time';
-import { ModalController, Translate } from '@singletons';
+import { ModalController } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CorePath } from '@singletons/path';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page to capture media in browser.
@@ -235,7 +235,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     async cancel(): Promise<void> {
         if (this.hasCaptured) {
             try {
-                await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+                await CoreAlerts.confirmLeaveWithChanges();
             } catch {
                 // Canceled.
                 return;
@@ -309,7 +309,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
 
         if (!this.mediaBlob) {
             // Shouldn't happen.
-            CoreDomUtils.showErrorModal('Please capture the media first.');
+            CoreAlerts.showError('Please capture the media first.');
 
             return;
         }
@@ -350,7 +350,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
                 this.dismissWithData([mediaFile]);
             }
         } catch (err) {
-            CoreDomUtils.showErrorModal(err);
+            CoreAlerts.showError(err);
         } finally {
             loadingModal.dismiss();
         }

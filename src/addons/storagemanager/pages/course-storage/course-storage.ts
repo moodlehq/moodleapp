@@ -28,14 +28,15 @@ import {
     CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourses } from '@features/courses/services/courses';
 import { AccordionGroupChangeEventDetail } from '@ionic/angular';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreErrorHelper } from '@services/error-helper';
 
 /**
  * Page that displays the amount of file storage used by each activity on the course, and allows
@@ -96,7 +97,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         try {
             this.courseId = CoreNavigator.getRequiredRouteParam('courseId');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             CoreNavigator.back();
 
@@ -145,7 +146,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                 this.initModulePrefetch(),
             ]);
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
 
         this.changeDetectorRef.markForCheck();
@@ -206,7 +207,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             // There is a download promise. Show an error if it fails.
             promise.catch((error) => {
                 if (!this.isDestroyed) {
-                    CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+                    CoreAlerts.showError(error, { default: Translate.instant('core.course.errordownloadingcourse') });
                 }
             });
         } else {
@@ -380,12 +381,9 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         event.preventDefault();
 
         try {
-            await CoreDomUtils.showDeleteConfirm(
-                'addon.storagemanager.confirmdeletedatafrom',
-                { name: this.title },
-            );
+            await CoreAlerts.confirmDelete(Translate.instant('addon.storagemanager.confirmdeletedatafrom', { name: this.title }));
         } catch (error) {
-            if (!CoreDomUtils.isCanceledError(error)) {
+            if (!CoreErrorHelper.isCanceledError(error)) {
                 throw error;
             }
 
@@ -411,12 +409,9 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         event.preventDefault();
 
         try {
-            await CoreDomUtils.showDeleteConfirm(
-                'addon.storagemanager.confirmdeletedatafrom',
-                { name: section.name },
-            );
+            await CoreAlerts.confirmDelete(Translate.instant('addon.storagemanager.confirmdeletedatafrom', { name: section.name }));
         } catch (error) {
-            if (!CoreDomUtils.isCanceledError(error)) {
+            if (!CoreErrorHelper.isCanceledError(error)) {
                 throw error;
             }
 
@@ -446,12 +441,9 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         }
 
         try {
-            await CoreDomUtils.showDeleteConfirm(
-                'addon.storagemanager.confirmdeletedatafrom',
-                { name: module.name },
-            );
+            await CoreAlerts.confirmDelete(Translate.instant('addon.storagemanager.confirmdeletedatafrom', { name: module.name }));
         } catch (error) {
-            if (!CoreDomUtils.isCanceledError(error)) {
+            if (!CoreErrorHelper.isCanceledError(error)) {
                 throw error;
             }
 
@@ -486,7 +478,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         try {
             await Promise.all(promises);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, Translate.instant('core.errordeletefile'));
+            CoreAlerts.showError(error, { default: Translate.instant('core.errordeletefile') });
         } finally {
             modal.dismiss();
 
@@ -523,7 +515,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
             } catch (error) {
                 if (!this.isDestroyed) {
-                    CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingsection', true);
+                    CoreAlerts.showError(error, { default: Translate.instant('core.course.errordownloadingsection') });
                 }
             } finally {
                 await this.updateSizes([section]);
@@ -531,7 +523,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         } catch (error) {
             // User cancelled or there was an error calculating the size.
             if (!this.isDestroyed && error) {
-                CoreDomUtils.showErrorModal(error);
+                CoreAlerts.showError(error);
                 this.changeDetectorRef.markForCheck();
 
                 return;
@@ -567,7 +559,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             await CoreCourseHelper.prefetchModule(module.prefetchHandler, module, size, module.course, refresh);
         } catch (error) {
             if (!this.isDestroyed) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
             }
         } finally {
             module.spinner = false;
@@ -655,7 +647,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         const course = await CoreCourseHelper.getCourseInfo(this.courseId);
         if (!course) {
-            CoreDomUtils.showErrorModal('core.course.errordownloadingcourse', true);
+            CoreAlerts.showError(Translate.instant('core.course.errordownloadingcourse'));
 
             return;
         }
@@ -677,7 +669,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                 return;
             }
 
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errordownloadingcourse') });
         }
     }
 

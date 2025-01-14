@@ -18,11 +18,11 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModGlossary } from '../glossary';
 import { ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler to treat links to glossary entries.
@@ -67,7 +67,7 @@ export class AddonModGlossaryEntryLinkHandlerService extends CoreContentLinksHan
                         },
                     );
                 } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentry', true);
+                    CoreAlerts.showError(error, { default: Translate.instant('addon.mod_glossary.errorloadingentry') });
                 } finally {
                     modal.dismiss();
                 }

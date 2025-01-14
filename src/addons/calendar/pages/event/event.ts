@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AlertOptions } from '@ionic/core';
 import {
     AddonCalendar,
     AddonCalendarEventToDisplay,
@@ -23,7 +22,6 @@ import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarSync, AddonCalendarSyncEvents } from '../../services/calendar-sync';
 import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreSites } from '@services/sites';
 import { CoreCourse } from '@features/course/services/course';
@@ -41,9 +39,9 @@ import { CoreReminders } from '@features/reminders/services/reminders';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CorePlatform } from '@services/platform';
 import { CoreConfig } from '@services/config';
-import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CorePopovers } from '@services/popovers';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
+import { CorePopovers } from '@services/overlays/popovers';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreUrl } from '@singletons/url';
 import {
     ADDON_CALENDAR_AUTO_SYNCED,
@@ -55,6 +53,7 @@ import {
     ADDON_CALENDAR_UNDELETED_EVENT_EVENT,
 } from '@addons/calendar/constants';
 import { REMINDERS_DEFAULT_NOTIFICATION_TIME_CHANGED } from '@features/reminders/constants';
+import { CoreAlerts, CoreAlertsConfirmOptions } from '@services/overlays/alerts';
 
 /**
  * Page that displays a single calendar event.
@@ -191,7 +190,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         try {
             this.eventId = CoreNavigator.getRequiredRouteNumberParam('id');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             CoreNavigator.back();
 
@@ -243,7 +242,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
                 if (this.eventId < 0) {
                     // It's an offline event, but it wasn't found. Shouldn't happen.
-                    CoreDomUtils.showErrorModal('Event not found.');
+                    CoreAlerts.showError('Event not found.');
                     CoreNavigator.back();
 
                     return;
@@ -318,7 +317,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
             await Promise.all(promises);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevent', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.calendar.errorloadevent') });
         }
 
         this.eventLoaded = true;
@@ -357,7 +356,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         try {
             const result = await AddonCalendarSync.syncEvents();
             if (result.warnings && result.warnings.length) {
-                CoreDomUtils.showAlert(undefined, result.warnings[0]);
+                CoreAlerts.show({ message: result.warnings[0] });
             }
 
             if (result.deleted && result.deleted.indexOf(this.eventId) != -1) {
@@ -380,7 +379,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             }
         } catch (error) {
             if (showErrors) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.errorsync') });
             }
         }
 
@@ -427,7 +426,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         e.stopPropagation();
 
         try {
-            await CoreDomUtils.showDeleteConfirm();
+            await CoreAlerts.confirmDelete(Translate.instant('core.areyousure'));
 
             const modal = await CoreLoadings.show('core.deleting', true);
 
@@ -435,7 +434,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                 await CoreReminders.removeReminder(id);
                 await this.loadReminders();
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'Error deleting reminder');
+                CoreAlerts.showError(error, { default: 'Error deleting reminder' });
             } finally {
                 modal.dismiss();
             }
@@ -500,9 +499,10 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             return;
         }
 
-        const title = Translate.instant('addon.calendar.deleteevent');
-        const options: AlertOptions = {};
         let message: string;
+        const options: CoreAlertsConfirmOptions = {
+            header: Translate.instant('addon.calendar.deleteevent'),
+        };
 
         if (this.event.eventcount > 1) {
             // It's a repeated event.
@@ -534,7 +534,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
         let deleteAll = false;
         try {
-            deleteAll = await CoreDomUtils.showConfirm(message, title, undefined, undefined, options);
+            deleteAll = await CoreAlerts.confirm(message, options);
         } catch {
             // User canceled.
             return;
@@ -583,7 +583,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
                 this.event.deleted = true;
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error deleting event.');
+            CoreAlerts.showError(error, { default: 'Error deleting event.' });
         }
 
         modal.dismiss();
@@ -611,7 +611,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             this.event.deleted = false;
 
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error undeleting event.');
+            CoreAlerts.showError(error, { default: 'Error undeleting event.' });
         }
 
         modal.dismiss();

@@ -19,10 +19,10 @@ import { FormBuilder } from '@angular/forms';
 import { SafeUrl } from '@angular/platform-browser';
 import { CoreAnyError } from '@classes/errors/error';
 import { CoreGeolocation, CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
-import { CoreLoadings } from '@services/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePlatform } from '@services/platform';
-import { CoreDomUtils } from '@services/utils/dom';
-import { DomSanitizer } from '@singletons';
+import { DomSanitizer, Translate } from '@singletons';
 
 /**
  * Component to render data latlong field.
@@ -140,12 +140,12 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginBa
      */
     protected showLocationErrorModal(error: CoreAnyError | CoreGeolocationError): void {
         if (error instanceof CoreGeolocationError) {
-            CoreDomUtils.showErrorModal(this.getGeolocationErrorMessage(error), true);
+            CoreAlerts.showError(Translate.instant(this.getGeolocationErrorMessage(error)));
 
             return;
         }
 
-        CoreDomUtils.showErrorModalDefault(error, 'Error getting location');
+        CoreAlerts.showError(error, { default: 'Error getting location' });
     }
 
     /**

@@ -22,12 +22,12 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { AddonModImscp, AddonModImscpImscp, AddonModImscpTocItem } from '../../services/imscp';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays a IMSCP content.
@@ -61,8 +61,7 @@ export class AddonModImscpViewPage implements OnInit {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.initialItemHref = CoreNavigator.getRouteParam('initialHref');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -118,7 +117,7 @@ export class AddonModImscpViewPage implements OnInit {
             try {
                 await this.loadItemHref(this.currentHref);
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'addon.mod_imscp.deploymenterror', true);
+                CoreAlerts.showError(error, { default: Translate.instant('addon.mod_imscp.deploymenterror') });
 
                 return;
             }
@@ -130,7 +129,7 @@ export class AddonModImscpViewPage implements OnInit {
                 this.warning = '';
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             this.loaded = true;
         }

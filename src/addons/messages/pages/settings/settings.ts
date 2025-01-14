@@ -23,13 +23,13 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreConstants } from '@/core/constants';
 import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons/notifications/services/notifications';
 import { CorePlatform } from '@services/platform';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { ADDON_MESSAGES_NOTIFICATION_PREFERENCES_KEY, AddonMessagesMessagePrivacy } from '@addons/messages/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the messages settings page.
@@ -118,7 +118,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
                 return;
             }
 
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         } finally {
             this.preferencesLoaded = true;
         }
@@ -171,7 +171,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
             this.previousContactableValue = this.contactablePrivacy;
         } catch (message) {
             // Show error and revert change.
-            CoreDomUtils.showErrorModal(message);
+            CoreAlerts.showError(message);
             this.contactablePrivacy = this.previousContactableValue;
         } finally {
             modal.dismiss();
@@ -214,7 +214,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
             this.updatePreferencesAfterDelay();
         } catch (error) {
             // Show error and revert change.
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             processor.enabled = !processor.enabled;
         } finally {
             notification.updating = false;
@@ -249,7 +249,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
             this.updatePreferencesAfterDelay();
         } catch (error) {
             // Show error and revert change.
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             processorState.checked = !processorState.checked;
         } finally {
             notification['updating'+state] = false;

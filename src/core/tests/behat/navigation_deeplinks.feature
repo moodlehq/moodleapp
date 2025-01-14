@@ -155,7 +155,8 @@ Feature: It navigates properly using deep links.
     Then I should find "This link belongs to another site" in the app
 
     When I press "OK" in the app
-    Then I should find "Are you sure you want to leave this page?" in the app
+    Then I should find "Leave page?" in the app
+    And I should find "Unsaved changes will be lost." in the app
 
     When I press "Cancel" in the app
     Then I should not find "Forum message" in the app
@@ -164,7 +165,7 @@ Feature: It navigates properly using deep links.
       | discussion  | user     |
       | Forum topic | student2 |
     And I press "OK" in the app
-    And I press "OK" in the app
+    And I press "Leave" in the app
     And I wait the app to restart
     Then I should find "Forum topic" in the app
     And I should find "Forum message" in the app

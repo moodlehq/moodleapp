@@ -18,10 +18,10 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Content links handler for glossary new entry.
@@ -56,7 +56,7 @@ export class AddonModGlossaryEditLinkHandlerService extends CoreContentLinksHand
                         { siteId },
                     );
                 } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingglossary', true);
+                    CoreAlerts.showError(error, { default: Translate.instant('addon.mod_glossary.errorloadingglossary') });
                 } finally {
                     // Just in case. In fact we need to dismiss the modal before showing a toast or error message.
                     modal.dismiss();

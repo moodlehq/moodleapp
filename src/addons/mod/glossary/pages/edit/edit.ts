@@ -23,7 +23,6 @@ import { CoreFileEntry } from '@services/file-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreWSError } from '@classes/errors/wserror';
 import { Translate } from '@singletons';
@@ -40,7 +39,8 @@ import { AddonModGlossaryHelper } from '../../services/glossary-helper';
 import { AddonModGlossaryOffline } from '../../services/glossary-offline';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_GLOSSARY_COMPONENT } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the edit form.
@@ -108,7 +108,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
                 this.handler = new AddonModGlossaryNewFormHandler(this);
             }
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -142,7 +142,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
                 url: '/mod/glossary/edit.php' + (this.entry ? `?cmid=${this.cmId}&id=${this.entry.id}` : ''),
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingglossary', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_glossary.errorloadingglossary') });
             CoreNavigator.back();
         }
     }
@@ -187,7 +187,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
         if (this.hasDataChanged()) {
             // Show confirmation if some data has been modified.
-            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
         // Delete the local files from the tmp folder.
@@ -203,7 +203,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
      */
     async save(): Promise<void> {
         if (!this.data.concept || !this.data.definition) {
-            CoreDomUtils.showErrorModal('addon.mod_glossary.fillfields', true);
+            CoreAlerts.showError(Translate.instant('addon.mod_glossary.fillfields'));
 
             return;
         }
@@ -223,7 +223,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
             CoreNavigator.back();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.cannoteditentry', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_glossary.cannoteditentry') });
         } finally {
             modal.dismiss();
         }

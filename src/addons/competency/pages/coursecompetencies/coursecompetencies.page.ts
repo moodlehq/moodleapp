@@ -19,7 +19,6 @@ import {
 } from '@addons/competency/services/competency';
 import { CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { ContextLevel } from '@/core/constants';
 import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/constants';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
@@ -29,6 +28,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreSites } from '@services/sites';
 import { Translate } from '@singletons';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page that displays the list of competencies of a course.
@@ -59,7 +59,7 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit, OnDestroy 
 
             this.competencies = new CoreListItemsManager(source, AddonCompetencyCourseCompetenciesPage);
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -121,7 +121,7 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit, OnDestroy 
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting course competencies data.');
+            CoreAlerts.showError(error, { default: 'Error getting course competencies data.' });
         }
     }
 

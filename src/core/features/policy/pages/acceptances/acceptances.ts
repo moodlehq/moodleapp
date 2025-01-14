@@ -15,7 +15,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
@@ -26,8 +25,9 @@ import { Subscription } from 'rxjs';
 import { CORE_DATAPRIVACY_FEATURE_NAME, CORE_DATAPRIVACY_PAGE_NAME } from '@features/dataprivacy/constants';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDataPrivacy } from '@features/dataprivacy/services/dataprivacy';
-import { CoreModals } from '@services/modals';
-import { CoreLoadings } from '@services/loadings';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page to view user acceptances.
@@ -132,7 +132,7 @@ export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting policies.');
+            CoreAlerts.showError(error, { default: 'Error getting policies.' });
         }
     }
 
@@ -220,7 +220,7 @@ export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
 
             await this.updatePolicyAcceptance(policy, accept);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error changing policy status.');
+            CoreAlerts.showError(error, { default: 'Error changing policy status.' });
         } finally {
             modal.dismiss();
         }
