@@ -59,7 +59,8 @@
         </ion-item>
 
         <!-- Button to download the package. -->
-        <ion-button *ngIf="!downloading && needsDownload" class="ion-text-wrap ion-margin" expand="block" (click)="downloadAndPlay($event)">
+        <ion-button *ngIf="!downloading && needsDownload" class="ion-text-wrap ion-margin" expand="block"
+            (click)="downloadAndPlayManually($event)">
             {{ 'addon.mod_h5pactivity.downloadh5pfile' | translate }}
         </ion-button>
 
