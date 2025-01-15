@@ -62,7 +62,7 @@ const STATUSES = {
 };
 const STATUS_TO_ICON = {
     asset: '', // Empty to show an space.
-    browsed: 'fas-book',
+    browsed: 'moodle-browsed',
     completed: 'fas-check',
     failed: 'fas-xmark',
     incomplete: 'fas-pen-to-square',
