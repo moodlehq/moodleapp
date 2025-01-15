@@ -114,22 +114,22 @@ export class MediaElementController extends ElementController {
             return;
         }
 
+        // Start listening to events because the player could be created while we're searching for it, causing a race condition.
+        this.jsPlayerListener = CoreEvents.on(VIDEO_JS_PLAYER_CREATED, ({ element, player }) => {
+            if (element !== media) {
+                return;
+            }
+
+            this.jsPlayerListener?.off();
+            this.jsPlayer.resolve(player);
+        });
+
         const player = await this.searchJSPlayer();
 
-        if (!player) {
-            this.jsPlayerListener = CoreEvents.on(VIDEO_JS_PLAYER_CREATED, ({ element, player }) => {
-                if (element !== media) {
-                    return;
-                }
-
-                this.jsPlayerListener?.off();
-                this.jsPlayer.resolve(player);
-            });
-
-            return;
+        if (player && !this.jsPlayer.isSettled()) {
+            this.jsPlayerListener?.off();
+            this.jsPlayer.resolve(player);
         }
-
-        this.jsPlayer.resolve(player);
     }
 
     /**

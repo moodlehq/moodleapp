@@ -27,6 +27,7 @@ import mimeToExt from '@/assets/mimetoext.json';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreUrl } from '@singletons/url';
 import { CoreSites } from '@services/sites';
+import { CoreUtils } from '@singletons/utils';
 
 interface MimeTypeInfo {
     type: string;
@@ -193,8 +194,10 @@ export class CoreMimetypeUtilsProvider {
                     return `<img src="${path}">`;
                 case 'audio':
                 case 'video':
+                    // Add videoJS class and ID because the media could use the VideoJS player.
                     return [
-                        `<${embedType} controls title="${filename}" src="${path}" controlsList="nodownload">`,
+                        `<${embedType} controls title="${filename}" src="${path}" controlsList="nodownload" class="video-js" ` +
+                            `id="id_videojs_moodleapp_${CoreUtils.getUniqueId('CoreMimetypeUtils-embedded-media')}">`,
                         `<source src="${path}" type="${mimeType}">`,
                         `</${embedType}>`,
                     ].join('');
