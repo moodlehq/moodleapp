@@ -106,5 +106,7 @@
     .questioncorrectnessicon,
     .fa.icon.questioncorrectnessicon {
         font-size: var(--mdl-typography-icon-fontSize-md);
+        vertical-align: middle;
+        margin: 4px;
     }
 }

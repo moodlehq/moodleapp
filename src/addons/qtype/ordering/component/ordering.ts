@@ -76,7 +76,7 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
             const itemContentEl = element.querySelector<HTMLElement>('[data-itemcontent]');
             itemContentEl?.querySelector(
                 '.icon.fa-check, .icon.fa-remove, .icon.fa-check-square, .icon.fa-circle-check, .icon.fa-xmark, ' +
-                '.icon.fa-circle-xmark, .icon.fa-square-check, .icon.circle-half-stroke',
+                '.icon.fa-circle-xmark, .icon.fa-square-check, .icon.circle-half-stroke, img.icon[src*="grade_partiallycorrect"]',
             )?.remove();
 
             return {

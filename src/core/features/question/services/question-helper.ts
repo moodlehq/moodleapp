@@ -810,6 +810,7 @@ export class CoreQuestionHelperProvider {
     getCorrectIcon(): IconData {
         if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.5')) {
             return {
+                font: 'font-awesome',
                 name: 'circle-check',
                 prefix: 'far',
                 library: 'regular',
@@ -817,6 +818,7 @@ export class CoreQuestionHelperProvider {
             };
         } else {
             return {
+                font: 'font-awesome',
                 name: 'check',
                 prefix: 'fas',
                 library: 'solid',
@@ -833,6 +835,7 @@ export class CoreQuestionHelperProvider {
     getIncorrectIcon(): IconData {
         if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.5')) {
             return {
+                font: 'font-awesome',
                 name: 'circle-xmark',
                 prefix: 'far',
                 library: 'regular',
@@ -840,6 +843,7 @@ export class CoreQuestionHelperProvider {
             };
         } else {
             return {
+                font: 'font-awesome',
                 name: 'xmark',
                 prefix: 'fas',
                 library: 'solid',
@@ -855,8 +859,17 @@ export class CoreQuestionHelperProvider {
      * @returns Icon data.
      */
     getPartiallyCorrectIcon(): IconData {
-        if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.5')) {
+        if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('5.0')) {
             return {
+                font: 'moodle',
+                name: 'grade-partiallycorrect',
+                prefix: 'moodle',
+                library: 'moodle',
+                fullName: 'moodle-grade-partiallycorrect',
+            };
+        } else if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.5')) {
+            return {
+                font: 'font-awesome',
                 name: 'circle-half-stroke',
                 prefix: 'fas',
                 library: 'solid',
@@ -864,6 +877,7 @@ export class CoreQuestionHelperProvider {
             };
         } else {
             return {
+                font: 'font-awesome',
                 name: 'square-check',
                 prefix: 'fas',
                 library: 'solid',
@@ -887,12 +901,15 @@ export class CoreQuestionHelperProvider {
             const incorrectIcon = this.getIncorrectIcon();
             const partiallyCorrectIcon = this.getPartiallyCorrectIcon();
             if ('src' in icon) {
-                if ((icon as HTMLImageElement).src.indexOf('correct') >= 0) {
-                    iconData = correctIcon;
-                    color = CoreIonicColorNames.SUCCESS;
+                if ((icon as HTMLImageElement).src.indexOf('grade_partiallycorrect') >= 0) {
+                    iconData = partiallyCorrectIcon;
+                    color = CoreIonicColorNames.WARNING;
                 } else if ((icon as HTMLImageElement).src.indexOf('incorrect') >= 0 ) {
                     iconData = incorrectIcon;
                     color = CoreIonicColorNames.DANGER;
+                } else if((icon as HTMLImageElement).src.indexOf('correct') >= 0) {
+                    iconData = correctIcon;
+                    color = CoreIonicColorNames.SUCCESS;
                 }
             } else {
                 if (icon.classList.contains(`fa-${partiallyCorrectIcon.name}`)) {
@@ -915,7 +932,7 @@ export class CoreQuestionHelperProvider {
             const newIcon: HTMLIonIconElement = document.createElement('ion-icon');
 
             newIcon.setAttribute('name', iconData.fullName);
-            newIcon.setAttribute('src', CoreIcons.getIconSrc('font-awesome', iconData.library, iconData.name));
+            newIcon.setAttribute('src', CoreIcons.getIconSrc(iconData.font, iconData.library, iconData.name));
             newIcon.className = `core-correct-icon ion-color ion-color-${color} questioncorrectnessicon`;
             newIcon.title = icon.title;
             newIcon.setAttribute('aria-label', icon.title);
@@ -1051,6 +1068,7 @@ export type CoreQuestionBehaviourCertaintyOption = CoreQuestionBehaviourButton &
  */
 type IconData = {
     name: string;
+    font: string;
     prefix: string;
     library: string;
     fullName: string;
