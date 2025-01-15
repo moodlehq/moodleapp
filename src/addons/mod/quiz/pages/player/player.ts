@@ -269,17 +269,17 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
-        if (page != -1 && (this.attempt.state === AddonModQuizAttemptStates.OVERDUE || this.attempt.finishedOffline)) {
+        if (page !== -1 && (this.attempt.state === AddonModQuizAttemptStates.OVERDUE || this.attempt.finishedOffline)) {
             // We can't load a page if overdue or the local attempt is finished.
             return;
-        } else if (page == this.attempt.currentpage && !this.showSummary && slot !== undefined) {
+        } else if (page === this.attempt.currentpage && !this.showSummary && slot !== undefined) {
             // Navigating to a question in the current page.
             await this.scrollToQuestion(slot);
 
             return;
         } else if (
-            (page == this.attempt.currentpage && !this.showSummary) ||
-            (fromModal && this.isSequential && page != this.attempt.currentpage && page !== this.nextPage)
+            (page === this.attempt.currentpage && !this.showSummary) ||
+            (fromModal && this.isSequential && page !== this.attempt.currentpage && page !== this.nextPage)
         ) {
             // If the user is navigating to the current page we do nothing.
             // Also, in sequential quizzes we can only navigate to the current page.
@@ -551,7 +551,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * Load a page questions.
      *
      * @param page The page to load.
-     * @returns Promise resolved when done.
      */
     protected async loadPage(page: number): Promise<void> {
         if (!this.quiz || !this.attempt) {

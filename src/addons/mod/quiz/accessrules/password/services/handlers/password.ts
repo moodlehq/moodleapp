@@ -32,14 +32,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
     ruleName = 'quizaccess_password';
 
     /**
-     * Add preflight data that doesn't require user interaction. The data should be added to the preflightData param.
-     *
-     * @param quiz The quiz the rule belongs to.
-     * @param preflightData Object where to add the preflight data.
-     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param prefetch Whether the user is prefetching the quiz.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done if async, void if it's synchronous.
+     * @inheritdoc
      */
     async getFixedPreflightData(
         quiz: AddonModQuizQuizWSData,
@@ -76,33 +69,21 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
     }
 
     /**
-     * Return the Component to use to display the access rule preflight.
-     * Implement this if your access rule requires a preflight check with user interaction.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @returns The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
     getPreflightComponent(): Type<unknown> | Promise<Type<unknown>> {
         return AddonModQuizAccessPasswordComponent;
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @returns True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Whether the rule requires a preflight check when prefetch/start/continue an attempt.
-     *
-     * @param quiz The quiz the rule belongs to.
-     * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
-     * @param prefetch Whether the user is prefetching the quiz.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Whether the rule requires a preflight check.
+     * @inheritdoc
      */
     async isPreflightCheckRequired(
         quiz: AddonModQuizQuizWSData,
@@ -117,14 +98,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
     }
 
     /**
-     * Function called when the preflight check has passed. This is a chance to record that fact in some way.
-     *
-     * @param quiz The quiz the rule belongs to.
-     * @param attempt The attempt started/continued.
-     * @param preflightData Preflight data gathered.
-     * @param prefetch Whether the user is prefetching the quiz.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done if async, void if it's synchronous.
+     * @inheritdoc
      */
     async notifyPreflightCheckPassed(
         quiz: AddonModQuizQuizWSData,
@@ -135,21 +109,14 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
     ): Promise<void> {
         // The password is right, store it to use it automatically in following executions.
         if (preflightData.quizpassword !== undefined) {
-            return this.storePassword(quiz.id, preflightData.quizpassword, siteId);
+            await this.storePassword(quiz.id, preflightData.quizpassword, siteId);
         }
     }
 
     /**
-     * Function called when the preflight check fails. This is a chance to record that fact in some way.
-     *
-     * @param quiz The quiz the rule belongs to.
-     * @param attempt The attempt started/continued.
-     * @param preflightData Preflight data gathered.
-     * @param prefetch Whether the user is prefetching the quiz.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done if async, void if it's synchronous.
+     * @inheritdoc
      */
-    notifyPreflightCheckFailed?(
+    async notifyPreflightCheckFailed?(
         quiz: AddonModQuizQuizWSData,
         attempt: AddonModQuizAttemptWSData | undefined,
         preflightData: Record<string, string>,
@@ -157,7 +124,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
         siteId?: string,
     ): Promise<void> {
         // The password is wrong, remove it from DB if it's there.
-        return this.removePassword(quiz.id, siteId);
+        await this.removePassword(quiz.id, siteId);
     }
 
     /**
@@ -165,7 +132,6 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
      */
     protected async removePassword(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -179,7 +145,6 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
      * @param quizId Quiz ID.
      * @param password Password.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
      */
     protected async storePassword(quizId: number, password: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

@@ -54,3 +54,11 @@ export const enum AddonModQuizDisplayOptionsAttemptStates {
     LATER_WHILE_OPEN = 0x00100,
     AFTER_CLOSE = 0x00010,
 }
+
+/**
+ * Possible navigation methods for a quiz.
+ */
+export const enum AddonModQuizNavMethods {
+    FREE = 'free',
+    SEQ = 'sequential',
+}
