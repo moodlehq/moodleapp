@@ -35,7 +35,7 @@
     </ng-container>
 
     <div *ngIf="mode === 'embedded'" class="ion-padding">
-        <core-format-text [text]="contentText" [filter]="false" />
+        <core-format-text [text]="contentText" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
     </div>
 
     <ng-container *ngIf="mode === 'external'">
