@@ -226,8 +226,8 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             this.deployedFile?.filesize &&
             CoreFilepool.shouldDownload(this.deployedFile.filesize)
         ) {
-            // Package is small, download it automatically. Don't block this function for this.
-            this.downloadAutomatically();
+            // Package is small, download and play it automatically. Don't block this function for this.
+            this.downloadAndPlay();
         }
     }
 
@@ -388,9 +388,8 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      * Download the file and play it.
      *
      * @param event Click event.
-     * @returns Promise resolved when done.
      */
-    async downloadAndPlay(event?: MouseEvent): Promise<void> {
+    async downloadAndPlayManually(event?: MouseEvent): Promise<void> {
         event?.preventDefault();
         event?.stopPropagation();
 
@@ -407,43 +406,17 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         try {
             // Confirm the download if needed.
             await CoreAlerts.confirmDownloadSize({ size: this.deployedFile.filesize || 0, total: true });
-
-            await this.downloadDeployedFile();
-
-            if (!this.isDestroyed) {
-                this.play();
-            }
-
         } catch (error) {
-            if (CoreErrorHelper.isCanceledError(error) || this.isDestroyed) {
-                // User cancelled or view destroyed, stop.
-                return;
-            }
-
-            if (error instanceof CoreH5PMissingDependenciesError) {
-                // Cannot be played offline, use online player.
-                this.hasMissingDependencies = true;
-                this.fileUrl = undefined;
-                this.play();
-
-                CoreToasts.show({
-                    message: Translate.instant('core.course.activityrequiresconnection'),
-                    duration: ToastDuration.LONG,
-                });
-
-                return;
-            }
-
-            CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
+            return;
         }
+
+        await this.downloadAndPlay();
     }
 
     /**
-     * Download the file automatically.
-     *
-     * @returns Promise resolved when done.
+     * Download the file and play it.
      */
-    protected async downloadAutomatically(): Promise<void> {
+    protected async downloadAndPlay(): Promise<void> {
         try {
             await this.downloadDeployedFile();
 
@@ -451,7 +424,26 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
                 this.play();
             }
         } catch (error) {
-            CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
+            if (CoreErrorHelper.isCanceledError(error) || this.isDestroyed) {
+                // User cancelled or view destroyed, stop.
+                return;
+            }
+
+            if (CoreErrorHelper.isNetworkError(error)) {
+                CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
+
+                return;
+            }
+
+            // Cannot download the file, use online player.
+            this.hasMissingDependencies = error instanceof CoreH5PMissingDependenciesError;
+            this.fileUrl = undefined;
+            this.play();
+
+            CoreToasts.show({
+                message: Translate.instant('core.course.activityrequiresconnection'),
+                duration: ToastDuration.LONG,
+            });
         }
     }
 
