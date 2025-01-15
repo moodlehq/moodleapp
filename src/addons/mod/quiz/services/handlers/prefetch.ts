@@ -248,23 +248,14 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @returns A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Prefetch a module.
-     *
-     * @param module Module.
-     * @param courseId Course ID the module belongs to.
-     * @param single True if we're downloading a single module, false if we're downloading a whole section.
-     * @param dirPath Path of the directory where to store all the content files.
-     * @param canStart If true, start a new attempt if needed.
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     async prefetch(
         module: SyncedModule,
@@ -292,7 +283,6 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
      * @param canStart If true, start a new attempt if needed.
      * @param siteId Site ID.
-     * @returns Promise resolved when done.
      */
     protected async prefetchQuiz(
         module: CoreCourseAnyModuleData,
@@ -474,7 +464,6 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param accessInfo Quiz access info.
      * @param attempt Attempt.
      * @param modOptions Other options.
-     * @returns Promise resolved when done.
      */
     protected async prefetchAttemptReview(
         quiz: AddonModQuizQuizWSData,
@@ -511,7 +500,6 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param quiz Quiz.
      * @param attempt Attempt.
      * @param modOptions Other options.
-     * @returns Promise resolved when done.
      */
     protected async prefetchAttemptReviewFiles(
         quiz: AddonModQuizQuizWSData,
@@ -545,7 +533,6 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param quiz Quiz.
      * @param modOptions Other options.
      * @param siteId Site ID.
-     * @returns Promise resolved when done.
      */
     protected async prefetchGradeAndFeedback(
         quiz: AddonModQuizQuizWSData,
@@ -570,7 +557,6 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param quiz Quiz.
      * @param askPreflight Whether it should ask for preflight data if needed.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
      */
     async prefetchQuizAndLastAttempt(quiz: AddonModQuizQuizWSData, askPreflight?: boolean, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -617,7 +603,6 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      *
      * @param quiz Quiz.
      * @param options Other options.
-     * @returns Promise resolved when done.
      */
     async setStatusAfterPrefetch(
         quiz: AddonModQuizQuizWSData,
@@ -654,7 +639,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param module Module.
      * @param courseId Course ID the module belongs to
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
+     * @returns Sync results.
      */
     async sync(module: SyncedModule, courseId: number, siteId?: string): Promise<AddonModQuizSyncResult | undefined> {
         const quiz = await AddonModQuiz.getQuiz(courseId, module.id, { siteId });

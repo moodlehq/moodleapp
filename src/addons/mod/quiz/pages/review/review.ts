@@ -144,8 +144,6 @@ export class AddonModQuizReviewPage implements OnInit {
 
     /**
      * Convenience function to get the quiz data.
-     *
-     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         try {
@@ -171,7 +169,6 @@ export class AddonModQuizReviewPage implements OnInit {
      * Load a page questions.
      *
      * @param page The page to load.
-     * @returns Promise resolved when done.
      */
     protected async loadPage(page: number): Promise<void> {
         if (!this.quiz) {
@@ -200,8 +197,6 @@ export class AddonModQuizReviewPage implements OnInit {
 
     /**
      * Load data to navigate the questions using the navigation modal.
-     *
-     * @returns Promise resolved when done.
      */
     protected async loadNavigation(): Promise<void> {
         // Get all questions in single page to retrieve all the questions.
