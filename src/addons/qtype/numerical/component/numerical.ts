@@ -14,20 +14,20 @@
 
 import { Component, ElementRef } from '@angular/core';
 
-import { AddonModQuizCalculatedQuestion, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
+import { AddonModQuizNumericalQuestion, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 
 /**
- * Component to render a calculated question.
+ * Component to render a numerical question.
  */
 @Component({
-    selector: 'addon-qtype-calculated',
-    templateUrl: 'addon-qtype-calculated.html',
-    styleUrl: 'calculated.scss',
+    selector: 'numerical',
+    templateUrl: 'numerical.html',
+    styleUrl: 'numerical.scss',
 })
-export class AddonQtypeCalculatedComponent extends CoreQuestionBaseComponent<AddonModQuizCalculatedQuestion> {
+export class AddonQtypeNumericalComponent extends CoreQuestionBaseComponent<AddonModQuizNumericalQuestion> {
 
     constructor(elementRef: ElementRef) {
-        super('AddonQtypeCalculatedComponent', elementRef);
+        super('AddonQtypeNumericalComponent', elementRef);
     }
 
     /**
