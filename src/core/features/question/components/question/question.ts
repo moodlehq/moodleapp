@@ -26,6 +26,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreLogger } from '@singletons/logger';
+import { CoreObject } from '@singletons/object';
 
 /**
  * Component to render a question.
@@ -149,13 +150,15 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
         if (this.offlineEnabled && this.component && this.attemptId) {
             await CoreQuestionHelper.loadLocalAnswers(this.question, this.component, this.attemptId);
 
-            this.validationError = CoreQuestionDelegate.getValidationError(
-                this.question,
-                this.question.localAnswers || {},
-                this.validationError,
-                this.component,
-                this.attemptId,
-            );
+            if (this.question.localAnswers && !CoreObject.isEmpty(this.question.localAnswers)) {
+                this.validationError = CoreQuestionDelegate.getValidationError(
+                    this.question,
+                    this.question.localAnswers,
+                    this.validationError,
+                    this.component,
+                    this.attemptId,
+                );
+            }
         } else {
             this.question.localAnswers = {};
         }

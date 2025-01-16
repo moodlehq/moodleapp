@@ -17,7 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { CoreObject } from '@singletons/object';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 /**
  * Handler to support short answer question type.
@@ -73,6 +73,20 @@ export class AddonQtypeShortAnswerHandlerService implements CoreQuestionHandler 
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
         return CoreObject.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        if (this.isGradableResponse(question, answers)) {
+            return;
+        }
+
+        return Translate.instant('addon.qtype_shortanswer.pleaseenterananswer');
     }
 
 }

@@ -59,6 +59,8 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
 
     /**
      * Check if there's a validation error with the offline data.
+     * In situations where isGradableResponse returns false, this method
+     * should generate a description of what the problem is.
      *
      * @param question The question.
      * @param answers Object with the question offline answers (without prefix).

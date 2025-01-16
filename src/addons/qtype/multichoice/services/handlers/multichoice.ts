@@ -18,7 +18,8 @@ import { AddonModQuizMultichoiceQuestion } from '@features/question/classes/base
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { CoreObject } from '@singletons/object';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
+import { CoreUtils } from '@singletons/utils';
 
 /**
  * Handler to support multichoice question type.
@@ -50,9 +51,9 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
 
         // To know if it's single or multi answer we need to search for answers with "choice" in the name.
         for (const name in answers) {
-            if (name.indexOf('choice') != -1) {
+            if (name.indexOf('choice') !== -1) {
                 isSingle = false;
-                if (answers[name]) {
+                if (CoreUtils.isTrueOrOne(answers[name])) {
                     isMultiComplete = true;
                 }
             }
@@ -158,6 +159,22 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
                sending an empty string (default value) will mark the first option as selected. */
             delete answers[question.optionsName];
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: AddonModQuizMultichoiceQuestion,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        if (this.isGradableResponse(question, answers)) {
+            return;
+        }
+
+        return question.multi
+            ? Translate.instant('addon.qtype_multichoice.pleaseselectatleastoneanswer')
+            : Translate.instant('addon.qtype_multichoice.pleaseselectananswer');
     }
 
 }

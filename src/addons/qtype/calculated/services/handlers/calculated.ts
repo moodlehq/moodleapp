@@ -18,7 +18,7 @@ import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/ques
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreObject } from '@singletons/object';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 /**
  * Handler to support calculated question type.
@@ -88,7 +88,7 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
             return -1;
         }
 
-        if (question.parsedSettings.unitdisplay != AddonQtypeCalculatedHandlerService.UNITINPUT && unit) {
+        if (question.parsedSettings.unitdisplay !== AddonQtypeCalculatedHandlerService.UNITINPUT && unit) {
             // There should be no units or be outside of the input, not valid.
             return 0;
         }
@@ -98,8 +98,8 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
             return 0;
         }
 
-        if (question.parsedSettings.unitdisplay == AddonQtypeCalculatedHandlerService.UNITINPUT &&
-                question.parsedSettings.unitgradingtype == AddonQtypeCalculatedHandlerService.UNITGRADED &&
+        if (question.parsedSettings.unitdisplay === AddonQtypeCalculatedHandlerService.UNITINPUT &&
+                question.parsedSettings.unitgradingtype === AddonQtypeCalculatedHandlerService.UNITGRADED &&
                 !this.isValidValue(unit)) {
             // Unit not supplied inside the input and it's required.
             return 0;
@@ -167,7 +167,7 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
 
         // If a '.' is present or there are multiple ',' (i.e. 2,456,789) assume ',' is a thousands separator and strip it.
         // Else assume it is a decimal separator, and change it to '.'.
-        if (answer.indexOf('.') != -1 || answer.split(',').length - 1 > 1) {
+        if (answer.indexOf('.') !== -1 || answer.split(',').length - 1 > 1) {
             answer = answer.replace(',', '');
         } else {
             answer = answer.replace(',', '.');
@@ -184,7 +184,7 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
                 match = answer.match(new RegExp(regexString + '$'));
             }
         } else {
-            unitsLeft = question.parsedSettings.unitsleft == '1';
+            unitsLeft = question.parsedSettings.unitsleft === '1';
             regexString = unitsLeft ? regexString + '$' : '^' + regexString;
 
             match = answer.match(new RegExp(regexString));
@@ -199,6 +199,44 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
 
         // No need to calculate the multiplier.
         return { answer: Number(numberString), unit };
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        if (!this.isGradableResponse(question, answers)) {
+            return Translate.instant('addon.qtype_numerical.pleaseenterananswer');
+        }
+
+        const { answer, unit } = this.parseAnswer(question, <string> answers.answer);
+        if (answer === null) {
+            return Translate.instant('addon.qtype_numerica.invalidnumber');
+        }
+
+        if (!question.parsedSettings) {
+            if (this.hasSeparateUnitField(question)) {
+                return Translate.instant('addon.qtype_numerica.unitnotselected');
+            }
+
+            // We cannot know if the answer should contain units or not.
+            return;
+        }
+
+        if (question.parsedSettings.unitdisplay !== AddonQtypeCalculatedHandlerService.UNITINPUT && unit) {
+            return Translate.instant('addon.qtype_numerica.invalidnumbernounit');
+        }
+
+        if (question.parsedSettings.unitdisplay === AddonQtypeCalculatedHandlerService.UNITINPUT &&
+            question.parsedSettings.unitgradingtype === AddonQtypeCalculatedHandlerService.UNITGRADED &&
+            !this.isValidValue(unit)) {
+                return Translate.instant('addon.qtype_numerica.invalidnumber');
+        }
+
+        return;
     }
 
 }

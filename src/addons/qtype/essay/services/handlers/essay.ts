@@ -84,8 +84,8 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
     protected getAllowedOptions(question: CoreQuestionQuestionParsed): { text: boolean; attachments: boolean } {
         if (question.parsedSettings) {
             return {
-                text: question.parsedSettings.responseformat != 'noinline',
-                attachments: question.parsedSettings.attachments != '0',
+                text: question.parsedSettings.responseformat !== 'noinline',
+                attachments: question.parsedSettings.attachments !== '0',
             };
         }
 
@@ -137,6 +137,8 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
         onlineError: string | undefined,
+        component: string,
+        componentId: string | number,
     ): string | undefined {
         if (answers.answer === undefined) {
             // Not answered in offline.
@@ -145,6 +147,10 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
 
         if (!answers.answer) {
             // Not answered yet, no error.
+            return;
+        }
+
+        if (this.isCompleteResponse(question, answers, component, componentId)) {
             return;
         }
 
@@ -221,7 +227,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             return attachments && attachments.length >= Number(question.parsedSettings.attachmentsrequired) ? 1 : 0;
         }
 
-        return ((hasTextAnswer || question.parsedSettings.responserequired == '0') &&
+        return ((hasTextAnswer || question.parsedSettings.responserequired === '0') &&
                 (attachments && attachments.length >= Number(question.parsedSettings.attachmentsrequired))) ? 1 : 0;
     }
 
@@ -452,8 +458,8 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         if (question.isPlainText !== undefined) {
             isPlainText = question.isPlainText;
         } else if (question.parsedSettings) {
-            isPlainText = question.parsedSettings.responseformat == 'monospaced' ||
-                question.parsedSettings.responseformat == 'plain';
+            isPlainText = question.parsedSettings.responseformat === 'monospaced' ||
+                question.parsedSettings.responseformat === 'plain';
         } else {
             const questionEl = convertTextToHTMLElement(question.html);
             isPlainText = !!questionEl.querySelector('.qtype_essay_monospaced') || !!questionEl.querySelector('.qtype_essay_plain');
