@@ -147,7 +147,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
             return false;
         }
 
-        const question: AddonModQuizCalculatedQuestion = this.question;
+        const question: AddonModQuizNumericalQuestion = this.question;
         question.options = [];
 
         for (const i in radios) {
@@ -209,7 +209,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
             return false;
         }
 
-        const question: AddonModQuizCalculatedQuestion = this.question;
+        const question: AddonModQuizNumericalQuestion = this.question;
         const selectModel: AddonModQuizQuestionSelect = {
             id: select.id,
             name: select.name,
@@ -731,7 +731,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 /**
  * Any possible types of question.
  */
-export type AddonModQuizQuestion = AddonModQuizCalculatedQuestion | AddonModQuizEssayQuestion | AddonModQuizTextQuestion |
+export type AddonModQuizQuestion = AddonModQuizNumericalQuestion | AddonModQuizEssayQuestion | AddonModQuizTextQuestion |
 AddonModQuizMatchQuestion | AddonModQuizMultichoiceQuestion;
 
 /**
@@ -744,7 +744,7 @@ export type AddonModQuizQuestionBasicData = CoreQuestionQuestion & {
 /**
  * Data for calculated question.
  */
-export type AddonModQuizCalculatedQuestion = AddonModQuizTextQuestion & {
+export type AddonModQuizNumericalQuestion = AddonModQuizTextQuestion & {
     select?: AddonModQuizQuestionSelect; // Select data if units use a select.
     selectFirst?: boolean; // Whether the select is first or after the input.
     options?: AddonModQuizQuestionRadioOption[]; // Options if units use radio buttons.

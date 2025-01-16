@@ -19,6 +19,7 @@ import { makeSingleton } from '@singletons';
 
 /**
  * Handler to support drag-and-drop words into sentences question type.
+ * This question type is a variation of gapselect.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonQtypeDdwtosHandlerService extends AddonQtypeGapSelectHandlerService {
