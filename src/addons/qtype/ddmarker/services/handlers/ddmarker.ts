@@ -18,7 +18,7 @@ import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { CoreQuestionHelper, CoreQuestionQuestion } from '@features/question/services/question-helper';
 import { CoreWSFile } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 /**
  * Handler to support drag-and-drop markers question type.
@@ -58,7 +58,7 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
     ): number {
         // If 1 dragitem is set we assume the answer is complete (like Moodle does).
         for (const name in answers) {
-            if (answers[name]) {
+            if (name !== ':sequencecheck' && answers[name]) {
                 return 1;
             }
         }
@@ -102,7 +102,7 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
 
         CoreQuestionHelper.extractQuestionScripts(treatedQuestion, usageId);
 
-        if (treatedQuestion.amdArgs && typeof treatedQuestion.amdArgs[1] == 'string') {
+        if (treatedQuestion.amdArgs && typeof treatedQuestion.amdArgs[1] === 'string') {
             // Moodle 3.6+.
             return [{
                 fileurl: treatedQuestion.amdArgs[1],
@@ -110,6 +110,20 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
         }
 
         return [];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        if (this.isCompleteResponse(question, answers)) {
+            return;
+        }
+
+        return Translate.instant('addon.qtype_ddmarker.pleasedragatleastonemarker');
     }
 
 }

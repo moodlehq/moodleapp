@@ -16,7 +16,7 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 /**
  * Handler to support drag-and-drop onto image question type.
@@ -99,6 +99,20 @@ export class AddonQtypeDdImageOrTextHandlerService implements CoreQuestionHandle
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
         return CoreQuestion.compareAllAnswers(prevAnswers, newAnswers);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        if (this.isCompleteResponse(question, answers)) {
+            return;
+        }
+
+        return Translate.instant('addon.qtype_ddimageortext.pleasedraganimagetoeachdropregion');
     }
 
 }

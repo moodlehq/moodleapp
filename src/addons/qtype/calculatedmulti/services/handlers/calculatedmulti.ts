@@ -79,6 +79,16 @@ export class AddonQtypeCalculatedMultiHandlerService implements CoreQuestionHand
         return AddonQtypeMultichoiceHandler.isSameResponseSingle(prevAnswers, newAnswers);
     }
 
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        return AddonQtypeMultichoiceHandler.getValidationError(question, answers);
+    }
+
 }
 
 export const AddonQtypeCalculatedMultiHandler = makeSingleton(AddonQtypeCalculatedMultiHandlerService);

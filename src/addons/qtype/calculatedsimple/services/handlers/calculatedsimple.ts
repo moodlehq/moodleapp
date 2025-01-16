@@ -79,6 +79,16 @@ export class AddonQtypeCalculatedSimpleHandlerService implements CoreQuestionHan
         return AddonQtypeCalculatedHandler.isSameResponse(question, prevAnswers, newAnswers);
     }
 
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        return AddonQtypeCalculatedHandler.getValidationError(question, answers);
+    }
+
 }
 
 export const AddonQtypeCalculatedSimpleHandler = makeSingleton(AddonQtypeCalculatedSimpleHandlerService);

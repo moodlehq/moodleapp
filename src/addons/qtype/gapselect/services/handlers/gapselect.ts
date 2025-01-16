@@ -16,7 +16,7 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 /**
  * Handler to support gapselect question type.
@@ -82,7 +82,7 @@ export class AddonQtypeGapSelectHandlerService implements CoreQuestionHandler {
         // We should always get a value for each select so we can assume we receive all the possible answers.
         for (const name in answers) {
             const value = answers[name];
-            if (value) {
+            if (value && value !== '0') {
                 return 1;
             }
         }
@@ -99,6 +99,20 @@ export class AddonQtypeGapSelectHandlerService implements CoreQuestionHandler {
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
         return CoreQuestion.compareAllAnswers(prevAnswers, newAnswers);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        if (this.isCompleteResponse(question, answers)) {
+            return;
+        }
+
+        return Translate.instant('addon.qtype_gapselect.pleaseputananswerineachbox');
     }
 
 }
