@@ -3,7 +3,8 @@
 
 <!--The iframe needs to be outside of core-loading, otherwise the request is canceled while loading. -->
 <!-- Don't add the iframe until safeUrl is set, adding an iframe with null as src causes the iframe to load the whole app. -->
-<ng-container *ngIf="safeUrl && !launchExternalLabel">
+<div *ngIf="safeUrl && !launchExternalLabel"
+    [ngStyle]="{'min-width': 'min(' +iframeWidth+', 100%)', 'min-height': 'min(' +iframeHeight+', 100%)'}" class="core-iframe-container">
     <core-navbar-buttons slot="end" prepend *ngIf="initialized && showFullscreenOnToolbar && !loading">
         <ion-button fill="clear" (click)="toggleFullscreen()"
             [ariaLabel]="(fullscreen ? 'core.disablefullscreen' : 'core.fullscreen') | translate">
@@ -27,7 +28,7 @@
         class="core-button-as-link core-iframe-help">
         {{ 'core.iframehelp' | translate }}
     </ion-button>
-</ng-container>
+</div>
 
 <!-- Iframe content needs to be launched in an external app. -->
 <ion-button *ngIf="launchExternalLabel" expand="block" class="ion-text-wrap ion-margin" (click)="launchExternal()">
