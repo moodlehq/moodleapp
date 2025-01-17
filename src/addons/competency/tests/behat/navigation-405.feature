@@ -1,4 +1,4 @@
-@addon_competency @app @javascript @lms_from5.0
+@addon_competency @app @javascript @lms_upto4.5
 Feature: Test competency navigation
 
   Background:
@@ -41,9 +41,9 @@ Feature: Test competency navigation
       | competency | relatedcompetency |
       | desserts   | cakes             |
     And the following "core_competency > plans" exist:
-      | name     | description           | competencies            | user     | status |
-      | Cookery  | Cookery is important  | salads, desserts, cakes | student1 | active |
-      | Literacy | Literacy is important | reading, writing        | student1 | active |
+      | name     | description           | competencies            | user     |
+      | Cookery  | Cookery is important  | salads, desserts, cakes | student1 |
+      | Literacy | Literacy is important | reading, writing        | student1 |
     And the following "core_competency > course_competencies" exist:
       | course | competency |
       | C1     | salads     |
@@ -386,6 +386,7 @@ Feature: Test competency navigation
     Then I should find "Desserts are important" in the app
     But I should not find "Cakes" in the app
 
+  @danitest
   Scenario: Tablet navigation (teacher)
     Given I entered the course "Course 1" as "teacher1" in the app
     And I change viewport size to "1200x640" in the app
