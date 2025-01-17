@@ -216,16 +216,17 @@ export class AddonQtypeNumericalHandlerService implements CoreQuestionHandler {
             return Translate.instant('addon.qtype_numerical.invalidnumber');
         }
 
-        if (!question.parsedSettings) {
-            if (this.hasSeparateUnitField(question)) {
-                return Translate.instant('addon.qtype_numerical.unitnotselected');
-            }
+        if (this.hasSeparateUnitField(question) && !this.isValidValue(<string> answers.unit)) {
+            return Translate.instant('addon.qtype_numerical.unitnotselected');
+        }
 
-            // We cannot know if the answer should contain units or not.
+        if (!question.parsedSettings) {
+            // We cannot check anything else without settings.
             return;
         }
 
         if (question.parsedSettings.unitdisplay !== AddonQtypeNumericalHandlerService.UNITINPUT && unit) {
+            // There should be no units or be outside of the input, not valid.
             return Translate.instant('addon.qtype_numerical.invalidnumbernounit');
         }
 
