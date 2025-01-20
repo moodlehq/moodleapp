@@ -190,14 +190,14 @@ export class CoreOpener {
             }
         }
 
-        const site = CoreSites.getCurrentSite();
+        if (CoreSites.getCurrentSite()?.containsUrl(url)) {
+            url = CoreUrl.addParamsToUrl(url, { lang: await CoreLang.getCurrentLanguage(CoreLangFormat.LMS) }, {
+                checkAutoLoginUrl: options.originalUrl !== url,
+            });
+        }
+
         CoreAnalytics.logEvent({ type: CoreAnalyticsEventType.OPEN_LINK, link: originaUrl });
-        window.open(
-            site?.containsUrl(url)
-                ? CoreUrl.addParamsToUrl(url, { lang: await CoreLang.getCurrentLanguage(CoreLangFormat.LMS) })
-                : url,
-            '_system',
-        );
+        window.open(url, '_system');
     }
 
     /**
