@@ -60,6 +60,7 @@ import { toBoolean } from '../transforms/boolean';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreLang, CoreLangFormat } from '@services/lang';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -833,7 +834,13 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             // Remove iframe src, otherwise it can cause auto-login issues if there are several iframes with auto-login.
             iframe.src = '';
 
-            const finalUrl = await CoreIframeUtils.getAutoLoginUrlForIframe(iframe, src);
+            let finalUrl = await CoreIframeUtils.getAutoLoginUrlForIframe(iframe, src);
+
+            const lang = await CoreLang.getCurrentLanguage(CoreLangFormat.LMS);
+            finalUrl = CoreUrl.addParamsToUrl(finalUrl, { lang }, {
+                checkAutoLoginUrl: src !== finalUrl,
+            });
+
             await CoreIframeUtils.fixIframeCookies(finalUrl);
 
             iframe.src = finalUrl;
