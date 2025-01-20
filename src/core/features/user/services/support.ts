@@ -24,7 +24,6 @@ import { CoreSubscriptions } from '@singletons/subscriptions';
 import { AlertButton } from '@ionic/angular';
 import { CoreLang } from '@services/lang';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
-import { CoreOpener } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
@@ -41,10 +40,9 @@ export class CoreUserSupportService {
     async contact(options: CoreUserSupportContactOptions = {}): Promise<void> {
         const supportConfig = options.supportConfig ?? CoreUserAuthenticatedSupportConfig.forCurrentSite();
         const supportPageUrl = supportConfig.getSupportPageUrl();
-        const autoLoginUrl = await CoreSites.getCurrentSite()?.getAutoLoginUrl(supportPageUrl, false);
-        const browser = CoreOpener.openInApp(autoLoginUrl ?? supportPageUrl);
+        const browser = await CoreSites.getCurrentSite()?.openInAppWithAutoLogin(supportPageUrl);
 
-        if (supportPageUrl.endsWith('/user/contactsitesupport.php')) {
+        if (browser && supportPageUrl.endsWith('/user/contactsitesupport.php')) {
             this.populateSupportForm(browser, options.subject, options.message);
             this.listenSupportFormSubmission(browser, supportConfig.getSupportPageLang());
         }
@@ -121,6 +119,10 @@ export class CoreUserSupportService {
      * @param lang Language used in the support page.
      */
     protected async listenSupportFormSubmission(browser: InAppBrowserObject, lang: string | null): Promise<void> {
+        if (!CorePlatform.isMobile()) {
+            return;
+        }
+
         const appSuccessMessage = Translate.instant('core.user.supportmessagesent');
         const lmsSuccessMessage = lang && await CoreLang.getMessage('core.user.supportmessagesent', lang);
         const subscription = browser.on('loadstop').subscribe(async () => {
