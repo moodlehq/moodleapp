@@ -309,6 +309,12 @@ export class CoreOpener {
 
         CoreOpener.setInAppBrowserToolbarColors(options);
 
+        if (CoreSites.getCurrentSite()?.containsUrl(url)) {
+            url = CoreUrl.addParamsToUrl(url, { lang: CoreLang.getCurrentLanguageSync(CoreLangFormat.LMS) }, {
+                checkAutoLoginUrl: options.originalUrl !== url,
+            });
+        }
+
         CoreOpener.iabInstance = InAppBrowser.create(url, '_blank', options);
 
         if (CorePlatform.isMobile()) {
