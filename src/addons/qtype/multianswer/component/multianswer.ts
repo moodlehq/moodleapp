@@ -35,6 +35,7 @@ export class AddonQtypeMultiAnswerComponent extends CoreQuestionBaseComponent {
      */
     init(): void {
         this.initOriginalTextComponent('.formulation');
+        this.onReadyPromise.resolve();
     }
 
     /**

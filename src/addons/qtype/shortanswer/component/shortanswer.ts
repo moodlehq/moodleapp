@@ -35,6 +35,7 @@ export class AddonQtypeShortAnswerComponent extends CoreQuestionBaseComponent<Ad
      */
     init(): void {
         this.initInputTextComponent();
+        this.onReadyPromise.resolve();
     }
 
 }
