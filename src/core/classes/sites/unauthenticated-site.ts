@@ -219,7 +219,7 @@ export class CoreUnauthenticatedSite {
      * @returns URL with params.
      */
     createSiteUrl(path: string, params?: Record<string, unknown>, anchor?: string): string {
-        return CoreUrl.addParamsToUrl(CorePath.concatenatePaths(this.siteUrl, path), params, anchor);
+        return CoreUrl.addParamsToUrl(CorePath.concatenatePaths(this.siteUrl, path), params, { anchor });
     }
 
     /**

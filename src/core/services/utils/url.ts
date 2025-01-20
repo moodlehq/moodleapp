@@ -46,7 +46,7 @@ export class CoreUrlUtilsProvider {
      * @deprecated since 4.5. Use CoreUrl.addParamsToUrl instead.
      */
     addParamsToUrl(url: string, params?: Record<string, unknown>, anchor?: string, boolToNumber?: boolean): string {
-        return CoreUrl.addParamsToUrl(url, params, anchor, boolToNumber);
+        return CoreUrl.addParamsToUrl(url, params, { anchor, boolToNumber });
     }
 
     /**

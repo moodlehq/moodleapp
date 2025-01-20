@@ -403,28 +403,31 @@ export class CoreUrl {
      *
      * @param url URL to add the params to.
      * @param params Object with the params to add.
-     * @param anchor Anchor text if needed.
-     * @param boolToNumber Whether to convert bools to 1 or 0.
+     * @param options Other options.
      * @returns URL with params.
      */
-    static addParamsToUrl(url: string, params?: Record<string, unknown>, anchor?: string, boolToNumber?: boolean): string {
-        // Remove any existing anchor to add the params before it.
-        const urlAndAnchor = url.split('#');
-        url = urlAndAnchor[0];
+    static addParamsToUrl(url: string, params?: Record<string, unknown>, options: CoreUrlAddParamsOptions = {}): string {
+        // If it's an auto-login URL, add the params to the urltogo. extractUrlParams returns the urltogo already decoded.
+        const urlParams = options.checkAutoLoginUrl ? CoreUrl.extractUrlParams(url) : undefined;
+        let urlToTreat = urlParams?.urltogo ?? url;
 
-        let separator = url.indexOf('?') !== -1 ? '&' : '?';
+        // Remove any existing anchor to add the params before it.
+        const urlAndAnchor = urlToTreat.split('#');
+        urlToTreat = urlAndAnchor[0];
+
+        let separator = urlToTreat.indexOf('?') !== -1 ? '&' : '?';
 
         for (const key in params) {
             let value = params[key];
 
-            if (boolToNumber && typeof value === 'boolean') {
+            if (options.boolToNumber && typeof value === 'boolean') {
                 // Convert booleans to 1 or 0.
                 value = value ? '1' : '0';
             }
 
             // Ignore objects and undefined.
             if (typeof value !== 'object' && value !== undefined) {
-                url += separator + key + '=' + value;
+                urlToTreat += separator + key + '=' + value;
                 separator = '&';
             }
         }
@@ -435,14 +438,19 @@ export class CoreUrl {
             urlAndAnchor.shift();
 
             // Use a join in case there is more than one #.
-            url += '#' + urlAndAnchor.join('#');
+            urlToTreat += '#' + urlAndAnchor.join('#');
         }
 
-        if (anchor) {
-            url += '#' + anchor;
+        if (options.anchor) {
+            urlToTreat += '#' + options.anchor;
         }
 
-        return url;
+        if (!urlParams?.urltogo) {
+            return urlToTreat;
+        }
+
+        // Replace the urltogo with the treated one.
+        return url.replace(encodeURIComponent(urlParams.urltogo), encodeURIComponent(urlToTreat));
     }
 
     /**
@@ -997,3 +1005,12 @@ export class CoreUrl {
 }
 
 export type CoreUrlParams = {[key: string]: string};
+
+/**
+ * Options for addParamsToUrl.
+ */
+export type CoreUrlAddParamsOptions = {
+    anchor?: string; // Anchor text if needed.
+    boolToNumber?: boolean; // Whether to convert bools to 1 / 0.
+    checkAutoLoginUrl?: boolean; // Whether the URL could be an auto-login URL. If so, any param will be added to the urltogo.
+};
