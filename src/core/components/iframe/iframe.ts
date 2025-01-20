@@ -30,6 +30,7 @@ import { CoreSites } from '@services/sites';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreDom } from '@singletons/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreLang, CoreLangFormat } from '@services/lang';
 
 @Component({
     selector: 'core-iframe',
@@ -234,9 +235,16 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             this.displayHelp = CoreIframeUtils.shouldDisplayHelpForUrl(url);
 
             const currentSite = CoreSites.getCurrentSite();
-            if (this.allowAutoLogin && currentSite) {
-                // Format the URL to add auto-login if needed.
-                url = await currentSite.getAutoLoginUrl(url, false);
+            if (currentSite?.containsUrl(url)) {
+                // Format the URL to add auto-login if needed and add the lang parameter.
+                const autoLoginUrl = this.allowAutoLogin ?
+                    await currentSite.getAutoLoginUrl(url, false) :
+                    url;
+
+                const lang = await CoreLang.getCurrentLanguage(CoreLangFormat.LMS);
+                url = CoreUrl.addParamsToUrl(autoLoginUrl, { lang }, {
+                    checkAutoLoginUrl: autoLoginUrl !== url,
+                });
             }
 
             if (currentSite?.isVersionGreaterEqualThan('3.7') && CoreUrl.isVimeoVideoUrl(url)) {
