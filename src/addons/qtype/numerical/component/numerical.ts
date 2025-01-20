@@ -35,6 +35,7 @@ export class AddonQtypeNumericalComponent extends CoreQuestionBaseComponent<Addo
      */
     init(): void {
         this.initCalculatedComponent();
+        this.onReadyPromise.resolve();
     }
 
 }

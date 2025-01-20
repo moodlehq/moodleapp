@@ -47,11 +47,15 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonMo
      */
     init(): void {
         if (!this.question) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 
         const questionElement = this.initComponent();
         if (!questionElement) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 
@@ -65,6 +69,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonMo
         const answerContainer = questionElement.querySelector('.answercontainer');
         if (!answerContainer) {
             this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
+            this.onReadyPromise.resolve();
 
             return CoreQuestionHelper.showComponentError(this.onAbort);
         }
@@ -98,6 +103,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonMo
         this.question.text = questionText;
 
         this.question.loaded = false;
+        this.onReadyPromise.resolve();
     }
 
     /**
