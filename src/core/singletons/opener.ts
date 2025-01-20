@@ -190,14 +190,14 @@ export class CoreOpener {
             }
         }
 
-        const site = CoreSites.getCurrentSite();
+        if (CoreSites.getCurrentSite()?.containsUrl(url)) {
+            url = CoreUrl.addParamsToUrl(url, { lang: await CoreLang.getCurrentLanguage(CoreLangFormat.LMS) }, {
+                checkAutoLoginUrl: options.originalUrl !== url,
+            });
+        }
+
         CoreAnalytics.logEvent({ type: CoreAnalyticsEventType.OPEN_LINK, link: originaUrl });
-        window.open(
-            site?.containsUrl(url)
-                ? CoreUrl.addParamsToUrl(url, { lang: await CoreLang.getCurrentLanguage(CoreLangFormat.LMS) })
-                : url,
-            '_system',
-        );
+        window.open(url, '_system');
     }
 
     /**
@@ -308,6 +308,12 @@ export class CoreOpener {
         }
 
         CoreOpener.setInAppBrowserToolbarColors(options);
+
+        if (CoreSites.getCurrentSite()?.containsUrl(url)) {
+            url = CoreUrl.addParamsToUrl(url, { lang: CoreLang.getCurrentLanguageSync(CoreLangFormat.LMS) }, {
+                checkAutoLoginUrl: options.originalUrl !== url,
+            });
+        }
 
         CoreOpener.iabInstance = InAppBrowser.create(url, '_blank', options);
 

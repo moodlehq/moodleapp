@@ -83,55 +83,50 @@ describe('CoreUrl singleton', () => {
         expect(url).toEqual('https://moodle.org');
     });
 
-    it('adds params to URL without params', () => {
-        const originalUrl = 'https://moodle.org';
-        const params = {
+    it('adds params and anchors to URLs', () => {
+        // Add params to a URL without params.
+        expect(CoreUrl.addParamsToUrl('https://moodle.org', {
             first: '1',
             second: '2',
-        };
-        const url = CoreUrl.addParamsToUrl(originalUrl, params);
+        })).toEqual('https://moodle.org?first=1&second=2');
 
-        expect(url).toEqual('https://moodle.org?first=1&second=2');
-    });
-
-    it('adds params to URL with existing params', () => {
-        const originalUrl = 'https://moodle.org?existing=1';
-        const params = {
+        // Add params to a URL with existing params.
+        expect(CoreUrl.addParamsToUrl('https://moodle.org?existing=1', {
             first: '1',
             second: '2',
-        };
-        const url = CoreUrl.addParamsToUrl(originalUrl, params);
+        })).toEqual('https://moodle.org?existing=1&first=1&second=2');
 
-        expect(url).toEqual('https://moodle.org?existing=1&first=1&second=2');
-    });
+        // No params supplied.
+        expect(CoreUrl.addParamsToUrl('https://moodle.org')).toEqual('https://moodle.org');
 
-    it('doesn\'t change URL if no params supplied', () => {
-        const originalUrl = 'https://moodle.org';
-        const url = CoreUrl.addParamsToUrl(originalUrl);
-
-        expect(url).toEqual(originalUrl);
-    });
-
-    it('doesn\'t add undefined or null params', () => {
-        const originalUrl = 'https://moodle.org';
-        const url = CoreUrl.addParamsToUrl(originalUrl, {
+        // Undefined or null params aren't added.
+        expect(CoreUrl.addParamsToUrl('https://moodle.org', {
             foo: undefined,
             bar: null,
             baz: 1,
-        });
+        })).toEqual('https://moodle.org?baz=1');
 
-        expect(url).toEqual('https://moodle.org?baz=1');
-    });
-
-    it('adds anchor to URL', () => {
-        const originalUrl = 'https://moodle.org';
-        const params = {
+        // Adds anchor to URL.
+        expect(CoreUrl.addParamsToUrl('https://moodle.org', {
             first: '1',
             second: '2',
-        };
-        const url = CoreUrl.addParamsToUrl(originalUrl, params, 'myanchor');
+        }, {
+            anchor: 'myanchor',
+        })).toEqual('https://moodle.org?first=1&second=2#myanchor');
 
-        expect(url).toEqual('https://moodle.org?first=1&second=2#myanchor');
+        // Adds params to the urltogo in case it's an auto-login URL.
+        expect(CoreUrl.addParamsToUrl('https://mysite.com/autologin.php?urltogo=https%3A%2F%2Fmoodle.org', {
+            first: '1',
+            second: '2',
+        }, {
+            checkAutoLoginUrl: true,
+        })).toEqual('https://mysite.com/autologin.php?urltogo=https%3A%2F%2Fmoodle.org%3Ffirst%3D1%26second%3D2');
+
+        // Adds params to the base URL even if it has urltogo if checkAutoLoginUrl is not set.
+        expect(CoreUrl.addParamsToUrl('https://mysite.com/autologin.php?urltogo=https%3A%2F%2Fmoodle.org', {
+            first: '1',
+            second: '2',
+        })).toEqual('https://mysite.com/autologin.php?urltogo=https%3A%2F%2Fmoodle.org&first=1&second=2');
     });
 
     it('parses standard urls', () => {
