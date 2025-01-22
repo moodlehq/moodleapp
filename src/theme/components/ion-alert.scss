@@ -20,6 +20,11 @@ ion-alert {
         overflow: auto;
         border-radius: var(--border-radius) !important;
 
+        button.alert-button {
+            // By default, Ionic uses the primary color, which does not meet AA accessibility.
+            color: var(--text-color);
+        }
+
         button.alert-button.alert-button-role-destructive {
             color: var(--danger);
         }
