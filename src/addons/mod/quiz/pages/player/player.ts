@@ -174,6 +174,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         try {
             await this.processAttempt(false, false);
+
+            modal.dismissWithStatus('core.sent', true);
         } catch (error) {
             // Save attempt failed. Show confirmation.
             modal.dismiss();
@@ -181,8 +183,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             await CoreAlerts.confirm(Translate.instant('addon.mod_quiz.confirmleavequizonerror'));
 
             CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
-        } finally {
-            modal.dismiss();
         }
 
         return true;
@@ -252,10 +252,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
                     }, 50);
                 }
             }
+
+            modal.dismissWithStatus('core.sent', true);
         } catch (error) {
-            CoreAlerts.showError(error, { default: 'Error performing action.' });
-        } finally {
             modal?.dismiss();
+            CoreAlerts.showError(error, { default: 'Error performing action.' });
         }
     }
 
@@ -301,7 +302,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             try {
                 await this.processAttempt(false, false);
 
-                modal.dismiss();
+                modal.dismissWithStatus('core.sent', true);
             } catch (error) {
                 CoreAlerts.showError(error, { default: Translate.instant('addon.mod_quiz.errorsaveattempt') });
                 modal.dismiss();
@@ -468,7 +469,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
                 await this.refreshAttempt();
                 await this.loadSummary();
             }
+
+            modal.dismissWithStatus('core.sent', true);
         } catch (error) {
+            modal?.dismiss();
             // eslint-disable-next-line promise/catch-or-return
             CoreAlerts
                 .showError(error, { default: Translate.instant('addon.mod_quiz.errorsaveattempt') })
@@ -481,8 +485,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
                     return;
                 });
-        } finally {
-            modal?.dismiss();
         }
     }
 
