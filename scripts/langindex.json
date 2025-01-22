@@ -2490,6 +2490,7 @@
   "core.settings.enableanalytics": "local_moodlemobileapp",
   "core.settings.enableanalyticsdescription": "local_moodlemobileapp",
   "core.settings.enabledownloadsection": "local_moodlemobileapp",
+  "core.settings.enablepinchtozoom": "local_moodlemobileapp",
   "core.settings.enablerichtexteditor": "local_moodlemobileapp",
   "core.settings.enablerichtexteditordescription": "local_moodlemobileapp",
   "core.settings.encryptedpushsupported": "local_moodlemobileapp",

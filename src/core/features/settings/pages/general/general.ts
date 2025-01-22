@@ -43,6 +43,7 @@ export class CoreSettingsGeneralPage {
     selectedLanguage = '';
     zoomLevels: { value: CoreZoomLevel; style: number; selected: boolean }[] = [];
     selectedZoomLevel = CoreZoomLevel.NONE;
+    pinchToZoom = false;
     richTextEditor = true;
     debugDisplay = false;
     analyticsAvailable = false;
@@ -97,6 +98,8 @@ export class CoreSettingsGeneralPage {
                 style: Math.round(CoreConstants.CONFIG.zoomlevels[value] * 16 / 100),
                 selected: value === this.selectedZoomLevel,
             }));
+
+        this.pinchToZoom = await CoreSettingsHelper.getPinchToZoom();
 
         this.richTextEditor = await CoreConfig.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
 
@@ -204,6 +207,19 @@ export class CoreSettingsGeneralPage {
 
         CoreSettingsHelper.applyZoomLevel(this.selectedZoomLevel);
         CoreConfig.set(CoreConstants.SETTINGS_ZOOM_LEVEL, this.selectedZoomLevel);
+    }
+
+    /**
+     * Called when pinch-to-zoom is enabled or disabled.
+     *
+     * @param ev Event
+     */
+    pinchToZoomChanged(ev: Event): void {
+        ev.stopPropagation();
+        ev.preventDefault();
+
+        CoreSettingsHelper.applyPinchToZoom(this.pinchToZoom);
+        CoreConfig.set(CoreConstants.SETTINGS_PINCH_TO_ZOOM, this.pinchToZoom ? 1 : 0);
     }
 
     /**

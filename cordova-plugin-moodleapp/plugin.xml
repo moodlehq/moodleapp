@@ -25,6 +25,10 @@
                 <param name="android-package" value="com.moodle.moodlemobile.Diagnostic_Location"/>
                 <param name="onload" value="true" />
             </feature>
+            <feature name="PinchToZoom">
+                <param name="android-package" value="com.moodle.moodlemobile.PinchToZoom"/>
+                <param name="onload" value="true" />
+            </feature>
         </config-file>
 
         <source-file src="src/android/Diagnostic.java" target-dir="src/cordova/plugins" />
@@ -37,6 +41,7 @@
 
         <source-file src="src/android/SecureStorage.java" target-dir="src/com/moodle/moodlemobile" />
         <source-file src="src/android/InstallReferrer.java" target-dir="src/com/moodle/moodlemobile" />
+        <source-file src="src/android/PinchToZoom.java" target-dir="src/com/moodle/moodlemobile" />
     </platform>
 
     <platform name="ios">
