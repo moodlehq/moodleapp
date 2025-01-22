@@ -109,10 +109,16 @@
             --background: rgba(var(--ion-text-color-rgb), var(--background-hover-opacity));
         }
 
-        &:focus,
-        &:focus-visible,
-        &.ion-focused {
+        &:focus:not(.ion-focused),
+        &:focus-visible:not(.ion-focused) {
             --background: rgba(var(--ion-text-color-rgb), var(--background-focused-opacity));
+        }
+
+        &.ion-focused {
+            border-color: var(--ion-background-color);
+            box-shadow: inset 0 0 0 calc(2px - var(--core-combobox-border-widthh, 0px)) var(--ion-background-color);
+            outline: var(--a11y-shadow-focus-outline);
+            z-index: 1;
         }
 
         &.ion-activated {

@@ -20,6 +20,9 @@ ion-item.item {
         --background: var(--primary-tint);
         --color: var(--gray-900);
         border: 0px;
+        ion-label h2 {
+            font-weight: bold;
+        }
     }
 
     &.item-hightlighted {
@@ -84,10 +87,22 @@ ion-item.item {
         &[role=button] {
             min-height: auto;
             min-width: auto;
+            @include core-focus-outline();
         }
+    }
+
+    &::part(native) {
+        @include core-focus-inset-outline();
     }
 }
 
 div.core-course-index-subsection {
     @include padding-horizontal(16px, null);
+}
+
+.ripple-parent {
+    position: relative;
+    ion-ripple-effect {
+        z-index: 1;
+    }
 }

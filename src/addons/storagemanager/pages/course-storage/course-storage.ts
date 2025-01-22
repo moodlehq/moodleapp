@@ -27,10 +27,10 @@ import {
     CoreCourseModulePrefetchDelegate,
     CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourses } from '@features/courses/services/courses';
-import { AccordionGroupChangeEventDetail } from '@ionic/angular';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
+import { CoreToasts } from '@services/overlays/toasts';
 import { Translate } from '@singletons';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -56,7 +56,6 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     sections: AddonStorageManagerCourseSection[] = [];
     totalSize = 0;
     calculatingSize = true;
-    accordionMultipleValue: string[] = [];
 
     downloadEnabled = false;
     downloadCourseEnabled = false;
@@ -95,7 +94,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         try {
-            this.courseId = CoreNavigator.getRequiredRouteParam('courseId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
         } catch (error) {
             CoreAlerts.showError(error);
 
@@ -125,9 +124,15 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         this.loaded = true;
 
+        let prioritizedSectionId: number | undefined;
+
         if (initialSectionId !== undefined && initialSectionId > 0) {
-            this.accordionMultipleValue.push(initialSectionId.toString());
-            this.accordionGroupChange();
+            CoreCourseHelper.flattenSections(this.sections).forEach((section) => {
+                if (section.id === initialSectionId) {
+                    section.expanded = true;
+                    prioritizedSectionId = section.id;
+                }
+            });
 
             CoreDom.scrollToElement(
                 this.elementRef.nativeElement,
@@ -135,13 +140,13 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                 { addYAxis: -10 },
             );
         } else {
-            this.accordionMultipleValue.push(this.sections[0].id.toString());
-            this.accordionGroupChange();
+            this.sections[0].expanded = true;
+            prioritizedSectionId = this.sections[0].id;
         }
 
         try {
             await Promise.all([
-                this.updateSizes(this.sections, Number(this.accordionMultipleValue[0])),
+                this.updateSizes(this.sections, prioritizedSectionId),
                 this.initCoursePrefetch(),
                 this.initModulePrefetch(),
             ]);
@@ -393,7 +398,15 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         const modules = CoreCourse.getSectionsModules(this.sections)
             .filter((module) => module.totalSize && module.totalSize > 0);
 
-        await this.deleteModules(modules);
+        const success = await this.deleteModules(modules);
+
+        if (success) {
+            CoreToasts.show({
+                cssClass: 'sr-only',
+                message: 'core.deleted',
+                translateMessage: true,
+            });
+        }
     }
 
     /**
@@ -420,7 +433,15 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         const modules = CoreCourse.getSectionsModules([section]).filter((module) => module.totalSize && module.totalSize > 0);
 
-        await this.deleteModules(modules);
+        const success = await this.deleteModules(modules);
+
+        if (success) {
+            CoreToasts.show({
+                cssClass: 'sr-only',
+                message: 'core.deleted',
+                translateMessage: true,
+            });
+        }
     }
 
     /**
@@ -450,15 +471,24 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             return;
         }
 
-        await this.deleteModules([module]);
+        const success = await this.deleteModules([module]);
+
+        if (success) {
+            CoreToasts.show({
+                cssClass: 'sr-only',
+                message: 'core.deleted',
+                translateMessage: true,
+            });
+        }
     }
 
     /**
      * Deletes the specified modules, showing the loading overlay while it happens.
      *
      * @param modules Modules to delete
+     * @returns True if modules are deleted with no errors.
      */
-    protected async deleteModules(modules: AddonStorageManagerModule[]): Promise<void> {
+    protected async deleteModules(modules: AddonStorageManagerModule[]): Promise<boolean> {
         const modal = await CoreLoadings.show('core.deleting', true);
 
         const sections = new Set<AddonStorageManagerCourseSection>();
@@ -477,8 +507,12 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         try {
             await Promise.all(promises);
+
+            return true;
         } catch (error) {
             CoreAlerts.showError(error, { default: Translate.instant('core.errordeletefile') });
+
+            return false;
         } finally {
             modal.dismiss();
 
@@ -507,12 +541,23 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     async prefetchSection(section: AddonStorageManagerCourseSection): Promise<void> {
         section.isCalculating = true;
         this.changeDetectorRef.markForCheck();
+        CoreToasts.show({
+            cssClass: 'sr-only',
+            message: 'core.downloading',
+            translateMessage: true,
+        });
+
         try {
             await CoreCourseHelper.confirmDownloadSizeSection(this.courseId, [section]);
 
             try {
                 await CoreCourseHelper.prefetchSections([section], this.courseId);
 
+                CoreToasts.show({
+                    cssClass: 'sr-only',
+                    message: 'core.downloaded',
+                    translateMessage: true,
+                });
             } catch (error) {
                 if (!this.isDestroyed) {
                     CoreAlerts.showError(error, { default: Translate.instant('core.course.errordownloadingsection') });
@@ -551,12 +596,23 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         // Show spinner since this operation might take a while.
         module.spinner = true;
+        CoreToasts.show({
+            cssClass: 'sr-only',
+            message: 'core.downloading',
+            translateMessage: true,
+        });
 
         try {
             // Get download size to ask for confirm if it's high.
             const size = await module.prefetchHandler.getDownloadSize(module, module.course, true);
 
             await CoreCourseHelper.prefetchModule(module.prefetchHandler, module, size, module.course, refresh);
+
+            CoreToasts.show({
+                cssClass: 'sr-only',
+                message: 'core.downloaded',
+                translateMessage: true,
+            });
         } catch (error) {
             if (!this.isDestroyed) {
                 CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
@@ -645,6 +701,12 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         event.stopPropagation();
         event.preventDefault();
 
+        CoreToasts.show({
+            cssClass: 'sr-only',
+            message: 'core.downloading',
+            translateMessage: true,
+        });
+
         const course = await CoreCourseHelper.getCourseInfo(this.courseId);
         if (!course) {
             CoreAlerts.showError(Translate.instant('core.course.errordownloadingcourse'));
@@ -662,6 +724,12 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                     isGuest: this.isGuest,
                 },
             );
+
+            CoreToasts.show({
+                cssClass: 'sr-only',
+                message: 'core.downloaded',
+                translateMessage: true,
+            });
 
             await this.updateSizes(this.sections);
         } catch (error) {
@@ -700,24 +768,12 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     }
 
     /**
-     * Toggle expand status.
+     * Toggle section expand status.
      *
-     * @param event Event object. If not defined, use the current value.
+     * @param section Section.
      */
-    accordionGroupChange(event?: AccordionGroupChangeEventDetail): void {
-        const sectionIds = event?.value as string[] ?? this.accordionMultipleValue;
-        const allSections = CoreCourseHelper.flattenSections(this.sections);
-        allSections.forEach((section) => {
-            section.expanded = false;
-        });
-
-        sectionIds.forEach((sectionId) => {
-            const section = allSections.find((section) => section.id === Number(sectionId));
-
-            if (section) {
-                section.expanded = true;
-            }
-        });
+    toggleSection(section: AddonStorageManagerCourseSection): void {
+        section.expanded = !section.expanded;
     }
 
     /**

@@ -70,7 +70,7 @@
     }
 
     // Accessibility vars.
-    --a11y-shadow-focus-boxShadowColor: var(--primary);
+    --a11y-shadow-focus-boxShadowColor: #{$blue};
 
     --text-color:       #{$text-color};
     --background-color: #{$background-color};
@@ -138,7 +138,7 @@
     --core-tab-color-active: var(--dark);
     --core-tab-border-color-active: var(--primary);
 
-    --core-loading-spinner: var(--primary);
+    --core-loading-spinner: var(--dark);
 
     --core-progressbar-color: var(--primary);
     --core-progressbar-text-color: var(--medium);
@@ -168,13 +168,13 @@
     --core-login-input-background: var(--white);
     --core-login-input-color: var(--gray-900);
 
-    --core-star-color: var(--primary);
+    --core-star-color: var(--text-color);
 
     --core-navigation-background: var(--contrast-background);
 
     --core-collapsible-footer-background: var(--contrast-background);
 
-    --addon-calendar-today-border-color: var(--primary);
+    --addon-calendar-today-border-color: var(--dark);
     --addon-calendar-border-color: var(--stroke);
 
     --core-messages-message-bg: var(--white);

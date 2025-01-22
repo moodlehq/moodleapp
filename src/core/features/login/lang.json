@@ -67,6 +67,7 @@
     "login": "Log in",
     "loginbutton": "Log in",
     "loginsteps": "For full access to this site, you first need to create an account.",
+    "logoof": "Logo of {{$a}}",
     "missingemail": "Missing email address",
     "missingfirstname": "Missing given name",
     "missinglastname": "Missing last name",

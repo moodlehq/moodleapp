@@ -1,7 +1,7 @@
-<ion-card class="card-file">
+<ion-card class="card-file ion-activatable">
 
     @if (file) {
-    <ion-item button [ngClass]="{ 'file-selected': showCheckbox && selected }" class="ion-text-wrap item-file" [detail]="false">
+    <ion-item [ngClass]="{ 'file-selected': showCheckbox && selected }" class="ion-text-wrap item-file" [detail]="false">
 
         @if (showCheckbox) {
         <ion-checkbox labelPlacement="start" [(ngModel)]="selected" (ngModelChange)="onSelectedFileChange.emit($event)" />
@@ -13,7 +13,7 @@
 
         <ion-label (click)="download($event, true)">
             <p class="item-heading">
-                {{fileName}}
+                <span (ariaButtonClick)="download($event, true)">{{fileName}}</span>
 
                 @if (state === statusDownloaded) {
                 <ion-icon class="core-icon-downloaded" color="success" name="fam-cloud-done"
@@ -48,6 +48,7 @@
             }
         </div>
     </ion-item>
+    <ion-ripple-effect />
     }
 
 </ion-card>

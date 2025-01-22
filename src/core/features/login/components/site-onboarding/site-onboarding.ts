@@ -19,6 +19,7 @@ import { CoreOpener } from '@singletons/opener';
 import { GET_STARTED_URL, ONBOARDING_DONE } from '@features/login/constants';
 import { ModalController } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreConstants } from '@/core/constants';
 
 /**
  * Component that displays onboarding help regarding the CoreLoginSitePage.
@@ -35,6 +36,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 export class CoreLoginSiteOnboardingComponent {
 
     step = 0;
+    appName = CoreConstants.CONFIG.appname;
 
     /**
      * Go to next step.

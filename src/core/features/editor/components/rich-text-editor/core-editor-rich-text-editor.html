@@ -8,7 +8,7 @@
         [placeholder]="placeholder" [aria-labelledby]="ariaLabelledBy" (ionChange)="onChange()" (ionFocus)="focusRTE($event)"
         (ionBlur)="blurRTE($event)" />
 
-    <div class="core-rte-info-message" *ngIf="infoMessage">
+    <div class="core-rte-info-message" *ngIf="infoMessage" role="status">
         <ion-icon name="fas-circle-info" aria-hidden="true" />
         {{ infoMessage | translate }}
     </div>
@@ -99,8 +99,8 @@
             </button>
         </swiper-slide>
         <swiper-slide *ngIf="canScanQR">
-            <button [disabled]="!rteEnabled" (click)="scanQR($event)" (keyup)="scanQR($event)" (mousedown)="stopBubble($event)"
-                (keydown)="stopBubble($event)" [title]="'core.scanqr' | translate" tabindex="0">
+            <button [disabled]="!rteEnabled" (click)="scanQR($event)" (keyup)="scanQR($event)" (mousedown)="downAction($event)"
+                (keydown)="downAction($event)" [title]="'core.scanqr' | translate" tabindex="0">
                 <ion-icon name="fas-qrcode" aria-hidden="true" />
             </button>
         </swiper-slide>

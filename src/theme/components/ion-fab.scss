@@ -13,4 +13,12 @@ ion-content.has-collapsible-footer ion-fab {
 
 ion-fab-button {
     --box-shadow: 0 3px 5px -1px rgb(0 0 0 / 20%), 0 6px 10px 0 rgb(0 0 0 / 14%), 0 1px 18px 0 rgb(0 0 0 / 12%);
+
+    &.ion-focused::part(native) {
+        --background-focused-opacity: 0;
+        border-color: var(--ion-background-color);
+        box-shadow: inset 0 0 0 1px var(--ion-background-color);
+        outline: var(--a11y-shadow-focus-outline);
+        z-index: 1;
+    }
 }

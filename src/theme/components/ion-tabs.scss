@@ -1,0 +1,9 @@
+@import "../globals.scss";
+
+ion-tab-button.ion-focused::part(native) {
+    @include core-focus-inset-outline-internal();
+}
+
+ion-tab-bar > ion-button.ion-focused {
+    @include core-focus-inset-outline-internal();
+}

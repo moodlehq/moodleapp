@@ -41,6 +41,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-local-file',
     templateUrl: 'core-local-file.html',
+    styleUrl: 'core-local-file.scss',
 })
 export class CoreLocalFileComponent implements OnInit {
 
