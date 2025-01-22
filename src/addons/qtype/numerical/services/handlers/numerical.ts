@@ -18,6 +18,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreObject } from '@singletons/object';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 /**
  * Handler to support numerical question type.
@@ -68,43 +69,45 @@ export class AddonQtypeNumericalHandlerService implements CoreQuestionHandler {
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         if (!this.isGradableResponse(question, answers)) {
-            return 0;
+            return QuestionCompleteGradableResponse.NO;
         }
 
         const { answer, unit } = this.parseAnswer(question, <string> answers.answer);
         if (answer === null) {
-            return 0;
+            return QuestionCompleteGradableResponse.NO;
         }
 
         if (!question.parsedSettings) {
             if (this.hasSeparateUnitField(question)) {
-                return this.isValidValue(<string> answers.unit) ? 1 : 0;
+                return this.isValidValue(<string> answers.unit)
+                    ? QuestionCompleteGradableResponse.YES
+                    : QuestionCompleteGradableResponse.NO;
             }
 
             // We cannot know if the answer should contain units or not.
-            return -1;
+            return QuestionCompleteGradableResponse.UNKNOWN;
         }
 
         if (question.parsedSettings.unitdisplay !== AddonQtypeNumericalHandlerService.UNITINPUT && unit) {
             // There should be no units or be outside of the input, not valid.
-            return 0;
+            return QuestionCompleteGradableResponse.NO;
         }
 
         if (this.hasSeparateUnitField(question) && !this.isValidValue(<string> answers.unit)) {
             // Unit not supplied as a separate field and it's required.
-            return 0;
+            return QuestionCompleteGradableResponse.NO;
         }
 
         if (question.parsedSettings.unitdisplay === AddonQtypeNumericalHandlerService.UNITINPUT &&
                 question.parsedSettings.unitgradingtype === AddonQtypeNumericalHandlerService.UNITGRADED &&
                 !this.isValidValue(unit)) {
             // Unit not supplied inside the input and it's required.
-            return 0;
+            return QuestionCompleteGradableResponse.NO;
         }
 
-        return 1;
+        return QuestionCompleteGradableResponse.YES;
     }
 
     /**
@@ -120,8 +123,10 @@ export class AddonQtypeNumericalHandlerService implements CoreQuestionHandler {
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
-        return this.isValidValue(<string> answers.answer) ? 1 : 0;
+    ): QuestionCompleteGradableResponse {
+        return this.isValidValue(<string> answers.answer)
+            ? QuestionCompleteGradableResponse.YES
+            : QuestionCompleteGradableResponse.NO;
     }
 
     /**
@@ -207,7 +212,7 @@ export class AddonQtypeNumericalHandlerService implements CoreQuestionHandler {
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
     ): string | undefined {
-        if (!this.isGradableResponse(question, answers)) {
+        if (this.isGradableResponse(question, answers) === QuestionCompleteGradableResponse.NO) {
             return Translate.instant('addon.qtype_numerical.pleaseenterananswer');
         }
 

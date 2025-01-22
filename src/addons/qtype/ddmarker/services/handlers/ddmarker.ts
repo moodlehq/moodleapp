@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
@@ -55,15 +56,15 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         // If 1 dragitem is set we assume the answer is complete (like Moodle does).
         for (const name in answers) {
             if (name !== ':sequencecheck' && answers[name]) {
-                return 1;
+                return QuestionCompleteGradableResponse.YES;
             }
         }
 
-        return 0;
+        return QuestionCompleteGradableResponse.NO;
     }
 
     /**
@@ -79,7 +80,7 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         return this.isCompleteResponse(question, answers);
     }
 
@@ -119,7 +120,7 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
     ): string | undefined {
-        if (this.isCompleteResponse(question, answers)) {
+        if (this.isCompleteResponse(question, answers) === QuestionCompleteGradableResponse.YES) {
             return;
         }
 

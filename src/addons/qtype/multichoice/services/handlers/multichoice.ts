@@ -20,6 +20,7 @@ import { CoreQuestionHandler } from '@features/question/services/question-delega
 import { CoreObject } from '@singletons/object';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreUtils } from '@singletons/utils';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 /**
  * Handler to support multichoice question type.
@@ -45,7 +46,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         let isSingle = true;
         let isMultiComplete = false;
 
@@ -64,7 +65,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
             return this.isCompleteResponseSingle(answers);
         } else {
             // Multi.
-            return isMultiComplete ? 1 : 0;
+            return isMultiComplete ? QuestionCompleteGradableResponse.YES : QuestionCompleteGradableResponse.NO;
         }
     }
 
@@ -74,8 +75,10 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
      * @param answers The question answers (without prefix).
      * @returns 1 if complete, 0 if not complete, -1 if cannot determine.
      */
-    isCompleteResponseSingle(answers: CoreQuestionsAnswers): number {
-        return (answers.answer && answers.answer !== '') ? 1 : 0;
+    isCompleteResponseSingle(answers: CoreQuestionsAnswers): QuestionCompleteGradableResponse {
+        return (answers.answer && answers.answer !== '')
+            ? QuestionCompleteGradableResponse.YES
+            : QuestionCompleteGradableResponse.NO;
     }
 
     /**
@@ -91,7 +94,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         return this.isCompleteResponse(question, answers);
     }
 
@@ -102,7 +105,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
      * @param answers Object with the question answers (without prefix).
      * @returns 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
-    isGradableResponseSingle(answers: CoreQuestionsAnswers): number {
+    isGradableResponseSingle(answers: CoreQuestionsAnswers): QuestionCompleteGradableResponse {
         return this.isCompleteResponseSingle(answers);
     }
 
@@ -168,7 +171,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
         question: AddonModQuizMultichoiceQuestion,
         answers: CoreQuestionsAnswers,
     ): string | undefined {
-        if (this.isGradableResponse(question, answers)) {
+        if (this.isGradableResponse(question, answers) === QuestionCompleteGradableResponse.YES) {
             return;
         }
 
