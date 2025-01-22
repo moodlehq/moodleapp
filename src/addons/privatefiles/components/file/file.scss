@@ -11,4 +11,8 @@
 
         --inner-border-width: 0 !important;
     }
+
+    ion-ripple-effect {
+        z-index: 1;
+    }
 }

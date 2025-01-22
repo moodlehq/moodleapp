@@ -1,10 +1,12 @@
-<ion-card class="card-file">
-    <ion-item *ngIf="file" button class="ion-text-wrap item-file" (click)="download($event, true)" [detail]="false">
+<ion-card class="card-file ion-activatable">
+    <ion-item *ngIf="file" tappable class="ion-text-wrap item-file" (click)="download($event, true)" [detail]="false">
         <ion-thumbnail slot="start">
             <img [src]="fileIcon" alt="" role="presentation" />
         </ion-thumbnail>
         <ion-label>
-            <p class="item-heading">{{fileName}}</p>
+            <p class="item-heading">
+                <span (ariaButtonClick)="download($event, true)">{{fileName}}</span>
+            </p>
             <p *ngIf="fileSizeReadable || showTime">
                 <ng-container *ngIf="fileSizeReadable">{{ fileSizeReadable }}</ng-container>
                 <ng-container *ngIf="fileSizeReadable && showTime"> · </ng-container>
@@ -25,4 +27,5 @@
             </ion-button>
         </div>
     </ion-item>
+    <ion-ripple-effect />
 </ion-card>
