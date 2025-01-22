@@ -1,4 +1,4 @@
-@addon_mod_page @app @javascript
+@addon_mod_page @app @mod @mod_page @javascript
 Feature: Test basic usage of page activity in app
 
   Background:

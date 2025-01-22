@@ -1,4 +1,4 @@
-@core_courses @app @javascript
+@core_courses @app @core @core_my @block_myoverview @block_timeline @javascript
 Feature: Test basic usage of courses in app
   In order to participate in the courses while using the mobile app
   As a student

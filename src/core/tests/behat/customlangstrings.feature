@@ -1,4 +1,4 @@
-@core @app @javascript
+@core_lang @app @javascript
 Feature: Custom lang strings
 
   Background:

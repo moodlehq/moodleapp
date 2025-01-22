@@ -1,4 +1,4 @@
-@addon_mod_scorm @app @javascript @_switch_iframe
+@addon_mod_scorm @app @mod @mod_scorm @javascript @_switch_iframe
 Feature: Test basic usage of SCORM activity in app
   In order to play a SCORM while using the mobile app
   As a student

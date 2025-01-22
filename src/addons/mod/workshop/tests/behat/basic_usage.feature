@@ -1,4 +1,4 @@
-@addon_mod_workshop @app @javascript
+@addon_mod_workshop @app @mod @mod_workshop @javascript
 Feature: Test basic usage of workshop activity in app
 
   Background:

@@ -1,4 +1,4 @@
-@core_tag @app @javascript
+@core_tag @app @core @javascript
 Feature: Tag navigation
 
   Background:

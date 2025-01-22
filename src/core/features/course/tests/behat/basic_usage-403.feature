@@ -1,4 +1,4 @@
-@core_course @app @javascript @lms_upto4.3
+@core_course @app @core @javascript @lms_upto4.3
 Feature: Test basic usage of one course in app
   In order to participate in one course while using the mobile app
   As a student

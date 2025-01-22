@@ -1,4 +1,4 @@
-@addon_mod_scorm @app @javascript
+@addon_mod_scorm @app @mod @mod_scorm @javascript
 Feature: Test appearance options of SCORM activity in app
   In order to play a SCORM while using the mobile app
   As a student

@@ -1,4 +1,4 @@
-@addon_notifications @app @javascript
+@addon_notifications @app @core @core_message @javascript
 Feature: Notifications
 
   Background:
