@@ -45,6 +45,10 @@ button {
 
 ion-card {
     --border-radius: var(--card-radius);
+
+    ion-ripple-effect {
+        z-index: 1;
+    }
 }
 
 .core-button-spinner {
