@@ -347,9 +347,10 @@ td {
     @include core-focus-outline();
 }
 
-ion-input,
-ion-input input,
-ion-textarea,
+// We need [class] to increase the specificity, See: https://ionicframework.com/docs/api/input#css-custom-properties
+ion-input[class],
+ion-textarea[class],
+ion-searchbar[class],
 core-rich-text-editor {
     --placeholder-color: var(--ion-placeholder-color);
     --placeholder-opacity: var(--mdl-placeholder-opacity);
