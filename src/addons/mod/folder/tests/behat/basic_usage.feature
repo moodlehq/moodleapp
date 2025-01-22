@@ -1,4 +1,4 @@
-@addon_mod_folder @app @javascript
+@addon_mod_folder @app @mod @mod_folder @javascript
 Feature: Test basic usage of folder activity in app
 
   Background:

@@ -1,4 +1,4 @@
-@core @app @javascript
+@core_filesystem @app @javascript
 Feature: It opens files properly.
 
   Background:

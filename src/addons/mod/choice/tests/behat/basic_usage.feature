@@ -1,4 +1,4 @@
-@addon_mod_choice @app @javascript
+@addon_mod_choice @app @mod @mod_choice @javascript
 Feature: Test basic usage of choice activity in app
   In order to participate in the choice while using the mobile app
   As a student

@@ -1,4 +1,4 @@
-@addon_mod_feedback @app @javascript
+@addon_mod_feedback @app @mod @mod_feedback @javascript
 Feature: Test feedback navigation
 
   Background:

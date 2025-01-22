@@ -1,4 +1,4 @@
-@addon_mod_forum @app @javascript
+@addon_mod_forum @app @mod @mod_forum @javascript
 Feature: Test forum navigation
 
   Background:
