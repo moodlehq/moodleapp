@@ -45,6 +45,8 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent<AddonMod
      */
     init(): void {
         if (!this.question) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 
@@ -57,6 +59,7 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent<AddonMod
         if (this.question?.allowsAttachments && this.uploadFilesSupported && !this.review) {
             this.loadAttachments();
         }
+        this.onReadyPromise.resolve();
     }
 
     /**

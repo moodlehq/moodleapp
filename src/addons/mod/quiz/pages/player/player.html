@@ -15,9 +15,9 @@
                 (click)="showConnectionError($event)" [ariaLabel]="'addon.mod_quiz.connectionerror' | translate" aria-haspopup="dialog">
                 <ion-icon name="fas-circle-exclamation" slot="icon-only" aria-hidden="true" />
             </ion-button>
-            <ion-button *ngIf="navigation.length && !showSummary" [ariaLabel]="'addon.mod_quiz.opentoc' | translate"
+            <ion-button *ngIf="attemptSummary.length && !showSummary" [ariaLabel]="'addon.mod_quiz.opentoc' | translate"
                 (click)="openNavigation()">
-                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true" />
+                <ion-icon name="fas-list-ul" slot="icon-only" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -64,13 +64,13 @@
         </ion-row>
 
         <!-- Summary -->
-        <ion-card *ngIf="!quizAborted && showSummary && summaryQuestions.length" class="addon-mod_quiz-table">
+        <ion-card *ngIf="!quizAborted && showSummary && attemptSummary.length" class="addon-mod_quiz-table">
             <ion-card-header class="ion-text-wrap">
                 <ion-card-title>{{ 'addon.mod_quiz.summaryofattempt' | translate }}</ion-card-title>
             </ion-card-header>
 
             <!-- List of questions of the summary table. -->
-            <ng-container *ngFor="let question of summaryQuestions">
+            <ng-container *ngFor="let question of attemptSummary">
                 <ion-item *ngIf="question.type !== 'description' && question.questionnumber"
                     (click)="!isSequential && canReturn && changePage(question.page, false, question.slot)"
                     [detail]="!isSequential && canReturn" [button]="!isSequential && canReturn"
@@ -123,7 +123,7 @@
             </ion-button>
         </ion-card>
 
-        <div collapsible-footer appearOnBottom *ngIf="!quizAborted && showSummary && summaryQuestions.length && loaded" slot="fixed">
+        <div collapsible-footer appearOnBottom *ngIf="!quizAborted && showSummary && attemptSummary.length && loaded" slot="fixed">
             <div class="list-item-limited-width">
                 <ion-button *ngIf="preventSubmitMessages.length" expand="block" class="ion-margin ion-text-wrap" [href]="moduleUrl"
                     core-link [showBrowserWarning]="false">

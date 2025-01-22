@@ -140,7 +140,7 @@ export class AddonModQuizOfflineProvider {
      * @param attemptId Attempt ID.
      * @param questions List of questions.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
+     * @returns Questions with local states loaded.
      */
     async loadQuestionsLocalStates(
         attemptId: number,
@@ -223,7 +223,6 @@ export class AddonModQuizOfflineProvider {
      *
      * @param attemptId Attempt ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
      */
     async removeAttemptAndAnswers(attemptId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -263,7 +262,6 @@ export class AddonModQuizOfflineProvider {
      * @param answers Answers to save.
      * @param timeMod Time modified to set in the answers. If not defined, current time.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
      */
     async saveAnswers(
         quiz: AddonModQuizQuizWSData,

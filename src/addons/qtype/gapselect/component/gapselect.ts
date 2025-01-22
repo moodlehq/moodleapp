@@ -36,6 +36,7 @@ export class AddonQtypeGapSelectComponent extends CoreQuestionBaseComponent {
      */
     init(): void {
         this.initOriginalTextComponent('.qtext');
+        this.onReadyPromise.resolve();
     }
 
     /**

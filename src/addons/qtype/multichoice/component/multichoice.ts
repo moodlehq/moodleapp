@@ -35,6 +35,7 @@ export class AddonQtypeMultichoiceComponent extends CoreQuestionBaseComponent<Ad
      */
     init(): void {
         this.initMultichoiceComponent();
+        this.onReadyPromise.resolve();
     }
 
     /**

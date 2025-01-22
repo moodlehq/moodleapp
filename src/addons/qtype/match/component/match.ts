@@ -35,6 +35,7 @@ export class AddonQtypeMatchComponent extends CoreQuestionBaseComponent<AddonMod
      */
     init(): void {
         this.initMatchComponent();
+        this.onReadyPromise.resolve();
     }
 
 }
