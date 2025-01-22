@@ -111,20 +111,19 @@
             </ion-checkbox>
         </ion-item>
         <ng-container *ngIf="forum.id && forum.maxattachments > 0">
-            <ion-item button class="divider ion-text-wrap" (click)="toggleAdvanced()" [detail]="false" [attr.aria-expanded]="advanced"
-                [attr.aria-controls]="'addon-forum-reply-edit-form-advanced-' + uniqueId"
-                [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate">
-                <ion-icon *ngIf="!advanced" name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true"
-                    class="expandable-status-icon" />
-                <ion-icon *ngIf="advanced" name="fas-chevron-down" slot="start" aria-hidden="true" class="expandable-status-icon" />
-                <ion-label>
-                    <h3 class="item-heading">{{ 'addon.mod_forum.advanced' | translate }}</h3>
-                </ion-label>
-            </ion-item>
-            <div *ngIf="advanced" [id]="'addon-forum-reply-edit-form-advanced-' + uniqueId">
-                <core-attachments [files]="formData.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments"
-                    [component]="component" [componentId]="forum.cmid" [allowOffline]="true" [courseId]="courseId" />
-            </div>
+            <ion-accordion-group [value]="advanced ? 'advanced' : ''" (ionChange)="onAdvancedChanged($event)">
+                <ion-accordion value="advanced" toggleIconSlot="start">
+                    <ion-item slot="header">
+                        <ion-label>
+                            <h3 class="item-heading">{{ 'addon.mod_forum.advanced' | translate }}</h3>
+                        </ion-label>
+                    </ion-item>
+                    <div slot="content">
+                        <core-attachments [files]="formData.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments"
+                            [component]="component" [componentId]="forum.cmid" [allowOffline]="true" [courseId]="courseId" />
+                    </div>
+                </ion-accordion>
+            </ion-accordion-group>
         </ng-container>
         <ion-grid>
             <ion-row>
