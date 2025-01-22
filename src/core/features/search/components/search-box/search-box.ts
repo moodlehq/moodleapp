@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, signal, ViewChild, ElementRef } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreSearchHistory } from '../../services/search-history.service';
@@ -56,13 +56,12 @@ export class CoreSearchBoxComponent implements OnInit {
     @Output() onSubmit: EventEmitter<string>; // Send data when submitting the search form.
     @Output() onClear: EventEmitter<void>; // Send event when clearing the search form.
 
-    formElement?: HTMLFormElement;
-
+    @ViewChild('searchForm') formElement?: ElementRef;
     searched = ''; // Last search emitted.
     searchText = '';
     history: CoreSearchHistoryDBRecord[] = [];
-    historyShown = false;
-    showLengthAlert = false;
+    historyShown = signal(false);
+    showLengthAlert = signal(false);
 
     constructor() {
         this.onSubmit = new EventEmitter<string>();
@@ -89,12 +88,12 @@ export class CoreSearchBoxComponent implements OnInit {
         e?.stopPropagation();
 
         if (this.searchText.length < this.lengthCheck) {
-            this.showLengthAlert = true;
+            this.showLengthAlert.set(true);
 
             return;
         }
 
-        this.showLengthAlert = false;
+        this.showLengthAlert.set(false);
 
         if (this.searchArea) {
             this.saveSearchToHistory(this.searchText);
@@ -102,7 +101,7 @@ export class CoreSearchBoxComponent implements OnInit {
 
         CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
 
-        this.historyShown = false;
+        this.historyShown.set(false);
         this.searched = this.searchText;
         this.onSubmit.emit(this.searchText);
     }
@@ -149,28 +148,28 @@ export class CoreSearchBoxComponent implements OnInit {
     clearForm(): void {
         this.searched = '';
         this.searchText = '';
-        this.showLengthAlert = false;
+        this.showLengthAlert.set(false);
         this.onClear.emit();
     }
 
     /**
      * @param event Focus event on input element.
      */
-    focus(event: CustomEvent): void {
-        this.historyShown = true;
+    focus(): void {
+        this.historyShown.set(true);
+    }
 
-        if (!this.formElement) {
-            this.formElement = event.detail.target.closest('form');
-
-            this.formElement?.addEventListener('blur', () => {
-                // Wait the new element to be focused.
-                setTimeout(() => {
-                    if (document.activeElement?.closest('form') != this.formElement) {
-                        this.historyShown = false;
-                    }
-                });
-            }, true);
-        }
+    /**
+     * Checks if the search box has lost focus.
+     */
+    checkFocus(): void {
+        // Wait until the new element is focused.
+        setTimeout(() => {
+            if (document.activeElement?.closest('form') !== this.formElement?.nativeElement) {
+                this.historyShown.set(false);
+                this.showLengthAlert.set(false);
+            }
+        });
     }
 
 }
