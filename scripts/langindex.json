@@ -2165,6 +2165,7 @@
   "core.login.login": "moodle",
   "core.login.loginbutton": "local_moodlemobileapp",
   "core.login.loginsteps": "moodle",
+  "core.login.logoof": "moodle",
   "core.login.missingemail": "moodle",
   "core.login.missingfirstname": "moodle",
   "core.login.missinglastname": "moodle",

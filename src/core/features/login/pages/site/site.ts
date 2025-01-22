@@ -77,6 +77,7 @@ export class CoreLoginSitePage implements OnInit {
     showScanQR!: boolean;
     enteredSiteUrl?: CoreLoginSiteInfoExtended;
     siteFinderSettings!: CoreLoginSiteFinderSettings;
+    appName = CoreConstants.CONFIG.appname;
 
     constructor(protected formBuilder: FormBuilder) {}
 
