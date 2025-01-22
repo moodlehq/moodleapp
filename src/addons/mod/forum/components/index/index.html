@@ -84,70 +84,75 @@
                 <p>{{ 'addon.mod_forum.errorloadingsortingorderdetails' | translate }}</p>
             </core-empty-box>
 
-            <ion-item *ngFor="let discussion of discussionsItems" class="addon-mod-forum-discussion" [detail]="true"
-                [lines]="discussion.groupname && 'none'" [attr.aria-current]="discussions?.getItemAriaCurrent(discussion)"
-                (click)="discussions?.select(discussion)" button>
-                <ion-label>
-                    <p class="addon-mod-forum-discussion-title ion-text-wrap item-heading">
-                        <ion-icon name="fas-map-pin" *ngIf="discussion.pinned"
-                            [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate" />
-                        <ion-icon name="fas-star" class="addon-forum-star" *ngIf="discussion.starred"
-                            [attr.aria-label]="'addon.mod_forum.favourites' | translate" />
-                        <core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="module && module.id"
-                            [courseId]="courseId" />
-                        <ion-icon name="fas-lock" *ngIf="discussion.locked" class="addon-mod-forum-locked-icon"
-                            [attr.aria-label]="'addon.mod_forum.discussionlocked' | translate" />
-                    </p>
-                    <div class="addon-mod-forum-discussion-info">
-                        <core-user-avatar *ngIf="discussion.userfullname" [user]="discussion" slot="start" [courseId]="courseId"
-                            [linkProfile]="false" />
-                        <div class="addon-mod-forum-discussion-author">
-                            <span *ngIf="discussion.userfullname" class="core-discussionusername">{{discussion.userfullname}}</span>
-                            <p *ngIf="discussion.groupname" class="core-groupname">
-                                <ion-icon name="fas-users" [attr.aria-label]="'addon.mod_forum.group' | translate" />
-                                <core-format-text [text]="discussion.groupname" contextLevel="course" [contextInstanceId]="courseId"
-                                    [wsNotFiltered]="true" />
-                            </p>
-                            <p *ngIf="isOnlineDiscussion(discussion)">
-                                {{discussion.created * 1000 | coreFormatDate: "strftimerecentfull"}}
-                            </p>
-                            <p *ngIf="isOfflineDiscussion(discussion)">
-                                <ion-icon name="fas-clock" aria-hidden="true" />
-                                {{ 'core.notsent' | translate }}
-                            </p>
+            <div *ngFor="let discussion of discussionsItems" class="ion-activatable ripple-parent">
+                <ion-item class="addon-mod-forum-discussion" [detail]="true" [lines]="discussion.groupname && 'none'"
+                    [attr.aria-current]="discussions?.getItemAriaCurrent(discussion)" (click)="discussions?.select(discussion)" tappable>
+                    <ion-label>
+                        <p class="addon-mod-forum-discussion-title ion-text-wrap item-heading">
+                            <ion-icon name="fas-map-pin" *ngIf="discussion.pinned"
+                                [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate" />
+                            <ion-icon name="fas-star" class="addon-forum-star" *ngIf="discussion.starred"
+                                [attr.aria-label]="'addon.mod_forum.favourites' | translate" />
+                            <span (ariaButtonClick)="discussions?.select(discussion)">
+                                <core-format-text [text]="discussion.subject" contextLevel="module"
+                                    [contextInstanceId]="module && module.id" [courseId]="courseId" />
+                            </span>
+                            <ion-icon name="fas-lock" *ngIf="discussion.locked" class="addon-mod-forum-locked-icon"
+                                [attr.aria-label]="'addon.mod_forum.discussionlocked' | translate" />
+                        </p>
+                        <div class="addon-mod-forum-discussion-info">
+                            <core-user-avatar *ngIf="discussion.userfullname" [user]="discussion" slot="start" [courseId]="courseId"
+                                [linkProfile]="false" />
+                            <div class="addon-mod-forum-discussion-author">
+                                <span *ngIf="discussion.userfullname" class="core-discussionusername">{{discussion.userfullname}}</span>
+                                <p *ngIf="discussion.groupname" class="core-groupname">
+                                    <ion-icon name="fas-users" [attr.aria-label]="'addon.mod_forum.group' | translate" />
+                                    <core-format-text [text]="discussion.groupname" contextLevel="course" [contextInstanceId]="courseId"
+                                        [wsNotFiltered]="true" />
+                                </p>
+                                <p *ngIf="isOnlineDiscussion(discussion)">
+                                    {{discussion.created * 1000 | coreFormatDate: "strftimerecentfull"}}
+                                </p>
+                                <p *ngIf="isOfflineDiscussion(discussion)">
+                                    <ion-icon name="fas-clock" aria-hidden="true" />
+                                    {{ 'core.notsent' | translate }}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    <ion-row *ngIf="isOnlineDiscussion(discussion)" class="ion-text-center addon-mod-forum-discussion-more-info">
-                        <ion-col class="ion-text-start">
-                            <ion-note>
-                                <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'addon.mod_forum.lastpost' | translate }}
-                                <ng-container *ngIf="discussion.timemodified > discussion.created">
-                                    {{ discussion.timemodified | coreTimeAgo }}
-                                </ng-container>
-                                <ng-container *ngIf="discussion.timemodified <= discussion.created">
-                                    {{ discussion.created | coreTimeAgo }}
-                                </ng-container>
-                            </ion-note>
-                        </ion-col>
-                        <ion-col class="ion-text-end">
-                            <ion-note>
-                                <ion-icon name="fas-comments" aria-hidden="true" />
-                                {{ 'addon.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}
-                                <ion-badge *ngIf="discussion.numunread" class="ion-text-center">
-                                    <span aria-hidden="true">{{ discussion.numunread }}</span>
-                                    <span class="sr-only">
-                                        {{ 'addon.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread} }}
-                                    </span>
-                                </ion-badge>
-                            </ion-note>
-                        </ion-col>
-                    </ion-row>
-                </ion-label>
-                <ion-button *ngIf="canPin || discussion.canlock || discussion.canfavourite" fill="clear"
-                    [ariaLabel]="('core.displayoptions' | translate)" (click)="showOptionsMenu($event, discussion)" slot="end">
-                    <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
-                </ion-button>
-            </ion-item>
+                        <ion-row *ngIf="isOnlineDiscussion(discussion)" class="ion-text-center addon-mod-forum-discussion-more-info">
+                            <ion-col class="ion-text-start">
+                                <ion-note>
+                                    <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'addon.mod_forum.lastpost' | translate }}
+                                    <ng-container *ngIf="discussion.timemodified > discussion.created">
+                                        {{ discussion.timemodified | coreTimeAgo }}
+                                    </ng-container>
+                                    <ng-container *ngIf="discussion.timemodified <= discussion.created">
+                                        {{ discussion.created | coreTimeAgo }}
+                                    </ng-container>
+                                </ion-note>
+                            </ion-col>
+                            <ion-col class="ion-text-end">
+                                <ion-note>
+                                    <ion-icon name="fas-comments" aria-hidden="true" />
+                                    {{ 'addon.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}
+                                    <ion-badge *ngIf="discussion.numunread" class="ion-text-center">
+                                        <span aria-hidden="true">{{ discussion.numunread }}</span>
+                                        <span class="sr-only">
+                                            {{ 'addon.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread} }}
+                                        </span>
+                                    </ion-badge>
+                                </ion-note>
+                            </ion-col>
+                        </ion-row>
+                    </ion-label>
+                    <ion-button *ngIf="canPin || discussion.canlock || discussion.canfavourite" fill="clear"
+                        [ariaLabel]="('core.displayoptions' | translate)" (click)="showOptionsMenu($event, discussion)" slot="end">
+                        <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
+                    </ion-button>
+                </ion-item>
+                <ion-ripple-effect />
+            </div>
+
 
             <core-infinite-loading [enabled]="discussions && discussions.loaded && !discussions.completed" [error]="fetchFailed"
                 (action)="fetchMoreDiscussions($event)" />

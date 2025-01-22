@@ -60,6 +60,7 @@ import { CoreWSFile } from '@services/ws';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { AccordionGroupCustomEvent } from '@ionic/angular';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -232,7 +233,6 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
         // Show advanced fields if any of them has not the default value.
         this.advanced = this.formData.files.length > 0;
-
         if (!isEditing || !postId || postId <= 0) {
             this.preparePostData = undefined;
         }
@@ -620,10 +620,10 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     /**
-     * Show or hide advanced form fields.
+     * Function called when advanced accordion is toggled.
      */
-    toggleAdvanced(): void {
-        this.advanced = !this.advanced;
+    onAdvancedChanged(event: AccordionGroupCustomEvent<string>): void {
+        this.advanced = event.detail.value === 'advanced';
     }
 
     /**

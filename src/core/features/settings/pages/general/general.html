@@ -33,6 +33,11 @@
                 </ion-segment-button>
             </ion-segment>
         </ion-item>
+        <ion-item>
+            <ion-toggle [(ngModel)]="pinchToZoom" (ionChange)="pinchToZoomChanged($event)">
+                <p class="item-heading ion-text-wrap">{{ 'core.settings.enablepinchtozoom' | translate }}</p>
+            </ion-toggle>
+        </ion-item>
         <ion-item class="ion-text-wrap core-settings-general-color-scheme" *ngIf="colorSchemes.length > 0">
             <ion-select [(ngModel)]="selectedScheme" (ionChange)="colorSchemeChanged($event)" interface="action-sheet"
                 [cancelText]="'core.cancel' | translate" [disabled]="colorSchemeDisabled"

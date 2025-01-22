@@ -20,13 +20,21 @@ ion-alert {
         overflow: auto;
         border-radius: var(--border-radius) !important;
 
+        button.alert-button {
+            // By default, Ionic uses the primary color, which does not meet AA accessibility.
+            color: var(--text-color);
+        }
+
         button.alert-button.alert-button-role-destructive {
             color: var(--danger);
         }
 
     }
 
-    .alert-message {
+    // We need [class] to increase the specificity. See: https://ionicframework.com/docs/api/alert#customization
+    .alert-message[class] {
+        // By default, Ionic uses a lighter text color for Android, which does not meet AA accessibility.
+        color: var(--color);
         user-select: text;
         flex-shrink: 0;
 

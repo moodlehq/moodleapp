@@ -22,12 +22,11 @@
     display: flex;
     flex-direction: column;
     background: var(--background);
-    border: 1px solid var(--stroke);
+    border: 2px solid var(--stroke);
     border-radius: var(--mdl-shape-borderRadius-md);
 
     &.has-focus {
-        border-color: var(--a11y-focus-color);
-        border-width: 2px;
+        border-color: var(--dark);
         outline: none !important;
     }
 
@@ -58,7 +57,7 @@
     }
 
     .core-rte-editor, .core-textarea {
-        padding: 2px;
+        padding: 8px;
         margin: 2px;
         width: calc(100% - 4px);
         resize: none;

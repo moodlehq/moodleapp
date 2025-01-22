@@ -38,6 +38,7 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'core-file',
     templateUrl: 'core-file.html',
+    styleUrl: 'core-file.scss',
 })
 export class CoreFileComponent implements OnInit, OnDestroy {
 

@@ -11,6 +11,11 @@
         color: var(--ion-color-shade);
     }
 
+    ion-button.button-solid.ion-color-success.ion-focused::part(native) {
+        background: var(--ion-color);
+        color: var(--ion-color-contrast);
+    }
+
     ion-button.button-outline::part(native){
         border-color: var(--gray-400);
     }

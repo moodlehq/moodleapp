@@ -1,6 +1,6 @@
 <ion-header class="no-title">
     <ion-toolbar>
-        <ion-buttons slot="start">
+        <ion-buttons slot="start" *ngIf="!isModal">
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title />
@@ -84,7 +84,7 @@
                     </ion-item>
                     <ng-container *ngIf="contactsExpanded || course.contacts.length < 5">
                         <ion-item button class="ion-text-wrap" *ngFor="let contact of course.contacts" core-user-link [userId]="contact.id"
-                            [courseId]="isEnrolled ? course.id : null" [attr.aria-label]="'core.viewprofile' | translate" [detail]="true">
+                            [courseId]="isEnrolled ? course.id : null" [detail]="true">
                             <core-user-avatar [user]="contact" slot="start" [userId]="contact.id" [courseId]="isEnrolled ? course.id : null"
                                 [linkProfile]="false" />
                             <ion-label>

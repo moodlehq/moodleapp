@@ -319,13 +319,24 @@ export class CoreSettingsHelperProvider {
     }
 
     /**
+     * Get saved pinch-to-zoom setting.
+     *
+     * @returns True if pinch-to-zoom is enabled.
+     */
+    async getPinchToZoom(): Promise<boolean> {
+        return Boolean(await CoreConfig.get(CoreConstants.SETTINGS_PINCH_TO_ZOOM, 0));
+    }
+
+    /**
      * Init Settings related to DOM.
      */
     async initDomSettings(): Promise<void> {
         // Set the font size based on user preference.
         const zoomLevel = await this.getZoomLevel();
+        const pinchToZoom = await this.getPinchToZoom();
 
         this.applyZoomLevel(zoomLevel);
+        this.applyPinchToZoom(pinchToZoom);
 
         this.initColorScheme();
     }
@@ -375,6 +386,30 @@ export class CoreSettingsHelperProvider {
         const zoom = CoreConstants.CONFIG.zoomlevels[zoomLevel];
 
         document.documentElement.style.setProperty('--zoom-level', zoom + '%');
+    }
+
+    /**
+     * Enable or disable pinch-to-zoom.
+     *
+     * @param pinchToZoom True if pinch-to-zoom should be enabled.
+     */
+    applyPinchToZoom(pinchToZoom: boolean): void {
+        const element = document.head.querySelector('meta[name=viewport]');
+        if (!element) {
+            return;
+        }
+        const content = element.getAttribute('content');
+        if (!content) {
+            return;
+        }
+
+        element.setAttribute('content', content.replace(/maximum-scale=\d\.\d/, `maximum-scale=${pinchToZoom ? '4.0' : '1.0'}`));
+
+        // Force layout reflow.
+        document.body.style.width = '99.9999%';
+        setTimeout(() => {
+            document.body.style.width = '';
+        });
     }
 
     /**
