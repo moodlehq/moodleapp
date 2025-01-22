@@ -1743,6 +1743,7 @@
   "core.decsep": "langconfig",
   "core.defaultvalue": "tool_usertours",
   "core.delete": "moodle",
+  "core.deleted": "moodle",
   "core.deletedoffline": "local_moodlemobileapp",
   "core.deleteduser": "bulkusers",
   "core.deleting": "local_moodlemobileapp",
