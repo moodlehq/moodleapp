@@ -24,19 +24,6 @@ ion-item.item {
         &.item-lines-default:not(.item-has-interactive-control) {
             --inner-border-width: 0 0 1px 0;
         }
-
-        &.ion-touched {
-            &.ion-invalid {
-                --ion-item-border-color: var(--highlight-color-invalid);
-                --highlight-background: var(--ion-item-border-color);
-                --border-color: var(--ion-item-border-color);
-            }
-            &.ion-valid {
-                --ion-item-border-color: var(--highlight-color-valid);
-                --highlight-background: var(--ion-item-border-color);
-                --border-color: var(--ion-item-border-color);
-            }
-        }
     }
 
     // Hide details on items to align badges.
