@@ -142,6 +142,7 @@ export class CoreConstants {
     static readonly SETTINGS_COLOR_SCHEME = 'CoreSettingsColorScheme';
     static readonly SETTINGS_ANALYTICS_ENABLED = 'CoreSettingsAnalyticsEnabled';
     static readonly SETTINGS_DONT_SHOW_EXTERNAL_LINK_WARN = 'CoreSettingsDontShowExtLinkWarn';
+    static readonly SETTINGS_PINCH_TO_ZOOM = 'CoreSettingsPinchToZoom';
 
     // WS constants.
     static readonly WS_TIMEOUT = 30000; // Timeout when not in WiFi.
