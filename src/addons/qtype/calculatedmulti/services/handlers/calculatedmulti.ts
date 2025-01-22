@@ -18,6 +18,7 @@ import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/ques
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonQtypeMultichoiceHandler } from '@addons/qtype/multichoice/services/handlers/multichoice';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 /**
  * Handler to support calculated multi question type.
@@ -44,7 +45,7 @@ export class AddonQtypeCalculatedMultiHandlerService implements CoreQuestionHand
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         // This question type depends on multichoice.
         return AddonQtypeMultichoiceHandler.isCompleteResponseSingle(answers);
     }
@@ -62,7 +63,7 @@ export class AddonQtypeCalculatedMultiHandlerService implements CoreQuestionHand
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         // This question type depends on multichoice.
         return AddonQtypeMultichoiceHandler.isGradableResponseSingle(answers);
     }

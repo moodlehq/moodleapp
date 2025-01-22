@@ -37,3 +37,12 @@ export const enum QuestionDisplayOptionsValues {
     VISIBLE = 1,
     EDITABLE = 2,
 }
+
+/**
+ * Possible values for the question complete response or gradable response (compatible).
+ */
+export const enum QuestionCompleteGradableResponse {
+    UNKNOWN = -1,
+    NO = 0,
+    YES = 1,
+}

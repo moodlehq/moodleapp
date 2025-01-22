@@ -17,6 +17,7 @@ import { CoreQuestionHandler } from '@features/question/services/question-delega
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { makeSingleton } from '@singletons';
 import { CoreSites } from '@services/sites';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 /**
  * Handler to support ordering question type.
@@ -39,8 +40,8 @@ export class AddonQtypeOrderingHandlerService implements CoreQuestionHandler {
     /**
      * @inheritdoc
      */
-    isCompleteResponse(): number {
-        return 1;
+    isCompleteResponse(): QuestionCompleteGradableResponse {
+        return QuestionCompleteGradableResponse.YES;
     }
 
     /**
@@ -53,8 +54,8 @@ export class AddonQtypeOrderingHandlerService implements CoreQuestionHandler {
     /**
      * @inheritdoc
      */
-    isGradableResponse(): number {
-        return 1;
+    isGradableResponse(): QuestionCompleteGradableResponse {
+        return QuestionCompleteGradableResponse.YES;
     }
 
     /**

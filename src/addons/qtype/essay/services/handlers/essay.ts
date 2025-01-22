@@ -28,6 +28,7 @@ import { CoreObject } from '@singletons/object';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreFileHelper } from '@services/file-helper';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 /**
  * Handler to support essay question type.
@@ -150,7 +151,8 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
             return;
         }
 
-        if (this.isCompleteResponse(question, answers, component, componentId)) {
+        // Continue check in case the response completion cannot be determined.
+        if (this.isCompleteResponse(question, answers, component, componentId) === QuestionCompleteGradableResponse.YES) {
             return;
         }
 
@@ -201,34 +203,38 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         answers: CoreQuestionsAnswers,
         component: string,
         componentId: string | number,
-    ): number {
+    ):  QuestionCompleteGradableResponse {
 
         const hasTextAnswer = !!answers.answer;
         const uploadFilesSupported = question.responsefileareas !== undefined;
         const allowedOptions = this.getAllowedOptions(question);
 
         if (hasTextAnswer && this.checkInputWordCount(question, <string> answers.answer, undefined)) {
-            return 0;
+            return QuestionCompleteGradableResponse.NO;
         }
 
         if (!allowedOptions.attachments) {
-            return hasTextAnswer ? 1 : 0;
+            return hasTextAnswer ? QuestionCompleteGradableResponse.YES : QuestionCompleteGradableResponse.NO;
         }
 
         if (!uploadFilesSupported || !question.parsedSettings) {
             // We can't know if the attachments are required or if the user added any in web.
-            return -1;
+            return QuestionCompleteGradableResponse.UNKNOWN;
         }
 
         const questionComponentId = CoreQuestion.getQuestionComponentId(question, componentId);
         const attachments = CoreFileSession.getFiles(component, questionComponentId);
 
         if (!allowedOptions.text) {
-            return attachments && attachments.length >= Number(question.parsedSettings.attachmentsrequired) ? 1 : 0;
+            return attachments && attachments.length >= Number(question.parsedSettings.attachmentsrequired)
+                ? QuestionCompleteGradableResponse.YES
+                : QuestionCompleteGradableResponse.NO;
         }
 
         return ((hasTextAnswer || question.parsedSettings.responserequired === '0') &&
-                (attachments && attachments.length >= Number(question.parsedSettings.attachmentsrequired))) ? 1 : 0;
+                (attachments && attachments.length >= Number(question.parsedSettings.attachmentsrequired)))
+                    ? QuestionCompleteGradableResponse.YES
+                    : QuestionCompleteGradableResponse.NO;
     }
 
     /**
@@ -246,16 +252,18 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         answers: CoreQuestionsAnswers,
         component: string,
         componentId: string | number,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         if (question.responsefileareas === undefined) {
-            return -1;
+            return QuestionCompleteGradableResponse.UNKNOWN;
         }
 
         const questionComponentId = CoreQuestion.getQuestionComponentId(question, componentId);
         const attachments = CoreFileSession.getFiles(component, questionComponentId);
 
         // Determine if the given response has online text or attachments.
-        return (answers.answer && answers.answer !== '') || (attachments && attachments.length > 0) ? 1 : 0;
+        return (answers.answer && answers.answer !== '') || (attachments && attachments.length > 0)
+            ? QuestionCompleteGradableResponse.YES
+            : QuestionCompleteGradableResponse.NO;
     }
 
     /**

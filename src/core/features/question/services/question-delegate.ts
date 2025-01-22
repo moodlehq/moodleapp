@@ -19,6 +19,7 @@ import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreQuestionDefaultHandler } from './handlers/default-question';
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from './question';
+import { QuestionCompleteGradableResponse } from '../constants';
 
 /**
  * Interface that all question type handlers must implement.
@@ -91,7 +92,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
         answers: CoreQuestionsAnswers,
         component: string,
         componentId: string | number,
-    ): number;
+    ): QuestionCompleteGradableResponse;
 
     /**
      * Check if a student has provided enough of an answer for the question to be graded automatically,
@@ -108,7 +109,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
         answers: CoreQuestionsAnswers,
         component: string,
         componentId: string | number,
-    ): number;
+    ): QuestionCompleteGradableResponse;
 
     /**
      * Check if two responses are the same.
@@ -296,7 +297,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
         answers: CoreQuestionsAnswers,
         component: string,
         componentId: string | number,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         const type = this.getTypeName(question);
 
         const isComplete = this.executeFunctionOnEnabled<number>(
@@ -305,7 +306,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
             [question, answers, component, componentId],
         );
 
-        return isComplete ?? -1;
+        return isComplete ?? QuestionCompleteGradableResponse.UNKNOWN;
     }
 
     /**
@@ -323,7 +324,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
         answers: CoreQuestionsAnswers,
         component: string,
         componentId: string | number,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         const type = this.getTypeName(question);
 
         const isGradable = this.executeFunctionOnEnabled<number>(
@@ -332,7 +333,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
             [question, answers, component, componentId],
         );
 
-        return isGradable ?? -1;
+        return isGradable ?? QuestionCompleteGradableResponse.UNKNOWN;
     }
 
     /**

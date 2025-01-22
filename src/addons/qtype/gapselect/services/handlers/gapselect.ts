@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
@@ -53,16 +54,16 @@ export class AddonQtypeGapSelectHandlerService implements CoreQuestionHandler {
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         // We should always get a value for each select so we can assume we receive all the possible answers.
         for (const name in answers) {
             const value = answers[name];
             if (!value || value === '0') {
-                return 0;
+                return QuestionCompleteGradableResponse.NO;
             }
         }
 
-        return 1;
+        return QuestionCompleteGradableResponse.YES;
     }
 
     /**
@@ -78,16 +79,16 @@ export class AddonQtypeGapSelectHandlerService implements CoreQuestionHandler {
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         // We should always get a value for each select so we can assume we receive all the possible answers.
         for (const name in answers) {
             const value = answers[name];
             if (value && value !== '0') {
-                return 1;
+                return QuestionCompleteGradableResponse.YES;
             }
         }
 
-        return 0;
+        return QuestionCompleteGradableResponse.NO;
     }
 
     /**
@@ -108,7 +109,7 @@ export class AddonQtypeGapSelectHandlerService implements CoreQuestionHandler {
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
     ): string | undefined {
-        if (this.isCompleteResponse(question, answers)) {
+        if (this.isCompleteResponse(question, answers) === QuestionCompleteGradableResponse.YES) {
             return;
         }
 

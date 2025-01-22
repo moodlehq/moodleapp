@@ -18,6 +18,7 @@ import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/ques
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { CoreObject } from '@singletons/object';
 import { makeSingleton, Translate } from '@singletons';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 /**
  * Handler to support short answer question type.
@@ -43,8 +44,8 @@ export class AddonQtypeShortAnswerHandlerService implements CoreQuestionHandler 
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
-        return answers.answer ? 1 : 0;
+    ): QuestionCompleteGradableResponse {
+        return answers.answer ? QuestionCompleteGradableResponse.YES : QuestionCompleteGradableResponse.NO;
     }
 
     /**
@@ -60,7 +61,7 @@ export class AddonQtypeShortAnswerHandlerService implements CoreQuestionHandler 
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         return this.isCompleteResponse(question, answers);
     }
 
@@ -82,7 +83,7 @@ export class AddonQtypeShortAnswerHandlerService implements CoreQuestionHandler 
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
     ): string | undefined {
-        if (this.isGradableResponse(question, answers)) {
+        if (this.isGradableResponse(question, answers) === QuestionCompleteGradableResponse.YES) {
             return;
         }
 
