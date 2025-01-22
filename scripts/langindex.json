@@ -2452,6 +2452,7 @@
   "core.selectall": "moodle",
   "core.send": "message",
   "core.sending": "chat",
+  "core.sent": "moodle",
   "core.serverconnection": "local_moodlemobileapp",
   "core.settings.about": "local_moodlemobileapp",
   "core.settings.accessstatement": "access",

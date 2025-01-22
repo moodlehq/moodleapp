@@ -298,6 +298,7 @@
     "selectall": "Select all",
     "send": "Send",
     "sending": "Sending",
+    "sent": "Sent",
     "serverconnection": "Error connecting to the server: {{details}}",
     "show": "Show",
     "showadvanced": "Show advanced",
