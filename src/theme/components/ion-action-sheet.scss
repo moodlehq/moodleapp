@@ -2,6 +2,8 @@ ion-action-sheet {
     --button-color: var(--ion-text-color);
     --button-color-selected: var(--ion-text-color);
 
+    @include core-focus-inset-outline();
+
     .action-sheet-title {
         --color: var(--ion-text-color);
         font-weight: bold;

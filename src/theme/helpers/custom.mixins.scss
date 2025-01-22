@@ -89,6 +89,17 @@
     }
 }
 
+@mixin core-focus-inset-outline() {
+    &:focus-visible {
+        @include core-focus-inset-outline-internal();
+    }
+    @supports not selector(:focus-visible) {
+        @at-root:focus {
+            @include core-focus-inset-outline-internal();
+        }
+    }
+}
+
 @mixin core-focus-background() {
     &:focus-visible {
         @include core-focus-background-internal();
@@ -137,6 +148,10 @@
     }
 }
 
+@mixin core-focus-inset-outline-internal() {
+    @include core-focus-outline-internal();
+    outline-offset: calc(var(--a11y-shadow-focus-borderWidth) * -1);
+}
 
 @mixin core-focus-background-internal() {
     --background-focused: var(--background-focused, var(--a11y-background-focus-background));
