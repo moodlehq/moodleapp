@@ -70,7 +70,7 @@
     }
 
     // Accessibility vars.
-    --a11y-shadow-focus-boxShadowColor: var(--primary);
+    --a11y-shadow-focus-boxShadowColor: #{$blue};
 
     --text-color:       #{$text-color};
     --background-color: #{$background-color};

@@ -117,9 +117,24 @@
 }
 
 @mixin core-focus-outline-internal() {
-    // box-shadow: var(--a11y-shadow-focus-boxShadow);
-    // border-radius: var(--border-radius);
     outline: var(--a11y-shadow-focus-outline);
+    // Use primary for text input controls.
+    &:is(
+        input:not([type]),
+        input[type^=date],
+        input[type=email],
+        input[type=month],
+        input[type=number],
+        input[type=password],
+        input[type=search],
+        input[type=tel],
+        input[type=text],
+        input[type=time],
+        input[type=url],
+        input[type=week]
+    ) {
+        outline-color: var(--primary);
+    }
 }
 
 
