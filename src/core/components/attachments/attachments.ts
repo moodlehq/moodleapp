@@ -26,6 +26,8 @@ import { CoreCourses } from '@features/courses/services/courses';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreToasts } from '@services/overlays/toasts';
+import { CoreWSFile } from '@services/ws';
 
 /**
  * Component to render attachments, allow adding more and delete the current ones.
@@ -163,6 +165,18 @@ export class CoreAttachmentsComponent implements OnInit {
             } catch {
                 // User cancelled.
                 return;
+            }
+        }
+
+        // Status message for screen readers.
+        const file = this.files[index];
+        if (file) {
+            const filename = (file as CoreWSFile).filename ?? (file as FileEntry).name;
+            if (filename) {
+                CoreToasts.show({
+                    cssClass: 'sr-only',
+                    message: Translate.instant('core.filedeletedsuccessfully', { filename }),
+                });
             }
         }
 
