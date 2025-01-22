@@ -14,6 +14,14 @@
 
             .item-heading {
                 font: var(--mdl-typography-heading4-font);
+                min-height: auto;
+            }
+
+            ion-icon[slot=start] {
+                margin-inline-end: var(--mdl-spacing-2);
+                background-color: var(--gray-100);
+                border-radius: 50%;
+                padding: var(--mdl-spacing-1);
             }
         }
 
@@ -40,6 +48,13 @@
                     }
                 }
             }
+        }
+    }
+
+    .ripple-parent {
+        position: relative;
+        ion-ripple-effect {
+            z-index: 1;
         }
     }
 }

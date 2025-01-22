@@ -27,7 +27,6 @@ import {
     CoreCourseModulePrefetchDelegate,
     CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourses } from '@features/courses/services/courses';
-import { AccordionGroupChangeEventDetail } from '@ionic/angular';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -57,7 +56,6 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     sections: AddonStorageManagerCourseSection[] = [];
     totalSize = 0;
     calculatingSize = true;
-    accordionMultipleValue: string[] = [];
 
     downloadEnabled = false;
     downloadCourseEnabled = false;
@@ -126,9 +124,15 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         this.loaded = true;
 
+        let prioritizedSectionId: number | undefined;
+
         if (initialSectionId !== undefined && initialSectionId > 0) {
-            this.accordionMultipleValue.push(initialSectionId.toString());
-            this.accordionGroupChange();
+            CoreCourseHelper.flattenSections(this.sections).forEach((section) => {
+                if (section.id === initialSectionId) {
+                    section.expanded = true;
+                    prioritizedSectionId = section.id;
+                }
+            });
 
             CoreDom.scrollToElement(
                 this.elementRef.nativeElement,
@@ -136,13 +140,13 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                 { addYAxis: -10 },
             );
         } else {
-            this.accordionMultipleValue.push(this.sections[0].id.toString());
-            this.accordionGroupChange();
+            this.sections[0].expanded = true;
+            prioritizedSectionId = this.sections[0].id;
         }
 
         try {
             await Promise.all([
-                this.updateSizes(this.sections, Number(this.accordionMultipleValue[0])),
+                this.updateSizes(this.sections, prioritizedSectionId),
                 this.initCoursePrefetch(),
                 this.initModulePrefetch(),
             ]);
@@ -764,24 +768,12 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     }
 
     /**
-     * Toggle expand status.
+     * Toggle section expand status.
      *
-     * @param event Event object. If not defined, use the current value.
+     * @param section Section.
      */
-    accordionGroupChange(event?: AccordionGroupChangeEventDetail): void {
-        const sectionIds = event?.value as string[] ?? this.accordionMultipleValue;
-        const allSections = CoreCourseHelper.flattenSections(this.sections);
-        allSections.forEach((section) => {
-            section.expanded = false;
-        });
-
-        sectionIds.forEach((sectionId) => {
-            const section = allSections.find((section) => section.id === Number(sectionId));
-
-            if (section) {
-                section.expanded = true;
-            }
-        });
+    toggleSection(section: AddonStorageManagerCourseSection): void {
+        section.expanded = !section.expanded;
     }
 
     /**
