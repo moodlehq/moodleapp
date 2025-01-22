@@ -26,7 +26,10 @@ ion-alert {
 
     }
 
-    .alert-message {
+    // We need [class] to increase the specificity. See: https://ionicframework.com/docs/api/alert#customization
+    .alert-message[class] {
+        // By default, Ionic uses a lighter text color for Android, which does not meet AA accessibility.
+        color: var(--color);
         user-select: text;
         flex-shrink: 0;
 
