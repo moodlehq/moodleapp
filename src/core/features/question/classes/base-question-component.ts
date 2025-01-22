@@ -26,6 +26,8 @@ import { CoreQuestionBehaviourButton, CoreQuestionHelper, CoreQuestionQuestion }
 import { ContextLevel } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
+import { CorePromisedValue } from '@classes/promised-value';
+import { AsyncDirective } from '@classes/async-directive';
 
 /**
  * Base class for components to render a question.
@@ -33,7 +35,7 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 @Component({
     template: '',
 })
-export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonModQuizQuestion> implements OnInit {
+export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonModQuizQuestion> implements OnInit, AsyncDirective {
 
     @Input() question?: T; // The question to render.
     @Input() component?: string; // The component the question belongs to.
@@ -54,6 +56,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 
     protected logger: CoreLogger;
     protected hostElement: HTMLElement;
+    protected onReadyPromise = new CorePromisedValue<void>();
 
     constructor(@Optional() @Inject('') logName: string, elementRef: ElementRef) {
         this.logger = CoreLogger.getInstance(logName);
@@ -82,6 +85,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
      */
     init(): void {
         this.initComponent();
+        this.onReadyPromise.resolve();
     }
 
     /**
@@ -147,7 +151,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
             return false;
         }
 
-        const question: AddonModQuizCalculatedQuestion = this.question;
+        const question: AddonModQuizNumericalQuestion = this.question;
         question.options = [];
 
         for (const i in radios) {
@@ -209,7 +213,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
             return false;
         }
 
-        const question: AddonModQuizCalculatedQuestion = this.question;
+        const question: AddonModQuizNumericalQuestion = this.question;
         const selectModel: AddonModQuizQuestionSelect = {
             id: select.id,
             name: select.name,
@@ -726,12 +730,19 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
         return questionEl;
     }
 
+    /**
+     * @inheritdoc
+     */
+    async ready(): Promise<void> {
+        return this.onReadyPromise;
+    }
+
 }
 
 /**
  * Any possible types of question.
  */
-export type AddonModQuizQuestion = AddonModQuizCalculatedQuestion | AddonModQuizEssayQuestion | AddonModQuizTextQuestion |
+export type AddonModQuizQuestion = AddonModQuizNumericalQuestion | AddonModQuizEssayQuestion | AddonModQuizTextQuestion |
 AddonModQuizMatchQuestion | AddonModQuizMultichoiceQuestion;
 
 /**
@@ -744,7 +755,7 @@ export type AddonModQuizQuestionBasicData = CoreQuestionQuestion & {
 /**
  * Data for calculated question.
  */
-export type AddonModQuizCalculatedQuestion = AddonModQuizTextQuestion & {
+export type AddonModQuizNumericalQuestion = AddonModQuizTextQuestion & {
     select?: AddonModQuizQuestionSelect; // Select data if units use a select.
     selectFirst?: boolean; // Whether the select is first or after the input.
     options?: AddonModQuizQuestionRadioOption[]; // Options if units use radio buttons.

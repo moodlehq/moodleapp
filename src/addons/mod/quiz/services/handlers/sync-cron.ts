@@ -27,21 +27,14 @@ export class AddonModQuizSyncCronHandlerService implements CoreCronHandler {
     name = 'AddonModQuizSyncCronHandler';
 
     /**
-     * Execute the process.
-     * Receives the ID of the site affected, undefined for all sites.
-     *
-     * @param siteId ID of the site affected, undefined for all sites.
-     * @param force Wether the execution is forced (manual sync).
-     * @returns Promise resolved when done, rejected if failure.
+     * @inheritdoc
      */
     execute(siteId?: string, force?: boolean): Promise<void> {
         return AddonModQuizSync.syncAllQuizzes(siteId, force);
     }
 
     /**
-     * Get the time between consecutive executions.
-     *
-     * @returns Time between consecutive executions (in ms).
+     * @inheritdoc
      */
     getInterval(): number {
         return AddonModQuizSync.syncInterval;

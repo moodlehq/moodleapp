@@ -50,6 +50,7 @@ import {
     AddonModQuizGradeMethods,
     AddonModQuizDisplayOptionsAttemptStates,
     ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD,
+    AddonModQuizNavMethods,
 } from '../constants';
 import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
@@ -1577,7 +1578,7 @@ export class AddonModQuizProvider {
      * @returns Whether navigation is sequential.
      */
     isNavigationSequential(quiz: AddonModQuizQuizWSData): boolean {
-        return quiz.navmethod == 'sequential';
+        return quiz.navmethod === AddonModQuizNavMethods.SEQ;
     }
 
     /**
@@ -2286,7 +2287,7 @@ export type AddonModQuizQuizWSData = {
     reviewrightanswer?: number; // Whether users are allowed to review their quiz attempts at various times.
     reviewoverallfeedback?: number; // Whether users are allowed to review their quiz attempts at various times.
     questionsperpage?: number; // How often to insert a page break when editing the quiz, or when shuffling the question order.
-    navmethod?: string; // Any constraints on how the user is allowed to navigate around the quiz.
+    navmethod?: AddonModQuizNavMethods; // Any constraints on how the user is allowed to navigate around the quiz.
     shuffleanswers?: number; // Whether the parts of the question should be shuffled, in those question types that support it.
     sumgrades?: number | null; // The total of all the question instance maxmarks.
     grade?: number; // The total that the quiz overall grade is scaled to be out of.

@@ -16,6 +16,7 @@ import { Type } from '@angular/core';
 
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '../services/question';
 import { CoreQuestionHandler } from '../services/question-delegate';
+import { QuestionCompleteGradableResponse } from '../constants';
 
 /**
  * Base handler for question types.
@@ -100,8 +101,8 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
         answers: CoreQuestionsAnswers, // eslint-disable-line @typescript-eslint/no-unused-vars
         component: string, // eslint-disable-line @typescript-eslint/no-unused-vars
         componentId: string | number, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): number {
-        return -1;
+    ): QuestionCompleteGradableResponse {
+        return QuestionCompleteGradableResponse.UNKNOWN;
     }
 
     /**
@@ -119,8 +120,8 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
         answers: CoreQuestionsAnswers, // eslint-disable-line @typescript-eslint/no-unused-vars
         component: string, // eslint-disable-line @typescript-eslint/no-unused-vars
         componentId: string | number, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): number {
-        return -1;
+    ): QuestionCompleteGradableResponse {
+        return QuestionCompleteGradableResponse.UNKNOWN;
     }
 
     /**

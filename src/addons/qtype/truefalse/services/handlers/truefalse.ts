@@ -18,7 +18,8 @@ import { CoreQuestionHandler } from '@features/question/services/question-delega
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreObject } from '@singletons/object';
 import { AddonModQuizMultichoiceQuestion } from '@features/question/classes/base-question-component';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 /**
  * Handler to support true/false question type.
@@ -45,8 +46,8 @@ export class AddonQtypeTrueFalseHandlerService implements CoreQuestionHandler {
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
-        return answers.answer ? 1 : 0;
+    ): QuestionCompleteGradableResponse {
+        return answers.answer ? QuestionCompleteGradableResponse.YES : QuestionCompleteGradableResponse.NO;
     }
 
     /**
@@ -62,7 +63,7 @@ export class AddonQtypeTrueFalseHandlerService implements CoreQuestionHandler {
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         return this.isCompleteResponse(question, answers);
     }
 
@@ -88,6 +89,20 @@ export class AddonQtypeTrueFalseHandlerService implements CoreQuestionHandler {
             // The user hasn't answered. Delete the answer to prevent marking one of the answers automatically.
             delete answers[question.optionsName];
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        if (this.isGradableResponse(question, answers) === QuestionCompleteGradableResponse.YES) {
+            return;
+        }
+
+        return Translate.instant('addon.qtype_truefalse.pleaseselectananswer');
     }
 
 }

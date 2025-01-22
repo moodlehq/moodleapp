@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 /**
  * Handler to support drag-and-drop onto image question type.
@@ -53,17 +54,17 @@ export class AddonQtypeDdImageOrTextHandlerService implements CoreQuestionHandle
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         // An answer is complete if all drop zones have an answer.
         // We should always receive all the drop zones with their value ('' if not answered).
         for (const name in answers) {
             const value = answers[name];
             if (!value || value === '0') {
-                return 0;
+                return QuestionCompleteGradableResponse.NO;
             }
         }
 
-        return 1;
+        return QuestionCompleteGradableResponse.YES;
     }
 
     /**
@@ -79,15 +80,15 @@ export class AddonQtypeDdImageOrTextHandlerService implements CoreQuestionHandle
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse{
         for (const name in answers) {
             const value = answers[name];
             if (value && value !== '0') {
-                return 1;
+                return QuestionCompleteGradableResponse.YES;
             }
         }
 
-        return 0;
+        return QuestionCompleteGradableResponse.NO;
     }
 
     /**
@@ -99,6 +100,20 @@ export class AddonQtypeDdImageOrTextHandlerService implements CoreQuestionHandle
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
         return CoreQuestion.compareAllAnswers(prevAnswers, newAnswers);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        if (this.isCompleteResponse(question, answers) === QuestionCompleteGradableResponse.YES) {
+            return;
+        }
+
+        return Translate.instant('addon.qtype_ddimageortext.pleasedraganimagetoeachdropregion');
     }
 
 }

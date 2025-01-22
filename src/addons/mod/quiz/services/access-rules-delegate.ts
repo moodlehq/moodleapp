@@ -256,7 +256,6 @@ export class AddonModQuizAccessRuleDelegateService extends CoreDelegate<AddonMod
      * @param preflightData Preflight data gathered.
      * @param prefetch Whether the user is prefetching the quiz.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
      */
     async notifyPreflightCheckPassed(
         rules: string[],
@@ -286,7 +285,6 @@ export class AddonModQuizAccessRuleDelegateService extends CoreDelegate<AddonMod
      * @param preflightData Preflight data gathered.
      * @param prefetch Whether the user is prefetching the quiz.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
      */
     async notifyPreflightCheckFailed(
         rules: string[],

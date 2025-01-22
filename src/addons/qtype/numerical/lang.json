@@ -1,0 +1,6 @@
+{
+    "pleaseenterananswer": "Please enter an answer.",
+    "invalidnumber": "You must enter a valid number.",
+    "unitnotselected": "You must select a unit.",
+    "invalidnumbernounit": "You must enter a valid number. Do not include a unit in your response."
+}

@@ -122,6 +122,10 @@ export class CorePromisedValue<T = unknown> extends CorePromise<T> {
      * Reset status and value.
      */
     reset(): void {
+        if (!this.isSettled()) {
+            return;
+        }
+
         delete this.resolvedValue;
         delete this.rejectedReason;
 

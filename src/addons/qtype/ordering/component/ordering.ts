@@ -48,11 +48,15 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
      */
     init(): void {
         if (!this.question) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 
         const questionElement = this.initComponent();
         if (!questionElement) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 
@@ -63,6 +67,7 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
         const listContainer = questionElement.querySelector('.sortablelist');
         if (!listContainer) {
             this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
+            this.onReadyPromise.resolve();
 
             return CoreQuestionHelper.showComponentError(this.onAbort);
         }
@@ -99,6 +104,7 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
         questionElement.querySelector('.ablock')?.remove();
         inputEl?.remove();
         this.question.text = CoreDomUtils.getContentsOfElement(questionElement, '.qtext');
+        this.onReadyPromise.resolve();
     }
 
     /**

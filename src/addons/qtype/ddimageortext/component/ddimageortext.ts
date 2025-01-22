@@ -45,11 +45,15 @@ export class AddonQtypeDdImageOrTextComponent
      */
     init(): void {
         if (!this.question) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 
         const questionElement = this.initComponent();
         if (!questionElement) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 
@@ -57,6 +61,7 @@ export class AddonQtypeDdImageOrTextComponent
         const ddArea = questionElement.querySelector('.ddarea');
         if (!ddArea) {
             this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
+            this.onReadyPromise.resolve();
 
             return CoreQuestionHelper.showComponentError(this.onAbort);
         }
@@ -84,6 +89,7 @@ export class AddonQtypeDdImageOrTextComponent
         }
 
         this.question.loaded = false;
+        this.onReadyPromise.resolve();
     }
 
     /**

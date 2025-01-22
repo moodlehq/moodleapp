@@ -14,18 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { AddonQtypeCalculatedComponent } from './component/calculated';
 import { AddonQtypeCalculatedHandler } from './services/handlers/calculated';
 
 @NgModule({
-    declarations: [
-        AddonQtypeCalculatedComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -34,9 +26,6 @@ import { AddonQtypeCalculatedHandler } from './services/handlers/calculated';
                 CoreQuestionDelegate.registerHandler(AddonQtypeCalculatedHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonQtypeCalculatedComponent,
     ],
 })
 export class AddonQtypeCalculatedModule {}

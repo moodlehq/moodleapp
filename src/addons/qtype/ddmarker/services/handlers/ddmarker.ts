@@ -13,12 +13,13 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { CoreQuestionHelper, CoreQuestionQuestion } from '@features/question/services/question-helper';
 import { CoreWSFile } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 /**
  * Handler to support drag-and-drop markers question type.
@@ -55,15 +56,15 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         // If 1 dragitem is set we assume the answer is complete (like Moodle does).
         for (const name in answers) {
-            if (answers[name]) {
-                return 1;
+            if (name !== ':sequencecheck' && answers[name]) {
+                return QuestionCompleteGradableResponse.YES;
             }
         }
 
-        return 0;
+        return QuestionCompleteGradableResponse.NO;
     }
 
     /**
@@ -79,7 +80,7 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         return this.isCompleteResponse(question, answers);
     }
 
@@ -102,7 +103,7 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
 
         CoreQuestionHelper.extractQuestionScripts(treatedQuestion, usageId);
 
-        if (treatedQuestion.amdArgs && typeof treatedQuestion.amdArgs[1] == 'string') {
+        if (treatedQuestion.amdArgs && typeof treatedQuestion.amdArgs[1] === 'string') {
             // Moodle 3.6+.
             return [{
                 fileurl: treatedQuestion.amdArgs[1],
@@ -110,6 +111,20 @@ export class AddonQtypeDdMarkerHandlerService implements CoreQuestionHandler {
         }
 
         return [];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        if (this.isCompleteResponse(question, answers) === QuestionCompleteGradableResponse.YES) {
+            return;
+        }
+
+        return Translate.instant('addon.qtype_ddmarker.pleasedragatleastonemarker');
     }
 
 }

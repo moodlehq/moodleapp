@@ -334,7 +334,6 @@ export class AddonModQuizHelperProvider {
      * @param page Page to load, -1 to all questions in same page.
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
      */
     async handleReviewLink(attemptId: number, page?: number, quizId?: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();

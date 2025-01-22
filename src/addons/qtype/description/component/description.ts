@@ -36,12 +36,16 @@ export class AddonQtypeDescriptionComponent extends CoreQuestionBaseComponent {
     init(): void {
         const questionEl = this.initComponent();
         if (!questionEl) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 
         // Get the "seen" hidden input.
         const input = questionEl.querySelector<HTMLInputElement>('input[type="hidden"][name*=seen]');
         if (!input) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 

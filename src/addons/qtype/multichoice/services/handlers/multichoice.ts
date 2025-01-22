@@ -18,7 +18,9 @@ import { AddonModQuizMultichoiceQuestion } from '@features/question/classes/base
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { CoreObject } from '@singletons/object';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
+import { CoreUtils } from '@singletons/utils';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 /**
  * Handler to support multichoice question type.
@@ -44,15 +46,15 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         let isSingle = true;
         let isMultiComplete = false;
 
         // To know if it's single or multi answer we need to search for answers with "choice" in the name.
         for (const name in answers) {
-            if (name.indexOf('choice') != -1) {
+            if (name.indexOf('choice') !== -1) {
                 isSingle = false;
-                if (answers[name]) {
+                if (CoreUtils.isTrueOrOne(answers[name])) {
                     isMultiComplete = true;
                 }
             }
@@ -63,7 +65,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
             return this.isCompleteResponseSingle(answers);
         } else {
             // Multi.
-            return isMultiComplete ? 1 : 0;
+            return isMultiComplete ? QuestionCompleteGradableResponse.YES : QuestionCompleteGradableResponse.NO;
         }
     }
 
@@ -73,8 +75,10 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
      * @param answers The question answers (without prefix).
      * @returns 1 if complete, 0 if not complete, -1 if cannot determine.
      */
-    isCompleteResponseSingle(answers: CoreQuestionsAnswers): number {
-        return (answers.answer && answers.answer !== '') ? 1 : 0;
+    isCompleteResponseSingle(answers: CoreQuestionsAnswers): QuestionCompleteGradableResponse {
+        return (answers.answer && answers.answer !== '')
+            ? QuestionCompleteGradableResponse.YES
+            : QuestionCompleteGradableResponse.NO;
     }
 
     /**
@@ -90,7 +94,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         return this.isCompleteResponse(question, answers);
     }
 
@@ -101,7 +105,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
      * @param answers Object with the question answers (without prefix).
      * @returns 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
-    isGradableResponseSingle(answers: CoreQuestionsAnswers): number {
+    isGradableResponseSingle(answers: CoreQuestionsAnswers): QuestionCompleteGradableResponse {
         return this.isCompleteResponseSingle(answers);
     }
 
@@ -158,6 +162,22 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
                sending an empty string (default value) will mark the first option as selected. */
             delete answers[question.optionsName];
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: AddonModQuizMultichoiceQuestion,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        if (this.isGradableResponse(question, answers) === QuestionCompleteGradableResponse.YES) {
+            return;
+        }
+
+        return question.multi
+            ? Translate.instant('addon.qtype_multichoice.pleaseselectatleastoneanswer')
+            : Translate.instant('addon.qtype_multichoice.pleaseselectananswer');
     }
 
 }

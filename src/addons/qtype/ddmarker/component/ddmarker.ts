@@ -51,11 +51,15 @@ export class AddonQtypeDdMarkerComponent
      */
     init(): void {
         if (!this.question) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 
         const questionElement = this.initComponent();
         if (!questionElement) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 
@@ -65,6 +69,7 @@ export class AddonQtypeDdMarkerComponent
 
         if (!ddArea || !ddForm) {
             this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
+            this.onReadyPromise.resolve();
 
             return CoreQuestionHelper.showComponentError(this.onAbort);
         }
@@ -107,6 +112,7 @@ export class AddonQtypeDdMarkerComponent
         }
 
         this.question.loaded = false;
+        this.onReadyPromise.resolve();
     }
 
     /**

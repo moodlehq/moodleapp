@@ -139,7 +139,6 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
      * @param quiz Quiz.
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
      */
     protected async prefetchAfterUpdateQuiz(
         module: CoreCourseModuleBasicInfo,
@@ -187,7 +186,6 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
      *
      * @param force Wether to force sync not depending on last execution.
      * @param siteId Site ID to sync.
-     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncAllQuizzesFunc(force: boolean, siteId: string): Promise<void> {
         // Get all offline attempts.
