@@ -1,4 +1,4 @@
-@addon_blog @core_blog @app @javascript @lms_from4.4
+@addon_blog @app @core @core_blog @javascript @lms_from4.4
 Feature: Blog entries
   In order to modify or delete a blog entry
   As a user

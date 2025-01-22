@@ -1,4 +1,4 @@
-@core_dataprivacy @app @javascript @lms_from4.4
+@core_dataprivacy @app @tool @tool_dataprivacy @javascript @lms_from4.4
 Feature: Data export and delete from the privacy API
   In order to export or delete data for users and meet legal requirements
   I need to be able to request my data data be exported or deleted

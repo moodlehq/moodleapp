@@ -1,4 +1,4 @@
-@core_login @app @javascript
+@core_login @app @core @javascript
 Feature: Test basic usage of login in app
   I need basic login functionality to work
 

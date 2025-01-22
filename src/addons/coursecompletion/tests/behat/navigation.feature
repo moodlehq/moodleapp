@@ -1,4 +1,4 @@
-@addon_coursecompletion @app @javascript
+@addon_coursecompletion @app @block @block_completionstatus @block_selfcompletion @javascript
 Feature: Course completion navigation
 
   Background:

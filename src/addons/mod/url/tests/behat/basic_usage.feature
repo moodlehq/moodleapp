@@ -1,4 +1,4 @@
-@addon_mod_url @app @javascript
+@addon_mod_url @app @mod @mod_url @javascript
 Feature: Test basic usage of url activity in app
 
   Background:

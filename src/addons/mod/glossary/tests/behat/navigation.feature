@@ -1,4 +1,4 @@
-@addon_mod_glossary @app @javascript
+@addon_mod_glossary @app @mod @mod_glossary @javascript
 Feature: Test glossary navigation
 
   Background:

@@ -1,4 +1,4 @@
-@core @app @javascript
+@core_navigation @app @javascript
 Feature: It navigates properly within activities.
 
   Background:

@@ -1,4 +1,4 @@
-@addon_mod_assign @app @javascript
+@addon_mod_assign @app @mod @mod_assign @javascript
 Feature: Test assignments navigation
 
   Background:
