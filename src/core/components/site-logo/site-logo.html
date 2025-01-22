@@ -1,7 +1,7 @@
 <div class="core-logo-container" *ngIf="showLogo && logoLoaded">
-    <img *ngIf="siteLogo" [src]="siteLogo" class="core-logo" [alt]="siteName" core-external-content [siteId]="siteId"
-        (error)="imageError()">
-    <img *ngIf="!siteLogo" [src]="fallbackLogo" class="core-logo" [alt]="siteName">
+    <img *ngIf="siteLogo" [src]="siteLogo" class="core-logo" [alt]="'core.login.logoof' | translate: { $a: siteName }" core-external-content
+        [siteId]="siteId" (error)="imageError()">
+    <img *ngIf="!siteLogo" [src]="fallbackLogo" class="core-logo" [alt]="'core.login.logoof' | translate: { $a: appName }">
 </div>
 
 <p *ngIf="showSiteName && siteNameMode === 'p' && siteName" class="ion-no-margin ion-no-padding core-logo-sitename">

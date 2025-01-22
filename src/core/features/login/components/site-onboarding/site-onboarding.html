@@ -16,7 +16,8 @@
 <ion-content class="ion-padding">
     <div>
         <div class="ion-text-center ion-padding core-login-site-logo">
-            <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation" alt="">
+            <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation"
+                [alt]="'core.login.logoof' | translate: { $a: appName }">
         </div>
 
         <h1 class="core-login-onboarding-step">

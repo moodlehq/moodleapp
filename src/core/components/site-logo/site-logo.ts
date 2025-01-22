@@ -20,6 +20,7 @@ import { CoreSite } from '@classes/sites/site';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
+import { CoreConstants } from '@/core/constants';
 
 /**
  * Component to render the current site logo.
@@ -46,6 +47,7 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
     logoLoaded = false;
     fallbackLogo = '';
     showSiteName = true;
+    appName = CoreConstants.CONFIG.appname;
 
     protected updateSiteObserver?: CoreEventObserver;
 
