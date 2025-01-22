@@ -26,7 +26,7 @@
     border-radius: var(--mdl-shape-borderRadius-md);
 
     &.has-focus {
-        border-color: var(--a11y-focus-color);
+        border-color: var(--primary);
         border-width: 2px;
         outline: none !important;
     }
