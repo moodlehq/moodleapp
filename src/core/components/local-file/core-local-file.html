@@ -1,13 +1,15 @@
 <form (ngSubmit)="changeName(newFileName, $event)" #nameForm>
-    <ion-card class="card-file">
-        <ion-item class="ion-text-wrap item-file" (click)="openFile($event)" button [detail]="false">
+    <ion-card class="card-file ion-activatable">
+        <ion-item class="ion-text-wrap item-file" (click)="openFile($event)" tappable [detail]="false">
             <ion-thumbnail slot="start">
                 <img [src]="fileIcon" [alt]="fileExtension" role="presentation" />
             </ion-thumbnail>
 
             <ion-label *ngIf="!editMode">
                 <!-- File name and edit button (if editable). -->
-                <p class="item-heading">{{fileName}}</p>
+                <p class="item-heading">
+                    <span (ariaButtonClick)="openFile($event)">{{fileName}}</span>
+                </p>
                 <!-- More data about the file. -->
                 <p *ngIf="size || timemodified">
                     <ng-container *ngIf="size">{{ size }}</ng-container>
@@ -45,5 +47,6 @@
                 </ng-container>
             </div>
         </ion-item>
+        <ion-ripple-effect />
     </ion-card>
 </form>
