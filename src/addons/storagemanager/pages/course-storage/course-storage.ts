@@ -95,7 +95,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         try {
-            this.courseId = CoreNavigator.getRequiredRouteParam('courseId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
         } catch (error) {
             CoreAlerts.showError(error);
 
