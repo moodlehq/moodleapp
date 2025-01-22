@@ -96,12 +96,12 @@
     </ion-row>
 
     <core-empty-box *ngIf="filteredCourses.length === 0" image="assets/img/icons/courses.svg">
-        <p *ngIf="hasCourses" class="item-heading">
+        <h3 *ngIf="hasCourses" class="item-heading">
             {{'addon.block_myoverview.noresult' | translate}}
-        </p>
-        <p *ngIf="!hasCourses" class="item-heading">
+        </h3>
+        <h3 *ngIf="!hasCourses" class="item-heading">
             {{'addon.block_myoverview.nocoursesenrolled' | translate}}
-        </p>
+        </h3>
         <ng-container *ngIf="searchEnabled">
             <p *ngIf="hasCourses" class="subdued">
                 {{'addon.block_myoverview.noresultdescription' | translate}}
