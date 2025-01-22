@@ -31,12 +31,27 @@ ion-item.item {
         --detail-icon-opacity: 0;
     }
 
-    &.item-has-interactive-control:focus-within {
-        @include core-focus-outline();
+    &.item-has-interactive-control:focus-within,
+    &[button]::part(native) {
+        @include core-focus-inset-outline();
+    }
+
+    &:has(ion-radio:focus-visible)::part(native)::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        @include core-focus-inset-outline-internal();
     }
 
     &.item-has-interactive-control.item-interactive-disabled {
         pointer-events: none;
+    }
+
+    &.item-radio-checked {
+        font-weight: bold;
     }
 }
 
