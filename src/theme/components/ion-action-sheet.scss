@@ -47,3 +47,10 @@ ion-action-sheet {
     z-index: 100;
     cursor: pointer;
 }
+
+// We need [class] to increase the specificity. See: https://ionicframework.com/docs/api/action-sheet#theming
+.action-sheet-button[class] {
+    &, &.ion-focused {
+        color: var(--text-color);
+    }
+}
