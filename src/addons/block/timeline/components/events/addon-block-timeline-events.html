@@ -9,7 +9,14 @@
 <ion-item-group *ngFor="let dayEvents of events">
     <ion-item>
         <ion-label>
-            <h4>{{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"strftimedaydate" }}</h4>
+            @if (course) {
+            <h3><ng-container *ngTemplateOutlet="date" /></h3>
+            } @else {
+            <h4><ng-container *ngTemplateOutlet="date" /></h4>
+            }
+            <ng-template #date>
+                {{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"strftimedaydate" }}
+            </ng-template>
         </ion-label>
     </ion-item>
     <ng-container *ngFor="let event of dayEvents.events">
