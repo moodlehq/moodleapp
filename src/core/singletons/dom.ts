@@ -580,7 +580,16 @@ export class CoreDom {
     ): void {
         const enabled = () => !CoreUtils.isTrueOrOne(element.dataset.disabledA11yClicks ?? 'false');
 
-        element.addEventListener('click', (event) => enabled() && callback(event));
+        element.addEventListener('click', (event) => {
+            if (!enabled()) {
+                return;
+            }
+
+            callback(event);
+
+            event.preventDefault();
+            event.stopPropagation();
+        });
 
         element.addEventListener('keydown', (event) => {
             if (!enabled()) {
