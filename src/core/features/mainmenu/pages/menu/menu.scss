@@ -56,7 +56,10 @@ core-user-menu-button {
 }
 
 ion-tab-button {
+    color: var(--ion-text-color-step-400);
+
     &.tab-selected {
+        color: var(--dark);
         background: var(--background-selected);
     }
 
@@ -93,6 +96,13 @@ ion-tab-button {
 
 ion-tabs.placement-bottom {
     ion-tab-button {
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+
+        &.tab-selected {
+            border-top-color: var(--core-tab-border-color-active);
+        }
+
         ion-icon.core-tab-icon {
             margin-bottom: var(--network-margin-bottom);
             transition: margin 500ms ease-in-out, transform 300ms ease-in-out;
@@ -138,6 +148,13 @@ ion-tabs.placement-side {
         ion-tab-button {
             --padding-start: 0;
             --padding-end: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+
+            &.tab-selected {
+                border-left-color: var(--core-tab-border-color-active);
+            }
+
             ion-badge.core-tab-badge {
                 @include position(null, 1px, null, auto);
             }
@@ -146,7 +163,7 @@ ion-tabs.placement-side {
 
         ion-tab-button, core-user-menu-button {
             width: 100%;
-            min-height: var(--menutabbar-size);
+            min-height: calc(var(--menutabbar-size) - 8px);
             flex: 0;
 
             ion-icon.core-tab-badge,
