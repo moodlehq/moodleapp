@@ -483,6 +483,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             component: CoreCourseCourseIndexComponent,
             initialBreakpoint: 1,
             breakpoints: [0, 1],
+            handle: false,
             componentProps: {
                 course: this.course,
                 sections: this.sections,
