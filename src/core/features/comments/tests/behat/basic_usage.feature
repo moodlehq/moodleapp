@@ -1,4 +1,4 @@
-@core_comments @app @javascript
+@core_comments @app @core_comment @javascript
 Feature: Test basic usage of comments in app
   In order to participate in the comments while using the mobile app
   As a student

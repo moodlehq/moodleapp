@@ -1,4 +1,4 @@
-@addon_mod_forum @app @javascript
+@addon_mod_forum @app @mod @mod_forum @javascript
 Feature: Test basic usage of forum activity in app
   In order to participate in the forum while using the mobile app
   As a student

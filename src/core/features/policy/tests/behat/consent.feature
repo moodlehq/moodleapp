@@ -1,4 +1,4 @@
-@core_policy @app @javascript @lms_from4.4
+@core_policy @app @tool @tool_policy @javascript @lms_from4.4
 Feature: Test accepting pending policies on signup
 
   Background:

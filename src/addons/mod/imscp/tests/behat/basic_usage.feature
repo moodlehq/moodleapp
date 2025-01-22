@@ -1,4 +1,4 @@
-@addon_mod_imscp @app @javascript
+@addon_mod_imscp @app @mod @mod_imscp @javascript
 Feature: Test basic usage of imscp activity in app
 
   Background:
