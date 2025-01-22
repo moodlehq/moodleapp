@@ -152,3 +152,37 @@ index c3d2d8e..bc40d4f 100644
      const root = getElementRoot(baseEl);
      const contentEl = root.querySelector('.popover-content');
      const referenceSizeEl = trigger || ((_a = ev === null || ev === void 0 ? void 0 : ev.detail) === null || _a === void 0 ? void 0 : _a.ionShadowTarget) || (ev === null || ev === void 0 ? void 0 : ev.target);
+diff --git a/node_modules/@ionic/core/dist/esm/input-shims-0314bbe5.js b/node_modules/@ionic/core/dist/esm/input-shims-0314bbe5.js
+index dd9d410..846146f 100644
+--- a/node_modules/@ionic/core/dist/esm/input-shims-0314bbe5.js
++++ b/node_modules/@ionic/core/dist/esm/input-shims-0314bbe5.js
+@@ -338,7 +338,8 @@ const enableScrollAssist = (componentEl, inputEl, contentEl, footerEl, keyboardH
+     const focusOut = () => {
+         hasKeyboardBeenPresentedForTextField = false;
+         win === null || win === void 0 ? void 0 : win.removeEventListener('ionKeyboardDidShow', keyboardShow);
+-        componentEl.removeEventListener('focusout', focusOut);
++        // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
++        inputEl.removeEventListener('focusout', focusOut);
+     };
+     /**
+      * When the input is about to receive
+@@ -358,13 +358,15 @@ const enableScrollAssist = (componentEl, inputEl, contentEl, footerEl, keyboardH
+         }
+         jsSetFocus(componentEl, inputEl, contentEl, footerEl, keyboardHeight, addScrollPadding, disableClonedInput, platformHeight);
+         win === null || win === void 0 ? void 0 : win.addEventListener('ionKeyboardDidShow', keyboardShow);
+-        componentEl.addEventListener('focusout', focusOut);
++        // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
++        inputEl.addEventListener('focusout', focusOut);
+     };
+-    componentEl.addEventListener('focusin', focusIn);
++    // Patched: Attach focusin/focusout events to inputEl instead of componentEl to allow focusing buttons inside <ion-input>.
++    inputEl.addEventListener('focusin', focusIn);
+     return () => {
+-        componentEl.removeEventListener('focusin', focusIn);
++        inputEl.removeEventListener('focusin', focusIn);
+         win === null || win === void 0 ? void 0 : win.removeEventListener('ionKeyboardDidShow', keyboardShow);
+-        componentEl.removeEventListener('focusout', focusOut);
++        inputEl.removeEventListener('focusout', focusOut);
+     };
+ };
+ /**
