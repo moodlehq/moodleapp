@@ -186,3 +186,14 @@ index dd9d410..846146f 100644
      };
  };
  /**
+--- a/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
++++ b/node_modules/@ionic/core/dist/esm/ion-item_8.entry.js
+@@ -109,7 +109,7 @@ const Item = class {
+     // inputs, then those need to individually get each click
+     hasCover() {
+         const inputs = this.el.querySelectorAll('ion-checkbox, ion-datetime, ion-select, ion-radio');
+-        return inputs.length === 1 && !this.multipleInputs;
++        return inputs.length === 1;
+     }
+     // If the item has an href or button property it will render a native
+     // anchor or button that is clickable
