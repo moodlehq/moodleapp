@@ -91,3 +91,10 @@ ion-item.item {
 div.core-course-index-subsection {
     @include padding-horizontal(16px, null);
 }
+
+.ripple-parent {
+    position: relative;
+    ion-ripple-effect {
+        z-index: 1;
+    }
+}
