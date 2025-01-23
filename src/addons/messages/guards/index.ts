@@ -14,8 +14,8 @@
 
 import { ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
 import { Router } from '@singletons';
-import { AddonMessagesMainMenuHandlerService } from '../services/handlers/mainmenu';
 import { AddonMessages } from '../services/messages';
+import { ADDON_MESSAGES_PAGE_NAME } from '../constants';
 
 /**
  * Guard to redirect to the right page based on the current Moodle site version.
@@ -24,7 +24,7 @@ import { AddonMessages } from '../services/messages';
  */
 export const messagesIndexGuard: CanActivateFn = async (route: ActivatedRouteSnapshot) => {
     const enabled = AddonMessages.isGroupMessagingEnabled();
-    const path = `/main/${AddonMessagesMainMenuHandlerService.PAGE_NAME}/` + ( enabled ? 'group-conversations' : 'index');
+    const path = `/main/${ADDON_MESSAGES_PAGE_NAME}/` + ( enabled ? 'group-conversations' : 'index');
 
     const newRoute = Router.parseUrl(path);
 

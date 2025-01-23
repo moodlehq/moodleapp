@@ -29,6 +29,8 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT } from '@addons/messages/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
 /**
  * Page that displays the list of contacts.
@@ -37,8 +39,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-messages-contacts',
     templateUrl: 'contacts.html',
     styleUrl: '../../messages-common.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSearchComponentsModule,
+    ],
 })
-export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
+export default class AddonMessagesContacts35Page implements OnInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
