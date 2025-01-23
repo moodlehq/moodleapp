@@ -21,6 +21,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { ModalController } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays the list of conversations, including group conversations.
@@ -28,6 +29,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-messages-conversation-info',
     templateUrl: 'conversation-info.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonMessagesConversationInfoComponent implements OnInit {
 
@@ -45,7 +50,7 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
     }
 
     /**
-     * Component loaded.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.fetchData().finally(() => {

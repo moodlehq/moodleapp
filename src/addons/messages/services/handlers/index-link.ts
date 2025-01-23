@@ -18,7 +18,7 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonMessages } from '../messages';
-import { AddonMessagesMainMenuHandlerService } from './mainmenu';
+import { ADDON_MESSAGES_PAGE_NAME } from '@addons/messages/constants';
 
 /**
  * Content links handler for messaging index.
@@ -38,7 +38,7 @@ export class AddonMessagesIndexLinkHandlerService extends CoreContentLinksHandle
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: async (siteId): Promise<void> => {
-                await CoreNavigator.navigateToSitePath(AddonMessagesMainMenuHandlerService.PAGE_NAME, {
+                await CoreNavigator.navigateToSitePath(ADDON_MESSAGES_PAGE_NAME, {
                     siteId,
                     preferCurrentTab: false,
                 });

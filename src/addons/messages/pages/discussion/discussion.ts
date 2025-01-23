@@ -1251,7 +1251,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     async viewInfo(): Promise<void> {
         if (this.isGroup) {
             const { AddonMessagesConversationInfoComponent } =
-                await import('@addons/messages/components/conversation-info/conversation-info.module');
+                await import('@addons/messages/components/conversation-info/conversation-info');
 
             // Display the group information.
             const userId = await CoreModals.openSideModal<number>({
