@@ -19,10 +19,10 @@ import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.m
 import { MESSAGES_OFFLINE_SITE_SCHEMA } from './services/database/messages';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
-import { AddonMessagesMainMenuHandler, AddonMessagesMainMenuHandlerService } from './services/handlers/mainmenu';
+import { AddonMessagesMainMenuHandler } from './services/handlers/mainmenu';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
-import { AddonMessagesSettingsHandler, AddonMessagesSettingsHandlerService } from './services/handlers/settings';
+import { AddonMessagesSettingsHandler } from './services/handlers/settings';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { AddonMessagesIndexLinkHandler } from './services/handlers/index-link';
@@ -37,6 +37,7 @@ import { CoreNetwork } from '@services/network';
 import { AddonMessagesSync } from './services/messages-sync';
 import { AddonMessagesSyncCronHandler } from './services/handlers/sync-cron';
 import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';
+import { ADDON_MESSAGES_PAGE_NAME, ADDON_MESSAGES_SETTINGS_PAGE_NAME } from './constants';
 
 /**
  * Get messages services.
@@ -57,14 +58,14 @@ export async function getMessagesServices(): Promise<Type<unknown>[]> {
 
 const mainMenuChildrenRoutes: Routes = [
     {
-        path: AddonMessagesMainMenuHandlerService.PAGE_NAME,
+        path: ADDON_MESSAGES_PAGE_NAME,
         loadChildren: () => import('./messages-lazy.module'),
     },
 ];
 const preferencesRoutes: Routes = [
     {
-        path: AddonMessagesSettingsHandlerService.PAGE_NAME,
-        loadChildren: () => import('./messages-settings-lazy.module'),
+        path: ADDON_MESSAGES_SETTINGS_PAGE_NAME,
+        loadComponent: () => import('./pages/settings/settings'),
     },
 ];
 

@@ -30,6 +30,7 @@ import { CoreErrorHelper } from '@services/error-helper';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { ADDON_MESSAGES_NOTIFICATION_PREFERENCES_KEY, AddonMessagesMessagePrivacy } from '@addons/messages/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the messages settings page.
@@ -37,8 +38,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-messages-settings',
     templateUrl: 'settings.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
+export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
 
     protected updateTimeout?: number;
 

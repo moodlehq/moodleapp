@@ -29,6 +29,7 @@ import { makeSingleton } from '@singletons';
 import {
     ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT,
     ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT,
+    ADDON_MESSAGES_PAGE_NAME,
 } from '@addons/messages/constants';
 import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
 
@@ -38,15 +39,13 @@ import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/consta
 @Injectable({ providedIn: 'root' })
 export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler, CoreCronHandler {
 
-    static readonly PAGE_NAME = 'messages';
-
     name = 'AddonMessages';
     priority = 700;
 
     protected handler: CoreMainMenuHandlerToDisplay = {
         icon: 'fas-comments',
         title: 'addon.messages.messages',
-        page: AddonMessagesMainMenuHandlerService.PAGE_NAME,
+        page: ADDON_MESSAGES_PAGE_NAME,
         class: 'addon-messages-handler',
         showBadge: true,
         badge: '',

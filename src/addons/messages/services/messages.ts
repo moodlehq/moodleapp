@@ -163,11 +163,7 @@ export class AddonMessagesProvider {
      */
     static readonly NOTIFICATION_PREFERENCES_KEY = 'message_provider_moodle_instantmessage';
 
-    protected logger: CoreLogger;
-
-    constructor() {
-        this.logger = CoreLogger.getInstance('AddonMessages');
-    }
+    protected logger = CoreLogger.getInstance('AddonMessages');
 
     /**
      * Add a contact.
@@ -332,7 +328,6 @@ export class AddonMessagesProvider {
      * @param conversationIds Conversations to delete.
      * @param siteId Site ID. If not defined, use current site.
      * @param userId User ID. If not defined, current user in the site.
-     * @returns Promise resolved when the conversations have been deleted.
      */
     async deleteConversations(conversationIds: number[], siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -410,7 +405,6 @@ export class AddonMessagesProvider {
      *
      * @param id Message ID.
      * @param userId User we want to delete the message for. If not defined, use current user.
-     * @returns Promise resolved when the message has been deleted.
      */
     async deleteMessageForAllOnline(id: number, userId?: number): Promise<void> {
         userId = userId || CoreSites.getCurrentSiteUserId();
