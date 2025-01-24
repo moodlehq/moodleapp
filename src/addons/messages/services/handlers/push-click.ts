@@ -19,7 +19,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
 import { AddonMessages } from '../messages';
-import { AddonMessagesMainMenuHandlerService } from './mainmenu';
+import { ADDON_MESSAGES_PAGE_NAME } from '@addons/messages/constants';
 
 /**
  * Handler for messaging push notifications clicks.
@@ -38,7 +38,7 @@ export class AddonMessagesPushClickHandlerService implements CorePushNotificatio
      * @returns Whether the notification click is handled by this handler
      */
     async handles(notification: AddonMessagesPushNotificationData): Promise<boolean> {
-        if (CoreUtils.isTrueOrOne(notification.notif) && notification.name != 'messagecontactrequests') {
+        if (CoreUtils.isTrueOrOne(notification.notif) && notification.name !== 'messagecontactrequests') {
             return false;
         }
 
@@ -72,7 +72,7 @@ export class AddonMessagesPushClickHandlerService implements CorePushNotificatio
             userId = Number(notification.userfromid);
         }
 
-        await CoreNavigator.navigateToSitePath(AddonMessagesMainMenuHandlerService.PAGE_NAME, {
+        await CoreNavigator.navigateToSitePath(ADDON_MESSAGES_PAGE_NAME, {
             siteId: notification.site,
             preferCurrentTab: false,
             nextNavigation: conversationId ?

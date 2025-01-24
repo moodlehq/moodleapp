@@ -34,6 +34,9 @@ import { CoreKeyboard } from '@singletons/keyboard';
 import { ADDON_MESSAGES_NEW_MESSAGE_EVENT, ADDON_MESSAGES_READ_CHANGED_EVENT } from '@addons/messages/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSearchComponentsModule } from '@features/search/components/components.module';
+import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 /**
  * Page that displays the list of discussions.
@@ -42,8 +45,14 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-messages-discussions',
     templateUrl: 'discussions.html',
     styleUrl: '../../messages-common.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSearchComponentsModule,
+        CoreMainMenuComponentsModule,
+    ],
 })
-export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
+export default class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 

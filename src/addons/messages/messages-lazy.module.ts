@@ -14,13 +14,10 @@
 
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreSharedModule } from '@/core/shared.module';
-import { AddonMessagesContacts35Page } from '@addons/messages/pages/contacts-35/contacts';
 import { AddonMessagesContactsPage } from '@addons/messages/pages/contacts/contacts';
 import { AddonMessagesDiscussionPage } from '@addons/messages/pages/discussion/discussion';
-import { AddonMessagesDiscussions35Page } from '@addons/messages/pages/discussions-35/discussions';
 import { AddonMessagesGroupConversationsPage } from '@addons/messages/pages/group-conversations/group-conversations';
 import { AddonMessagesSearchPage } from '@addons/messages/pages/search/search';
-import { AddonMessagesMainMenuHandlerService } from '@addons/messages/services/handlers/mainmenu';
 import { Injector, NgModule } from '@angular/core';
 import { Route, ROUTES, Routes } from '@angular/router';
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
@@ -29,6 +26,7 @@ import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.modu
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 import { CoreScreen } from '@services/screen';
 import { messagesIndexGuard } from './guards';
+import { ADDON_MESSAGES_PAGE_NAME } from './constants';
 
 /**
  * Build module routes.
@@ -55,16 +53,16 @@ function buildRoutes(injector: Injector): Routes {
         },
         {
             path: 'index',
-            data: { mainMenuTabRoot: AddonMessagesMainMenuHandlerService.PAGE_NAME },
-            component: AddonMessagesDiscussions35Page,
+            data: { mainMenuTabRoot: ADDON_MESSAGES_PAGE_NAME },
+            loadComponent: () => import('./pages/discussions-35/discussions'),
         },
         {
             path: 'contacts-35', // 3.5.
-            component: AddonMessagesContacts35Page,
+            loadComponent: () => import('./pages/contacts-35/contacts'),
         },
         {
             path: 'group-conversations', // 3.6 or greater.
-            data: { mainMenuTabRoot: AddonMessagesMainMenuHandlerService.PAGE_NAME },
+            data: { mainMenuTabRoot: ADDON_MESSAGES_PAGE_NAME },
             component: AddonMessagesGroupConversationsPage,
         },
         {
@@ -88,19 +86,19 @@ function buildRoutes(injector: Injector): Routes {
             children: discussionRoutes,
         },
         {
-            path: 'index',
-            data: { mainMenuTabRoot: AddonMessagesMainMenuHandlerService.PAGE_NAME },
-            component: AddonMessagesDiscussions35Page,
+            path: 'index', // 3.5.
+            data: { mainMenuTabRoot: ADDON_MESSAGES_PAGE_NAME },
+            loadComponent: () => import('./pages/discussions-35/discussions'),
             children: discussionRoutes,
         },
         {
             path: 'contacts-35', // 3.5.
-            component: AddonMessagesContacts35Page,
+            loadComponent: () => import('./pages/contacts-35/contacts'),
             children: discussionRoutes,
         },
         {
             path: 'group-conversations', // 3.6 or greater.
-            data: { mainMenuTabRoot: AddonMessagesMainMenuHandlerService.PAGE_NAME },
+            data: { mainMenuTabRoot: ADDON_MESSAGES_PAGE_NAME },
             component: AddonMessagesGroupConversationsPage,
             children: discussionRoutes,
         },
@@ -117,7 +115,7 @@ function buildRoutes(injector: Injector): Routes {
         ...discussionRoutes,
         {
             path: 'message-settings',
-            loadChildren: () => import('./messages-settings-lazy.module'),
+            loadComponent: () => import('./pages/settings/settings'),
         },
         ...buildTabMainRoutes(injector, {
             canActivate: [messagesIndexGuard],
@@ -132,10 +130,8 @@ function buildRoutes(injector: Injector): Routes {
         CoreMainMenuComponentsModule,
     ],
     declarations: [
-        AddonMessagesContacts35Page,
         AddonMessagesContactsPage,
         AddonMessagesDiscussionPage,
-        AddonMessagesDiscussions35Page,
         AddonMessagesGroupConversationsPage,
         AddonMessagesSearchPage,
     ],

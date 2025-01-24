@@ -24,6 +24,9 @@ export const ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT = 'addon_messages_conta
 export const ADDON_MESSAGES_POLL_INTERVAL = 10000;
 export const ADDON_MESSAGES_PUSH_SIMULATION_COMPONENT = 'AddonMessagesPushSimulation';
 
+export const ADDON_MESSAGES_PAGE_NAME = 'messages';
+export const ADDON_MESSAGES_SETTINGS_PAGE_NAME = 'messages';
+
 export const enum AddonMessagesMessagePrivacy {
     COURSEMEMBER = 0, // Privacy setting for being messaged by anyone within courses user is member.
     ONLYCONTACTS = 1, // Privacy setting for being messaged only by contacts.
