@@ -51,6 +51,23 @@ export class CoreWindow {
      * @param name Name of the browsing context into which to load the URL.
      */
     static async open(url: string, name?: string): Promise<void> {
+        // Check for forceexternal parameter first
+        try {
+            const urlObject = new URL(url);
+            const forceExternal = urlObject.searchParams.get('forceexternal');
+
+            if (forceExternal === '1') {
+                // Force external browser opening
+                console.log('Opening in external browser because forceexternal=1:', url);
+                await CoreOpener.openInBrowser(url);
+
+                return;
+            }
+        } catch (error) {
+            // Invalid URL, continue with normal flow
+            console.warn('Error parsing URL for forceexternal parameter:', error);
+        }
+
         if (CoreUrl.isLocalFileUrl(url)) {
             const filename = url.substring(url.lastIndexOf('/') + 1);
 
@@ -82,6 +99,22 @@ export class CoreWindow {
                 }
             }
         }
+    }
+
+    /**
+     * Open a URL in the system's external browser.
+     *
+     * @param url The URL to open.
+     * @returns Promise resolved when done.
+     */
+    static async handleLinkExternally(url: string): Promise<void> {
+        // Force external browser opening
+        if (!url) {
+            return;
+        }
+
+        console.log('Opening in external browser using handleLinkExternally:', url);
+        await CoreOpener.openInBrowser(url);
     }
 
 }

@@ -41,6 +41,11 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     protected logger = CoreLogger.getInstance('AppComponent');
 
+    constructor() {
+        // Expose handleLinkExternally to window object
+        (window as any).handleLinkExternally = CoreWindow.handleLinkExternally;
+    }
+
     /**
      * @inheritdoc
      */
