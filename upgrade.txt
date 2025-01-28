@@ -8,6 +8,7 @@ For more information about upgrading, read the official documentation: https://m
  - The parameters of treatDownloadedFile of plugin file handlers have changed. Now the third parameter is an object with all the optional parameters.
  - Some CoreColors functions have been refactored to handle alpha and to validate colors.
  - The parameters of CoreUrl.addParamsToUrl have changed. Now the third parameter is an object with all the optional parameters.
+ - The following CoreLang functions were converted to async to properly handle child languages: addSitePluginsStrings, loadCustomStringsFromSite, loadCustomStrings, loadLangStrings, loadString.
 
 === 4.5.0 ===
 
