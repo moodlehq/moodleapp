@@ -18,16 +18,19 @@
         <ion-item class="ion-text-wrap answer" *ngFor="let option of question.options">
             <div class="flex-column">
                 <ion-checkbox [attr.name]="option.name" [(ngModel)]="option.checked" [disabled]="option.disabled"
-                    [color]='(option.isCorrect === 1 ? "success": "") + (option.isCorrect === 0 ? "danger": "")'>
+                    [color]="option.correctColor">
                     <div class="flex-grow ion-text-wrap">
                         <div [class]="option.class">
                             <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"
                                 [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
                         </div>
                     </div>
-                    <ion-icon *ngIf="option.isCorrect === 1" class="core-correct-icon" [name]="correctIcon" color="success"
+
+                    <ion-icon *ngIf="option.correctClass === 'correct'" class="core-correct-icon" [name]="correctIcon" color="success"
                         [attr.aria-label]="'core.question.correct' | translate" />
-                    <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" [name]="incorrectIcon" color="danger"
+                    <ion-icon *ngIf="option.correctClass === 'partiallycorrect'" class="core-correct-icon" [name]="partialCorrectIcon"
+                        color="warning" [attr.aria-label]="'core.question.partiallycorrect' | translate" />
+                    <ion-icon *ngIf="option.correctClass === 'incorrect'" class="core-correct-icon" [name]="incorrectIcon" color="danger"
                         [attr.aria-label]="'core.question.incorrect' | translate" />
                 </ion-checkbox>
                 <div *ngIf="option.feedback" class="specificfeedback">
@@ -45,17 +48,19 @@
     <ion-radio-group *ngIf="!question.multi" [(ngModel)]="question.singleChoiceModel" [name]="question.optionsName">
         <ion-item class="ion-text-wrap answer" *ngFor="let option of question.options">
             <div class="flex-column">
-                <ion-radio [value]="option.value" [disabled]="option.disabled"
-                    [color]='(option.isCorrect === 1 ? "success": "") + (option.isCorrect === 0 ? "danger": "")'>
+                <ion-radio [value]="option.value" [disabled]="option.disabled" [color]="option.correctColor">
                     <div class="flex-grow ion-text-wrap">
                         <div [class]="option.class">
                             <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"
                                 [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
                         </div>
                     </div>
-                    <ion-icon *ngIf="option.isCorrect === 1" class="core-correct-icon" [name]="correctIcon" color="success"
+
+                    <ion-icon *ngIf="option.correctClass === 'correct'" class="core-correct-icon" [name]="correctIcon" color="success"
                         [attr.aria-label]="'core.question.correct' | translate" />
-                    <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" [name]="incorrectIcon" color="danger"
+                    <ion-icon *ngIf="option.correctClass === 'partiallycorrect'" class="core-correct-icon" [name]="partialCorrectIcon"
+                        color="warning" [attr.aria-label]="'core.question.partiallycorrect' | translate" />
+                    <ion-icon *ngIf="option.correctClass === 'incorrect'" class="core-correct-icon" [name]="incorrectIcon" color="danger"
                         [attr.aria-label]="'core.question.incorrect' | translate" />
                 </ion-radio>
 
