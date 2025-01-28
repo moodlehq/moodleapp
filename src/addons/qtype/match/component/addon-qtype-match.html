@@ -8,8 +8,9 @@
     <ion-item class="ion-text-wrap question-rows" *ngFor="let row of question.rows">
 
         <ion-select id="{{row.id}}" [name]="row.name" [(ngModel)]="row.selected" interface="action-sheet" [disabled]="row.disabled"
-            [cancelText]="'core.cancel' | translate"
-            [ngClass]="{'addon-qtype-match-correct': row.isCorrect === 1,'addon-qtype-match-incorrect': row.isCorrect === 0}">
+            [cancelText]="'core.cancel' | translate" [class.addon-qtype-match-correct]="row.correctClass === 'correct'"
+            [class.addon-qtype-match-incorrect]="row.correctClass === 'incorrect'"
+            [class.addon-qtype-match-partiallycorrect]="row.correctClass === 'partiallycorrect'">
             <div slot="label" class="flex-row ion-text-wrap">
                 <div>
                     <core-format-text [component]="component" [componentId]="componentId" [text]="row.text" [contextLevel]="contextLevel"
@@ -19,10 +20,14 @@
                     {{ row.accessibilityLabel }}
                 </label>
             </div>
-            <ion-icon *ngIf="row.isCorrect === 1" class="core-correct-icon" [name]="correctIcon" color="success" slot="start"
+
+            <ion-icon *ngIf="row.correctClass === 'correct'" class="core-correct-icon" [name]="correctIcon" color="success" slot="start"
                 [attr.aria-label]="'core.question.correct' | translate" />
-            <ion-icon *ngIf="row.isCorrect === 0" class="core-correct-icon" [name]="incorrectIcon" color="danger" slot="start"
+            <ion-icon *ngIf="row.correctClass === 'partiallycorrect'" class="core-correct-icon" [name]="partialCorrectIcon" color="warning"
+                slot="start" [attr.aria-label]="'core.question.partiallycorrect' | translate" />
+            <ion-icon *ngIf="row.correctClass === 'incorrect'" class="core-correct-icon" [name]="incorrectIcon" color="danger" slot="start"
                 [attr.aria-label]="'core.question.incorrect' | translate" />
+
             <ion-select-option *ngFor="let option of row.options" [value]="option.value">
                 {{option.label}}
             </ion-select-option>
