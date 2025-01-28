@@ -15,7 +15,7 @@
 
     <span class="sr-only" *ngIf="label">{{ label }},</span>
     <div class="select-text">
-        <slot name="text">{{selection}}</slot>
+        <slot name="text"><core-format-text [text]="selection" /></slot>
     </div>
 
     <div class="select-icon" role="presentation" aria-hidden="true" slot="end">
