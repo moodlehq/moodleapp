@@ -30,6 +30,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { CoreText } from '@singletons/text';
+import { GestureDetail } from '@ionic/angular';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -225,8 +226,8 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
      *
      * @param e Event.
      */
-    copyItemInfo(e: Event): void {
-        const el = <Element>e.target;
+    copyItemInfo(e: GestureDetail): void {
+        const el = <Element>e.event.target;
         const text = el?.closest('ion-item')?.textContent?.trim();
 
         text && CoreText.copyToClipboard(text);
