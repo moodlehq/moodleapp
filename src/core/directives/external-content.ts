@@ -518,7 +518,8 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             clickableEl.addEventListener(eventName, () => {
                 // User played media or opened a downloadable link.
                 // Download the file if in wifi and it hasn't been downloaded already (for big files).
-                if (state !== DownloadStatus.DOWNLOADED && state !== DownloadStatus.DOWNLOADING && CoreNetwork.isWifi()) {
+                if (state !== DownloadStatus.DOWNLOADED && state !== DownloadStatus.DOWNLOADING &&
+                    CoreNetwork.isWifi()) {
                     // We aren't using the result, so it doesn't matter which of the 2 functions we call.
                     CoreFilepool.getUrlByUrl(site.getId(), url, this.component, this.componentId, 0, false);
                 }

@@ -186,7 +186,7 @@ export class CoreAlertsService {
         const limitedThreshold = options.limitedThreshold ?? CoreConstants.DOWNLOAD_THRESHOLD;
 
         let wifiPrefix = '';
-        if (CoreNetwork.isNetworkAccessLimited()) {
+        if (CoreNetwork.isCellular()) {
             wifiPrefix = Translate.instant('core.course.confirmlimiteddownload');
         }
 
@@ -203,7 +203,7 @@ export class CoreAlertsService {
                 { size: readableSize, availableSpace: availableSpace },
             ));
         } else if (options.alwaysConfirm || size.size >= wifiThreshold ||
-                (CoreNetwork.isNetworkAccessLimited() && size.size >= limitedThreshold)) {
+                (CoreNetwork.isCellular() && size.size >= limitedThreshold)) {
 
             return this.confirm(wifiPrefix + Translate.instant(
                 options.message ?? (size.size === 0 ? 'core.course.confirmdownloadzerosize' : 'core.course.confirmdownload'),
