@@ -107,6 +107,9 @@ export class CoreEvents {
     static readonly IAB_MESSAGE = 'inappbrowser_message';
     static readonly APP_LAUNCHED_URL = 'app_launched_url'; // App opened with a certain URL (custom URL scheme).
     static readonly FILE_SHARED = 'file_shared';
+    /**
+     * @deprecated since 5.0.0. Use CoreKeyboard.getKeyboardShownSignal signal.
+     */
     static readonly KEYBOARD_CHANGE = 'keyboard_change';
     static readonly ORIENTATION_CHANGE = 'orientation_change';
     static readonly SEND_ON_ENTER_CHANGED = 'send_on_enter_changed';

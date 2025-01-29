@@ -25,6 +25,7 @@ import {
     Output,
     EventEmitter,
     inject,
+    effect,
 } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -50,6 +51,7 @@ import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
+import { CoreKeyboard } from '@singletons/keyboard';
 
 /**
  * Component that displays a rich text editor.
@@ -85,7 +87,6 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
 
     @ViewChild(CoreDynamicComponent) dynamicComponent!: CoreDynamicComponent<CoreEditorBaseComponent>;
 
-    protected keyboardObserver?: CoreEventObserver;
     protected resizeListener?: CoreEventObserver;
     protected editorComponentClass?: Type<CoreEditorBaseComponent>;
     protected editorComponentData: Record<string, unknown> = {};
@@ -107,6 +108,15 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
     constructor() {
          // Generate a "unique" ID based on timestamp.
         this.pageInstance = `app_${Date.now()}`;
+
+        effect(() => {
+            // Signal will be triggered when the keyboard is shown or hidden.
+            CoreKeyboard.getKeyboardShownSignal();
+
+            // Opening or closing the keyboard also calls the resize function, but sometimes the resize is called too soon.
+            // Check the height again, now the window height should have been updated.
+            this.maximizeEditorSize();
+        });
     }
 
     /**
@@ -188,12 +198,6 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
         this.controlSubscription = this.control?.valueChanges.subscribe((newValue) => {
             this.onControlValueChange(newValue);
         });
-
-        // Opening or closing the keyboard also calls the resize function, but sometimes the resize is called too soon.
-        // Check the height again, now the window height should have been updated.
-        this.keyboardObserver = CoreEvents.on(CoreEvents.KEYBOARD_CHANGE, () => {
-            this.maximizeEditorSize();
-        });
     }
 
     /**
@@ -201,7 +205,6 @@ export class CoreEditorRichTextEditorComponent implements AfterViewInit, OnDestr
      */
     ngOnDestroy(): void {
         this.resizeListener?.off();
-        this.keyboardObserver?.off();
         this.controlSubscription?.unsubscribe();
         this.resetObserver?.off();
         this.labelObserver?.disconnect();
