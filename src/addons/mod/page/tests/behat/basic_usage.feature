@@ -24,7 +24,7 @@ Feature: Test basic usage of page activity in app
       | name                                 | activity | activityname    | course   |
       | \mod_page\event\course_module_viewed | page     | Test page title | Course 1 |
 
-  Scenario: Prefecth page
+  Scenario: Prefetch page
     Given I entered the course "Course 1" as "student1" in the app
     When I press "Course downloads" in the app
     And I press "Download" within "Test page title" "ion-item" in the app
