@@ -90,7 +90,7 @@ export class CoreAppProvider {
     /**
      * Closes the keyboard.
      *
-     * @deprecated sinde 4.5.0. Use CoreKeyboard.closeKeyboard instead.
+     * @deprecated since 4.5.0. Use CoreKeyboard.closeKeyboard instead.
      */
     closeKeyboard(): void {
         CoreKeyboard.close();
