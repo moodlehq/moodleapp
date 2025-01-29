@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, HostBinding } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, HostBinding, signal } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import {
@@ -29,7 +29,6 @@ import {
 } from '@features/course/services/module-prefetch-delegate';
 import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { BehaviorSubject } from 'rxjs';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreRemindersDateComponent } from '../../../reminders/components/date/date';
 import { CoreCourseModuleCompletionComponent } from '../module-completion/module-completion';
@@ -74,9 +73,9 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     modNameTranslated = '';
     hasCompletion = false; // Whether activity has completion to be shown.
     showManualCompletion = false; // Whether to show manual completion when completion conditions are disabled.
-    prefetchStatusIcon$ = new BehaviorSubject<string>(''); // Module prefetch status icon.
-    prefetchStatusText$ = new BehaviorSubject<string>(''); // Module prefetch status text.
     moduleHasView = true;
+    readonly prefetchStatusIcon = signal<string>(''); // Module prefetch status icon.
+    readonly prefetchStatusText = signal<string>(''); // Module prefetch status text.
 
     protected prefetchHandler?: CoreCourseModulePrefetchHandler;
 
@@ -152,16 +151,16 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
         switch (prefetchStatus) {
             case DownloadStatus.OUTDATED:
-                this.prefetchStatusIcon$.next(CoreConstants.ICON_OUTDATED);
-                this.prefetchStatusText$.next('core.outdated');
+                this.prefetchStatusIcon.set(CoreConstants.ICON_OUTDATED);
+                this.prefetchStatusText.set('core.outdated');
                 break;
             case DownloadStatus.DOWNLOADED:
-                this.prefetchStatusIcon$.next(CoreConstants.ICON_DOWNLOADED);
-                this.prefetchStatusText$.next('core.downloaded');
+                this.prefetchStatusIcon.set(CoreConstants.ICON_DOWNLOADED);
+                this.prefetchStatusText.set('core.downloaded');
                 break;
             default:
-                this.prefetchStatusIcon$.next('');
-                this.prefetchStatusText$.next('');
+                this.prefetchStatusIcon.set('');
+                this.prefetchStatusText.set('');
                 break;
         }
 
