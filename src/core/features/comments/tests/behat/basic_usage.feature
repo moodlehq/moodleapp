@@ -38,8 +38,8 @@ Feature: Test basic usage of comments in app
     And I press "Comments (0)" in the app
     And I set the field "Add a comment..." to "comment test teacher" in the app
     And I press "Send" in the app
-    Then I should find "Comment created" in the app
     And I should find "comment test teacher" in the app
+    And I should not find "There are offline comments to be synchronised" in the app
 
     When I go back in the app
     And I should find "Comments (1)" in the app
@@ -51,9 +51,9 @@ Feature: Test basic usage of comments in app
     And I press "Comments (1)" in the app
     And I set the field "Add a comment..." to "comment test student" in the app
     And I press "Send" in the app
-    Then I should find "Comment created" in the app
     And I should find "comment test teacher" in the app
     And I should find "comment test student" in the app
+    And I should not find "There are offline comments to be synchronised" in the app
 
     When I go back in the app
     And I press "Comments (2)" in the app
@@ -78,7 +78,6 @@ Feature: Test basic usage of comments in app
     And I switch network connection to offline
     And I set the field "Add a comment..." to "comment test" in the app
     And I press "Send" in the app
-    Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." in the app
     And I should find "There are offline comments to be synchronised." in the app
     And I should find "comment test" in the app
 
@@ -126,8 +125,8 @@ Feature: Test basic usage of comments in app
     And I press "Comments (0)" in the app
     And I set the field "Add a comment..." to "comment test teacher" in the app
     And I press "Send" in the app
-    Then I should find "Comment created" in the app
     And I should find "comment test teacher" in the app
+    And I should not find "There are offline comments to be synchronised" in the app
     And I go back in the app
     And I should find "Comments (1)" in the app
 
@@ -138,9 +137,9 @@ Feature: Test basic usage of comments in app
     And I press "Comments (1)" in the app
     And I set the field "Add a comment..." to "comment test student" in the app
     And I press "Send" in the app
-    Then I should find "Comment created" in the app
     And I should find "comment test teacher" in the app
     And I should find "comment test student" in the app
+    And I should not find "There are offline comments to be synchronised" in the app
 
     When I go back in the app
     And I press "Comments (2)" in the app
@@ -166,7 +165,6 @@ Feature: Test basic usage of comments in app
     And I switch network connection to offline
     And I set the field "Add a comment..." to "comment test" in the app
     And I press "Send" in the app
-    Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." in the app
     And I should find "There are offline comments to be synchronised." in the app
     And I should find "comment test" in the app
 
@@ -218,8 +216,8 @@ Feature: Test basic usage of comments in app
     When I press "Comments (0)" in the app
     And I set the field "Add a comment..." to "comment test" in the app
     And I press "Send" in the app
-    Then I should find "Comment created" in the app
     And I should find "comment test" in the app
+    And I should not find "There are offline comments to be synchronised" in the app
 
     When I go back in the app
     And I press "Comments (1)" in the app
@@ -249,7 +247,6 @@ Feature: Test basic usage of comments in app
     And I switch network connection to offline
     And I set the field "Add a comment..." to "comment test" in the app
     And I press "Send" in the app
-    Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." in the app
     And I should find "There are offline comments to be synchronised." in the app
     And I should find "comment test" in the app
 
