@@ -27,4 +27,11 @@ section.core-course-module-list-wrapper {
 core-course-module.core-sitehome-news {
     --card-border-width: var(--ion-card-border-width);
     --card-radius: var(--ion-card-radius);
+    ::ng-deep ion-card {
+        padding-top: 4px !important;
+        --card-padding-bottom: 4px;
+        ion-item {
+            --padding-start: 16px;
+        }
+    }
 }

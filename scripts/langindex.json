@@ -1558,7 +1558,6 @@
   "core.comments.commentscount": "moodle",
   "core.comments.commentsnotworking": "local_moodlemobileapp",
   "core.comments.deletecommentbyon": "moodle",
-  "core.comments.eventcommentcreated": "moodle",
   "core.comments.eventcommentdeleted": "moodle",
   "core.comments.nocomments": "moodle",
   "core.comments.savecomment": "moodle",
