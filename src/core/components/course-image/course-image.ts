@@ -66,7 +66,7 @@ export class CoreCourseImageComponent {
 
             const tint = CoreColors.lighter(course.color, 50);
             this.element.style.setProperty('--course-color-tint', tint);
-        } else if(course.colorNumber !== undefined) {
+        } else if (course.colorNumber !== undefined) {
             this.element.classList.add('course-color-' + course.colorNumber);
         }
     }
