@@ -25,7 +25,7 @@ import { CoreConfig } from '@services/config';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
-import { CoreNetwork, CoreNetworkConnection } from '@services/network';
+import { CoreNetwork, CoreNetworkConnectionType } from '@services/network';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { CoreText } from '@singletons/text';
@@ -96,7 +96,7 @@ export default class CoreSettingsDeviceInfoPage {
             compilationTime: CoreConstants.BUILD.compilationTime || 0,
             lastCommit: CoreConstants.BUILD.lastCommitHash || '',
             isOnline: CoreNetwork.onlineSignal(),
-            wifiConnection: computed(() => CoreNetwork.connectionTypeSignal()() === CoreNetworkConnection.WIFI),
+            wifiConnection: computed(() => CoreNetwork.connectionTypeSignal()() === CoreNetworkConnectionType.WIFI),
             localNotifAvailable: CoreLocalNotifications.isPluginAvailable() ? 'yes' : 'no',
             pushId: CorePushNotifications.getPushId(),
             deviceType: '',

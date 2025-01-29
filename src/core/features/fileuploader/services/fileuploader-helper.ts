@@ -140,7 +140,7 @@ export class CoreFileUploaderHelperProvider {
 
         if (size < 0) {
             return CoreAlerts.confirm(Translate.instant('core.fileuploader.confirmuploadunknownsize'));
-        } else if (size >= wifiThreshold || (CoreNetwork.isNetworkAccessLimited() && size >= limitedThreshold)) {
+        } else if (size >= wifiThreshold || (CoreNetwork.isCellular() && size >= limitedThreshold)) {
             const readableSize = CoreText.bytesToSize(size, 2);
 
             return CoreAlerts.confirm(Translate.instant('core.fileuploader.confirmuploadfile', { size: readableSize }));
