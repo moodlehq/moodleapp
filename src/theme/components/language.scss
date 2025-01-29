@@ -1,0 +1,27 @@
+// Some languages have tall typefaces and it may be necessary to adjust the line height.
+:root[lang=ar],
+:root[lang=bn],
+:root[lang=fa],
+:root[lang=gu],
+:root[lang=hi],
+:root[lang=km],
+:root[lang=kn],
+:root[lang=ml],
+:root[lang=mr],
+:root[lang=my],
+:root[lang=ne],
+:root[lang=pa],
+:root[lang=si],
+:root[lang=ta],
+:root[lang=te],
+:root[lang=th],
+:root[lang=ur],
+:root[lang=vi] {
+    --mdl-typography-heading-lineHeight: 200%;
+    --mdl-typography-body-lineHeight: 170%;
+    --mdl-typography-link-lineHeight: 170%;
+    --mdl-typography-subtitle-lineHeight: 170%;
+    * {
+        line-height: 170%;
+    }
+}
