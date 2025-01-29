@@ -363,10 +363,12 @@ export class AddonBlogIndexPage implements OnInit, OnDestroy {
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
      * @returns Resolved when done.
      */
-    loadMore(infiniteComplete?: () => void): Promise<void> {
-        return this.fetchEntries(false).finally(() => {
-            infiniteComplete && infiniteComplete();
-        });
+    async loadMore(infiniteComplete?: () => void): Promise<void> {
+        try {
+            return await this.fetchEntries(false);
+        } finally {
+            infiniteComplete?.();
+        }
     }
 
     /**
