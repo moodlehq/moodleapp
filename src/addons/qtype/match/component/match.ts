@@ -15,6 +15,7 @@
 import { Component, ElementRef } from '@angular/core';
 
 import { AddonModQuizMatchQuestion, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a match question.
@@ -23,6 +24,10 @@ import { AddonModQuizMatchQuestion, CoreQuestionBaseComponent } from '@features/
     selector: 'addon-qtype-match',
     templateUrl: 'addon-qtype-match.html',
     styleUrl: 'match.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonQtypeMatchComponent extends CoreQuestionBaseComponent<AddonModQuizMatchQuestion> {
 

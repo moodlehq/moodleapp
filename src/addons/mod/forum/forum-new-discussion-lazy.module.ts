@@ -33,8 +33,6 @@ const routes: Routes = [{
         CoreSharedModule,
         AddonModForumComponentsModule,
         CoreEditorComponentsModule,
-    ],
-    declarations: [
         AddonModForumNewDiscussionPage,
     ],
 })

@@ -20,11 +20,9 @@ import { AddonQbehaviourInformationItemComponent } from './component/information
 import { AddonQbehaviourInformationItemHandler } from './services/handlers/informationitem';
 
 @NgModule({
-    declarations: [
-        AddonQbehaviourInformationItemComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonQbehaviourInformationItemComponent,
     ],
     providers: [
         {

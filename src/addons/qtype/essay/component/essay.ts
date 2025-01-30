@@ -23,12 +23,20 @@ import { CoreText } from '@singletons/text';
 import { CoreFileSession } from '@services/file-session';
 import { CoreQuestion } from '@features/question/services/question';
 import { CoreFileEntry } from '@services/file-helper';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
+
 /**
  * Component to render an essay question.
  */
 @Component({
     selector: 'addon-qtype-essay',
     templateUrl: 'addon-qtype-essay.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreEditorComponentsModule,
+    ],
 })
 export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent<AddonModQuizEssayQuestion> {
 

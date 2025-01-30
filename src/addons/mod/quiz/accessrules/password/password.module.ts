@@ -22,11 +22,9 @@ import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-dele
 import { SITE_SCHEMA } from './services/database/password';
 
 @NgModule({
-    declarations: [
-        AddonModQuizAccessPasswordComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModQuizAccessPasswordComponent,
     ],
     providers: [
         {

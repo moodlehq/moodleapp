@@ -36,6 +36,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_LESSON_COMPONENT } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a retake made by a certain user.
@@ -44,6 +45,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-lesson-user-retake',
     templateUrl: 'user-retake.html',
     styleUrl: 'user-retake.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModLessonUserRetakePage implements OnInit {
 

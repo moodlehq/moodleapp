@@ -58,8 +58,6 @@ import { canLeaveGuard } from '@guards/can-leave';
         CoreCommentsComponentsModule,
         CoreTagComponentsModule,
         CoreMainMenuComponentsModule,
-    ],
-    declarations: [
         AddonBlogIndexPage,
     ],
     providers: [

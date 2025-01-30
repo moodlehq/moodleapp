@@ -31,6 +31,7 @@ import {
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
 import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME, AddonModWorkshopPhase } from '@addons/mod/workshop/constants';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays workshop submission.
@@ -39,6 +40,10 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'addon-mod-workshop-submission',
     templateUrl: 'addon-mod-workshop-submission.html',
     styleUrl: 'submission.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModWorkshopSubmissionComponent implements OnInit {
 

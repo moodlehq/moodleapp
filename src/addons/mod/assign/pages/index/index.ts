@@ -17,6 +17,7 @@ import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-
 import { AddonModAssignIndexComponent } from '../../components/index/index';
 import { CoreNavigator } from '@services/navigator';
 import { CoreWait } from '@singletons/wait';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays an assign.
@@ -24,6 +25,11 @@ import { CoreWait } from '@singletons/wait';
 @Component({
     selector: 'page-addon-mod-assign-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModAssignIndexComponent,
+    ],
 })
 export class AddonModAssignIndexPage extends CoreCourseModuleMainActivityPage<AddonModAssignIndexComponent>
     implements AfterViewInit {

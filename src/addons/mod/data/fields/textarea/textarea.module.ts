@@ -20,12 +20,10 @@ import { AddonModDataFieldTextareaComponent } from './component/textarea';
 import { AddonModDataFieldTextareaHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldTextareaComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreEditorComponentsModule,
+        AddonModDataFieldTextareaComponent,
     ],
     providers: [
         {

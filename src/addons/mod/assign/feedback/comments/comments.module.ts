@@ -20,12 +20,10 @@ import { CoreEditorComponentsModule } from '@features/editor/components/componen
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
 
 @NgModule({
-    declarations: [
-        AddonModAssignFeedbackCommentsComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreEditorComponentsModule,
+        AddonModAssignFeedbackCommentsComponent,
     ],
     providers: [
         {

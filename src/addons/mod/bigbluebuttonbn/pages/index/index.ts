@@ -15,6 +15,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModBBBIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a Big Blue Button activity.
@@ -22,6 +23,11 @@ import { AddonModBBBIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-bbb-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModBBBIndexComponent,
+    ],
 })
 export class AddonModBBBIndexPage extends CoreCourseModuleMainActivityPage<AddonModBBBIndexComponent> {
 

@@ -40,8 +40,6 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         AddonModScormComponentsModule,
-    ],
-    declarations: [
         AddonModScormIndexPage,
         AddonModScormPlayerPage,
     ],

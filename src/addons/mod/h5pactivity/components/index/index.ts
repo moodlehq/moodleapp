@@ -14,7 +14,6 @@
 
 import { Component, Optional, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { IonContent } from '@ionic/angular';
-
 import { DownloadStatus } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
@@ -59,6 +58,9 @@ import { NgZone, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreH5PComponentsModule } from '@features/h5p/components/components.module';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays an H5P activity entry page.
@@ -66,6 +68,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-h5pactivity-index',
     templateUrl: 'addon-mod-h5pactivity-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+        CoreH5PComponentsModule,
+    ],
 })
 export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

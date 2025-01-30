@@ -21,6 +21,8 @@ import { AddonModPagePage, AddonModPage } from '../../services/page';
 import { AddonModPageHelper } from '../../services/page-helper';
 import { ADDON_MOD_PAGE_COMPONENT } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a page.
@@ -28,6 +30,11 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 @Component({
     selector: 'addon-mod-page-index',
     templateUrl: 'addon-mod-page-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+    ],
 })
 export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 

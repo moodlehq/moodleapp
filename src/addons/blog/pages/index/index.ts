@@ -44,6 +44,10 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { Subscription } from 'rxjs';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
+import { CoreTagComponentsModule } from '@features/tag/components/components.module';
+import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the list of blog entries.
@@ -52,6 +56,13 @@ import { Translate } from '@singletons';
     selector: 'page-addon-blog-index',
     templateUrl: 'index.html',
     styleUrl: './index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreMainMenuComponentsModule,
+        CoreTagComponentsModule,
+        CoreCommentsComponentsModule,
+    ],
 })
 export class AddonBlogIndexPage implements OnInit, OnDestroy {
 

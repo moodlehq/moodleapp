@@ -68,8 +68,6 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         AddonModForumComponentsModule,
-    ],
-    declarations: [
         AddonModForumIndexPage,
     ],
 })

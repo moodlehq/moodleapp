@@ -64,8 +64,6 @@ function buildRoutes(injector: Injector): Routes {
     imports: [
         CoreSharedModule,
         CoreMainMenuComponentsModule,
-    ],
-    declarations: [
         AddonNotificationsListPage,
         AddonNotificationsNotificationPage,
     ],

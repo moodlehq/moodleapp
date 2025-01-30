@@ -20,6 +20,7 @@ import { AddonModDataEntryFieldInitialized, AddonModDataFieldPluginBaseComponent
 import { AddonModDataData, AddonModDataField } from '../../services/data';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
 import { AddonModDataTemplateMode } from '../../constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a database field plugin.
@@ -27,6 +28,10 @@ import { AddonModDataTemplateMode } from '../../constants';
 @Component({
     selector: 'addon-mod-data-field-plugin',
     templateUrl: 'addon-mod-data-field-plugin.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
 

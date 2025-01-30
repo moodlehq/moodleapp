@@ -48,8 +48,6 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         AddonModH5PActivityComponentsModule,
-    ],
-    declarations: [
         AddonModH5PActivityIndexPage,
         AddonModH5PActivityUserAttemptsPage,
         AddonModH5PActivityAttemptResultsPage,

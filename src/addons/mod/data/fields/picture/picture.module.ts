@@ -19,11 +19,9 @@ import { AddonModDataFieldPictureComponent } from './component/picture';
 import { AddonModDataFieldPictureHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldPictureComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModDataFieldPictureComponent,
     ],
     providers: [
         {

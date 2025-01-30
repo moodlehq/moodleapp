@@ -19,6 +19,7 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
 import { CoreDomUtils } from '@services/utils/dom';
 import { AddonQtypeDdwtosQuestion } from '../classes/ddwtos';
 import { CoreText } from '@singletons/text';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a drag-and-drop words into sentences question.
@@ -27,6 +28,10 @@ import { CoreText } from '@singletons/text';
     selector: 'addon-qtype-ddwtos',
     templateUrl: 'addon-qtype-ddwtos.html',
     styleUrls: ['../../../../core/features/question/question.scss', 'ddwtos.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonModQuizDdwtosQuestionData> implements OnDestroy {
 

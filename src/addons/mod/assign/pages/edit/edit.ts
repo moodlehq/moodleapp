@@ -48,6 +48,8 @@ import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { AddonModAssignSubmissionPluginComponent } from '../../components/submission-plugin/submission-plugin';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that allows adding or editing an assigment submission.
@@ -56,6 +58,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-assign-edit',
     templateUrl: 'edit.html',
     styleUrl: 'edit.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModAssignSubmissionPluginComponent,
+    ],
 })
 export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 

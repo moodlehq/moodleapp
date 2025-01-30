@@ -59,6 +59,9 @@ import {
 } from '@addons/mod/workshop/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
+import { AddonModWorkshopSubmissionComponent } from '../submission/submission';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a workshop index page.
@@ -66,6 +69,12 @@ import { CoreOpener } from '@singletons/opener';
 @Component({
     selector: 'addon-mod-workshop-index',
     templateUrl: 'addon-mod-workshop-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+        AddonModWorkshopSubmissionComponent,
+    ],
 })
 export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

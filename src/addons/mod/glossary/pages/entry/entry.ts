@@ -42,6 +42,10 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreRatingComponentsModule } from '@features/rating/components/components.module';
+import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
+import { CoreTagComponentsModule } from '@features/tag/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a glossary entry.
@@ -49,6 +53,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-glossary-entry',
     templateUrl: 'entry.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreTagComponentsModule,
+        CoreCommentsComponentsModule,
+        CoreRatingComponentsModule,
+    ],
 })
 export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 

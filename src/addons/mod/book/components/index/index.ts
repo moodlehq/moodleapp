@@ -20,6 +20,8 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_MOD_BOOK_PAGE_NAME, AddonModBookNumbering } from '../../constants';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a book entry page.
@@ -27,6 +29,11 @@ import { ADDON_MOD_BOOK_PAGE_NAME, AddonModBookNumbering } from '../../constants
 @Component({
     selector: 'addon-mod-book-index',
     templateUrl: 'addon-mod-book-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+    ],
 })
 export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 

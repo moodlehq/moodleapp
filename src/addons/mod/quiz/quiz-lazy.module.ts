@@ -46,8 +46,6 @@ const routes: Routes = [
         CoreSharedModule,
         AddonModQuizComponentsModule,
         CoreQuestionComponentsModule,
-    ],
-    declarations: [
         AddonModQuizIndexPage,
         AddonModQuizPlayerPage,
         AddonModQuizReviewPage,

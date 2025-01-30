@@ -60,6 +60,9 @@ import {
 import { CoreModals } from '@services/overlays/modals';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreTagComponentsModule } from '@features/tag/components/components.module';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a wiki entry page.
@@ -68,6 +71,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-wiki-index',
     templateUrl: 'addon-mod-wiki-index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+        CoreTagComponentsModule,
+    ],
 })
 export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

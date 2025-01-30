@@ -14,6 +14,7 @@
 
 import { Component, ElementRef } from '@angular/core';
 import { CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a description question.
@@ -21,6 +22,10 @@ import { CoreQuestionBaseComponent } from '@features/question/classes/base-quest
 @Component({
     selector: 'addon-qtype-description',
     templateUrl: 'addon-qtype-description.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonQtypeDescriptionComponent extends CoreQuestionBaseComponent {
 

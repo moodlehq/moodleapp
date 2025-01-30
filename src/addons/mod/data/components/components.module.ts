@@ -19,13 +19,11 @@ import { AddonModDataIndexComponent } from './index';
 import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
 
 @NgModule({
-    declarations: [
-        AddonModDataIndexComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreCourseComponentsModule,
         CoreCompileHtmlComponentModule,
+        AddonModDataIndexComponent,
     ],
     exports: [
         AddonModDataIndexComponent,

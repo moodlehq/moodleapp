@@ -20,6 +20,7 @@ import { CoreUtils } from '@singletons/utils';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-profilefield-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Directive to render a datetime user profile field.
@@ -27,6 +28,10 @@ import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-p
 @Component({
     selector: 'addon-user-profile-field-datetime',
     templateUrl: 'addon-user-profile-field-datetime.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileFieldBaseComponent<string | undefined> {
 

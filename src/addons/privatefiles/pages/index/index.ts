@@ -38,6 +38,7 @@ import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { AddonPrivateFilesFileComponent } from '@addons/privatefiles/components/file/file';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the list of files.
@@ -46,6 +47,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-privatefiles-index',
     templateUrl: 'index.html',
     styleUrl: './index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonPrivateFilesFileComponent,
+    ],
 })
 export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 

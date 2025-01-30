@@ -20,11 +20,9 @@ import { AddonQtypeDescriptionComponent } from './component/description';
 import { AddonQtypeDescriptionHandler } from './services/handlers/description';
 
 @NgModule({
-    declarations: [
-        AddonQtypeDescriptionComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonQtypeDescriptionComponent,
     ],
     providers: [
         {

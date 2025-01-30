@@ -36,6 +36,8 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a Big Blue Button activity.
@@ -44,6 +46,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-bbb-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+    ],
 })
 export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 

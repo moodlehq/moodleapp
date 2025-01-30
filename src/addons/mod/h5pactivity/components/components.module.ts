@@ -20,13 +20,11 @@ import { AddonModH5PActivityIndexComponent } from './index';
 import { CoreH5PComponentsModule } from '@features/h5p/components/components.module';
 
 @NgModule({
-    declarations: [
-        AddonModH5PActivityIndexComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreCourseComponentsModule,
         CoreH5PComponentsModule,
+        AddonModH5PActivityIndexComponent,
     ],
     exports: [
         AddonModH5PActivityIndexComponent,

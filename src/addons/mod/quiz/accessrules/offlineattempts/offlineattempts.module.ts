@@ -20,11 +20,9 @@ import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-dele
 import { AddonModQuizAccessOfflineAttemptsHandler } from './services/handlers/offlineattempts';
 
 @NgModule({
-    declarations: [
-        AddonModQuizAccessOfflineAttemptsComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModQuizAccessOfflineAttemptsComponent,
     ],
     providers: [
         {

@@ -37,8 +37,6 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         AddonModFolderComponentsModule,
-    ],
-    declarations: [
         AddonModFolderIndexPage,
     ],
 })

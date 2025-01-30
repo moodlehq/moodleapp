@@ -41,6 +41,8 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_GLOSSARY_COMPONENT } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the edit form.
@@ -48,6 +50,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-glossary-edit',
     templateUrl: 'edit.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreEditorComponentsModule,
+    ],
 })
 export class AddonModGlossaryEditPage implements OnInit, CanLeave {
 

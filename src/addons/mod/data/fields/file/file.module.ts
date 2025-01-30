@@ -19,11 +19,9 @@ import { AddonModDataFieldFileComponent } from './component/file';
 import { AddonModDataFieldFileHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldFileComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModDataFieldFileComponent,
     ],
     providers: [
         {

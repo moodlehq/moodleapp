@@ -26,6 +26,7 @@ import { AddonModChat } from '@addons/mod/chat/services/chat';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays list of chat sessions.
@@ -33,6 +34,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-chat-sessions',
     templateUrl: 'sessions.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModChatSessionsPage implements OnInit, AfterViewInit, OnDestroy {
 

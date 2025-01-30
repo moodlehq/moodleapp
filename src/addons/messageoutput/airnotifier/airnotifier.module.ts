@@ -33,12 +33,10 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    declarations: [
-        AddonMessageOutputAirnotifierDevicesPage,
-    ],
     imports: [
         CoreSharedModule,
         CoreMainMenuTabRoutingModule.forChild(routes),
+        AddonMessageOutputAirnotifierDevicesPage,
     ],
     providers: [
         {

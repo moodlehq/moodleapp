@@ -45,6 +45,8 @@ import {
     ADDON_MOD_FEEDBACK_PAGE_NAME,
     AddonModFeedbackIndexTabName,
 } from '../../constants';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a feedback index page.
@@ -52,6 +54,11 @@ import {
 @Component({
     selector: 'addon-mod-feedback-index',
     templateUrl: 'addon-mod-feedback-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+    ],
 })
 export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

@@ -20,12 +20,10 @@ import { AddonCalendarCalendarComponent } from './calendar/calendar';
 import { AddonCalendarUpcomingEventsComponent } from './upcoming-events/upcoming-events';
 
 @NgModule({
-    declarations: [
-        AddonCalendarCalendarComponent,
-        AddonCalendarUpcomingEventsComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonCalendarCalendarComponent,
+        AddonCalendarUpcomingEventsComponent,
     ],
     exports: [
         AddonCalendarCalendarComponent,

@@ -20,11 +20,9 @@ import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-dele
 import { AddonModQuizAccessTimeLimitHandler } from './services/handlers/timelimit';
 
 @NgModule({
-    declarations: [
-        AddonModQuizAccessTimeLimitComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModQuizAccessTimeLimitComponent,
     ],
     providers: [
         {

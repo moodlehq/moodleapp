@@ -22,8 +22,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @NgModule({
     imports: [
         CoreSharedModule,
-    ],
-    declarations: [
         AddonModWorkshopAssessmentStrategyAccumulativeComponent,
         AddonModWorkshopAssessmentStrategyCommentsComponent,
         AddonModWorkshopAssessmentStrategyNumErrorsComponent,

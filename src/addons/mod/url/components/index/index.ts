@@ -24,6 +24,8 @@ import { AddonModUrl, AddonModUrlDisplayOptions, AddonModUrlUrl } from '../../se
 import { AddonModUrlHelper } from '../../services/url-helper';
 import { ADDON_MOD_URL_COMPONENT } from '../../constants';
 import { CoreSites } from '@services/sites';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a url.
@@ -32,6 +34,11 @@ import { CoreSites } from '@services/sites';
     selector: 'addon-mod-url-index',
     templateUrl: 'addon-mod-url-index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+    ],
 })
 export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 

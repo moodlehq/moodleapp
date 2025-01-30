@@ -20,6 +20,8 @@ import { CoreNavigator } from '@services/navigator';
 import { AddonModImscp, AddonModImscpTocItem } from '../../services/imscp';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_MOD_IMSCP_COMPONENT, ADDON_MOD_IMSCP_PAGE_NAME } from '../../constants';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a IMSCP.
@@ -28,6 +30,11 @@ import { ADDON_MOD_IMSCP_COMPONENT, ADDON_MOD_IMSCP_PAGE_NAME } from '../../cons
     selector: 'addon-mod-imscp-index',
     templateUrl: 'addon-mod-imscp-index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+    ],
 })
 export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
