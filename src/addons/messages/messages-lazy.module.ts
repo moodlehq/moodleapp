@@ -128,8 +128,6 @@ function buildRoutes(injector: Injector): Routes {
         CoreSharedModule,
         CoreSearchComponentsModule,
         CoreMainMenuComponentsModule,
-    ],
-    declarations: [
         AddonMessagesContactsPage,
         AddonMessagesDiscussionPage,
         AddonMessagesGroupConversationsPage,

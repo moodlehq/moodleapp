@@ -21,14 +21,12 @@ import { CoreTagComponentsModule } from '@features/tag/components/components.mod
 
 // This module is intended to be passed to the compiler in order to avoid circular depencencies.
 @NgModule({
-    declarations: [
-        AddonModDataFieldPluginComponent,
-        AddonModDataActionComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreCommentsComponentsModule,
         CoreTagComponentsModule,
+        AddonModDataFieldPluginComponent,
+        AddonModDataActionComponent,
     ],
     exports: [
         AddonModDataActionComponent,

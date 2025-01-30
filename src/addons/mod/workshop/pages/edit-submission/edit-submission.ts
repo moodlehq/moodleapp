@@ -46,6 +46,8 @@ import {
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreDom } from '@singletons/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the workshop edit submission.
@@ -53,6 +55,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-workshop-edit-submission',
     templateUrl: 'edit-submission.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreEditorComponentsModule,
+    ],
 })
 export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, CanLeave {
 

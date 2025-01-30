@@ -24,16 +24,14 @@ import { AddonModForumIndexComponent } from './index/index';
 import { AddonModForumPostComponent } from './post/post';
 
 @NgModule({
-    declarations: [
-        AddonModForumIndexComponent,
-        AddonModForumPostComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreCourseComponentsModule,
         CoreTagComponentsModule,
         CoreEditorComponentsModule,
         CoreRatingComponentsModule,
+        AddonModForumIndexComponent,
+        AddonModForumPostComponent,
     ],
     exports: [
         AddonModForumIndexComponent,

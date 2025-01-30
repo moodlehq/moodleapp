@@ -20,11 +20,9 @@ import { AddonUserProfileFieldSocialComponent } from './component/social';
 import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldSocialComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonUserProfileFieldSocialComponent,
     ],
     providers: [
         {

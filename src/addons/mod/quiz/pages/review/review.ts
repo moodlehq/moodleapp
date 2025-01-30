@@ -37,6 +37,10 @@ import { ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreQuestionComponentsModule } from '@features/question/components/components.module';
+import { AddonModQuizQuestionCardComponent } from '../../components/question-card/question-card';
+import { AddonModQuizAttemptInfoComponent } from '../../components/attempt-info/attempt-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that allows reviewing a quiz attempt.
@@ -44,6 +48,13 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'page-addon-mod-quiz-review',
     templateUrl: 'review.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModQuizAttemptInfoComponent,
+        AddonModQuizQuestionCardComponent,
+        CoreQuestionComponentsModule,
+    ],
 })
 export class AddonModQuizReviewPage implements OnInit {
 

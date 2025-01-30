@@ -19,11 +19,9 @@ import { AddonModDataFieldLatlongComponent } from './component/latlong';
 import { AddonModDataFieldLatlongHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldLatlongComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModDataFieldLatlongComponent,
     ],
     providers: [
         {

@@ -20,11 +20,9 @@ import { AddonUserProfileFieldCheckboxComponent } from './component/checkbox';
 import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldCheckboxComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonUserProfileFieldCheckboxComponent,
     ],
     providers: [
         {

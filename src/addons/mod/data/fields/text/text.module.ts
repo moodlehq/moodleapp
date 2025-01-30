@@ -19,11 +19,9 @@ import { AddonModDataFieldTextComponent } from './component/text';
 import { AddonModDataFieldTextHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldTextComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModDataFieldTextComponent,
     ],
     providers: [
         {

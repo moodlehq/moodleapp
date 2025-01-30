@@ -19,11 +19,9 @@ import { AddonModDataFieldRadiobuttonComponent } from './component/radiobutton';
 import { AddonModDataFieldRadiobuttonHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldRadiobuttonComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModDataFieldRadiobuttonComponent,
     ],
     providers: [
         {

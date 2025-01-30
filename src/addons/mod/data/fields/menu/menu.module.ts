@@ -19,11 +19,9 @@ import { AddonModDataFieldMenuComponent } from './component/menu';
 import { AddonModDataFieldMenuHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldMenuComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModDataFieldMenuComponent,
     ],
     providers: [
         {

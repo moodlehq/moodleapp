@@ -19,11 +19,9 @@ import { AddonModDataFieldUrlComponent } from './component/url';
 import { AddonModDataFieldUrlHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldUrlComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModDataFieldUrlComponent,
     ],
     providers: [
         {

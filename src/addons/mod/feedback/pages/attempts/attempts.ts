@@ -27,6 +27,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays feedback attempts.
@@ -34,6 +35,10 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'page-addon-mod-feedback-attempts',
     templateUrl: 'attempts.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
 

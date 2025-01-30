@@ -21,12 +21,10 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldTextareaComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreEditorComponentsModule,
+        AddonUserProfileFieldTextareaComponent,
     ],
     providers: [
         {

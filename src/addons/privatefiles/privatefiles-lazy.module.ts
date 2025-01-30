@@ -47,8 +47,6 @@ function buildRoutes(injector: Injector): Routes {
     imports: [
         CoreSharedModule,
         AddonPrivateFilesFileComponent,
-    ],
-    declarations: [
         AddonPrivateFilesIndexPage,
     ],
     providers: [

@@ -54,6 +54,8 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { REMINDERS_DISABLED, CoreRemindersUnits } from '@features/reminders/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -62,6 +64,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-calendar-edit-event',
     templateUrl: 'edit-event.html',
     styleUrl: 'edit-event.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreEditorComponentsModule,
+    ],
 })
 export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 

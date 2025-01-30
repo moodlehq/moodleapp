@@ -47,6 +47,8 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreArray } from '@singletons/array';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the view edit page.
@@ -55,6 +57,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-data-edit',
     templateUrl: 'edit.html',
     styleUrls: ['../../data.scss', '../../data-forms.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCompileHtmlComponentModule,
+    ],
 })
 export class AddonModDataEditPage implements OnInit {
 

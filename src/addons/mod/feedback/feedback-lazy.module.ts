@@ -77,8 +77,6 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         AddonModFeedbackComponentsModule,
-    ],
-    declarations: [
         AddonModFeedbackAttemptsPage,
         AddonModFeedbackFormPage,
         AddonModFeedbackIndexPage,

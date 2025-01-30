@@ -53,6 +53,8 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNetwork } from '@services/network';
 import { Subscription } from 'rxjs';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a SCORM entry page.
@@ -61,6 +63,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-scorm-index',
     templateUrl: 'addon-mod-scorm-index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+    ],
 })
 export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

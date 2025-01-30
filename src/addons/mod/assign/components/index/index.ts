@@ -53,6 +53,8 @@ import {
     ADDON_MOD_ASSIGN_WARN_GROUPS_REQUIRED,
 } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays an assignment.
@@ -60,6 +62,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-assign-index',
     templateUrl: 'addon-mod-assign-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+        AddonModAssignSubmissionComponent,
+    ],
 })
 export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

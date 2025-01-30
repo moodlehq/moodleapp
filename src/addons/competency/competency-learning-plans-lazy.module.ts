@@ -83,8 +83,6 @@ const routes: Routes = [
         AddonCompetencyCompetenciesPageModule,
         AddonCompetencyCompetencyPageModule,
         AddonCompetencyCompetencySummaryPageModule,
-    ],
-    declarations: [
         AddonCompetencyPlanPage,
         AddonCompetencyPlanListPage,
     ],

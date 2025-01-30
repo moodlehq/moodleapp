@@ -55,8 +55,6 @@ const routes: Routes = [
         CoreCommentsComponentsModule,
         CoreRatingComponentsModule,
         CoreCompileHtmlComponentModule,
-    ],
-    declarations: [
         AddonModDataIndexPage,
         AddonModDataEntryPage,
         AddonModDataEditPage,

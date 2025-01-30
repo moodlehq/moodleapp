@@ -36,6 +36,8 @@ import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { OpenFileAction } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a resource.
@@ -44,6 +46,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-resource-index',
     templateUrl: 'addon-mod-resource-index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+    ],
 })
 export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 

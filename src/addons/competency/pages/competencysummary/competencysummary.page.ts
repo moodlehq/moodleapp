@@ -21,6 +21,7 @@ import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/constants';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the competency summary.
@@ -28,6 +29,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-competency-competency-summary',
     templateUrl: 'competencysummary.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonCompetencyCompetencySummaryPage implements OnInit {
 

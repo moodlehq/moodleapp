@@ -51,6 +51,10 @@ import {
 } from '../../constants';
 import { QuestionDisplayOptionsMarks } from '@features/question/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { AddonModQuizAttemptInfoComponent } from '../attempt-info/attempt-info';
+import { AddonModQuizAttemptStateComponent } from '../attempt-state/attempt-state';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a quiz entry page.
@@ -59,6 +63,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-quiz-index',
     templateUrl: 'addon-mod-quiz-index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+        AddonModQuizAttemptStateComponent,
+        AddonModQuizAttemptInfoComponent,
+    ],
 })
 export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

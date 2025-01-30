@@ -20,12 +20,10 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModAssignSubmissionDelegate } from '../../services/submission-delegate';
 
 @NgModule({
-    declarations: [
-        AddonModAssignSubmissionOnlineTextComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreEditorComponentsModule,
+        AddonModAssignSubmissionOnlineTextComponent,
     ],
     providers: [
         {

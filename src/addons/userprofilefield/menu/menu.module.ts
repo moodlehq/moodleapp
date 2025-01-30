@@ -20,11 +20,9 @@ import { AddonUserProfileFieldMenuComponent } from './component/menu';
 import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldMenuComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonUserProfileFieldMenuComponent,
     ],
     providers: [
         {

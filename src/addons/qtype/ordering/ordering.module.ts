@@ -19,11 +19,9 @@ import { AddonQtypeOrderingComponent } from './component/ordering';
 import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonQtypeOrderingComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonQtypeOrderingComponent,
     ],
     providers: [
         {

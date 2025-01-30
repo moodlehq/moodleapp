@@ -56,6 +56,9 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 
@@ -66,6 +69,12 @@ const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
     selector: 'addon-mod-data-index',
     templateUrl: 'addon-mod-data-index.html',
     styleUrl: '../../data.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+        CoreCompileHtmlComponentModule,
+    ],
 })
 export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

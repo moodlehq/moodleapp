@@ -23,6 +23,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreSites } from '@services/sites';
 import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the list of learning plans.
@@ -30,6 +31,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-competency-planlist',
     templateUrl: 'planlist.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
 

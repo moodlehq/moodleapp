@@ -20,11 +20,9 @@ import { AddonQbehaviourDeferredCBMComponent } from './component/deferredcbm';
 import { AddonQbehaviourDeferredCBMHandler } from './services/handlers/deferredcbm';
 
 @NgModule({
-    declarations: [
-        AddonQbehaviourDeferredCBMComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonQbehaviourDeferredCBMComponent,
     ],
     providers: [
         {

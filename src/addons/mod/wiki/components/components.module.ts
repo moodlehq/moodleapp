@@ -19,13 +19,11 @@ import { CoreTagComponentsModule } from '@features/tag/components/components.mod
 import { AddonModWikiIndexComponent } from './index/index';
 
 @NgModule({
-    declarations: [
-        AddonModWikiIndexComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreCourseComponentsModule,
         CoreTagComponentsModule,
+        AddonModWikiIndexComponent,
     ],
     exports: [
         AddonModWikiIndexComponent,

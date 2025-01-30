@@ -21,12 +21,10 @@ import { AddonQtypeEssayHandler } from './services/handlers/essay';
 import { AddonQtypeEssayComponent } from './component/essay';
 
 @NgModule({
-    declarations: [
-        AddonQtypeEssayComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreEditorComponentsModule,
+        AddonQtypeEssayComponent,
     ],
     providers: [
         {

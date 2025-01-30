@@ -19,11 +19,9 @@ import { AddonModDataFieldDateComponent } from './component/date';
 import { AddonModDataFieldDateHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldDateComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModDataFieldDateComponent,
     ],
     providers: [
         {

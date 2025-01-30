@@ -72,8 +72,6 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         AddonModChatComponentsModule,
-    ],
-    declarations: [
         AddonModChatIndexPage,
         AddonModChatChatPage,
         AddonModChatSessionsPage,

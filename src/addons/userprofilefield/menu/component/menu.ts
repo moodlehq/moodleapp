@@ -16,6 +16,7 @@ import { Component } from '@angular/core';
 
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-profilefield-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Directive to render a menu user profile field.
@@ -24,6 +25,10 @@ import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-p
     selector: 'addon-user-profile-field-menu',
     templateUrl: 'addon-user-profile-field-menu.html',
     styleUrl: './menu.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonUserProfileFieldMenuComponent extends CoreUserProfileFieldBaseComponent {
 

@@ -18,6 +18,7 @@ import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-
 import { CanLeave } from '@guards/can-leave';
 import { AddonModH5PActivityIndexComponent } from '../../components/index';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays an H5P activity.
@@ -25,6 +26,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-h5pactivity-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModH5PActivityIndexComponent,
+    ],
 })
 export class AddonModH5PActivityIndexPage extends CoreCourseModuleMainActivityPage<AddonModH5PActivityIndexComponent>
     implements CanLeave, OnDestroy {

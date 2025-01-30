@@ -71,8 +71,6 @@ function buildRoutes(injector: Injector): Routes {
         AddonCalendarComponentsModule,
         CoreMainMenuComponentsModule,
         CoreEditorComponentsModule,
-    ],
-    declarations: [
         AddonCalendarDayPage,
         AddonCalendarEditEventPage,
         AddonCalendarEventPage,

@@ -32,10 +32,17 @@ import { Translate } from '@singletons';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreSearchComponentsModule } from '@features/search/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 @Component({
     selector: 'page-addon-mod-forum-search',
     templateUrl: 'search.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSearchComponentsModule,
+    ],
 })
 export class AddonModForumSearchPage implements OnInit {
 

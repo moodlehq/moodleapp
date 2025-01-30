@@ -36,8 +36,6 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         AddonModImscpComponentsModule,
-    ],
-    declarations: [
         AddonModImscpIndexPage,
         AddonModImscpViewPage,
     ],

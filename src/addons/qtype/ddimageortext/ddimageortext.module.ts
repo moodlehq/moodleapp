@@ -20,11 +20,9 @@ import { AddonQtypeDdImageOrTextComponent } from './component/ddimageortext';
 import { AddonQtypeDdImageOrTextHandler } from './services/handlers/ddimageortext';
 
 @NgModule({
-    declarations: [
-        AddonQtypeDdImageOrTextComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonQtypeDdImageOrTextComponent,
     ],
     providers: [
         {

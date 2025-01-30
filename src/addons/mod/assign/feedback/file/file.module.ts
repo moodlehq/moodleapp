@@ -19,11 +19,9 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
 
 @NgModule({
-    declarations: [
-        AddonModAssignFeedbackFileComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModAssignFeedbackFileComponent,
     ],
     providers: [
         {

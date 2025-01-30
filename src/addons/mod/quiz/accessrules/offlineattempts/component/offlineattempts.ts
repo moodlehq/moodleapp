@@ -17,6 +17,7 @@ import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '@addons/mod/q
 import { AddonModQuizSync } from '@addons/mod/quiz/services/quiz-sync';
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render the preflight for offline attempts.
@@ -24,6 +25,10 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 @Component({
     selector: 'addon-mod-quiz-access-offline-attempts',
     templateUrl: 'addon-mod-quiz-access-offline-attempts.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModQuizAccessOfflineAttemptsComponent implements OnInit {
 

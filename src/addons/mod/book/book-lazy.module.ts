@@ -37,8 +37,6 @@ const routes: Routes = [
         CoreSharedModule,
         AddonModBookComponentsModule,
         CoreTagComponentsModule,
-    ],
-    declarations: [
         AddonModBookIndexPage,
         AddonModBookContentsPage,
     ],

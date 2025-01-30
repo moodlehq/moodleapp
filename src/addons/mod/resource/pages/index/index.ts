@@ -15,6 +15,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModResourceIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a resource.
@@ -22,6 +23,11 @@ import { AddonModResourceIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-resource-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModResourceIndexComponent,
+    ],
 })
 export class AddonModResourceIndexPage extends CoreCourseModuleMainActivityPage<AddonModResourceIndexComponent> {
 

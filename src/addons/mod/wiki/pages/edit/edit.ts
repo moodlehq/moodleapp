@@ -34,6 +34,8 @@ import { ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_PAGE_CREATED_EVENT, ADDON_MOD_
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that allows adding or editing a wiki page.
@@ -41,6 +43,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-wiki-edit',
     templateUrl: 'edit.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreEditorComponentsModule,
+    ],
 })
 export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 

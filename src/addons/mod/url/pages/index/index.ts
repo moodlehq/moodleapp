@@ -15,6 +15,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModUrlIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a url.
@@ -22,6 +23,11 @@ import { AddonModUrlIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-url-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModUrlIndexComponent,
+    ],
 })
 export class AddonModUrlIndexPage extends CoreCourseModuleMainActivityPage<AddonModUrlIndexComponent> {
 

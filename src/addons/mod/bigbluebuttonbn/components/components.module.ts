@@ -18,12 +18,10 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 @NgModule({
-    declarations: [
-        AddonModBBBIndexComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreCourseComponentsModule,
+        AddonModBBBIndexComponent,
     ],
     exports: [
         AddonModBBBIndexComponent,

@@ -22,15 +22,13 @@ import { AddonModAssignSubmissionPluginComponent } from './submission-plugin/sub
 import { AddonModAssignFeedbackPluginComponent } from './feedback-plugin/feedback-plugin';
 
 @NgModule({
-    declarations: [
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
         AddonModAssignIndexComponent,
         AddonModAssignSubmissionComponent,
         AddonModAssignSubmissionPluginComponent,
         AddonModAssignFeedbackPluginComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-        CoreCourseComponentsModule,
     ],
     exports: [
         AddonModAssignIndexComponent,

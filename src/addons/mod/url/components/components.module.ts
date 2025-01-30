@@ -20,12 +20,10 @@ import { CoreCourseComponentsModule } from '@features/course/components/componen
 import { AddonModUrlIndexComponent } from './index/index';
 
 @NgModule({
-    declarations: [
-        AddonModUrlIndexComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreCourseComponentsModule,
+        AddonModUrlIndexComponent,
     ],
     exports: [
         AddonModUrlIndexComponent,

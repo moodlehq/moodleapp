@@ -28,6 +28,8 @@ import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/cl
 import { ContextLevel } from '@/core/constants';
 import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a comments feedback plugin.
@@ -35,6 +37,11 @@ import { CoreViewer } from '@features/viewer/services/viewer';
 @Component({
     selector: 'addon-mod-assign-feedback-comments',
     templateUrl: 'addon-mod-assign-feedback-comments.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreEditorComponentsModule,
+    ],
 })
 export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedbackPluginBaseComponent implements OnInit {
 

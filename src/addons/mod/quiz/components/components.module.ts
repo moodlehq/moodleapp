@@ -22,22 +22,19 @@ import { AddonModQuizAttemptStateComponent } from './attempt-state/attempt-state
 import { AddonModQuizQuestionCardComponent } from './question-card/question-card';
 
 @NgModule({
-    declarations: [
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
         AddonModQuizAttemptInfoComponent,
         AddonModQuizAttemptStateComponent,
         AddonModQuizIndexComponent,
         AddonModQuizQuestionCardComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-        CoreCourseComponentsModule,
     ],
     exports: [
         AddonModQuizAttemptInfoComponent,
         AddonModQuizAttemptStateComponent,
         AddonModQuizIndexComponent,
         AddonModQuizQuestionCardComponent,
-
     ],
 })
 export class AddonModQuizComponentsModule {}

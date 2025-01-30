@@ -56,6 +56,10 @@ import {
 } from '@addons/mod/workshop/constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { AddonModWorkshopAssessmentComponent } from '../../components/assessment/assessment';
+import { AddonModWorkshopSubmissionComponent } from '../../components/submission/submission';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a workshop submission.
@@ -63,6 +67,14 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-workshop-submission-page',
     templateUrl: 'submission.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModWorkshopSubmissionComponent,
+        AddonModWorkshopAssessmentComponent,
+        CoreEditorComponentsModule,
+        AddonModWorkshopAssessmentStrategyComponent,
+    ],
 })
 export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLeave {
 

@@ -15,6 +15,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModChoiceIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a choice.
@@ -22,6 +23,11 @@ import { AddonModChoiceIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-choice-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModChoiceIndexComponent,
+    ],
 })
 export class AddonModChoiceIndexPage extends CoreCourseModuleMainActivityPage<AddonModChoiceIndexComponent> {
 

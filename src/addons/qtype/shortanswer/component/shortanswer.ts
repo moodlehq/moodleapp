@@ -15,6 +15,7 @@
 import { Component, ElementRef } from '@angular/core';
 
 import { AddonModQuizTextQuestion, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a short answer question.
@@ -23,6 +24,10 @@ import { AddonModQuizTextQuestion, CoreQuestionBaseComponent } from '@features/q
     selector: 'addon-qtype-shortanswer',
     templateUrl: 'addon-qtype-shortanswer.html',
     styleUrl: 'shortanswer.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonQtypeShortAnswerComponent extends CoreQuestionBaseComponent<AddonModQuizTextQuestion> {
 

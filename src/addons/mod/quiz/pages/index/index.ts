@@ -15,6 +15,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModQuizIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the quiz entry page.
@@ -22,6 +23,11 @@ import { AddonModQuizIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-quiz-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModQuizIndexComponent,
+    ],
 })
 export class AddonModQuizIndexPage extends CoreCourseModuleMainActivityPage<AddonModQuizIndexComponent> {
 
