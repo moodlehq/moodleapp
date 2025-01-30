@@ -30,6 +30,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { CoreText } from '@singletons/text';
+import { GestureDetail } from '@ionic/angular';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -51,7 +52,7 @@ interface CoreSettingsDeviceInfo {
     locationHref?: string;
     deviceType: string;
     screen?: string;
-    networkStatus: string;
+    isOnline: boolean;
     wifiConnection: string;
     cordovaVersion?: string;
     platform?: string;
@@ -93,7 +94,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
             versionCode: CoreConstants.CONFIG.versioncode,
             compilationTime: CoreConstants.BUILD.compilationTime || 0,
             lastCommit: CoreConstants.BUILD.lastCommitHash || '',
-            networkStatus: CoreNetwork.isOnline() ? 'online' : 'offline',
+            isOnline: CoreNetwork.isOnline(),
             wifiConnection: CoreNetwork.isWifi() ? 'yes' : 'no',
             localNotifAvailable: CoreLocalNotifications.isPluginAvailable() ? 'yes' : 'no',
             pushId: CorePushNotifications.getPushId(),
@@ -172,7 +173,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
-                this.deviceInfo.networkStatus = CoreNetwork.isOnline() ? 'online' : 'offline';
+                this.deviceInfo.isOnline = CoreNetwork.isOnline();
             });
         });
 
@@ -225,8 +226,8 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
      *
      * @param e Event.
      */
-    copyItemInfo(e: Event): void {
-        const el = <Element>e.target;
+    copyItemInfo(e: GestureDetail): void {
+        const el = <Element>e.event.target;
         const text = el?.closest('ion-item')?.textContent?.trim();
 
         text && CoreText.copyToClipboard(text);

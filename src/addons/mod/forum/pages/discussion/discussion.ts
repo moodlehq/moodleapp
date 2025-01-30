@@ -333,20 +333,20 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * Runs when the page is about to leave and no longer be the active page.
      */
     ionViewWillLeave(): void {
-        this.syncObserver && this.syncObserver.off();
-        this.syncManualObserver && this.syncManualObserver.off();
-        this.ratingOfflineObserver && this.ratingOfflineObserver.off();
-        this.ratingSyncObserver && this.ratingSyncObserver.off();
-        this.changeDiscObserver && this.changeDiscObserver.off();
+        this.syncObserver?.off();
+        this.syncManualObserver?.off();
+        this.ratingOfflineObserver?.off();
+        this.ratingSyncObserver?.off();
+        this.changeDiscObserver?.off();
         delete this.syncObserver;
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.onlineObserver && this.onlineObserver.unsubscribe();
-        this.discussions && this.discussions.destroy();
+        this.onlineObserver?.unsubscribe();
+        this.discussions?.destroy();
     }
 
     /**
