@@ -5,7 +5,7 @@
      */
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "[html]": {
-        "editor.defaultFormatter": "vscode.html-language-features",
+        "editor.defaultFormatter": "nesterenok.js-beautify-extentions",
     },
     "editor.formatOnSave": true,
     "eslint.format.enable": true,
