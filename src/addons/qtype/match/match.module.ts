@@ -14,16 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { AddonQtypeMatchComponent } from './component/match';
 import { AddonQtypeMatchHandler } from './services/handlers/match';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonQtypeMatchComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -32,9 +26,6 @@ import { AddonQtypeMatchHandler } from './services/handlers/match';
                 CoreQuestionDelegate.registerHandler(AddonQtypeMatchHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonQtypeMatchComponent,
     ],
 })
 export class AddonQtypeMatchModule {}

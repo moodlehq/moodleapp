@@ -16,14 +16,8 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { AddonUserProfileFieldCheckboxHandler } from './services/handlers/checkbox';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
-import { AddonUserProfileFieldCheckboxComponent } from './component/checkbox';
-import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonUserProfileFieldCheckboxComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -32,9 +26,6 @@ import { CoreSharedModule } from '@/core/shared.module';
                 CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldCheckboxHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonUserProfileFieldCheckboxComponent,
     ],
 })
 export class AddonUserProfileFieldCheckboxModule {}

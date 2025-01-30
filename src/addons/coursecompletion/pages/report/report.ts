@@ -38,7 +38,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonCourseCompletionReportPage implements OnInit {
+export default class AddonCourseCompletionReportPage implements OnInit {
 
     protected userId!: number;
     protected logView: () => void;

@@ -84,7 +84,7 @@ type Post = AddonModForumPost & { children?: Post[] };
         AddonModForumPostComponent,
     ],
 })
-export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDestroy, CanLeave {
+export default class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDestroy, CanLeave {
 
     @ViewChild(IonContent) content!: IonContent;
 

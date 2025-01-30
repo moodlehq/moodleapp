@@ -36,7 +36,20 @@ import { ADDON_MOD_SCORM_COMPONENT, ADDON_MOD_SCORM_PAGE_NAME } from './constant
 const routes: Routes = [
     {
         path: ADDON_MOD_SCORM_PAGE_NAME,
-        loadChildren: () => import('./scorm-lazy.module'),
+        children: [
+            {
+                path: ':courseId/:cmId',
+                loadComponent: () => import('./pages/index/index'),
+            },
+            {
+                path: ':courseId/:cmId/player',
+                loadComponent: () => import('./pages/player/player'),
+            },
+            {
+                path: ':courseId/:cmId/online-player',
+                loadComponent: () => import('./pages/online-player/online-player'),
+            },
+        ],
     },
 ];
 

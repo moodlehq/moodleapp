@@ -14,12 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModWikiComponentsModule } from './components/components.module';
-import { AddonModWikiIndexPage } from './pages/index/index';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { canLeaveGuard } from '@guards/can-leave';
-import { AddonModWikiEditPage } from './pages/edit/edit';
 
 const routes: Routes = [
     {
@@ -28,11 +23,11 @@ const routes: Routes = [
     },
     {
         path: ':courseId/:cmId/page/:hash',
-        component: AddonModWikiIndexPage,
+        loadComponent: () => import('./pages/index/index'),
     },
     {
         path: ':courseId/:cmId/edit',
-        component: AddonModWikiEditPage,
+        loadComponent: () => import('./pages/edit/edit'),
         canDeactivate: [canLeaveGuard],
     },
 ];
@@ -40,11 +35,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        AddonModWikiComponentsModule,
-        CoreEditorComponentsModule,
-        AddonModWikiIndexPage,
-        AddonModWikiEditPage,
     ],
 })
 export default class AddonModWikiLazyModule {}

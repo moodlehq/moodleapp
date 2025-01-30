@@ -49,7 +49,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreEditorComponentsModule,
     ],
 })
-export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild('editPageForm') formElement?: ElementRef;
 

@@ -29,6 +29,7 @@ import { AddonModWorkshopModuleHandler } from './services/handlers/module';
 import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME } from '@addons/mod/workshop/constants';
 import { getPrefetchHandlerInstance } from '@addons/mod/workshop/services/handlers/prefetch';
 import { getCronHandlerInstance } from '@addons/mod/workshop/services/handlers/sync-cron';
+import { canLeaveGuard } from '@guards/can-leave';
 
 /**
  * Get modworkshop services.
@@ -66,7 +67,27 @@ export async function getModWorkshopComponentModules(): Promise<unknown[]> {
 const routes: Routes = [
     {
         path: ADDON_MOD_WORKSHOP_PAGE_NAME,
-        loadChildren: () => import('./workshop-lazy.module'),
+        children: [
+            {
+                path: ':courseId/:cmId',
+                loadComponent: () => import('./pages/index/index'),
+            },
+            {
+                path: ':courseId/:cmId/:submissionId',
+                loadComponent: () => import('./pages/submission/submission'),
+                canDeactivate: [canLeaveGuard],
+            },
+            {
+                path: ':courseId/:cmId/:submissionId/edit',
+                loadComponent: () => import('./pages/edit-submission/edit-submission'),
+                canDeactivate: [canLeaveGuard],
+            },
+            {
+                path: ':courseId/:cmId/:submissionId/:assessmentId',
+                loadComponent: () => import('./pages/assessment/assessment'),
+                canDeactivate: [canLeaveGuard],
+            },
+        ],
     },
 ];
 

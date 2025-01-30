@@ -29,7 +29,17 @@ import { ADDON_MOD_FOLDER_PAGE_NAME } from './constants';
 const routes: Routes = [
     {
         path: ADDON_MOD_FOLDER_PAGE_NAME,
-        loadChildren: () => import('./folder-lazy.module'),
+        children: [
+            {
+                path: ':courseId/:cmId/:hash',
+                loadComponent: () => import('./pages/index/index'),
+            },
+            {
+                path: ':courseId/:cmId',
+                redirectTo: ':courseId/:cmId/', // Fake "hash".
+                pathMatch: 'full',
+            },
+        ],
     },
 ];
 

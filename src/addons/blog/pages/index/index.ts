@@ -64,7 +64,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreCommentsComponentsModule,
     ],
 })
-export class AddonBlogIndexPage implements OnInit, OnDestroy {
+export default class AddonBlogIndexPage implements OnInit, OnDestroy {
 
     title = '';
 

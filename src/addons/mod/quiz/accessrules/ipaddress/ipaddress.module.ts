@@ -18,8 +18,6 @@ import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-dele
 import { AddonModQuizAccessIpAddressHandler } from './services/handlers/ipaddress';
 
 @NgModule({
-    declarations: [
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,

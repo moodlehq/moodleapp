@@ -17,15 +17,11 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
-import { CoreSharedModule } from '@/core/shared.module';
-
-import { AddonModForumComponentsModule } from './components/components.module';
-import { AddonModForumIndexPage } from './pages/index';
 
 const mobileRoutes: Routes = [
     {
         path: ':courseId/:cmId',
-        component: AddonModForumIndexPage,
+        loadComponent: () => import('./pages/index/index'),
     },
     {
         path: ':courseId/:cmId/new/:timeCreated',
@@ -34,6 +30,7 @@ const mobileRoutes: Routes = [
     {
         path: ':courseId/:cmId/:discussionId',
         loadChildren: () => import('./forum-discussion-lazy.module'),
+
     },
     {
         path: 'discussion/:discussionId', // Only for discussion link handling.
@@ -44,7 +41,7 @@ const mobileRoutes: Routes = [
 const tabletRoutes: Routes = [
     {
         path: ':courseId/:cmId',
-        component: AddonModForumIndexPage,
+        loadComponent: () => import('./pages/index/index'),
         children: [
             {
                 path: 'new/:timeCreated',
@@ -66,9 +63,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        AddonModForumComponentsModule,
-        AddonModForumIndexPage,
     ],
 })
 export default class AddonModForumLazyModule {}

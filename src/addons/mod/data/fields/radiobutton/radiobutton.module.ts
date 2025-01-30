@@ -12,17 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
-import { AddonModDataFieldRadiobuttonComponent } from './component/radiobutton';
 import { AddonModDataFieldRadiobuttonHandler } from './services/handler';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonModDataFieldRadiobuttonComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -31,9 +25,6 @@ import { AddonModDataFieldRadiobuttonHandler } from './services/handler';
                 AddonModDataFieldsDelegate.registerHandler(AddonModDataFieldRadiobuttonHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonModDataFieldRadiobuttonComponent,
     ],
 })
 export class AddonModDataFieldRadiobuttonModule {}

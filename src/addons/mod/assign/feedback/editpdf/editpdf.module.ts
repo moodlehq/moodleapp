@@ -14,15 +14,9 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { AddonModAssignFeedbackEditPdfHandler } from './services/handler';
-import { AddonModAssignFeedbackEditPdfComponent } from './component/editpdf';
-import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonModAssignFeedbackEditPdfComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -31,9 +25,6 @@ import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate
                 AddonModAssignFeedbackDelegate.registerHandler(AddonModAssignFeedbackEditPdfHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonModAssignFeedbackEditPdfComponent,
     ],
 })
 export class AddonModAssignFeedbackEditPdfModule {}

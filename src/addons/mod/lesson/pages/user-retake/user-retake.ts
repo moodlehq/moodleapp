@@ -50,7 +50,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonModLessonUserRetakePage implements OnInit {
+export default class AddonModLessonUserRetakePage implements OnInit {
 
     component = ADDON_MOD_LESSON_COMPONENT;
     lesson?: AddonModLessonLessonWSData; // The lesson the retake belongs to.

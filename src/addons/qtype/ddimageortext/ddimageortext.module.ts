@@ -14,16 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { AddonQtypeDdImageOrTextComponent } from './component/ddimageortext';
 import { AddonQtypeDdImageOrTextHandler } from './services/handlers/ddimageortext';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonQtypeDdImageOrTextComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -32,9 +26,6 @@ import { AddonQtypeDdImageOrTextHandler } from './services/handlers/ddimageortex
                 CoreQuestionDelegate.registerHandler(AddonQtypeDdImageOrTextHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonQtypeDdImageOrTextComponent,
     ],
 })
 export class AddonQtypeDdImageOrTextModule {}

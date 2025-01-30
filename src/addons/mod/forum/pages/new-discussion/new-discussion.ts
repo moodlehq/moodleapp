@@ -80,7 +80,7 @@ type NewDiscussionData = {
         CoreEditorComponentsModule,
     ],
 })
-export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild('newDiscFormEl') formElement!: ElementRef;
     @ViewChild(CoreEditorRichTextEditorComponent) messageEditor!: CoreEditorRichTextEditorComponent;

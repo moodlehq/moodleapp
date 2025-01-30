@@ -41,7 +41,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonModH5PActivityUserAttemptsPage implements OnInit {
+export default class AddonModH5PActivityUserAttemptsPage implements OnInit {
 
     loaded = false;
     courseId!: number;

@@ -70,7 +70,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreEditorComponentsModule,
     ],
 })
-export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(CoreEditorRichTextEditorComponent) descriptionEditor!: CoreEditorRichTextEditorComponent;
     @ViewChild('editEventForm') formElement!: ElementRef;

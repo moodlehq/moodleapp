@@ -32,7 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonCalendarSettingsPage implements OnInit {
+export default class AddonCalendarSettingsPage implements OnInit {
 
     defaultTimeLabel = '';
 

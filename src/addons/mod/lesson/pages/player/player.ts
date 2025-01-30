@@ -73,7 +73,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreEditorComponentsModule,
     ],
 })
-export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild('questionFormEl') formElement?: ElementRef;

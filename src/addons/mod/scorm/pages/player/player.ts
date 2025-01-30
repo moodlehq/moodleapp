@@ -57,7 +57,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonModScormPlayerPage implements OnInit, OnDestroy {
+export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
     title?: string; // Title.
     scorm!: AddonModScormScorm; // The SCORM object.

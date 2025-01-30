@@ -43,7 +43,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
+export default class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
 
     notifications?: AddonNotificationSwipeItemsManager;
     notification?: AddonNotificationsNotificationMessageFormatted;

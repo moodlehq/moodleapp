@@ -13,25 +13,19 @@
 // limitations under the License.
 
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { canLeaveGuard } from '@guards/can-leave';
 import { CoreScreen } from '@services/screen';
-import { AddonModAssignComponentsModule } from './components/components.module';
-import { AddonModAssignEditPage } from './pages/edit/edit';
-import { AddonModAssignIndexPage } from './pages/index';
-import { AddonModAssignSubmissionListPage } from './pages/submission-list/submission-list';
-import { AddonModAssignSubmissionReviewPage } from './pages/submission-review/submission-review';
 
 const commonRoutes: Routes = [
     {
         path: ':courseId/:cmId',
-        component: AddonModAssignIndexPage,
+        loadComponent: () => import('./pages/index'),
     },
     {
         path: ':courseId/:cmId/edit',
-        component: AddonModAssignEditPage,
+        loadComponent: () => import('./pages/edit/edit'),
         canDeactivate: [canLeaveGuard],
     },
 ];
@@ -40,11 +34,11 @@ const mobileRoutes: Routes = [
     ...commonRoutes,
     {
         path: ':courseId/:cmId/submission',
-        component: AddonModAssignSubmissionListPage,
+        loadComponent: () => import('./pages/submission-list/submission-list'),
     },
     {
         path: ':courseId/:cmId/submission/:submitId',
-        component: AddonModAssignSubmissionReviewPage,
+        loadComponent: () => import('./pages/submission-review/submission-review'),
         canDeactivate: [canLeaveGuard],
     },
 ];
@@ -53,11 +47,11 @@ const tabletRoutes: Routes = [
     ...commonRoutes,
     {
         path: ':courseId/:cmId/submission',
-        component: AddonModAssignSubmissionListPage,
+        loadComponent: () => import('./pages/submission-list/submission-list'),
         children: [
             {
                 path: ':submitId',
-                component: AddonModAssignSubmissionReviewPage,
+                loadComponent: () => import('./pages/submission-review/submission-review'),
                 canDeactivate: [canLeaveGuard],
             },
         ],
@@ -72,12 +66,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        AddonModAssignComponentsModule,
-        AddonModAssignIndexPage,
-        AddonModAssignSubmissionListPage,
-        AddonModAssignSubmissionReviewPage,
-        AddonModAssignEditPage,
     ],
 })
 export default class AddonModAssignLazyModule {}

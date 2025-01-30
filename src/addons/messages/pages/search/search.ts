@@ -46,7 +46,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSearchComponentsModule,
     ],
 })
-export class AddonMessagesSearchPage implements OnDestroy {
+export default class AddonMessagesSearchPage implements OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 

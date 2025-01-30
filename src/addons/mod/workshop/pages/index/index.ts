@@ -30,7 +30,8 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonModWorkshopIndexComponent,
     ],
 })
-export class AddonModWorkshopIndexPage extends CoreCourseModuleMainActivityPage<AddonModWorkshopIndexComponent> implements OnInit {
+export default class AddonModWorkshopIndexPage extends CoreCourseModuleMainActivityPage<AddonModWorkshopIndexComponent>
+    implements OnInit {
 
     @ViewChild(AddonModWorkshopIndexComponent) activityComponent?: AddonModWorkshopIndexComponent;
 

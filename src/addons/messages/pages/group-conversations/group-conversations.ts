@@ -71,7 +71,7 @@ const enum AddonMessagesGroupConversationOptionNames {
         CoreMainMenuComponentsModule,
     ],
 })
-export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
+export default class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
     @ViewChild(IonContent) content?: IonContent;

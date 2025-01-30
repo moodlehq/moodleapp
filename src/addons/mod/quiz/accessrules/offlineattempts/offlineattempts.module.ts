@@ -14,16 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModQuizAccessOfflineAttemptsComponent } from './component/offlineattempts';
 import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-delegate';
 import { AddonModQuizAccessOfflineAttemptsHandler } from './services/handlers/offlineattempts';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonModQuizAccessOfflineAttemptsComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -32,9 +26,6 @@ import { AddonModQuizAccessOfflineAttemptsHandler } from './services/handlers/of
                 AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessOfflineAttemptsHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonModQuizAccessOfflineAttemptsComponent,
     ],
 })
 export class AddonModQuizAccessOfflineAttemptsModule {}

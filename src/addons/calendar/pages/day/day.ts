@@ -73,7 +73,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonCalendarDayPage implements OnInit, OnDestroy {
+export default class AddonCalendarDayPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreSwipeSlidesComponent) swipeSlidesComponent?: CoreSwipeSlidesComponent<PreloadedDay>;
 

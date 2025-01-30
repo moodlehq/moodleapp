@@ -70,13 +70,13 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        AddonModWorkshopSubmissionComponent,
-        AddonModWorkshopAssessmentComponent,
         CoreEditorComponentsModule,
+        AddonModWorkshopAssessmentComponent,
         AddonModWorkshopAssessmentStrategyComponent,
+        AddonModWorkshopSubmissionComponent,
     ],
 })
-export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(AddonModWorkshopAssessmentStrategyComponent) assessmentStrategy?: AddonModWorkshopAssessmentStrategyComponent;
 

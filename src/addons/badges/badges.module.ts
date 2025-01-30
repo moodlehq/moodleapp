@@ -42,16 +42,17 @@ export async function getBadgesServices(): Promise<Type<unknown>[]> {
 
 const mainMenuRoutes: Routes = [
     {
-        path: 'badge',
-        loadChildren: () => import('./badge-lazy.module'),
+        path: 'badge/:badgeHash',
+        loadComponent: () => import('./pages/issued-badge/issued-badge'),
+        data: { usesSwipeNavigation: false },
     },
     {
         path: 'badges',
         loadChildren: () => import('./badges-lazy.module'),
     },
     {
-        path: 'badgeclass',
-        loadChildren: () => import('./badgeclass-lazy.module'),
+        path: 'badgeclass/:badgeId',
+        loadComponent: () => import('./pages/badge-class/badge-class'),
     },
 ];
 

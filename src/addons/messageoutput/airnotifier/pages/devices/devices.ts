@@ -30,7 +30,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestroy {
+export default class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestroy {
 
     platformDevices: AddonMessageOutputAirnotifierPlatformDevices[] = [];
     loaded = false;

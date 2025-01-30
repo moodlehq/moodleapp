@@ -58,7 +58,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonCalendarUpcomingEventsComponent,
     ],
 })
-export class AddonCalendarIndexPage implements OnInit, OnDestroy {
+export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
     @ViewChild(AddonCalendarCalendarComponent) calendarComponent?: AddonCalendarCalendarComponent;
     @ViewChild(AddonCalendarUpcomingEventsComponent) upcomingEventsComponent?: AddonCalendarUpcomingEventsComponent;

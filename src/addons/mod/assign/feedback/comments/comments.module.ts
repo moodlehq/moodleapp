@@ -14,17 +14,9 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { AddonModAssignFeedbackCommentsHandler } from './services/handler';
-import { AddonModAssignFeedbackCommentsComponent } from './component/comments';
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        CoreEditorComponentsModule,
-        AddonModAssignFeedbackCommentsComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -33,9 +25,6 @@ import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate
                 AddonModAssignFeedbackDelegate.registerHandler(AddonModAssignFeedbackCommentsHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonModAssignFeedbackCommentsComponent,
     ],
 })
 export class AddonModAssignFeedbackCommentsModule {}

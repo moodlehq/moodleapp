@@ -35,7 +35,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonModFeedbackNonRespondentsPage implements OnInit {
+export default class AddonModFeedbackNonRespondentsPage implements OnInit {
 
     protected cmId!: number;
     protected feedback?: AddonModFeedbackWSFeedback;

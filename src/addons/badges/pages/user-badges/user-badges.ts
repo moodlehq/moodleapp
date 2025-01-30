@@ -39,7 +39,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
+export default class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
 
     currentTime = 0;
     badges: CoreListItemsManager<AddonBadgesUserBadge, AddonBadgesUserBadgesSource>;

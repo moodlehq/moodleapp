@@ -16,14 +16,8 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { AddonUserProfileFieldDatetimeHandler } from './services/handlers/datetime';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
-import { AddonUserProfileFieldDatetimeComponent } from './component/datetime';
-import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonUserProfileFieldDatetimeComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -32,9 +26,6 @@ import { CoreSharedModule } from '@/core/shared.module';
                 CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldDatetimeHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonUserProfileFieldDatetimeComponent,
     ],
 })
 export class AddonUserProfileFieldDatetimeModule {}

@@ -13,30 +13,10 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { AddonModWorkshopIndexComponent } from './index/index';
-import { AddonModWorkshopSubmissionComponent } from './submission/submission';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModWorkshopAssessmentComponentsModule } from '@addons/mod/workshop/assessment/assesment-components.module';
-import { AddonModWorkshopAssessmentComponent } from './assessment/assessment';
 import { AddonModWorkshopAssessmentStrategyComponent } from './assessment-strategy/assessment-strategy';
 
 @NgModule({
     imports: [
-        CoreSharedModule,
-        CoreCourseComponentsModule,
-        CoreEditorComponentsModule,
-        AddonModWorkshopAssessmentComponentsModule,
-        AddonModWorkshopIndexComponent,
-        AddonModWorkshopSubmissionComponent,
-        AddonModWorkshopAssessmentComponent,
-        AddonModWorkshopAssessmentStrategyComponent,
-    ],
-    exports: [
-        AddonModWorkshopIndexComponent,
-        AddonModWorkshopSubmissionComponent,
-        AddonModWorkshopAssessmentComponent,
         AddonModWorkshopAssessmentStrategyComponent,
     ],
 })

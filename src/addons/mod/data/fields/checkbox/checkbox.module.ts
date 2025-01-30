@@ -14,15 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { AddonModDataFieldCheckboxComponent } from './component/checkbox';
-import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
 import { AddonModDataFieldCheckboxHandler } from './services/handler';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonModDataFieldCheckboxComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -31,9 +26,6 @@ import { AddonModDataFieldCheckboxHandler } from './services/handler';
                 AddonModDataFieldsDelegate.registerHandler(AddonModDataFieldCheckboxHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonModDataFieldCheckboxComponent,
     ],
 })
 export class AddonModDataFieldCheckboxModule {}
