@@ -101,8 +101,7 @@
                                                     [autoSave]="true" contextLevel="module" [contextInstanceId]="lesson.coursemodule"
                                                     elementId="answer_editor" />
                                             </ion-item>
-                                        }
-                                        @if (!question.textarea && question.useranswer) {
+                                        } @else if (question.useranswer) {
                                             <ion-item class="ion-text-wrap">
                                                 <ion-label>
                                                     <p class="item-heading">{{ 'addon.mod_lesson.youranswer' | translate }}</p>
@@ -116,8 +115,8 @@
                                         }
                                     }
                                     @case ('multichoice') {
-                                        <!-- Single choice. -->
                                         @if (!question.multi) {
+                                            <!-- Single choice. -->
                                             <ion-radio-group [formControlName]="question.controlName">
                                                 <ion-item class="ion-text-wrap" *ngFor="let option of question.options">
                                                     <ion-radio [id]="option.id" [value]="option.value" [disabled]="option.disabled">
@@ -127,9 +126,8 @@
                                                     </ion-radio>
                                                 </ion-item>
                                             </ion-radio-group>
-                                        }
-                                        <!-- Multiple choice. -->
-                                        @if (question.multi) {
+                                        } @else {
+                                            <!-- Multiple choice. -->
 
                                             <ion-item class="ion-text-wrap" *ngFor="let option of question.options">
                                                 <ion-checkbox [id]="option.id" [formControlName]="option.name">
@@ -138,7 +136,6 @@
                                                         [courseId]="courseId" />
                                                 </ion-checkbox>
                                             </ion-item>
-
                                         }
                                     }
                                     @case ('matching') {
@@ -203,19 +200,18 @@
                     </ion-list>
                 }
 
-                <!-- End of lesson reached. -->
-                @if (eolData && !processData && eolData.offline?.value) {
-                    <ion-card class="core-warning-card">
-                        <ion-item>
-                            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                            <ion-label>{{ 'addon.mod_lesson.finishretakeoffline' | translate }}</ion-label>
-                        </ion-item>
-                    </ion-card>
-                }
-
                 @if (eolData && !processData) {
-                    <ion-card>
+                    @if (eolData.offline?.value) {
+                        <!-- End of lesson reached. -->
+                        <ion-card class="core-warning-card">
+                            <ion-item>
+                                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                                <ion-label>{{ 'addon.mod_lesson.finishretakeoffline' | translate }}</ion-label>
+                            </ion-item>
+                        </ion-card>
+                    }
 
+                    <ion-card>
                         @if (eolData.gradelesson) {
                             <ion-card-header class="ion-text-wrap">
                                 <ion-card-title>{{ 'addon.mod_lesson.congratulations' | translate }}</ion-card-title>
@@ -245,8 +241,7 @@
                             <ion-item class="ion-text-wrap">
                                 <ion-label [innerHTML]="eolData.displayscorewithessays.message" />
                             </ion-item>
-                        }
-                        @if (!eolData.displayscorewithessays && eolData.displayscorewithoutessays) {
+                        } @else if (eolData.displayscorewithoutessays) {
                             <ion-item class="ion-text-wrap">
                                 <ion-label>{{ eolData.displayscorewithoutessays.message }}</ion-label>
                             </ion-item>

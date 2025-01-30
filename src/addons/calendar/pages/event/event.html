@@ -37,8 +37,7 @@
                     @if (event.moduleIcon) {
                         <core-mod-icon [modicon]="event.moduleIcon" [showAlt]="false" [modname]="event.modulename"
                             [componentId]="event.instance" slot="start" [purpose]="event.purpose" [isBranded]="event.branded" />
-                    }
-                    @if ( event.eventIcon && !event.moduleIcon) {
+                    } @else if ( event.eventIcon) {
                         <ion-icon [name]="event.eventIcon" aria-hidden="true" slot="start" />
                     }
                     <ion-label>
@@ -147,25 +146,25 @@
             </ion-list>
         }
 
-        @if (remindersEnabled && event && !canScheduleExactAlarms && !scheduleExactWarningHidden) {
-            <ion-card class="core-warning-card core-card-with-buttons">
-                <ion-item class="ion-text-wrap">
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <p><strong>{{ 'core.exactalarmsturnedoff' | translate }}</strong></p>
-                        <p>{{ 'core.exactalarmsturnedoffmessage' | translate }}</p>
-                    </ion-label>
-                </ion-item>
-                <div class="core-card-buttons">
-                    <ion-button fill="clear" (click)="hideAlarmWarning()">
-                        {{ 'core.dontshowagain' | translate | coreNoPeriod }}
-                    </ion-button>
-                    <ion-button fill="outline" (click)="openAlarmSettings()">{{ 'core.turnon' | translate }}</ion-button>
-                </div>
-            </ion-card>
-        }
-
         @if (remindersEnabled && event) {
+            @if (!canScheduleExactAlarms && !scheduleExactWarningHidden) {
+                <ion-card class="core-warning-card core-card-with-buttons">
+                    <ion-item class="ion-text-wrap">
+                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                        <ion-label>
+                            <p><strong>{{ 'core.exactalarmsturnedoff' | translate }}</strong></p>
+                            <p>{{ 'core.exactalarmsturnedoffmessage' | translate }}</p>
+                        </ion-label>
+                    </ion-item>
+                    <div class="core-card-buttons">
+                        <ion-button fill="clear" (click)="hideAlarmWarning()">
+                            {{ 'core.dontshowagain' | translate | coreNoPeriod }}
+                        </ion-button>
+                        <ion-button fill="outline" (click)="openAlarmSettings()">{{ 'core.turnon' | translate }}</ion-button>
+                    </div>
+                </ion-card>
+            }
+
             <ion-card>
                 <ion-item>
                     <ion-label>

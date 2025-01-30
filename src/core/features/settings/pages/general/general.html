@@ -53,13 +53,13 @@
                         {{ 'core.settings.colorscheme-' + scheme | translate }}</ion-select-option>
                 </ion-select>
             </ion-item>
-        }
-        @if (colorSchemes.length > 0 && selectedScheme === 'system' && isAndroid) {
-            <ion-item lines="none">
-                <ion-label class="ion-text-wrap">
-                    <p class="ion-text-wrap">{{ 'core.settings.colorscheme-system-notice' | translate }}</p>
-                </ion-label>
-            </ion-item>
+            @if (selectedScheme === 'system' && isAndroid) {
+                <ion-item lines="none">
+                    <ion-label class="ion-text-wrap">
+                        <p class="ion-text-wrap">{{ 'core.settings.colorscheme-system-notice' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            }
         }
         <core-dynamic-component [component]="editorSettingsComponentClass" />
         @if (displayIframeHelp) {

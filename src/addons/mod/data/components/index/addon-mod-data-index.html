@@ -38,85 +38,85 @@
     <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="setGroup(selectedGroup)"
         [courseId]="database?.course" />
 
-    @if (!access?.timeavailable && timeAvailableFrom) {
-        <ion-card class="core-info-card">
-            <ion-item>
-                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                <ion-label>{{ 'addon.mod_data.notopenyet' | translate:{$a: timeAvailableFromReadable} }}</ion-label>
-            </ion-item>
-        </ion-card>
-    }
+    @if (access) {
+        @if (!access.timeavailable) {
+            @if (timeAvailableFrom) {
+                <ion-card class="core-info-card">
+                    <ion-item>
+                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                        <ion-label>{{ 'addon.mod_data.notopenyet' | translate:{$a: timeAvailableFromReadable} }}</ion-label>
+                    </ion-item>
+                </ion-card>
+            }
 
-    @if (!access?.timeavailable && timeAvailableTo) {
-        <ion-card class="core-info-card">
-            <ion-item>
-                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                <ion-label>{{ 'addon.mod_data.expired' | translate:{$a: timeAvailableToReadable} }}</ion-label>
-            </ion-item>
-        </ion-card>
-    }
-
-    @if (access && access.entrieslefttoview) {
-        <ion-card class="core-info-card">
-            <ion-item>
-                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                <ion-label>
-                    {{ 'addon.mod_data.entrieslefttoaddtoview' | translate:{$a: {entrieslefttoview: access.entrieslefttoview} } }}
-                </ion-label>
-            </ion-item>
-        </ion-card>
-    }
-
-    @if (access && access.entrieslefttoadd) {
-        <ion-card class="core-info-card">
-            <ion-item>
-                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                <ion-label>
-                    {{ 'addon.mod_data.entrieslefttoadd' | translate:{$a: {entriesleft: access.entrieslefttoadd} } }}
-                </ion-label>
-            </ion-item>
-        </ion-card>
-    }
-
-    <!-- Reset search. -->
-    @if (search.searching && !isEmpty) {
-
-        @if (!foundRecordsTranslationData) {
-            <ion-item (click)="searchReset($event)" button [detail]="false">
-                <ion-label color="info">
-                    {{ 'addon.mod_data.resetsettings' | translate}}
-                </ion-label>
-            </ion-item>
+            @if (timeAvailableTo) {
+                <ion-card class="core-info-card">
+                    <ion-item>
+                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                        <ion-label>{{ 'addon.mod_data.expired' | translate:{$a: timeAvailableToReadable} }}</ion-label>
+                    </ion-item>
+                </ion-card>
+            }
         }
 
-        @if (foundRecordsTranslationData) {
-            <ion-card class="core-success-card">
-                <ion-item (click)="searchReset($event)" button [detail]="false">
+        @if (access.entrieslefttoview) {
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
                     <ion-label>
-                        <p [innerHTML]="'addon.mod_data.foundrecords' | translate:{$a: foundRecordsTranslationData}"></p>
+                        {{ 'addon.mod_data.entrieslefttoaddtoview' | translate:{$a: {entrieslefttoview: access.entrieslefttoview} } }}
                     </ion-label>
                 </ion-item>
             </ion-card>
         }
 
+        @if (access.entrieslefttoadd) {
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        {{ 'addon.mod_data.entrieslefttoadd' | translate:{$a: {entriesleft: access.entrieslefttoadd} } }}
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
     }
 
-    @if (!isEmpty && database) {
-        <div class="addon-data-contents addon-data-entries addon-data-entries-{{database.id}}">
-            <core-compile-html [text]="entriesRendered" [jsData]="jsData" [extraImports]="extraImports" [cssCode]="database.csstemplate" />
-        </div>
-    }
+    @if (!isEmpty) {
+        @if (search.searching) {
+            <!-- Reset search. -->
+            @if (!foundRecordsTranslationData) {
+                <ion-item (click)="searchReset($event)" button [detail]="false">
+                    <ion-label color="info">
+                        {{ 'addon.mod_data.resetsettings' | translate}}
+                    </ion-label>
+                </ion-item>
+            } @else {
+                <ion-card class="core-success-card">
+                    <ion-item (click)="searchReset($event)" button [detail]="false">
+                        <ion-label>
+                            <p [innerHTML]="'addon.mod_data.foundrecords' | translate:{$a: foundRecordsTranslationData}"></p>
+                        </ion-label>
+                    </ion-item>
+                </ion-card>
+            }
 
+        }
 
-
-    @if (isEmpty && !search.searching) {
-        <core-empty-box icon="fas-database" [message]="'addon.mod_data.norecords' | translate" />
-    }
-
-    @if (isEmpty && search.searching) {
-        <core-empty-box icon="fas-database" [message]="'addon.mod_data.nomatch' | translate" class="core-empty-box-clickable">
-            <button class="as-link" (click)="searchReset($event)">{{ 'addon.mod_data.resetsettings' | translate}}</button>
-        </core-empty-box>
+        @if (database) {
+            <div class="addon-data-contents addon-data-entries addon-data-entries-{{database.id}}">
+                <core-compile-html [text]="entriesRendered" [jsData]="jsData" [extraImports]="extraImports"
+                    [cssCode]="database.csstemplate" />
+            </div>
+        }
+    } @else {
+        @if (!search.searching) {
+            <core-empty-box icon="fas-database" [message]="'addon.mod_data.norecords' | translate" />
+        } @else {
+            <core-empty-box icon="fas-database" [message]="'addon.mod_data.nomatch' | translate" class="core-empty-box-clickable">
+                <button class="as-link" (click)="searchReset($event)">{{ 'addon.mod_data.resetsettings' | translate}}</button>
+            </core-empty-box>
+        }
     }
 
     @if (!showLoading) {

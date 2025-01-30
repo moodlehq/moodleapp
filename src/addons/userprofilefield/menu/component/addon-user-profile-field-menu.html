@@ -1,5 +1,5 @@
-<!-- Render (no edit). -->
 @if (!edit && field && field.name) {
+    <!-- Render (no edit). -->
     <ion-item>
         <ion-label>
             <p class="item-heading">
@@ -14,8 +14,8 @@
     </ion-item>
 }
 
-<!-- Edit. -->
 @if (edit && field && field.shortname && form) {
+    <!-- Edit. -->
     <ion-item class="ion-text-wrap" [formGroup]="form">
         <ion-select labelPlacement="stacked" [formControlName]="modelName" [placeholder]="'core.choosedots' | translate"
             interface="action-sheet" [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: field.name}">

@@ -219,8 +219,7 @@
                                 [ariaLabel]="'core.clearstoreddata' | translate:{$a: size | coreBytesToSize}" slot="end">
                                 <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
                             </ion-button>
-                        }
-                        @if (removeFilesLoading) {
+                        } @else{
                             <ion-spinner slot="end" aria-hidden="true" />
                         }
                     </ion-item>
@@ -237,8 +236,7 @@
                         [attr.aria-label]="'addon.storagemanager.downloaddatafrom' | translate:{name: module?.name}">
                         @if (!prefetchLoading) {
                             <ion-icon name="fas-cloud-arrow-down" slot="start" aria-hidden="true" />
-                        }
-                        @if (prefetchLoading) {
+                        } @else {
                             <ion-spinner slot="start" aria-hidden="true" />
                         }
                         <ion-label>
@@ -268,9 +266,7 @@
                     {{ 'core.refresh' | translate }}
                 </ion-label>
             </ion-button>
-        }
-
-        @if (hasOffline) {
+        } @else {
             <ion-button class="ion-margin" (click)="sync()" expand="block" fill="outline">
                 <ion-icon name="fas-rotate" slot="start" aria-hidden="true" />
                 <ion-label>

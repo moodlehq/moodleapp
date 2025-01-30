@@ -119,8 +119,6 @@
                                 </ion-select-option>
                             </ion-select>
                         </ion-item>
-                    }
-                    @if (access?.canoverridegrades) {
                         <ion-item>
                             <ion-label position="stacked">{{ 'addon.mod_workshop.feedbackreviewer' | translate }}</ion-label>
                             <core-rich-text-editor [control]="evaluateForm.controls['text']" name="text" [autoSave]="true"

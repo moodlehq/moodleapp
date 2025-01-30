@@ -34,8 +34,7 @@
                 <div #courseThumb slot="start" class="core-course-thumb">
                     <ion-icon name="fas-graduation-cap" class="course-icon" aria-hidden="true" />
                 </div>
-            }
-            @if (course.courseimage) {
+            } @else {
                 <ion-avatar slot="start" class="core-course-thumb">
                     <img [url]="course.courseimage" core-external-content alt="" />
                 </ion-avatar>

@@ -16,7 +16,6 @@
             <ion-list>
                 <!-- Media file. -->
                 @if (pageInstance.mediaFile) {
-
                     <ion-item-divider>
                         <ion-label>
                             <h2>{{ 'addon.mod_lesson.linkedmedia' | translate }}</h2>
@@ -24,7 +23,6 @@
                     </ion-item-divider>
                     <core-file [file]="pageInstance.mediaFile" [component]="pageInstance.component"
                         [componentId]="pageInstance.lesson?.coursemodule" />
-
                 }
 
                 <!-- Lesson menu. -->
@@ -41,8 +39,7 @@
                                 <ion-spinner [attr.aria-label]="'core.loading' | translate" />
                             </ion-label>
                         </ion-item>
-                    }
-                    @if (!pageInstance.loadingMenu) {
+                    } @else {
                         <div>
                             <ng-container *ngFor="let page of pageInstance.lessonPages">
                                 @if (page.display && page.displayinmenublock) {

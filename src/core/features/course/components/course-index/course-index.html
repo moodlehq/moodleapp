@@ -24,11 +24,8 @@
                                 </h2>
                             </ion-label>
                         </ion-item>
-                    }
-                    @if (allSectionId !== section.id) {
-
+                    } @else {
                         <ng-container *ngTemplateOutlet="sectionTemplate; context: {section}" />
-
                     }
                 </ng-container>
             </ion-list>
@@ -48,8 +45,7 @@
                     [attr.aria-label]="(section.expanded ? 'core.collapse' : 'core.expand') | translate"
                     [attr.aria-expanded]="section.expanded" [attr.aria-controls]="'core-course-index-section-' + section.id"
                     [class.expandable-status-icon-expanded]="section.expanded" />
-            }
-            @if (!section.hasVisibleModules) {
+            } @else {
                 <ion-icon name="" slot="start" aria-hidden="true" class="expandable-status-icon" />
             }
             <ion-label>
@@ -89,16 +85,13 @@
                         (click)="selectSectionOrModule($event, section.id, modOrSubsection.id)" button>
                         @if (modOrSubsection.completionStatus === undefined) {
                             <ion-icon class="completioninfo completion_none" name="" slot="start" aria-hidden="true" />
-                        }
-                        @if (modOrSubsection.completionStatus === 0) {
+                        } @else if (modOrSubsection.completionStatus === 0) {
                             <ion-icon class="completioninfo completion_incomplete" name="far-circle" slot="start"
                                 [attr.aria-label]="'core.course.todo' | translate" />
-                        }
-                        @if (modOrSubsection.completionStatus === 1 || modOrSubsection.completionStatus === 2) {
+                        } @else if (modOrSubsection.completionStatus === 1 || modOrSubsection.completionStatus === 2) {
                             <ion-icon class="completioninfo completion_complete" name="fas-circle" color="success" slot="start"
                                 [attr.aria-label]="'core.course.done' | translate" />
-                        }
-                        @if (modOrSubsection.completionStatus === 3) {
+                        } @else if (modOrSubsection.completionStatus === 3) {
                             <ion-icon class="completioninfo completion_fail" name="fas-xmark" color="danger" slot="start"
                                 [attr.aria-label]="'core.course.failed' | translate" />
                         }

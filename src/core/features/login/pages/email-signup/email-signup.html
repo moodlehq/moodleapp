@@ -34,12 +34,10 @@
                             {{ 'core.openinbrowser' | translate }}
                         </ion-button>
                     </ion-list>
-                }
+                } @else if (settingsLoaded && settings) {
 
-                @if (allRequiredSupported && settingsLoaded && settings) {
-
-                    <!-- Age verification. -->
                     @if (ageDigitalConsentVerification) {
+                        <!-- Age verification. -->
                         <form [formGroup]="ageVerificationForm" (ngSubmit)="verifyAge($event)" #ageForm>
 
                             <ion-item-divider class="ion-text-wrap">
@@ -80,10 +78,8 @@
                                 </ion-label>
                             </ion-item>
                         </form>
-                    }
-
-                    <!-- Signup form. -->
-                    @if (!ageDigitalConsentVerification && site) {
+                    } @else if (site) {
+                        <!-- Signup form. -->
                         <form [formGroup]="signupForm" (ngSubmit)="create($event)" #signupFormEl>
 
                             <ion-item class="ion-text-wrap ion-text-center">

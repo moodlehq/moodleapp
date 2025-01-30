@@ -93,16 +93,14 @@
         (click)="gotoConversation(conversation.id, conversation.userid)"
         id="addon-message-conversation-{{ conversation.id ? conversation.id : 'user-' + conversation.userid }}"
         [attr.aria-label]="conversation.name">
-        <!-- Group conversation image. -->
         @if (conversation.type === typeGroup) {
+            <!-- Group conversation image. -->
             <ion-avatar slot="start">
                 <img [url]="conversation.imageurl" [alt]="conversation.name" core-external-content
                     onError="this.src='assets/img/group-avatar.svg'">
             </ion-avatar>
-        }
-
-        <!-- Avatar for individual conversations. -->
-        @if (conversation.type !== typeGroup) {
+        } @else {
+            <!-- Avatar for individual conversations. -->
             <core-user-avatar core-user-avatar [user]="conversation.otherUser" [linkProfile]="false"
                 [checkOnline]="conversation.showonlinestatus" slot="start" />
         }
@@ -127,8 +125,6 @@
                         }
                         @if (conversation.unreadcount > 0) {
                             <ion-badge aria-label="true">{{ conversation.unreadcount }}</ion-badge>
-                        }
-                        @if (conversation.unreadcount > 0) {
                             <span class="sr-only">
                                 {{ 'addon.messages.unreadmessages' | translate:{$a: conversation.unreadcount} }}
                             </span>
@@ -147,8 +143,7 @@
                         <span class="addon-message-last-message-user">
                             {{ 'addon.messages.you' | translate }}
                         </span>
-                    }
-                    @if (!conversation.sentfromcurrentuser && conversation.type === typeGroup && conversation.members[0]) {
+                    } @else if (conversation.type === typeGroup && conversation.members[0]) {
                         <span class="addon-message-last-message-user">{{ conversation.members[0].fullname + ':' }}</span>
                     }
                     <core-format-text clean="true" singleLine="true" [text]="conversation.lastmessage"

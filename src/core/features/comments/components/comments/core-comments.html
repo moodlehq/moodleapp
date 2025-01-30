@@ -1,36 +1,32 @@
 @if (enabled) {
-
     @if (!showItem) {
-<core-loading [hideUntil]="commentsLoaded" [fullscreen]="false">
-        @if (!countError) {
-<button (click)="openComments($event)" class="as-link">
-            {{ 'core.comments.commentscount' | translate : {'$a': commentsCount} }}
-        </button>
-}
-        @if (countError) {
-<div>
-            {{ 'core.comments.commentsnotworking' | translate }}
-        </div>
-}
-    </core-loading>
-}
-    @if (showItem) {
-<ion-item button [detail]="!countError && commentsLoaded" (click)="openComments($event)" [disabled]="countError">
-        <ion-label>
-            <core-loading [hideUntil]="commentsLoaded" [fullscreen]="false">
-                @if (!countError) {
-<p class="item-heading">
+        <core-loading [hideUntil]="commentsLoaded" [fullscreen]="false">
+            @if (!countError) {
+                <button (click)="openComments($event)" class="as-link">
                     {{ 'core.comments.commentscount' | translate : {'$a': commentsCount} }}
-                </p>
-}
-                @if (countError) {
-<p>
+                </button>
+            } @else {
+                <div>
                     {{ 'core.comments.commentsnotworking' | translate }}
-                </p>
-}
-            </core-loading>
-        </ion-label>
-    </ion-item>
-}
+                </div>
+            }
+        </core-loading>
+    } @else {
+        <ion-item button [detail]="!countError && commentsLoaded" (click)="openComments($event)" [disabled]="countError">
+            <ion-label>
+                <core-loading [hideUntil]="commentsLoaded" [fullscreen]="false">
+                    @if (!countError) {
+                        <p class="item-heading">
+                            {{ 'core.comments.commentscount' | translate : {'$a': commentsCount} }}
+                        </p>
+                    } @else {
+                        <p>
+                            {{ 'core.comments.commentsnotworking' | translate }}
+                        </p>
+                    }
+                </core-loading>
+            </ion-label>
+        </ion-item>
+    }
 
 }

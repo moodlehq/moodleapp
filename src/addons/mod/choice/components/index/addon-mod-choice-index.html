@@ -18,70 +18,71 @@
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
         [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()" />
 
-    <!-- Activity availability messages -->
-    @if (showPreview && options.length) {
-        <ion-card class="core-info-card">
-            <ion-item>
-                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                <ion-label>
-                    <p>{{ 'addon.mod_choice.previewing' | translate }}</p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
-    }
-
-    <!-- Inform what will happen with the choices. -->
-    @if (publishInfo && options.length) {
-        <ion-card class="core-info-card">
-            <ion-item>
-                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                <ion-label>{{ publishInfo | translate }}</ion-label>
-            </ion-item>
-        </ion-card>
-    }
-
-    <!-- Choice options -->
-    @if (options.length && choice && (canEdit || showPreview)) {
-        <ion-card>
-            @if (choice.allowmultiple) {
-
-                <ion-item class="ion-text-wrap" *ngFor="let option of options">
-                    <ion-checkbox [(ngModel)]="option.checked" [disabled]="option.disabled || showPreview">
-                        <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option: option}" />
-                    </ion-checkbox>
+    @if (options.length) {
+        @if (showPreview) {
+            <!-- Activity availability messages -->
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p>{{ 'addon.mod_choice.previewing' | translate }}</p>
+                    </ion-label>
                 </ion-item>
+            </ion-card>
+        }
 
-            }
-            @if (!choice.allowmultiple) {
-                <ion-radio-group [(ngModel)]="selectedOption.id">
-                    <ion-item class="ion-text-wrap" *ngFor="let option of options">
-                        <ion-radio [value]="option.id" [disabled]="option.disabled || showPreview">
-                            <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option: option}" />
-                        </ion-radio>
-                    </ion-item>
-                </ion-radio-group>
-            }
-        </ion-card>
-    }
+        @if (publishInfo) {
+            <!-- Inform what will happen with the choices. -->
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>{{ publishInfo | translate }}</ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
-    @if (options.length && choice && !canEdit && !showPreview) {
-        <ion-card>
-            <ion-item-divider>
-                <ion-label>
-                    <h2>{{ 'addon.mod_choice.yourselection' | translate }}</h2>
-                </ion-label>
-            </ion-item-divider>
-            <ng-container *ngFor="let option of options">
-                @if (option.checked) {
-                    <ion-item class="ion-text-wrap">
+        @if (choice) {
+            @if (canEdit || showPreview) {
+                <!-- Choice options -->
+                <ion-card>
+                    @if (choice.allowmultiple) {
+
+                        <ion-item class="ion-text-wrap" *ngFor="let option of options">
+                            <ion-checkbox [(ngModel)]="option.checked" [disabled]="option.disabled || showPreview">
+                                <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option, choice}" />
+                            </ion-checkbox>
+                        </ion-item>
+
+                    } @else {
+                        <ion-radio-group [(ngModel)]="selectedOption.id">
+                            <ion-item class="ion-text-wrap" *ngFor="let option of options">
+                                <ion-radio [value]="option.id" [disabled]="option.disabled || showPreview">
+                                    <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option, choice}" />
+                                </ion-radio>
+                            </ion-item>
+                        </ion-radio-group>
+                    }
+                </ion-card>
+            } @else {
+                <ion-card>
+                    <ion-item-divider>
                         <ion-label>
-                            <core-format-text [text]="option.text" contextLevel="module" [contextInstanceId]="module.id"
-                                [courseId]="courseId" />
+                            <h2>{{ 'addon.mod_choice.yourselection' | translate }}</h2>
                         </ion-label>
-                    </ion-item>
-                }
-            </ng-container>
-        </ion-card>
+                    </ion-item-divider>
+                    <ng-container *ngFor="let option of options">
+                        @if (option.checked) {
+                            <ion-item class="ion-text-wrap">
+                                <ion-label>
+                                    <core-format-text [text]="option.text" contextLevel="module" [contextInstanceId]="module.id"
+                                        [courseId]="courseId" />
+                                </ion-label>
+                            </ion-item>
+                        }
+                    </ng-container>
+                </ion-card>
+            }
+        }
     }
 
     <!-- Choice results -->
@@ -114,6 +115,7 @@
                             </ion-label>
                         </ion-item>
                     </ion-col>
+
                     @if (choice.publish && results) {
                         <ion-col size="12" size-lg="6">
                             <ion-item-group *ngFor="let result of results">
@@ -138,8 +140,8 @@
                                         }
                                     </ion-label>
                                 </ion-item>
-                                @if (result.expanded) {
 
+                                @if (result.expanded) {
                                     <ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseId"
                                         [userId]="user.userid" [attr.aria-label]="user.fullname" class="ion-text-wrap">
                                         <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false" />
@@ -147,8 +149,8 @@
                                             <p>{{user.fullname}}</p>
                                         </ion-label>
                                     </ion-item>
-
                                 }
+
                             </ion-item-group>
                         </ion-col>
                         }
@@ -195,16 +197,16 @@
 
 
 <!-- Template to render a choice option label. -->
-<ng-template #optionLabelTemplate let-option="option">
+<ng-template #optionLabelTemplate let-option="option" let-choice="choice">
     <p class="item-heading">
         <core-format-text [text]="option.text" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
-        @if (choice!.limitanswers && option.countanswers >= option.maxanswers) {
+        @if (choice.limitanswers && option.countanswers >= option.maxanswers) {
             <span>
                 {{ 'addon.mod_choice.full' | translate }}
             </span>
         }
     </p>
-    @if (choice!.limitanswers && choice!.showavailable) {
+    @if (choice.limitanswers && choice.showavailable) {
 
         <p>{{ 'addon.mod_choice.responsesa' | translate:{$a: option.countanswers} }}</p>
         <p>{{ 'addon.mod_choice.limita' | translate:{$a: option.maxanswers} }}</p>

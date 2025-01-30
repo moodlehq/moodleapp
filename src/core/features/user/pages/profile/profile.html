@@ -134,15 +134,16 @@
                         <ion-badge slot="end" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
                             {{handler.badge}}
                         </ion-badge>
+                        @if (handler.badge && handler.badgeA11yText) {
+                            <span class="sr-only">
+                                {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
+                            </span>
+                        }
+                        @if (handler.loading) {
+                            <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                        }
                     }
-                    @if (handler.showBadge && handler.badge && handler.badgeA11yText) {
-                        <span class="sr-only">
-                            {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
-                        </span>
-                    }
-                    @if (handler.showBadge && handler.loading) {
-                        <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
-                    }
+
                 </ion-item>
             </ion-list>
         }

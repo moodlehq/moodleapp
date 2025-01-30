@@ -101,8 +101,7 @@
                                                     <p>
                                                         {{ 'core.percentagenumber' | translate:{$a: overview.avescore} }}
                                                     </p>
-                                                }
-                                                @if (overview.numofattempts <= 0) {
+                                                } @else {
                                                     <p>{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                                 }
                                             </ion-col>
@@ -113,8 +112,7 @@
                                                     <p>
                                                         {{ 'core.percentagenumber' | translate:{$a: overview.highscore} }}
                                                     </p>
-                                                }
-                                                @if (overview.highscore === null) {
+                                                } @else {
                                                     <p>{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                                 }
                                             </ion-col>
@@ -125,8 +123,7 @@
                                                     <p>
                                                         {{ 'core.percentagenumber' | translate:{$a: overview.lowscore} }}
                                                     </p>
-                                                }
-                                                @if (overview.lowscore === null) {
+                                                } @else {
                                                     <p>{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                                 }
                                             </ion-col>
@@ -137,8 +134,7 @@
                                             <p class="item-heading">{{ 'addon.mod_lesson.averagetime' | translate }}</p>
                                             @if (overview.avetime !== null && overview.numofattempts) {
                                                 <p>{{ avetimeReadable }}</p>
-                                            }
-                                            @if (overview.avetime === null || !overview.numofattempts) {
+                                            } @else {
                                                 <p>
                                                     {{ 'addon.mod_lesson.notcompleted' | translate }}
                                                 </p>
@@ -149,8 +145,7 @@
                                             <p class="item-heading">{{ 'addon.mod_lesson.hightime' | translate }}</p>
                                             @if (overview.hightime !== null) {
                                                 <p>{{ hightimeReadable }}</p>
-                                            }
-                                            @if (overview.hightime === null) {
+                                            } @else {
                                                 <p>{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                             }
                                         </ion-col>
@@ -159,8 +154,7 @@
                                             <p class="item-heading">{{ 'addon.mod_lesson.lowtime' | translate }}</p>
                                             @if (overview.lowtime !== null) {
                                                 <p>{{ lowtimeReadable }}</p>
-                                            }
-                                            @if (overview.lowtime === null) {
+                                            } @else {
                                                 <p>{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                             }
                                         </ion-col>
@@ -177,8 +171,7 @@
                                                     <p>
                                                         {{ 'core.percentagenumber' | translate:{$a: overview.avescore} }}
                                                     </p>
-                                                }
-                                                @if (overview.numofattempts <= 0) {
+                                                } @else {
                                                     <p>{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                                 }
                                             </ion-col>
@@ -188,8 +181,7 @@
                                             <p class="item-heading">{{ 'addon.mod_lesson.averagetime' | translate }}</p>
                                             @if (overview.avetime !== null && overview.numofattempts) {
                                                 <p>{{ avetimeReadable }}</p>
-                                            }
-                                            @if (overview.avetime === null || !overview.numofattempts) {
+                                            } @else {
                                                 <p>
                                                     {{ 'addon.mod_lesson.notcompleted' | translate }}
                                                 </p>
@@ -204,8 +196,7 @@
                                                     <p>
                                                         {{ 'core.percentagenumber' | translate:{$a: overview.highscore} }}
                                                     </p>
-                                                }
-                                                @if (overview.highscore === null) {
+                                                } @else {
                                                     <p>{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                                 }
                                             </ion-col>
@@ -215,8 +206,7 @@
                                             <p class="item-heading">{{ 'addon.mod_lesson.hightime' | translate }}</p>
                                             @if (overview.hightime !== null) {
                                                 <p>{{ hightimeReadable }}</p>
-                                            }
-                                            @if (overview.hightime === null) {
+                                            } @else {
                                                 <p>{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                             }
                                         </ion-col>
@@ -229,8 +219,7 @@
                                                     <p>
                                                         {{ 'core.percentagenumber' | translate:{$a: overview.lowscore} }}
                                                     </p>
-                                                }
-                                                @if (overview.lowscore === null) {
+                                                } @else {
                                                     <p>{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                                 }
                                             </ion-col>
@@ -240,8 +229,7 @@
                                             <p class="item-heading">{{ 'addon.mod_lesson.lowtime' | translate }}</p>
                                             @if (overview.lowtime !== null) {
                                                 <p>{{ lowtimeReadable }}</p>
-                                            }
-                                            @if (overview.lowtime === null) {
+                                            } @else {
                                                 <p>{{ 'addon.mod_lesson.notcompleted' | translate }}</p>
                                             }
                                         </ion-col>
@@ -306,65 +294,59 @@
 
     @if (lesson && !preventReasons.length) {
 
-        @if (leftDuringTimed && !lesson.timelimit && !finishedOffline) {
-            <ion-item class="ion-text-wrap">
-                <!-- User left during the session and there is no time limit, ask to continue. -->
-                <ion-label>
-                    <p [innerHTML]="'addon.mod_lesson.youhaveseen' | translate"></p>
-                    <ion-row>
-                        <ion-col>
-                            <ion-button expand="block" fill="outline" (click)="start(false)">
-                                {{ 'core.no' | translate }}
-                            </ion-button>
-                        </ion-col>
-                        <ion-col>
-                            <ion-button expand="block" (click)="start(true)">
-                                {{ 'core.yes' | translate }}
-                            </ion-button>
-                        </ion-col>
-                    </ion-row>
-                </ion-label>
-            </ion-item>
-        }
+        @if (leftDuringTimed) {
+            @if (!finishedOffline) {
+                @if (!lesson.timelimit) {
+                    <ion-item class="ion-text-wrap">
+                        <!-- User left during the session and there is no time limit, ask to continue. -->
+                        <ion-label>
+                            <p [innerHTML]="'addon.mod_lesson.youhaveseen' | translate"></p>
+                            <ion-row>
+                                <ion-col>
+                                    <ion-button expand="block" fill="outline" (click)="start(false)">
+                                        {{ 'core.no' | translate }}
+                                    </ion-button>
+                                </ion-col>
+                                <ion-col>
+                                    <ion-button expand="block" (click)="start(true)">
+                                        {{ 'core.yes' | translate }}
+                                    </ion-button>
+                                </ion-col>
+                            </ion-row>
+                        </ion-label>
+                    </ion-item>
+                } @else if (lesson.retake) {
+                    <ion-item class="ion-text-wrap">
+                        <!-- User left during the session with time limit and retakes allowed, ask to continue. -->
+                        <ion-label [innerHTML]="'addon.mod_lesson.leftduringtimed' | translate" />
+                    </ion-item>
+                    <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="start(false)">
+                        {{ 'addon.mod_lesson.continue' | translate }}
+                    </ion-button>
+                }
+            }
 
-        @if (leftDuringTimed && lesson.timelimit && lesson.retake && !finishedOffline) {
-
-            <ion-item class="ion-text-wrap">
-                <!-- User left during the session with time limit and retakes allowed, ask to continue. -->
-                <ion-label [innerHTML]="'addon.mod_lesson.leftduringtimed' | translate" />
-            </ion-item>
-            <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="start(false)">
-                {{ 'addon.mod_lesson.continue' | translate }}
-            </ion-button>
-
-        }
-
-        @if (leftDuringTimed && lesson.timelimit && !lesson.retake) {
-            <ion-item class="ion-text-wrap">
-                <!-- User left during the session with time limit and retakes not allowed.
+            @if (lesson.timelimit && !lesson.retake) {
+                <ion-item class="ion-text-wrap">
+                    <!-- User left during the session with time limit and retakes not allowed.
                 This should be handled by preventMessages. -->
-                <ion-label [innerHTML]="'addon.mod_lesson.leftduringtimednoretake' | translate" />
-            </ion-item>
-        }
-
-        @if (!leftDuringTimed && !finishedOffline) {
-
+                    <ion-label [innerHTML]="'addon.mod_lesson.leftduringtimednoretake' | translate" />
+                </ion-item>
+            }
+        } @else if (!finishedOffline) {
             <!-- User hasn't left during the session, show a start button. -->
             @if (!canManage) {
                 <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="start(false)">
                     {{ 'core.start' | translate }}
                 </ion-button>
-            }
-            @if (canManage) {
+            } @else {
                 <ion-button class="ion-text-wrap ion-margin" expand="block" fill="outline" (click)="start(false)">
                     <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true" />
                     {{ 'addon.mod_lesson.preview' | translate }}
                 </ion-button>
             }
 
-        }
-
-        @if (finishedOffline) {
+        } @else {
             <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="start(true)">
                 <!-- There's an attempt finished in offline. Let the user continue, showing the end of lesson. -->
                 {{ 'addon.mod_lesson.continue' | translate }}

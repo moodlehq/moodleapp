@@ -5,9 +5,7 @@
 
         <div slot="content">
             @if (section.expanded) {
-
                 <ng-container *ngTemplateOutlet="sectionContent" />
-
             }
         </div>
     </ion-accordion>
@@ -77,14 +75,12 @@
         @if (!isModule(modOrSubsection)) {
             <core-course-section [course]="course" [section]="modOrSubsection" [lastModuleViewed]="lastModuleViewed"
                 [viewedModules]="viewedModules" [collapsible]="true" />
-        } @else {
-            @if (modOrSubsection.visibleoncoursepage !== 0) {
-                <core-course-module [module]="modOrSubsection" [section]="section" [showActivityDates]="course.showactivitydates"
-                    [showCompletionConditions]="course.showcompletionconditions"
-                    [isLastViewed]="lastModuleViewed && lastModuleViewed.cmId === modOrSubsection.id" [class.core-course-module-not-viewed]="
+        } @else if (modOrSubsection.visibleoncoursepage !== 0) {
+            <core-course-module [module]="modOrSubsection" [section]="section" [showActivityDates]="course.showactivitydates"
+                [showCompletionConditions]="course.showcompletionconditions"
+                [isLastViewed]="lastModuleViewed && lastModuleViewed.cmId === modOrSubsection.id" [class.core-course-module-not-viewed]="
                     !viewedModules[modOrSubsection.id] &&
                     (!modOrSubsection.completiondata || modOrSubsection.completiondata.state === completionStatusIncomplete)" />
-            }
         }
     </ng-container>
 </ng-template>

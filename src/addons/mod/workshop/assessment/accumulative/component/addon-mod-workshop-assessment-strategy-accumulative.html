@@ -8,33 +8,34 @@
                         [courseId]="courseId" />
                 </ion-label>
             </ion-item>
-            @if (edit && field.grades) {
-                <ion-item>
-                    <ion-select labelPlacement="stacked" [(ngModel)]="selectedValues[n].grade" [cancelText]="'core.cancel' | translate"
-                        interface="action-sheet" [interfaceOptions]="{header: 'addon.mod_workshop_assessment_accumulative.dimensiongradefor' |
-                    translate : {'$a': field.dimtitle }}">
-                        <div [core-mark-required]="true" slot="label">
-                            {{ 'addon.mod_workshop_assessment_accumulative.dimensiongradefor' | translate : {'$a': field.dimtitle } }}
-                        </div>
-                        <ion-select-option *ngFor="let grade of field.grades" [value]="grade.value">{{grade.label}}</ion-select-option>
-                    </ion-select>
-                    @if (fieldErrors['grade_' + n]) {
-                        <core-input-errors [errorText]="fieldErrors['grade_' + n]" />
-                    }
-                </ion-item>
-            }
-            @if (!edit && field.grades) {
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.mod_workshop_assessment_accumulative.dimensiongradefor' | translate : {'$a':
-                    field.dimtitle } }}</p>
-                        <ng-container *ngFor="let grade of field.grades">
-                            @if (grade.value === selectedValues[n].grade) {
-                                <p>{{grade.label}}</p>
-                            }
-                        </ng-container>
-                    </ion-label>
-                </ion-item>
+            @if (field.grades) {
+                @if (edit) {
+                    <ion-item>
+                        <ion-select labelPlacement="stacked" [(ngModel)]="selectedValues[n].grade" [cancelText]="'core.cancel' | translate"
+                            interface="action-sheet" [interfaceOptions]="{header: 'addon.mod_workshop_assessment_accumulative.dimensiongradefor' |
+                        translate : {'$a': field.dimtitle }}">
+                            <div [core-mark-required]="true" slot="label">
+                                {{ 'addon.mod_workshop_assessment_accumulative.dimensiongradefor' | translate : {'$a': field.dimtitle } }}
+                            </div>
+                            <ion-select-option *ngFor="let grade of field.grades" [value]="grade.value">{{grade.label}}</ion-select-option>
+                        </ion-select>
+                        @if (fieldErrors['grade_' + n]) {
+                            <core-input-errors [errorText]="fieldErrors['grade_' + n]" />
+                        }
+                    </ion-item>
+                } @else {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_workshop_assessment_accumulative.dimensiongradefor' | translate : {'$a':
+                        field.dimtitle } }}</p>
+                            <ng-container *ngFor="let grade of field.grades">
+                                @if (grade.value === selectedValues[n].grade) {
+                                    <p>{{grade.label}}</p>
+                                }
+                            </ng-container>
+                        </ion-label>
+                    </ion-item>
+                }
             }
             @if (edit) {
                 <ion-item>
@@ -42,8 +43,7 @@
                         [core-auto-rows]="selectedValues[n].peercomment"
                         [label]=" 'addon.mod_workshop_assessment_accumulative.dimensioncommentfor' | translate : {'$a': field.dimtitle }" />
                 </ion-item>
-            }
-            @if (!edit) {
+            } @else {
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <p class="item-heading">

@@ -6,8 +6,7 @@
         <ion-title>
             @if (attempt) {
                 <h1>{{ attempt.fullname }}</h1>
-            }
-            @if (anonAttempt) {
+            } @else if (anonAttempt) {
                 <h1>{{ 'addon.mod_feedback.anonymous_user' | translate }}</h1>
             }
         </ion-title>
@@ -28,9 +27,7 @@
                             }
                         </ion-label>
                     </ion-item>
-                }
-
-                @if (anonAttempt) {
+                } @else if (anonAttempt) {
                     <ion-item class="ion-text-wrap">
                         <core-user-avatar [linkProfile]="false" slot="start" />
                         <ion-label>

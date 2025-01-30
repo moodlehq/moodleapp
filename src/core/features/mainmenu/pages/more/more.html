@@ -32,14 +32,14 @@
                 <ion-badge slot="end" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
                     {{handler.badge}}
                 </ion-badge>
-            }
-            @if (handler.showBadge && handler.badge && handler.badgeA11yText) {
-                <span class="sr-only">
-                    {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
-                </span>
-            }
-            @if (handler.showBadge && handler.loading) {
-                <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                @if (handler.badge && handler.badgeA11yText) {
+                    <span class="sr-only">
+                        {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
+                    </span>
+                }
+                @if (handler.loading) {
+                    <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                }
             }
         </ion-item>
         <ng-container *ngFor="let item of customItems">
@@ -52,8 +52,7 @@
                         <p class="item-heading">{{item.label}}</p>
                     </ion-label>
                 </ion-item>
-            }
-            @if (item.type === 'embedded') {
+            } @else {
                 <ion-item button (click)="openItem(item)" [attr.aria-label]="item.label" class="core-moremenu-customitem" [detail]="true">
                     <ion-icon [name]="item.icon" slot="start" aria-hidden="true" />
                     <ion-label>

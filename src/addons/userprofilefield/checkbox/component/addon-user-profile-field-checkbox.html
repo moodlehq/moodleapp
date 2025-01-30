@@ -1,5 +1,5 @@
-<!-- Render (no edit). -->
 @if (!edit && field && field.name) {
+    <!-- Render (no edit). -->
     <ion-item>
         <ion-label>
             <p class="item-heading">
@@ -10,8 +10,7 @@
                 <p>
                     {{ 'core.yes' | translate }}
                 </p>
-            }
-            @if (value === '0') {
+            } @else {
                 <p>
                     {{ 'core.no' | translate }}
                 </p>
@@ -20,8 +19,8 @@
     </ion-item>
 }
 
-<!-- Edit. -->
 @if (edit && field && field.shortname && form) {
+    <!-- Edit. -->
     <ion-item [formGroup]="form">
         <ion-checkbox [formControlName]="modelName" labelPlacement="start" justify="space-between">
             <span [core-mark-required]="required">

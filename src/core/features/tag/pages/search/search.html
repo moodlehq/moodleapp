@@ -35,18 +35,15 @@
         </ion-row>
     </ion-grid>
     <core-loading [hideUntil]="loaded && !searching">
-        @if (!cloud || !cloud!.tags || !cloud!.tags.length) {
+        @if (!cloud || !cloud!.tags || !cloud.tags.length) {
             <core-empty-box icon="fas-tags" [message]="'core.tag.notagsfound' | translate: {$a: query}" role="alert" />
-        }
-
-        @if (cloud && cloud!.tags && cloud!.tags.length > 0) {
-
+        } @else {
             <div class="ion-text-center core-tag-cloud">
                 <ion-badge *ngFor="let tag of cloud!.tags" (click)="openTag(tag)" class="ion-text-wrap">
                     <span [class]="'size' + tag.size">{{ tag.name }}</span>
                 </ion-badge>
             </div>
-            @if (cloud!.tags.length < cloud!.totalcount) {
+            @if (cloud.tags.length < cloud.totalcount) {
                 <p class="ion-text-center">
                     {{ 'core.tag.showingfirsttags' | translate: {$a: cloud!.tags.length} }}
                 </p>

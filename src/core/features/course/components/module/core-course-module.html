@@ -36,7 +36,7 @@
                                 }
                             </p>
 
-                            @if (module.visible === 0 || (module.visible !== 0 && module.isStealth)) {
+                            @if (module.visible === 0 || module.isStealth) {
                                 <div class="core-module-additional-info">
                                     <!-- Hidden badges -->
                                     @if (module.visible === 0) {
@@ -44,8 +44,7 @@
                                             <ion-icon name="far-eye-slash" aria-hidden="true" />
                                             {{ 'core.course.hiddenfromstudents' | translate }}
                                         </ion-badge>
-                                    }
-                                    @if (module.visible !== 0 && module.isStealth) {
+                                    } @else if(module.isStealth) {
                                         <ion-badge color="secondary" class="ion-text-wrap">
                                             <ion-icon name="fas-eye-low-vision" aria-hidden="true" />
                                             {{ 'core.course.hiddenoncoursepage' | translate }}

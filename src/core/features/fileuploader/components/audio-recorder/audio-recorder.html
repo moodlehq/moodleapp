@@ -42,9 +42,7 @@
                             (click)="pauseRecording()">
                             <ion-icon slot="icon-only" name="fas-circle-pause" />
                         </ion-button>
-                    }
-
-                    @if (status === 'recording-paused') {
+                    } @else if (status === 'recording-paused') {
                         <ion-button [ariaLabel]="'core.fileuploader.resumerecording' | translate" shape="round" fill="clear" color="danger"
                             (click)="resumeRecording()">
                             <ion-icon slot="icon-only" name="fas-microphone" />

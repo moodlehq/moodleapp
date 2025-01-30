@@ -20,17 +20,13 @@
             <!-- Video stream for image and video. -->
             <video [hidden]="hasCaptured" class="core-webcam-stream" autoplay #streamVideo></video>
 
-            <!-- For video recording, use 2 videos and show/hide them because a CSS rule caused problems with the controls. -->
             @if (isVideo) {
+                <!-- For video recording, use 2 videos and show/hide them because a CSS rule caused problems with the controls. -->
                 <video [hidden]="!hasCaptured" class="core-webcam-video-captured" controls #previewVideo controlsList="nodownload">
                 </video>
-            }
-
-            <!-- Canvas to treat the image and an img to show the result. -->
-            @if (isImage) {
+            } @else if (isImage) {
+                <!-- Canvas to treat the image and an img to show the result. -->
                 <canvas class="core-webcam-image-canvas" #imgCanvas></canvas>
-            }
-            @if (isImage) {
                 <img [hidden]="!hasCaptured" class="core-webcam-image" alt="{{ 'core.capturedimage' | translate }}" #previewImage>
             }
         </div>
@@ -46,16 +42,13 @@
                     <ion-button fill="clear" (click)="actionClicked()" [ariaLabel]="title">
                         @if (!isCapturing && isVideo) {
                             <ion-icon name="fas-video" slot="icon-only" aria-hidden="true" />
-                        }
-                        @if (isImage) {
+                        } @else if (isImage) {
                             <ion-icon name="fas-camera" slot="icon-only" aria-hidden="true" />
-                        }
-                        @if (isCapturing) {
+                        } @else if (isCapturing) {
                             <ion-icon name="fas-square" slot="icon-only" aria-hidden="true" />
                         }
                     </ion-button>
-                }
-                @if (hasCaptured) {
+                } @else {
                     <ion-button fill="clear" (click)="discard()" [ariaLabel]="'core.discard' | translate">
                         <ion-icon color="danger" name="fas-trash" slot="icon-only" aria-hidden="true" />
                     </ion-button>

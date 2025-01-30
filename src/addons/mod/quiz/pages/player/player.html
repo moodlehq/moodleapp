@@ -101,20 +101,25 @@
                                 <p>{{ question.status }}</p>
                             </ion-label>
 
-                            @if (question.stateclass === 'requiresgrading') {
-                                <ion-icon name="fas-circle-question" aria-hidden="true" slot="end" />
-                            }
-                            @if (question.stateclass === 'correct') {
-                                <ion-icon [name]="correctIcon" color="success" aria-hidden="true" slot="end" />
-                            }
-                            @if (question.stateclass === 'partiallycorrect') {
-                                <ion-icon [name]="partialCorrectIcon" color="warning" aria-hidden="true" slot="end" />
-                            }
-                            @if (question.stateclass === 'incorrect' || question.stateclass === 'notanswered') {
-                                <ion-icon [name]="incorrectIcon" color="danger" aria-hidden="true" slot="end" />
-                            }
-                            @if (question.stateclass === 'invalidanswer') {
-                                <ion-icon name="fas-triangle-exclamation" color="danger" aria-hidden="true" slot="end" />
+                            @switch (question.stateclass) {
+                                @case ('requiresgrading') {
+                                    <ion-icon name="fas-circle-question" aria-hidden="true" slot="end" />
+                                }
+                                @case ('correct') {
+                                    <ion-icon [name]="correctIcon" color="success" aria-hidden="true" slot="end" />
+                                }
+                                @case ('partiallycorrect') {
+                                    <ion-icon [name]="partialCorrectIcon" color="warning" aria-hidden="true" slot="end" />
+                                }
+                                @case ('incorrect') {
+                                    <ion-icon [name]="incorrectIcon" color="danger" aria-hidden="true" slot="end" />
+                                }
+                                @case ('notanswered') {
+                                    <ion-icon [name]="incorrectIcon" color="danger" aria-hidden="true" slot="end" />
+                                }
+                                @case ('invalidanswer') {
+                                    <ion-icon name="fas-triangle-exclamation" color="danger" aria-hidden="true" slot="end" />
+                                }
                             }
                         </ion-item>
                     }

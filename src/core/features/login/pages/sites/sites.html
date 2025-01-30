@@ -24,18 +24,17 @@
     <core-loading [hideUntil]="loaded">
         <core-sites-list [accountsList]="accountsList" [sitesClickable]="true" (onSiteClicked)="login($event)">
             <ng-template #siteItem let-site="site" let-isCurrentSite="isCurrentSite">
-                @if (!showDelete && site.badge) {
-                    <ion-badge slot="end" @coreShowHideAnimation>
-                        <span aria-hidden="true">{{site.badge}}</span>
-                        <span class="sr-only">{{ 'core.login.sitebadgedescription' | translate:{ count: site.badge }
-                        }}</span>
-                    </ion-badge>
-                }
                 @if (showDelete) {
                     <ion-button slot="end" fill="clear" color="danger" (click)="deleteSite($event, site)"
                         [ariaLabel]="'core.login.removeaccount' | translate" [@coreSlideInOut]="'fromRight'">
                         <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
                     </ion-button>
+                } @else if (site.badge) {
+                    <ion-badge slot="end" @coreShowHideAnimation>
+                        <span aria-hidden="true">{{site.badge}}</span>
+                        <span class="sr-only">{{ 'core.login.sitebadgedescription' | translate:{ count: site.badge }
+                        }}</span>
+                    </ion-badge>
                 }
             </ng-template>
         </core-sites-list>

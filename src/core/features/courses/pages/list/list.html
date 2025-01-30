@@ -6,8 +6,7 @@
         <ion-title>
             @if (!showOnlyEnrolled) {
                 <h1>{{ 'core.courses.availablecourses' | translate }}</h1>
-            }
-            @if (showOnlyEnrolled) {
+            } @else {
                 <h1>{{ 'core.courses.mycourses' | translate }}</h1>
             }
         </ion-title>

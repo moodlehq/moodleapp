@@ -17,8 +17,7 @@
                 @if (showCalendar) {
                     <core-context-menu-item [priority]="800" [content]="'addon.calendar.upcomingevents' | translate"
                         iconAction="fas-table-list" (action)="toggleDisplay()" />
-                }
-                @if (!showCalendar) {
+                } @else {
                     <core-context-menu-item [priority]="800" [content]="'addon.calendar.monthlyview' | translate"
                         iconAction="fas-calendar-days" (action)="toggleDisplay()" />
                 }

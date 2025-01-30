@@ -131,9 +131,9 @@
                                     @if (attempt.rescaledGrade !== undefined && attempt.rescaledGrade >= 0) {
                                         <p>
                                             {{ 'core.grades.gradelong' | translate: { $a: {
-                            grade: attempt.formattedGrade,
-                            max: quiz.gradeFormatted,
-                            } } }}
+                                                grade: attempt.formattedGrade,
+                                                max: quiz.gradeFormatted,
+                                            } } }}
                                         </p>
                                     } @else {
                                         <p>{{ 'addon.mod_quiz.notyetgraded' | translate }}</p>
@@ -267,7 +267,7 @@
 
                     <!-- Button to open in browser if it cannot be attempted in the app. -->
                     @if (!buttonText && ((!hasSupportedQuestions && unsupportedQuestions.length) ||
-                unsupportedRules.length || behaviourSupported === false)) {
+                        unsupportedRules.length || behaviourSupported === false)) {
                         <ion-button class="ion-text-wrap ion-margin" expand="block" [href]="module.url" core-link
                             [showBrowserWarning]="false">
                             {{ 'core.openinbrowser' | translate }}

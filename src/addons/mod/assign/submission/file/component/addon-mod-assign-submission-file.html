@@ -1,5 +1,5 @@
-<!-- Read only. -->
 @if (files && files.length && !edit) {
+    <!-- Read only. -->
     <ion-item class="ion-text-wrap">
         <ion-label>
             <p class="item-heading">{{ plugin.name }}</p>
@@ -10,8 +10,8 @@
     </ion-item>
 }
 
-<!-- Edit -->
 @if (edit) {
+    <!-- Edit -->
     <div>
         <ion-item-divider class="ion-text-wrap" [sticky]="true">
             <ion-label>

@@ -63,10 +63,7 @@
 
         @if (notes && notes.length === 0) {
             <core-empty-box icon="fas-receipt" [message]="'addon.notes.nonotes' | translate" />
-        }
-
-        @if (notes && notes.length > 0) {
-
+        } @else {
             <ion-card *ngFor="let note of notes">
                 <ion-item class="ion-text-wrap">
                     @if (!userId) {
@@ -95,8 +92,6 @@
                                 {{ 'core.deletedoffline' | translate }}
                             </span>
                         </p>
-                    }
-                    @if (note.deleted) {
                         <ion-button slot="end" fill="clear" color="danger" (click)="undoDeleteNote($event, note)"
                             [ariaLabel]="'core.restore' | translate">
                             <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />

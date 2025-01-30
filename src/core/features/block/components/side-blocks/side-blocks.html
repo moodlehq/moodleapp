@@ -20,9 +20,7 @@
                     }
                 </ng-container>
             </ion-list>
-        }
-
-        @if (blocks.length === 0) {
+        } @else {
             <core-empty-box icon="fas-table-cells-large" [message]="'core.block.noblocks' | translate" />
         }
     </core-loading>

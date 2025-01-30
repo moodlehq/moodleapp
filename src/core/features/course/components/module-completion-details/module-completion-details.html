@@ -3,16 +3,15 @@
     <!-- Dialog header. -->
     @if (isTrackedUser) {
         <h2>{{ 'core.course.youmust' | translate }}</h2>
-    }
-    @if (!isTrackedUser) {
+    } @else {
         <h2>{{ 'core.course.studentsmust' | translate }}</h2>
     }
 
     <ion-list role="list">
         <ng-container *ngFor="let rule of completionDetails">
-            <!-- Show completion status and description to tracked users. -->
 
             @if (isTrackedUser) {
+                <!-- Show completion status and description to tracked users. -->
 
                 @if (rule.statusComplete) {
                     <div role="listitem" [attr.aria-label]="rule.accessibleDescription" class="text-success">
@@ -38,10 +37,8 @@
                     </div>
                 }
 
-            }
-
-            <!-- Show only description (without status) to non-tracked users. -->
-            @if (!isTrackedUser) {
+            } @else {
+                <!-- Show only description (without status) to non-tracked users. -->
                 <div role="listitem" [attr.aria-label]="rule.accessibleDescription">
                     <ion-icon name="fas-circle" class="completion_dot" aria-hidden="true" />
                     {{ rule.rulevalue.description }}

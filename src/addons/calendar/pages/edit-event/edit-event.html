@@ -48,8 +48,6 @@
                         <ion-label>
                             <p class="item-heading" [core-mark-required]="true">{{ 'addon.calendar.eventkind' | translate }}</p>
                         </ion-label>
-                    }
-                    @if (eventTypes.length === 1) {
                         <p slot="end">{{eventTypes[0].name | translate }}</p>
                     }
                     @if (eventTypes.length > 1) {
@@ -63,8 +61,8 @@
                     }
                 </ion-item>
 
-                <!-- Category. -->
                 @if (typeControl.value === 'category') {
+                    <!-- Category. -->
                     <ion-item class="ion-text-wrap">
                         <ion-select formControlName="categoryid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
                             [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.category' | translate}">
@@ -101,32 +99,29 @@
                             </ion-select-option>
                         </ion-select>
                     </ion-item>
-                    <!-- The course has no groups. -->
-                    @if (!loadingGroups && courseGroupSet && !groups.length) {
+                    @if (loadingGroups) {
+                        <!-- Loading groups. -->
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>
+                                <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+                            </ion-label>
+                        </ion-item>
+                    } @else if (courseGroupSet && !groups.length) {
+                        <!-- The course has no groups. -->
                         <ion-item class="ion-text-wrap core-danger-item">
                             <ion-label>
                                 <p>{{ 'core.coursenogroups' | translate }}</p>
                             </ion-label>
                         </ion-item>
-                    }
-                    <!-- Select the group. -->
-                    @if (!loadingGroups && groups.length > 0) {
+                    } @else if (groups.length > 0) {
+                        <!-- Select the group. -->
+                        <!-- The course has no groups. -->
                         <ion-item class="ion-text-wrap core-edit-set-group">
                             <ion-select formControlName="groupid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
                                 [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.group' | translate}">
                                 <p [core-mark-required]="true" slot="label">{{ 'core.group' | translate }}</p>
                                 <ion-select-option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</ion-select-option>
                             </ion-select>
-                        </ion-item>
-                    }
-                    <!-- Loading groups. -->
-                    @if (loadingGroups) {
-                        <ion-item class="ion-text-wrap">
-                            <ion-label>
-                                @if (loadingGroups) {
-                                    <ion-spinner [attr.aria-label]="'core.loading' | translate" />
-                                }
-                            </ion-label>
                         </ion-item>
                     }
 
@@ -255,15 +250,16 @@
                         labelPlacement="stacked" formControlName="location" />
                 </ion-item>
             </form>
-        }
-        @if (loaded && !error) {
-            <div collapsible-footer appearOnBottom slot="fixed">
-                <div class="list-item-limited-width adaptable-buttons-row">
-                    <ion-button expand="block" (click)="submit()" [disabled]="!form.valid" type="submit" class="ion-margin ion-text-wrap">
-                        {{ 'core.save' | translate }}
-                    </ion-button>
+            @if (loaded) {
+                <div collapsible-footer appearOnBottom slot="fixed">
+                    <div class="list-item-limited-width adaptable-buttons-row">
+                        <ion-button expand="block" (click)="submit()" [disabled]="!form.valid" type="submit"
+                            class="ion-margin ion-text-wrap">
+                            {{ 'core.save' | translate }}
+                        </ion-button>
+                    </div>
                 </div>
-            </div>
+            }
         }
     </core-loading>
 </ion-content>

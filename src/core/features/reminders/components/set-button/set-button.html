@@ -2,8 +2,7 @@
     [ariaLabel]="'core.reminders.setareminderfor' | translate : { title: title, label: labelClean }">
     @if (timebefore !== undefined) {
         <ion-icon name="fas-bell" slot="icon-only" aria-hidden="true" />
-    }
-    @if (timebefore === undefined) {
+    } @else {
         <ion-icon name="far-bell-slash" slot="icon-only" aria-hidden="true" />
     }
 </ion-button>

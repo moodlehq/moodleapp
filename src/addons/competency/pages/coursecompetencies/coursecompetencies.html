@@ -21,8 +21,7 @@
                         <ion-item class="ion-text-wrap">
                             <ion-label>{{ 'addon.competency.coursecompetencyratingsarepushedtouserplans' | translate }}</ion-label>
                         </ion-item>
-                    }
-                    @if (!courseCompetencies.settings.pushratingstouserplans) {
+                    } @else {
                         <ion-item class="ion-text-wrap" color="danger">
                             <ion-label>{{ 'addon.competency.coursecompetencyratingsarenotpushedtouserplans' | translate }}</ion-label>
                         </ion-item>
@@ -110,12 +109,9 @@
                                             <core-format-text [text]="competency.comppath.framework.name" contextLevel="course"
                                                 [contextInstanceId]="courseId" />
                                         </a>
-                                    }
-                                    @if (!competency.comppath.showlinks) {
-
+                                    } @else {
                                         <core-format-text [text]="competency.comppath.framework.name" contextLevel="course"
                                             [contextInstanceId]="courseId" />
-
                                     }
                                     &nbsp;/&nbsp;
                                     <ng-container *ngFor="let ancestor of competency.comppath.ancestors">
@@ -124,11 +120,8 @@
                                                 <core-format-text [text]="ancestor.name" contextLevel="course"
                                                     [contextInstanceId]="courseId" />
                                             </button>
-                                        }
-                                        @if (!competency.comppath.showlinks) {
-
+                                        } @else {
                                             <core-format-text [text]="ancestor.name" contextLevel="course" [contextInstanceId]="courseId" />
-
                                         }
                                         @if (!ancestor.last) {
                                             &nbsp;/&nbsp;

@@ -12,7 +12,6 @@
     <ion-list>
         @if (defaultTimeLabel) {
             <ion-item>
-
                 <ion-select [(ngModel)]="defaultTimeLabel" (click)="changeDefaultTime($event)"
                     [label]="'addon.calendar.defaultnotificationtime' | translate">
                     <ion-select-option [value]="defaultTimeLabel">{{ defaultTimeLabel }}</ion-select-option>

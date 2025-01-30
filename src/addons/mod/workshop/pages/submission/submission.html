@@ -179,26 +179,26 @@
         @if (assessmentId) {
             <addon-mod-workshop-assessment-strategy [workshop]="workshop" [access]="access" [assessmentId]="assessmentId"
                 [userId]="assessmentUserId" [strategy]="strategy" [edit]="access.assessingallowed" />
-        }
 
-        @if (assessmentId && !access.assessingallowed && assessment?.feedbackreviewer) {
-            <ion-list>
-                <ion-item class="ion-text-wrap">
-                    @if (evaluateGradingByProfile) {
-                        <core-user-avatar [user]="evaluateGradingByProfile" slot="start" [courseId]="courseId"
-                            [userId]="evaluateGradingByProfile.id" />
-                    }
-                    <ion-label>
-                        @if (evaluateGradingByProfile && evaluateGradingByProfile.fullname) {
-                            <h3 class="item-heading">
-                                {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateGradingByProfile.fullname} }}
-                            </h3>
+            @if (!access.assessingallowed && assessment?.feedbackreviewer) {
+                <ion-list>
+                    <ion-item class="ion-text-wrap">
+                        @if (evaluateGradingByProfile) {
+                            <core-user-avatar [user]="evaluateGradingByProfile" slot="start" [courseId]="courseId"
+                                [userId]="evaluateGradingByProfile.id" />
                         }
-                        <core-format-text [text]="assessment!.feedbackreviewer" contextLevel="module" [contextInstanceId]="module.id"
-                            [courseId]="courseId" />
-                    </ion-label>
-                </ion-item>
-            </ion-list>
+                        <ion-label>
+                            @if (evaluateGradingByProfile && evaluateGradingByProfile.fullname) {
+                                <h3 class="item-heading">
+                                    {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateGradingByProfile.fullname} }}
+                                </h3>
+                            }
+                            <core-format-text [text]="assessment!.feedbackreviewer" contextLevel="module" [contextInstanceId]="module.id"
+                                [courseId]="courseId" />
+                        </ion-label>
+                    </ion-item>
+                </ion-list>
+            }
         }
     </core-loading>
 </ion-content>

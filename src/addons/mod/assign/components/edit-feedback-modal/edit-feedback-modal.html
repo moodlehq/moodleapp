@@ -14,30 +14,30 @@
     <core-loading [hideUntil]="loaded">
         @if (gradeInfo) {
             <form name="addon-mod_assign-edit-feedback-form" #editFeedbackForm>
-                <!-- Numeric grade.
-                Use a text input because otherwise we cannot read the value if it has an invalid character. -->
-                @if (grade.method === 'simple' && !grade.scale) {
-                    <ion-item class="ion-text-wrap">
-                        @if (!grade.disabled) {
-                            <ion-input name="grade" type="text" [(ngModel)]="grade.grade" min="0" [max]="gradeInfo.grade"
-                                [lang]="grade.lang" [label]="'addon.mod_assign.gradeoutof' | translate: {$a: gradeInfo.grade}"
-                                labelPlacement="stacked"
-                                [helperText]="grade.disabled ? ('addon.mod_assign.gradelocked' | translate) : null" />
-                        }
-                    </ion-item>
-                }
-
-                <!-- Grade using a scale. -->
-                @if (grade.method === 'simple' && grade.scale) {
-                    <ion-item class="ion-text-wrap">
-                        <ion-select name="grade" [(ngModel)]="grade.grade" interface="action-sheet" [disabled]="grade.disabled"
-                            [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.gradenoun' | translate}">
-                            <p class="item-heading" slot="label">{{ 'core.gradenoun' | translate }}</p>
-                            <ion-select-option *ngFor="let grade of grade.scale" [value]="grade.value">
-                                {{grade.label}}
-                            </ion-select-option>
-                        </ion-select>
-                    </ion-item>
+                @if (grade.method === 'simple'){
+                    @if (!grade.scale) {
+                        <!-- Numeric grade.
+                        Use a text input because otherwise we cannot read the value if it has an invalid character. -->
+                        <ion-item class="ion-text-wrap">
+                            @if (!grade.disabled) {
+                                <ion-input name="grade" type="text" [(ngModel)]="grade.grade" min="0" [max]="gradeInfo.grade"
+                                    [lang]="grade.lang" [label]="'addon.mod_assign.gradeoutof' | translate: {$a: gradeInfo.grade}"
+                                    labelPlacement="stacked"
+                                    [helperText]="grade.disabled ? ('addon.mod_assign.gradelocked' | translate) : null" />
+                            }
+                        </ion-item>
+                    } @else {
+                        <!-- Grade using a scale. -->
+                        <ion-item class="ion-text-wrap">
+                            <ion-select name="grade" [(ngModel)]="grade.grade" interface="action-sheet" [disabled]="grade.disabled"
+                                [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.gradenoun' | translate}">
+                                <p class="item-heading" slot="label">{{ 'core.gradenoun' | translate }}</p>
+                                <ion-select-option *ngFor="let grade of grade.scale" [value]="grade.value">
+                                    {{grade.label}}
+                                </ion-select-option>
+                            </ion-select>
+                        </ion-item>
+                    }
                 }
 
                 <!-- Outcomes. -->
@@ -51,8 +51,7 @@
                                 {{grade.label}}
                             </ion-select-option>
                         </ion-select>
-                    }
-                    @if (!outcome.itemNumber) {
+                    } @else {
                         <p>{{ outcome.selected }}</p>
                     }
                 </ion-item>
@@ -127,8 +126,7 @@
                                     {{ 'addon.mod_assign.outof' | translate :
                                 {'$a': {'current': currentAttemptNumber, 'total': maxAttemptsText} } }}
                                 </p>
-                            }
-                            @if (assign.maxattempts !== unlimitedAttempts) {
+                            } @else {
                                 <p>
                                     {{ 'addon.mod_assign.outof' | translate :
                                 {'$a': {'current': currentAttemptNumber, 'total': assign.maxattempts} } }}

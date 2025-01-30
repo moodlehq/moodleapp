@@ -60,15 +60,9 @@
                 }
 
                 @if (loggedInOffLegacyMode) {
-
                     <ng-container *ngTemplateOutlet="legacySettings; context: {preferences: preferences}" />
-
-                }
-
-                @if (!loggedInOffLegacyMode) {
-
+                } @else {
                     <ng-container *ngTemplateOutlet="settings; context: {preferences: preferences}" />
-
                 }
             </ion-card>
         }
@@ -115,15 +109,11 @@
                                         <ion-toggle [(ngModel)]="notification.processorsByName[currentProcessorName][state].checked"
                                             (ngModelChange)="changePreferenceLegacy(notification, state)" />
                                     </core-button-with-spinner>
-                                }
-                                @if (notification.processorsByName[currentProcessorName].locked &&
-                                    notification.processorsByName[currentProcessorName][state].checked) {
+                                } @else if (notification.processorsByName[currentProcessorName][state].checked) {
                                     <span class="text-gray">
                                         {{'core.settings.forced' | translate }}
                                     </span>
-                                }
-                                @if (notification.processorsByName[currentProcessorName].locked &&
-                                    !notification.processorsByName[currentProcessorName][state].checked) {
+                                } @else {
                                     <span class="text-gray">
                                         {{'core.settings.disallowed' | translate }}
                                     </span>
@@ -159,15 +149,11 @@
                                         (ngModelChange)="changePreferenceLegacy(notification, state)" />
                                 }
                             </core-button-with-spinner>
-                        }
-                        @if (notification.processorsByName[currentProcessorName].locked &&
-                        notification.processorsByName[currentProcessorName][state].checked) {
+                        } @else if(notification.processorsByName[currentProcessorName][state].checked) {
                             <span class="text-gray">
                                 {{'core.settings.forced' | translate }}
                             </span>
-                        }
-                        @if (notification.processorsByName[currentProcessorName].locked &&
-                        !notification.processorsByName[currentProcessorName][state].checked) {
+                        } @else {
                             <span class="text-gray">
                                 {{'core.settings.disallowed' | translate }}
                             </span>
@@ -206,15 +192,11 @@
                                         (ngModelChange)="changePreference(notification)" />
                                 }
                             </core-button-with-spinner>
-                        }
-                        @if ( notification.processorsByName[currentProcessorName].locked &&
-                        notification.processorsByName[currentProcessorName].enabled) {
+                        } @else if (notification.processorsByName[currentProcessorName].enabled) {
                             <span class="text-gray">
                                 {{'core.settings.forced' | translate }}
                             </span>
-                        }
-                        @if ( notification.processorsByName[currentProcessorName].locked &&
-                        !notification.processorsByName[currentProcessorName].enabled) {
+                        } @else {
                             <span class="text-gray">
                                 {{'core.settings.disallowed' | translate }}
                             </span>

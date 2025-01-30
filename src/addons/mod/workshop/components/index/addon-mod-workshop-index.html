@@ -26,25 +26,27 @@
                     <h2 class="ion-text-wrap">{{ phases[workshop.phase].title }}</h2>
                 </ion-label>
             </ion-item>
-            @if (phases && phases[workshop.phase] && phases[workshop.phase].tasks &&
+            @if (phases[workshop.phase] && phases[workshop.phase].tasks &&
             phases[workshop.phase].tasks.length) {
 
                 <ion-item button class="ion-text-wrap" *ngFor="let task of phases[workshop.phase].tasks"
                     [class.item-dimmed]="task.code === 'submit' && !showSubmit" (click)="runTask(task)" [detail]="false">
-                    @if (task.completed === null) {
-                        <ion-icon slot="start" name="far-circle" [attr.aria-label]="'addon.mod_workshop.tasktodo' | translate" />
-                    }
-                    @if (task.completed === '') {
-                        <ion-icon slot="start" name="fas-circle-xmark" color="danger"
-                            [attr.aria-label]="'addon.mod_workshop.taskfail' | translate" />
-                    }
-                    @if (task.completed === 'info') {
-                        <ion-icon slot="start" name="fas-circle-info" color="info"
-                            [attr.aria-label]="'addon.mod_workshop.taskinfo' | translate" />
-                    }
-                    @if (task.completed === '1') {
-                        <ion-icon slot="start" name="fas-circle-check" color="success"
-                            [attr.aria-label]="'addon.mod_workshop.taskdone' | translate" />
+                    @switch (task.completed) {
+                        @case (null) {
+                            <ion-icon slot="start" name="far-circle" [attr.aria-label]="'addon.mod_workshop.tasktodo' | translate" />
+                        }
+                        @case ('') {
+                            <ion-icon slot="start" name="fas-circle-xmark" color="danger"
+                                [attr.aria-label]="'addon.mod_workshop.taskfail' | translate" />
+                        }
+                        @case ('info') {
+                            <ion-icon slot="start" name="fas-circle-info" color="info"
+                                [attr.aria-label]="'addon.mod_workshop.taskinfo' | translate" />
+                        }
+                        @case ('1') {
+                            <ion-icon slot="start" name="fas-circle-check" color="success"
+                                [attr.aria-label]="'addon.mod_workshop.taskdone' | translate" />
+                        }
                     }
                     <ion-label>
                         <p class="item-heading">{{task.title}}</p>
@@ -61,219 +63,215 @@
         </ion-card>
     }
 
-    <!-- Description (setup phase only) -->
-    @if (description && workshop && workshop.phase === PHASE_SETUP) {
-        <ion-card>
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <h3 class="item-heading">{{ 'core.description' | translate }}</h3>
-                    <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
-                        [contextInstanceId]="module.id" [courseId]="courseId" />
-                </ion-label>
-            </ion-item>
-        </ion-card>
-    }
+    @if (workshop) {)
+        @if (description && workshop.phase === PHASE_SETUP) {
+            <!-- Description (setup phase only) -->
+            <ion-card>
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <h3 class="item-heading">{{ 'core.description' | translate }}</h3>
+                        <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
+                            [contextInstanceId]="module.id" [courseId]="courseId" />
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
-    @if (access && workshop && workshop.phase >= PHASE_SUBMISSION) {
-        <div>
-            <!-- CLOSED PHASE -->
-            @if (workshop.phase >= PHASE_CLOSED) {
+        @if (access && workshop.phase >= PHASE_SUBMISSION) {
+            <div>
+                @if (workshop.phase >= PHASE_CLOSED) {
+                    <!-- CLOSED PHASE -->
 
-                @if (workshop.conclusion) {
+                    @if (workshop.conclusion) {
+                        <ion-card>
+                            <ion-item class="ion-text-wrap">
+                                <ion-label>
+                                    <h3 class="item-heading">{{ 'addon.mod_workshop.conclusion' | translate }}</h3>
+                                    <core-format-text collapsible-item [component]="component" [componentId]="module.id"
+                                        [text]="workshop.conclusion" contextLevel="module" [contextInstanceId]="module.id"
+                                        [courseId]="courseId" />
+                                </ion-label>
+                            </ion-item>
+                        </ion-card>
+                    }
+
+                    @if (userGrades) {
+                        <ion-card>
+                            <ion-item-divider class="ion-text-wrap">
+                                <ion-label>
+                                    <h3 class="item-heading">{{ 'addon.mod_workshop.yourgrades' | translate }}</h3>
+                                </ion-label>
+                            </ion-item-divider>
+                            @if (userGrades.submissionlongstrgrade) {
+                                <ion-item class="ion-text-wrap">
+                                    <ion-label>
+                                        <p class="item-heading">{{ 'addon.mod_workshop.submissiongrade' | translate }}</p>
+                                        <p>{{ userGrades.submissionlongstrgrade }}</p>
+                                    </ion-label>
+                                </ion-item>
+                            }
+                            @if (userGrades.assessmentlongstrgrade) {
+                                <ion-item class="ion-text-wrap">
+                                    <ion-label>
+                                        <p class="item-heading">{{ 'addon.mod_workshop.gradinggrade' | translate }}</p>
+                                        <p>{{ userGrades.assessmentlongstrgrade }}</p>
+                                    </ion-label>
+                                </ion-item>
+                            }
+                        </ion-card>
+                    }
+
+                }
+
+                @if (workshop.phase === PHASE_SUBMISSION && workshop.instructauthors) {
+                    <!-- SUBMISSION PHASE -->
                     <ion-card>
                         <ion-item class="ion-text-wrap">
                             <ion-label>
-                                <h3 class="item-heading">{{ 'addon.mod_workshop.conclusion' | translate }}</h3>
+                                <h3 class="item-heading">{{ 'addon.mod_workshop.areainstructauthors' | translate }}</h3>
                                 <core-format-text collapsible-item [component]="component" [componentId]="module.id"
-                                    [text]="workshop.conclusion" contextLevel="module" [contextInstanceId]="module.id"
+                                    [text]="workshop.instructauthors" contextLevel="module" [contextInstanceId]="module.id"
                                     [courseId]="courseId" />
                             </ion-label>
                         </ion-item>
                     </ion-card>
                 }
 
-                @if (userGrades) {
+                @if (canSubmit) {
                     <ion-card>
                         <ion-item-divider class="ion-text-wrap">
                             <ion-label>
-                                <h3 class="item-heading">{{ 'addon.mod_workshop.yourgrades' | translate }}</h3>
+                                @if (workshop.phase !== PHASE_CLOSED || !submission) {
+                                    <h3 class="item-heading">
+                                        {{ 'addon.mod_workshop.yoursubmission' | translate }}
+                                    </h3>
+                                } @else {
+                                    <h3 class="item-heading">
+                                        {{ 'addon.mod_workshop.yoursubmissionwithassessments' | translate }}
+                                    </h3>
+                                }
                             </ion-label>
                         </ion-item-divider>
-                        @if (userGrades.submissionlongstrgrade) {
+                        @if (!submission) {
                             <ion-item class="ion-text-wrap">
                                 <ion-label>
-                                    <p class="item-heading">{{ 'addon.mod_workshop.submissiongrade' | translate }}</p>
-                                    <p>{{ userGrades.submissionlongstrgrade }}</p>
+                                    <p>{{ 'addon.mod_workshop.noyoursubmission' | translate }}</p>
                                 </ion-label>
                             </ion-item>
-                        }
-                        @if (userGrades.assessmentlongstrgrade) {
-                            <ion-item class="ion-text-wrap">
-                                <ion-label>
-                                    <p class="item-heading">{{ 'addon.mod_workshop.gradinggrade' | translate }}</p>
-                                    <p>{{ userGrades.assessmentlongstrgrade }}</p>
-                                </ion-label>
-                            </ion-item>
+                        } @else {
+                            <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop.course" [module]="module"
+                                [workshop]="workshop" [access]="access" />
                         }
                     </ion-card>
                 }
 
-            }
 
-            <!-- SUBMISSION PHASE -->
-            @if (workshop.phase === PHASE_SUBMISSION && workshop.instructauthors) {
-                <ion-card>
-                    <ion-item class="ion-text-wrap">
-                        <ion-label>
-                            <h3 class="item-heading">{{ 'addon.mod_workshop.areainstructauthors' | translate }}</h3>
-                            <core-format-text collapsible-item [component]="component" [componentId]="module.id"
-                                [text]="workshop.instructauthors" contextLevel="module" [contextInstanceId]="module.id"
-                                [courseId]="courseId" />
-                        </ion-label>
-                    </ion-item>
-                </ion-card>
-            }
+                @if (workshop.phase >= PHASE_CLOSED) {
 
-            @if (canSubmit) {
-                <ion-card>
-                    <ion-item-divider class="ion-text-wrap">
-                        <ion-label>
-                            @if (workshop.phase !== PHASE_CLOSED || !submission) {
-                                <h3 class="item-heading">
-                                    {{ 'addon.mod_workshop.yoursubmission' | translate }}
-                                </h3>
-                            }
-                            @if (workshop.phase === PHASE_CLOSED && submission) {
-                                <h3 class="item-heading">
-                                    {{ 'addon.mod_workshop.yoursubmissionwithassessments' | translate }}
-                                </h3>
-                            }
-                        </ion-label>
-                    </ion-item-divider>
-                    @if (!submission) {
-                        <ion-item class="ion-text-wrap">
-                            <ion-label>
-                                @if (!submission) {
-                                    <p>{{ 'addon.mod_workshop.noyoursubmission' | translate }}</p>
-                                }
-                            </ion-label>
-                        </ion-item>
+                    @if (publishedSubmissions && publishedSubmissions.length) {
+                        <ion-card>
+                            <ion-item-divider class="ion-text-wrap">
+                                <ion-label>
+                                    <h3 class="item-heading">{{ 'addon.mod_workshop.publishedsubmissions' | translate }}</h3>
+                                </ion-label>
+                            </ion-item-divider>
+                            <ng-container *ngFor="let submission of publishedSubmissions">
+                                <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop.course" [module]="module"
+                                    [workshop]="workshop" [access]="access" [summary]="true" class="core-as-item" />
+                            </ng-container>
+                        </ion-card>
                     }
-                    @if (submission) {
-                        <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop.course" [module]="module"
-                            [workshop]="workshop" [access]="access" />
+
+                }
+
+                @if (workshop.phase >= PHASE_ASSESSMENT) {
+                    <!-- ASSESSMENT PHASE -->
+
+                    @if (workshop.phase === PHASE_ASSESSMENT && workshop.instructreviewers) {
+                        <ion-card>
+                            <ion-item class="ion-text-wrap">
+                                <ion-label>
+                                    <h3 class="item-heading">{{ 'addon.mod_workshop.areainstructreviewers' | translate }}</h3>
+                                    <core-format-text collapsible-item [component]="component" [componentId]="module.id"
+                                        [text]="workshop.instructreviewers" contextLevel="module" [contextInstanceId]="module.id"
+                                        [courseId]="courseId" />
+                                </ion-label>
+                            </ion-item>
+                        </ion-card>
                     }
-                </ion-card>
-            }
 
+                    @if (canAssess) {
+                        <ion-card>
+                            <ion-item-divider class="ion-text-wrap">
+                                <ion-label>
+                                    <h3 class="item-heading">{{ 'addon.mod_workshop.assignedassessments' | translate }}</h3>
+                                </ion-label>
+                            </ion-item-divider>
+                            @if (!assessments || !assessments.length) {
+                                <ion-item class="ion-text-wrap">
+                                    <ion-label>
+                                        <p>{{ 'addon.mod_workshop.assignedassessmentsnone' | translate }}</p>
+                                    </ion-label>
+                                </ion-item>
+                            }
+                            <ng-container *ngFor="let assessment of (assessments || [])">
+                                <addon-mod-workshop-submission [submission]="assessment.submission" [assessment]="assessment"
+                                    [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" [summary]="true"
+                                    class="core-as-item" />
+                            </ng-container>
+                        </ion-card>
+                    }
 
-            @if (workshop.phase >= PHASE_CLOSED) {
+                }
 
-                @if (publishedSubmissions && publishedSubmissions.length) {
+                @if (access.canviewallsubmissions && workshop.phase >= PHASE_SUBMISSION &&
+                    ((grades && grades.length) || (groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)))) {
+                    <!-- MULTIPLE PHASES SUBMISSION OR GREATER only teachers -->
                     <ion-card>
                         <ion-item-divider class="ion-text-wrap">
                             <ion-label>
-                                <h3 class="item-heading">{{ 'addon.mod_workshop.publishedsubmissions' | translate }}</h3>
+                                @if (workshop.phase === PHASE_SUBMISSION) {
+                                    <h3 class="item-heading">{{ 'addon.mod_workshop.submissionsreport' | translate }}</h3>
+                                } @else if (workshop.phase > PHASE_SUBMISSION) {
+                                    <h3 class="item-heading">{{ 'addon.mod_workshop.gradesreport' | translate }}
+                                    </h3>
+                                }
                             </ion-label>
                         </ion-item-divider>
-                        <ng-container *ngFor="let submission of publishedSubmissions">
+                        <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)"
+                            [courseId]="courseId" />
+
+                        <ng-container *ngFor="let submission of grades">
                             <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop.course" [module]="module"
                                 [workshop]="workshop" [access]="access" [summary]="true" class="core-as-item" />
                         </ng-container>
-                    </ion-card>
-                }
 
-            }
-
-            <!-- ASSESSMENT PHASE -->
-            @if (workshop.phase >= PHASE_ASSESSMENT) {
-
-                @if (workshop.phase === PHASE_ASSESSMENT && workshop.instructreviewers) {
-                    <ion-card>
-                        <ion-item class="ion-text-wrap">
-                            <ion-label>
-                                <h3 class="item-heading">{{ 'addon.mod_workshop.areainstructreviewers' | translate }}</h3>
-                                <core-format-text collapsible-item [component]="component" [componentId]="module.id"
-                                    [text]="workshop.instructreviewers" contextLevel="module" [contextInstanceId]="module.id"
-                                    [courseId]="courseId" />
-                            </ion-label>
-                        </ion-item>
-                    </ion-card>
-                }
-
-                @if (canAssess) {
-                    <ion-card>
-                        <ion-item-divider class="ion-text-wrap">
-                            <ion-label>
-                                <h3 class="item-heading">{{ 'addon.mod_workshop.assignedassessments' | translate }}</h3>
-                            </ion-label>
-                        </ion-item-divider>
-                        @if (!assessments || !assessments.length) {
-                            <ion-item class="ion-text-wrap">
-                                <ion-label>
-                                    <p>{{ 'addon.mod_workshop.assignedassessmentsnone' | translate }}</p>
-                                </ion-label>
-                            </ion-item>
+                        @if (page > 0 || hasNextPage) {
+                            <ion-grid>
+                                <ion-row class="ion-align-items-center">
+                                    @if (page > 0) {
+                                        <ion-col>
+                                            <ion-button expand="block" fill="outline" (click)="gotoSubmissionsPage(page -1)">
+                                                <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true" />
+                                                {{ 'core.previous' | translate }}
+                                            </ion-button>
+                                        </ion-col>
+                                    }
+                                    @if (hasNextPage) {
+                                        <ion-col>
+                                            <ion-button expand="block" (click)="gotoSubmissionsPage(page + 1)">
+                                                {{ 'core.next' | translate }}
+                                                <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
+                                            </ion-button>
+                                        </ion-col>
+                                    }
+                                </ion-row>
+                            </ion-grid>
                         }
-                        <ng-container *ngFor="let assessment of (assessments || [])">
-                            <addon-mod-workshop-submission [submission]="assessment.submission" [assessment]="assessment"
-                                [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" [summary]="true"
-                                class="core-as-item" />
-                        </ng-container>
                     </ion-card>
                 }
-
-            }
-
-            <!-- MULTIPLE PHASES SUBMISSION OR GREATER only teachers -->
-            @if (access.canviewallsubmissions && workshop.phase >= PHASE_SUBMISSION &&
-            ((grades && grades.length) || (groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)))) {
-                <ion-card>
-                    <ion-item-divider class="ion-text-wrap">
-                        <ion-label>
-                            @if (workshop.phase === PHASE_SUBMISSION) {
-                                <h3 class="item-heading">{{ 'addon.mod_workshop.submissionsreport' |
-                        translate }}</h3>
-                            }
-                            @if (workshop.phase > PHASE_SUBMISSION) {
-                                <h3 class="item-heading">{{ 'addon.mod_workshop.gradesreport' | translate }}
-                                </h3>
-                            }
-                        </ion-label>
-                    </ion-item-divider>
-                    <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)"
-                        [courseId]="courseId" />
-
-                    <ng-container *ngFor="let submission of grades">
-                        <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop.course" [module]="module"
-                            [workshop]="workshop" [access]="access" [summary]="true" class="core-as-item" />
-                    </ng-container>
-
-                    @if (page > 0 || hasNextPage) {
-                        <ion-grid>
-                            <ion-row class="ion-align-items-center">
-                                @if (page > 0) {
-                                    <ion-col>
-                                        <ion-button expand="block" fill="outline" (click)="gotoSubmissionsPage(page -1)">
-                                            <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true" />
-                                            {{ 'core.previous' | translate }}
-                                        </ion-button>
-                                    </ion-col>
-                                }
-                                @if (hasNextPage) {
-                                    <ion-col>
-                                        <ion-button expand="block" (click)="gotoSubmissionsPage(page + 1)">
-                                            {{ 'core.next' | translate }}
-                                            <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
-                                        </ion-button>
-                                    </ion-col>
-                                }
-                            </ion-row>
-                        </ion-grid>
-                    }
-                </ion-card>
-            }
-        </div>
+            </div>
+        }
     }
 
 

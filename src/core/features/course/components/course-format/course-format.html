@@ -7,8 +7,8 @@
     <!-- Default course format. -->
     <core-loading [hideUntil]="loaded" placeholderType="listwithicon" placeholderHeight="128px" placeholderWidth="44px">
 
-        <!-- Single section. -->
         @if (selectedSection && selectedSection.id !== allSectionsId) {
+            <!-- Single section. -->
             <div class="list-item-limited-width">
                 <core-dynamic-component [component]="singleSectionComponent" [data]="data">
                     <ion-accordion-group [multiple]="true" (ionChange)="accordionMultipleChange($event.detail)"
@@ -25,8 +25,8 @@
             </div>
         }
 
-        <!-- Multiple sections. -->
         @if (selectedSection && selectedSection.id === allSectionsId) {
+            <!-- Multiple sections. -->
             <div class="list-item-limited-width">
                 <core-dynamic-component [component]="allSectionsComponent" [data]="data">
                     <ion-accordion-group [multiple]="true" (ionChange)="accordionMultipleChange($event.detail)"
@@ -44,6 +44,7 @@
                 <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)" />
             </div>
         }
+
         @if (displayCourseIndex && (previousSection || nextSection)) {
             <div collapsible-footer appearOnBottom slot="fixed">
                 <div class="core-course-section-nav-buttons safe-area-padding-horizontal list-item-limited-width">

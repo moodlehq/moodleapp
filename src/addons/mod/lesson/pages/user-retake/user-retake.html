@@ -74,17 +74,15 @@
                         </ion-item>
                     </ion-list>
                 }
-
-                <!-- Not completed, no stats. -->
-                @if (retake && (!retake.userstats || !retake.userstats.gradeinfo)) {
-                    <ion-item class="ion-text-wrap">
-                        <ion-label>{{ 'addon.mod_lesson.notcompleted' | translate }}</ion-label>
-                    </ion-item>
-                }
-
-                <!-- Pages. -->
                 @if (retake) {
+                    @if (!retake.userstats || !retake.userstats.gradeinfo) {
+                        <!-- Not completed, no stats. -->
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>{{ 'addon.mod_lesson.notcompleted' | translate }}</ion-label>
+                        </ion-item>
+                    }
 
+                    <!-- Pages. -->
                     <!-- The "text-dimmed" class does nothing, but the same goes for the "dimmed" class in Moodle. -->
                     <ion-card *ngFor="let page of retake.answerpages" class="addon-mod_lesson-answerpage"
                         [ngClass]="{'text-dimmed': page.grayout}">
@@ -112,8 +110,7 @@
                                     <p>{{ 'addon.mod_lesson.didnotanswerquestion' | translate }}</p>
                                 </ion-label>
                             </ion-item>
-                        }
-                        @if (page.answerdata && page.answerdata.answers && page.answerdata.answers.length) {
+                        } @else {
                             <div class="addon-mod_lesson-answer">
                                 <ng-container *ngFor="let answer of page.answerdata.answers">
                                     @if (page.isContent) {

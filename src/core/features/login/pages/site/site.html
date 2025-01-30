@@ -23,7 +23,7 @@
         @if (!fixedSites && siteForm) {
             <form [formGroup]="siteForm" (ngSubmit)="connect(siteForm.value.siteUrl, $event)" #siteFormEl>
                 <!-- Form to input the site URL if there are no fixed sites. -->
-                @if (siteSelector==='url') {
+                @if (siteSelector === 'url') {
 
                     <ion-item lines="inset">
                         <ion-input name="url" type="url" placeholder="{{ 'core.login.siteaddressplaceholder' | translate }}"
@@ -31,8 +31,7 @@
                             [label]="'core.login.siteaddress' | translate" [clearInput]="true" />
                     </ion-item>
 
-                }
-                @if (siteSelector !== 'url') {
+                } @else {
 
                     <ion-item lines="inset">
                         <ion-input name="url" placeholder="{{ 'core.login.siteaddressplaceholder' | translate }}" formControlName="siteUrl"

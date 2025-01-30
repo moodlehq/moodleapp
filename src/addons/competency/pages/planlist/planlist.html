@@ -16,8 +16,7 @@
         <core-loading [hideUntil]="plans.loaded">
             @if (plans.empty) {
                 <core-empty-box icon="fas-route" [message]="'addon.competency.noplanswerecreated' | translate" />
-            }
-            @if (!plans.empty) {
+            } @else {
                 <ion-list class="ion-no-margin">
                     <ion-item class="ion-text-wrap" *ngFor="let plan of plans.items" [attr.aria-label]="plan.name"
                         (click)="plans.select(plan)" [attr.aria-current]="plans.getItemAriaCurrent(plan)" button [detail]="true">

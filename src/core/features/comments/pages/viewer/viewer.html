@@ -18,8 +18,7 @@
                 <ion-button slot="end" fill="clear" (click)="toggleDelete()" [ariaLabel]="'core.toggledelete' | translate">
                     @if (!showDelete) {
                         <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true" />
-                    }
-                    @if (showDelete) {
+                    } @else {
                         <ion-icon name="fas-check" slot="icon-only" aria-hidden="true" />
                     }
                 </ion-button>
@@ -65,14 +64,14 @@
                     <ion-icon name="fas-triangle-exclamation" aria-hidden="true" />
                     {{ 'core.thereisdatatosync' | translate:{$a: 'core.comments.comments' | translate | lowercase } }}
                 </ion-badge>
-            }
-            @if (hasOffline && offlineComment) {
-                <!-- Workaround to fix https://github.com/angular/angular/issues/26133 -->
-                <div>
-                    <core-message [message]="offlineComment" [text]="offlineComment.content" [user]="offlineComment"
-                        [showDelete]="showDelete" [contextLevel]="contextLevel" [instanceId]="instanceId" [courseId]="courseId"
-                        (onDeleteMessage)="deleteComment(offlineComment)" />
-                </div>
+                @if (offlineComment) {
+                    <!-- Workaround to fix https://github.com/angular/angular/issues/26133 -->
+                    <div>
+                        <core-message [message]="offlineComment" [text]="offlineComment.content" [user]="offlineComment"
+                            [showDelete]="showDelete" [contextLevel]="contextLevel" [instanceId]="instanceId" [courseId]="courseId"
+                            (onDeleteMessage)="deleteComment(offlineComment)" />
+                    </div>
+                }
             }
         </ion-list>
 

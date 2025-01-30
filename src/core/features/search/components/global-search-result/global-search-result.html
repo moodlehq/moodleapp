@@ -10,11 +10,9 @@
             <p class="item-heading">
                 @if (renderedIcon) {
                     <ion-icon [name]="renderedIcon" aria-hidden="true" />
-                }
-                @if (!renderedIcon && result.module) {
+                } @else if (result.module) {
                     <core-mod-icon [modicon]="result.module.iconurl" [modname]="result.module.name" [colorize]="false" />
-                }
-                @if (!renderedIcon && !result.module && result.component) {
+                } @else if (result.component) {
                     <img [url]="result.component.iconurl" alt="" class="result-icon" core-external-content
                         [component]="result.component.name">
                 }

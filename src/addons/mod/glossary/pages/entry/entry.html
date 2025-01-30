@@ -47,8 +47,7 @@
                             <ion-note slot="end">{{ onlineEntry.timemodified | coreDateDayOrTime }}</ion-note>
                         }
                     </ion-item>
-                }
-                @if (!showAuthor) {
+                } @else {
                     <ion-item class="ion-text-wrap">
                         <ion-label>
                             <p class="item-heading">
@@ -125,8 +124,6 @@
                 <core-rating-rate [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="glossary.coursemodule"
                     [itemId]="onlineEntry.id" [itemSetId]="0" [courseId]="glossary.course" [aggregateMethod]="glossary.assessed"
                     [scaleId]="glossary.scale" [userId]="entry.userid" (onUpdate)="ratingUpdated()" />
-            }
-            @if (glossary && ratingInfo && onlineEntry) {
                 <core-rating-aggregate [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="glossary.coursemodule"
                     [itemId]="onlineEntry.id" [courseId]="glossary.course" [aggregateMethod]="glossary.assessed"
                     [scaleId]="glossary.scale" />

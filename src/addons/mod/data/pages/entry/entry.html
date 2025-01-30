@@ -34,21 +34,23 @@
                 <core-compile-html [text]="entryHtml" [jsData]="jsData" [extraImports]="extraImports"
                     (compiling)="setRenderingEntry($event)" [cssCode]="database.csstemplate" />
             </div>
-        }
 
-        @if (database && entry && ratingInfo && (!database.approval || entry.approved)) {
-            <core-rating-rate [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="database.coursemodule" [itemId]="entry.id"
-                [itemSetId]="0" [courseId]="courseId" [aggregateMethod]="database.assessed" [scaleId]="database.scale"
-                [userId]="entry.userid" (onLoading)="setLoadingRating($event)" (onUpdate)="ratingUpdated()" />
-        }
-        @if (database && entry && ratingInfo) {
-            <core-rating-aggregate [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="database.coursemodule" [itemId]="entry.id"
-                [courseId]="courseId" [aggregateMethod]="database.assessed" [scaleId]="database.scale" />
-        }
+            @if (ratingInfo) {
+                @if (!database.approval || entry.approved) {
+                    <core-rating-rate [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="database.coursemodule"
+                        [itemId]="entry.id" [itemSetId]="0" [courseId]="courseId" [aggregateMethod]="database.assessed"
+                        [scaleId]="database.scale" [userId]="entry.userid" (onLoading)="setLoadingRating($event)"
+                        (onUpdate)="ratingUpdated()" />
+                }
 
-        @if (database && database.comments && entry && entry.id > 0 && commentsEnabled) {
-            <core-comments contextLevel="module" [instanceId]="database.coursemodule" component="mod_data" [itemId]="entry.id"
-                area="database_entry" [courseId]="courseId" (onLoading)="setLoadingComments($event)" [showItem]="true" />
+                <core-rating-aggregate [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="database.coursemodule"
+                    [itemId]="entry.id" [courseId]="courseId" [aggregateMethod]="database.assessed" [scaleId]="database.scale" />
+            }
+
+            @if (database.comments && entry.id > 0 && commentsEnabled) {
+                <core-comments contextLevel="module" [instanceId]="database.coursemodule" component="mod_data" [itemId]="entry.id"
+                    area="database_entry" [courseId]="courseId" (onLoading)="setLoadingComments($event)" [showItem]="true" />
+            }
         }
     </core-loading>
     @if (entryLoaded && hasPrevious || hasNext) {

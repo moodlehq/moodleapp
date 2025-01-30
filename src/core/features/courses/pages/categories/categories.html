@@ -78,8 +78,7 @@
                         <ion-label>
                             @if (!showOnlyEnrolled) {
                                 <h2 class="big">{{ 'core.courses.courses' | translate }}</h2>
-                            }
-                            @if (showOnlyEnrolled) {
+                            } @else {
                                 <h2 class="big">{{ 'core.courses.mycourses' | translate }}</h2>
                             }
                         </ion-label>

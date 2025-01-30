@@ -32,8 +32,7 @@
                     <ion-badge color="light" slot="end">
                         @if (!calculatingSize) {
                             {{ totalSize | coreBytesToSize }}
-                        }
-                        @if (calculatingSize) {
+                        } @else {
                             {{ 'core.calculating' | translate }}
                         }
                     </ion-badge>
@@ -43,8 +42,7 @@
                         [disabled]="prefetchCourseData.loading">
                         @if (!prefetchCourseData.loading) {
                             <ion-icon [name]="prefetchCourseData.icon" slot="start" aria-hidden="true" />
-                        }
-                        @if (prefetchCourseData.loading) {
+                        } @else {
                             <ion-spinner slot="start" />
                         }
                         {{ prefetchCourseData.statusTranslatable | translate }}
@@ -140,8 +138,8 @@
                             <ng-container *ngTemplateOutlet="sectionCard; context: { section: modOrSubsection }" />
                         } @else {
                             @if (modOrSubsection.handlerData &&
-                            modOrSubsection.visibleoncoursepage !== 0 &&
-                            (downloadEnabled || (!modOrSubsection.calculatingSize && modOrSubsection.totalSize > 0))) {
+                                modOrSubsection.visibleoncoursepage !== 0 &&
+                                (downloadEnabled || (!modOrSubsection.calculatingSize && modOrSubsection.totalSize > 0))) {
                                 <ion-item class="core-course-storage-activity">
                                     @if (modOrSubsection.handlerData.icon) {
                                         <core-mod-icon slot="start" [modicon]="modOrSubsection.handlerData.icon"
@@ -157,12 +155,11 @@
                                             <ion-badge [color]="modOrSubsection.downloadStatus === statusDownloaded ? 'success' : 'light'">
                                                 @if (modOrSubsection.downloadStatus === statusDownloaded) {
                                                     <ion-icon name="fam-cloud-done" [attr.aria-label]="'core.downloaded' | translate" />
-                                                }{{ modOrSubsection.totalSize |
-                                coreBytesToSize }}
+                                                }{{ modOrSubsection.totalSize | coreBytesToSize }}
                                             </ion-badge>
                                         }
                                         @if (modOrSubsection.calculatingSize ||
-                            (section.isDownloading && modOrSubsection.downloadStatus === statusDownloaded)) {
+                                            (section.isDownloading && modOrSubsection.downloadStatus === statusDownloaded)) {
                                             <ion-badge color="light">
                                                 {{ 'core.calculating' | translate }}
                                             </ion-badge>
@@ -171,7 +168,7 @@
 
                                     <div class="storage-buttons" slot="end">
                                         @if (downloadEnabled && modOrSubsection.handlerData?.showDownloadButton &&
-                            modOrSubsection.downloadStatus !== statusDownloaded) {
+                                            modOrSubsection.downloadStatus !== statusDownloaded) {
                                             <core-download-refresh [status]="modOrSubsection.downloadStatus" [enabled]="true"
                                                 [canTrustDownload]="true"
                                                 [loading]="modOrSubsection.spinner || modOrSubsection.handlerData.spinner"
@@ -182,7 +179,7 @@
                                         @if (!modOrSubsection.calculatingSize && modOrSubsection.totalSize > 0) {
                                             <ion-button fill="clear" (click)="deleteForModule($event, modOrSubsection)" color="danger">
                                                 <ion-icon name="fas-trash" slot="icon-only" [attr.aria-label]="
-                                        'addon.storagemanager.deletedatafrom' | translate: { name: modOrSubsection.name }" />
+                                                'addon.storagemanager.deletedatafrom' | translate: { name: modOrSubsection.name }" />
                                             </ion-button>
                                         }
                                         @if (!downloadEnabled || !modOrSubsection.handlerData?.showDownloadButton) {

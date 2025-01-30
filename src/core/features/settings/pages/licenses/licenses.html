@@ -22,16 +22,14 @@
                     <ion-button [href]="licensesUrl" target="_blank" fill="clear" slot="end" core-link [autoLogin]="false">
                         {{ 'core.view' | translate }}</ion-button>
                 </ion-item>
-            }
-            @if (!error) {
+            } @else {
 
                 <ion-item *ngFor="let license of licenses" class="ion-text-wrap" lines="inset">
                     <ion-label>
                         <p class="item-heading">
                             @if (license.repository) {
                                 <a [href]="license.repository" core-link [autoLogin]="false">{{ license.name }}</a>
-                            }
-                            @if (!license.repository) {
+                            } @else {
                                 {{ license.name }}
                             } - {{ license.version }}
                         </p>

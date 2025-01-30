@@ -16,9 +16,7 @@
         <core-loading [hideUntil]="badges.loaded" placeholderType="listwithavatar">
             @if (badges.empty) {
                 <core-empty-box icon="fas-trophy" [message]="'addon.badges.nobadges' | translate" />
-            }
-
-            @if (!badges.empty) {
+            } @else {
                 <ion-list class="ion-no-margin">
                     <ion-item button class="ion-text-wrap" *ngFor="let badge of badges.items" [attr.aria-label]="badge.name"
                         (click)="badges.select(badge)" [attr.aria-current]="badges.getItemAriaCurrent(badge)" [detail]="true">

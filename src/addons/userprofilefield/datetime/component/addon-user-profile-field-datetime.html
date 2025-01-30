@@ -1,5 +1,5 @@
-<!-- Render (no edit). -->
 @if (!edit && field && field.name) {
+    <!-- Render (no edit). -->
     <ion-item>
         <ion-label>
             <p class="item-heading">
@@ -16,8 +16,8 @@
     </ion-item>
 }
 
-<!-- Edit. -->
 @if (edit && field && field.shortname && form) {
+    <!-- Edit. -->
     <ion-item class="ion-text-wrap" [formGroup]="form">
         <ion-label position="stacked">
             <label [core-mark-required]="required" for="profile-field-datetime-{{field.shortname}}-button">

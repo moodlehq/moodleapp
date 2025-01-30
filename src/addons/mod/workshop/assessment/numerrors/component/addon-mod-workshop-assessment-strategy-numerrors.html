@@ -38,8 +38,7 @@
                         [core-auto-rows]="selectedValues[n].peercomment"
                         [label]="'addon.mod_workshop_assessment_numerrors.dimensioncommentfor' | translate : {'$a': field.dimtitle }" />
                 </ion-item>
-            }
-            @if (!edit) {
+            } @else {
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.mod_workshop_assessment_numerrors.dimensioncommentfor' | translate : {'$a': field.dimtitle

@@ -14,8 +14,7 @@
 
     @if (autoLink) {
         <a [href]="value.content" core-link capture="true">{{ displayValue }}</a>
-    }
-    @if (!autoLink) {
+    } @else {
         <span>{{ displayValue }}</span>
     }
 

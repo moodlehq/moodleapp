@@ -40,27 +40,25 @@
                                     {{ 'addon.mod_assign.hiddenuser' | translate }} {{submission.blindid}}
                                 }
                             </p>
-                            @if (assign && assign!.teamsubmission) {
+                            @if (assign && assign.teamsubmission) {
                                 <p>
                                     @if (submission.groupname) {
                                         <span class="core-groupname">
                                             <core-format-text [text]="submission.groupname" contextLevel="course"
                                                 [contextInstanceId]="courseId" />
                                         </span>
-                                    }
-                                    @if (assign!.preventsubmissionnotingroup && !submission.groupname && submission.noGroups
-                                    && !submission.blindid) {
-                                        <span class="text-danger">
-                                            {{ 'addon.mod_assign.noteam' | translate }}
-                                        </span>
-                                    }
-                                    @if (assign!.preventsubmissionnotingroup && !submission.groupname && submission.manyGroups
-                                    && !submission.blindid) {
-                                        <span class="text-danger">
-                                            {{ 'addon.mod_assign.multipleteams' | translate }}
-                                        </span>
-                                    }
-                                    @if (!assign!.preventsubmissionnotingroup && !submission.groupname) {
+                                    } @else if (assign.preventsubmissionnotingroup){
+                                        @if (submission.noGroups && !submission.blindid) {
+                                            <span class="text-danger">
+                                                {{ 'addon.mod_assign.noteam' | translate }}
+                                            </span>
+                                        }
+                                        @if (submission.manyGroups && !submission.blindid) {
+                                            <span class="text-danger">
+                                                {{ 'addon.mod_assign.multipleteams' | translate }}
+                                            </span>
+                                        }
+                                    } @else {
                                         <span>
                                             {{ 'addon.mod_assign.defaultteam' | translate }}
                                         </span>

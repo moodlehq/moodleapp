@@ -45,9 +45,7 @@
                             {{ 'addon.messages.blocknoncontacts' | translate }}
                         </ion-toggle>
                     </ion-item>
-                }
-
-                @if (advancedContactable) {
+                } @else {
                     <ion-list>
                         <ion-radio-group [(ngModel)]="contactablePrivacy" (ionChange)="saveContactablePrivacy(contactablePrivacy)">
                             <ion-item-divider>
@@ -79,18 +77,11 @@
 
             <!-- Notifications. -->
             @if (preferences) {
-
-                @if (!groupMessagingEnabled) {
-
-                    <ng-container *ngTemplateOutlet="legacySettings; context: {preferences: preferences}" />
-
-                }
                 @if (groupMessagingEnabled) {
-
                     <ng-container *ngTemplateOutlet="settings; context: {preferences: preferences}" />
-
+                } @else {
+                    <ng-container *ngTemplateOutlet="legacySettings; context: {preferences: preferences}" />
                 }
-
             }
         }
     </core-loading>
@@ -167,21 +158,17 @@
                         <p>{{ processor.displayname }}</p>
                     </ion-label>
                     @if (!preferences.disableall) {
-
                         <!-- If notifications enabled, show toggle. -->
                         @if (!processor.locked) {
                             <core-button-with-spinner [loading]="notification.updating" slot="end">
                                 <ion-toggle [(ngModel)]="processor.enabled" (ngModelChange)="changePreference(notification, processor)" />
                             </core-button-with-spinner>
-                        }
-                        @if (processor.locked) {
+                        } @else {
                             <span class="text-gray" slot="end">
                                 {{ processor.lockedmessage }}
                             </span>
                         }
-
-                    }
-                    @if (preferences.disableall) {
+                    } @else {
                         <span class="text-gray" slot="end">{{ 'core.settings.disabled' | translate }}</span>
                     }
                 </ion-item>

@@ -7,8 +7,7 @@
         <ion-title>
             @if (!editingProfile) {
                 <h1>{{ 'core.user.completeyourprofile' | translate }}</h1>
-            }
-            @if (editingProfile) {
+            } @else {
                 <h1>{{ 'core.login.reconnecttosite' | translate }}</h1>
             }
         </ion-title>
@@ -33,8 +32,7 @@
                 {{ 'core.user.completeprofile' | translate }}
             </ion-button>
 
-        }
-        @if (editingProfile) {
+        } @else {
 
             <ion-item class="ion-text-wrap">
                 <ion-label>

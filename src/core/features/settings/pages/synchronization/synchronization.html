@@ -44,9 +44,7 @@
                         </ion-label>
                     </ion-item>
                 </ion-card>
-            }
-
-            @if (isOnline && (!dataSaver || !limitedConnection)) {
+            } @else {
 
                 <ion-item-divider>
                     <ion-label>
@@ -69,8 +67,7 @@
                                     <ion-icon name="fas-rotate" slot="icon-only" aria-hidden="true" />
                                 </ion-button>
                             </core-button-with-spinner>
-                        }
-                        @if (site.loggedOut) {
+                        } @else {
                             <ion-button fill="clear" (click)="login(site.id)" [ariaLabel]="'core.login.login' | translate" slot="end">
                                 <ion-icon name="fas-right-to-bracket" slot="icon-only" aria-hidden="true" />
                             </ion-button>

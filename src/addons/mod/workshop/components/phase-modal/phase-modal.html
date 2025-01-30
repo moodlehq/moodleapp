@@ -35,20 +35,22 @@
             <ion-item class="ion-text-wrap" *ngFor="let task of phase.tasks"
                 [class.item-dimmed]="phase.code !== workshopPhase || (task.code === 'submit' && !showSubmit)" (click)="runTask(task)"
                 [detail]="false" button>
-                @if (task.completed === null) {
-                    <ion-icon slot="start" name="far-circle" [attr.aria-label]="'addon.mod_workshop.tasktodo' | translate" />
-                }
-                @if (task.completed === '') {
-                    <ion-icon slot="start" name="fas-circle-xmark" color="danger"
-                        [attr.aria-label]="'addon.mod_workshop.taskfail' | translate" />
-                }
-                @if (task.completed === 'info') {
-                    <ion-icon slot="start" name="fas-circle-info" color="info"
-                        [attr.aria-label]="'addon.mod_workshop.taskinfo' | translate" />
-                }
-                @if (task.completed === '1') {
-                    <ion-icon slot="start" name="fas-circle-check" color="success"
-                        [attr.aria-label]="'addon.mod_workshop.taskdone' | translate" />
+                @switch (task.completed) {
+                    @case (null) {
+                        <ion-icon slot="start" name="far-circle" [attr.aria-label]="'addon.mod_workshop.tasktodo' | translate" />
+                    }
+                    @case ('') {
+                        <ion-icon slot="start" name="fas-circle-xmark" color="danger"
+                            [attr.aria-label]="'addon.mod_workshop.taskfail' | translate" />
+                    }
+                    @case ('info') {
+                        <ion-icon slot="start" name="fas-circle-info" color="info"
+                            [attr.aria-label]="'addon.mod_workshop.taskinfo' | translate" />
+                    }
+                    @case ('1') {
+                        <ion-icon slot="start" name="fas-circle-check" color="success"
+                            [attr.aria-label]="'addon.mod_workshop.taskdone' | translate" />
+                    }
                 }
                 <ion-label>
                     <p class="item-heading ion-text-wrap">{{task.title}}</p>
