@@ -20,11 +20,9 @@ import { CoreQuestionDelegate } from '@features/question/services/question-deleg
 import { AddonQtypeMultichoiceHandler } from './services/handlers/multichoice';
 
 @NgModule({
-    declarations: [
-        AddonQtypeMultichoiceComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonQtypeMultichoiceComponent,
     ],
     providers: [
         {

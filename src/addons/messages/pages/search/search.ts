@@ -31,6 +31,8 @@ import {
 } from '@addons/messages/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreSearchComponentsModule } from '@features/search/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page for searching users.
@@ -38,6 +40,11 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'page-addon-messages-search',
     templateUrl: 'search.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSearchComponentsModule,
+    ],
 })
 export class AddonMessagesSearchPage implements OnDestroy {
 

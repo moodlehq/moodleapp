@@ -28,6 +28,7 @@ import { Translate } from '@singletons';
 import { AddonModImscp, AddonModImscpImscp, AddonModImscpTocItem } from '../../services/imscp';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a IMSCP content.
@@ -35,6 +36,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-imscp-view',
     templateUrl: 'view.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModImscpViewPage implements OnInit {
 

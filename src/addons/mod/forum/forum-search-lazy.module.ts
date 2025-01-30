@@ -30,8 +30,6 @@ const routes: Routes = [{
         CoreSharedModule,
         CoreSearchComponentsModule,
         CoreMainMenuComponentsModule,
-    ],
-    declarations: [
         AddonModForumSearchPage,
     ],
 })

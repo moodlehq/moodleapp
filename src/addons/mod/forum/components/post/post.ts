@@ -61,6 +61,10 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { AccordionGroupCustomEvent } from '@ionic/angular';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreRatingComponentsModule } from '@features/rating/components/components.module';
+import { CoreTagComponentsModule } from '@features/tag/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -69,6 +73,13 @@ import { AccordionGroupCustomEvent } from '@ionic/angular';
     selector: 'addon-mod-forum-post',
     templateUrl: 'post.html',
     styleUrl: 'post.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreTagComponentsModule,
+        CoreRatingComponentsModule,
+        CoreEditorComponentsModule,
+    ],
 })
 export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges {
 

@@ -59,6 +59,9 @@ import {
 } from '../../constants';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSearchComponentsModule } from '@features/search/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a glossary entry page.
@@ -67,6 +70,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-glossary-index',
     templateUrl: 'addon-mod-glossary-index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSearchComponentsModule,
+        CoreCourseComponentsModule,
+    ],
 })
 export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivityComponent
     implements OnInit, AfterViewInit, OnDestroy {

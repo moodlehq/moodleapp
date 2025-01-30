@@ -20,11 +20,9 @@ import { AddonUserProfileFieldDatetimeComponent } from './component/datetime';
 import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldDatetimeComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonUserProfileFieldDatetimeComponent,
     ],
     providers: [
         {

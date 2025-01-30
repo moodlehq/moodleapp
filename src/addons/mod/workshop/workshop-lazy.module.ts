@@ -52,8 +52,6 @@ const routes: Routes = [
         CoreSharedModule,
         AddonModWorkshopComponentsModule,
         CoreEditorComponentsModule,
-    ],
-    declarations: [
         AddonModWorkshopIndexPage,
         AddonModWorkshopSubmissionPage,
         AddonModWorkshopAssessmentPage,

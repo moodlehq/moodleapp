@@ -64,6 +64,8 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { AddonModForumPostComponent } from '../../components/post/post';
+import { CoreSharedModule } from '@/core/shared.module';
 
 type SortType = 'flat-newest' | 'flat-oldest' | 'nested';
 
@@ -76,6 +78,11 @@ type Post = AddonModForumPost & { children?: Post[] };
     selector: 'page-addon-mod-forum-discussion',
     templateUrl: 'discussion.html',
     styleUrl: 'discussion.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModForumPostComponent,
+    ],
 })
 export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDestroy, CanLeave {
 

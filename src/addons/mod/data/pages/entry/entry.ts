@@ -45,6 +45,10 @@ import {
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
+import { CoreRatingComponentsModule } from '@features/rating/components/components.module';
+import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the view entry page.
@@ -53,6 +57,13 @@ import { Translate } from '@singletons';
     selector: 'page-addon-mod-data-entry',
     templateUrl: 'entry.html',
     styleUrl: '../../data.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCompileHtmlComponentModule,
+        CoreRatingComponentsModule,
+        CoreCommentsComponentsModule,
+    ],
 })
 export class AddonModDataEntryPage implements OnInit, OnDestroy {
 

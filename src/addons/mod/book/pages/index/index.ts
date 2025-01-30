@@ -15,6 +15,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModBookIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a book entry page.
@@ -22,6 +23,11 @@ import { AddonModBookIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-book-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModBookIndexComponent,
+    ],
 })
 export class AddonModBookIndexPage extends CoreCourseModuleMainActivityPage<AddonModBookIndexComponent> {
 

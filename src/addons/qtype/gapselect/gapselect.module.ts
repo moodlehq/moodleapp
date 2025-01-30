@@ -20,11 +20,9 @@ import { AddonQtypeGapSelectComponent } from './component/gapselect';
 import { AddonQtypeGapSelectHandler } from './services/handlers/gapselect';
 
 @NgModule({
-    declarations: [
-        AddonQtypeGapSelectComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonQtypeGapSelectComponent,
     ],
     providers: [
         {

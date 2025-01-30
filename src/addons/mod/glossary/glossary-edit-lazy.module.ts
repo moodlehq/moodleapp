@@ -26,13 +26,11 @@ const routes: Routes = [{
 }];
 
 @NgModule({
-    declarations: [
-        AddonModGlossaryEditPage,
-    ],
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
         CoreEditorComponentsModule,
+        AddonModGlossaryEditPage,
     ],
 })
 export default class AddonModGlossaryEditLazyModule {}

@@ -19,11 +19,9 @@ import { AddonModDataFieldNumberComponent } from './component/number';
 import { AddonModDataFieldNumberHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldNumberComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModDataFieldNumberComponent,
     ],
     providers: [
         {

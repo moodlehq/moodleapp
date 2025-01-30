@@ -15,6 +15,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModGlossaryIndexComponent } from '../../components/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a glossary.
@@ -22,6 +23,11 @@ import { AddonModGlossaryIndexComponent } from '../../components/index';
 @Component({
     selector: 'page-addon-mod-glossary-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModGlossaryIndexComponent,
+    ],
 })
 export class AddonModGlossaryIndexPage extends CoreCourseModuleMainActivityPage<AddonModGlossaryIndexComponent> {
 

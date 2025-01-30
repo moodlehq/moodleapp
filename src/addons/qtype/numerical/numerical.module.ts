@@ -20,11 +20,9 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { AddonQtypeNumericalComponent } from './component/numerical';
 
 @NgModule({
-    declarations: [
-        AddonQtypeNumericalComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonQtypeNumericalComponent,
     ],
     providers: [
         {

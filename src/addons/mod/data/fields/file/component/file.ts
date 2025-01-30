@@ -18,6 +18,7 @@ import { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/b
 import { CoreFileSession } from '@services/file-session';
 import { CoreFileEntry } from '@services/file-helper';
 import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render data file field.
@@ -25,6 +26,10 @@ import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
 @Component({
     selector: 'addon-mod-data-field-file',
     templateUrl: 'addon-mod-data-field-file.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginBaseComponent {
 

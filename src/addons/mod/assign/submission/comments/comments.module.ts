@@ -20,12 +20,10 @@ import { AddonModAssignSubmissionDelegate } from '../../services/submission-dele
 import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
 
 @NgModule({
-    declarations: [
-        AddonModAssignSubmissionCommentsComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreCommentsComponentsModule,
+        AddonModAssignSubmissionCommentsComponent,
     ],
     providers: [
         {

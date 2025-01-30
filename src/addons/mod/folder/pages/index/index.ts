@@ -18,6 +18,7 @@ import { CoreNavigator } from '@services/navigator';
 import { AddonModFolderIndexComponent } from '../../components/index/index';
 import { AddonModFolderFolder } from '../../services/folder';
 import { AddonModFolderFolderFormattedData } from '../../services/folder-helper';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a folder.
@@ -25,6 +26,11 @@ import { AddonModFolderFolderFormattedData } from '../../services/folder-helper'
 @Component({
     selector: 'page-addon-mod-folder-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModFolderIndexComponent,
+    ],
 })
 export class AddonModFolderIndexPage extends CoreCourseModuleMainActivityPage<AddonModFolderIndexComponent> implements OnInit {
 

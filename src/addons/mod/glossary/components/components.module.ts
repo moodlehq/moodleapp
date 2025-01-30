@@ -19,13 +19,11 @@ import { CoreCourseComponentsModule } from '@features/course/components/componen
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
 @NgModule({
-    declarations: [
-        AddonModGlossaryIndexComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreCourseComponentsModule,
         CoreSearchComponentsModule,
+        AddonModGlossaryIndexComponent,
     ],
     exports: [
         AddonModGlossaryIndexComponent,

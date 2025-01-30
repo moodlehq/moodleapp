@@ -20,11 +20,9 @@ import { AddonUserProfileFieldTextComponent } from './component/text';
 import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldTextComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonUserProfileFieldTextComponent,
     ],
     providers: [
         {

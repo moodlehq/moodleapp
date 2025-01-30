@@ -55,6 +55,9 @@ import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreQuestionComponentsModule } from '@features/question/components/components.module';
+import { AddonModQuizQuestionCardComponent } from '../../components/question-card/question-card';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that allows attempting a quiz.
@@ -63,6 +66,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-quiz-player',
     templateUrl: 'player.html',
     styleUrl: 'player.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModQuizQuestionCardComponent,
+        CoreQuestionComponentsModule,
+    ],
 })
 export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 

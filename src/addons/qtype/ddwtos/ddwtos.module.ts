@@ -20,11 +20,9 @@ import { AddonQtypeDdwtosComponent } from './component/ddwtos';
 import { AddonQtypeDdwtosHandler } from './services/handlers/ddwtos';
 
 @NgModule({
-    declarations: [
-        AddonQtypeDdwtosComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonQtypeDdwtosComponent,
     ],
     providers: [
         {

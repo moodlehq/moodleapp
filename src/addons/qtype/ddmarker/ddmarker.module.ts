@@ -20,11 +20,9 @@ import { AddonQtypeDdMarkerComponent } from './component/ddmarker';
 import { AddonQtypeDdMarkerHandler } from './services/handlers/ddmarker';
 
 @NgModule({
-    declarations: [
-        AddonQtypeDdMarkerComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonQtypeDdMarkerComponent,
     ],
     providers: [
         {

@@ -20,6 +20,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
 import { AddonBadges, AddonBadgesBadgeClass } from '../../services/badges';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a badge class.
@@ -27,6 +28,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-badges-badge-class',
     templateUrl: 'badge-class.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonBadgesBadgeClassPage implements OnInit {
 

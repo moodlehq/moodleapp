@@ -15,6 +15,7 @@
 import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { Component } from '@angular/core';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render data multimenu field.
@@ -22,6 +23,10 @@ import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-fiel
 @Component({
     selector: 'addon-mod-data-field-multimenu',
     templateUrl: 'addon-mod-data-field-multimenu.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModDataFieldMultimenuComponent extends AddonModDataFieldPluginBaseComponent {
 

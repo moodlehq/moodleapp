@@ -29,6 +29,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreSites } from '@services/sites';
 import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the list of competencies of a course.
@@ -36,6 +37,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-competency-coursecompetencies',
     templateUrl: 'coursecompetencies.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonCompetencyCourseCompetenciesPage implements OnInit, OnDestroy {
 

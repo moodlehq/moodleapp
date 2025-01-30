@@ -19,11 +19,9 @@ import { AddonModDataFieldMultimenuComponent } from './component/multimenu';
 import { AddonModDataFieldMultimenuHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldMultimenuComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModDataFieldMultimenuComponent,
     ],
     providers: [
         {

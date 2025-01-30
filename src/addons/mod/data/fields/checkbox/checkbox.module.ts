@@ -19,11 +19,9 @@ import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate'
 import { AddonModDataFieldCheckboxHandler } from './services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModDataFieldCheckboxComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModDataFieldCheckboxComponent,
     ],
     providers: [
         {

@@ -21,6 +21,8 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreTime } from '@singletons/time';
 import { AddonModChat, AddonModChatChat } from '../../services/chat';
 import { ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_PAGE_NAME } from '../../constants';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a chat.
@@ -28,6 +30,11 @@ import { ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_PAGE_NAME } from '../../consta
 @Component({
     selector: 'addon-mod-chat-index',
     templateUrl: 'addon-mod-chat-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+    ],
 })
 export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 

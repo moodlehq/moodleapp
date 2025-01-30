@@ -23,17 +23,15 @@ import { AddonModWorkshopAssessmentComponent } from './assessment/assessment';
 import { AddonModWorkshopAssessmentStrategyComponent } from './assessment-strategy/assessment-strategy';
 
 @NgModule({
-    declarations: [
-        AddonModWorkshopIndexComponent,
-        AddonModWorkshopSubmissionComponent,
-        AddonModWorkshopAssessmentComponent,
-        AddonModWorkshopAssessmentStrategyComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreCourseComponentsModule,
         CoreEditorComponentsModule,
         AddonModWorkshopAssessmentComponentsModule,
+        AddonModWorkshopIndexComponent,
+        AddonModWorkshopSubmissionComponent,
+        AddonModWorkshopAssessmentComponent,
+        AddonModWorkshopAssessmentStrategyComponent,
     ],
     exports: [
         AddonModWorkshopIndexComponent,

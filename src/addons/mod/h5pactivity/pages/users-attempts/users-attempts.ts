@@ -26,6 +26,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { AddonModH5PActivityGradeMethod } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays all users that can attempt an H5P activity.
@@ -34,6 +35,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-h5pactivity-users-attempts',
     templateUrl: 'users-attempts.html',
     styleUrl: 'users-attempts.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
 

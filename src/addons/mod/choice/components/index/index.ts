@@ -42,6 +42,8 @@ import {
 } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a choice.
@@ -49,6 +51,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-choice-index',
     templateUrl: 'addon-mod-choice-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+    ],
 })
 export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 

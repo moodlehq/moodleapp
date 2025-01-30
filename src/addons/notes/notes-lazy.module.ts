@@ -32,8 +32,6 @@ const routes: Routes = [
         CoreSharedModule,
         CoreCommentsComponentsModule,
         CoreTagComponentsModule,
-    ],
-    declarations: [
         AddonNotesListPage,
     ],
 })

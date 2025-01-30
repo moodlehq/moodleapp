@@ -52,6 +52,8 @@ import {
     ADDON_MOD_LESSON_PAGE_NAME,
 } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a lesson entry page.
@@ -59,6 +61,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-lesson-index',
     templateUrl: 'addon-mod-lesson-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+    ],
 })
 export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

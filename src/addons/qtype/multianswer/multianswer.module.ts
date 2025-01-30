@@ -20,11 +20,9 @@ import { AddonQtypeMultiAnswerComponent } from './component/multianswer';
 import { AddonQtypeMultiAnswerHandler } from './services/handlers/multianswer';
 
 @NgModule({
-    declarations: [
-        AddonQtypeMultiAnswerComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonQtypeMultiAnswerComponent,
     ],
     providers: [
         {

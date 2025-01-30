@@ -20,11 +20,9 @@ import { AddonQtypeShortAnswerComponent } from './component/shortanswer';
 import { AddonQtypeShortAnswerHandler } from './services/handlers/shortanswer';
 
 @NgModule({
-    declarations: [
-        AddonQtypeShortAnswerComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonQtypeShortAnswerComponent,
     ],
     providers: [
         {

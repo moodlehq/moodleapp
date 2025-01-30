@@ -46,8 +46,6 @@ const routes: Routes = [
         CoreSharedModule,
         CoreEditorComponentsModule,
         AddonModLessonComponentsModule,
-    ],
-    declarations: [
         AddonModLessonIndexPage,
         AddonModLessonPlayerPage,
         AddonModLessonUserRetakePage,

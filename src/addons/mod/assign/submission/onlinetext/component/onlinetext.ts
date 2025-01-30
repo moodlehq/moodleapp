@@ -24,6 +24,8 @@ import { AddonModAssignSubmissionOnlineTextPluginData } from '../services/handle
 import { ContextLevel } from '@/core/constants';
 import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render an onlinetext submission plugin.
@@ -31,6 +33,11 @@ import { CoreViewer } from '@features/viewer/services/viewer';
 @Component({
     selector: 'addon-mod-assign-submission-online-text',
     templateUrl: 'addon-mod-assign-submission-onlinetext.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreEditorComponentsModule,
+    ],
 })
 export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignSubmissionPluginBaseComponent implements OnInit {
 

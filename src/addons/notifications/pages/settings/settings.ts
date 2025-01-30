@@ -41,6 +41,7 @@ import { Translate } from '@singletons';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays notifications settings.
@@ -49,6 +50,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-notifications-settings',
     templateUrl: 'settings.html',
     styleUrl: 'settings.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
 

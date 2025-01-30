@@ -29,6 +29,7 @@ import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { ADDON_CALENDAR_UNDELETED_EVENT_EVENT } from '@addons/calendar/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays upcoming events.
@@ -37,6 +38,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-calendar-upcoming-events',
     templateUrl: 'addon-calendar-upcoming-events.html',
     styleUrl: '../../calendar-common.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, OnDestroy {
 

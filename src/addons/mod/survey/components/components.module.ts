@@ -18,12 +18,10 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 @NgModule({
-    declarations: [
-        AddonModSurveyIndexComponent,
-    ],
     imports: [
         CoreSharedModule,
         CoreCourseComponentsModule,
+        AddonModSurveyIndexComponent,
     ],
     exports: [
         AddonModSurveyIndexComponent,

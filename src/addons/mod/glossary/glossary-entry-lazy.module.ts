@@ -26,15 +26,13 @@ const routes: Routes = [{
 }];
 
 @NgModule({
-    declarations: [
-        AddonModGlossaryEntryPage,
-    ],
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
         CoreCommentsComponentsModule,
         CoreRatingComponentsModule,
         CoreTagComponentsModule,
+        AddonModGlossaryEntryPage,
     ],
 })
 export default class AddonModGlossaryEntryLazyModule {}

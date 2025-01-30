@@ -20,8 +20,6 @@ import { AddonCompetencyCompetencyPage } from './competency.page';
 @NgModule({
     imports: [
         CoreSharedModule,
-    ],
-    declarations: [
         AddonCompetencyCompetencyPage,
     ],
 })

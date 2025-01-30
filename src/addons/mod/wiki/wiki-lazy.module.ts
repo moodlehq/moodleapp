@@ -43,8 +43,6 @@ const routes: Routes = [
         CoreSharedModule,
         AddonModWikiComponentsModule,
         CoreEditorComponentsModule,
-    ],
-    declarations: [
         AddonModWikiIndexPage,
         AddonModWikiEditPage,
     ],

@@ -20,11 +20,9 @@ import { AddonQtypeMatchComponent } from './component/match';
 import { AddonQtypeMatchHandler } from './services/handlers/match';
 
 @NgModule({
-    declarations: [
-        AddonQtypeMatchComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonQtypeMatchComponent,
     ],
     providers: [
         {

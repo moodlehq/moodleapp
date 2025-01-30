@@ -19,11 +19,9 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModAssignSubmissionDelegate } from '../../services/submission-delegate';
 
 @NgModule({
-    declarations: [
-        AddonModAssignSubmissionFileComponent,
-    ],
     imports: [
         CoreSharedModule,
+        AddonModAssignSubmissionFileComponent,
     ],
     providers: [
         {
