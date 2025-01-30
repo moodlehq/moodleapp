@@ -37,9 +37,10 @@
                 <ion-card-content>
                     <ion-item *ngFor="let user of session.sessionusers">
                         <ion-label>
-                            {{ user.userfullname }} @if (user.messagecount) {
-                                <span>({{ user.messagecount }})</span>
-                                }
+                            {{ user.userfullname }}
+                            @if (user.messagecount) {
+                                <span>( {{ user.messagecount }} )</span>
+                            }
                         </ion-label>
                     </ion-item>
                 </ion-card-content>

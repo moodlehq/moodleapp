@@ -1,9 +1,7 @@
 <core-loading [hideUntil]="loaded">
     @if (!filteredEvents || !filteredEvents.length) {
         <core-empty-box icon="fas-calendar" [message]="'addon.calendar.noevents' | translate" />
-    }
-
-    @if (filteredEvents && filteredEvents.length) {
+    } @else {
         <ion-list class="list-item-limited-width">
             <ng-container *ngFor="let event of filteredEvents">
                 <ion-card>
@@ -12,8 +10,7 @@
                         @if (event.moduleIcon) {
                             <core-mod-icon [modicon]="event.moduleIcon" slot="start" [modname]="event.modulename"
                                 [componentId]="event.instance" [showAlt]="false" [purpose]="event.purpose" [isBranded]="event.branded" />
-                        }
-                        @if (event.eventIcon && !event.moduleIcon) {
+                        } @else if (event.eventIcon) {
                             <ion-icon [name]="event.eventIcon" slot="start" aria-hidden="true" />
                         }
                         <ion-label>
@@ -32,18 +29,18 @@
                                 <core-format-text [text]="event.formattedtime" [filter]="false" />
                             </p>
                         </ion-label>
-                        @if (event.offline && !event.deleted) {
-                            <ion-note slot="end">
-                                <ion-icon name="fas-clock" aria-hidden="true" />
-                                <span class="ion-text-wrap">{{ 'core.notsent' | translate }}</span>
-                            </ion-note>
-                        }
                         @if (event.deleted) {
                             <ion-note slot="end">
                                 <ion-icon name="fas-trash" aria-hidden="true" />
                                 <span class="ion-text-wrap">{{ 'core.deletedoffline' | translate }}</span>
                             </ion-note>
+                        } @else if (event.offline) {
+                            <ion-note slot="end">
+                                <ion-icon name="fas-clock" aria-hidden="true" />
+                                <span class="ion-text-wrap">{{ 'core.notsent' | translate }}</span>
+                            </ion-note>
                         }
+
                     </ion-item>
                 </ion-card>
             </ng-container>

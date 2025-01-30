@@ -27,24 +27,18 @@
                     <p class="ion-text-wrap">{{ error.message }}</p>
 
                     @if (error.method) {
-
                         <p class="item-heading">Method</p>
                         <p class="ion-text-wrap">{{ error.method }}</p>
-
                     }
 
                     @if (error.type) {
-
                         <p class="item-heading">Type</p>
                         <p class="ion-text-wrap">{{ error.type }}</p>
-
                     }
 
                     @if (error.data) {
-
                         <p class="item-heading">Data</p>
                         <p class="ion-text-wrap">{{ error.data | json }}</p>
-
                     }
 
                     @if (error.time) {
@@ -56,9 +50,7 @@
             </ion-item>
         </ion-list>
     } @else {
-
         <core-empty-box message="No logs available" icon="fas-clipboard-question" />
-
     }
 
 </ion-content>

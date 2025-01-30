@@ -8,17 +8,16 @@
                 @if (loaded && !otherMember && conversationImage) {
                     <img class="core-bar-button-image" [url]="conversationImage" alt="" onError="this.src='assets/img/group-avatar.svg'"
                         core-external-content role="presentation" [siteId]="siteId">
-                }
-                @if (loaded && otherMember) {
+                } @else if (loaded && otherMember) {
                     <core-user-avatar class="core-bar-button-image" [user]="otherMember" [linkProfile]="false"
                         [checkOnline]="otherMember.showonlinestatus" />
                 }
                 <!-- WS didn't filter the conversation name, see MDL-81815. -->
                 <core-format-text [text]="title" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true" />
-                @if (conversation && conversation.isfavourite) {
+                @if (conversation?.isfavourite) {
                     <ion-icon name="fas-star" [attr.aria-label]="'core.favourites' | translate" />
                 }
-                @if (conversation && conversation.ismuted) {
+                @if (conversation?.ismuted) {
                     <ion-icon name="fas-bell-slash" [attr.aria-label]="'addon.messages.mutedconversation' | translate" />
                 }
             </h1>

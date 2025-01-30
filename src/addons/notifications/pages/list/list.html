@@ -48,20 +48,16 @@
                             </div>
                         }
                     </core-user-avatar>
-                }
-
-                @if (notification.useridfrom <= 0) {
+                } @else {
 
                     @if (notification.imgUrl) {
                         <img class="core-notification-img" [url]="notification.imgUrl" core-external-content alt="" role="presentation"
                             slot="start">
-                    }
-                    @if (!notification.imgUrl) {
+                    } @else {
                         <div class="core-notification-icon" slot="start">
                             @if (notification.iconurl) {
                                 <img [url]="notification.iconurl" core-external-content alt="" role="presentation">
-                            }
-                            @if (!notification.iconurl) {
+                            } @else {
                                 <ion-icon name="fas-bell" aria-hidden="true" />
                             }
                         </div>
@@ -104,8 +100,7 @@
                     (click)="markAllNotificationsAsRead()">
                     @if (!loadingMarkAllNotificationsAsRead) {
                         <ion-icon name="fas-eye" aria-hidden="true" />
-                    }
-                    @if (loadingMarkAllNotificationsAsRead) {
+                    } @else {
                         <ion-spinner [attr.aria-label]="'core.loading' | translate" />
                     }
                     {{ 'addon.notifications.markallread' | translate }}

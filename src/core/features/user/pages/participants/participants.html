@@ -10,14 +10,10 @@
         <core-loading [hideUntil]="participants.loaded" placeholderType="listwithavatar" placeholderHeight="44px" placeholderWidth="44px">
             @if (participants.empty && !searchInProgress && !searchQuery) {
                 <core-empty-box icon="far-user" [message]="'core.user.noparticipants' | translate" />
-            }
-
-            @if (participants.empty && !searchInProgress && searchQuery) {
+            } @else if (participants.empty && !searchInProgress && searchQuery) {
                 <core-empty-box icon="fas-magnifying-glass" [message]="'core.noresults' | translate"
                     [attr.role]="searchQuery ? 'alert' : null" />
-            }
-
-            @if (!participants.empty) {
+            } @else if (!participants.empty) {
                 <ion-list>
                     <ion-item *ngFor="let participant of participants.items" class="ion-text-wrap"
                         [attr.aria-current]="participants.getItemAriaCurrent(participant)" [attr.aria-label]="participant.fullname"
@@ -40,8 +36,7 @@
                                             {{ 'core.never' | translate }}
                                         }
                                     </p>
-                                }
-                                @if (participant.lastcourseaccess === undefined && participant.lastaccess !== undefined) {
+                                } @else if (participant.lastaccess !== undefined) {
                                     <p>
                                         <strong>{{ 'core.lastaccess' | translate }}: </strong>
                                         @if (participant.lastaccess) {
@@ -53,14 +48,10 @@
                                     </p>
                                 }
 
-                            }
-
-                            @if (searchQuery) {
-
+                            } @else {
                                 <p class="item-heading">
                                     <core-format-text [text]="participant.fullname" [highlight]="searchQuery" [filter]="false" />
                                 </p>
-
                             }
                         </ion-label>
 

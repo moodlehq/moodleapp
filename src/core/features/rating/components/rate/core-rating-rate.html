@@ -1,9 +1,9 @@
-@if (item && (item!.canrate || item!.rating !== null) && !disabled) {
-<ion-item class="ion-text-wrap">
-    <ion-select class="ion-text-start" [(ngModel)]="rating" (ngModelChange)="userRatingChanged()" interface="action-sheet"
-        [cancelText]="'core.cancel' | translate" [disabled]="!item!.canrate" [interfaceOptions]="{header: 'core.rating.rating' | translate}"
-        [label]="'core.rating.rating' | translate">
-        <ion-select-option *ngFor="let scaleItem of scale!.items" [value]="scaleItem.value">{{ scaleItem.name }}</ion-select-option>
-    </ion-select>
-</ion-item>
+@if (item && (item.canrate || item.rating !== null) && !disabled) {
+    <ion-item class="ion-text-wrap">
+        <ion-select class="ion-text-start" [(ngModel)]="rating" (ngModelChange)="userRatingChanged()" interface="action-sheet"
+            [cancelText]="'core.cancel' | translate" [disabled]="!item!.canrate"
+            [interfaceOptions]="{header: 'core.rating.rating' | translate}" [label]="'core.rating.rating' | translate">
+            <ion-select-option *ngFor="let scaleItem of scale!.items" [value]="scaleItem.value">{{ scaleItem.name }}</ion-select-option>
+        </ion-select>
+    </ion-item>
 }

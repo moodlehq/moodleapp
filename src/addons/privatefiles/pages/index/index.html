@@ -74,10 +74,8 @@
                         }
                     </ng-container>
                 </ion-list>
-            }
-
-            <!-- Message telling there are no files. -->
-            @if (!files || !files.length) {
+            } @else {
+                <!-- Message telling there are no files. -->
                 <core-empty-box icon="far-folder-open" [message]="'addon.privatefiles.emptyfilelist' | translate" />
             }
         </core-loading>

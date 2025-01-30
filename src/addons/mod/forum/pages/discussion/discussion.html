@@ -118,11 +118,9 @@
         }
 
         @if (sort === 'nested' && posts.length) {
-
             <ng-container *ngFor="let post of posts">
                 <ng-container *ngTemplateOutlet="nestedPosts; context: {post: post}" />
             </ng-container>
-
         }
 
         <ng-template #nestedPosts let-post="post">

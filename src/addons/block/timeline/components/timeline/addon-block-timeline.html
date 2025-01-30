@@ -48,14 +48,13 @@
         </ion-col>
     </ion-row>
     @if (sections$ | async; as sections) {
-
-        <ng-container *ngFor="let section of sections">
+        @for (section of sections; track section.course?.id || section.dateRange.from) {
             @if (section.data$ | async; as data) {
                 <addon-block-timeline-events [events]="data.events" [showInlineCourse]="(sort$ | async) === AddonBlockTimelineSort.ByDates"
                     [canLoadMore]="data.canLoadMore" [loadingMore]="data.loadingMore" (loadMore)="section.loadMore()"
                     [course]="section.course" />
             }
-        </ng-container>
+        }
         @if (sections && sections.length === 0) {
             <core-empty-box image="assets/img/icons/courses.svg" [message]="'addon.block_timeline.noevents' | translate" />
         }

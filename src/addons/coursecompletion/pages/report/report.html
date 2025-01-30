@@ -42,8 +42,6 @@
                     </ion-label>
                 </ion-item>
             </ion-card>
-        }
-        @if (completion && tracked) {
             <ion-card>
                 <ion-item-divider>
                     <ion-label>
@@ -61,8 +59,7 @@
                     </ion-label>
                     @if (criteria.complete) {
                         <strong slot="end">{{ 'core.yes' | translate }}</strong>
-                    }
-                    @if (!criteria.complete) {
+                    } @else {
                         <strong slot="end">{{ 'core.no' | translate }}</strong>
                     }
                 </ion-item>
@@ -91,16 +88,14 @@
                             </ion-col>
                             @if (criteria.complete) {
                                 <ion-col>{{ 'core.yes' | translate }}</ion-col>
-                            }
-                            @if (!criteria.complete) {
+                            } @else {
                                 <ion-col>{{ 'core.no' | translate }}</ion-col>
                             }
                             @if (criteria.timecompleted) {
                                 <ion-col>
                                     {{ criteria.timecompleted * 1000 | coreFormatDate :'strftimedatetimeshort' }}
                                 </ion-col>
-                            }
-                            @if (!criteria.timecompleted) {
+                            } @else {
                                 <ion-col />
                             }
                         </ion-row>
@@ -123,9 +118,7 @@
                     </ion-label>
                 </ion-item>
             </ion-card>
-        }
-
-        @if (!tracked) {
+        } @else if (!tracked) {
             <ion-card class="core-warning-card">
                 <ion-item>
                     <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />

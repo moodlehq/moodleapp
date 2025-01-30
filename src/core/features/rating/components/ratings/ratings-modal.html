@@ -27,8 +27,7 @@
                     }
                 </ion-item>
             </ion-list>
-        }
-        @if (ratings.length === 0) {
+        } @else {
             <core-empty-box icon="fas-star-half-stroke" [message]="'core.rating.noratings' | translate" />
         }
     </core-loading>

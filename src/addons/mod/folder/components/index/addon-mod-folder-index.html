@@ -17,8 +17,8 @@
 <!-- Content. -->
 <core-loading [hideUntil]="!showLoading">
 
-    <!-- Activity info. -->
     @if (!subfolder) {
+        <!-- Activity info. -->
         <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
             [courseId]="courseId" />
     }
@@ -37,9 +37,7 @@
                 <core-file [file]="file" [component]="component" [componentId]="componentId" />
             </ng-container>
         </ion-list>
-    }
-
-    @if (!contents || (contents.files.length + contents.folders.length === 0)) {
+    } @else{
         <core-empty-box icon="far-folder-open" [message]=" 'addon.mod_folder.emptyfilelist' | translate" />
     }
 

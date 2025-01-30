@@ -24,13 +24,11 @@
             <div class="core-course-thumb" #courseThumb>
                 @if (course.courseimage) {
                     <img [url]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
-                }
-                @if (!course.courseimage) {
+                } @else {
                     <ion-icon name="fas-graduation-cap" class="course-icon" aria-hidden="true" />
                 }
             </div>
-        }
-        @if (course) {
+
             <div class="course-container">
                 <div class="list-item-limited-width">
                     <ion-item class="ion-text-wrap course-name">
@@ -178,9 +176,7 @@
                     <ion-button expand="block" (click)="enrolMe()" class="ion-text-wrap">
                         {{ 'core.courses.enrolme' | translate }}
                     </ion-button>
-                }
-
-                @if (!selfEnrolInstances.length && !hasBrowserEnrolments) {
+                } @else {
                     <ion-card class="core-info-card ion-text-wrap">
                         <ion-item>
                             <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />

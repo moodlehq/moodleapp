@@ -34,8 +34,6 @@
                     (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate" />
             </ion-col>
         </ion-row>
-    }
-    @if (hasCourses) {
         <ion-row class="ion-justify-content-between ion-align-items-center addon-block-myoverview-filter">
             @if (filters.enabled) {
                 <ion-col size="auto">
@@ -120,8 +118,7 @@
                             [ariaLabel]="'addon.block_myoverview.aria:list' | translate">
                             <ion-icon slot="icon-only" name="fas-list" aria-hidden="true" />
                         </ion-button>
-                    }
-                    @if (layout === 'list') {
+                    } @else if (layout === 'list') {
                         <ion-button fill="outline" (click)="toggleLayout('card')"
                             [ariaLabel]="'addon.block_myoverview.aria:card' | translate">
                             <ion-icon slot="icon-only" name="fas-table-cells-large" aria-hidden="true" />
@@ -138,20 +135,17 @@
                 <h3 class="item-heading">
                     {{'addon.block_myoverview.noresult' | translate}}
                 </h3>
-            }
-            @if (!hasCourses) {
+            } @else {
                 <h3 class="item-heading">
                     {{'addon.block_myoverview.nocoursesenrolled' | translate}}
                 </h3>
             }
             @if (searchEnabled) {
-
                 @if (hasCourses) {
                     <p class="subdued">
                         {{'addon.block_myoverview.noresultdescription' | translate}}
                     </p>
-                }
-                @if (!hasCourses) {
+                } @else {
                     <p class="subdued">
                         {{'addon.block_myoverview.nocoursesenrolleddescription' | translate}}
                     </p>

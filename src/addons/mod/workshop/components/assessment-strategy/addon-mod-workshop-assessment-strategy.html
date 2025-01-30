@@ -3,9 +3,7 @@
 <form name="mma-mod_workshop-assessment-form" #assessmentForm>
     <core-loading [hideUntil]="assessmentStrategyLoaded">
         @if (componentClass && assessmentStrategyLoaded) {
-
             <core-dynamic-component [component]="componentClass" [data]="data" />
-
         }
 
         @if (notSupported) {
@@ -41,39 +39,41 @@
                             <core-input-errors [errorText]="data.fieldErrors['feedbackauthor']" />
                         }
                     </ion-item>
-                }
-                @if (edit && workshop.overallfeedbackfiles) {
-                    <core-attachments [files]="data.assessment?.feedbackattachmentfiles" [maxSize]="workshop.overallfeedbackmaxbytes"
-                        [maxSubmissions]="workshop.overallfeedbackfiles" [component]="component" [componentId]="componentId"
-                        [allowOffline]="true" [courseId]="workshop.course" />
-                }
-                @if (edit && access && access.canallocate) {
-                    <ion-item>
-                        <ion-select labelPlacement="stacked" [(ngModel)]="weight" interface="action-sheet" name="weight"
-                            [cancelText]="'core.cancel' | translate"
-                            [interfaceOptions]="{header: 'addon.mod_workshop.assessmentweight' | translate}">
-                            <div [core-mark-required]="true" slot="label">
-                                {{ 'addon.mod_workshop.assessmentweight' | translate }}
-                            </div>
-                            <ion-select-option *ngFor="let w of weights" [value]="w">{{w}}</ion-select-option>
-                        </ion-select>
-                    </ion-item>
-                }
-                @if (!edit && data.assessment?.feedbackauthor) {
-                    <ion-item class="ion-text-wrap">
-                        <ion-label>
-                            <core-format-text [component]="component" [componentId]="componentId" [text]="data.assessment?.feedbackauthor"
-                                contextLevel="module" [contextInstanceId]="workshop.coursemodule" [courseId]="workshop.course" />
-                        </ion-label>
-                    </ion-item>
-                }
-                @if (!edit && workshop.overallfeedbackfiles && data.assessment?.feedbackattachmentfiles?.length) {
-                    <ion-item>
-                        <ion-label>
-                            <core-files [files]="data.assessment?.feedbackattachmentfiles" [component]="component"
-                                [componentId]="componentId" />
-                        </ion-label>
-                    </ion-item>
+                    @if (workshop.overallfeedbackfiles) {
+                        <core-attachments [files]="data.assessment?.feedbackattachmentfiles" [maxSize]="workshop.overallfeedbackmaxbytes"
+                            [maxSubmissions]="workshop.overallfeedbackfiles" [component]="component" [componentId]="componentId"
+                            [allowOffline]="true" [courseId]="workshop.course" />
+                    }
+                    @if (access && access.canallocate) {
+                        <ion-item>
+                            <ion-select labelPlacement="stacked" [(ngModel)]="weight" interface="action-sheet" name="weight"
+                                [cancelText]="'core.cancel' | translate"
+                                [interfaceOptions]="{header: 'addon.mod_workshop.assessmentweight' | translate}">
+                                <div [core-mark-required]="true" slot="label">
+                                    {{ 'addon.mod_workshop.assessmentweight' | translate }}
+                                </div>
+                                <ion-select-option *ngFor="let w of weights" [value]="w">{{w}}</ion-select-option>
+                            </ion-select>
+                        </ion-item>
+                    }
+                } @else {
+                    @if (data.assessment?.feedbackauthor) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>
+                                <core-format-text [component]="component" [componentId]="componentId"
+                                    [text]="data.assessment?.feedbackauthor" contextLevel="module"
+                                    [contextInstanceId]="workshop.coursemodule" [courseId]="workshop.course" />
+                            </ion-label>
+                        </ion-item>
+                    }
+                    @if (workshop.overallfeedbackfiles && data.assessment?.feedbackattachmentfiles?.length) {
+                        <ion-item>
+                            <ion-label>
+                                <core-files [files]="data.assessment?.feedbackattachmentfiles" [component]="component"
+                                    [componentId]="componentId" />
+                            </ion-label>
+                        </ion-item>
+                    }
                 }
             </ion-card>
         }

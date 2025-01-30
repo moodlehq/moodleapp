@@ -29,8 +29,7 @@
                                             {{ 'core.course.hiddenfromstudents' | translate }}
                                         </ion-badge>
                                     </div>
-                                }
-                                @if (section.visible === 0 && section.uservisible === false) {
+                                } @else if (section.visible === 0 && section.uservisible === false) {
                                     <div>
                                         <ion-badge color="warning">
                                             {{ 'core.notavailable' | translate }}

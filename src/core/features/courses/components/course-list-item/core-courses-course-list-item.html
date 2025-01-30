@@ -6,8 +6,7 @@
         <div class="core-course-thumb">
             @if (course.courseimage) {
                 <img [url]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
-            }
-            @if (!course.courseimage) {
+            } @else {
                 <ion-icon name="fas-graduation-cap" class="course-icon" aria-hidden="true" />
             }
         </div>
@@ -19,8 +18,7 @@
 
             @if (!course.courseimage) {
                 <ion-icon name="fas-graduation-cap" slot="start" class="course-icon core-course-thumb" aria-hidden="true" />
-            }
-            @if (course.courseimage) {
+            } @else {
                 <ion-avatar slot="start" class="core-course-thumb">
                     <img [url]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
                 </ion-avatar>
@@ -39,8 +37,6 @@
                 <p class="item-heading">
                     @if (course.isfavourite) {
                         <ion-icon name="fas-star" [attr.aria-label]="'core.courses.favourite' | translate" />
-                    }
-                    @if (course.isfavourite) {
                         <span class="sr-only">{{ 'core.courses.aria:favourite' | translate }}</span>
                     }
 
@@ -101,15 +97,13 @@
 
         @if (courseOptionMenuEnabled) {
             <div class="core-button-spinner">
-                <!-- Options menu. -->
                 @if (!showSpinner) {
+                    <!-- Options menu. -->
                     <ion-button fill="clear" (click)="showCourseOptionsMenu($event)" [ariaLabel]="('core.displayoptions' | translate)">
                         <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
                     </ion-button>
-                }
-
-                <!-- Loading options course spinner. -->
-                @if (showSpinner) {
+                } @else {
+                    <!-- Loading options course spinner. -->
                     <ion-spinner [attr.aria-label]="'core.loading' | translate" />
                 }
             </div>

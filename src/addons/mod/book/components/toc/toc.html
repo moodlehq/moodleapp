@@ -20,8 +20,7 @@
                     <p [class.ion-padding-start]="addPadding && chapter.level === 1 ? true : null" class="item-heading">
                         @if (showNumbers) {
                             <span class="addon-mod-book-number">{{chapter.indexNumber}} </span>
-                        }
-                        @if (showBullets) {
+                        } @else if (showBullets) {
                             <span class="addon-mod-book-bullet">&bull; </span>
                         }
                         <core-format-text [text]="chapter.title" contextLevel="module" [contextInstanceId]="moduleId"

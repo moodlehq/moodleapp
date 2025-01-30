@@ -39,14 +39,14 @@
                 </ion-item>
                 @if (advanced) {
                     <div id="addon-mod-forum-new-discussion-advanced">
-                        @if (showGroups && groupIds.length > 1 && accessInfo.cancanposttomygroups) {
-                            <ion-item class="ion-text-wrap">
-                                <ion-toggle [(ngModel)]="newDiscussion.postToAllGroups" name="postallgroups">
-                                    {{ 'addon.mod_forum.posttomygroups' | translate }}
-                                </ion-toggle>
-                            </ion-item>
-                        }
                         @if (showGroups) {
+                            @if (groupIds.length > 1 && accessInfo.cancanposttomygroups) {
+                                <ion-item class="ion-text-wrap">
+                                    <ion-toggle [(ngModel)]="newDiscussion.postToAllGroups" name="postallgroups">
+                                        {{ 'addon.mod_forum.posttomygroups' | translate }}
+                                    </ion-toggle>
+                                </ion-item>
+                            }
                             <ion-item class="core-edit-set-group ion-text-wrap">
                                 <ion-select [(ngModel)]="newDiscussion.groupId" [disabled]="newDiscussion.postToAllGroups"
                                     interface="action-sheet" name="groupid"

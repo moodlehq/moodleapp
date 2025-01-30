@@ -71,10 +71,10 @@
                         <ion-checkbox name="agreepolicy" formControlName="agreepolicy">
                             @if (isManageAcceptancesAvailable) {
                                 <p [core-mark-required]="true">
-                                    {{ 'core.policy.havereadandagreepolicy' | translate:{ policyname:'core.policy.policyagreement' | translate } }}
+                                    {{ 'core.policy.havereadandagreepolicy' | translate:
+                                        { policyname:'core.policy.policyagreement' | translate } }}
                                 </p>
-                            }
-                            @if (!isManageAcceptancesAvailable) {
+                            } @else {
                                 <p [core-mark-required]="true">
                                     {{ 'core.policy.policyacceptmandatory' | translate }}
                                 </p>
@@ -180,8 +180,7 @@
             </ion-checkbox>
             <core-input-errors [control]="policiesForm.controls['agreepolicy' + policy.versionid]" [errorMessages]="policiesErrors" />
         </ion-item>
-    }
-    @if (policy.optional && policiesForm) {
+    } @else if (policy.optional && policiesForm) {
         <ion-radio-group [formControl]="policiesForm.controls['agreepolicy' + policy.versionid]">
             <ion-item class="ion-text-wrap">
                 <ion-radio [value]="1">

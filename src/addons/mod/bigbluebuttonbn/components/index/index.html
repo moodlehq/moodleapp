@@ -72,8 +72,7 @@
                         <p class="item-heading">
                             {{ 'addon.mod_bigbluebuttonbn.view_message_moderators' | translate }}
                         </p>
-                    }
-                    @if (!meetingInfo.moderatorplural) {
+                    } @else {
                         <p class="item-heading">
                             {{ 'addon.mod_bigbluebuttonbn.view_message_moderator' | translate }}
                         </p>
@@ -88,8 +87,7 @@
                         <p class="item-heading">
                             {{ 'addon.mod_bigbluebuttonbn.view_message_viewers' | translate }}
                         </p>
-                    }
-                    @if (!meetingInfo.participantplural) {
+                    } @else {
                         <p class="item-heading">
                             {{ 'addon.mod_bigbluebuttonbn.view_message_viewer' | translate }}
                         </p>
@@ -165,8 +163,7 @@
                                 <core-format-text [text]="data.value" [component]="component" [componentId]="module.id"
                                     contextLevel="module" [contextInstanceId]="module.id" [courseId]="module.course" />
                             </p>
-                        }
-                        @if (!data.allowHTML) {
+                        } @else {
                             <p>{{ data.value }}</p>
                         }
                     </ion-label>

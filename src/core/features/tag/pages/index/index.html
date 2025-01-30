@@ -36,8 +36,7 @@
                         }
                     </ion-item>
                 </ion-list>
-            }
-            @if (!hasUnsupportedAreas && (!areas || !areas.length)) {
+            } @else {
                 <core-empty-box icon="fas-tag" [message]="'core.tag.noresultsfor' | translate: { $a: tagName }" />
             }
         </core-loading>

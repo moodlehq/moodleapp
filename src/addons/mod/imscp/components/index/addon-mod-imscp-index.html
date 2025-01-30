@@ -42,8 +42,7 @@
                 <ion-button class="ion-margin ion-text-wrap" expand="block" (click)="openImscp()">
                     @if (!hasStarted) {
                         <span>{{ 'core.start' | translate }}</span>
-                    }
-                    @if (hasStarted) {
+                    } @else {
                         <span>{{ 'core.resume' | translate }}</span>
                     }
                 </ion-button>

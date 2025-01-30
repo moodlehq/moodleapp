@@ -5,8 +5,7 @@
                 <h2 class="inline">
                     {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
                 </h2>
-            }
-            @if (question.type === 'description' || !question.questionnumber) {
+            } @else {
                 <h2 class="inline">
                     {{ 'core.question.information' | translate }}
                 </h2>

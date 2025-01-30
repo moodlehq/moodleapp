@@ -15,8 +15,7 @@
                     <ion-label>
                         @if (!offlinePost) {
                             <p class="item-heading">{{ 'addon.mod_forum.delete' | translate }}</p>
-                        }
-                        @if (offlinePost) {
+                        } @else {
                             <p class="item-heading">{{ 'core.discard' | translate }}</p>
                         }
                     </ion-label>

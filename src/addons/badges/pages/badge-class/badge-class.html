@@ -6,8 +6,7 @@
         <ion-title>
             @if (badge) {
                 <h1>{{ badge.name }}</h1>
-            }
-            @if (!badge) {
+            } @else {
                 <h1>{{ 'addon.badges.badgedetails' | translate }}</h1>
             }
         </ion-title>
@@ -19,7 +18,6 @@
     </ion-refresher>
     <core-loading [hideUntil]="badgeLoaded" placeholderType="imageandboxes">
         @if (badge) {
-
             <ion-item-group>
                 <ion-item class="ion-text-wrap ion-text-center">
                     <ion-label>
@@ -84,7 +82,6 @@
                     </ion-item>
                 </ion-item-group>
             }
-
         }
     </core-loading>
 </ion-content>

@@ -4,8 +4,7 @@
             <ion-item button class="ion-text-wrap" (click)="action('download')" [detail]="false">
                 @if (!prefetch.loading) {
                     <ion-icon [name]="prefetch.icon" slot="start" aria-hidden="true" />
-                }
-                @if (prefetch.loading) {
+                } @else {
                     <ion-spinner slot="start" [attr.aria-label]="'core.loading' | translate" />
                 }
                 <ion-label>
@@ -28,8 +27,7 @@
                     <p class="item-heading">{{ 'core.courses.hidecourse' | translate }}</p>
                 </ion-label>
             </ion-item>
-        }
-        @if (course.hidden) {
+        } @else {
             <ion-item button class="ion-text-wrap" (click)="action('show')" [detail]="false">
                 <ion-icon name="fas-eye-slash" slot="start" aria-hidden="true" />
                 <ion-label>
@@ -44,8 +42,7 @@
                     <p class="item-heading">{{ 'core.courses.addtofavourites' | translate }}</p>
                 </ion-label>
             </ion-item>
-        }
-        @if (course.isfavourite) {
+        } @else {
             <ion-item button class="ion-text-wrap" (click)="action('unfavourite')" [detail]="false">
                 <ion-icon name="far-star" slot="start" aria-hidden="true" />
                 <ion-label>

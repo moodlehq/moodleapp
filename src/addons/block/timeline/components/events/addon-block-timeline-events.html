@@ -83,13 +83,12 @@
 @if (canLoadMore) {
     <div class="ion-padding ion-text-center">
         <!-- Button and spinner to show more attempts. -->
-        @if (!loadingMore) {
+        @if (loadingMore) {
+            <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+        } @else {
             <ion-button expand="block" (click)="loadMore.emit()" fill="outline">
                 {{ 'core.loadmore' | translate }}
             </ion-button>
-        }
-        @if (loadingMore) {
-            <ion-spinner [attr.aria-label]="'core.loading' | translate" />
         }
     </div>
 }

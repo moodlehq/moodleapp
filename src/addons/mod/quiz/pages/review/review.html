@@ -22,34 +22,30 @@
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
 
-        <!-- Review summary -->
         @if (attempt) {
+            <!-- Review summary -->
             <ion-card>
                 <ion-list>
                     <addon-mod-quiz-attempt-info [quiz]="quiz" [attempt]="attempt" [additionalData]="additionalData" />
                 </ion-list>
             </ion-card>
-        }
 
-        <!-- Questions -->
-        @if (attempt && questions.length) {
+            @if (questions.length) {
+                <!-- Questions. -->
+                <ng-container *ngFor="let question of questions">
+                    <addon-mod-quiz-question-card [question]="question">
+                        <core-question class="ion-text-wrap" [question]="question" [component]="component" [componentId]="cmId"
+                            [attemptId]="attempt.id" [usageId]="attempt.uniqueid" [offlineEnabled]="false" contextLevel="module"
+                            [contextInstanceId]="cmId" [courseId]="courseId" [review]="true"
+                            [preferredBehaviour]="quiz?.preferredbehaviour" />
+                    </addon-mod-quiz-question-card>
+                </ng-container>
 
-
-            <!-- Questions. -->
-            <ng-container *ngFor="let question of questions">
-                <addon-mod-quiz-question-card [question]="question">
-                    <core-question class="ion-text-wrap" [question]="question" [component]="component" [componentId]="cmId"
-                        [attemptId]="attempt.id" [usageId]="attempt.uniqueid" [offlineEnabled]="false" contextLevel="module"
-                        [contextInstanceId]="cmId" [courseId]="courseId" [review]="true" [preferredBehaviour]="quiz?.preferredbehaviour" />
-                </addon-mod-quiz-question-card>
-            </ng-container>
-
-            @if (showAll) {
-                <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" />
+                @if (showAll) {
+                    <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" />
+                }
             }
-
         }
-
         @if (loaded && numPages > 1) {
             <div collapsible-footer appearOnBottom slot="fixed">
                 <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
@@ -67,8 +63,7 @@
                             <ion-button class="ion-text-wrap" (click)="switchMode()" fill="outline">
                                 @if (!showAll) {
                                     <span>{{ 'addon.mod_quiz.showall' | translate }}</span>
-                                }
-                                @if (showAll) {
+                                } @else {
                                     <span>{{ 'addon.mod_quiz.showeachpage' | translate }}</span>
                                 }
                             </ion-button>

@@ -24,9 +24,7 @@
         <core-loading [hideUntil]="loaded" [message]="loadingMessage">
             @if (!hasContacts && searchString === '') {
                 <core-empty-box icon="fas-address-book" [message]="'addon.messages.contactlistempty' | translate" />
-            }
-
-            @if (!hasContacts && searchString !== '') {
+            } @else if (!hasContacts && searchString !== '') {
                 <core-empty-box icon="fas-address-book" [message]="'addon.messages.nousersfound' | translate" />
             }
 

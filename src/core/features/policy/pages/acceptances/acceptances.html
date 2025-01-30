@@ -49,8 +49,8 @@
                     </thead>
                     <tbody class="auto-striped">
                         <ng-container *ngFor="let policy of policies">
-                            <ng-container
-                                *ngTemplateOutlet="policyTabletTemplate; context: {policy: policy, isPreviousVersion: false, hidden: false}" />
+                            <ng-container *ngTemplateOutlet="policyTabletTemplate;
+                                context: {policy: policy, isPreviousVersion: false, hidden: false}" />
                         </ng-container>
                     </tbody>
                 </table>
@@ -78,13 +78,11 @@
         <td class="core-policy-title">
             @if (isPreviousVersion) {
                 <ion-icon name="moodle-level" aria-hidden="true" />
-            }
-            @if (!isPreviousVersion && policy.previousVersions.length) {
+            } @else if (policy.previousVersions.length) {
                 <ion-icon name="fas-chevron-right" flip-rtl (ariaButtonClick)="toggle($event, policy)" class="expandable-status-icon"
                     [class.expandable-status-icon-expanded]="policy.expanded" [attr.aria-expanded]="policy.expanded"
                     [attr.aria-label]="(policy.expanded ? 'core.collapse' : 'core.expand') | translate" />
-            }
-            @if (!isPreviousVersion && !policy.previousVersions.length) {
+            } @else {
                 <ion-icon name="moodle-item" color="secondary" class="core-policy-icon-bullet" aria-hidden="true" />
             }
 
@@ -120,8 +118,7 @@
                         <span class="core-policy-user-agreement-status">
                             {{ 'core.policy.acceptancestatusacceptedbehalf' | translate }}
                         </span>
-                    }
-                    @if (!policy.onBehalf) {
+                    } @else {
                         <span class="core-policy-user-agreement-status">
                             {{ 'core.policy.acceptancestatusaccepted' | translate }}
                         </span>
@@ -145,8 +142,7 @@
                         <span class="core-policy-user-agreement-status">
                             {{ 'core.policy.acceptancestatusdeclinedbehalf' | translate }}
                         </span>
-                    }
-                    @if (!policy.onBehalf) {
+                    } @else {
                         <span class="core-policy-user-agreement-status">
                             {{ 'core.policy.acceptancestatusdeclined' | translate }}
                         </span>

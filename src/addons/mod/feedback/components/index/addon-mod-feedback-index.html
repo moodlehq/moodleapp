@@ -50,8 +50,7 @@
 
                                 {{ 'addon.mod_feedback.complete_the_form' | translate }}
 
-                            }
-                            @if (goPage) {
+                            } @else {
 
                                 {{ 'addon.mod_feedback.continue_the_form' | translate }}
 
@@ -162,8 +161,7 @@
                             <p class="item-heading">{{ 'addon.mod_feedback.mode' | translate }}</p>
                             @if (access.isanonymous) {
                                 <p>{{ 'addon.mod_feedback.anonymous' | translate }}</p>
-                            }
-                            @if (!access.isanonymous) {
+                            } @else {
                                 <p>{{ 'addon.mod_feedback.non_anonymous' | translate }}</p>
                             }
                         </ion-label>

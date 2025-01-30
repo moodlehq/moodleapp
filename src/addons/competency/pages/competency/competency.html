@@ -48,9 +48,7 @@
                                     <core-format-text [text]="competency.competency.comppath.framework.name" [contextLevel]="contextLevel"
                                         [contextInstanceId]="contextInstanceId" />
                                 </a>
-                            }
-                            @if (!competency.competency.comppath.showlinks) {
-
+                            } @else {
                                 <core-format-text [text]="competency.competency.comppath.framework.name" [contextLevel]="contextLevel"
                                     [contextInstanceId]="contextInstanceId" />
 
@@ -62,12 +60,9 @@
                                         <core-format-text [text]="ancestor.name" [contextLevel]="contextLevel"
                                             [contextInstanceId]="contextInstanceId" />
                                     </button>
-                                }
-                                @if (!competency.competency.comppath.showlinks) {
-
+                                } @else {
                                     <core-format-text [text]="ancestor.name" [contextLevel]="contextLevel"
                                         [contextInstanceId]="contextInstanceId" />
-
                                 }
                                 @if (!ancestor.last) {
                                     &nbsp;/&nbsp;
@@ -83,9 +78,7 @@
                             <p>
                                 {{ 'addon.competency.nocrossreferencedcompetencies' | translate }}
                             </p>
-                        }
-                        @if (competency.competency.hasrelatedcompetencies) {
-
+                        } @else {
                             <p *ngFor="let relatedcomp of competency.competency.relatedcompetencies">
                                 <button (click)="openCompetencySummary(relatedcomp.id)" class="as-link">
                                     <core-format-text [text]="relatedcomp.shortname" [contextLevel]="contextLevel"
@@ -136,8 +129,7 @@
                             <ion-badge slot="end" color="success">
                                 {{ 'core.yes' | translate }}
                             </ion-badge>
-                        }
-                        @if (!userCompetency.proficiency) {
+                        } @else {
                             <ion-badge slot="end" color="danger">
                                 {{ 'core.no' | translate }}
                             </ion-badge>

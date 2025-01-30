@@ -6,14 +6,12 @@
 
         @if (editMode) {
             <span [core-mark-required]="field.required" class="core-mark-required"></span>
-        }
-        @if (editMode) {
             <core-rich-text-editor [control]="form.controls['f_'+field.id]" [placeholder]="field.name" [name]="'f_'+field.id"
                 [component]="component" [componentId]="componentId" [autoSave]="true" contextLevel="module"
                 [contextInstanceId]="componentId" [elementId]="'field_'+field.id" ngDefaultControl />
-        }
-        @if (error && editMode) {
-            <core-input-errors [control]="form.controls['f_'+field.id]" [errorText]="error" />
+            @if (error) {
+                <core-input-errors [control]="form.controls['f_'+field.id]" [errorText]="error" />
+            }
         }
     </span>
 }

@@ -113,17 +113,15 @@
             <p class="ion-text-center">
                 {{ 'addon.mod_chat.mustbeonlinetosendmessages' | translate }}
             </p>
-        }
-
-        @if (isOnline && polling && loaded) {
-            <core-send-message-form [sendDisabled]="sending" [message]="newMessage" (onSubmit)="sendMessage($event)"
-                [placeholder]="'addon.messages.newmessage' | translate" />
-        }
-
-        @if (isOnline && !polling && loaded) {
-            <ion-button (click)="reconnect()" expand="block" fill="outline">
-                {{ 'core.login.reconnect' | translate }}
-            </ion-button>
+        } @else if(loaded) {
+            @if (polling) {
+                <core-send-message-form [sendDisabled]="sending" [message]="newMessage" (onSubmit)="sendMessage($event)"
+                    [placeholder]="'addon.messages.newmessage' | translate" />
+            } @else {
+                <ion-button (click)="reconnect()" expand="block" fill="outline">
+                    {{ 'core.login.reconnect' | translate }}
+                </ion-button>
+            }
         }
     </ion-toolbar>
 </ion-footer>

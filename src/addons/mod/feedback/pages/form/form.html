@@ -45,89 +45,95 @@
                                 </ion-label>
                             }
 
-                            @if (item.templateName === 'textfield') {
-                                <ion-input labelPlacement="stacked" type="text" [(ngModel)]="item.value" autocorrect="off"
-                                    name="{{item.typ}}_{{item.id}}" maxlength="{{item.length}}" [required]="item.required">
-                                    <ng-container *ngTemplateOutlet="label; context: {item: item}" />
-                                </ion-input>
-                            }
-
-                            @if (item.templateName === 'numeric') {
-
-                                <ion-input labelPlacement="stacked" type="number" [(ngModel)]="item.value" name="{{item.typ}}_{{item.id}}"
-                                    [required]="item.required">
-                                    <ng-container *ngTemplateOutlet="label; context: {item: item}" />
-                                </ion-input>
-                                @if (item.hasError) {
-                                    <ion-text color="danger" class="addon-mod_feedback-item-error">
-                                        {{ 'addon.mod_feedback.numberoutofrange' | translate }} [{{item.rangefrom}}
-                                @if (item.rangefrom && item.rangeto) {
-                                    <span>, </span>
-                                }{{item.rangeto}}]
-                                    </ion-text>
+                            @switch (item.templateName) {
+                                @case ('textfield') {
+                                    <ion-input labelPlacement="stacked" type="text" [(ngModel)]="item.value" autocorrect="off"
+                                        name="{{item.typ}}_{{item.id}}" maxlength="{{item.length}}" [required]="item.required">
+                                        <ng-container *ngTemplateOutlet="label; context: {item: item}" />
+                                    </ion-input>
                                 }
 
-                            }
+                                @case ('numeric') {
+                                    <ion-input labelPlacement="stacked" type="number" [(ngModel)]="item.value"
+                                        name="{{item.typ}}_{{item.id}}" [required]="item.required">
+                                        <ng-container *ngTemplateOutlet="label; context: {item: item}" />
+                                    </ion-input>
+                                    @if (item.hasError) {
+                                        <ion-text color="danger" class="addon-mod_feedback-item-error">
+                                            {{ 'addon.mod_feedback.numberoutofrange' | translate }} [ {{item.rangefrom}}
+                                            @if (item.rangefrom && item.rangeto) {
+                                                <span>, </span>
+                                            }
+                                            {{item.rangeto}} ]
+                                        </ion-text>
+                                    }
+                                }
 
-                            @if (item.templateName === 'textarea') {
-                                <ion-textarea labelPlacement="stacked" [required]="item.required" name="{{item.typ}}_{{item.id}}"
-                                    [(ngModel)]="item.value">
-                                    <ng-container *ngTemplateOutlet="label; context: {item: item}" />
-                                </ion-textarea>
-                            }
+                                @case ('textarea') {
+                                    <ion-textarea labelPlacement="stacked" [required]="item.required" name="{{item.typ}}_{{item.id}}"
+                                        [(ngModel)]="item.value">
+                                        <ng-container *ngTemplateOutlet="label; context: {item: item}" />
+                                    </ion-textarea>
+                                }
 
-                            @if (item.templateName === 'multichoice-d') {
-                                <ion-select labelPlacement="stacked" [required]="item.required" name="{{item.typ}}_{{item.id}}"
-                                    [(ngModel)]="item.value" interface="action-sheet" [cancelText]="'core.cancel' | translate"
-                                    [interfaceOptions]="{header: item.cleanedName}">
-                                    <ng-container *ngTemplateOutlet="label; context: {item: item}" />
-                                    <ion-select-option *ngFor="let option of item.choices" [value]="option.value">
-                                        <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
-                                            contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId" />
-                                    </ion-select-option>
-                                </ion-select>
+                                @case ('multichoice-d') {
+                                    <ion-select labelPlacement="stacked" [required]="item.required" name="{{item.typ}}_{{item.id}}"
+                                        [(ngModel)]="item.value" interface="action-sheet" [cancelText]="'core.cancel' | translate"
+                                        [interfaceOptions]="{header: item.cleanedName}">
+                                        <ng-container *ngTemplateOutlet="label; context: {item: item}" />
+                                        <ion-select-option *ngFor="let option of item.choices" [value]="option.value">
+                                            <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
+                                                contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true"
+                                                [courseId]="courseId" />
+                                        </ion-select-option>
+                                    </ion-select>
+                                }
                             }
                         </ion-item>
 
-                        @if (item.templateName === 'multichoice-r') {
-                            <ion-radio-group [(ngModel)]="item.value" [required]="item.required" name="{{item.typ}}_{{item.id}}">
-                                <ion-item *ngFor="let option of item.choices" class="ion-text-wrap">
-                                    <ion-radio [value]="option.value">
+                        @switch (item.templateName) {
+                            @case ('multichoice-r') {
+                                <ion-radio-group [(ngModel)]="item.value" [required]="item.required" name="{{item.typ}}_{{item.id}}">
+                                    <ion-item *ngFor="let option of item.choices" class="ion-text-wrap">
+                                        <ion-radio [value]="option.value">
+                                            <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
+                                                contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true"
+                                                [courseId]="courseId" />
+                                        </ion-radio>
+                                    </ion-item>
+                                </ion-radio-group>
+                            }
+
+                            @case ('multichoice-c') {
+
+                                <ion-item *ngFor="let option of item.choices">
+                                    <ion-checkbox [required]="item.required" name="{{item.typ}}_{{item.id}}" [(ngModel)]="option.checked"
+                                        value="option.value">
                                         <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
                                             contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId" />
-                                    </ion-radio>
+                                    </ion-checkbox>
                                 </ion-item>
-                            </ion-radio-group>
-                        }
 
-                        @if (item.templateName === 'multichoice-c') {
-
-                            <ion-item *ngFor="let option of item.choices">
-                                <ion-checkbox [required]="item.required" name="{{item.typ}}_{{item.id}}" [(ngModel)]="option.checked"
-                                    value="option.value">
-                                    <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
-                                        contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId" />
-                                </ion-checkbox>
-                            </ion-item>
-
-                        }
-
-                        @if (item.templateName === 'captcha') {
-
-                            @if (!preview && !offline) {
-                                <core-recaptcha [publicKey]="item.captcha.recaptchapublickey" [model]="item" modelValueName="value" />
-                            }
-                            @if (!preview && (!item.captcha || offline)) {
-                                <div class="core-warning-card">
-                                    <ion-item>
-                                        <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                                        <ion-label>{{ 'addon.mod_feedback.captchaofflinewarning' | translate }}</ion-label>
-                                    </ion-item>
-                                </div>
                             }
 
+                            @case ('captcha') {
+                                @if (!preview) {
+                                    @if (!offline) {
+                                        <core-recaptcha [publicKey]="item.captcha.recaptchapublickey" [model]="item"
+                                            modelValueName="value" />
+                                    }
+                                    @if (!item.captcha || offline) {
+                                        <div class="core-warning-card">
+                                            <ion-item>
+                                                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                                                <ion-label>{{ 'addon.mod_feedback.captchaofflinewarning' | translate }}</ion-label>
+                                            </ion-item>
+                                        </div>
+                                    }
+                                }
+                            }
                         }
-                        }
+                    }
                 </ng-container>
 
                 @if (!preview) {
@@ -147,8 +153,7 @@
                                     <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
                                 </ion-button>
                             </ion-col>
-                        }
-                        @if (!hasNextPage) {
+                        } @else {
                             <ion-col>
                                 <ion-button expand="block" (click)="gotoPage(false)" class="ion-text-wrap">
                                     {{ 'core.submit' | translate }}
@@ -159,52 +164,49 @@
                 }
             </ion-list>
 
-            }
+        }
 
-            @if (completed) {
-                <ion-card class="core-success-card">
-                    <ion-item class="ion-text-wrap">
-                        <ion-icon name="fas-check" slot="start" aria-hidden="true" />
-                        <ion-label>
-                            @if (!completionPageContents && !completedOffline) {
-                                <p>
-                                    {{ 'addon.mod_feedback.this_feedback_is_already_submitted' | translate }}
-                                </p>
-                            }
-                            @if (!completionPageContents && completedOffline) {
-                                <p>
-                                    {{ 'addon.mod_feedback.feedback_submitted_offline' | translate }}
-                                </p>
-                            }
-                            @if (completionPageContents) {
-                                <core-format-text [component]="component" componentId="componentId" [text]="completionPageContents"
-                                    contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
-                            }
-                        </ion-label>
-                    </ion-item>
-                </ion-card>
-            }
-
-            @if (feedbackLoaded && completed) {
-                <div collapsible-footer slot="fixed" appearOnBottom>
-                    <div class="list-item-limited-width adaptable-buttons-row">
-                        @if (access!.canviewanalysis) {
-                            <ion-button expand="block" fill="outline" (click)="showAnalysis()" class="ion-text-wrap ion-margin">
-                                <ion-icon name="fas-chart-bar" slot="start" aria-hidden="true" />
-                                {{ 'addon.mod_feedback.completed_feedbacks' | translate }}
-                            </ion-button>
+        @if (completed) {
+            <ion-card class="core-success-card">
+                <ion-item class="ion-text-wrap">
+                    <ion-icon name="fas-check" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        @if (!completionPageContents && !completedOffline) {
+                            <p>
+                                {{ 'addon.mod_feedback.this_feedback_is_already_submitted' | translate }}
+                            </p>
+                        } @else if (!completionPageContents && completedOffline) {
+                            <p>
+                                {{ 'addon.mod_feedback.feedback_submitted_offline' | translate }}
+                            </p>
+                        } @else {
+                            <core-format-text [component]="component" componentId="componentId" [text]="completionPageContents"
+                                contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
                         }
-                        <ion-button expand="block" (click)="continue()" class="ion-text-wrap ion-margin">
-                            @if (!siteAfterSubmit) {
-                                {{ 'core.continue' | translate }}
-                            }
-                            @if (siteAfterSubmit) {
-                                {{ 'core.course.nextactivity' | translate }}
-                            }
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
+
+        @if (feedbackLoaded && completed) {
+            <div collapsible-footer slot="fixed" appearOnBottom>
+                <div class="list-item-limited-width adaptable-buttons-row">
+                    @if (access!.canviewanalysis) {
+                        <ion-button expand="block" fill="outline" (click)="showAnalysis()" class="ion-text-wrap ion-margin">
+                            <ion-icon name="fas-chart-bar" slot="start" aria-hidden="true" />
+                            {{ 'addon.mod_feedback.completed_feedbacks' | translate }}
                         </ion-button>
-                    </div>
+                    }
+                    <ion-button expand="block" (click)="continue()" class="ion-text-wrap ion-margin">
+                        @if (!siteAfterSubmit) {
+                            {{ 'core.continue' | translate }}
+                        } @else {
+                            {{ 'core.course.nextactivity' | translate }}
+                        }
+                    </ion-button>
                 </div>
-            }
+            </div>
+        }
     </core-loading>
 </ion-content>
 

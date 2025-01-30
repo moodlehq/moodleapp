@@ -27,10 +27,10 @@
                     <core-infinite-loading [enabled]="messages.canLoadMore" (action)="search(query, 'messages', $event)"
                         [error]="messages.loadMoreError" />
                 </ion-list>
-            }
 
-            @if (displayResults && !contacts.results.length && !nonContacts.results.length && !messages.results.length) {
-                <core-empty-box icon="fas-magnifying-glass" [message]="'core.noresults' | translate" role="alert" />
+                @if (!contacts.results.length && !nonContacts.results.length && !messages.results.length) {
+                    <core-empty-box icon="fas-magnifying-glass" [message]="'core.noresults' | translate" role="alert" />
+                }
             }
         </core-loading>
     </core-split-view>
@@ -76,20 +76,17 @@
 
         <!-- Load more button for contacts and non-contacts -->
         @if (item.type !== 'messages') {
-
-            @if (item.canLoadMore && !item.loadingMore) {
+            @if (item.loadingMore) {
+                <div class="ion-padding ion-text-center">
+                    <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+                </div>
+            } @else if (item.canLoadMore) {
                 <div class="ion-padding-horizontal">
                     <ion-button expand="block" fill="outline" (click)="search(query, item.type)">
                         {{ 'core.loadmore' | translate }}
                     </ion-button>
                 </div>
             }
-            @if (item.loadingMore) {
-                <div class="ion-padding ion-text-center">
-                    <ion-spinner [attr.aria-label]="'core.loading' | translate" />
-                </div>
-            }
-
         }
 
     }

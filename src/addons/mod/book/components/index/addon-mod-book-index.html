@@ -32,8 +32,7 @@
                 <p [class.ion-padding-start]="addPadding && chapter.level === 1 ? true : null">
                     @if (showNumbers) {
                         <span class="addon-mod-book-number">{{chapter.indexNumber}} </span>
-                    }
-                    @if (showBullets) {
+                    } @else if (showBullets) {
                         <span class="addon-mod-book-bullet">&bull; </span>
                     }
                     <core-format-text [text]="chapter.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
@@ -48,8 +47,7 @@
                 <ion-button expand="block" (click)="openBook()" class="ion-margin ion-text-wrap">
                     @if (!hasStartedBook) {
                         <span>{{ 'core.start' | translate }}</span>
-                    }
-                    @if (hasStartedBook) {
+                    } @else {
                         <span>{{ 'core.resume' | translate }}</span>
                     }
                 </ion-button>

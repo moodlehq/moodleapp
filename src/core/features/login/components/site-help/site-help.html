@@ -27,11 +27,9 @@
                 <ion-label>
                     @if (question.answer.format === 'text') {
                         <p>{{ question.answer.text }}</p>
-                    }
-                    @if (question.answer.format === 'safe-html') {
+                    } @else if (question.answer.format === 'safe-html') {
                         <p [innerHTML]="question.answer.text"></p>
-                    }
-                    @if (question.answer.format === 'unsafe-html') {
+                    } @else if (question.answer.format === 'unsafe-html') {
                         <core-format-text [text]="question.answer.text" [filter]="false" />
                     }
                 </ion-label>

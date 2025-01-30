@@ -84,8 +84,8 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         this.dataRetrieved.emit(this.book);
 
         this.description = this.book.intro;
-        this.showNumbers = this.book.numbering == AddonModBookNumbering.NUMBERS;
-        this.showBullets = this.book.numbering == AddonModBookNumbering.BULLETS;
+        this.showNumbers = this.book.numbering === AddonModBookNumbering.NUMBERS;
+        this.showBullets = this.book.numbering === AddonModBookNumbering.BULLETS;
         this.addPadding = this.book.numbering != AddonModBookNumbering.NONE;
 
         const lastChapterViewed = await AddonModBook.getLastChapterViewed(this.book.id);

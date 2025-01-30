@@ -15,27 +15,26 @@
 <ion-content>
     <core-loading [hideUntil]="handlersLoaded" placeholderType="column" placeholderHeight="48px">
         <ion-list>
-            <!-- Site info with URL and clickable. -->
-            @if (siteInfo && displaySiteUrl) {
-                <ion-item button class="core-usermenu-siteinfo ion-text-wrap" lines="full" [detail]="false" [href]="siteUrl" core-link>
-                    <ion-label>
-                        <!-- Show site logo. -->
-                        <core-site-logo [hideOnError]="true" siteNameMode="p" />
-                        <a [href]="siteUrl" core-link class="core-usermenu-siteurl">{{ siteUrl }}</a>
-                    </ion-label>
-                </ion-item>
-            }
-            <!-- Site info without URL and not clickable. -->
-            @if (siteInfo && !displaySiteUrl) {
-                <ion-item class="core-usermenu-siteinfo ion-text-wrap" lines="full" detail="false">
-                    <ion-label>
-                        <!-- Show site logo. -->
-                        <core-site-logo [hideOnError]="true" siteNameMode="p" />
-                    </ion-label>
-                </ion-item>
-            }
-
             @if (siteInfo) {
+                @if (displaySiteUrl) {
+                    <!-- Site info with URL and clickable. -->
+                    <ion-item button class="core-usermenu-siteinfo ion-text-wrap" lines="full" [detail]="false" [href]="siteUrl" core-link>
+                        <ion-label>
+                            <!-- Show site logo. -->
+                            <core-site-logo [hideOnError]="true" siteNameMode="p" />
+                            <a [href]="siteUrl" core-link class="core-usermenu-siteurl">{{ siteUrl }}</a>
+                        </ion-label>
+                    </ion-item>
+                } @else {
+                    <!-- Site info without URL and not clickable. -->
+                    <ion-item class="core-usermenu-siteinfo ion-text-wrap" lines="full" detail="false">
+                        <ion-label>
+                            <!-- Show site logo. -->
+                            <core-site-logo [hideOnError]="true" siteNameMode="p" />
+                        </ion-label>
+                    </ion-item>
+                }
+
                 <ion-item button class="core-usermenu-profile ion-text-wrap" lines="full" (click)="openUserProfile($event)" [detail]="true">
                     <core-user-avatar [site]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" slot="start" />
                     <ion-label>
@@ -57,14 +56,14 @@
                     <ion-badge slot="end" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
                         {{handler.badge}}
                     </ion-badge>
-                }
-                @if (handler.showBadge && handler.badge && handler.badgeA11yText) {
-                    <span class="sr-only">
-                        {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
-                    </span>
-                }
-                @if (handler.showBadge && handler.loading) {
-                    <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                    @if (handler.badge && handler.badgeA11yText) {
+                        <span class="sr-only">
+                            {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
+                        </span>
+                    }
+                    @if (handler.loading) {
+                        <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                    }
                 }
             </ion-item>
 
@@ -82,14 +81,14 @@
                     <ion-badge slot="end" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
                         {{handler.badge}}
                     </ion-badge>
-                }
-                @if (handler.showBadge && handler.badge && handler.badgeA11yText) {
-                    <span class="sr-only">
-                        {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
-                    </span>
-                }
-                @if (handler.showBadge && handler.loading) {
-                    <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                    @if (handler.badge && handler.badgeA11yText) {
+                        <span class="sr-only">
+                            {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
+                        </span>
+                    }
+                    @if (handler.loading) {
+                        <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                    }
                 }
             </ion-item>
 
@@ -130,8 +129,7 @@
                 <ion-icon name="fas-right-from-bracket" slot="start" aria-hidden="true" />
                 {{ 'core.mainmenu.logout' | translate }}
 
-            }
-            @if (removeAccountOnLogout) {
+            } @else {
 
                 <ion-icon name="fas-trash" slot="start" aria-hidden="true" />
                 {{ 'core.login.removeaccount' | translate }}

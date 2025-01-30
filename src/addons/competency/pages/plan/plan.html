@@ -104,8 +104,7 @@
                             <ion-badge slot="end" [color]="competency.usercompetencyplan.proficiency ? 'success' : 'danger'">
                                 {{ competency.usercompetencyplan.gradename }}
                             </ion-badge>
-                        }
-                        @if (!competency.usercompetencyplan) {
+                        } @else {
                             <ion-badge slot="end" [color]="competency.usercompetency.proficiency ? 'success' : 'danger'">
                                 {{ competency.usercompetency.gradename }}
                             </ion-badge>

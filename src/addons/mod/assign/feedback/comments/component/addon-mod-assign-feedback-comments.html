@@ -1,5 +1,5 @@
-<!-- Read only. -->
 @if (text && !edit) {
+    <!-- Read only. -->
     <ion-item class="ion-text-wrap" button [detail]="true" (click)="open($event)">
         <ion-label>
             <p class="item-heading">{{ plugin.name }}</p>
@@ -11,8 +11,8 @@
     </ion-item>
 }
 
-<!-- Edit -->
 @if (edit && loaded) {
+    <!-- Edit -->
     <ion-item class="ion-text-wrap">
         <ion-label position="stacked">
             <p class="item-heading">{{ plugin.name }}</p>

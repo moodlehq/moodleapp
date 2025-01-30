@@ -33,8 +33,7 @@
                     <ion-note slot="end">
                         <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'core.notsent' | translate }}
                     </ion-note>
-                }
-                @if (submission.timemodified) {
+                } @else {
                     <ion-note slot="end">
                         {{submission.timemodified | coreDateDayOrTime}}
                         @if (submission.offline) {

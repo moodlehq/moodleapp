@@ -7,12 +7,13 @@
                     @if (displaySubject) {
                         <div class="addon-mod-forum-post-title">
                             <h2 class="ion-text-wrap">
-                                @if (discussion && !post.parentid && discussion.pinned) {
-                                    <ion-icon name="fas-map-pin" [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate" />
-                                }
-                                @if (discussion && !post.parentid && !discussion.pinned && discussion.starred) {
-                                    <ion-icon name="fas-star" class="addon-forum-star"
-                                        [attr.aria-label]="'addon.mod_forum.favourites' | translate" />
+                                @if (discussion && !post.parentid) {
+                                    @if (discussion.pinned) {
+                                        <ion-icon name="fas-map-pin" [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate" />
+                                    } @else if (discussion.starred) {
+                                        <ion-icon name="fas-star" class="addon-forum-star"
+                                            [attr.aria-label]="'addon.mod_forum.favourites' | translate" />
+                                    }
                                 }
                                 <core-format-text [text]="post.subject" contextLevel="module" [contextInstanceId]="forum && forum.cmid"
                                     [courseId]="courseId" [sanitize]="!post.id || post.id < 0" />
@@ -52,15 +53,14 @@
                             }
                             @if (post.timecreated) {
                                 <p>{{post.timecreated * 1000 | coreFormatDate: "strftimerecentfull"}}</p>
-                            }
-                            @if (!post.timecreated) {
+                            } @else {
                                 <p>
                                     <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'core.notsent' | translate }}
                                 </p>
                             }
                         </div>
-                        @if (!displaySubject) {
 
+                        @if (!displaySubject) {
                             @if (trackPosts && post.unread) {
                                 <ion-note class="ion-float-end ion-padding-start ion-text-end"
                                     [attr.aria-label]="'addon.mod_forum.unread' | translate">
@@ -73,7 +73,6 @@
                                     <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
                                 </ion-button>
                             }
-
                         }
                     </div>
                 </ion-label>
@@ -111,8 +110,6 @@
                 <core-rating-rate [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id"
                     [itemSetId]="discussionId" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale"
                     [userId]="post.author.id" (onUpdate)="ratingUpdated()" />
-            }
-            @if (forum && ratingInfo) {
                 <core-rating-aggregate [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id"
                     [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale" />
             }
@@ -152,8 +149,8 @@
                     </ion-checkbox>
                 </ion-item>
             }
-            @if (forum.id && forum.maxattachments > 0) {
 
+            @if (forum.id && forum.maxattachments > 0) {
                 <ion-accordion-group [value]="advanced ? 'advanced' : ''" (ionChange)="onAdvancedChanged($event)">
                     <ion-accordion value="advanced" toggleIconSlot="start">
                         <ion-item slot="header">
@@ -167,8 +164,8 @@
                         </div>
                     </ion-accordion>
                 </ion-accordion-group>
-
             }
+
             <ion-grid>
                 <ion-row>
                     <ion-col>
@@ -178,8 +175,7 @@
                         <ion-button expand="block" (click)="send()" [disabled]="formData.subject === '' || formData.message === null">
                             @if (formData.isEditing) {
                                 <span>{{ 'core.savechanges' | translate }}</span>
-                            }
-                            @if (!formData.isEditing) {
+                            } @else {
                                 <span>{{ 'addon.mod_forum.posttoforum' | translate }}</span>
                             }
                         </ion-button>

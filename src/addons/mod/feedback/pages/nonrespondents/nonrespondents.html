@@ -22,8 +22,8 @@
                     <h2>{{ 'addon.mod_feedback.non_respondents_students' | translate : {$a: total } }}</h2>
                 </ion-label>
             </ion-item-divider>
-            @if (total > 0) {
 
+            @if (total > 0) {
                 <ion-item *ngFor="let user of users" class="ion-text-wrap">
                     <core-user-avatar [user]="user" slot="start" />
                     <ion-label>
@@ -33,8 +33,7 @@
                                 <ion-badge color="success">
                                     {{ 'addon.mod_feedback.started' | translate}}
                                 </ion-badge>
-                            }
-                            @if (!user.started) {
+                            } @else {
                                 <ion-badge color="danger">
                                     {{ 'addon.mod_feedback.not_started' | translate}}
                                 </ion-badge>

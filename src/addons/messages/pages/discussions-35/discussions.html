@@ -58,8 +58,7 @@
                         </ion-label>
                     </ion-item>
 
-                }
-                @if (!search.showResults) {
+                } @else {
 
                     <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let discussion of discussions" button
                         [attr.aria-label]="discussion.fullname" (click)="gotoDiscussion(discussion.message!.user)"

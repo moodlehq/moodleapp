@@ -6,8 +6,7 @@
         <ion-title>
             @if (courseId) {
                 <h1>{{ 'core.search' | translate }}</h1>
-            }
-            @if (!courseId) {
+            } @else {
                 <h1>{{ 'core.search.globalsearch' | translate }}</h1>
             }
         </ion-title>
@@ -46,12 +45,9 @@
             <core-empty-box icon="fas-magnifying-glass" [dimmed]="!resultsSource.isLoaded()">
                 @if (!resultsSource.isLoaded()) {
                     <p role="alert">{{ 'core.search.empty' | translate }}</p>
-                }
-                @if (resultsSource.isLoaded()) {
-
+                } @else {
                     <p><strong>{{ 'core.search.noresults' | translate: { $a: resultsSource.getQuery() } }}</strong></p>
                     <p><small>{{ 'core.search.noresultshelp' | translate }}</small></p>
-
                 }
             </core-empty-box>
         }

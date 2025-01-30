@@ -26,19 +26,11 @@
                         </ion-label>
                     </ion-item>
                 </ion-list>
-            } @else {
 
-                @if (!reports.items?.length) {
-                    <core-empty-box icon="fas-rectangle-list" [message]="'core.course.nocontentavailable' | translate" />
-                }
-
-            }
-
-
-
-            @if (reports.items?.length) {
                 <core-infinite-loading [enabled]="reports.loaded && !reports.completed" (action)="fetchMoreReports($event)"
                     [error]="state.loadMoreError" />
+            } @else {
+                <core-empty-box icon="fas-rectangle-list" [message]="'core.course.nocontentavailable' | translate" />
             }
         </core-loading>
     </ion-content>

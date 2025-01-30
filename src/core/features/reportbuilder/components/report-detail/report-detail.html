@@ -7,46 +7,51 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
         </ion-refresher>
 
-        @if (state.report?.data?.rows?.length && state.report?.data?.headers && state.report?.details) {
-
+        @if (state.report && state.report?.data?.rows?.length && state.report?.data?.headers && state.report?.details) {
 
             @if (isCardLayout) {
-
-                <ion-card *ngFor="let row of state.report.data.rows; let rowIndex = index">
-                    <ion-list class="ion-text-wrap">
-                        <core-report-builder-report-column *ngFor="let column of row.columns | slice:0:row.isExpanded ?
-                            row.columns.length : state.cardVisibleColumns; let columnIndex = index" [columnIndex]="columnIndex"
-                            [rowIndex]="rowIndex" [isExpandable]="columnIndex === 0 && row.columns.length > state.cardVisibleColumns"
-                            [isExpanded]="row.isExpanded" [showFirstTitle]="state.cardviewShowFirstTitle" [source]="source$ | async"
-                            [contextId]="state.report.details.contextid" [header]="state.report.data.headers[columnIndex]" [column]="column"
-                            (onToggleRow)="toggleRow(rowIndex)" />
-                    </ion-list>
-                </ion-card>
-
-            }
-
-            @if (!isCardLayout) {
+                @for (row of state.report.data.rows; track rowIndex; let rowIndex = $index) {
+                    <ion-card>
+                        <ion-list class="ion-text-wrap">
+                            @for (column of row.columns | slice:0:row.isExpanded ?
+                                row.columns.length : state.cardVisibleColumns; track columnIndex; let columnIndex = $index) {
+                                <core-report-builder-report-column [columnIndex]="columnIndex" [rowIndex]="rowIndex"
+                                    [isExpandable]="columnIndex === 0 && row.columns.length > state.cardVisibleColumns"
+                                    [isExpanded]="row.isExpanded" [showFirstTitle]="state.cardviewShowFirstTitle" [source]="source$ | async"
+                                    [contextId]="state.report.details.contextid" [header]="state.report.data.headers[columnIndex]"
+                                    [column]="column" (onToggleRow)="toggleRow(rowIndex)" />
+                            }
+                        </ion-list>
+                    </ion-card>
+                }
+            } @else {
                 <div class="x-scrollable">
                     <table class="core-table">
                         <thead>
                             <tr>
-                                <th *ngFor="let header of state.report.data.headers">
-                                    {{ header }}
-                                </th>
+                                @for (header of state.report.data.headers; track $index) {
+                                    <th>
+                                        {{ header }}
+                                    </th>
+                                }
                             </tr>
                         </thead>
                         <tbody class="auto-striped">
-                            <tr *ngFor="let row of state.report.data.rows">
-                                <td *ngFor="let column of row.columns">
-                                    @if (isString(column)) {
-                                        <core-format-text [text]="column" [contextLevel]="source$ | async"
-                                            [contextInstanceId]="state.report.details.contextid" />
-                                    } @else {
-                                        {{ column }}
-                                    }
+                            @for (row of state.report.data.rows; track $index) {
+                                <tr>
+                                    @for (column of row.columns; track $index) {
+                                        <td>
+                                            @if (isString(column)) {
+                                                <core-format-text [text]="column" [contextLevel]="source$ | async"
+                                                    [contextInstanceId]="state.report.details.contextid" />
+                                            } @else {
+                                                {{ column }}
+                                            }
 
-                                </td>
-                            </tr>
+                                        </td>
+                                    }
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -60,8 +65,6 @@
             </core-empty-box>
 
         }
-
-
 
         @if (!isBlock && state.report?.data?.rows?.length && state.report?.data?.headers && state.report?.details) {
             <core-infinite-loading [enabled]="state.canLoadMoreRows" (action)="fetchMoreInfo($event)" [error]="state.errorLoadingRows" />

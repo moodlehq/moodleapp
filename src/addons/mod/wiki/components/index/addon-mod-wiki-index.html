@@ -5,8 +5,7 @@
         <ion-button (click)="showSubwikiPicker($event)" [ariaLabel]="'addon.mod_wiki.subwiki' | translate" aria-haspopup="true">
             @if (!groupWiki) {
                 <ion-icon name="fas-user" aria-hidden="true" />
-            }
-            @if (groupWiki) {
+            } @else {
                 <ion-icon name="fas-users" aria-hidden="true" />
             }
         </ion-button>
@@ -19,10 +18,11 @@
     }
 
     <core-context-menu>
-        @if (canEdit && (isOnline || pageIsOffline)) {
-            <core-context-menu-item [priority]="590" [content]="'core.edit' | translate" iconAction="fas-pen" (action)="goToEditPage()" />
-        }
         @if (canEdit) {
+            @if (isOnline || pageIsOffline) {
+                <core-context-menu-item [priority]="590" [content]="'core.edit' | translate" iconAction="fas-pen"
+                    (action)="goToEditPage()" />
+            }
             <core-context-menu-item [priority]="580" [content]="'addon.mod_wiki.createpage' | translate" iconAction="fas-plus"
                 (action)="goToNewPage()" />
         }
@@ -51,16 +51,15 @@
 
     @if (pageIsOffline || hasOffline || pageWarning) {
         <div>
-            <!-- Wiki has something offline. -->
             @if (pageIsOffline || hasOffline) {
+                <!-- Wiki has something offline. -->
                 <ion-card class="core-warning-card">
                     <ion-item class="ion-text-wrap">
                         <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
                         <ion-label>
                             @if (pageIsOffline) {
                                 <span>{{ 'core.hasdatatosync' | translate:{$a: pageStr} }}</span>
-                            }
-                            @if (!pageIsOffline) {
+                            } @else {
                                 <span>{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</span>
                             }
                         </ion-label>
@@ -68,8 +67,8 @@
                 </ion-card>
             }
 
-            <!-- Page warning. -->
             @if (pageWarning) {
+                <!-- Page warning. -->
                 <ion-card class="core-warning-card">
                     <ion-item>
                         <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
@@ -91,8 +90,7 @@
                 @if (pageContent) {
                     <core-format-text [component]="component" [componentId]="componentId" [text]="pageContent" contextLevel="module"
                         [contextInstanceId]="module.id" [courseId]="courseId" [sanitize]="pageIsOffline" />
-                }
-                @if (!pageContent) {
+                } @else {
                     <core-empty-box icon="fas-file-lines" [message]="'addon.mod_wiki.nocontent' | translate" />
                 }
             </article>

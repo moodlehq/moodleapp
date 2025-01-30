@@ -12,7 +12,6 @@
     }
 </core-navbar-buttons>
 
-<!-- Content. -->
 <core-loading [hideUntil]="!showLoading">
 
     <!-- Activity info. -->
@@ -37,8 +36,7 @@
                     <p class="item-heading">{{ 'core.course.hiddenfromstudents' | translate }}</p>
                     @if (module.visible) {
                         <p>{{ 'core.no' | translate }}</p>
-                    }
-                    @if (!module.visible) {
+                    } @else {
                         <p>{{ 'core.yes' | translate }}</p>
                     }
                 </ion-label>
@@ -61,84 +59,85 @@
                 </ion-item>
             }
 
-            <!-- Summary of all submissions. -->
-            @if (summary && summary.participantcount) {
-                <ion-item class="ion-text-wrap" (click)="goToSubmissionList()" [detail]="true" button>
-                    <ion-label>
-                        @if (assign.teamsubmission) {
-                            <p class="item-heading">{{ 'addon.mod_assign.numberofteams' | translate }}</p>
-                        }
-                        @if (!assign.teamsubmission) {
-                            <p class="item-heading">{{ 'addon.mod_assign.numberofparticipants' | translate }}</p>
-                        }
-                    </ion-label>
-                    <ion-badge slot="end" color="primary">
-                        <span aria-hidden="true">{{ summary.participantcount }}</span>
-                        @if (!assign.teamsubmission) {
-                            <span class="sr-only">
-                                {{ 'addon.mod_assign.numberofparticipantscountdescription' | translate:{count: summary.participantcount} }}
-                            </span>
-                        }
-                        @if (assign.teamsubmission) {
-                            <span class="sr-only">
-                                {{ 'addon.mod_assign.numberofteamscountdescription' | translate:{count: summary.participantcount} }}
-                            </span>
-                        }
-                    </ion-badge>
-                </ion-item>
-            }
+            @if (summary) {
+                @if (summary.participantcount) {
+                    <!-- Summary of all submissions. -->
+                    <ion-item class="ion-text-wrap" (click)="goToSubmissionList()" [detail]="true" button>
+                        <ion-label>
+                            @if (assign.teamsubmission) {
+                                <p class="item-heading">{{ 'addon.mod_assign.numberofteams' | translate }}</p>
+                            } @else {
+                                <p class="item-heading">{{ 'addon.mod_assign.numberofparticipants' | translate }}</p>
+                            }
+                        </ion-label>
+                        <ion-badge slot="end" color="primary">
+                            <span aria-hidden="true">{{ summary.participantcount }}</span>
+                            @if (!assign.teamsubmission) {
+                                <span class="sr-only">
+                                    {{ 'addon.mod_assign.numberofparticipantscountdescription' |
+                                    translate:{count: summary.participantcount} }}
+                                </span>
+                            } @else {
+                                <span class="sr-only">
+                                    {{ 'addon.mod_assign.numberofteamscountdescription' | translate:{count: summary.participantcount} }}
+                                </span>
+                            }
+                        </ion-badge>
+                    </ion-item>
+                }
 
-            <!-- Summary of submissions with draft status. -->
-            @if (assign.submissiondrafts && summary && summary.submissionsenabled) {
-                <ion-item class="ion-text-wrap" [class.hide-detail]="!summary.submissiondraftscount" [detail]="true"
-                    [button]="summary.submissiondraftscount"
-                    (click)="goToSubmissionList(submissionStatusDraft, !!summary.submissiondraftscount)">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.mod_assign.numberofdraftsubmissions' | translate }}</p>
-                    </ion-label>
-                    <ion-badge slot="end" color="primary">
-                        <span aria-hidden="true">{{ summary.submissiondraftscount }}</span>
-                        <span class="sr-only">
-                            {{ 'addon.mod_assign.numberofdraftsubmissionscountdescription' | translate:
+                @if (summary.submissionsenabled) {
+                    @if (assign.submissiondrafts) {
+                        <!-- Summary of submissions with draft status. -->
+                        <ion-item class="ion-text-wrap" [class.hide-detail]="!summary.submissiondraftscount" [detail]="true"
+                            [button]="summary.submissiondraftscount"
+                            (click)="goToSubmissionList(submissionStatusDraft, !!summary.submissiondraftscount)">
+                            <ion-label>
+                                <p class="item-heading">{{ 'addon.mod_assign.numberofdraftsubmissions' | translate }}</p>
+                            </ion-label>
+                            <ion-badge slot="end" color="primary">
+                                <span aria-hidden="true">{{ summary.submissiondraftscount }}</span>
+                                <span class="sr-only">
+                                    {{ 'addon.mod_assign.numberofdraftsubmissionscountdescription' | translate:
                         {count: summary.submissiondraftscount} }}
-                        </span>
-                    </ion-badge>
-                </ion-item>
-            }
+                                </span>
+                            </ion-badge>
+                        </ion-item>
+                    }
 
-            <!-- Summary of submissions with submitted status. -->
-            @if (summary && summary.submissionsenabled) {
-                <ion-item class="ion-text-wrap" [class.hide-detail]="!summary.submissionssubmittedcount" [detail]="true"
-                    [button]="summary.submissionssubmittedcount"
-                    (click)="goToSubmissionList(submissionStatusSubmitted, !!summary.submissionssubmittedcount)">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.mod_assign.numberofsubmittedassignments' | translate }}</p>
-                    </ion-label>
-                    <ion-badge slot="end" color="primary">
-                        <span aria-hidden="true">{{ summary.submissionssubmittedcount }}</span>
-                        <span class="sr-only">
-                            {{ 'addon.mod_assign.numberofsubmittedassignmentscountdescription' | translate:
+                    <!-- Summary of submissions with submitted status. -->
+                    <ion-item class="ion-text-wrap" [class.hide-detail]="!summary.submissionssubmittedcount" [detail]="true"
+                        [button]="summary.submissionssubmittedcount"
+                        (click)="goToSubmissionList(submissionStatusSubmitted, !!summary.submissionssubmittedcount)">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_assign.numberofsubmittedassignments' | translate }}</p>
+                        </ion-label>
+                        <ion-badge slot="end" color="primary">
+                            <span aria-hidden="true">{{ summary.submissionssubmittedcount }}</span>
+                            <span class="sr-only">
+                                {{ 'addon.mod_assign.numberofsubmittedassignmentscountdescription' | translate:
                         {count: summary.submissionssubmittedcount} }}
-                        </span>
-                    </ion-badge>
-                </ion-item>
-            }
+                            </span>
+                        </ion-badge>
+                    </ion-item>
 
-            <!-- Summary of submissions that need grading. -->
-            @if (summary && summary.submissionsenabled && !assign.teamsubmission) {
-                <ion-item class="ion-text-wrap" [class.hide-detail]="!needsGradingAvailable" [detail]="true"
-                    [button]="needsGradingAvailable" (click)="goToSubmissionList(needGrading, needsGradingAvailable)">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.mod_assign.numberofsubmissionsneedgrading' | translate }}</p>
-                    </ion-label>
-                    <ion-badge slot="end" color="primary">
-                        <span aria-hidden="true">{{ summary.submissionsneedgradingcount }}</span>
-                        <span class="sr-only">
-                            {{ 'addon.mod_assign.numberofsubmissionsneedgradingcountdescription' | translate:
+                    @if (!assign.teamsubmission) {
+                        <!-- Summary of submissions that need grading. -->
+                        <ion-item class="ion-text-wrap" [class.hide-detail]="!needsGradingAvailable" [detail]="true"
+                            [button]="needsGradingAvailable" (click)="goToSubmissionList(needGrading, needsGradingAvailable)">
+                            <ion-label>
+                                <p class="item-heading">{{ 'addon.mod_assign.numberofsubmissionsneedgrading' | translate }}</p>
+                            </ion-label>
+                            <ion-badge slot="end" color="primary">
+                                <span aria-hidden="true">{{ summary.submissionsneedgradingcount }}</span>
+                                <span class="sr-only">
+                                    {{ 'addon.mod_assign.numberofsubmissionsneedgradingcountdescription' | translate:
                         {count: summary.submissionsneedgradingcount} }}
-                        </span>
-                    </ion-badge>
-                </ion-item>
+                                </span>
+                            </ion-badge>
+                        </ion-item>
+                    }
+                }
             }
         </ion-list>
 

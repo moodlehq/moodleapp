@@ -1,5 +1,5 @@
-<!-- Render (no edit). -->
 @if (!edit && field && field.name) {
+    <!-- Render (no edit). -->
     <ion-item>
         <ion-label>
             <p class="item-heading">
@@ -14,8 +14,8 @@
     </ion-item>
 }
 
-<!-- Edit. -->
 @if (edit && field && field.shortname && form) {
+    <!-- Edit. -->
     <ion-item class="ion-text-wrap" [formGroup]="form">
         <ion-input labelPlacement="stacked" type="text" [formControlName]="modelName" [placeholder]="field.name">
             <div [core-mark-required]="required" slot="label">
