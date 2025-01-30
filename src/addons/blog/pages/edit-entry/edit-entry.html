@@ -40,35 +40,35 @@
                 [componentId]="entry?.id ?? 0" />
 
             @if (courseId && associatedCourse) {
-            <ion-item class="divider section" (click)="toggleAssociations()" button [detail]="false"
-                [attr.aria-label]="(associationsExpanded ? 'core.collapse' : 'core.expand') | translate"
-                [attr.aria-expanded]="associationsExpanded" aria-controls="addon-blog-associations"
-                [class.expandable-status-icon-expanded]="associationsExpanded">
-                <ion-icon [name]="associationsExpanded ? 'fas-chevron-down' : 'fas-chevron-right'" flip-rtl slot="start"
-                    class="expandable-status-icon" />
-                <ion-label>
-                    <h2>{{ 'addon.blog.associations' | translate }}</h2>
-                </ion-label>
-            </ion-item>
-            <div id="addon-blog-associations">
-                @if (associationsExpanded) {
-                <ion-item>
-                    @if (associatedModule) {
-                    <ion-toggle formControlName="associateWithModule">
-                        <core-format-text [text]="'addon.blog.associatewithmodule' | translate: {
+                <ion-item class="divider section" (click)="toggleAssociations()" button [detail]="false"
+                    [attr.aria-label]="(associationsExpanded ? 'core.collapse' : 'core.expand') | translate"
+                    [attr.aria-expanded]="associationsExpanded" aria-controls="addon-blog-associations"
+                    [class.expandable-status-icon-expanded]="associationsExpanded">
+                    <ion-icon [name]="associationsExpanded ? 'fas-chevron-down' : 'fas-chevron-right'" flip-rtl slot="start"
+                        class="expandable-status-icon" />
+                    <ion-label>
+                        <h2>{{ 'addon.blog.associations' | translate }}</h2>
+                    </ion-label>
+                </ion-item>
+                <div id="addon-blog-associations">
+                    @if (associationsExpanded) {
+                        <ion-item>
+                            @if (associatedModule) {
+                                <ion-toggle formControlName="associateWithModule">
+                                    <core-format-text [text]="'addon.blog.associatewithmodule' | translate: {
                             $a: { modtype: associatedModule.modname, modname: associatedModule.name }
                             }" [contextLevel]="moduleContext" [contextInstanceId]="modId" [courseId]="courseId" />
-                    </ion-toggle>
-                    } @else if (associatedCourse) {
-                    <ion-toggle formControlName="associateWithCourse">
-                        <core-format-text
-                            [text]="'addon.blog.associatewithcourse' | translate: { $a: { coursename: associatedCourse.fullname } }"
-                            [contextLevel]="courseContext" [contextInstanceId]="courseId" [courseId]="courseId" />
-                    </ion-toggle>
+                                </ion-toggle>
+                            } @else if (associatedCourse) {
+                                <ion-toggle formControlName="associateWithCourse">
+                                    <core-format-text
+                                        [text]="'addon.blog.associatewithcourse' | translate: { $a: { coursename: associatedCourse.fullname } }"
+                                        [contextLevel]="courseContext" [contextInstanceId]="courseId" [courseId]="courseId" />
+                                </ion-toggle>
+                            }
+                        </ion-item>
                     }
-                </ion-item>
-                }
-            </div>
+                </div>
             }
 
             <ion-button class="ion-margin" expand="block" [ariaLabel]="'core.save' | translate"

@@ -17,10 +17,10 @@
 
 <ion-list>
     @if (isDownloaded) {
-    <ion-item button detail="false" lines="none" (click)="close({ status: 'deleteOffline' })">
-        <ion-icon slot="start" name="fam-cloud-x" aria-hidden="true" />
-        <ion-label>{{ 'core.removedownloadeddata' | translate }}</ion-label>
-    </ion-item>
+        <ion-item button detail="false" lines="none" (click)="close({ status: 'deleteOffline' })">
+            <ion-icon slot="start" name="fam-cloud-x" aria-hidden="true" />
+            <ion-label>{{ 'core.removedownloadeddata' | translate }}</ion-label>
+        </ion-item>
     }
 
     <ion-item button detail="false" (click)="close({ status: 'deleteOnline' })" lines="none">

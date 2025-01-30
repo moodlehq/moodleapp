@@ -11,17 +11,17 @@
 
         <ion-buttons slot="end">
             @if (course?.format !== 'singleactivity') {
-            <ion-button fill="clear" (click)="openCourseSummary()" [ariaLabel]="'core.course.coursesummary' | translate">
-                <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
-            </ion-button>
+                <ion-button fill="clear" (click)="openCourseSummary()" [ariaLabel]="'core.course.coursesummary' | translate">
+                    <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
+                </ion-button>
 
-            <!-- Add an empty context menu so tab pages can add items, otherwise the menu disappears in some cases. -->
-            <core-context-menu />
+                <!-- Add an empty context menu so tab pages can add items, otherwise the menu disappears in some cases. -->
+                <core-context-menu />
             } @else {
-            <core-context-menu>
-                <core-context-menu-item [priority]="1" [content]="'core.course.coursesummary' | translate" (action)="openCourseSummary()"
-                    iconAction="fas-graduation-cap" />
-            </core-context-menu>
+                <core-context-menu>
+                    <core-context-menu-item [priority]="1" [content]="'core.course.coursesummary' | translate"
+                        (action)="openCourseSummary()" iconAction="fas-graduation-cap" />
+                </core-context-menu>
             }
         </ion-buttons>
     </ion-toolbar>

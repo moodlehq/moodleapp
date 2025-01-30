@@ -14,11 +14,11 @@
                     <div class="activity-title">
                         <p class="item-heading">
                             @if (module.handlerData.action && module.uservisible) {
-                            <span (ariaButtonClick)="moduleClicked($event)">
-                                <ng-container *ngTemplateOutlet="title" />
-                            </span>
+                                <span (ariaButtonClick)="moduleClicked($event)">
+                                    <ng-container *ngTemplateOutlet="title" />
+                                </span>
                             } @else {
-                            <ng-container *ngTemplateOutlet="title" />
+                                <ng-container *ngTemplateOutlet="title" />
                             }
                             <ng-template #title>
                                 <core-format-text [text]="module.handlerData.title" contextLevel="module" [contextInstanceId]="module.id"
@@ -111,7 +111,7 @@
         </div>
 
         @if (module.handlerData.action && module.uservisible) {
-        <ion-ripple-effect />
+            <ion-ripple-effect />
         }
     </ng-container>
 
