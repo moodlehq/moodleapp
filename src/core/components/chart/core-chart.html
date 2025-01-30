@@ -1,8 +1,12 @@
 <canvas #canvas [attr.height]="height"></canvas>
 
-<ion-list *ngIf="chart">
-    <ion-item *ngFor="let data of legendItems">
-        <ion-icon name="fas-square" slot="start" [style.color]="data.fillStyle" aria-hidden="true" />
-        <ion-label>{{data.text}}</ion-label>
-    </ion-item>
-</ion-list>
+@if (chart) {
+    <ion-list>
+        @for (data of legendItems; track data.text) {
+            <ion-item>
+                <ion-icon name="fas-square" slot="start" [style.color]="data.fillStyle" aria-hidden="true" />
+                <ion-label>{{data.text}}</ion-label>
+            </ion-item>
+        }
+    </ion-list>
+}

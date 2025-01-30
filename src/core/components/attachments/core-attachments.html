@@ -3,15 +3,19 @@
         <ion-item class="ion-text-wrap">
             <ion-label>
                 <p class="item-heading">{{ title }} <span [core-mark-required]="required" class="core-mark-required"></span></p>
-                <span *ngIf="maxSubmissionsReadable">
-                    {{ 'core.maxsizeandattachments' | translate:{$a: {size: maxSizeReadable, attachments: maxSubmissionsReadable} } }}
+                <span>
+                    @if (maxSubmissionsReadable) {
+                        {{ 'core.maxsizeandattachments' | translate:{$a: {size: maxSizeReadable, attachments: maxSubmissionsReadable} } }}
+                    } @else {
+                        {{ 'core.maxfilesize' | translate:{$a: maxSizeReadable} }}
+                    }
                 </span>
-                <span *ngIf="!maxSubmissionsReadable">{{ 'core.maxfilesize' | translate:{$a: maxSizeReadable} }}</span>
             </ion-label>
-            <ion-button slot="end" (click)="add()" [ariaLabel]="'core.fileuploader.addfiletext' | translate"
-                *ngIf="unlimitedFiles || (maxSubmissions !== undefined && maxSubmissions >= 0 && files && files.length < maxSubmissions)">
-                <ion-icon name="fas-plus" slot="icon-only" aria-hidden="true" />
-            </ion-button>
+            @if (unlimitedFiles || (maxSubmissions !== undefined && maxSubmissions >= 0 && files && files.length < maxSubmissions)) {
+                <ion-button slot="end" (click)="add()" [ariaLabel]="'core.fileuploader.addfiletext' | translate">
+                    <ion-icon name="fas-plus" slot="icon-only" aria-hidden="true" />
+                </ion-button>
+            }
         </ion-item>
 
         @if (fileTypes && fileTypes.mimetypes && fileTypes.mimetypes.length) {
@@ -25,30 +29,36 @@
                     </ion-item>
 
                     <ul class="core-attachments" slot="content">
-                        <li *ngFor="let typeInfo of fileTypes.info">
-                            <strong *ngIf="typeInfo.name">{{typeInfo.name}} </strong>{{typeInfo.extlist}}
-                        </li>
+                        @for (typeInfo of fileTypes.info; track typeInfo.name) {
+                            <li>
+                                @if (typeInfo.name) {
+                                    <strong>{{typeInfo.name}} </strong>
+                                }
+                                {{typeInfo.extlist}}
+                            </li>
+                        }
                     </ul>
                 </ion-accordion>
             </ion-accordion-group>
         }
 
-
-
         <ng-container *ngFor="let file of files; let index=index">
-            <!-- Files already attached to the submission, either in online or in offline. -->
-            <core-file *ngIf="!file.name" [file]="file" [component]="component" [componentId]="componentId" [canDelete]="true"
-                (onDelete)="delete(index, true)" [canDownload]="!file.offline" />
-
-            <!-- Files added to draft but not attached to submission yet. -->
-            <core-local-file *ngIf="file.name" [file]="file" [manage]="true" (onDelete)="delete(index, false)"
-                (onRename)="renamed(index, $event)" />
+            @if (file.name) {
+                <!-- Files added to draft but not attached to submission yet. -->
+                <core-local-file [file]="file" [manage]="true" (onDelete)="delete(index, false)" (onRename)="renamed(index, $event)" />
+            } @else {
+                <!-- Files already attached to the submission, either in online or in offline. -->
+                <core-file [file]="file" [component]="component" [componentId]="componentId" [canDelete]="true"
+                    (onDelete)="delete(index, true)" [canDownload]="!file.offline" />
+            }
         </ng-container>
 
-        <ion-item class="ion-text-wrap" *ngIf="!files || !files.length">
-            <ion-label>
-                <p>{{ 'core.fileuploader.nofilesattached' | translate }}</p>
-            </ion-label>
-        </ion-item>
+        @if (!files || !files.length) {
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <p>{{ 'core.fileuploader.nofilesattached' | translate }}</p>
+                </ion-label>
+            </ion-item>
+        }
     </ion-card>
 </core-loading>

@@ -51,14 +51,20 @@ import { CorePath } from '@singletons/path';
     templateUrl: 'core-tabs-outlet.html',
     styleUrl: '../tabs/tabs.scss',
 })
-export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutletTab>
+export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutletTabWithId>
     implements AfterViewInit, OnChanges, OnDestroy {
 
     /**
      * Determine tabs layout.
      */
     @Input() layout: 'icon-top' | 'icon-start' | 'icon-end' | 'icon-bottom' | 'icon-hide' | 'label-hide' = 'icon-hide';
-    @Input() tabs: CoreTabsOutletTab[] = [];
+    @Input({ transform: (tabs?: CoreTabsOutletTab[]): CoreTabsOutletTabWithId[] => {
+        if (!tabs) {
+            return [];
+        }
+
+        return tabs.map((tab) => CoreTabsOutletComponent.formatTab(tab));
+    } }) tabs: CoreTabsOutletTabWithId[] = [];
 
     @ViewChild(IonTabs) protected ionTabs!: IonTabs;
 
@@ -69,12 +75,16 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
      * Init tab info.
      *
      * @param tab Tab.
+     *
+     * @returns Tab with enabled and id.
      */
-    protected initTab(tab: CoreTabsOutletTab): void {
+    protected static formatTab(tab: CoreTabsOutletTab): CoreTabsOutletTabWithId {
         tab.id = tab.id || 'core-tab-outlet-' + CoreUtils.getUniqueId('CoreTabsOutletComponent');
         if (tab.enabled === undefined) {
             tab.enabled = true;
         }
+
+        return tab as CoreTabsOutletTabWithId;
     }
 
     /**
@@ -118,10 +128,6 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
      */
     ngOnChanges(changes: Record<string, SimpleChange>): void {
         if (changes.tabs) {
-            this.tabs.forEach((tab) => {
-                this.initTab(tab);
-            });
-
             this.calculateSlides();
         }
 
@@ -168,7 +174,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     /**
      * @inheritdoc
      */
-    protected calculateInitialTab(): CoreTabsOutletTab | undefined {
+    protected calculateInitialTab(): CoreTabsOutletTabWithId | undefined {
         // Check if a tab should be selected because it was loaded by path.
         const currentPath = CoreNavigator.getCurrentPath();
         const currentPathTab = this.tabs.find(tab => tab.page === currentPath);
@@ -236,3 +242,5 @@ export type CoreTabsOutletTab = CoreTabBase & {
     page: string; // Page to navigate to.
     pageParams?: Params; // Page params.
 };
+
+export type CoreTabsOutletTabWithId = Omit<CoreTabsOutletTab, 'id'> & { id: string };

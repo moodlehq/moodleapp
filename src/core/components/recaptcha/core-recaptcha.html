@@ -1,16 +1,25 @@
 <!-- ReCAPTCHA V2 -->
-<div *ngIf="publicKey && siteUrl && model">
-    <!-- A button to open the recaptcha modal. -->
-    <ion-button expand="block" fill="outline" class="ion-margin" *ngIf="!model[modelValueName]" (click)="answerRecaptcha()">
-        {{ 'core.opensecurityquestion' | translate }}
-    </ion-button>
-    <ion-item *ngIf="model[modelValueName]">
-        <ion-label color="success">{{ 'core.answered' | translate }}</ion-label>
-    </ion-item>
-    <ion-item *ngIf="expired" class="ion-text-wrap core-input-error">
-        <ion-label color="danger">{{ 'core.login.recaptchaexpired' | translate }}</ion-label>
-    </ion-item>
-    <ion-item *ngIf="showRequiredError && !model[modelValueName] && !expired" class="ion-text-wrap core-input-error">
-        <ion-label color="danger">{{ 'core.required' | translate }}</ion-label>
-    </ion-item>
-</div>
+@if (publicKey && siteUrl && model) {
+    <div>
+        @if (model[modelValueName]) {
+            <ion-item>
+                <ion-label color="success">{{ 'core.answered' | translate }}</ion-label>
+            </ion-item>
+        } @else {
+            <!-- A button to open the recaptcha modal. -->
+            <ion-button expand="block" fill="outline" class="ion-margin" (click)="answerRecaptcha()">
+                {{ 'core.opensecurityquestion' | translate }}
+            </ion-button>
+        }
+
+        @if (expired) {
+            <ion-item class="ion-text-wrap core-input-error">
+                <ion-label color="danger">{{ 'core.login.recaptchaexpired' | translate }}</ion-label>
+            </ion-item>
+        } @else if (showRequiredError && !model[modelValueName]) {
+            <ion-item class="ion-text-wrap core-input-error">
+                <ion-label color="danger">{{ 'core.required' | translate }}</ion-label>
+            </ion-item>
+        }
+    </div>
+}

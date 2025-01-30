@@ -1,14 +1,29 @@
-<div class="core-logo-container" *ngIf="showLogo && logoLoaded">
-    <img *ngIf="siteLogo" [src]="siteLogo" class="core-logo" [alt]="'core.login.logoof' | translate: { $a: siteName }" core-external-content
-        [siteId]="siteId" (error)="imageError()">
-    <img *ngIf="!siteLogo" [src]="fallbackLogo" class="core-logo" [alt]="'core.login.logoof' | translate: { $a: appName }">
-</div>
+@if (showLogo && logoLoaded) {
+    <div class="core-logo-container">
+        @if (siteLogo) {
+            <img [src]="siteLogo" class="core-logo" [alt]="'core.login.logoof' | translate: { $a: siteName }" core-external-content
+                [siteId]="siteId" (error)="imageError()">
+        } @else {
+            <img [src]="fallbackLogo" class="core-logo" [alt]="'core.login.logoof' | translate: { $a: appName }">
+        }
+    </div>
+}
 
-<p *ngIf="showSiteName && siteNameMode === 'p' && siteName" class="ion-no-margin ion-no-padding core-logo-sitename">
-    <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [siteId]="siteId" />
-</p>
-<core-format-text *ngIf="showSiteName && siteNameMode === '' && siteName" [text]="siteName" contextLevel="system" [contextInstanceId]="0"
-    class="core-logo-sitename" [siteId]="siteId" />
-<h2 *ngIf="showSiteName && siteNameMode === 'h2' && siteName" class="ion-margin-top ion-no-padding core-logo-sitename">
-    <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [siteId]="siteId" />
-</h2>
+@if (showSiteName && siteName) {
+    @switch (siteNameMode) {
+        @case ('p') {
+            <p class="ion-no-margin ion-no-padding core-logo-sitename">
+                <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [siteId]="siteId" />
+            </p>
+        }
+        @case ('') {
+            <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" class="core-logo-sitename"
+                [siteId]="siteId" />
+        }
+        @case ('h2') {
+            <h2 class="ion-margin-top ion-no-padding core-logo-sitename">
+                <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [siteId]="siteId" />
+            </h2>
+        }
+    }
+}
