@@ -21,45 +21,45 @@
     </ion-refresher>
     <core-loading [hideUntil]="preferencesLoaded">
         @if (warningMessage()) {
-        <ion-card class="core-warning-card ion-margin-top">
-            <ion-item>
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                <ion-label>{{ warningMessage() }}</ion-label>
-            </ion-item>
-        </ion-card>
+            <ion-card class="core-warning-card ion-margin-top">
+                <ion-item>
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                    <ion-label>{{ warningMessage() }}</ion-label>
+                </ion-item>
+            </ion-card>
         } @else {
-        <ion-card>
-            <ion-item class="ion-text-wrap" *ngIf="preferences">
-                <ion-toggle [(ngModel)]="preferences.enableall" (ngModelChange)="enableAll(preferences.enableall)">
-                    <p class="item-heading">{{ 'addon.notifications.allownotifications' | translate }}</p>
-                </ion-toggle>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="canChangeSound">
-                <ion-toggle [(ngModel)]="notificationSound" (ngModelChange)="changeNotificationSound(notificationSound)">
-                    <p class="item-heading">{{ 'addon.notifications.playsound' | translate }}</p>
-                </ion-toggle>
-            </ion-item>
-        </ion-card>
+            <ion-card>
+                <ion-item class="ion-text-wrap" *ngIf="preferences">
+                    <ion-toggle [(ngModel)]="preferences.enableall" (ngModelChange)="enableAll(preferences.enableall)">
+                        <p class="item-heading">{{ 'addon.notifications.allownotifications' | translate }}</p>
+                    </ion-toggle>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="canChangeSound">
+                    <ion-toggle [(ngModel)]="notificationSound" (ngModelChange)="changeNotificationSound(notificationSound)">
+                        <p class="item-heading">{{ 'addon.notifications.playsound' | translate }}</p>
+                    </ion-toggle>
+                </ion-item>
+            </ion-card>
 
-        <ion-card>
-            <ion-item class="ion-text-wrap addon-notification-type-form" *ngIf="preferences?.processors?.length">
-                <!-- Show processor selector. -->
-                <ion-select [(ngModel)]="currentProcessorName" (ionChange)="changeProcessor($event)" interface="popover">
-                    <p class="item-heading" slot="label">{{ 'addon.notifications.typeofnotification' | translate }}</p>
-                    <ion-select-option class="ion-text-wrap" *ngFor="let processor of preferences?.processors" [value]="processor.name">
-                        {{ processor.displayname }}
-                    </ion-select-option>
-                </ion-select>
-            </ion-item>
+            <ion-card>
+                <ion-item class="ion-text-wrap addon-notification-type-form" *ngIf="preferences?.processors?.length">
+                    <!-- Show processor selector. -->
+                    <ion-select [(ngModel)]="currentProcessorName" (ionChange)="changeProcessor($event)" interface="popover">
+                        <p class="item-heading" slot="label">{{ 'addon.notifications.typeofnotification' | translate }}</p>
+                        <ion-select-option class="ion-text-wrap" *ngFor="let processor of preferences?.processors" [value]="processor.name">
+                            {{ processor.displayname }}
+                        </ion-select-option>
+                    </ion-select>
+                </ion-item>
 
-            <ng-container *ngIf="loggedInOffLegacyMode">
-                <ng-container *ngTemplateOutlet="legacySettings; context: {preferences: preferences}" />
-            </ng-container>
+                <ng-container *ngIf="loggedInOffLegacyMode">
+                    <ng-container *ngTemplateOutlet="legacySettings; context: {preferences: preferences}" />
+                </ng-container>
 
-            <ng-container *ngIf="!loggedInOffLegacyMode">
-                <ng-container *ngTemplateOutlet="settings; context: {preferences: preferences}" />
-            </ng-container>
-        </ion-card>
+                <ng-container *ngIf="!loggedInOffLegacyMode">
+                    <ng-container *ngTemplateOutlet="settings; context: {preferences: preferences}" />
+                </ng-container>
+            </ion-card>
         }
     </core-loading>
 

@@ -52,25 +52,25 @@
 
             <div class="core-login-methods">
                 @if (currentLogin && currentLogin.provider) {
-                <core-identity-provider [provider]="currentLogin.provider" [launchurl]="siteConfig?.launchurl" [redirectData]="redirectData"
-                    [siteUrl]="site.siteUrl" />
-                @if (currentLogin.showOther) {
-                <ion-accordion-group>
-                    <ion-accordion toggleIconSlot="start">
-                        <ion-item class="ion-text-wrap" slot="header">
-                            <ion-label>
-                                <p class="item-heading">{{ 'core.login.morewaystologin' | translate }}</p>
-                            </ion-label>
-                        </ion-item>
+                    <core-identity-provider [provider]="currentLogin.provider" [launchurl]="siteConfig?.launchurl"
+                        [redirectData]="redirectData" [siteUrl]="site.siteUrl" />
+                    @if (currentLogin.showOther) {
+                        <ion-accordion-group>
+                            <ion-accordion toggleIconSlot="start">
+                                <ion-item class="ion-text-wrap" slot="header">
+                                    <ion-label>
+                                        <p class="item-heading">{{ 'core.login.morewaystologin' | translate }}</p>
+                                    </ion-label>
+                                </ion-item>
 
-                        <div slot="content">
-                            <ng-template *ngTemplateOutlet="loginMethods" />
-                        </div>
-                    </ion-accordion>
-                </ion-accordion-group>
-                }
+                                <div slot="content">
+                                    <ng-template *ngTemplateOutlet="loginMethods" />
+                                </div>
+                            </ion-accordion>
+                        </ion-accordion-group>
+                    }
                 } @else {
-                <ng-template *ngTemplateOutlet="loginMethods" />
+                    <ng-template *ngTemplateOutlet="loginMethods" />
                 }
             </div>
         </div>

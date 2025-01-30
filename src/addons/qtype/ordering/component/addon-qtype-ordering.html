@@ -1,56 +1,58 @@
 @if (question && (question.text || question.text === '')) {
-<div>
-    <ion-item class="ion-text-wrap">
-        <ion-label>
-            <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
-                [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-        </ion-label>
-    </ion-item>
+    <div>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
+                    [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+            </ion-label>
+        </ion-item>
 
-    @if (a11yAnnouncement) {
-    <div aria-live="polite" class="sr-only">{{ a11yAnnouncement }}</div>
-    }
-
-    <ion-reorder-group class="{{numberingClass}}" [disabled]="dragDisabled" (ionItemReorder)="moveItem($event.detail)">
-        @for (item of question.items; track item.id) {
-        <ion-card id="{{item.id}}" class="core-question-answer-{{item.correctClass}}">
-            <ion-item class="ion-text-wrap">
-                <ion-reorder slot="start" aria-hidden="true" />
-
-                @if (dragDisabled) {
-                @if (item.correctClass === 'correct') {
-                <ion-icon [name]="correctIcon" slot="start" [ariaLabel]="'core.question.correct' | translate" color="success" />
-                } @else if (item.correctClass === 'incorrect') {
-                <ion-icon [name]="incorrectIcon" slot="start" [ariaLabel]="'core.question.incorrect' | translate" color="danger" />
-                } @else if (item.correctClass.startsWith('partial')) {
-                <ion-icon [name]="partialCorrectIcon" slot="start" [ariaLabel]="'core.question.partiallycorrect' | translate"
-                    color="warning" />
-                }
-                }
-
-                <ion-label id="{{item.id}}-text">
-                    <core-format-text [component]="component" [componentId]="componentId" [text]="item.content"
-                        [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" />
-                </ion-label>
-
-                @if (!dragDisabled) {
-                <div slot="end" class="flex-row">
-                    <ion-button fill="clear" (click)="moveItemByClick($event, false, item.id)" data-action="move-backward"
-                        [ariaLabel]="'core.moveup' | translate" [attr.aria-description]="item.contentText">
-                        <ion-icon slot="icon-only" name="fas-chevron-up" aria-hidden="true" />
-                    </ion-button>
-                    <ion-button fill="clear" (click)="moveItemByClick($event, true, item.id)" data-action="move-forward"
-                        [ariaLabel]="'core.movedown' | translate" [attr.aria-description]="item.contentText">
-                        <ion-icon slot="icon-only" name="fas-chevron-down" aria-hidden="true" />
-                    </ion-button>
-                </div>
-                }
-            </ion-item>
-        </ion-card>
+        @if (a11yAnnouncement) {
+            <div aria-live="polite" class="sr-only">{{ a11yAnnouncement }}</div>
         }
-    </ion-reorder-group>
 
-    <!-- Create a hidden input to hold the value. -->
-    <input type="hidden" [ngModel]="responseInput.value" [attr.name]="responseInput.name">
-</div>
+        <ion-reorder-group class="{{numberingClass}}" [disabled]="dragDisabled" (ionItemReorder)="moveItem($event.detail)">
+            @for (item of question.items; track item.id) {
+                <ion-card id="{{item.id}}" class="core-question-answer-{{item.correctClass}}">
+                    <ion-item class="ion-text-wrap">
+                        <ion-reorder slot="start" aria-hidden="true" />
+
+                        @if (dragDisabled) {
+                            @if (item.correctClass === 'correct') {
+                                <ion-icon [name]="correctIcon" slot="start" [ariaLabel]="'core.question.correct' | translate"
+                                    color="success" />
+                            } @else if (item.correctClass === 'incorrect') {
+                                <ion-icon [name]="incorrectIcon" slot="start" [ariaLabel]="'core.question.incorrect' | translate"
+                                    color="danger" />
+                            } @else if (item.correctClass.startsWith('partial')) {
+                                <ion-icon [name]="partialCorrectIcon" slot="start"
+                                    [ariaLabel]="'core.question.partiallycorrect' | translate" color="warning" />
+                            }
+                        }
+
+                        <ion-label id="{{item.id}}-text">
+                            <core-format-text [component]="component" [componentId]="componentId" [text]="item.content"
+                                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" />
+                        </ion-label>
+
+                        @if (!dragDisabled) {
+                            <div slot="end" class="flex-row">
+                                <ion-button fill="clear" (click)="moveItemByClick($event, false, item.id)" data-action="move-backward"
+                                    [ariaLabel]="'core.moveup' | translate" [attr.aria-description]="item.contentText">
+                                    <ion-icon slot="icon-only" name="fas-chevron-up" aria-hidden="true" />
+                                </ion-button>
+                                <ion-button fill="clear" (click)="moveItemByClick($event, true, item.id)" data-action="move-forward"
+                                    [ariaLabel]="'core.movedown' | translate" [attr.aria-description]="item.contentText">
+                                    <ion-icon slot="icon-only" name="fas-chevron-down" aria-hidden="true" />
+                                </ion-button>
+                            </div>
+                        }
+                    </ion-item>
+                </ion-card>
+            }
+        </ion-reorder-group>
+
+        <!-- Create a hidden input to hold the value. -->
+        <input type="hidden" [ngModel]="responseInput.value" [attr.name]="responseInput.name">
+    </div>
 }
