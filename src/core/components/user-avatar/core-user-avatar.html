@@ -1,24 +1,33 @@
-<ng-container *ngIf="avatarUrl">
-    <img class="userpicture" *ngIf="linkProfile" [url]="avatarUrl" [alt]="fullname" core-external-content (error)="loadImageError()"
-        (ariaButtonClick)="gotoProfile($event)" [siteId]="siteId">
+@if (avatarUrl) {
 
-    <img class="userpicture" *ngIf="!linkProfile" [url]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}"
-        core-external-content (error)="loadImageError()" aria-hidden="true" [siteId]="siteId">
-</ng-container>
-<ng-container *ngIf="!avatarUrl && initials">
-    <div class="userinitials" *ngIf="linkProfile" [attr.aria-label]="fullname" [title]="fullname" (ariaButtonClick)="gotoProfile($event)"
-        [attr.data-initials]="initials">
-    </div>
+    @if (linkProfile) {
+        <img class="userpicture" [url]="avatarUrl" [alt]="fullname" core-external-content (error)="loadImageError()"
+            (ariaButtonClick)="gotoProfile($event)" [siteId]="siteId">
+    } @else {
+        <img class="userpicture" [url]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content
+            (error)="loadImageError()" aria-hidden="true" [siteId]="siteId">
+    }
 
-    <div class="userinitials" *ngIf="!linkProfile" [attr.aria-label]="'core.pictureof' | translate:{$a: fullname}"
-        [title]="'core.pictureof' | translate:{$a: fullname}" role="img" [attr.data-initials]="initials" aria-hidden="true">
-    </div>
-</ng-container>
-<ng-container *ngIf="!avatarUrl && !initials"><!-- During loading -->
+} @else if (!avatarUrl && initials) {
+
+    @if (linkProfile) {
+        <div class="userinitials" [attr.aria-label]="fullname" [title]="fullname" (ariaButtonClick)="gotoProfile($event)"
+            [attr.data-initials]="initials">
+        </div>
+    } @else {
+        <div class="userinitials" [attr.aria-label]="'core.pictureof' | translate:{$a: fullname}"
+            [title]="'core.pictureof' | translate:{$a: fullname}" role="img" [attr.data-initials]="initials" aria-hidden="true">
+        </div>
+    }
+
+} @else {
+    <!-- During loading -->
     <img class="userpicture_loading" src="assets/img/user-avatar.png" role="presentation" aria-hidden="true" alt="">
-</ng-container>
+}
 
-<span *ngIf="checkOnline && isOnline()" class="contact-status online" role="status" [attr.aria-label]="'core.online' | translate">
-</span>
+@if (checkOnline && isOnline()) {
+    <span class="contact-status online" role="status" [attr.aria-label]="'core.online' | translate">
+    </span>
+}
 
 <ng-content />

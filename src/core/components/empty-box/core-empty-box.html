@@ -3,5 +3,7 @@
 } @else if (image) {
     <img [src]="image" role="presentation" alt="">
 }
-<p *ngIf="message">{{ message }}</p>
+@if (message) {
+    <p>{{ message }}</p>
+}
 <ng-content />

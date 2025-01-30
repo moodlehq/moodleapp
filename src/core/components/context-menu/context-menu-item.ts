@@ -15,6 +15,7 @@
 import { Component, Input, Output, OnInit, OnDestroy, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreUtils } from '@singletons/utils';
 
 /**
  * This directive adds a item to the Context Menu popover.
@@ -57,6 +58,8 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChange
     @Output() action?: EventEmitter<() => void>; // Will emit an event when the item clicked.
     @Output() onClosed?: EventEmitter<() => void>; // Will emit an event when the popover is closed because the item was clicked.
     @Output() toggleChange = new EventEmitter<boolean>();// Will emit an event when toggle changes to enable 2-way data binding.
+
+    uniqueId = CoreUtils.getUniqueId('CoreContextMenuItem');
 
     protected hasAction = false;
     protected destroyed = false;
