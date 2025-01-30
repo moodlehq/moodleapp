@@ -18,8 +18,6 @@ import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-dele
 import { AddonModQuizAccessOpenCloseDateHandler } from './services/handlers/openclosedate';
 
 @NgModule({
-    declarations: [
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,

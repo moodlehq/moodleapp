@@ -42,7 +42,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonCompetencyCourseCompetenciesPage implements OnInit, OnDestroy {
+export default class AddonCompetencyCourseCompetenciesPage implements OnInit, OnDestroy {
 
     competencies!: CoreListItemsManager<
         AddonCompetencyDataForCourseCompetenciesPageCompetency,

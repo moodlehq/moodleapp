@@ -61,7 +61,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(IonContent) content?: IonContent;
 

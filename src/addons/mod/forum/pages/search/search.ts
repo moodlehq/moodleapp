@@ -44,7 +44,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSearchComponentsModule,
     ],
 })
-export class AddonModForumSearchPage implements OnInit {
+export default class AddonModForumSearchPage implements OnInit {
 
     loadMoreError = false;
     searchBanner: string | null = null;

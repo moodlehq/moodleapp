@@ -14,26 +14,17 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
-import { AddonModForumComponentsModule } from '@addons/mod/forum/components/components.module';
 import { canLeaveGuard } from '@guards/can-leave';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModForumNewDiscussionPage } from '@addons/mod/forum/pages/new-discussion/new-discussion';
 
 const routes: Routes = [{
     path: '',
-    component: AddonModForumNewDiscussionPage,
+    loadComponent: () => import('./pages/new-discussion/new-discussion'),
     canDeactivate: [canLeaveGuard],
 }];
 
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        AddonModForumComponentsModule,
-        CoreEditorComponentsModule,
-        AddonModForumNewDiscussionPage,
     ],
 })
 export default class AddonModForumNewDiscussionLazyModule {}

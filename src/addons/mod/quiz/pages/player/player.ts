@@ -73,7 +73,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreQuestionComponentsModule,
     ],
 })
-export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(IonContent) content?: IonContent;
     @ViewChildren(CoreQuestionComponent) questionComponents?: QueryList<CoreQuestionComponent>;

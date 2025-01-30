@@ -64,7 +64,7 @@ const mainMenuChildrenRoutes: Routes = [
 const courseIndexRoutes: Routes = [
     {
         path: ADDON_COMPETENCY_COMPETENCIES_PAGE,
-        loadChildren: () => import('./competency-course-contents-lazy.module'),
+        loadComponent: () => import('./pages/coursecompetencies/coursecompetencies'),
     },
 ];
 

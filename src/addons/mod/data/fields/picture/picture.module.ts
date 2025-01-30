@@ -12,17 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
-import { AddonModDataFieldPictureComponent } from './component/picture';
 import { AddonModDataFieldPictureHandler } from './services/handler';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonModDataFieldPictureComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -31,9 +25,6 @@ import { AddonModDataFieldPictureHandler } from './services/handler';
                 AddonModDataFieldsDelegate.registerHandler(AddonModDataFieldPictureHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonModDataFieldPictureComponent,
     ],
 })
 export class AddonModDataFieldPictureModule {}

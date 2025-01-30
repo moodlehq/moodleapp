@@ -61,7 +61,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreRatingComponentsModule,
     ],
 })
-export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
+export default class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreCommentsCommentsComponent) comments?: CoreCommentsCommentsComponent;
 

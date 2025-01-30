@@ -40,7 +40,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
         CoreSharedModule,
     ],
 })
-export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
+export default class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
 
     protected badgeHash = '';
     protected userId!: number;

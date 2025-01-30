@@ -68,7 +68,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonCalendarEventPage implements OnInit, OnDestroy {
+export default class AddonCalendarEventPage implements OnInit, OnDestroy {
 
     protected eventId!: number;
     protected siteHomeId: number;

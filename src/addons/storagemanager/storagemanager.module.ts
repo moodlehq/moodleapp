@@ -22,8 +22,13 @@ import { AddonStorageManagerSettingsHandler } from './services/handlers/settings
 
 const routes: Routes = [
     {
-        path: '',
-        loadChildren: () => import('@addons/storagemanager/storagemanager-lazy.module'),
+        path: 'storage',
+        loadComponent: () => import('./pages/courses-storage/courses-storage'),
+    },
+    {
+        path: 'storage/:courseId',
+        loadComponent: () => import('./pages/course-storage/course-storage'),
+
     },
 ];
 

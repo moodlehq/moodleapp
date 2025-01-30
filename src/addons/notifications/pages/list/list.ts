@@ -50,7 +50,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreMainMenuComponentsModule,
     ],
 })
-export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
+export default class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
     notifications!: CoreListItemsManager<AddonNotificationsNotificationMessageFormatted, AddonNotificationsNotificationsSource>;

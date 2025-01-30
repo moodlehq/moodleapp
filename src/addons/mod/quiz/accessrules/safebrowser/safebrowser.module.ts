@@ -18,8 +18,6 @@ import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-dele
 import { AddonModQuizAccessSafeBrowserHandler } from './services/handlers/safebrowser';
 
 @NgModule({
-    declarations: [
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,

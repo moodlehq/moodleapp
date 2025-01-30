@@ -15,37 +15,29 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { AddonCompetencyCompetencyPage } from './pages/competency/competency.page';
-import { AddonCompetencyCompetencySummaryPage } from './pages/competencysummary/competencysummary.page';
 import { ADDON_COMPETENCY_SUMMARY_PAGE } from './constants';
-import { AddonCompetencyCompetencyPageModule } from './pages/competency/competency.module';
-import { AddonCompetencyCompetencySummaryPageModule } from './pages/competencysummary/competencysummary.module';
-import { AddonCompetencyCourseCompetenciesPage } from './pages/coursecompetencies/coursecompetencies.page';
-import { AddonCompetencyCourseCompetenciesPageModule } from './pages/coursecompetencies/coursecompetencies.module';
-import { AddonCompetencyCompetenciesPage } from './pages/competencies/competencies.page';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
-import { AddonCompetencyCompetenciesPageModule } from './pages/competencies/competencies.module';
 
 const mobileRoutes: Routes = [
     {
         path: '',
-        component: AddonCompetencyCourseCompetenciesPage,
+        loadComponent: () => import('./pages/coursecompetencies/coursecompetencies'),
     },
     {
         path: ':competencyId',
-        component: AddonCompetencyCompetencyPage,
+        loadComponent: () => import('./pages/competency/competency'),
     },
 ];
 
 const tabletRoutes: Routes = [
     {
         path: '',
-        component: AddonCompetencyCompetenciesPage,
+        loadComponent: () => import('./pages/competencies/competencies'),
         children: [
             {
                 path: ':competencyId',
-                component: AddonCompetencyCompetencyPage,
+                loadComponent: () => import('./pages/competency/competency'),
             },
         ],
     },
@@ -56,17 +48,13 @@ const routes: Routes = [
     ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
     {
         path: `:competencyId/${ADDON_COMPETENCY_SUMMARY_PAGE}`,
-        component: AddonCompetencyCompetencySummaryPage,
+        loadComponent: () => import('./pages/competencysummary/competencysummary'),
     },
 ];
 
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        AddonCompetencyCourseCompetenciesPageModule,
-        AddonCompetencyCompetenciesPageModule,
-        AddonCompetencyCompetencyPageModule,
-        AddonCompetencyCompetencySummaryPageModule,
     ],
 })
 export default class AddonCompetencyCourseDetailsLazyModule {}

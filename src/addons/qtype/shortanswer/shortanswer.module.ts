@@ -14,16 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { AddonQtypeShortAnswerComponent } from './component/shortanswer';
 import { AddonQtypeShortAnswerHandler } from './services/handlers/shortanswer';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonQtypeShortAnswerComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -32,9 +26,6 @@ import { AddonQtypeShortAnswerHandler } from './services/handlers/shortanswer';
                 CoreQuestionDelegate.registerHandler(AddonQtypeShortAnswerHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonQtypeShortAnswerComponent,
     ],
 })
 export class AddonQtypeShortAnswerModule {}

@@ -40,7 +40,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
+export default class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 

@@ -41,7 +41,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonModAssignSubmissionComponent,
     ],
 })
-export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
 

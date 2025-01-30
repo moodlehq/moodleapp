@@ -30,7 +30,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonModWikiIndexComponent,
     ],
 })
-export class AddonModWikiIndexPage extends CoreCourseModuleMainActivityPage<AddonModWikiIndexComponent> implements OnInit {
+export default class AddonModWikiIndexPage extends CoreCourseModuleMainActivityPage<AddonModWikiIndexComponent> implements OnInit {
 
     @ViewChild(AddonModWikiIndexComponent) activityComponent?: AddonModWikiIndexComponent;
 

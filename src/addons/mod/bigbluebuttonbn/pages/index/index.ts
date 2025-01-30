@@ -29,7 +29,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonModBBBIndexComponent,
     ],
 })
-export class AddonModBBBIndexPage extends CoreCourseModuleMainActivityPage<AddonModBBBIndexComponent> {
+export default class AddonModBBBIndexPage extends CoreCourseModuleMainActivityPage<AddonModBBBIndexComponent> {
 
     @ViewChild(AddonModBBBIndexComponent) activityComponent?: AddonModBBBIndexComponent;
 

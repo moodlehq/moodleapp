@@ -47,7 +47,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestroy {
+export default class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 

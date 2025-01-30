@@ -17,51 +17,42 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonCompetencyPlanPage } from './pages/plan/plan';
-import { AddonCompetencyPlanListPage } from './pages/planlist/planlist';
-import { AddonCompetencyCompetencyPage } from './pages/competency/competency.page';
-import { AddonCompetencyCompetencySummaryPage } from './pages/competencysummary/competencysummary.page';
 import { ADDON_COMPETENCY_COMPETENCIES_PAGE, ADDON_COMPETENCY_SUMMARY_PAGE } from './constants';
-import { AddonCompetencyCompetencyPageModule } from './pages/competency/competency.module';
-import { AddonCompetencyCompetencySummaryPageModule } from './pages/competencysummary/competencysummary.module';
-import { AddonCompetencyCompetenciesPage } from './pages/competencies/competencies.page';
-import { AddonCompetencyCompetenciesPageModule } from './pages/competencies/competencies.module';
 
 const mobileRoutes: Routes = [
     {
         path: '',
         pathMatch: 'full',
-        component: AddonCompetencyPlanListPage,
+        loadComponent: () => import('./pages/planlist/planlist'),
     },
     {
         path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
-        component: AddonCompetencyPlanPage,
+        loadComponent: () => import('./pages/plan/plan'),
     },
     {
         path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}/:competencyId`,
-        component: AddonCompetencyCompetencyPage,
+        loadComponent: () => import('./pages/competency/competency'),
     },
 ];
 
 const tabletRoutes: Routes = [
     {
         path: '',
-        component: AddonCompetencyPlanListPage,
+        loadComponent: () => import('./pages/planlist/planlist'),
         children: [
             {
                 path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
-                component: AddonCompetencyPlanPage,
+                loadComponent: () => import('./pages/plan/plan'),
             },
         ],
     },
     {
         path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
-        component: AddonCompetencyCompetenciesPage,
+        loadComponent: () => import('./pages/competencies/competencies'),
         children: [
             {
                 path: ':competencyId',
-                component: AddonCompetencyCompetencyPage,
+                loadComponent: () => import('./pages/competency/competency'),
             },
         ],
     },
@@ -72,19 +63,13 @@ const routes: Routes = [
     ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
     {
         path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}/:competencyId/${ADDON_COMPETENCY_SUMMARY_PAGE}`,
-        component: AddonCompetencyCompetencySummaryPage,
+        loadComponent: () => import('./pages/competencysummary/competencysummary'),
     },
 ];
 
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        AddonCompetencyCompetenciesPageModule,
-        AddonCompetencyCompetencyPageModule,
-        AddonCompetencyCompetencySummaryPageModule,
-        AddonCompetencyPlanPage,
-        AddonCompetencyPlanListPage,
     ],
 })
 export default class AddonCompetencyLearningPlansLazyModule {}

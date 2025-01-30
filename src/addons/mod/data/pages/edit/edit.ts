@@ -25,7 +25,7 @@ import { CoreForms } from '@singletons/form';
 import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { AddonModDataComponentsCompileModule } from '../../components/components-compile.module';
+import { AddonModDataComponentsCompileModule } from '../../components/components.module';
 import {
     AddonModDataData,
     AddonModDataField,
@@ -63,7 +63,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreCompileHtmlComponentModule,
     ],
 })
-export class AddonModDataEditPage implements OnInit {
+export default class AddonModDataEditPage implements OnInit {
 
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild('editFormEl') formElement!: ElementRef;

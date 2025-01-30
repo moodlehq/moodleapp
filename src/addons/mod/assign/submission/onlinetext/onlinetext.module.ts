@@ -14,17 +14,9 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { AddonModAssignSubmissionOnlineTextHandler } from './services/handler';
-import { AddonModAssignSubmissionOnlineTextComponent } from './component/onlinetext';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
-import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModAssignSubmissionDelegate } from '../../services/submission-delegate';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        CoreEditorComponentsModule,
-        AddonModAssignSubmissionOnlineTextComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -33,9 +25,6 @@ import { AddonModAssignSubmissionDelegate } from '../../services/submission-dele
                 AddonModAssignSubmissionDelegate.registerHandler(AddonModAssignSubmissionOnlineTextHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonModAssignSubmissionOnlineTextComponent,
     ],
 })
 export class AddonModAssignSubmissionOnlineTextModule {}

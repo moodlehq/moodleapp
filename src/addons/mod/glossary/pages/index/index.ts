@@ -29,7 +29,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonModGlossaryIndexComponent,
     ],
 })
-export class AddonModGlossaryIndexPage extends CoreCourseModuleMainActivityPage<AddonModGlossaryIndexComponent> {
+export default class AddonModGlossaryIndexPage extends CoreCourseModuleMainActivityPage<AddonModGlossaryIndexComponent> {
 
     @ViewChild(AddonModGlossaryIndexComponent) activityComponent?: AddonModGlossaryIndexComponent;
 

@@ -33,7 +33,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonBadgesBadgeClassPage implements OnInit {
+export default class AddonBadgesBadgeClassPage implements OnInit {
 
     protected badgeId = 0;
     protected logView: (badge: AddonBadgesBadgeClass) => void;

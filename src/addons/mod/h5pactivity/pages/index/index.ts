@@ -32,7 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonModH5PActivityIndexComponent,
     ],
 })
-export class AddonModH5PActivityIndexPage extends CoreCourseModuleMainActivityPage<AddonModH5PActivityIndexComponent>
+export default class AddonModH5PActivityIndexPage extends CoreCourseModuleMainActivityPage<AddonModH5PActivityIndexComponent>
     implements CanLeave, OnDestroy {
 
     canLeaveSafely = false;

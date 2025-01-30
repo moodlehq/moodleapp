@@ -14,16 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { AddonQtypeDdwtosComponent } from './component/ddwtos';
 import { AddonQtypeDdwtosHandler } from './services/handlers/ddwtos';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonQtypeDdwtosComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -32,9 +26,6 @@ import { AddonQtypeDdwtosHandler } from './services/handlers/ddwtos';
                 CoreQuestionDelegate.registerHandler(AddonQtypeDdwtosHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonQtypeDdwtosComponent,
     ],
 })
 export class AddonQtypeDdwtosModule {}

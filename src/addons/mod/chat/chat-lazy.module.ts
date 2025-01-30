@@ -14,24 +14,18 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModChatComponentsModule } from './components/components.module';
-import { AddonModChatIndexPage } from './pages/index/index';
-import { AddonModChatChatPage } from './pages/chat/chat';
-import { AddonModChatSessionMessagesPage } from './pages/session-messages/session-messages';
 import { CoreScreen } from '@services/screen';
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { AddonModChatSessionsPage } from './pages/sessions/sessions';
 import { canLeaveGuard } from '@guards/can-leave';
 
 const commonRoutes: Routes = [
     {
         path: ':courseId/:cmId',
-        component: AddonModChatIndexPage,
+        loadComponent: () => import('./pages/index/index'),
     },
     {
         path: ':courseId/:cmId/chat',
-        component: AddonModChatChatPage,
+        loadComponent: () => import('./pages/chat/chat'),
         canDeactivate: [canLeaveGuard],
     },
 ];
@@ -40,11 +34,11 @@ const mobileRoutes: Routes = [
     ...commonRoutes,
     {
         path: ':courseId/:cmId/sessions',
-        component: AddonModChatSessionsPage,
+        loadComponent: () => import('./pages/sessions/sessions'),
     },
     {
         path: ':courseId/:cmId/sessions/:sessionStart/:sessionEnd',
-        component: AddonModChatSessionMessagesPage,
+        loadComponent: () => import('./pages/session-messages/session-messages'),
     },
 ];
 
@@ -52,11 +46,11 @@ const tabletRoutes: Routes = [
     ...commonRoutes,
     {
         path: ':courseId/:cmId/sessions',
-        component: AddonModChatSessionsPage,
+        loadComponent: () => import('./pages/sessions/sessions'),
         children: [
             {
                 path: ':sessionStart/:sessionEnd',
-                component: AddonModChatSessionMessagesPage,
+                loadComponent: () => import('./pages/session-messages/session-messages'),
             },
         ],
     },
@@ -70,12 +64,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        AddonModChatComponentsModule,
-        AddonModChatIndexPage,
-        AddonModChatChatPage,
-        AddonModChatSessionsPage,
-        AddonModChatSessionMessagesPage,
     ],
 })
 export default class AddonModChatLazyModule {}

@@ -61,7 +61,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreEditorComponentsModule,
     ],
 })
-export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild('editFormEl') formElement!: ElementRef;
 

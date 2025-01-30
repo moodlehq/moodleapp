@@ -56,7 +56,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreQuestionComponentsModule,
     ],
 })
-export class AddonModQuizReviewPage implements OnInit {
+export default class AddonModQuizReviewPage implements OnInit {
 
     @ViewChild(IonContent) content?: IonContent;
 

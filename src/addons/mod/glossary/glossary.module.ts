@@ -41,7 +41,7 @@ const mainMenuRoutes: Routes = [
     // Link handlers navigation.
     {
         path: `${ADDON_MOD_GLOSSARY_PAGE_NAME}/entry/:entrySlug`,
-        loadChildren: () => import('./glossary-entry-lazy.module'),
+        loadComponent: () => import('./pages/entry/entry'),
     },
 
     // Course activity navigation.
@@ -64,7 +64,7 @@ const mainMenuRoutes: Routes = [
     ...conditionalRoutes(
         [{
             path: `${CORE_COURSE_CONTENTS_PATH}/${ADDON_MOD_GLOSSARY_PAGE_NAME}/entry/:entrySlug`,
-            loadChildren: () => import('./glossary-entry-lazy.module'),
+            loadComponent: () => import('./pages/entry/entry'),
             data: { glossaryPathPrefix: `${ADDON_MOD_GLOSSARY_PAGE_NAME}/` },
         }],
         () => CoreScreen.isMobile,
@@ -75,7 +75,7 @@ const mainMenuRoutes: Routes = [
 const courseContentsRoutes: Routes = conditionalRoutes(
     [{
         path: `${ADDON_MOD_GLOSSARY_PAGE_NAME}/entry/:entrySlug`,
-        loadChildren: () => import('./glossary-entry-lazy.module'),
+        loadComponent: () => import('./pages/entry/entry'),
         data: { glossaryPathPrefix: `${ADDON_MOD_GLOSSARY_PAGE_NAME}/` },
     }],
     () => CoreScreen.isTablet,

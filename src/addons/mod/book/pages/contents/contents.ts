@@ -54,7 +54,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreTagComponentsModule,
     ],
 })
-export class AddonModBookContentsPage implements OnInit, OnDestroy {
+export default class AddonModBookContentsPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreSwipeSlidesComponent) swipeSlidesComponent?: CoreSwipeSlidesComponent;
 
