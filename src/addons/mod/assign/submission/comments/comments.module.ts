@@ -14,17 +14,9 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { AddonModAssignSubmissionCommentsHandler } from './services/handler';
-import { AddonModAssignSubmissionCommentsComponent } from './component/comments';
-import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModAssignSubmissionDelegate } from '../../services/submission-delegate';
-import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        CoreCommentsComponentsModule,
-        AddonModAssignSubmissionCommentsComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -33,9 +25,6 @@ import { CoreCommentsComponentsModule } from '@features/comments/components/comp
                 AddonModAssignSubmissionDelegate.registerHandler(AddonModAssignSubmissionCommentsHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonModAssignSubmissionCommentsComponent,
     ],
 })
 export class AddonModAssignSubmissionCommentsModule {}

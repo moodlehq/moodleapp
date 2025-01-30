@@ -64,7 +64,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonModAssignSubmissionPluginComponent,
     ],
 })
-export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild('editSubmissionForm') formElement?: ElementRef;
 

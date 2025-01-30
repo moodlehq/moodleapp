@@ -13,24 +13,18 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { RouterModule, Routes } from '@angular/router';
 import { canLeaveGuard } from '@guards/can-leave';
-import { AddonModGlossaryEditPage } from '@addons/mod/glossary/pages/edit/edit';
 
 const routes: Routes = [{
     path: '',
-    component: AddonModGlossaryEditPage,
+    loadComponent: () => import('./pages/edit/edit'),
     canDeactivate: [canLeaveGuard],
 }];
 
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        CoreEditorComponentsModule,
-        AddonModGlossaryEditPage,
     ],
 })
 export default class AddonModGlossaryEditLazyModule {}

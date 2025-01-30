@@ -27,7 +27,7 @@ import {
 } from '../../services/data';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
 import { AddonModDataHelper } from '../../services/data-helper';
-import { AddonModDataComponentsCompileModule } from '../components-compile.module';
+import { AddonModDataComponentsCompileModule } from '../components.module';
 import { AddonModDataSearchDataParams } from '../index';
 import { AddonModDataTemplateType } from '../../constants';
 import { CoreSharedModule } from '@/core/shared.module';

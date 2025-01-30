@@ -27,7 +27,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonModForumIndexComponent,
     ],
 })
-export class AddonModForumIndexPage extends CoreCourseModuleMainActivityPage<AddonModForumIndexComponent> {
+export default class AddonModForumIndexPage extends CoreCourseModuleMainActivityPage<AddonModForumIndexComponent> {
 
     @ViewChild(AddonModForumIndexComponent) activityComponent?: AddonModForumIndexComponent;
 

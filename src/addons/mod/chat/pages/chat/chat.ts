@@ -47,7 +47,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
 
     protected static readonly POLL_INTERVAL = 4000;
 

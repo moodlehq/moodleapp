@@ -18,7 +18,7 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { AddonModWorkshopSubmissionPage } from '../../pages/submission/submission';
+import AddonModWorkshopSubmissionPage from '../../pages/submission/submission';
 import {
     AddonModWorkshopData,
     AddonModWorkshopGetWorkshopAccessInformationWSResponse,

@@ -28,8 +28,8 @@ import { ADDON_MOD_PAGE_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: ADDON_MOD_PAGE_PAGE_NAME,
-        loadChildren: () => import('./page-lazy.module'),
+        path: `${ADDON_MOD_PAGE_PAGE_NAME}/:courseId/:cmId`,
+        loadComponent: () => import('./pages/index/index'),
     },
 ];
 

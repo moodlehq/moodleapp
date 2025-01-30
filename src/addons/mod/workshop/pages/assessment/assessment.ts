@@ -62,7 +62,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreEditorComponentsModule,
     ],
 })
-export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild('evaluateFormEl') formElement!: ElementRef;
 

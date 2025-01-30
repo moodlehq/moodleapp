@@ -43,7 +43,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
+export default class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
 
     cmId: number;
     courseId: number;

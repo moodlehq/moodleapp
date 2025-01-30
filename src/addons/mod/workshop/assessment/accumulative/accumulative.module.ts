@@ -14,13 +14,9 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { AddonWorkshopAssessmentStrategyDelegate } from '../../services/assessment-strategy-delegate';
-import { CoreSharedModule } from '@/core/shared.module';
 import { getAssessmentStrategyHandlerInstance } from './services/handler';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,

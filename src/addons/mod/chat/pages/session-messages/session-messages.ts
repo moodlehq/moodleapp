@@ -37,7 +37,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonModChatSessionMessagesPage implements OnInit {
+export default class AddonModChatSessionMessagesPage implements OnInit {
 
     currentUserId!: number;
     cmId!: number;

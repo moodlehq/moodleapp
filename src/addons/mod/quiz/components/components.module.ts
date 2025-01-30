@@ -14,8 +14,6 @@
 
 import { NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { AddonModQuizIndexComponent } from './index/index';
 import { AddonModQuizAttemptInfoComponent } from './attempt-info/attempt-info';
 import { AddonModQuizAttemptStateComponent } from './attempt-state/attempt-state';
@@ -23,14 +21,6 @@ import { AddonModQuizQuestionCardComponent } from './question-card/question-card
 
 @NgModule({
     imports: [
-        CoreSharedModule,
-        CoreCourseComponentsModule,
-        AddonModQuizAttemptInfoComponent,
-        AddonModQuizAttemptStateComponent,
-        AddonModQuizIndexComponent,
-        AddonModQuizQuestionCardComponent,
-    ],
-    exports: [
         AddonModQuizAttemptInfoComponent,
         AddonModQuizAttemptStateComponent,
         AddonModQuizIndexComponent,

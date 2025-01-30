@@ -20,8 +20,8 @@ import { ModalController } from '@singletons';
 import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '../../services/assign';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
 import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModAssignComponentsModule } from '../components.module';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { AddonModAssignFeedbackPluginComponent } from '../feedback-plugin/feedback-plugin';
 
 /**
  * Modal that allows editing a feedback plugin.
@@ -32,7 +32,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
     standalone: true,
     imports: [
         CoreSharedModule,
-        AddonModAssignComponentsModule,
+        AddonModAssignFeedbackPluginComponent,
     ],
 })
 export class AddonModAssignEditFeedbackModalComponent {

@@ -31,7 +31,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonModAssignIndexComponent,
     ],
 })
-export class AddonModAssignIndexPage extends CoreCourseModuleMainActivityPage<AddonModAssignIndexComponent>
+export default class AddonModAssignIndexPage extends CoreCourseModuleMainActivityPage<AddonModAssignIndexComponent>
     implements AfterViewInit {
 
     private action?: string;

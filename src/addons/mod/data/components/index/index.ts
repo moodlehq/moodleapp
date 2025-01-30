@@ -39,7 +39,7 @@ import {
 import { AddonModDataHelper, AddonModDatDisplayFieldsOptions } from '../../services/data-helper';
 import { AddonModDataAutoSyncData, AddonModDataSyncResult } from '../../services/data-sync';
 import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch-lazy';
-import { AddonModDataComponentsCompileModule } from '../components-compile.module';
+import { AddonModDataComponentsCompileModule } from '../components.module';
 import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
 import {

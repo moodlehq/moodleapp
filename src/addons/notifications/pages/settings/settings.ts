@@ -55,7 +55,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
+export default class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
 
     preferences?: AddonNotificationsPreferencesFormatted;
     components?: AddonNotificationsPreferencesComponentFormatted[];

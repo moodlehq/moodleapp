@@ -53,7 +53,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
+export default class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
     courseId!: number;
     title = '';

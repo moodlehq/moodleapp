@@ -44,7 +44,7 @@ import { ADDON_MOD_FORUM_COMPONENT, ADDON_MOD_FORUM_PAGE_NAME, ADDON_MOD_FORUM_S
 const mainMenuRoutes: Routes = [
     {
         path: ADDON_MOD_FORUM_SEARCH_PAGE_NAME,
-        loadChildren: () => import('./forum-search-lazy.module'),
+        loadComponent: () => import('./pages/search/search'),
     },
     {
         path: `${ADDON_MOD_FORUM_PAGE_NAME}/discussion/:discussionId`,

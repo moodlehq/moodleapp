@@ -30,8 +30,8 @@ import { ADDON_MOD_SURVEY_PAGE_NAME } from '@addons/mod/survey/constants';
 
 const routes: Routes = [
     {
-        path: ADDON_MOD_SURVEY_PAGE_NAME,
-        loadChildren: () => import('./survey-lazy.module'),
+        path: `${ADDON_MOD_SURVEY_PAGE_NAME}/:courseId/:cmId`,
+        loadComponent: () => import('./pages/index/index'),
     },
 ];
 

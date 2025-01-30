@@ -29,7 +29,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonModChatIndexComponent,
     ],
 })
-export class AddonModChatIndexPage extends CoreCourseModuleMainActivityPage<AddonModChatIndexComponent> {
+export default class AddonModChatIndexPage extends CoreCourseModuleMainActivityPage<AddonModChatIndexComponent> {
 
     @ViewChild(AddonModChatIndexComponent) activityComponent?: AddonModChatIndexComponent;
 

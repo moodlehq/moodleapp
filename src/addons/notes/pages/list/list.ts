@@ -48,7 +48,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonNotesListPage implements OnInit, OnDestroy {
+export default class AddonNotesListPage implements OnInit, OnDestroy {
 
     @ViewChild(IonContent) content?: IonContent;
 

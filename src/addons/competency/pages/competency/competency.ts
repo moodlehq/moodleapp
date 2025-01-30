@@ -54,7 +54,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
+export default class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
 
     competencyLoaded = false;
     competencies!: AddonCompetencyCompetenciesSwipeManager;

@@ -41,7 +41,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonModImscpViewPage implements OnInit {
+export default class AddonModImscpViewPage implements OnInit {
 
     title = '';
     cmId!: number;

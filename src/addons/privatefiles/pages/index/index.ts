@@ -53,7 +53,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonPrivateFilesFileComponent,
     ],
 })
-export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
+export default class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 
     title!: string; // Page title.
     root?: 'my' | 'site'; // The root of the files loaded: 'my' or 'site'.

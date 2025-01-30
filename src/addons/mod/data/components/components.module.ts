@@ -13,20 +13,14 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
-import { AddonModDataIndexComponent } from './index';
-import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { AddonModDataFieldPluginComponent } from './field-plugin/field-plugin';
+import { AddonModDataActionComponent } from './action/action';
 
+// This module is intended to be passed to the compiler in order to avoid circular depencencies.
 @NgModule({
     imports: [
-        CoreSharedModule,
-        CoreCourseComponentsModule,
-        CoreCompileHtmlComponentModule,
-        AddonModDataIndexComponent,
-    ],
-    exports: [
-        AddonModDataIndexComponent,
+        AddonModDataFieldPluginComponent,
+        AddonModDataActionComponent,
     ],
 })
-export class AddonModDataComponentsModule {}
+export class AddonModDataComponentsCompileModule {}

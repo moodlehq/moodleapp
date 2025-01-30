@@ -17,20 +17,16 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
-import { CoreSharedModule } from '@/core/shared.module';
-
-import { AddonBadgesIssuedBadgePage } from './pages/issued-badge/issued-badge';
-import { AddonBadgesUserBadgesPage } from './pages/user-badges/user-badges';
 
 const mobileRoutes: Routes = [
     {
         path: '',
         pathMatch: 'full',
-        component: AddonBadgesUserBadgesPage,
+        loadComponent: () => import('./pages/user-badges/user-badges'),
     },
     {
         path: ':badgeHash',
-        component: AddonBadgesIssuedBadgePage,
+        loadComponent: () => import('./pages/issued-badge/issued-badge'),
         data: { usesSwipeNavigation: true },
     },
 ];
@@ -38,11 +34,11 @@ const mobileRoutes: Routes = [
 const tabletRoutes: Routes = [
     {
         path: '',
-        component: AddonBadgesUserBadgesPage,
+        loadComponent: () => import('./pages/user-badges/user-badges'),
         children: [
             {
                 path: ':badgeHash',
-                component: AddonBadgesIssuedBadgePage,
+                loadComponent: () => import('./pages/issued-badge/issued-badge'),
                 data: { usesSwipeNavigation: true },
             },
         ],
@@ -57,8 +53,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        AddonBadgesUserBadgesPage,
     ],
 })
 export default class AddonBadgesLazyModule {}

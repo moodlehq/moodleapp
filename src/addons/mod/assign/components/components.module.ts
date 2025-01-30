@@ -14,25 +14,11 @@
 
 import { NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
-import { AddonModAssignIndexComponent } from './index/index';
-import { AddonModAssignSubmissionComponent } from './submission/submission';
 import { AddonModAssignSubmissionPluginComponent } from './submission-plugin/submission-plugin';
 import { AddonModAssignFeedbackPluginComponent } from './feedback-plugin/feedback-plugin';
 
 @NgModule({
     imports: [
-        CoreSharedModule,
-        CoreCourseComponentsModule,
-        AddonModAssignIndexComponent,
-        AddonModAssignSubmissionComponent,
-        AddonModAssignSubmissionPluginComponent,
-        AddonModAssignFeedbackPluginComponent,
-    ],
-    exports: [
-        AddonModAssignIndexComponent,
-        AddonModAssignSubmissionComponent,
         AddonModAssignSubmissionPluginComponent,
         AddonModAssignFeedbackPluginComponent,
     ],

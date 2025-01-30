@@ -14,15 +14,9 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { AddonModAssignFeedbackFileHandler } from './services/handler';
-import { AddonModAssignFeedbackFileComponent } from './component/file';
-import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonModAssignFeedbackFileComponent,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -31,9 +25,6 @@ import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate
                 AddonModAssignFeedbackDelegate.registerHandler(AddonModAssignFeedbackFileHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonModAssignFeedbackFileComponent,
     ],
 })
 export class AddonModAssignFeedbackFileModule {}

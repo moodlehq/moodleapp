@@ -36,7 +36,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
+export default class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 

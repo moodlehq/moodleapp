@@ -15,31 +15,28 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModGlossaryComponentsModule } from './components/components.module';
-import { AddonModGlossaryIndexPage } from './pages/index/index';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 
 const mobileRoutes: Routes = [
     {
         path: ':courseId/:cmId',
-        component: AddonModGlossaryIndexPage,
+        loadComponent: () => import('./pages/index/index'),
     },
     {
         path: ':courseId/:cmId/entry/:entrySlug',
-        loadChildren: () => import('./glossary-entry-lazy.module'),
+        loadComponent: () => import('./pages/entry/entry'),
     },
 ];
 
 const tabletRoutes: Routes = [
     {
         path: ':courseId/:cmId',
-        component: AddonModGlossaryIndexPage,
+        loadComponent: () => import('./pages/index/index'),
         children: [
             {
                 path: 'entry/:entrySlug',
-                loadChildren: () => import('./glossary-entry-lazy.module'),
+                loadComponent: () => import('./pages/entry/entry'),
             },
         ],
     },
@@ -61,9 +58,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        AddonModGlossaryComponentsModule,
-        AddonModGlossaryIndexPage,
     ],
 })
 export default class AddonModGlossaryLazyModule {}

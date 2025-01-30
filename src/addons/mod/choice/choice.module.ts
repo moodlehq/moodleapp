@@ -32,8 +32,8 @@ import { ADDON_MOD_CHOICE_COMPONENT, ADDON_MOD_CHOICE_PAGE_NAME } from './consta
 
 const routes: Routes = [
     {
-        path: ADDON_MOD_CHOICE_PAGE_NAME,
-        loadChildren: () => import('./choice-lazy.module'),
+        path: `${ADDON_MOD_CHOICE_PAGE_NAME}/:courseId/:cmId`,
+        loadComponent: () => import('./pages/index/index'),
     },
 ];
 

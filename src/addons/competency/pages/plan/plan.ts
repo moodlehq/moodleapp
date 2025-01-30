@@ -37,7 +37,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonCompetencyPlanPage implements OnInit, OnDestroy {
+export default class AddonCompetencyPlanPage implements OnInit, OnDestroy {
 
     plans!: CoreSwipeNavigationItemsManager;
     competencies!: CoreListItemsManager<AddonCompetencyDataForPlanPageCompetency, AddonCompetencyPlanCompetenciesSource>;

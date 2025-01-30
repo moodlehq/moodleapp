@@ -23,7 +23,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { AddonModDataComponentsCompileModule } from '../../components/components-compile.module';
+import { AddonModDataComponentsCompileModule } from '../../components/components.module';
 import {
     AddonModData,
     AddonModDataData,
@@ -65,7 +65,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreCommentsComponentsModule,
     ],
 })
-export class AddonModDataEntryPage implements OnInit, OnDestroy {
+export default class AddonModDataEntryPage implements OnInit, OnDestroy {
 
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild(CoreCommentsCommentsComponent) comments?: CoreCommentsCommentsComponent;

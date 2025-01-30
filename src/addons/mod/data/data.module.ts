@@ -35,11 +35,31 @@ import { AddonModDataTagAreaHandler } from './services/handlers/tag-area';
 import { AddonModDataFieldModule } from './fields/field.module';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_PAGE_NAME } from './constants';
+import { canLeaveGuard } from '@guards/can-leave';
 
 const routes: Routes = [
     {
         path: ADDON_MOD_DATA_PAGE_NAME,
-        loadChildren: () => import('./data-lazy.module'),
+        children: [
+            {
+                path: ':courseId/:cmId',
+                loadComponent: () => import('./pages/index/index'),
+            },
+            {
+                path: ':courseId/:cmId/edit',
+                loadComponent: () => import('./pages/edit/edit'),
+                canDeactivate: [canLeaveGuard],
+            },
+            {
+                path: ':courseId/:cmId/edit/:entryId',
+                loadComponent: () => import('./pages/edit/edit'),
+                canDeactivate: [canLeaveGuard],
+            },
+            {
+                path: ':courseId/:cmId/:entryId',
+                loadComponent: () => import('./pages/entry/entry'),
+            },
+        ],
     },
 ];
 

@@ -39,7 +39,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonModChatSessionsPage implements OnInit, AfterViewInit, OnDestroy {
+export default class AddonModChatSessionsPage implements OnInit, AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 

@@ -34,7 +34,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class AddonCompetencyCompetencySummaryPage implements OnInit {
+export default class AddonCompetencyCompetencySummaryPage implements OnInit {
 
     competencyLoaded = false;
     competencyId!: number;
