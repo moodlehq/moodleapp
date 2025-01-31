@@ -47,6 +47,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWS } from '@services/ws';
 import { CoreDom } from '@singletons/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * This component has a behaviour similar to $compile for AngularJS. Given an HTML code, it will compile it so all its
@@ -56,7 +57,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
  * component is used, so it can slow down the app.
  *
  * This component has its own module to prevent circular dependencies. If you want to use it,
- * you need to import CoreCompileHtmlComponentModule.
+ * you need to import CoreCompileHtmlComponent.
  *
  * You can provide some Javascript code (as text) to be executed inside the component. The context of the javascript code (this)
  * will be the component instance created to compile the template. This means your javascript code can interact with the template.
@@ -67,6 +68,8 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'core-compile-html',
     template: '<core-loading [hideUntil]="loaded"><ng-container #dynamicComponent /></core-loading>',
     styles: [':host { display: contents; }'],
+    standalone: true,
+    imports: [CoreSharedModule],
 })
 export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 

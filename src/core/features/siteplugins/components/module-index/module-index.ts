@@ -31,7 +31,6 @@ import {
 import { CoreModals } from '@services/overlays/modals';
 import { CoreUtils } from '@singletons/utils';
 import { CoreSitePluginsPluginContentComponent, CoreSitePluginsPluginContentLoadedData } from '../plugin-content/plugin-content';
-import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -45,7 +44,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCompileHtmlComponentModule,
         CoreCourseComponentsModule,
         CoreSitePluginsPluginContentComponent,
     ],

@@ -47,7 +47,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreArray } from '@singletons/array';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -60,7 +60,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCompileHtmlComponentModule,
+        CoreCompileHtmlComponent,
     ],
 })
 export default class AddonModDataEditPage implements OnInit {

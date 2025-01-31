@@ -58,7 +58,7 @@ export async function getModWorkshopServices(): Promise<Type<unknown>[]> {
  *
  * @returns Workshop component modules.
  */
-export async function getModWorkshopComponentModules(): Promise<unknown[]> {
+export async function getModWorkshopComponentModules(): Promise<Type<unknown>[]> {
     const { AddonModWorkshopAssessmentStrategyComponent } =
         await import('@addons/mod/workshop/components/assessment-strategy/assessment-strategy');
 

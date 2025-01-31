@@ -31,7 +31,7 @@ import { AddonModDataHelper } from '../../services/data-helper';
 import { AddonModDataSearchDataParams } from '../index';
 import { AddonModDataTemplateType } from '../../constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 
 /**
  * Page that displays the search modal.
@@ -43,7 +43,7 @@ import { CoreCompileHtmlComponentModule } from '@features/compile/components/com
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCompileHtmlComponentModule,
+        CoreCompileHtmlComponent,
     ],
 })
 export class AddonModDataSearchModalComponent implements OnInit {
