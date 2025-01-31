@@ -59,9 +59,10 @@ export async function getModWorkshopServices(): Promise<Type<unknown>[]> {
  * @returns Workshop component modules.
  */
 export async function getModWorkshopComponentModules(): Promise<unknown[]> {
-    const { AddonModWorkshopComponentsModule } = await import('@addons/mod/workshop/components/components.module');
+    const { AddonModWorkshopAssessmentStrategyComponent } =
+        await import('@addons/mod/workshop/components/assessment-strategy/assessment-strategy');
 
-    return [AddonModWorkshopComponentsModule];
+    return [AddonModWorkshopAssessmentStrategyComponent];
 }
 
 const routes: Routes = [
