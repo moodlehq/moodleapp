@@ -15,6 +15,8 @@
 import { Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy, ElementRef } from '@angular/core';
 import { SafeStyle } from '@angular/platform-browser';
 import { DomSanitizer, Translate } from '@singletons';
+import { TranslateModule } from '@ngx-translate/core';
+import { IonicModule } from '@ionic/angular';
 
 /**
  * Component to show a progress bar and its value.
@@ -27,6 +29,8 @@ import { DomSanitizer, Translate } from '@singletons';
     templateUrl: 'core-progress-bar.html',
     styleUrl: 'progress-bar.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [IonicModule, TranslateModule],
 })
 export class CoreProgressBarComponent implements OnChanges {
 

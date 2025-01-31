@@ -16,8 +16,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Translate } from '@singletons';
 import { ModalOptions } from '@ionic/core';
 import { CoreModals } from '@services/overlays/modals';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreFormatTextDirective } from '../../directives/format-text';
+import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
+import { CoreFaIconDirective } from '../../directives/fa-icon';
+import { IonicModule } from '@ionic/angular';
 
 /**
  * Component that show a combo select button (combobox).
@@ -44,9 +48,17 @@ import { toBoolean } from '@/core/transforms/boolean';
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,
-            multi:true,
+            multi: true,
             useExisting: CoreComboboxComponent,
         },
+    ],
+    standalone: true,
+    imports: [
+        IonicModule,
+        FormsModule,
+        CoreFaIconDirective,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFormatTextDirective,
     ],
 })
 export class CoreComboboxComponent implements ControlValueAccessor {

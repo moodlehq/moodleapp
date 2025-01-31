@@ -18,6 +18,14 @@ import { CoreSites } from '@services/sites';
 import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { TranslateModule } from '@ngx-translate/core';
+import { CoreFormatTextDirective } from '../../directives/format-text';
+import { CoreAutoFocusDirective } from '../../directives/auto-focus';
+import { FormsModule } from '@angular/forms';
+import { CoreContentDirective } from '../../directives/content';
+import { CoreFaIconDirective } from '../../directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
+import { IonicModule } from '@ionic/angular';
 
 /**
  * Modal that asks the password.
@@ -27,6 +35,17 @@ import { CoreLoadings } from '@services/overlays/loadings';
 @Component({
     selector: 'core-password-modal',
     templateUrl: 'password-modal.html',
+    standalone: true,
+    imports: [
+        IonicModule,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFaIconDirective,
+        CoreContentDirective,
+        FormsModule,
+        CoreAutoFocusDirective,
+        CoreFormatTextDirective,
+        TranslateModule,
+    ],
 })
 export class CorePasswordModalComponent {
 

@@ -14,8 +14,10 @@
 
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange, ViewChild, ElementRef } from '@angular/core';
-import { IonInfiniteScroll } from '@ionic/angular';
+import { IonInfiniteScroll, IonicModule } from '@ionic/angular';
 import { CoreWait } from '@singletons/wait';
+import { TranslateModule } from '@ngx-translate/core';
+import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
 
 const THRESHOLD = .15; // % of the scroll element height that must be close to the edge to consider loading more items necessary.
 
@@ -28,6 +30,12 @@ const THRESHOLD = .15; // % of the scroll element height that must be close to t
 @Component({
     selector: 'core-infinite-loading',
     templateUrl: 'core-infinite-loading.html',
+    standalone: true,
+    imports: [
+        IonicModule,
+        CoreUpdateNonReactiveAttributesDirective,
+        TranslateModule,
+    ],
 })
 export class CoreInfiniteLoadingComponent implements OnChanges {
 

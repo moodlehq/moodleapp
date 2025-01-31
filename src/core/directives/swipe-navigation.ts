@@ -33,6 +33,7 @@ const SWIPE_FRICTION = 0.6;
  */
 @Directive({
     selector: 'ion-content[core-swipe-navigation]',
+    standalone: true,
 })
 export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
 

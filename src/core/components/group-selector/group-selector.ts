@@ -20,6 +20,11 @@ import {
     ChangeDetectionStrategy,
 } from '@angular/core';
 import { CoreGroupInfo } from '@services/groups';
+import { TranslateModule } from '@ngx-translate/core';
+import { CoreFormatTextDirective } from '../../directives/format-text';
+import { FormsModule } from '@angular/forms';
+import { CoreFaIconDirective } from '../../directives/fa-icon';
+import { IonicModule } from '@ionic/angular';
 
 /**
  * Component to display a group selector.
@@ -29,6 +34,14 @@ import { CoreGroupInfo } from '@services/groups';
     templateUrl: 'group-selector.html',
     styleUrl: 'group-selector.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+        IonicModule,
+        CoreFaIconDirective,
+        FormsModule,
+        CoreFormatTextDirective,
+        TranslateModule,
+    ],
 })
 export class CoreGroupSelectorComponent {
 

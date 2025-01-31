@@ -31,6 +31,14 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreFileUtils } from '@singletons/file-utils';
 import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { TranslateModule } from '@ngx-translate/core';
+import { CoreSupressEventsDirective } from '../../directives/supress-events';
+import { CoreFaIconDirective } from '../../directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
+import { CoreAutoFocusDirective } from '../../directives/auto-focus';
+import { CoreAriaButtonClickDirective } from '../../directives/aria-button';
+import { IonicModule } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
 
 /**
  * Component to handle a local file. Only files inside the app folder can be managed.
@@ -42,6 +50,17 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'core-local-file',
     templateUrl: 'core-local-file.html',
     styleUrl: 'core-local-file.scss',
+    standalone: true,
+    imports: [
+        FormsModule,
+        IonicModule,
+        CoreAriaButtonClickDirective,
+        CoreAutoFocusDirective,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFaIconDirective,
+        CoreSupressEventsDirective,
+        TranslateModule,
+    ],
 })
 export class CoreLocalFileComponent implements OnInit {
 

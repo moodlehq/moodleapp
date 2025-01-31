@@ -30,6 +30,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
+import { CoreExternalContentDirective } from '../../directives/external-content';
 
 const assetsPath = 'assets/img/';
 const fallbackModName = 'external-tool';
@@ -48,6 +49,8 @@ const enum IconVersion {
     templateUrl: 'mod-icon.html',
     styleUrl: 'mod-icon.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [CoreExternalContentDirective],
 })
 export class CoreModIconComponent implements OnInit, OnChanges {
 

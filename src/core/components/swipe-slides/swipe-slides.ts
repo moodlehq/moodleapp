@@ -13,7 +13,18 @@
 // limitations under the License.
 
 import {
-    Component, ContentChild, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChange, TemplateRef, ViewChild,
+    Component,
+    ContentChild,
+    CUSTOM_ELEMENTS_SCHEMA,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnDestroy,
+    Output,
+    SimpleChange,
+    TemplateRef,
+    ViewChild,
 } from '@angular/core';
 import { AsyncDirective } from '@classes/async-directive';
 import { CoreSwipeSlidesItemsManager } from '@classes/items-management/swipe-slides-items-manager';
@@ -28,6 +39,7 @@ import { CoreMath } from '@singletons/math';
 import { CoreSwiper } from '@singletons/swiper';
 import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
+import { NgTemplateOutlet } from '@angular/common';
 /**
  * Helper component to display swipable slides.
  */
@@ -35,6 +47,9 @@ import { SwiperOptions } from 'swiper/types';
     selector: 'core-swipe-slides',
     templateUrl: 'swipe-slides.html',
     styleUrl: 'swipe-slides.scss',
+    standalone: true,
+    imports: [NgTemplateOutlet],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDestroy, AsyncDirective {
 
