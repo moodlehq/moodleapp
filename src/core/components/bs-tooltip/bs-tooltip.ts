@@ -14,6 +14,7 @@
 
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input } from '@angular/core';
+import { IonicModule } from '@ionic/angular';
 
 /**
  * Component to display a Bootstrap Tooltip in a popover.
@@ -21,6 +22,8 @@ import { Component, Input } from '@angular/core';
 @Component({
     selector: 'core-bs-tooltip',
     templateUrl: 'core-bs-tooltip.html',
+    standalone: true,
+    imports: [IonicModule],
 })
 export class CoreBSTooltipComponent {
 

@@ -64,6 +64,7 @@ import { CoreLogger } from '@singletons/logger';
     selector: 'core-dynamic-component',
     templateUrl: 'core-dynamic-component.html',
     styles: [':host { display: contents; }'],
+    standalone: true,
 })
 export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck, AsyncDirective {
 

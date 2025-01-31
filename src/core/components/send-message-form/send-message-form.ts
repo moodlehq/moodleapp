@@ -21,6 +21,15 @@ import { CoreConstants } from '@/core/constants';
 import { CoreForms } from '@singletons/form';
 import { CorePlatform } from '@services/platform';
 import { toBoolean } from '@/core/transforms/boolean';
+import { TranslateModule } from '@ngx-translate/core';
+import { CoreFaIconDirective } from '../../directives/fa-icon';
+import { CoreSupressEventsDirective } from '../../directives/supress-events';
+import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
+import { IonicModule } from '@ionic/angular';
+import { CoreOnResizeDirective } from '../../directives/on-resize';
+import { CoreAutoFocusDirective } from '../../directives/auto-focus';
+import { CoreAutoRowsDirective } from '../../directives/auto-rows';
+import { FormsModule } from '@angular/forms';
 
 /**
  * Component to display a "send message form".
@@ -36,6 +45,18 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-send-message-form',
     templateUrl: 'core-send-message-form.html',
     styleUrl: 'send-message-form.scss',
+    standalone: true,
+    imports: [
+        FormsModule,
+        CoreAutoRowsDirective,
+        CoreAutoFocusDirective,
+        CoreOnResizeDirective,
+        IonicModule,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreSupressEventsDirective,
+        CoreFaIconDirective,
+        TranslateModule,
+    ],
 })
 export class CoreSendMessageFormComponent {
 

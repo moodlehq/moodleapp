@@ -25,7 +25,7 @@ import { CoreTimeAgoPipe } from './time-ago';
 import { CoreNoPeriodPipe } from './no-period';
 
 @NgModule({
-    declarations: [
+    imports: [
         CoreBytesToSizePipe,
         CoreCreateLinksPipe,
         CoreDateDayOrTimePipe,

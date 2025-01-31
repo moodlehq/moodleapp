@@ -73,6 +73,7 @@ import { CoreLang, CoreLangFormat } from '@services/lang';
  */
 @Directive({
     selector: 'core-format-text',
+    standalone: true,
 })
 export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirective {
 

@@ -21,6 +21,7 @@ import { CoreLogger } from '@singletons/logger';
  */
 @Pipe({
     name: 'coreFormatDate',
+    standalone: true,
 })
 export class CoreFormatDatePipe implements PipeTransform {
 

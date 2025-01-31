@@ -30,6 +30,13 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreFormatDatePipe } from '../../pipes/format-date';
+import { TranslateModule } from '@ngx-translate/core';
+import { CoreFaIconDirective } from '../../directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
+import { CoreDownloadRefreshComponent } from '../download-refresh/download-refresh';
+import { CoreAriaButtonClickDirective } from '../../directives/aria-button';
+import { IonicModule } from '@ionic/angular';
 
 /**
  * Component to handle a remote file. Shows the file name, icon (depending on mimetype) and a button
@@ -39,6 +46,16 @@ import { Translate } from '@singletons';
     selector: 'core-file',
     templateUrl: 'core-file.html',
     styleUrl: 'core-file.scss',
+    standalone: true,
+    imports: [
+        IonicModule,
+        CoreAriaButtonClickDirective,
+        CoreDownloadRefreshComponent,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFaIconDirective,
+        TranslateModule,
+        CoreFormatDatePipe,
+    ],
 })
 export class CoreFileComponent implements OnInit, OnDestroy {
 

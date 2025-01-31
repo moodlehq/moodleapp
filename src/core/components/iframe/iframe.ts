@@ -31,11 +31,28 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CoreDom } from '@singletons/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLang, CoreLangFormat } from '@services/lang';
+import { TranslateModule } from '@ngx-translate/core';
+import { CoreFaIconDirective } from '../../directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
+import { IonicModule } from '@ionic/angular';
+import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
+import { NgStyle } from '@angular/common';
+import { CoreLoadingComponent } from '../loading/loading';
 
 @Component({
     selector: 'core-iframe',
     templateUrl: 'core-iframe.html',
     styleUrl: 'iframe.scss',
+    standalone: true,
+    imports: [
+        CoreLoadingComponent,
+        NgStyle,
+        CoreNavBarButtonsComponent,
+        IonicModule,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFaIconDirective,
+        TranslateModule,
+    ],
 })
 export class CoreIframeComponent implements OnChanges, OnDestroy {
 

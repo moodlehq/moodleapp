@@ -17,11 +17,20 @@ import { Component, ElementRef, HostBinding, input, effect } from '@angular/core
 import { CoreCourseListItem } from '@features/courses/services/courses';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { CoreColors } from '@singletons/colors';
+import { CoreExternalContentDirective } from '../../directives/external-content';
+import { CoreFaIconDirective } from '../../directives/fa-icon';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
     selector: 'core-course-image',
     templateUrl: 'course-image.html',
     styleUrl: './course-image.scss',
+    standalone: true,
+    imports: [
+        IonicModule,
+        CoreFaIconDirective,
+        CoreExternalContentDirective,
+    ],
 })
 export class CoreCourseImageComponent {
 
