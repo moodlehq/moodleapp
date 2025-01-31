@@ -23,6 +23,7 @@ import {
 import { CoreModals } from '@services/overlays/modals';
 import { CoreSites } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays the aggregation of a rating item.
@@ -30,6 +31,10 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 @Component({
     selector: 'core-rating-aggregate',
     templateUrl: 'core-rating-aggregate.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
 

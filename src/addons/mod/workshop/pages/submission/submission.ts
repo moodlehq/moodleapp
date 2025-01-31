@@ -56,7 +56,7 @@ import {
 } from '@addons/mod/workshop/constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { AddonModWorkshopAssessmentComponent } from '../../components/assessment/assessment';
 import { AddonModWorkshopSubmissionComponent } from '../../components/submission/submission';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -70,7 +70,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreEditorComponentsModule,
+        CoreEditorRichTextEditorComponent,
         AddonModWorkshopAssessmentComponent,
         AddonModWorkshopAssessmentStrategyComponent,
         AddonModWorkshopSubmissionComponent,

@@ -54,7 +54,6 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { CoreSharedModule } from '@/core/shared.module';
 
 type NewDiscussionData = {
@@ -77,7 +76,7 @@ type NewDiscussionData = {
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreEditorComponentsModule,
+        CoreEditorRichTextEditorComponent,
     ],
 })
 export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLeave {

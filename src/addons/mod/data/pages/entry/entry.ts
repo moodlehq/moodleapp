@@ -45,10 +45,10 @@ import {
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
-import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
-import { CoreRatingComponentsModule } from '@features/rating/components/components.module';
 import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
+import { CoreRatingAggregateComponent } from '@features/rating/components/aggregate/aggregate';
 
 /**
  * Page that displays the view entry page.
@@ -61,8 +61,9 @@ import { CoreSharedModule } from '@/core/shared.module';
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,
-        CoreRatingComponentsModule,
-        CoreCommentsComponentsModule,
+        CoreCommentsCommentsComponent,
+        CoreRatingRateComponent,
+        CoreRatingAggregateComponent,
     ],
 })
 export default class AddonModDataEntryPage implements OnInit, OnDestroy {

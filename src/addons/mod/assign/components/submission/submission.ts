@@ -72,8 +72,8 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { AddonModAssignFeedbackPluginComponent } from '../feedback-plugin/feedback-plugin';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 
 /**
  * Component that displays an assignment submission.
@@ -86,7 +86,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     imports: [
         CoreSharedModule,
         AddonModAssignSubmissionPluginComponent,
-        CoreCourseComponentsModule,
+        CoreCourseModuleNavigationComponent,
         AddonModAssignFeedbackPluginComponent,
     ],
 })

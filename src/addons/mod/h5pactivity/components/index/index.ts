@@ -58,9 +58,10 @@ import { NgZone, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreH5PComponentsModule } from '@features/h5p/components/components.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreH5PIframeComponent } from '@features/h5p/components/h5p-iframe/h5p-iframe';
 
 /**
  * Component that displays an H5P activity entry page.
@@ -71,8 +72,9 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCourseComponentsModule,
-        CoreH5PComponentsModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+        CoreH5PIframeComponent,
     ],
 })
 export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {

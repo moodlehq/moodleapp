@@ -14,6 +14,7 @@
 
 import { Component } from '@angular/core';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component showing the User Tour for the Course Index feature.
@@ -22,6 +23,10 @@ import { CoreUserTours } from '@features/usertours/services/user-tours';
     selector: 'core-course-course-index-tour',
     templateUrl: 'course-index-tour.html',
     styleUrl: 'course-index-tour.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCourseCourseIndexTourComponent {
 

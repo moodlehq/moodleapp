@@ -14,14 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreRemindersComponentsModule } from './components/components.module';
 import { REMINDERS_SITE_SCHEMA } from './services/database/reminders';
 import { CoreReminders } from './services/reminders';
 
 @NgModule({
-    imports: [
-        CoreRemindersComponentsModule,
-    ],
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,

@@ -14,6 +14,7 @@
 
 import { Component } from '@angular/core';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component showing the User Tour for the User Menu feature.
@@ -22,6 +23,10 @@ import { CoreUserTours } from '@features/usertours/services/user-tours';
     selector: 'core-mainmenu-user-menu-tour',
     templateUrl: 'user-menu-tour.html',
     styleUrl: 'user-menu-tour.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreMainMenuUserMenuTourComponent {
 

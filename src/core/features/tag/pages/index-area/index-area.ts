@@ -19,6 +19,7 @@ import { CoreTagAreaDelegate } from '../../services/tag-area-delegate';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the tag index area.
@@ -26,6 +27,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-core-tag-index-area',
     templateUrl: 'index-area.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreTagIndexAreaPage implements OnInit {
 

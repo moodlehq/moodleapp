@@ -17,7 +17,6 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreCommentsComponentsModule } from './components/components.module';
 import { CoreComments } from './services/comments';
 import { COMMENTS_OFFLINE_SITE_SCHEMA } from './services/database/comments';
 import { CoreCommentsSyncCronHandler } from './services/handlers/sync-cron';
@@ -48,7 +47,6 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        CoreCommentsComponentsModule,
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [

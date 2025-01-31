@@ -22,6 +22,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the tag index.
@@ -29,6 +30,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-core-tag-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreTagIndexPage implements OnInit {
 

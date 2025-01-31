@@ -42,10 +42,10 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreRatingComponentsModule } from '@features/rating/components/components.module';
-import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
-import { CoreTagComponentsModule } from '@features/tag/components/components.module';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
+import { CoreRatingAggregateComponent } from '@features/rating/components/aggregate/aggregate';
 
 /**
  * Page that displays a glossary entry.
@@ -56,9 +56,10 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreTagComponentsModule,
-        CoreCommentsComponentsModule,
-        CoreRatingComponentsModule,
+        CoreTagListComponent,
+        CoreCommentsCommentsComponent,
+        CoreRatingRateComponent,
+        CoreRatingAggregateComponent,
     ],
 })
 export default class AddonModGlossaryEntryPage implements OnInit, OnDestroy {

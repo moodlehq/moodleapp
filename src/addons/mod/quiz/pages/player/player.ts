@@ -55,7 +55,6 @@ import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreQuestionComponentsModule } from '@features/question/components/components.module';
 import { AddonModQuizQuestionCardComponent } from '../../components/question-card/question-card';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -70,7 +69,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     imports: [
         CoreSharedModule,
         AddonModQuizQuestionCardComponent,
-        CoreQuestionComponentsModule,
+        CoreQuestionComponent,
     ],
 })
 export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {

@@ -15,7 +15,6 @@
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 import { CoreSitePreferencesPage } from '@features/settings/pages/site/site';
@@ -53,12 +52,6 @@ function buildRoutes(injector: Injector): Routes {
 @NgModule({
     providers: [
         { provide: ROUTES, multi: true, useFactory: buildRoutes, deps: [Injector] },
-    ],
-    declarations: [
-        CoreSitePreferencesPage,
-    ],
-    imports: [
-        CoreSharedModule,
     ],
 })
 export default class CoreettingsSiteLazyModule {}

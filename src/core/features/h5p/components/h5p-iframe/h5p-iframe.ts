@@ -31,6 +31,7 @@ import { CoreH5PHelper } from '../../classes/helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render an iframe with an H5P package.
@@ -38,6 +39,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-h5p-iframe',
     templateUrl: 'core-h5p-iframe.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
 

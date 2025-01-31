@@ -53,7 +53,8 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNetwork } from '@services/network';
 import { Subscription } from 'rxjs';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -66,7 +67,8 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCourseComponentsModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
     ],
 })
 export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {

@@ -35,8 +35,8 @@ import { ADDON_MESSAGES_NEW_MESSAGE_EVENT, ADDON_MESSAGES_READ_CHANGED_EVENT } f
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreSearchComponentsModule } from '@features/search/components/components.module';
-import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
+import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
+import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/user-menu-button/user-menu-button';
 
 /**
  * Page that displays the list of discussions.
@@ -48,8 +48,8 @@ import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/comp
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreSearchComponentsModule,
-        CoreMainMenuComponentsModule,
+        CoreSearchBoxComponent,
+        CoreMainMenuUserButtonComponent,
     ],
 })
 export default class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {

@@ -60,9 +60,10 @@ import {
 import { CoreModals } from '@services/overlays/modals';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreTagComponentsModule } from '@features/tag/components/components.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 
 /**
  * Component that displays a wiki entry page.
@@ -74,8 +75,9 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCourseComponentsModule,
-        CoreTagComponentsModule,
+        CoreTagListComponent,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
     ],
 })
 export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {

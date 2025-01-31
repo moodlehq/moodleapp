@@ -20,7 +20,7 @@ import { CoreSitePluginsCallWSOnLoadDirective } from './call-ws-on-load';
 import { CoreSitePluginsNewContentDirective } from './new-content';
 
 @NgModule({
-    declarations: [
+    imports: [
         CoreSitePluginsCallWSDirective,
         CoreSitePluginsCallWSNewContentDirective,
         CoreSitePluginsCallWSOnLoadDirective,

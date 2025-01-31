@@ -40,6 +40,8 @@ import {
     MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
     MAIN_MENU_VISIBILITY_UPDATED_EVENT,
 } from '@features/mainmenu/constants';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
 
 const ANIMATION_DURATION = 500;
 
@@ -64,11 +66,17 @@ const ANIMATION_DURATION = 500;
                 animate(`${ANIMATION_DURATION}ms ease-in-out`, style({ transform: 'translateY(100%)' })),
             ]),
             transition('hidden => visible', [
-                style({ transform: 'translateY(100%)',  visibility: 'visible', height: '*' }),
+                style({ transform: 'translateY(100%)', visibility: 'visible', height: '*' }),
                 animate(`${ANIMATION_DURATION}ms ease-in-out`, style({ transform: 'translateY(0)' })),
             ]),
-        ])],
+        ]),
+    ],
     styleUrl: 'menu.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreMainMenuUserButtonComponent,
+    ],
 })
 export class CoreMainMenuPage implements OnInit, OnDestroy {
 

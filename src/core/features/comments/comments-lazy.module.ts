@@ -28,8 +28,6 @@ const routes: Routes = [
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
-    ],
-    declarations: [
         CoreCommentsViewerPage,
     ],
 })

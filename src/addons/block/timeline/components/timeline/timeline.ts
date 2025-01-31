@@ -27,9 +27,9 @@ import { FormControl } from '@angular/forms';
 import { formControlValue, resolved } from '@/core/utils/rxjs';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 import { AddonBlockTimelineEventsComponent } from '../events/events';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
 
 /**
  * Component to render a timeline block.
@@ -42,7 +42,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreSearchComponentsModule,
+        CoreSearchBoxComponent,
         AddonBlockTimelineEventsComponent,
     ],
 })

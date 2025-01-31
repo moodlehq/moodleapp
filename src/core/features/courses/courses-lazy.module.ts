@@ -12,15 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
-import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
 import { CoreCoursesCategoriesPage } from '@features/courses/pages/categories/categories';
 import { CoreCoursesListPage } from '@features/courses/pages/list/list';
-import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 import { CoreCoursesHelper } from './services/courses-helper';
 import { CoreCoursesMyCoursesMainMenuHandlerService } from './services/handlers/my-courses-mainmenu';
 
@@ -60,16 +56,6 @@ function buildRoutes(injector: Injector): Routes {
 }
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        CoreCoursesComponentsModule,
-        CoreMainMenuComponentsModule,
-        CoreSearchComponentsModule,
-    ],
-    declarations: [
-        CoreCoursesCategoriesPage,
-        CoreCoursesListPage,
-    ],
     providers: [
         {
             provide: ROUTES,

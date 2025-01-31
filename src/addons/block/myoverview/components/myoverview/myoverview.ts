@@ -35,7 +35,7 @@ import { PageLoadWatcher } from '@classes/page-load-watcher';
 import { PageLoadsManager } from '@classes/page-loads-manager';
 import { DownloadStatus } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
+import { CoreCoursesCourseListItemComponent } from '@features/courses/components/course-list-item/course-list-item';
 import {
     CORE_COURSES_MY_COURSES_UPDATED_EVENT,
     CoreCoursesMyCoursesUpdatedEventAction,
@@ -58,7 +58,7 @@ const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCoursesComponentsModule,
+        CoreCoursesCourseListItemComponent,
     ],
 })
 export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy, OnChanges {

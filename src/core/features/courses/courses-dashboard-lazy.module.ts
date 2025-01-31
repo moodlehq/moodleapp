@@ -15,8 +15,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreBlockComponentsModule } from '@features/block/components/components.module';
 import { CoreCoursesDashboardPage } from '@features/courses/pages/dashboard/dashboard';
 
 const routes: Routes = [
@@ -29,11 +27,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        CoreBlockComponentsModule,
-    ],
-    declarations: [
-        CoreCoursesDashboardPage,
     ],
 })
 export default class CoreCoursesDashboardLazyModule {}

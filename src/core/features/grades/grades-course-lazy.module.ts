@@ -15,8 +15,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreGradesCoursePage } from './pages/course/course.page';
-import { CoreGradesCoursePageModule } from './pages/course/course.module';
+import { CoreGradesCoursePage } from './pages/course/course';
 
 const routes: Routes = [
     {
@@ -28,7 +27,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreGradesCoursePageModule,
     ],
 })
 export default class CoreGradesCourseLazyModule {}

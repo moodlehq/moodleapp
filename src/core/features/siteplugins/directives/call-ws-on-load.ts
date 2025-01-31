@@ -32,6 +32,7 @@ import { CoreSitePluginsPluginContentComponent } from '../components/plugin-cont
  */
 @Directive({
     selector: '[core-site-plugins-call-ws-on-load]',
+    standalone: true,
 })
 export class CoreSitePluginsCallWSOnLoadDirective extends CoreSitePluginsCallWSBaseDirective implements OnInit {
 

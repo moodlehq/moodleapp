@@ -32,8 +32,9 @@ import { Translate } from '@singletons';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CoreSearchComponentsModule } from '@features/search/components/components.module';
+import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSearchGlobalSearchResultComponent } from '@features/search/components/global-search-result/global-search-result';
 
 @Component({
     selector: 'page-addon-mod-forum-search',
@@ -41,7 +42,8 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreSearchComponentsModule,
+        CoreSearchBoxComponent,
+        CoreSearchGlobalSearchResultComponent,
     ],
 })
 export default class AddonModForumSearchPage implements OnInit {

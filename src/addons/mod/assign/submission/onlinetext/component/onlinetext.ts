@@ -24,7 +24,7 @@ import { AddonModAssignSubmissionOnlineTextPluginData } from '../services/handle
 import { ContextLevel } from '@/core/constants';
 import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -36,7 +36,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreEditorComponentsModule,
+        CoreEditorRichTextEditorComponent,
     ],
 })
 export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignSubmissionPluginBaseComponent implements OnInit {
