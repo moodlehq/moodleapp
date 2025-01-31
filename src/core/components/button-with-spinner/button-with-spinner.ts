@@ -15,6 +15,8 @@
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input } from '@angular/core';
 import { CoreAnimations } from '@components/animations';
+import { TranslateModule } from '@ngx-translate/core';
+import { IonicModule } from '@ionic/angular';
 
 /**
  * Component to show a button or a spinner when loading.
@@ -29,6 +31,8 @@ import { CoreAnimations } from '@components/animations';
     templateUrl: 'core-button-with-spinner.html',
     styleUrl: 'button-with-spinner.scss',
     animations: [CoreAnimations.SHOW_HIDE],
+    standalone: true,
+    imports: [IonicModule, TranslateModule],
 })
 export class CoreButtonWithSpinnerComponent {
 

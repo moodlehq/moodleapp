@@ -21,6 +21,7 @@ import { toBoolean } from '../transforms/boolean';
  */
 @Directive({
     selector: '[ariaButtonClick]',
+    standalone: true,
 })
 export class CoreAriaButtonClickDirective implements OnInit, OnChanges {
 

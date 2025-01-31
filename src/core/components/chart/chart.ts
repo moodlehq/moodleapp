@@ -18,6 +18,8 @@ import { Component, Input, OnDestroy, OnInit, ElementRef, OnChanges, ViewChild, 
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { ChartLegendLabelItem, ChartLegendOptions } from 'chart.js';
+import { CoreFaIconDirective } from '../../directives/fa-icon';
+import { IonicModule } from '@ionic/angular';
 
 /**
  * This component shows a chart using chart.js.
@@ -31,6 +33,8 @@ import { ChartLegendLabelItem, ChartLegendOptions } from 'chart.js';
     selector: 'core-chart',
     templateUrl: 'core-chart.html',
     styleUrl: 'chart.scss',
+    standalone: true,
+    imports: [IonicModule, CoreFaIconDirective],
 })
 export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
 

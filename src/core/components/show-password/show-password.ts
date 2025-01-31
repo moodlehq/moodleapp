@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, AfterViewInit, Input, ContentChild, ViewEncapsulation } from '@angular/core';
-import { IonInput } from '@ionic/angular';
+import { IonInput, IonicModule } from '@ionic/angular';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -48,6 +48,8 @@ import { CoreLogger } from '@singletons/logger';
     templateUrl: 'core-show-password.html',
     styles: 'core-show-password { display: contents; }',
     encapsulation: ViewEncapsulation.None,
+    standalone: true,
+    imports: [IonicModule],
 })
 export class CoreShowPasswordComponent implements AfterViewInit {
 

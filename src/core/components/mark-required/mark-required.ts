@@ -17,6 +17,8 @@ import { Component, Input, AfterViewInit, ElementRef } from '@angular/core';
 
 import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
+import { CoreFaIconDirective } from '../../directives/fa-icon';
+import { IonicModule } from '@ionic/angular';
 
 /**
  * Directive to add a red asterisk for required input fields.
@@ -32,6 +34,8 @@ import { Translate } from '@singletons';
     selector: '[core-mark-required]',
     templateUrl: 'core-mark-required.html',
     styleUrl: 'mark-required.scss',
+    standalone: true,
+    imports: [IonicModule, CoreFaIconDirective],
 })
 export class CoreMarkRequiredComponent implements AfterViewInit {
 

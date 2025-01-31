@@ -19,6 +19,14 @@ import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CoreUserWithAvatar } from '@components/user-avatar/user-avatar';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreFormatDatePipe } from '../../pipes/format-date';
+import { TranslateModule } from '@ngx-translate/core';
+import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
+import { CoreFaIconDirective } from '../../directives/fa-icon';
+import { IonicModule } from '@ionic/angular';
+import { CoreFormatTextDirective } from '../../directives/format-text';
+import { CoreUserAvatarComponent } from '../user-avatar/user-avatar';
+import { CoreLongPressDirective } from '../../directives/long-press';
 
 /**
  * Component to handle a message in a conversation.
@@ -28,6 +36,17 @@ import { toBoolean } from '@/core/transforms/boolean';
     templateUrl: 'message.html',
     styleUrl: 'message.scss',
     animations: [CoreAnimations.SLIDE_IN_OUT],
+    standalone: true,
+    imports: [
+        CoreLongPressDirective,
+        CoreUserAvatarComponent,
+        CoreFormatTextDirective,
+        IonicModule,
+        CoreFaIconDirective,
+        CoreUpdateNonReactiveAttributesDirective,
+        TranslateModule,
+        CoreFormatDatePipe,
+    ],
 })
 export class CoreMessageComponent implements OnInit {
 

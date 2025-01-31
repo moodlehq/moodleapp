@@ -15,6 +15,10 @@
 import { ContextLevel } from '@/core/constants';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChange } from '@angular/core';
 import { Translate } from '@singletons';
+import { CoreProgressBarComponent } from '../progress-bar/progress-bar';
+import { CoreFaIconDirective } from '../../directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
+import { IonicModule } from '@ionic/angular';
 
 /**
  * Component to show a "bar" with arrows to navigate forward/backward and an progressbar to see the status.
@@ -29,6 +33,13 @@ import { Translate } from '@singletons';
     selector: 'core-navigation-bar',
     templateUrl: 'core-navigation-bar.html',
     styleUrl: 'navigation-bar.scss',
+    standalone: true,
+    imports: [
+        IonicModule,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFaIconDirective,
+        CoreProgressBarComponent,
+    ],
 })
 export class CoreNavigationBarComponent implements OnChanges {
 

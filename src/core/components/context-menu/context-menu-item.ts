@@ -33,6 +33,7 @@ import { CoreUtils } from '@singletons/utils';
 @Component({
     selector: 'core-context-menu-item',
     template: '',
+    standalone: true,
 })
 export class CoreContextMenuItemComponent implements OnInit, OnDestroy, OnChanges {
 

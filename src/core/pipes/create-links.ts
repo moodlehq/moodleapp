@@ -19,6 +19,7 @@ import { Pipe, PipeTransform } from '@angular/core';
  */
 @Pipe({
     name: 'coreCreateLinks',
+    standalone: true,
 })
 export class CoreCreateLinksPipe implements PipeTransform {
 
