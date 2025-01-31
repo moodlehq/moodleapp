@@ -31,6 +31,7 @@ import { CorePath } from '@singletons/path';
 import { CoreSites } from '@services/sites';
 import { CoreWait } from '@singletons/wait';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -39,6 +40,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-course-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCourseIndexPage implements OnInit, OnDestroy {
 

@@ -15,12 +15,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreBlockComponentsModule } from '@features/block/components/components.module';
-
-import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 import { CoreCoursesMyPage } from '@features/courses/pages/my/my';
-import { CoreSiteLogoComponent } from '@/core/components/site-logo/site-logo';
 
 const routes: Routes = [
     {
@@ -32,13 +27,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        CoreBlockComponentsModule,
-        CoreMainMenuComponentsModule,
-        CoreSiteLogoComponent,
-    ],
-    declarations: [
-        CoreCoursesMyPage,
     ],
 })
 export default class CoreCoursesMyLazyModule {}

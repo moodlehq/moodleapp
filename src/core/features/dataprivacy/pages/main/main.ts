@@ -27,6 +27,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to display the main data privacy page.
@@ -35,6 +36,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-data-privacy-main',
     templateUrl: 'main.html',
     styleUrl: 'main.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreDataPrivacyMainPage implements OnInit {
 

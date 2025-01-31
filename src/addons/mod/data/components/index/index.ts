@@ -57,7 +57,8 @@ import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
 import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreSharedModule } from '@/core/shared.module';
 
 const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
@@ -72,7 +73,8 @@ const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCourseComponentsModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
         CoreCompileHtmlComponent,
     ],
 })

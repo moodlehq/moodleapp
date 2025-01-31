@@ -42,6 +42,8 @@ import { CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 import { CoreEnrol, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
 import { CORE_COURSES_MY_COURSES_UPDATED_EVENT, CoreCoursesMyCoursesUpdatedEventAction } from '@features/courses/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreRemindersDateComponent } from '../../../reminders/components/date/date';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that shows the summary of a course including buttons to enrol and other available options.
@@ -50,6 +52,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-course-summary',
     templateUrl: 'course-summary.html',
     styleUrl: 'course-summary.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreRemindersDateComponent,
+    ],
 })
 export class CoreCourseSummaryPage implements OnInit, OnDestroy {
 

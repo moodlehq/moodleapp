@@ -28,6 +28,7 @@ import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays the user rating select.
@@ -35,6 +36,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-rating-rate',
     templateUrl: 'core-rating-rate.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreRatingRateComponent implements OnChanges, OnDestroy {
 

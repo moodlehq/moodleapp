@@ -15,7 +15,7 @@
 import { Component } from '@angular/core';
 
 import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-profilefield-component';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -27,7 +27,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreEditorComponentsModule,
+        CoreEditorRichTextEditorComponent,
     ],
 })
 export class AddonUserProfileFieldTextareaComponent extends CoreUserProfileFieldBaseComponent {}

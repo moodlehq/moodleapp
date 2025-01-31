@@ -12,12 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { resolveIndexRoutes } from '@features/course/course-routing.module';
-import { CoreCourseSummaryPageModule } from '@features/course/pages/course-summary/course-summary.module';
 import { CoreCourseIndexPage } from '@features/course/pages/index';
 import { CoreCourseListModTypePage } from '@features/course/pages/list-mod-type/list-mod-type';
 import { CoreCourseModulePreviewPage } from '@features/course/pages/module-preview/module-preview';
@@ -64,16 +61,6 @@ function buildRoutes(injector: Injector): Routes {
 }
 
 @NgModule({
-    declarations: [
-        CoreCourseListModTypePage,
-        CoreCourseIndexPage,
-        CoreCourseModulePreviewPage,
-    ],
-    imports: [
-        CoreSharedModule,
-        CoreCourseComponentsModule,
-        CoreCourseSummaryPageModule,
-    ],
     providers: [
         {
             provide: ROUTES,

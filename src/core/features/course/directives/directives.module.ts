@@ -17,9 +17,7 @@ import { NgModule } from '@angular/core';
 import { CoreCourseDownloadModuleMainFileDirective } from './download-module-main-file';
 
 @NgModule({
-    declarations: [
-        CoreCourseDownloadModuleMainFileDirective,
-    ],
+    imports: [CoreCourseDownloadModuleMainFileDirective],
     exports: [
         CoreCourseDownloadModuleMainFileDirective,
     ],

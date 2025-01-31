@@ -31,7 +31,7 @@ import {
 } from '@addons/messages/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
-import { CoreSearchComponentsModule } from '@features/search/components/components.module';
+import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -43,7 +43,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreSearchComponentsModule,
+        CoreSearchBoxComponent,
     ],
 })
 export default class AddonMessagesSearchPage implements OnDestroy {

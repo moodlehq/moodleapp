@@ -15,7 +15,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CorePolicySitePolicyPage } from '@features/policy/pages/site-policy/site-policy';
 import { ACCEPTANCES_PAGE_NAME, SITE_POLICY_PAGE_NAME } from './constants';
 import { CorePolicyAcceptancesPage } from './pages/acceptances/acceptances';
@@ -33,12 +32,7 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        CoreSharedModule,
         RouterModule.forChild(routes),
-    ],
-    declarations: [
-        CorePolicySitePolicyPage,
-        CorePolicyAcceptancesPage,
     ],
 })
 export default class CorePolicyLazyModule {}

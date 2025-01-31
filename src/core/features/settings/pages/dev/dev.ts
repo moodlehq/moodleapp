@@ -33,6 +33,7 @@ import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreText } from '@singletons/text';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the developer options.
@@ -40,6 +41,10 @@ import { CoreLoadings } from '@services/overlays/loadings';
 @Component({
     selector: 'page-core-app-settings-dev',
     templateUrl: 'dev.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreSettingsDevPage implements OnInit {
 

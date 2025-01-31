@@ -24,6 +24,8 @@ import { CoreNavigator } from '@services/navigator';
 import { Translate } from '@singletons';
 import { CoreDom } from '@singletons/dom';
 import { CoreViewer } from '@features/viewer/services/viewer';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
 
 /**
  * Page that displays the more page of the app.
@@ -32,6 +34,11 @@ import { CoreViewer } from '@features/viewer/services/viewer';
     selector: 'page-core-mainmenu-more',
     templateUrl: 'more.html',
     styleUrl: 'more.scss',
+    standalone: true,
+    imports: [
+    CoreSharedModule,
+    CoreMainMenuUserButtonComponent,
+],
 })
 export class CoreMainMenuMorePage implements OnInit, OnDestroy {
 

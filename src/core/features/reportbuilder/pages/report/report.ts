@@ -16,10 +16,17 @@ import { Component, OnInit } from '@angular/core';
 import { CoreReportBuilderReportDetail } from '@features/reportbuilder/services/reportbuilder';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreReportBuilderReportDetailComponent } from '../../components/report-detail/report-detail';
 
 @Component({
     selector: 'core-report-builder-report',
     templateUrl: './report.html',
+    standalone: true,
+    imports: [
+    CoreSharedModule,
+        CoreReportBuilderReportDetailComponent,
+    ],
 })
 export class CoreReportBuilderReportPage implements OnInit {
 

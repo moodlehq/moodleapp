@@ -31,7 +31,7 @@ import { CoreBlockBaseComponent } from '@features/block/classes/base-block-compo
 import { CoreUtils } from '@singletons/utils';
 import { CoreSite } from '@classes/sites/site';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
+import { CoreCoursesCourseListItemComponent } from '@features/courses/components/course-list-item/course-list-item';
 import {
     CORE_COURSES_MY_COURSES_UPDATED_EVENT,
     CoreCoursesMyCoursesUpdatedEventAction,
@@ -48,7 +48,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCoursesComponentsModule,
+        CoreCoursesCourseListItemComponent,
     ],
 })
 export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {

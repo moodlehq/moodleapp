@@ -16,7 +16,6 @@ import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreH5PComponentsModule } from './components/components.module';
 import { SITE_SCHEMA } from './services/database/h5p';
 import { CoreH5PPluginFileHandler } from './services/handlers/pluginfile';
 
@@ -34,9 +33,6 @@ export async function getH5PServices(): Promise<Type<unknown>[]> {
 }
 
 @NgModule({
-    imports: [
-        CoreH5PComponentsModule,
-    ],
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,

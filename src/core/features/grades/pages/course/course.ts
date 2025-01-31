@@ -35,6 +35,7 @@ import { CoreDom } from '@singletons/dom';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a course grades.
@@ -43,6 +44,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-grades-course',
     templateUrl: 'course.html',
     styleUrl: 'course.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 

@@ -23,6 +23,8 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseModuleComponent } from '../../components/module/module';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays all modules of a certain type in a course.
@@ -34,6 +36,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
         --activity-border: 0px;
         --card-padding-bottom: 0px;
     }`,
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleComponent,
+    ],
 })
 export class CoreCourseListModTypePage implements OnInit {
 

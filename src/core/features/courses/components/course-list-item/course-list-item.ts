@@ -38,6 +38,7 @@ import {
 import { CORE_COURSE_ALL_COURSES_CLEARED, CORE_COURSE_PROGRESS_UPDATED_EVENT } from '@features/course/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreErrorHelper } from '@services/error-helper';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * This directive is meant to display an item for a list of courses.
@@ -50,6 +51,10 @@ import { CoreErrorHelper } from '@services/error-helper';
     selector: 'core-courses-course-list-item',
     templateUrl: 'core-courses-course-list-item.html',
     styleUrl: 'course-list-item.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, OnChanges {
 

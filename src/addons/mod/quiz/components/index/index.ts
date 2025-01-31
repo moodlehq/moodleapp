@@ -53,7 +53,8 @@ import { QuestionDisplayOptionsMarks } from '@features/question/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { AddonModQuizAttemptInfoComponent } from '../attempt-info/attempt-info';
 import { AddonModQuizAttemptStateComponent } from '../attempt-state/attempt-state';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -66,7 +67,8 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCourseComponentsModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
         AddonModQuizAttemptStateComponent,
         AddonModQuizAttemptInfoComponent,
     ],

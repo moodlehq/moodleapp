@@ -27,7 +27,10 @@ import { CoreCourseCourseIndexTourComponent } from './course-index-tour/course-i
 import { CoreRemindersComponentsModule } from '@features/reminders/components/components.module';
 
 @NgModule({
-    declarations: [
+    imports: [
+        CoreBlockComponentsModule,
+        CoreRemindersComponentsModule,
+        CoreSharedModule,
         CoreCourseModuleComponent,
         CoreCourseModuleCompletionComponent,
         CoreCourseModuleCompletionLegacyComponent,
@@ -36,11 +39,6 @@ import { CoreRemindersComponentsModule } from '@features/reminders/components/co
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
         CoreCourseModuleNavigationComponent,
-    ],
-    imports: [
-        CoreBlockComponentsModule,
-        CoreRemindersComponentsModule,
-        CoreSharedModule,
     ],
     exports: [
         CoreCourseModuleComponent,

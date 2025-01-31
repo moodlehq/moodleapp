@@ -33,11 +33,18 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreReportBuilderReportColumnComponent } from '../report-column/report-column';
 
 @Component({
     selector: 'core-report-builder-report-detail',
     templateUrl: './report-detail.html',
     styleUrl: './report-detail.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreReportBuilderReportColumnComponent,
+    ],
 })
 export class CoreReportBuilderReportDetailComponent implements OnInit {
 

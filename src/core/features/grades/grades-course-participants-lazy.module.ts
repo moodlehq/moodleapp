@@ -16,8 +16,7 @@ import { conditionalRoutes } from '@/app/app-routing.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreUserParticipantsPageModule } from '@features/user/pages/participants/participants.module';
-import { CoreUserParticipantsPage } from '@features/user/pages/participants/participants.page';
+import { CoreUserParticipantsPage } from '@features/user/pages/participants/participants';
 import { CoreScreen } from '@services/screen';
 
 const routes: Routes = [
@@ -37,7 +36,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreUserParticipantsPageModule,
     ],
 })
 export default class CoreGradesCourseParticipantsLazyModule {}

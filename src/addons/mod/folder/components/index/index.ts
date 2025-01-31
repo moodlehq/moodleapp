@@ -23,7 +23,8 @@ import { AddonModFolder, AddonModFolderFolder } from '../../services/folder';
 import { AddonModFolderFolderFormattedData, AddonModFolderHelper } from '../../services/folder-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_MOD_FOLDER_COMPONENT, ADDON_MOD_FOLDER_PAGE_NAME } from '../../constants';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -38,7 +39,8 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCourseComponentsModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
     ],
 })
 export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {

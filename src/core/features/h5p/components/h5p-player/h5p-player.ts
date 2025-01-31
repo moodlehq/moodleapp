@@ -29,6 +29,8 @@ import { BehaviorSubject } from 'rxjs';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreH5PIframeComponent } from '../h5p-iframe/h5p-iframe';
 
 /**
  * Component to render an H5P package.
@@ -37,6 +39,11 @@ import { Translate } from '@singletons';
     selector: 'core-h5p-player',
     templateUrl: 'core-h5p-player.html',
     styleUrl: 'h5p-player.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreH5PIframeComponent,
+    ],
 })
 export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 

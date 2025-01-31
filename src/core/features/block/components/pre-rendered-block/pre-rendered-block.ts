@@ -15,6 +15,7 @@
 import { OnInit, Component, HostBinding } from '@angular/core';
 import { CoreBlockBaseComponent } from '../../classes/base-block-component';
 import { ContextLevel } from '@/core/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render blocks with pre-rendered HTML.
@@ -22,6 +23,10 @@ import { ContextLevel } from '@/core/constants';
 @Component({
     selector: 'core-block-pre-rendered',
     templateUrl: 'core-block-pre-rendered.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreBlockPreRenderedComponent extends CoreBlockBaseComponent implements OnInit {
 

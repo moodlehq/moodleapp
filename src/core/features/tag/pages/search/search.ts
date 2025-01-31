@@ -24,6 +24,9 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreSites } from '@services/sites';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';
+import { CoreSearchBoxComponent } from '../../../search/components/search-box/search-box';
 
 /**
  * Page that displays most used tags and allows searching.
@@ -32,6 +35,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-tag-search',
     templateUrl: 'search.html',
     styleUrl: 'search.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreMainMenuUserButtonComponent,
+        CoreSearchBoxComponent,
+    ],
 })
 export class CoreTagSearchPage implements OnInit {
 

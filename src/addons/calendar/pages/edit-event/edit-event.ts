@@ -54,7 +54,6 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { REMINDERS_DISABLED, CoreRemindersUnits } from '@features/reminders/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -67,7 +66,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreEditorComponentsModule,
+        CoreEditorRichTextEditorComponent,
     ],
 })
 export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {

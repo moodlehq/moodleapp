@@ -16,7 +16,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreScreen } from '@services/screen';
 
 import { CoreSettingsIndexPage } from './pages/index';
@@ -100,18 +99,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-    ],
-    declarations: [
-        CoreSettingsIndexPage,
-        CoreSettingsSynchronizationPage,
-        CoreSettingsGeneralPage,
-        CoreSettingsSpaceUsagePage,
-        CoreSettingsAboutPage,
-        CoreSettingsLicensesPage,
-        CoreSettingsDeviceInfoPage,
-        CoreSettingsDevPage,
-        CoreSettingsErrorLogPage,
     ],
 })
 export default class CoreSettingsLazyModule {}

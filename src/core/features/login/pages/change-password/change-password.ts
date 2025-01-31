@@ -21,6 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreOpener } from '@singletons/opener';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that shows instructions to change the password.
@@ -28,6 +29,10 @@ import { CoreOpener } from '@singletons/opener';
 @Component({
     selector: 'page-core-login-change-password',
     templateUrl: 'change-password.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreLoginChangePasswordPage implements OnDestroy {
 

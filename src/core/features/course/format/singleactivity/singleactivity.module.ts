@@ -14,20 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
-import { CoreCourseFormatSingleActivityComponent } from './components/singleactivity';
 import { CoreCourseFormatSingleActivityHandler } from './services/handlers/singleactivity-format';
-import { CoreBlockComponentsModule } from '@features/block/components/components.module';
 
 @NgModule({
-    declarations: [
-        CoreCourseFormatSingleActivityComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-        CoreBlockComponentsModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -36,9 +26,6 @@ import { CoreBlockComponentsModule } from '@features/block/components/components
                 CoreCourseFormatDelegate.registerHandler(CoreCourseFormatSingleActivityHandler.instance);
             },
         },
-    ],
-    exports: [
-        CoreCourseFormatSingleActivityComponent,
     ],
 })
 export class CoreCourseFormatSingleActivityModule {}

@@ -14,15 +14,11 @@
 
 import { NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCoursesCourseListItemComponent } from './course-list-item/course-list-item';
 
 @NgModule({
-    declarations: [
-        CoreCoursesCourseListItemComponent,
-    ],
     imports: [
-        CoreSharedModule,
+        CoreCoursesCourseListItemComponent,
     ],
     exports: [
         CoreCoursesCourseListItemComponent,

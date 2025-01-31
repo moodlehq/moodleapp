@@ -31,8 +31,9 @@ import {
 import { CoreModals } from '@services/overlays/modals';
 import { CoreUtils } from '@singletons/utils';
 import { CoreSitePluginsPluginContentComponent, CoreSitePluginsPluginContentLoadedData } from '../plugin-content/plugin-content';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleInfoComponent } from '../../../course/components/module-info/module-info';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 
 /**
  * Component that displays the index of a module site plugin.
@@ -42,10 +43,11 @@ import { CoreSharedModule } from '@/core/shared.module';
     templateUrl: 'core-siteplugins-module-index.html',
     styles: [':host { display: contents; }'],
     standalone: true,
-    imports: [
+        imports: [
         CoreSharedModule,
-        CoreCourseComponentsModule,
         CoreSitePluginsPluginContentComponent,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
     ],
 })
 export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {

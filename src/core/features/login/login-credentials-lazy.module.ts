@@ -15,10 +15,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreLoginComponentsModule } from '@features/login/components/components.module';
 import { CoreLoginCredentialsPage } from '@features/login/pages/credentials/credentials';
-import { CoreSiteLogoComponent } from '@/core/components/site-logo/site-logo';
 
 const routes: Routes = [
     {
@@ -30,12 +27,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        CoreLoginComponentsModule,
-        CoreSiteLogoComponent,
-    ],
-    declarations: [
-        CoreLoginCredentialsPage,
     ],
 })
 export default class CoreLoginCredentialsLazyModule {}

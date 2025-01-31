@@ -17,10 +17,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
-import { CoreSharedModule } from '@/core/shared.module';
 
-import { CoreGradesCoursePage } from './pages/course/course.page';
-import { CoreGradesCoursePageModule } from './pages/course/course.module';
+import { CoreGradesCoursePage } from './pages/course/course';
 import { CoreGradesCoursesPage } from './pages/courses/courses';
 
 const mobileRoutes: Routes = [
@@ -55,11 +53,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        CoreGradesCoursePageModule,
-    ],
-    declarations: [
-        CoreGradesCoursesPage,
     ],
 })
 export default class CoreGradesCoursesLazyModule {}

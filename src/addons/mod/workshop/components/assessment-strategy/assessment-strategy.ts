@@ -46,7 +46,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -58,7 +58,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreEditorComponentsModule,
+        CoreEditorRichTextEditorComponent,
     ],
 })
 export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDestroy {

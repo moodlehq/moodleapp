@@ -18,7 +18,6 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/user';
-import { CoreUserComponentsModule } from './components/components.module';
 import { CoreUserDelegate } from './services/user-delegate';
 import { CoreUserProfileMailHandler } from './services/handlers/profile-mail';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
@@ -95,7 +94,6 @@ const courseIndexRoutes: Routes = [
         AppRoutingModule.forChild(appRoutes),
         CoreMainMenuTabRoutingModule.forChild(routes),
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
-        CoreUserComponentsModule,
     ],
     providers: [
         {

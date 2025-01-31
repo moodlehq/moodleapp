@@ -17,6 +17,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CoreTimeUtils } from '@services/utils/time';
 import { Translate } from '@singletons';
 import { CoreTime } from '@singletons/time';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreRemindersSetButtonComponent } from '../set-button/set-button';
 
 /**
  * Component that displays a date to remind.
@@ -25,6 +27,11 @@ import { CoreTime } from '@singletons/time';
     selector: 'core-reminders-date',
     templateUrl: 'date.html',
     styleUrl: 'date.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreRemindersSetButtonComponent,
+    ],
 })
 export class CoreRemindersDateComponent implements OnInit {
 

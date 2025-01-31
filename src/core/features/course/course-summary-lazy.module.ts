@@ -15,10 +15,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreRemindersComponentsModule } from '@features/reminders/components/components.module';
-import { CoreCourseSummaryPage } from '@features/course/pages/course-summary/course-summary.page';
-import { CoreCourseSummaryPageModule } from '@features/course/pages/course-summary/course-summary.module';
+import { CoreCourseSummaryPage } from '@features/course/pages/course-summary/course-summary';
 
 const routes: Routes = [
     {
@@ -30,9 +27,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        CoreRemindersComponentsModule,
-        CoreCourseSummaryPageModule,
     ],
 })
 export default class CoreCourseSummaryLazyModule {}

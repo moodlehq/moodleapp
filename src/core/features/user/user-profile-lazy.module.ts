@@ -15,7 +15,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreUserProfilePage } from '@features/user/pages/profile/profile';
 
 const routes: Routes = [
@@ -28,10 +27,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-    ],
-    declarations: [
-        CoreUserProfilePage,
     ],
 })
 export default class CoreUserProfileLazyModule {}
