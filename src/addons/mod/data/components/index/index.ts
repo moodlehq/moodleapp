@@ -39,7 +39,7 @@ import {
 import { AddonModDataHelper, AddonModDatDisplayFieldsOptions } from '../../services/data-helper';
 import { AddonModDataAutoSyncData, AddonModDataSyncResult } from '../../services/data-sync';
 import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch-lazy';
-import { AddonModDataComponentsCompileModule } from '../components.module';
+
 import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
 import {
@@ -107,7 +107,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
     hasNextPage = false;
     entriesRendered = '';
-    extraImports: Type<unknown>[] = [AddonModDataComponentsCompileModule];
+    extraImports: Type<unknown>[] = [];
 
     jsData?: {
         fields: Record<number, AddonModDataField>;
@@ -148,6 +148,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      */
     async ngOnInit(): Promise<void> {
         await super.ngOnInit();
+
+        this.extraImports = await AddonModDataHelper.getComponentsToCompile();
 
         this.selectedGroup = this.group || 0;
 

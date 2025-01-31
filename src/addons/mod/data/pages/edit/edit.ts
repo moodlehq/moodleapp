@@ -25,7 +25,7 @@ import { CoreForms } from '@singletons/form';
 import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { AddonModDataComponentsCompileModule } from '../../components/components.module';
+
 import {
     AddonModDataData,
     AddonModDataField,
@@ -91,7 +91,7 @@ export default class AddonModDataEditPage implements OnInit {
     groupInfo?: CoreGroupInfo;
     editFormRender = '';
     editForm: FormGroup;
-    extraImports: Type<unknown>[] = [AddonModDataComponentsCompileModule];
+    extraImports: Type<unknown>[] = [];
     jsData?: {
         fields: Record<number, AddonModDataField>;
         database?: AddonModDataData;
@@ -125,7 +125,7 @@ export default class AddonModDataEditPage implements OnInit {
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         try {
             this.moduleId = CoreNavigator.getRequiredRouteNumberParam('cmId');
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
@@ -139,6 +139,8 @@ export default class AddonModDataEditPage implements OnInit {
 
             return;
         }
+
+        this.extraImports = await AddonModDataHelper.getComponentsToCompile();
 
         // If entryId is lower than 0 or null, it is a new entry or an offline entry.
         this.isEditing = this.entryId !== undefined && this.entryId > 0;
