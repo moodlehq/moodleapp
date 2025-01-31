@@ -21,6 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSiteBasicInfo } from '@services/sites';
 import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to display the list of sites to choose one to store a shared file.
@@ -28,6 +29,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-core-shared-files-choose-site',
     templateUrl: 'choose-site.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreSharedFilesChooseSitePage implements OnInit {
 

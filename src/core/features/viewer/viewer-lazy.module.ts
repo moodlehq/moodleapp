@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CoreViewerIframePage } from '@features/viewer/pages/iframe/iframe';
@@ -27,10 +26,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-    ],
-    declarations: [
-        CoreViewerIframePage,
     ],
 })
 export default class CoreViewerLazyModule {}

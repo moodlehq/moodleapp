@@ -15,7 +15,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreDataPrivacyMainPage } from './pages/main/main';
 
 const routes: Routes = [
@@ -29,10 +28,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-    ],
-    declarations: [
-        CoreDataPrivacyMainPage,
     ],
 })
 export default class CoreDataPrivacyLazyModule {}

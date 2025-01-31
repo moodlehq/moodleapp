@@ -20,7 +20,6 @@ import { CoreFileUploaderDelegate } from '@features/fileuploader/services/fileup
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';
 import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
-import { CoreSharedFilesComponentsModule } from './components/components.module';
 import { CoreSharedFilesSettingsHandler } from './services/handlers/settings';
 import { CoreSharedFilesUploadHandler } from './services/handlers/upload';
 import { CoreSharedFiles } from './services/sharedfiles';
@@ -54,7 +53,6 @@ const routes: Routes = [
         AppRoutingModule.forChild(routes),
         CoreMainMenuTabRoutingModule.forChild(routes),
         CoreSitePreferencesRoutingModule.forChild(routes),
-        CoreSharedFilesComponentsModule,
     ],
     providers: [
         {

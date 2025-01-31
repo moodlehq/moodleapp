@@ -15,12 +15,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { hasSitesGuard } from './guards/has-sites';
-import { CoreLoginComponentsModule } from './components/components.module';
 import { CoreLoginHelper } from './services/login-helper';
 import { CoreLoginForgottenPasswordPage } from '@features/login/pages/forgotten-password/forgotten-password';
-import { CoreUserComponentsModule } from '@features/user/components/components.module';
 import { CoreLoginEmailSignupPage } from '@features/login/pages/email-signup/email-signup';
 import { CoreLoginSitePage } from '@features/login/pages/site/site';
 import { CoreLoginSitesPage } from '@features/login/pages/sites/sites';
@@ -65,17 +62,7 @@ const routes: Routes = [
 
 @NgModule({
     imports: [
-        CoreSharedModule,
-        CoreLoginComponentsModule,
-        CoreUserComponentsModule,
         RouterModule.forChild(routes),
-    ],
-    declarations: [
-        CoreLoginForgottenPasswordPage,
-        CoreLoginSitePage,
-        CoreLoginSitesPage,
-        CoreLoginChangePasswordPage,
-        CoreLoginEmailSignupPage,
     ],
 })
 export default class CoreLoginLazyModule {}

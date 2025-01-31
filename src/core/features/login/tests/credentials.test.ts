@@ -15,7 +15,6 @@
 import { CoreSharedModule } from '@/core/shared.module';
 import { findElement, mock, mockSingleton, renderPageComponent, requireElement } from '@/testing/utils';
 import { CoreLoginError } from '@classes/errors/loginerror';
-import { CoreLoginComponentsModule } from '@features/login/components/components.module';
 import { CoreLoginCredentialsPage } from '@features/login/pages/credentials/credentials';
 import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
@@ -23,6 +22,9 @@ import { Http } from '@singletons';
 import { of } from 'rxjs';
 import { CoreLoginHelper } from '../services/login-helper';
 import { CoreConstants } from '@/core/constants';
+import { CoreSiteLogoComponent } from '@components/site-logo/site-logo';
+import { CoreLoginExceededAttemptsComponent } from '../components/exceeded-attempts/exceeded-attempts';
+import { CoreLoginMethodsComponent } from '../components/login-methods/login-methods';
 
 describe('Credentials page', () => {
 
@@ -86,7 +88,9 @@ describe('Credentials page', () => {
             routeParams: { siteUrl },
             imports: [
                 CoreSharedModule,
-                CoreLoginComponentsModule,
+                CoreSiteLogoComponent,
+                CoreLoginExceededAttemptsComponent,
+                CoreLoginMethodsComponent,
             ],
         });
 
@@ -137,7 +141,12 @@ describe('Credentials page', () => {
 
         const fixture = await renderPageComponent(CoreLoginCredentialsPage, {
             routeParams: { siteUrl, siteCheck },
-            imports: [CoreSharedModule, CoreLoginComponentsModule],
+            imports: [
+                CoreSharedModule,
+                CoreSiteLogoComponent,
+                CoreLoginExceededAttemptsComponent,
+                CoreLoginMethodsComponent,
+            ],
         });
 
         // Act.

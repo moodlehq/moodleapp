@@ -31,6 +31,10 @@ import type { CoreCourseModuleMainActivityComponent } from '@features/course/cla
     selector: 'core-course-format-single-activity',
     templateUrl: 'core-course-format-single-activity.html',
     styleUrl: 'single-activity.scss',
+    standalone: true,
+    imports: [
+        CoreDynamicComponent,
+    ],
 })
 export class CoreCourseFormatSingleActivityComponent implements OnChanges {
 

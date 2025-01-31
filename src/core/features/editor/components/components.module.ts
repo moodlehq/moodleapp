@@ -12,21 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 
 import { CoreEditorRichTextEditorComponent } from './rich-text-editor/rich-text-editor';
-import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        CoreEditorRichTextEditorComponent,
-    ],
     imports: [
-        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
     ],
     exports: [
         CoreEditorRichTextEditorComponent,
     ],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CoreEditorComponentsModule {}

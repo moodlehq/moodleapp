@@ -21,7 +21,8 @@ import { AddonModPagePage, AddonModPage } from '../../services/page';
 import { AddonModPageHelper } from '../../services/page-helper';
 import { ADDON_MOD_PAGE_COMPONENT } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -33,7 +34,8 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCourseComponentsModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
     ],
 })
 export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {

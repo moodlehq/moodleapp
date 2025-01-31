@@ -44,6 +44,7 @@ import { toBoolean } from '@/core/transforms/boolean';
  */
 @Directive({
     selector: '[core-site-plugins-new-content]',
+    standalone: true,
 })
 export class CoreSitePluginsNewContentDirective implements OnInit {
 

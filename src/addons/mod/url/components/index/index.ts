@@ -24,7 +24,8 @@ import { AddonModUrl, AddonModUrlDisplayOptions, AddonModUrlUrl } from '../../se
 import { AddonModUrlHelper } from '../../services/url-helper';
 import { ADDON_MOD_URL_COMPONENT } from '../../constants';
 import { CoreSites } from '@services/sites';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -37,7 +38,8 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCourseComponentsModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
     ],
 })
 export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {

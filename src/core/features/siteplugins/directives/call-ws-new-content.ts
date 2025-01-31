@@ -52,6 +52,7 @@ import { toBoolean } from '@/core/transforms/boolean';
  */
 @Directive({
     selector: '[core-site-plugins-call-ws-new-content]',
+    standalone: true,
 })
 export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCallWSOnClickBaseDirective {
 

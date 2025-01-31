@@ -34,8 +34,8 @@ import {
     AddonModDataAction,
     AddonModDataTemplateMode,
 } from '../../constants';
-import { CoreTagComponentsModule } from '@features/tag/components/components.module';
-import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
+import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -47,8 +47,8 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCommentsComponentsModule,
-        CoreTagComponentsModule,
+        CoreCommentsCommentsComponent,
+        CoreTagListComponent,
     ],
 })
 export class AddonModDataActionComponent implements OnInit {

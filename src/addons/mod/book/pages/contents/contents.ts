@@ -38,7 +38,7 @@ import { CoreUrl } from '@singletons/url';
 import { ADDON_MOD_BOOK_COMPONENT, AddonModBookNavStyle } from '../../constants';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreTagComponentsModule } from '@features/tag/components/components.module';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -51,7 +51,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreTagComponentsModule,
+        CoreTagListComponent,
     ],
 })
 export default class AddonModBookContentsPage implements OnInit, OnDestroy {

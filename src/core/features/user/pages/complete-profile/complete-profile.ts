@@ -21,6 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreOpener } from '@singletons/opener';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that shows instructions to complete the profile.
@@ -28,6 +29,10 @@ import { CoreOpener } from '@singletons/opener';
 @Component({
     selector: 'page-core-user-complete-profile',
     templateUrl: 'complete-profile.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreUserCompleteProfilePage implements OnDestroy {
 

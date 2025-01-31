@@ -21,8 +21,9 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreTime } from '@singletons/time';
 import { AddonModChat, AddonModChatChat } from '../../services/chat';
 import { ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_PAGE_NAME } from '../../constants';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 
 /**
  * Component that displays a chat.
@@ -33,7 +34,8 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCourseComponentsModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
     ],
 })
 export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {

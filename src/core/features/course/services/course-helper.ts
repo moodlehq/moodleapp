@@ -1981,7 +1981,7 @@ export class CoreCourseHelperProvider {
      * @param course Course selected
      */
     async openCourseSummary(course: CoreCourseWithImageAndColor & CoreCourseAnyCourseData): Promise<void> {
-        const { CoreCourseSummaryPage } = await import('../pages/course-summary/course-summary.page');
+        const { CoreCourseSummaryPage } = await import('../pages/course-summary/course-summary');
 
         CoreModals.openSideModal<void>({
             component: CoreCourseSummaryPage,

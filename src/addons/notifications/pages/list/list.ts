@@ -34,8 +34,8 @@ import { CoreConstants } from '@/core/constants';
 import { CorePlatform } from '@services/platform';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/user-menu-button/user-menu-button';
 
 /**
  * Page that displays the list of notifications.
@@ -46,9 +46,9 @@ import { CoreSharedModule } from '@/core/shared.module';
     styleUrls: ['list.scss', '../../notifications.scss'],
     standalone: true,
     imports: [
-        CoreSharedModule,
-        CoreMainMenuComponentsModule,
-    ],
+    CoreSharedModule,
+    CoreMainMenuUserButtonComponent,
+],
 })
 export default class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
 

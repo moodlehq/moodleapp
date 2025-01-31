@@ -15,11 +15,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreLoginComponentsModule } from '@features/login/components/components.module';
 import { CoreLoginReconnectPage } from '@features/login/pages/reconnect/reconnect';
-import { CoreSiteLogoComponent } from '@/core/components/site-logo/site-logo';
-import { CoreLoginIdentityProviderComponent } from './components/identity-provider/identity-provider';
 
 const routes: Routes = [
     {
@@ -31,13 +27,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        CoreLoginComponentsModule,
-        CoreSiteLogoComponent,
-        CoreLoginIdentityProviderComponent,
-    ],
-    declarations: [
-        CoreLoginReconnectPage,
     ],
 })
 export default class CoreLoginReconnectLazyModule {}

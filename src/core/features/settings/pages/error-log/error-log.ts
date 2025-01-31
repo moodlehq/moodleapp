@@ -15,6 +15,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CoreText } from '@singletons/text';
 import { CoreErrorLogs, CoreSettingsErrorLog } from '@singletons/error-logs';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the error logs.
@@ -22,6 +23,10 @@ import { CoreErrorLogs, CoreSettingsErrorLog } from '@singletons/error-logs';
 @Component({
     selector: 'page-core-app-settings-error-log',
     templateUrl: 'error-log.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreSettingsErrorLogPage implements OnInit {
 

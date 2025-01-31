@@ -13,13 +13,10 @@
 // limitations under the License.
 
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { CoreSharedModule } from '@/core/shared.module';
 import { Injector, NgModule } from '@angular/core';
 import { Route, ROUTES, Routes } from '@angular/router';
-import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 import { CoreTagIndexAreaPage } from '@features/tag/pages/index-area/index-area';
 import { CoreTagIndexPage } from '@features/tag/pages/index/index';
 import { CoreTagSearchPage } from '@features/tag/pages/search/search';
@@ -76,16 +73,6 @@ function buildRoutes(injector: Injector): Routes {
 }
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        CoreSearchComponentsModule,
-        CoreMainMenuComponentsModule,
-    ],
-    declarations: [
-        CoreTagIndexPage,
-        CoreTagSearchPage,
-        CoreTagIndexAreaPage,
-    ],
     providers: [
         {
             provide: ROUTES,

@@ -15,11 +15,16 @@
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { CoreSearchGlobalSearchResult, CoreSearchGlobalSearchResultContext } from '@features/search/services/global-search';
+import { CoreSharedModule } from '@/core/shared.module';
 
 @Component({
     selector: 'core-search-global-search-result',
     templateUrl: 'global-search-result.html',
     styleUrl: './global-search-result.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreSearchGlobalSearchResultComponent implements OnChanges {
 

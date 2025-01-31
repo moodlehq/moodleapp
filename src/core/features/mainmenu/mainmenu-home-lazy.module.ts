@@ -15,14 +15,10 @@
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
-
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
-import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 import { resolveHomeRoutes } from '@features/mainmenu/mainmenu-home-routing.module';
 import { CoreMainMenuHomePage } from '@features/mainmenu/pages/home/home';
-import { CoreSiteLogoComponent } from '@/core/components/site-logo/site-logo';
 
 /**
  * Build module routes.
@@ -47,16 +43,8 @@ function buildRoutes(injector: Injector): Routes {
 }
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        CoreMainMenuComponentsModule,
-        CoreSiteLogoComponent,
-    ],
     providers: [
         { provide: ROUTES, multi: true, useFactory: buildRoutes, deps: [Injector] },
-    ],
-    declarations: [
-        CoreMainMenuHomePage,
     ],
 })
 export default class CoreMainMenuHomeLazyModule {}

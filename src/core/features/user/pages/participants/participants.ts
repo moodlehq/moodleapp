@@ -24,6 +24,8 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSearchBoxComponent } from '../../../search/components/search-box/search-box';
 
 /**
  * Page that displays the list of course participants.
@@ -31,6 +33,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-core-user-participants',
     templateUrl: 'participants.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSearchBoxComponent,
+    ],
 })
 export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestroy {
 

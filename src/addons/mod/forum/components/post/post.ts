@@ -61,10 +61,11 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { AccordionGroupCustomEvent } from '@ionic/angular';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
-import { CoreRatingComponentsModule } from '@features/rating/components/components.module';
-import { CoreTagComponentsModule } from '@features/tag/components/components.module';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreRatingAggregateComponent } from '@features/rating/components/aggregate/aggregate';
+import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -76,9 +77,10 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreTagComponentsModule,
-        CoreRatingComponentsModule,
-        CoreEditorComponentsModule,
+        CoreTagListComponent,
+        CoreRatingRateComponent,
+        CoreRatingAggregateComponent,
+        CoreEditorRichTextEditorComponent,
     ],
 })
 export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges {

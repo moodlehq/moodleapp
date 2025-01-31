@@ -24,6 +24,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to show a button to go to the next resource/activity.
@@ -35,6 +36,10 @@ import { Translate } from '@singletons';
     selector: 'core-course-module-navigation',
     templateUrl: 'core-course-module-navigation.html',
     styleUrl: 'module-navigation.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
 

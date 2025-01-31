@@ -59,8 +59,9 @@ import {
 } from '../../constants';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
-import { CoreSearchComponentsModule } from '@features/search/components/components.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -73,8 +74,9 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreSearchComponentsModule,
-        CoreCourseComponentsModule,
+        CoreSearchBoxComponent,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
     ],
 })
 export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivityComponent

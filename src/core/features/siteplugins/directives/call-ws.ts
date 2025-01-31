@@ -48,6 +48,7 @@ import { toBoolean } from '@/core/transforms/boolean';
  */
 @Directive({
     selector: '[core-site-plugins-call-ws]',
+    standalone: true,
 })
 export class CoreSitePluginsCallWSDirective extends CoreSitePluginsCallWSOnClickBaseDirective {
 

@@ -31,10 +31,20 @@ import { CoreSearchBoxComponent } from '@features/search/components/search-box/s
 import { CoreModals } from '@services/overlays/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';
+import { CoreSearchGlobalSearchResultComponent } from '../../components/global-search-result/global-search-result';
 
 @Component({
     selector: 'page-core-search-global-search',
     templateUrl: 'global-search.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreMainMenuUserButtonComponent,
+        CoreSearchBoxComponent,
+        CoreSearchGlobalSearchResultComponent,
+    ],
 })
 export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewInit {
 

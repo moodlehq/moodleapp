@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CoreUserComponentsModule } from '@features/user/components/components.module';
 import { CoreUserAboutPage } from '@features/user/pages/about/about';
 
 const routes: Routes = [
@@ -37,11 +35,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        CoreUserComponentsModule,
-    ],
-    declarations: [
-        CoreUserAboutPage,
     ],
 })
 export default class CoreUserLazyModule {}

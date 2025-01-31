@@ -26,6 +26,7 @@ import { CorePath } from '@singletons/path';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to capture media in browser.
@@ -34,6 +35,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'core-emulator-capture-media',
     templateUrl: 'capture-media.html',
     styleUrl: 'capture-media.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
 

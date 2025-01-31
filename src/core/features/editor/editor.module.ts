@@ -15,7 +15,6 @@
 import { NgModule, Type } from '@angular/core';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreEditorComponentsModule } from './components/components.module';
 import { SITE_SCHEMA } from './services/database/editor';
 
 /**
@@ -32,9 +31,6 @@ export async function getEditorServices(): Promise<Type<unknown>[]> {
 }
 
 @NgModule({
-    imports: [
-        CoreEditorComponentsModule,
-    ],
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,

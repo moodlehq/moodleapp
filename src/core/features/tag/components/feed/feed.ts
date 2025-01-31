@@ -15,6 +15,7 @@
 import { Component, Input } from '@angular/core';
 
 import { CoreTagFeedElement } from '@features/tag/services/tag-helper';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a tag area that uses the "core_tag/tagfeed" web template.
@@ -22,6 +23,10 @@ import { CoreTagFeedElement } from '@features/tag/services/tag-helper';
 @Component({
     selector: 'core-tag-feed',
     templateUrl: 'core-tag-feed.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreTagFeedComponent {
 

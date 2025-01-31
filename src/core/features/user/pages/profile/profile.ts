@@ -37,11 +37,16 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 @Component({
     selector: 'page-core-user-profile',
     templateUrl: 'profile.html',
     styleUrl: 'profile.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreUserProfilePage implements OnInit, OnDestroy {
 

@@ -18,10 +18,15 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreSettingsSection, CoreSettingsSectionsSource } from '@features/settings/classes/settings-sections-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CoreSharedModule } from '@/core/shared.module';
 
 @Component({
     selector: 'page-core-settings-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreSettingsIndexPage implements AfterViewInit, OnDestroy {
 

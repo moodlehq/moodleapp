@@ -15,8 +15,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreSharedFilesComponentsModule } from './components/components.module';
 import { CoreSharedFilesListPage } from './pages/list/list';
 import { CoreSharedFilesChooseSitePage } from './pages/choose-site/choose-site';
 
@@ -34,12 +32,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
-        CoreSharedModule,
-        CoreSharedFilesComponentsModule,
-    ],
-    declarations: [
-        CoreSharedFilesListPage,
-        CoreSharedFilesChooseSitePage,
     ],
 })
 export default class CoreSharedFilesLazyModule {}
