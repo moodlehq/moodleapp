@@ -62,7 +62,7 @@ export async function getModQuizServices(): Promise<Type<unknown>[]> {
  *
  * @returns Quiz component modules.
  */
-export async function getModQuizComponentModules(): Promise<unknown[]> {
+export async function getModQuizComponentModules(): Promise<Type<unknown>[]> {
     const { AddonModQuizAttemptInfoComponent } = await import('@addons/mod/quiz/components/attempt-info/attempt-info');
     const { AddonModQuizAttemptStateComponent } = await import('@addons/mod/quiz/components/attempt-state/attempt-state');
     const { AddonModQuizQuestionCardComponent } = await import('@addons/mod/quiz/components/question-card/question-card');

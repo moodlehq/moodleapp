@@ -15,8 +15,9 @@
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
+import { getModQuizComponentModules } from '@addons/mod/quiz/quiz.module';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 
 import { AddonModQuizQuestion } from '@features/question/classes/base-question-component';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
@@ -33,7 +34,7 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCompileHtmlComponentModule,
+        CoreCompileHtmlComponent,
     ],
 })
 export class CoreSitePluginsQuestionComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
@@ -54,7 +55,7 @@ export class CoreSitePluginsQuestionComponent extends CoreSitePluginsCompileInit
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         // Pass the input and output data to the component.
         this.jsData.question = this.question;
         this.jsData.component = this.component;
@@ -68,6 +69,8 @@ export class CoreSitePluginsQuestionComponent extends CoreSitePluginsCompileInit
         this.jsData.preferredBehaviour = this.preferredBehaviour;
         this.jsData.buttonClicked = this.buttonClicked;
         this.jsData.onAbort = this.onAbort;
+
+        this.extraImports = await getModQuizComponentModules();
 
         if (this.question) {
             this.getHandlerData(CoreQuestionDelegate.getHandlerName('qtype_' + this.question.type));

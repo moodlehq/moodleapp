@@ -61,7 +61,7 @@ export async function getModAssignServices(): Promise<Type<unknown>[]> {
  *
  * @returns Assign component modules.
  */
-export async function getModAssignComponentModules(): Promise<unknown[]> {
+export async function getModAssignComponentModules(): Promise<Type<unknown>[]> {
     const { AddonModAssignSubmissionPluginComponent } =
         await import('@addons/mod/assign/components/submission-plugin/submission-plugin');
     const { AddonModAssignFeedbackPluginComponent } =

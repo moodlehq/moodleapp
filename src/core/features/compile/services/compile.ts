@@ -122,9 +122,9 @@ import { getCompetencyServices } from '@addons/competency/competency.module';
 import { getCourseCompletionServices } from '@addons/coursecompletion/coursecompletion.module';
 import { getMessageOutputServices } from '@addons/messageoutput/messageoutput.module';
 import { getMessagesServices } from '@addons/messages/messages.module';
-import { getModAssignComponentModules, getModAssignServices } from '@addons/mod/assign/assign.module';
-import { getModQuizComponentModules, getModQuizServices } from '@addons/mod/quiz/quiz.module';
-import { getModWorkshopComponentModules, getModWorkshopServices } from '@addons/mod/workshop/workshop.module';
+import { getModAssignServices } from '@addons/mod/assign/assign.module';
+import { getModQuizServices } from '@addons/mod/quiz/quiz.module';
+import { getModWorkshopServices } from '@addons/mod/workshop/workshop.module';
 import { getNotesServices } from '@addons/notes/notes.module';
 import { getNotificationsServices } from '@addons/notifications/notifications.module';
 import { getPrivateFilesServices } from '@addons/privatefiles/privatefiles.module';
@@ -172,9 +172,6 @@ export class CoreCompileProvider {
     ];
 
     protected readonly LAZY_IMPORTS = [
-        getModAssignComponentModules,
-        getModQuizComponentModules,
-        getModWorkshopComponentModules,
         getCoreStandaloneComponents,
         getCourseStandaloneComponents,
         getSitePluginsDirectives,

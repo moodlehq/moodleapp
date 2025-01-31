@@ -47,7 +47,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
 import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
 import { CoreRatingComponentsModule } from '@features/rating/components/components.module';
-import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -60,7 +60,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCompileHtmlComponentModule,
+        CoreCompileHtmlComponent,
         CoreRatingComponentsModule,
         CoreCommentsComponentsModule,
     ],
