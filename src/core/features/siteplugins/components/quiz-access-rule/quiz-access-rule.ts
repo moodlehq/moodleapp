@@ -19,7 +19,7 @@ import { AddonModQuizAccessRuleDelegate } from '@addons/mod/quiz/services/access
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '@addons/mod/quiz/services/quiz';
 import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/classes/compile-init-component';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -32,7 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCompileHtmlComponentModule,
+        CoreCompileHtmlComponent,
     ],
 })
 export class CoreSitePluginsQuizAccessRuleComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
@@ -47,7 +47,7 @@ export class CoreSitePluginsQuizAccessRuleComponent extends CoreSitePluginsCompi
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         // Pass the input and output data to the component.
         this.jsData.rule = this.rule;
         this.jsData.quiz = this.quiz;

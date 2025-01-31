@@ -14,6 +14,7 @@
 
 import { CoreObject } from '@singletons/object';
 import { CoreSitePlugins, CoreSitePluginsInitHandlerData } from '../services/siteplugins';
+import { Type } from '@angular/core';
 
 /**
  * Base class for components that will display a component using core-compile-html and want to call a
@@ -23,6 +24,7 @@ export class CoreSitePluginsCompileInitComponent {
 
     content = ''; // Content.
     jsData: Record<string, unknown> = {}; // Data to pass to the component.
+    extraImports: Type<unknown>[] = [];
     protected handlerSchema?: CoreSitePluginsInitHandlerData; // The handler data.
 
     /**
