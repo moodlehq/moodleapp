@@ -18,7 +18,6 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import AddonModWorkshopSubmissionPage from '../../pages/submission/submission';
 import {
     AddonModWorkshopData,
     AddonModWorkshopGetWorkshopAccessInformationWSResponse,
@@ -54,13 +53,13 @@ export class AddonModWorkshopSubmissionComponent implements OnInit {
     @Input({ required: true }) courseId!: number;
     @Input() assessment?: AddonModWorkshopSubmissionAssessmentWithFormData;
     @Input({ transform: toBoolean }) summary = false;
+    @Input({ transform: toBoolean }) viewDetails = false;
 
     component = ADDON_MOD_WORKSHOP_COMPONENT;
     componentId?: number;
     userId: number;
     loaded = false;
     offline = false;
-    viewDetails = false;
     profile?: CoreUserProfile;
     showGrade: (grade?: number|string) => boolean;
     evaluateByProfile?: CoreUserProfile;
@@ -101,8 +100,7 @@ export class AddonModWorkshopSubmissionComponent implements OnInit {
             }));
         }
 
-        this.viewDetails = !this.summary && this.workshop.phase == AddonModWorkshopPhase.PHASE_CLOSED &&
-            CoreNavigator.getCurrentRoute().component != AddonModWorkshopSubmissionPage;
+        this.viewDetails = this.viewDetails && this.workshop.phase === AddonModWorkshopPhase.PHASE_CLOSED;
 
         if (this.viewDetails && this.submission.gradeoverby) {
             promises.push(CoreUser.getProfile(this.submission.gradeoverby, this.courseId, true).then((profile) => {
