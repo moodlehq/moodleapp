@@ -23,7 +23,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { AddonModDataComponentsCompileModule } from '../../components/components.module';
+
 import {
     AddonModData,
     AddonModDataData,
@@ -99,7 +99,7 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
     showComments = false;
     entryHtml = '';
     siteId: string;
-    extraImports: Type<unknown>[] = [AddonModDataComponentsCompileModule];
+    extraImports: Type<unknown>[] = [];
     jsData?: {
         fields: Record<number, AddonModDataField>;
         entries: Record<number, AddonModDataEntry>;
@@ -173,6 +173,8 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
 
             return;
         }
+
+        this.extraImports = await AddonModDataHelper.getComponentsToCompile();
 
         this.commentsEnabled = CoreComments.areCommentsEnabledInSite();
 
