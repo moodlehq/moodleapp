@@ -56,7 +56,7 @@ import { CoreLoginIdentityProviderComponent } from '../../components/identity-pr
         CoreLoginMethodsComponent,
     ],
 })
-export class CoreLoginReconnectPage implements OnInit, OnDestroy {
+export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
     @ViewChild('reconnectForm') formElement?: ElementRef;
     @ViewChild(CoreLoginMethodsComponent) set loginMethods(loginMethods: CoreLoginMethodsComponent) {

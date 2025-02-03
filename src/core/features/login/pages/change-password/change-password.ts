@@ -34,7 +34,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreLoginChangePasswordPage implements OnDestroy {
+export default class CoreLoginChangePasswordPage implements OnDestroy {
 
     changingPassword = false;
     logoutLabel: string;

@@ -32,7 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreTagIndexAreaPage implements OnInit {
+export default class CoreTagIndexAreaPage implements OnInit {
 
     tagId = 0;
     tagName = '';

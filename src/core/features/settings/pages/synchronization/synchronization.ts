@@ -39,7 +39,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
+export default class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
 
     accountsList: CoreAccountsList = {
         sameSite: [],

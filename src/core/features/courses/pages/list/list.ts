@@ -48,7 +48,7 @@ type CoreCoursesListMode = 'search' | 'all' | 'my';
         CoreCoursesCourseListItemComponent,
     ],
 })
-export class CoreCoursesListPage implements OnInit, OnDestroy {
+export default class CoreCoursesListPage implements OnInit, OnDestroy {
 
     downloadAllCoursesEnabled = false;
 

@@ -14,7 +14,6 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CoreUserAboutPage } from '@features/user/pages/about/about';
 
 const routes: Routes = [
     {
@@ -24,11 +23,11 @@ const routes: Routes = [
     },
     {
         path: 'profile',
-        loadChildren: () => import('./user-profile-lazy.module'),
+        loadComponent: () => import('@features/user/pages/profile/profile'),
     },
     {
         path: 'about',
-        component: CoreUserAboutPage,
+        loadComponent: () => import('@features/user/pages/about/about'),
     },
 ];
 

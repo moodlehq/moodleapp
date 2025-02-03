@@ -15,12 +15,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreCoursesMyPage } from '@features/courses/pages/my/my';
-
 const routes: Routes = [
     {
         path: '',
-        component: CoreCoursesMyPage,
+        loadComponent: () => import('@features/courses/pages/my/my'),
     },
 ];
 

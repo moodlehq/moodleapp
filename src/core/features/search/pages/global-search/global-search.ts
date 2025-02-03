@@ -46,7 +46,7 @@ import { CoreSearchGlobalSearchResultComponent } from '../../components/global-s
         CoreSearchGlobalSearchResultComponent,
     ],
 })
-export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewInit {
+export default class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewInit {
 
     courseId: number | null = null;
     loadMoreError = false;

@@ -77,7 +77,7 @@ interface CoreSettingsDeviceInfo {
         CoreSharedModule,
     ],
 })
-export class CoreSettingsDeviceInfoPage implements OnDestroy {
+export default class CoreSettingsDeviceInfoPage implements OnDestroy {
 
     deviceInfo: CoreSettingsDeviceInfo;
     deviceOsTranslated?: string;

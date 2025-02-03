@@ -32,7 +32,7 @@ import { CoreSharedFilesListComponent } from '../../components/list/list';
         CoreSharedFilesListComponent,
     ],
 })
-export class CoreSharedFilesListPage implements OnInit {
+export default class CoreSharedFilesListPage implements OnInit {
 
     siteId?: string;
     mimetypes?: string[];

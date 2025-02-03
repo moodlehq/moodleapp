@@ -39,7 +39,7 @@ import { CoreSearchBoxComponent } from '../../../search/components/search-box/se
         CoreSearchBoxComponent,
     ],
 })
-export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestroy {
+export default class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestroy {
 
     courseId!: number;
     participants!: CoreUserParticipantsManager;

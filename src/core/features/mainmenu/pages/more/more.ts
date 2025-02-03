@@ -40,7 +40,7 @@ import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-butt
     CoreMainMenuUserButtonComponent,
 ],
 })
-export class CoreMainMenuMorePage implements OnInit, OnDestroy {
+export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
 
     handlers?: CoreMainMenuHandlerData[];
     handlersLoaded = false;

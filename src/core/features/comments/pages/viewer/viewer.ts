@@ -61,7 +61,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterViewInit {
+export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterViewInit {
 
     @ViewChild(IonContent) content?: IonContent;
 

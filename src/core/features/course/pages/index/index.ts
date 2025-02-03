@@ -45,7 +45,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreCourseIndexPage implements OnInit, OnDestroy {
+export default class CoreCourseIndexPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
     @ViewChild('courseThumb') courseThumb?: ElementRef;

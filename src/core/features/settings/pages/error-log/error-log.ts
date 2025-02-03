@@ -28,7 +28,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreSettingsErrorLogPage implements OnInit {
+export default class CoreSettingsErrorLogPage implements OnInit {
 
     errorLogs: CoreSettingsErrorLog[] = [];
 

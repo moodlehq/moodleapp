@@ -14,8 +14,6 @@
 
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
-import { CoreCoursesCategoriesPage } from '@features/courses/pages/categories/categories';
-import { CoreCoursesListPage } from '@features/courses/pages/list/list';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCoursesHelper } from './services/courses-helper';
 import { CoreCoursesMyCoursesMainMenuHandlerService } from './services/handlers/my-courses-mainmenu';
@@ -42,11 +40,11 @@ function buildRoutes(injector: Injector): Routes {
         },
         {
             path: 'categories/:id',
-            component: CoreCoursesCategoriesPage,
+            loadComponent: () => import('@features/courses/pages/categories/categories'),
         },
         {
             path: 'list',
-            component: CoreCoursesListPage,
+            loadComponent: () => import('@features/courses/pages/list/list'),
         },
         ...buildTabMainRoutes(injector, {
             redirectTo: 'my',

@@ -51,7 +51,7 @@ import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/si
         CoreBlockSideBlocksButtonComponent,
     ],
 })
-export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
+export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
     dataLoaded = false;
     section?: CoreCourseWSSection & {

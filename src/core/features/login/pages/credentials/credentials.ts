@@ -62,7 +62,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreLoginMethodsComponent,
     ],
 })
-export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
+export default class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
     @ViewChild('credentialsForm') formElement?: ElementRef<HTMLFormElement>;
 

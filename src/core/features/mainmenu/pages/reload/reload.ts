@@ -27,7 +27,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreMainMenuReloadPage implements OnInit {
+export default class CoreMainMenuReloadPage implements OnInit {
 
     /**
      * @inheritdoc

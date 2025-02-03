@@ -15,9 +15,6 @@
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
 import { resolveIndexRoutes } from '@features/course/course-routing.module';
-import { CoreCourseIndexPage } from '@features/course/pages/index';
-import { CoreCourseListModTypePage } from '@features/course/pages/list-mod-type/list-mod-type';
-import { CoreCourseModulePreviewPage } from '@features/course/pages/module-preview/module-preview';
 import { CoreCourseHelper } from './services/course-helper';
 import { CORE_COURSE_INDEX_PATH } from './constants';
 
@@ -36,7 +33,7 @@ function buildRoutes(injector: Injector): Routes {
             children: [
                 {
                     path: '',
-                    component: CoreCourseIndexPage,
+                    loadComponent: () => import('@features/course/pages/index/index'),
                     data: {
                         isCourseIndex: true,
                     },
@@ -47,11 +44,11 @@ function buildRoutes(injector: Injector): Routes {
         },
         {
             path: ':courseId/:cmId/module-preview',
-            component: CoreCourseModulePreviewPage,
+            loadComponent: () => import('@features/course/pages/module-preview/module-preview'),
         },
         {
             path: ':courseId/list-mod-type',
-            component: CoreCourseListModTypePage,
+            loadComponent: () => import('@features/course/pages/list-mod-type/list-mod-type'),
         },
         {
             path: ':courseId/summary',
