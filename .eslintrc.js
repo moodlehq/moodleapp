@@ -199,7 +199,7 @@ const appConfig = {
         'id-match': 'error',
         'jsdoc/check-alignment': 'error',
         'jsdoc/check-param-names': [
-            'warn',
+            'error',
             {
                 checkDestructured: false,
                 enableFixer: true
