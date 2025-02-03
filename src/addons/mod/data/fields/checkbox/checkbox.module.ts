@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { AddonModDataFieldCheckboxComponent } from './component/checkbox';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
 import { AddonModDataFieldCheckboxHandler } from './services/handler';
 

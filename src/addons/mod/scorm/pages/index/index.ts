@@ -30,7 +30,8 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonModScormIndexComponent,
     ],
 })
-export default class AddonModScormIndexPage extends CoreCourseModuleMainActivityPage<AddonModScormIndexComponent> implements OnInit {
+export default class AddonModScormIndexPage extends CoreCourseModuleMainActivityPage<AddonModScormIndexComponent>
+    implements OnInit {
 
     @ViewChild(AddonModScormIndexComponent) activityComponent?: AddonModScormIndexComponent;
 
