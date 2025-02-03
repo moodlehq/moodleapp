@@ -153,7 +153,7 @@ export class CoreSearchBoxComponent implements OnInit {
     }
 
     /**
-     * @param event Focus event on input element.
+     * Search input focused.
      */
     focus(): void {
         this.historyShown.set(true);
