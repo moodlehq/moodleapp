@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { findElement, mock, mockSingleton, renderPageComponent, requireElement } from '@/testing/utils';
 import { CoreLoginError } from '@classes/errors/loginerror';
 import CoreLoginCredentialsPage from '@features/login/pages/credentials/credentials';
@@ -22,9 +21,6 @@ import { Http } from '@singletons';
 import { of } from 'rxjs';
 import { CoreLoginHelper } from '../services/login-helper';
 import { CoreConstants } from '@/core/constants';
-import { CoreSiteLogoComponent } from '@components/site-logo/site-logo';
-import { CoreLoginExceededAttemptsComponent } from '../components/exceeded-attempts/exceeded-attempts';
-import { CoreLoginMethodsComponent } from '../components/login-methods/login-methods';
 
 describe('Credentials page', () => {
 
@@ -86,12 +82,7 @@ describe('Credentials page', () => {
         // Act.
         const fixture = await renderPageComponent(CoreLoginCredentialsPage, {
             routeParams: { siteUrl },
-            imports: [
-                CoreSharedModule,
-                CoreSiteLogoComponent,
-                CoreLoginExceededAttemptsComponent,
-                CoreLoginMethodsComponent,
-            ],
+            standalone: true,
         });
 
         // Assert.
@@ -141,12 +132,7 @@ describe('Credentials page', () => {
 
         const fixture = await renderPageComponent(CoreLoginCredentialsPage, {
             routeParams: { siteUrl, siteCheck },
-            imports: [
-                CoreSharedModule,
-                CoreSiteLogoComponent,
-                CoreLoginExceededAttemptsComponent,
-                CoreLoginMethodsComponent,
-            ],
+            standalone: true,
         });
 
         // Act.
