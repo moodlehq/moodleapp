@@ -42,7 +42,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreCoursesCourseListItemComponent,
     ],
 })
-export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
+export default class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
 
     title: string;
     currentCategory?: CoreCategoryData;

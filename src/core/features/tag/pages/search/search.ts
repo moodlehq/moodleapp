@@ -42,7 +42,7 @@ import { CoreSearchBoxComponent } from '../../../search/components/search-box/se
         CoreSearchBoxComponent,
     ],
 })
-export class CoreTagSearchPage implements OnInit {
+export default class CoreTagSearchPage implements OnInit {
 
     collectionId!: number;
     query!: string;

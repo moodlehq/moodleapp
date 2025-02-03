@@ -18,28 +18,25 @@ import { RouterModule, Routes } from '@angular/router';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 
-import { CoreGradesCoursePage } from './pages/course/course';
-import { CoreGradesCoursesPage } from './pages/courses/courses';
-
 const mobileRoutes: Routes = [
     {
         path: '',
-        component: CoreGradesCoursesPage,
+        loadComponent: () => import('@features/grades/pages/courses/courses'),
     },
     {
         path: ':courseId',
-        component: CoreGradesCoursePage,
+        loadComponent: () => import('@features/grades/pages/course/course'),
     },
 ];
 
 const tabletRoutes: Routes = [
     {
         path: '',
-        component: CoreGradesCoursesPage,
+        loadComponent: () => import('@features/grades/pages/courses/courses'),
         children: [
             {
                 path: ':courseId',
-                component: CoreGradesCoursePage,
+                loadComponent: () => import('@features/grades/pages/course/course'),
             },
         ],
     },

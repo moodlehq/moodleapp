@@ -42,7 +42,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreCourseModuleNavigationComponent,
     ],
 })
-export class CoreCourseModulePreviewPage implements OnInit {
+export default class CoreCourseModulePreviewPage implements OnInit {
 
     title!: string;
     module!: CoreCourseModuleData;

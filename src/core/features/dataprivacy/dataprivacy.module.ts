@@ -25,7 +25,8 @@ import { CoreDataPrivacyCreateDataRequestLinkHandler } from './services/handlers
 const routes: Routes = [
     {
         path: CORE_DATAPRIVACY_PAGE_NAME,
-        loadChildren: () => import('./dataprivacy-lazy.module'),
+        pathMatch: 'full',
+        loadComponent: () => import('@features/dataprivacy/pages/main/main'),
     },
 ];
 

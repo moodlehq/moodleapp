@@ -28,7 +28,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreViewerIframePage implements OnInit {
+export default class CoreViewerIframePage implements OnInit {
 
     title?: string; // Page title.
     url?: string; // Iframe URL.

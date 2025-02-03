@@ -46,7 +46,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreSettingsDevPage implements OnInit {
+export default class CoreSettingsDevPage implements OnInit {
 
     rtl = false;
     forceSafeAreaMargins = false;

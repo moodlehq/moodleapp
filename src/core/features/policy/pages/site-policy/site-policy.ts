@@ -47,7 +47,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
+export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
     @ViewChild(IonContent) content?: IonContent;
 

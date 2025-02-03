@@ -17,15 +17,12 @@ import { Injector, NgModule } from '@angular/core';
 import { Route, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreTagIndexAreaPage } from '@features/tag/pages/index-area/index-area';
-import { CoreTagIndexPage } from '@features/tag/pages/index/index';
-import { CoreTagSearchPage } from '@features/tag/pages/search/search';
 import { CoreScreen } from '@services/screen';
 import { CoreTagMainMenuHandlerService } from './services/handlers/mainmenu';
 
 const indexAreaRoute: Route = {
     path: 'index-area',
-    component: CoreTagIndexAreaPage,
+    loadComponent: () => import('@features/tag/pages/index-area/index-area'),
 };
 
 /**
@@ -38,7 +35,7 @@ function buildRoutes(injector: Injector): Routes {
     const mobileRoutes: Routes = [
         {
             path: 'index',
-            component: CoreTagIndexPage,
+            loadComponent: () => import('@features/tag/pages/index/index'),
         },
         {
             ...indexAreaRoute,
@@ -49,7 +46,7 @@ function buildRoutes(injector: Injector): Routes {
     const tabletRoutes: Routes = [
         {
             path: 'index',
-            component: CoreTagIndexPage,
+            loadComponent: () => import('@features/tag/pages/index/index'),
             children: [
                 indexAreaRoute,
             ],
@@ -62,7 +59,7 @@ function buildRoutes(injector: Injector): Routes {
         {
             path: 'search',
             data: { mainMenuTabRoot: CoreTagMainMenuHandlerService.PAGE_NAME },
-            component: CoreTagSearchPage,
+            loadComponent: () => import('@features/tag/pages/search/search'),
         },
         indexAreaRoute,
         ...buildTabMainRoutes(injector, {

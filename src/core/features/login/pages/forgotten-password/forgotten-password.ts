@@ -40,7 +40,7 @@ import { CoreLoginExceededAttemptsComponent } from '../../components/exceeded-at
         CoreLoginExceededAttemptsComponent,
     ],
 })
-export class CoreLoginForgottenPasswordPage implements OnInit {
+export default class CoreLoginForgottenPasswordPage implements OnInit {
 
     @ViewChild('resetPasswordForm') formElement?: ElementRef;
 

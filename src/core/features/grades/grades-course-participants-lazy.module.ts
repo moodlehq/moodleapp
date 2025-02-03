@@ -16,17 +16,16 @@ import { conditionalRoutes } from '@/app/app-routing.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreUserParticipantsPage } from '@features/user/pages/participants/participants';
 import { CoreScreen } from '@services/screen';
 
 const routes: Routes = [
     {
         path: '',
-        component: CoreUserParticipantsPage,
+        loadComponent: () => import('@features/user/pages/participants/participants'),
         children: conditionalRoutes([
             {
                 path: ':userId',
-                loadChildren: () => import('./grades-course-lazy.module'),
+                loadComponent: () => import('@features/grades/pages/course/course'),
                 data: { swipeManagerSource: 'participants' },
             },
         ], () => CoreScreen.isTablet),

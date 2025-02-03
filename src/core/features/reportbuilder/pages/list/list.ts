@@ -35,7 +35,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreReportBuilderListPage implements AfterViewInit, OnDestroy {
+export default class CoreReportBuilderListPage implements AfterViewInit, OnDestroy {
 
     reports!: CoreListItemsManager<CoreReportBuilderReport, CoreReportBuilderReportsSource>;
 

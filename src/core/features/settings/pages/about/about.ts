@@ -32,7 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreSettingsAboutPage {
+export default class CoreSettingsAboutPage {
 
     appName: string;
     versionName: string;

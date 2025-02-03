@@ -29,7 +29,7 @@ import { canLeaveGuard } from '@guards/can-leave';
     return [
         {
             path: 'index',
-            loadChildren: () => import('./pages/index/index'),
+            loadComponent: () => import('./pages/index/index'),
             data: {
                 mainMenuTabRoot: ADDON_BLOG_MAINMENU_PAGE_NAME,
             },

@@ -50,7 +50,7 @@ import { CoreUserProfileFieldComponent } from '../../components/user-profile-fie
         CoreUserProfileFieldComponent,
     ],
 })
-export class CoreUserAboutPage implements OnInit, OnDestroy {
+export default class CoreUserAboutPage implements OnInit, OnDestroy {
 
     courseId!: number;
     userLoaded = false;

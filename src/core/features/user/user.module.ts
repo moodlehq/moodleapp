@@ -61,8 +61,8 @@ export async function getUsersServices(): Promise<Type<unknown>[]> {
 
 const appRoutes: Routes = [
     {
-        path: 'user',
-        loadChildren: () => import('@features/user/user-app-lazy.module'),
+        path: 'user/completeprofile',
+        loadComponent: () => import('@features/user/pages/complete-profile/complete-profile'),
     },
 ];
 
@@ -74,7 +74,7 @@ const routes: Routes = [
     ...conditionalRoutes([
         {
             path: `${CORE_COURSE_PAGE_NAME}/${CORE_COURSE_INDEX_PATH}/${PARTICIPANTS_PAGE_NAME}/:userId`,
-            loadChildren: () => import('@features/user/user-profile-lazy.module'),
+            loadComponent: () => import('@features/user/pages/profile/profile'),
             data: {
                 swipeManagerSource: 'participants',
             },

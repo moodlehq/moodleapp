@@ -28,7 +28,7 @@ import { CoreReportBuilderReportDetailComponent } from '../../components/report-
         CoreReportBuilderReportDetailComponent,
     ],
 })
-export class CoreReportBuilderReportPage implements OnInit {
+export default class CoreReportBuilderReportPage implements OnInit {
 
     reportId!: string;
     reportDetail?: CoreReportBuilderReportDetail;

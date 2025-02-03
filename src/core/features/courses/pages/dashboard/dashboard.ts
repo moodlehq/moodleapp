@@ -43,7 +43,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreBlockSideBlocksButtonComponent,
     ],
 })
-export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
+export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
     @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
 

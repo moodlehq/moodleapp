@@ -18,29 +18,20 @@ import { RouterModule, Routes } from '@angular/router';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 
-import { CoreSettingsIndexPage } from './pages/index';
 import { SHAREDFILES_PAGE_NAME } from '@features/sharedfiles/constants';
-import { CoreSettingsSynchronizationPage } from '@features/settings/pages/synchronization/synchronization';
-import { CoreSettingsGeneralPage } from '@features/settings/pages/general/general';
-import { CoreSettingsSpaceUsagePage } from '@features/settings/pages/space-usage/space-usage';
-import { CoreSettingsAboutPage } from '@features/settings/pages/about/about';
-import { CoreSettingsLicensesPage } from '@features/settings/pages/licenses/licenses';
-import { CoreSettingsDeviceInfoPage } from '@features/settings/pages/deviceinfo/deviceinfo';
-import { CoreSettingsDevPage } from '@features/settings/pages/dev/dev';
-import { CoreSettingsErrorLogPage } from '@features/settings/pages/error-log/error-log';
 
 const sectionRoutes: Routes = [
     {
         path: 'general',
-        component: CoreSettingsGeneralPage,
+        loadComponent: () => import('@features/settings/pages/general/general'),
     },
     {
         path: 'spaceusage',
-        component: CoreSettingsSpaceUsagePage,
+        loadComponent: () => import('@features/settings/pages/space-usage/space-usage'),
     },
     {
         path: 'sync',
-        component: CoreSettingsSynchronizationPage,
+        loadComponent: () => import('@features/settings/pages/synchronization/synchronization'),
     },
     {
         path: SHAREDFILES_PAGE_NAME,
@@ -48,14 +39,14 @@ const sectionRoutes: Routes = [
     },
     {
         path: 'about',
-        component: CoreSettingsAboutPage,
+        loadComponent: () => import('@features/settings/pages/about/about'),
     },
 ];
 
 const mobileRoutes: Routes = [
     {
         path: '',
-        component: CoreSettingsIndexPage,
+        loadComponent: () => import('@features/settings/pages/index/index'),
     },
     ...sectionRoutes,
 ];
@@ -63,7 +54,7 @@ const mobileRoutes: Routes = [
 const tabletRoutes: Routes = [
     {
         path: '',
-        component: CoreSettingsIndexPage,
+        loadComponent: () => import('@features/settings/pages/index/index'),
         children: [
             {
                 path: '',
@@ -80,19 +71,19 @@ const routes: Routes = [
     ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
     {
         path: 'about/deviceinfo',
-        component: CoreSettingsDeviceInfoPage,
+        loadComponent: () => import('@features/settings/pages/deviceinfo/deviceinfo'),
     },
     {
         path: 'about/deviceinfo/dev',
-        component: CoreSettingsDevPage,
+        loadComponent: () => import('@features/settings/pages/dev/dev'),
     },
     {
         path: 'about/deviceinfo/dev/error-log',
-        component: CoreSettingsErrorLogPage,
+        loadComponent: () => import('@features/settings/pages/error-log/error-log'),
     },
     {
         path: 'about/licenses',
-        component: CoreSettingsLicensesPage,
+        loadComponent: () => import('@features/settings/pages/licenses/licenses'),
     },
 ];
 

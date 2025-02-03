@@ -42,7 +42,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreSettingsGeneralPage {
+export default class CoreSettingsGeneralPage {
 
     languages: { code: string; name: string }[] = [];
     selectedLanguage = '';

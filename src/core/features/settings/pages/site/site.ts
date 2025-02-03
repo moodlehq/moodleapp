@@ -43,7 +43,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
+export default class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 

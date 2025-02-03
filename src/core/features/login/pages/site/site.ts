@@ -65,7 +65,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreLoginSitePage implements OnInit {
+export default class CoreLoginSitePage implements OnInit {
 
     @ViewChild('siteFormEl') formElement?: ElementRef;
 

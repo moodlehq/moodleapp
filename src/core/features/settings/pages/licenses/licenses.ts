@@ -45,7 +45,7 @@ interface CoreSettingsLicense {
         CoreSharedModule,
     ],
 })
-export class CoreSettingsLicensesPage implements OnInit {
+export default class CoreSettingsLicensesPage implements OnInit {
 
     licensesUrl: string;
     loaded = false;

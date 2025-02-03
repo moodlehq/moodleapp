@@ -38,7 +38,7 @@ import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-butt
     CoreMainMenuUserButtonComponent,
 ],
 })
-export class CoreMainMenuHomePage implements OnInit {
+export default class CoreMainMenuHomePage implements OnInit {
 
     @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
 

@@ -15,17 +15,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreSharedFilesListPage } from './pages/list/list';
-import { CoreSharedFilesChooseSitePage } from './pages/choose-site/choose-site';
-
 const routes: Routes = [
     {
         path: 'choosesite',
-        component: CoreSharedFilesChooseSitePage,
+        loadComponent: () => import('@features/sharedfiles/pages/choose-site/choose-site'),
     },
     {
         path: 'list/:hash',
-        component: CoreSharedFilesListPage,
+        loadComponent: () => import('@features/sharedfiles/pages/list/list'),
     },
 ];
 
