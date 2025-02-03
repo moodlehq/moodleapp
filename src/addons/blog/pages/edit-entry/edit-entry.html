@@ -61,9 +61,9 @@
                                 </ion-toggle>
                             } @else if (associatedCourse) {
                                 <ion-toggle formControlName="associateWithCourse">
-                                    <core-format-text
-                                        [text]="'addon.blog.associatewithcourse' | translate: { $a: { coursename: associatedCourse.fullname } }"
-                                        [contextLevel]="courseContext" [contextInstanceId]="courseId" [courseId]="courseId" />
+                                    <core-format-text [text]="'addon.blog.associatewithcourse' | translate:
+                                        { $a: { coursename: associatedCourse.fullname } }" [contextLevel]="courseContext"
+                                        [contextInstanceId]="courseId" [courseId]="courseId" />
                                 </ion-toggle>
                             }
                         </ion-item>

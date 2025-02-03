@@ -31,7 +31,8 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonModFeedbackIndexComponent,
     ],
 })
-export default class AddonModFeedbackIndexPage extends CoreCourseModuleMainActivityPage<AddonModFeedbackIndexComponent> implements OnInit {
+export default class AddonModFeedbackIndexPage extends CoreCourseModuleMainActivityPage<AddonModFeedbackIndexComponent>
+    implements OnInit {
 
     @ViewChild(AddonModFeedbackIndexComponent) activityComponent?: AddonModFeedbackIndexComponent;
 

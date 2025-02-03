@@ -32,7 +32,8 @@ import { CoreSharedModule } from '@/core/shared.module';
         AddonModFolderIndexComponent,
     ],
 })
-export default class AddonModFolderIndexPage extends CoreCourseModuleMainActivityPage<AddonModFolderIndexComponent> implements OnInit {
+export default class AddonModFolderIndexPage extends CoreCourseModuleMainActivityPage<AddonModFolderIndexComponent>
+    implements OnInit {
 
     @ViewChild(AddonModFolderIndexComponent) activityComponent?: AddonModFolderIndexComponent;
 

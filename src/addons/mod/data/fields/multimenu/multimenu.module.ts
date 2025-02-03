@@ -14,7 +14,6 @@
 
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
-import { AddonModDataFieldMultimenuComponent } from './component/multimenu';
 import { AddonModDataFieldMultimenuHandler } from './services/handler';
 
 @NgModule({
