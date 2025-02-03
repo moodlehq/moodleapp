@@ -98,9 +98,9 @@
                 <ion-label>
                     <p class="item-heading">Private token</p>
                     @if (privateToken) {
-                    <p>{{ privateToken }}</p>
+                        <p>{{ privateToken }}</p>
                     } @else {
-                    <p>---</p>
+                        <p>---</p>
                     }
                 </ion-label>
             </ion-item>
@@ -108,31 +108,31 @@
                 <ion-label>
                     <p class="item-heading">Files access key</p>
                     @if (filesAccessKey) {
-                    <p>{{ filesAccessKey }}</p>
+                        <p>{{ filesAccessKey }}</p>
                     } @else {
-                    <p>---</p>
+                        <p>---</p>
                     }
                 </ion-label>
             </ion-item>
 
             @if (privateToken) {
-            <ion-item class="ion-text-wrap" *ngIf="autoLoginTimeBetweenRequests">
-                <ion-label>
-                    <p class="item-heading">Minimum time between auto-login requests</p>
-                    <p>{{ autoLoginTimeBetweenRequests | coreDuration }}</p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading">Last auto login in this device</p>
-                    @if (lastAutoLoginTime && lastAutoLoginTime > 0) {
-                    <p>{{ lastAutoLoginTime | coreTimeAgo }}</p>
-                    <ion-note class="core-text-sm">This value will reset when the app is restarted.</ion-note>
-                    } @else {
-                    <p>---</p>
-                    }
-                </ion-label>
-            </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="autoLoginTimeBetweenRequests">
+                    <ion-label>
+                        <p class="item-heading">Minimum time between auto-login requests</p>
+                        <p>{{ autoLoginTimeBetweenRequests | coreDuration }}</p>
+                    </ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p class="item-heading">Last auto login in this device</p>
+                        @if (lastAutoLoginTime && lastAutoLoginTime > 0) {
+                            <p>{{ lastAutoLoginTime | coreTimeAgo }}</p>
+                            <ion-note class="core-text-sm">This value will reset when the app is restarted.</ion-note>
+                        } @else {
+                            <p>---</p>
+                        }
+                    </ion-label>
+                </ion-item>
             }
 
             <ion-item-divider>

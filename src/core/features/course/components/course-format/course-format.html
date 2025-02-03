@@ -27,11 +27,11 @@
                 <ion-accordion-group [multiple]="true" (ionChange)="accordionMultipleChange($event.detail)"
                     [value]="accordionMultipleValue">
                     @for (section of sections; track section.id) {
-                    @if ($index
+                        @if ($index
                     <= lastShownSectionIndex && !section.hiddenbynumsections && section.id !==allSectionsId && section.id
                         !==stealthModulesSectionId) { <core-course-section [course]="course" [section]="section"
-                        [lastModuleViewed]="lastModuleViewed" [viewedModules]="viewedModules" [collapsible]="true" />
-                    }
+                                [lastModuleViewed]="lastModuleViewed" [viewedModules]="viewedModules" [collapsible]="true" />
+                        }
                     }
                 </ion-accordion-group>
             </core-dynamic-component>

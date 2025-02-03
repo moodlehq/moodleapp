@@ -38,10 +38,10 @@
         </ion-item-divider>
         <ng-container *ngFor="let modOrSubsection of section.contents">
             @if (isModule(modOrSubsection)) {
-            <core-course-module [module]="modOrSubsection" [section]="section" [showActivityDates]="false" [showAvailability]="false"
-                [showExtra]="false" [showDownloadStatus]="false" [showCompletion]="false" [showIndentation]="false" />
+                <core-course-module [module]="modOrSubsection" [section]="section" [showActivityDates]="false" [showAvailability]="false"
+                    [showExtra]="false" [showDownloadStatus]="false" [showCompletion]="false" [showIndentation]="false" />
             } @else {
-            <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: modOrSubsection}" />
+                <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: modOrSubsection}" />
             }
         </ng-container>
     </ion-card>

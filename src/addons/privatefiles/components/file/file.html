@@ -1,54 +1,55 @@
 <ion-card class="card-file ion-activatable">
 
     @if (file) {
-    <ion-item [ngClass]="{ 'file-selected': showCheckbox && selected }" class="ion-text-wrap item-file" [detail]="false">
+        <ion-item [ngClass]="{ 'file-selected': showCheckbox && selected }" class="ion-text-wrap item-file" [detail]="false">
 
-        @if (showCheckbox) {
-        <ion-checkbox labelPlacement="start" [(ngModel)]="selected" (ngModelChange)="onSelectedFileChange.emit($event)" />
-        } @else {
-        <ion-thumbnail slot="start" (click)="download($event, true)">
-            <img [src]="fileIcon" alt="" role="presentation" />
-        </ion-thumbnail>
-        }
+            @if (showCheckbox) {
+                <ion-checkbox labelPlacement="start" [(ngModel)]="selected" (ngModelChange)="onSelectedFileChange.emit($event)" />
+            } @else {
+                <ion-thumbnail slot="start" (click)="download($event, true)">
+                    <img [src]="fileIcon" alt="" role="presentation" />
+                </ion-thumbnail>
+            }
 
-        <ion-label (click)="download($event, true)">
-            <p class="item-heading">
-                <span (ariaButtonClick)="download($event, true)">{{fileName}}</span>
+            <ion-label (click)="download($event, true)">
+                <p class="item-heading">
+                    <span (ariaButtonClick)="download($event, true)">{{fileName}}</span>
 
-                @if (state === statusDownloaded) {
-                <ion-icon class="core-icon-downloaded" color="success" name="fam-cloud-done"
-                    [attr.aria-label]="'core.downloaded' | translate" role="status" />
+                    @if (state === statusDownloaded) {
+                        <ion-icon class="core-icon-downloaded" color="success" name="fam-cloud-done"
+                            [attr.aria-label]="'core.downloaded' | translate" role="status" />
+                    }
+                </p>
+
+
+                <p *ngIf="fileSizeReadable || showTime">
+                    <ng-container *ngIf="fileSizeReadable">{{ fileSizeReadable }}</ng-container>
+                    <ng-container *ngIf="fileSizeReadable && showTime"> · </ng-container>
+                    <ng-container *ngIf="showTime">{{ timemodified * 1000 | coreFormatDate }}</ng-container>
+                </p>
+            </ion-label>
+            <div slot="end" class="flex-row">
+                <ion-button fill="clear" *ngIf="isDownloaded && isIOS" (click)="openFile($event, true)"
+                    [title]="openButtonLabel | translate">
+                    <ion-icon slot="icon-only" [name]="openButtonIcon" aria-hidden="true" />
+                </ion-button>
+
+                @if (!showCheckbox) {
+
+                    @if (state !== statusDownloaded) {
+                        <core-download-refresh [status]="state" [enabled]="canDownload" [loading]="isDownloading"
+                            [canTrustDownload]="!alwaysDownload" (action)="download()" />
+                    }
+
+                    @if (canDelete) {
+                        <ion-button (click)="openMenuClick()" fill="clear">
+                            <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
+                        </ion-button>
+                    }
                 }
-            </p>
-
-
-            <p *ngIf="fileSizeReadable || showTime">
-                <ng-container *ngIf="fileSizeReadable">{{ fileSizeReadable }}</ng-container>
-                <ng-container *ngIf="fileSizeReadable && showTime"> · </ng-container>
-                <ng-container *ngIf="showTime">{{ timemodified * 1000 | coreFormatDate }}</ng-container>
-            </p>
-        </ion-label>
-        <div slot="end" class="flex-row">
-            <ion-button fill="clear" *ngIf="isDownloaded && isIOS" (click)="openFile($event, true)" [title]="openButtonLabel | translate">
-                <ion-icon slot="icon-only" [name]="openButtonIcon" aria-hidden="true" />
-            </ion-button>
-
-            @if (!showCheckbox) {
-
-            @if (state !== statusDownloaded) {
-            <core-download-refresh [status]="state" [enabled]="canDownload" [loading]="isDownloading" [canTrustDownload]="!alwaysDownload"
-                (action)="download()" />
-            }
-
-            @if (canDelete) {
-            <ion-button (click)="openMenuClick()" fill="clear">
-                <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
-            </ion-button>
-            }
-            }
-        </div>
-    </ion-item>
-    <ion-ripple-effect />
+            </div>
+        </ion-item>
+        <ion-ripple-effect />
     }
 
 </ion-card>

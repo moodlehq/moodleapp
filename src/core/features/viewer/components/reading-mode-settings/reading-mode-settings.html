@@ -34,11 +34,11 @@
     </ion-item>
     <ion-radio-group [(ngModel)]="settings.theme" (ionChange)="onSettingChange()">
         @for (theme of themes; track $index; let last = $last;) {
-        <ion-item class="ion-text-wrap" [lines]="last ? 'full': 'none'">
-            <ion-radio [value]="theme" class="reading-theme">
-                <div class="preview {{theme}}">Aa</div> {{ 'core.viewer.readingtheme'+theme | translate }}
-            </ion-radio>
-        </ion-item>
+            <ion-item class="ion-text-wrap" [lines]="last ? 'full': 'none'">
+                <ion-radio [value]="theme" class="reading-theme">
+                    <div class="preview {{theme}}">Aa</div> {{ 'core.viewer.readingtheme'+theme | translate }}
+                </ion-radio>
+            </ion-item>
         }
     </ion-radio-group>
     <ion-item class="ion-text-wrap" (ionChange)="onSettingChange()" lines="full">

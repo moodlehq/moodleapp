@@ -2,11 +2,11 @@
     <ion-toolbar>
         <ion-buttons slot="start">
             @if (selectFilesEnabled()) {
-            <ion-button fill="clear" [ariaLabel]="'core.close' | translate" (click)="cancelFileSelection()">
-                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true" />
-            </ion-button>
+                <ion-button fill="clear" [ariaLabel]="'core.close' | translate" (click)="cancelFileSelection()">
+                    <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true" />
+                </ion-button>
             } @else {
-            <ion-back-button [text]="'core.back' | translate" />
+                <ion-back-button [text]="'core.back' | translate" />
             }
         </ion-buttons>
         <ion-title>
@@ -14,9 +14,9 @@
         </ion-title>
         <ion-buttons slot="end">
             @if (selectFilesEnabled() && selectedFiles.length > 0) {
-            <ion-button fill="clear" (click)="deleteSelectedFiles(true)" [ariaLabel]="'core.delete' | translate" color="danger">
-                <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true" />
-            </ion-button>
+                <ion-button fill="clear" (click)="deleteSelectedFiles(true)" [ariaLabel]="'core.delete' | translate" color="danger">
+                    <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true" />
+                </ion-button>
             }
         </ion-buttons>
     </ion-toolbar>
@@ -58,12 +58,12 @@
                 </ion-item>
 
                 @if (!file.isdir) {
-                <addon-privatefiles-file [file]="file" [component]="component" [componentId]="file.contextid"
-                    (onOpenMenuClick)="root === 'my' && openManagementFileMenu($event, file)"
-                    (longPress)="canDeleteFiles && root === 'my' && enableMultipleSelection(file)"
-                    [showCheckbox]="canDeleteFiles && root === 'my' && selectFilesEnabled()"
-                    (onSelectedFileChange)="root === 'my' && selectedFileValueChanged($event, file)" showDownloadStatus="true"
-                    [selected]="file.selected" [canDelete]="canDeleteFiles && root === 'my'" />
+                    <addon-privatefiles-file [file]="file" [component]="component" [componentId]="file.contextid"
+                        (onOpenMenuClick)="root === 'my' && openManagementFileMenu($event, file)"
+                        (longPress)="canDeleteFiles && root === 'my' && enableMultipleSelection(file)"
+                        [showCheckbox]="canDeleteFiles && root === 'my' && selectFilesEnabled()"
+                        (onSelectedFileChange)="root === 'my' && selectedFileValueChanged($event, file)" showDownloadStatus="true"
+                        [selected]="file.selected" [canDelete]="canDeleteFiles && root === 'my'" />
                 }
             </ng-container>
         </ion-list>
@@ -74,19 +74,19 @@
 
     <!-- Upload a private file. -->
     @if (showUpload && root !== 'site' && !path && !selectFilesEnabled()) {
-    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
-        <ion-fab-button (click)="uploadFile()" [attr.aria-label]="'core.fileuploader.uploadafile' | translate">
-            <ion-icon name="fas-arrow-up-from-bracket" aria-hidden="true" />
-            <span class="sr-only">{{ 'core.fileuploader.uploadafile' | translate }}</span>
-        </ion-fab-button>
-    </ion-fab>
+        <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
+            <ion-fab-button (click)="uploadFile()" [attr.aria-label]="'core.fileuploader.uploadafile' | translate">
+                <ion-icon name="fas-arrow-up-from-bracket" aria-hidden="true" />
+                <span class="sr-only">{{ 'core.fileuploader.uploadafile' | translate }}</span>
+            </ion-fab-button>
+        </ion-fab>
     }
 </ion-content>
 
 @if (selectFilesEnabled()) {
-<div class="ion-padding addons-privatefiles-index-select-all">
-    <ion-checkbox labelPlacement="end" [(ngModel)]="selectAll" (ngModelChange)="onSelectAllChanges($event)">
-        {{ 'core.selectall' | translate }}
-    </ion-checkbox>
-</div>
+    <div class="ion-padding addons-privatefiles-index-select-all">
+        <ion-checkbox labelPlacement="end" [(ngModel)]="selectAll" (ngModelChange)="onSelectAllChanges($event)">
+            {{ 'core.selectall' | translate }}
+        </ion-checkbox>
+    </div>
 }

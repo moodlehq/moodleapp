@@ -1,20 +1,20 @@
 @if (collapsible) {
-<ion-accordion class="core-course-module-list-wrapper" [id]="section.id"
-    [attr.aria-labelledby]="section.name ? 'core-section-name-' + section.id : null" [value]="section.id" toggleIconSlot="start">
-    <ng-container *ngTemplateOutlet="sectionHeader" />
+    <ion-accordion class="core-course-module-list-wrapper" [id]="section.id"
+        [attr.aria-labelledby]="section.name ? 'core-section-name-' + section.id : null" [value]="section.id" toggleIconSlot="start">
+        <ng-container *ngTemplateOutlet="sectionHeader" />
 
-    <div slot="content">
-        <ng-container *ngIf="section.expanded">
-            <ng-container *ngTemplateOutlet="sectionContent" />
-        </ng-container>
-    </div>
-</ion-accordion>
+        <div slot="content">
+            <ng-container *ngIf="section.expanded">
+                <ng-container *ngTemplateOutlet="sectionContent" />
+            </ng-container>
+        </div>
+    </ion-accordion>
 } @else {
-<div class="core-course-module-list-wrapper" [id]="section.id"
-    [attr.aria-labelledby]="section.name ? 'core-section-name-' + section.id : null">
-    <ng-container *ngTemplateOutlet="sectionHeader" />
-    <ng-container *ngTemplateOutlet="sectionContent" />
-</div>
+    <div class="core-course-module-list-wrapper" [id]="section.id"
+        [attr.aria-labelledby]="section.name ? 'core-section-name-' + section.id : null">
+        <ng-container *ngTemplateOutlet="sectionHeader" />
+        <ng-container *ngTemplateOutlet="sectionContent" />
+    </div>
 }
 
 <ng-template #sectionHeader>
@@ -59,12 +59,12 @@
 
     <ng-container *ngFor="let modOrSubsection of section.contents">
         @if (!isModule(modOrSubsection)) {
-        <core-course-section [course]="course" [section]="modOrSubsection" [lastModuleViewed]="lastModuleViewed"
-            [viewedModules]="viewedModules" [collapsible]="true" />
+            <core-course-section [course]="course" [section]="modOrSubsection" [lastModuleViewed]="lastModuleViewed"
+                [viewedModules]="viewedModules" [collapsible]="true" />
         } @else {
-        <core-course-module *ngIf="modOrSubsection.visibleoncoursepage !== 0" [module]="modOrSubsection" [section]="section"
-            [showActivityDates]="course.showactivitydates" [showCompletionConditions]="course.showcompletionconditions"
-            [isLastViewed]="lastModuleViewed && lastModuleViewed.cmId === modOrSubsection.id" [class.core-course-module-not-viewed]="
+            <core-course-module *ngIf="modOrSubsection.visibleoncoursepage !== 0" [module]="modOrSubsection" [section]="section"
+                [showActivityDates]="course.showactivitydates" [showCompletionConditions]="course.showcompletionconditions"
+                [isLastViewed]="lastModuleViewed && lastModuleViewed.cmId === modOrSubsection.id" [class.core-course-module-not-viewed]="
                     !viewedModules[modOrSubsection.id] &&
                     (!modOrSubsection.completiondata || modOrSubsection.completiondata.state === completionStatusIncomplete)" />
         }

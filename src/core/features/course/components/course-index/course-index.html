@@ -64,31 +64,32 @@
         <ng-container *ngIf="section.expanded">
             <ng-container *ngFor="let modOrSubsection of section.contents">
                 @if (!isModule(modOrSubsection)) {
-                <div class="core-course-index-subsection">
-                    <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: modOrSubsection}" />
-                </div>
+                    <div class="core-course-index-subsection">
+                        <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: modOrSubsection}" />
+                    </div>
                 } @else {
-                <ion-item class="module" [class.item-dimmed]="!modOrSubsection.visible" [class.indented]="modOrSubsection.indented"
-                    [class.item-hightlighted]="section.highlighted" (click)="selectSectionOrModule($event, section.id, modOrSubsection.id)"
-                    button>
-                    <ion-icon class="completioninfo completion_none" name="" *ngIf="modOrSubsection.completionStatus === undefined"
-                        slot="start" aria-hidden="true" />
-                    <ion-icon class="completioninfo completion_incomplete" name="far-circle" *ngIf="modOrSubsection.completionStatus === 0"
-                        slot="start" [attr.aria-label]="'core.course.todo' | translate" />
-                    <ion-icon class="completioninfo completion_complete" name="fas-circle"
-                        *ngIf="modOrSubsection.completionStatus === 1 || modOrSubsection.completionStatus === 2" color="success"
-                        slot="start" [attr.aria-label]="'core.course.done' | translate" />
-                    <ion-icon class="completioninfo completion_fail" name="fas-xmark" *ngIf="modOrSubsection.completionStatus === 3"
-                        color="danger" slot="start" [attr.aria-label]="'core.course.failed' | translate" />
-                    <ion-label>
-                        <p class="item-heading">
-                            <core-format-text [text]="modOrSubsection.name" contextLevel="module" [contextInstanceId]="modOrSubsection.id"
-                                [courseId]="modOrSubsection.course" />
-                        </p>
-                    </ion-label>
-                    <ion-icon name="fas-lock" *ngIf="!modOrSubsection.uservisible" slot="end" class="restricted"
-                        [attr.aria-label]="'core.restricted' | translate" />
-                </ion-item>
+                    <ion-item class="module" [class.item-dimmed]="!modOrSubsection.visible" [class.indented]="modOrSubsection.indented"
+                        [class.item-hightlighted]="section.highlighted"
+                        (click)="selectSectionOrModule($event, section.id, modOrSubsection.id)" button>
+                        <ion-icon class="completioninfo completion_none" name="" *ngIf="modOrSubsection.completionStatus === undefined"
+                            slot="start" aria-hidden="true" />
+                        <ion-icon class="completioninfo completion_incomplete" name="far-circle"
+                            *ngIf="modOrSubsection.completionStatus === 0" slot="start"
+                            [attr.aria-label]="'core.course.todo' | translate" />
+                        <ion-icon class="completioninfo completion_complete" name="fas-circle"
+                            *ngIf="modOrSubsection.completionStatus === 1 || modOrSubsection.completionStatus === 2" color="success"
+                            slot="start" [attr.aria-label]="'core.course.done' | translate" />
+                        <ion-icon class="completioninfo completion_fail" name="fas-xmark" *ngIf="modOrSubsection.completionStatus === 3"
+                            color="danger" slot="start" [attr.aria-label]="'core.course.failed' | translate" />
+                        <ion-label>
+                            <p class="item-heading">
+                                <core-format-text [text]="modOrSubsection.name" contextLevel="module"
+                                    [contextInstanceId]="modOrSubsection.id" [courseId]="modOrSubsection.course" />
+                            </p>
+                        </ion-label>
+                        <ion-icon name="fas-lock" *ngIf="!modOrSubsection.uservisible" slot="end" class="restricted"
+                            [attr.aria-label]="'core.restricted' | translate" />
+                    </ion-item>
                 }
             </ng-container>
         </ng-container>
