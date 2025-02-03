@@ -1,15 +1,19 @@
-<ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap" *ngIf="items.length > 1">
-    <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto">
-        <ion-button [disabled]="previousIndex < 0" fill="clear" [ariaLabel]="previousTitle" (click)="navigate(previousIndex)">
-            <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
-        </ion-button>
-    </ion-col>
-    <ion-col class="ion-text-center">
-        <core-progress-bar [progress]="progress" [text]="progressText" *ngIf="currentIndex >= 0" />
-    </ion-col>
-    <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto">
-        <ion-button [disabled]="nextIndex >= items.length" fill="clear" [ariaLabel]="nextTitle" (click)="navigate(nextIndex)">
-            <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />
-        </ion-button>
-    </ion-col>
-</ion-row>
+@if (items.length > 1) {
+    <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
+        <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto">
+            <ion-button [disabled]="previousIndex < 0" fill="clear" [ariaLabel]="previousTitle" (click)="navigate(previousIndex)">
+                <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
+            </ion-button>
+        </ion-col>
+        <ion-col class="ion-text-center">
+            @if (currentIndex >= 0) {
+                <core-progress-bar [progress]="progress" [text]="progressText" />
+            }
+        </ion-col>
+        <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto">
+            <ion-button [disabled]="nextIndex >= items.length" fill="clear" [ariaLabel]="nextTitle" (click)="navigate(nextIndex)">
+                <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />
+            </ion-button>
+        </ion-col>
+    </ion-row>
+}

@@ -1,12 +1,15 @@
-<ng-container *ngIf="groupInfo && groupInfo.groups.length > 0 && (groupInfo.separateGroups || groupInfo.visibleGroups)">
-    <ion-card class="core-info-card" *ngIf="multipleGroupsMessage && groupInfo.groups && groupInfo.groups.length > 1">
-        <ion-item class="ion-text-wrap">
-            <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
-            <ion-label>
-                <p class="item-label">{{ multipleGroupsMessage }}</p>
-            </ion-label>
-        </ion-item>
-    </ion-card>
+@if (groupInfo && groupInfo.groups.length > 0 && (groupInfo.separateGroups || groupInfo.visibleGroups)) {
+
+    @if (multipleGroupsMessage && groupInfo.groups && groupInfo.groups.length > 1) {
+        <ion-card class="core-info-card">
+            <ion-item class="ion-text-wrap">
+                <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
+                <ion-label>
+                    <p class="item-label">{{ multipleGroupsMessage }}</p>
+                </ion-label>
+            </ion-item>
+        </ion-card>
+    }
 
     <ion-item class="ion-text-wrap core-group-selector" lines="full">
         <ion-icon name="fas-user-group" slot="start" aria-hidden="true" />
@@ -14,9 +17,12 @@
             [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.group' | translate}">
             <p class="item-heading" slot="label">{{ (groupInfo.separateGroups ? 'core.groupsseparate': 'core.groupsvisible') | translate }}
             </p>
-            <ion-select-option *ngFor="let group of groupInfo.groups" [value]=" group.id">
-                <core-format-text [text]="group.name" contextLevel="course" [contextInstanceId]="courseId" [wsNotFiltered]="true" />
-            </ion-select-option>
+            @for (group of groupInfo.groups; track group.id) {
+                <ion-select-option [value]="group.id">
+                    <core-format-text [text]="group.name" contextLevel="course" [contextInstanceId]="courseId" [wsNotFiltered]="true" />
+                </ion-select-option>
+            }
         </ion-select>
     </ion-item>
-</ng-container>
+
+}

@@ -3,9 +3,9 @@
         <swiper-slide>
             <div class="swiper-zoom-container">
                 @if (dataUrl) {
-                <img [src]="dataUrl" [alt]="title">
+                    <img [src]="dataUrl" [alt]="title">
                 } @else {
-                <img [url]="image" [alt]="title" core-external-content [component]="component" [componentId]="componentId">
+                    <img [url]="image" [alt]="title" core-external-content [component]="component" [componentId]="componentId">
                 }
             </div>
         </swiper-slide>
