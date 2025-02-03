@@ -1,13 +1,13 @@
 <ng-container *ngIf="avatarUrl">
-    <img class="userpicture" *ngIf="linkProfile" [url]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content
-        (error)="loadImageError()" (ariaButtonClick)="gotoProfile($event)" [siteId]="siteId">
+    <img class="userpicture" *ngIf="linkProfile" [url]="avatarUrl" [alt]="fullname" core-external-content (error)="loadImageError()"
+        (ariaButtonClick)="gotoProfile($event)" [siteId]="siteId">
 
     <img class="userpicture" *ngIf="!linkProfile" [url]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}"
         core-external-content (error)="loadImageError()" aria-hidden="true" [siteId]="siteId">
 </ng-container>
 <ng-container *ngIf="!avatarUrl && initials">
-    <div class="userinitials" *ngIf="linkProfile" [attr.aria-label]="'core.pictureof' | translate:{$a: fullname}"
-        [title]="'core.pictureof' | translate:{$a: fullname}" (ariaButtonClick)="gotoProfile($event)" [attr.data-initials]="initials">
+    <div class="userinitials" *ngIf="linkProfile" [attr.aria-label]="fullname" [title]="fullname" (ariaButtonClick)="gotoProfile($event)"
+        [attr.data-initials]="initials">
     </div>
 
     <div class="userinitials" *ngIf="!linkProfile" [attr.aria-label]="'core.pictureof' | translate:{$a: fullname}"
