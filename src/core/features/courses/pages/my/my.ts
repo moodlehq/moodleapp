@@ -56,7 +56,7 @@ import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/si
     CoreBlockSideBlocksButtonComponent,
 ],
 })
-export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
+export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
 
     @ViewChild(CoreBlockComponent) block!: CoreBlockComponent;
 

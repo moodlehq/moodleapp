@@ -17,11 +17,6 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { hasSitesGuard } from './guards/has-sites';
 import { CoreLoginHelper } from './services/login-helper';
-import { CoreLoginForgottenPasswordPage } from '@features/login/pages/forgotten-password/forgotten-password';
-import { CoreLoginEmailSignupPage } from '@features/login/pages/email-signup/email-signup';
-import { CoreLoginSitePage } from '@features/login/pages/site/site';
-import { CoreLoginSitesPage } from '@features/login/pages/sites/sites';
-import { CoreLoginChangePasswordPage } from '@features/login/pages/change-password/change-password';
 
 const routes: Routes = [
     {
@@ -31,7 +26,7 @@ const routes: Routes = [
     },
     {
         path: 'site',
-        component: CoreLoginSitePage,
+        loadComponent: () => import('@features/login/pages/site/site'),
     },
     {
         path: 'credentials',
@@ -39,20 +34,20 @@ const routes: Routes = [
     },
     {
         path: 'sites',
-        component: CoreLoginSitesPage,
+        loadComponent: () => import('@features/login/pages/sites/sites'),
         canActivate: [hasSitesGuard],
     },
     {
         path: 'forgottenpassword',
-        component: CoreLoginForgottenPasswordPage,
+        loadComponent: () => import('@features/login/pages/forgotten-password/forgotten-password'),
     },
     {
         path: 'changepassword',
-        component: CoreLoginChangePasswordPage,
+        loadComponent: () => import('@features/login/pages/change-password/change-password'),
     },
     {
         path: 'emailsignup',
-        component: CoreLoginEmailSignupPage,
+        loadComponent: () => import('@features/login/pages/email-signup/email-signup'),
     },
     {
         path: 'reconnect',

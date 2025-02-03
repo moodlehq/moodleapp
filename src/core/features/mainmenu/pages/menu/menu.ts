@@ -78,7 +78,7 @@ const ANIMATION_DURATION = 500;
         CoreMainMenuUserButtonComponent,
     ],
 })
-export class CoreMainMenuPage implements OnInit, OnDestroy {
+export default class CoreMainMenuPage implements OnInit, OnDestroy {
 
     tabs: CoreMainMenuHandlerToDisplay[] = [];
     allHandlers?: CoreMainMenuHandlerToDisplay[];

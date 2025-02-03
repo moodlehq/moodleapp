@@ -42,7 +42,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
+export default class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
 
     dataLoaded = false;
     policies: ActiveSitePolicy[] = [];

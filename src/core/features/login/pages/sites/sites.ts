@@ -35,7 +35,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreLoginSitesPage implements OnInit {
+export default class CoreLoginSitesPage implements OnInit {
 
     accountsList: CoreAccountsList = {
         sameSite: [],

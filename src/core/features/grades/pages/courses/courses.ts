@@ -37,7 +37,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
+export default class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
 
     courses: CoreGradesCoursesManager;
 

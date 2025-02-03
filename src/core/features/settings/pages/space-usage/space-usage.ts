@@ -34,7 +34,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
+export default class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
 
     loaded = false;
     totalSpaceUsage = 0;

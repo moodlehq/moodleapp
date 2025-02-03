@@ -15,18 +15,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreUserParticipantsPage } from './pages/participants/participants';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 
 const routes: Routes = [
     {
         path: '',
-        component: CoreUserParticipantsPage,
+        loadComponent: () => import('@features/user/pages/participants/participants'),
         children: conditionalRoutes([
             {
                 path: ':userId',
-                loadChildren: () => import('@features/user/user-profile-lazy.module'),
+                loadComponent: () => import('@features/user/pages/profile/profile'),
                 data: { swipeManagerSource: 'participants' },
             },
         ], () => CoreScreen.isTablet),

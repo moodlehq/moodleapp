@@ -42,7 +42,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreCourseModuleComponent,
     ],
 })
-export class CoreCourseListModTypePage implements OnInit {
+export default class CoreCourseListModTypePage implements OnInit {
 
     private static readonly PAGE_LENGTH = 10; // How many activities should load each time showMoreActivities is called.
 

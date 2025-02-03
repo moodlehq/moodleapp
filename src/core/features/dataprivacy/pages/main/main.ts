@@ -41,7 +41,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreDataPrivacyMainPage implements OnInit {
+export default class CoreDataPrivacyMainPage implements OnInit {
 
     accessInfo?: CoreDataPrivacyGetAccessInformationWSResponse;
     requests: CoreDataPrivacyRequestToDisplay[] = [];

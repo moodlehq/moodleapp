@@ -15,12 +15,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreLoginReconnectPage } from '@features/login/pages/reconnect/reconnect';
-
 const routes: Routes = [
     {
         path: '',
-        component: CoreLoginReconnectPage,
+        loadComponent: () => import('@features/login/pages/reconnect/reconnect'),
     },
 ];
 

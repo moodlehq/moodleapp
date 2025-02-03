@@ -17,7 +17,6 @@ import { ROUTES, Routes } from '@angular/router';
 
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
-import { CoreSitePreferencesPage } from '@features/settings/pages/site/site';
 import { resolveSiteRoutes } from '@features/settings/settings-site-routing.module';
 
 /**
@@ -31,14 +30,14 @@ function buildRoutes(injector: Injector): Routes {
     const mobileRoutes: Routes = [
         {
             path: '',
-            component: CoreSitePreferencesPage,
+            loadComponent: () => import('@features/settings/pages/site/site'),
         },
         ...routes.siblings,
     ];
     const tabletRoutes: Routes = [
         {
             path: '',
-            component: CoreSitePreferencesPage,
+            loadComponent: () => import('@features/settings/pages/site/site'),
             children: routes.siblings,
         },
     ];

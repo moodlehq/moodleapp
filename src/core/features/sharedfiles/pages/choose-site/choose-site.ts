@@ -34,7 +34,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreSharedFilesChooseSitePage implements OnInit {
+export default class CoreSharedFilesChooseSitePage implements OnInit {
 
     fileName?: string;
     loaded = false;

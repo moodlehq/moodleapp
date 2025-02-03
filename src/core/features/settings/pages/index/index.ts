@@ -28,7 +28,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreSettingsIndexPage implements AfterViewInit, OnDestroy {
+export default class CoreSettingsIndexPage implements AfterViewInit, OnDestroy {
 
     sections: CoreListItemsManager<CoreSettingsSection>;
 

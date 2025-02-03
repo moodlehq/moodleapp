@@ -15,12 +15,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreLoginCredentialsPage } from '@features/login/pages/credentials/credentials';
-
 const routes: Routes = [
     {
         path: '',
-        component: CoreLoginCredentialsPage,
+        loadComponent: () => import('@features/login/pages/credentials/credentials'),
     },
 ];
 

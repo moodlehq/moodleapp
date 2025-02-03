@@ -34,7 +34,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreUserCompleteProfilePage implements OnDestroy {
+export default class CoreUserCompleteProfilePage implements OnDestroy {
 
     editingProfile = false;
     logoutLabel: string;

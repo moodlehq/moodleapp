@@ -48,7 +48,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export class CoreUserProfilePage implements OnInit, OnDestroy {
+export default class CoreUserProfilePage implements OnInit, OnDestroy {
 
     protected courseId?: number;
     protected userId!: number;

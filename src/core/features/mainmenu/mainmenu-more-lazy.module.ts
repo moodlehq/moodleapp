@@ -16,7 +16,6 @@ import { Injector, NgModule } from '@angular/core';
 import { Routes, ROUTES } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreMainMenuMorePage } from '@features/mainmenu/pages/more/more';
 import { MAIN_MENU_MORE_PAGE_NAME } from './constants';
 
 /**
@@ -27,7 +26,7 @@ import { MAIN_MENU_MORE_PAGE_NAME } from './constants';
  */
 function buildRoutes(injector: Injector): Routes {
     return buildTabMainRoutes(injector, {
-        component: CoreMainMenuMorePage,
+        loadComponent: () => import('@features/mainmenu/pages/more/more'),
         data: {
             mainMenuTabRoot: MAIN_MENU_MORE_PAGE_NAME,
         },
