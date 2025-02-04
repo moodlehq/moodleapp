@@ -33,10 +33,10 @@ import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-butt
     templateUrl: 'home.html',
     standalone: true,
     imports: [
-    CoreSharedModule,
-    CoreSiteLogoComponent,
-    CoreMainMenuUserButtonComponent,
-],
+        CoreSharedModule,
+        CoreSiteLogoComponent,
+        CoreMainMenuUserButtonComponent,
+    ],
 })
 export default class CoreMainMenuHomePage implements OnInit {
 

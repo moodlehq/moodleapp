@@ -72,11 +72,11 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
     templateUrl: 'addon-mod-workshop-index.html',
     standalone: true,
     imports: [
-    CoreSharedModule,
-    AddonModWorkshopSubmissionComponent,
-    CoreCourseModuleNavigationComponent,
-    CoreCourseModuleInfoComponent,
-],
+        CoreSharedModule,
+        AddonModWorkshopSubmissionComponent,
+        CoreCourseModuleNavigationComponent,
+        CoreCourseModuleInfoComponent,
+    ],
 })
 export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

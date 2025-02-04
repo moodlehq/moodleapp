@@ -46,9 +46,9 @@ import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/u
     styleUrls: ['list.scss', '../../notifications.scss'],
     standalone: true,
     imports: [
-    CoreSharedModule,
-    CoreMainMenuUserButtonComponent,
-],
+        CoreSharedModule,
+        CoreMainMenuUserButtonComponent,
+    ],
 })
 export default class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
 

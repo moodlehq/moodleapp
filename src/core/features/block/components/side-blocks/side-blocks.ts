@@ -34,9 +34,9 @@ import { CoreAlerts } from '@services/overlays/alerts';
     styleUrl: 'side-blocks.scss',
     standalone: true,
     imports: [
-    CoreSharedModule,
-    CoreBlockComponent,
-],
+        CoreSharedModule,
+        CoreBlockComponent,
+    ],
 })
 export class CoreBlockSideBlocksComponent implements OnInit {
 

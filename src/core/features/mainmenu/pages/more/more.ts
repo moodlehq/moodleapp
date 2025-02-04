@@ -36,9 +36,9 @@ import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-butt
     styleUrl: 'more.scss',
     standalone: true,
     imports: [
-    CoreSharedModule,
-    CoreMainMenuUserButtonComponent,
-],
+        CoreSharedModule,
+        CoreMainMenuUserButtonComponent,
+    ],
 })
 export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
 
