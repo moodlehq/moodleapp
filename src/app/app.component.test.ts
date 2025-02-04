@@ -15,11 +15,15 @@
 import { AppComponent } from '@/app/app.component';
 
 import { renderComponent } from '@/testing/utils';
+import { RouterModule } from '@angular/router';
 
 describe('AppComponent', () => {
 
     it('should render', async () => {
-        const fixture = await renderComponent(AppComponent);
+        const fixture = await renderComponent(AppComponent, {
+            standalone: true,
+            imports: [RouterModule.forRoot([])],
+        });
 
         expect(fixture.debugElement.componentInstance).toBeTruthy();
         expect(fixture.nativeElement.querySelector('ion-router-outlet')).toBeTruthy();

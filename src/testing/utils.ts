@@ -217,7 +217,7 @@ function createNewServiceInstance(injectionToken: Exclude<ServiceInjectionToken,
         const constructor = injectionToken as { new (): Record<string, unknown> };
 
         return new constructor();
-    } catch (e) {
+    } catch {
         return null;
     }
 }
