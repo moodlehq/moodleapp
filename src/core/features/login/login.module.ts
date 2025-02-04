@@ -21,6 +21,7 @@ import { redirectGuard } from '@guards/redirect';
 import { CoreLoginCronHandler } from './services/handlers/cron';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreEvents } from '@singletons/events';
+import { hasSitesGuard } from './guards/has-sites';
 
 /**
  * Get login services.
@@ -38,7 +39,42 @@ export async function getLoginServices(): Promise<Type<unknown>[]> {
 const appRoutes: Routes = [
     {
         path: 'login',
-        loadChildren: () => import('./login-lazy.module'),
+        children: [
+            {
+                path: '',
+                pathMatch: 'full',
+                redirectTo: 'sites',
+            },
+            {
+                path: 'site',
+                loadComponent: () => import('@features/login/pages/site/site'),
+            },
+            {
+                path: 'credentials',
+                loadChildren: () => CoreLoginHelper.getCredentialsRouteModule(),
+            },
+            {
+                path: 'sites',
+                loadComponent: () => import('@features/login/pages/sites/sites'),
+                canActivate: [hasSitesGuard],
+            },
+            {
+                path: 'forgottenpassword',
+                loadComponent: () => import('@features/login/pages/forgotten-password/forgotten-password'),
+            },
+            {
+                path: 'changepassword',
+                loadComponent: () => import('@features/login/pages/change-password/change-password'),
+            },
+            {
+                path: 'emailsignup',
+                loadComponent: () => import('@features/login/pages/email-signup/email-signup'),
+            },
+            {
+                path: 'reconnect',
+                loadChildren: () => CoreLoginHelper.getReconnectRouteModule(),
+            },
+        ],
         canActivate: [redirectGuard],
     },
     {

@@ -41,10 +41,28 @@ export async function getSharedFilesServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get the shared files routes.
+ *
+ * @returns Shared files routes.
+ */
+export function getSharedFilesRoutes(): Routes {
+    return [
+        {
+            path: 'choosesite',
+            loadComponent: () => import('@features/sharedfiles/pages/choose-site/choose-site'),
+        },
+        {
+            path: 'list/:hash',
+            loadComponent: () => import('@features/sharedfiles/pages/list/list'),
+        },
+    ];
+}
+
 const routes: Routes = [
     {
         path: SHAREDFILES_PAGE_NAME,
-        loadChildren: () => import('./sharedfiles-lazy.module'),
+        children: getSharedFilesRoutes(),
     },
 ];
 

@@ -32,6 +32,9 @@ import { AddonModAssignPushClickHandler } from './services/handlers/push-click';
 import { AddonModAssignSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModAssignSubmissionModule } from './submission/submission.module';
 import { ADDON_MOD_ASSIGN_COMPONENT, ADDON_MOD_ASSIGN_PAGE_NAME } from './constants';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { canLeaveGuard } from '@guards/can-leave';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Get mod assign services.
@@ -73,10 +76,53 @@ export async function getModAssignComponentModules(): Promise<Type<unknown>[]> {
     ];
 }
 
+const commonRoutes: Routes = [
+    {
+        path: ':courseId/:cmId',
+        loadComponent: () => import('./pages/index'),
+    },
+    {
+        path: ':courseId/:cmId/edit',
+        loadComponent: () => import('./pages/edit/edit'),
+        canDeactivate: [canLeaveGuard],
+    },
+];
+
+const mobileRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/submission',
+        loadComponent: () => import('./pages/submission-list/submission-list'),
+    },
+    {
+        path: ':courseId/:cmId/submission/:submitId',
+        loadComponent: () => import('./pages/submission-review/submission-review'),
+        canDeactivate: [canLeaveGuard],
+    },
+];
+
+const tabletRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/submission',
+        loadComponent: () => import('./pages/submission-list/submission-list'),
+        children: [
+            {
+                path: ':submitId',
+                loadComponent: () => import('./pages/submission-review/submission-review'),
+                canDeactivate: [canLeaveGuard],
+            },
+        ],
+    },
+];
+
 const routes: Routes = [
     {
         path: ADDON_MOD_ASSIGN_PAGE_NAME,
-        loadChildren: () => import('./assign-lazy.module'),
+        children: [
+            ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+            ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+        ],
     },
 ];
 

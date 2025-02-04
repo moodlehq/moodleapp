@@ -69,7 +69,21 @@ const appRoutes: Routes = [
 const routes: Routes = [
     {
         path: 'user',
-        loadChildren: () => import('@features/user/user-lazy.module'),
+        children: [
+            {
+                path: '',
+                redirectTo: 'profile',
+                pathMatch: 'full',
+            },
+            {
+                path: 'profile',
+                loadComponent: () => import('@features/user/pages/profile/profile'),
+            },
+            {
+                path: 'about',
+                loadComponent: () => import('@features/user/pages/about/about'),
+            },
+        ],
     },
     ...conditionalRoutes([
         {
@@ -85,7 +99,14 @@ const routes: Routes = [
 const courseIndexRoutes: Routes = [
     {
         path: PARTICIPANTS_PAGE_NAME,
-        loadChildren: () => import('@features/user/user-course-lazy.module'),
+        loadComponent: () => import('@features/user/pages/participants/participants'),
+        children: conditionalRoutes([
+            {
+                path: ':userId',
+                loadComponent: () => import('@features/user/pages/profile/profile'),
+                data: { swipeManagerSource: 'participants' },
+            },
+        ], () => CoreScreen.isTablet),
     },
 ];
 
