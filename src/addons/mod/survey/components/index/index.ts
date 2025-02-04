@@ -16,7 +16,7 @@ import { Component, OnInit, Optional } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { IonContent } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';

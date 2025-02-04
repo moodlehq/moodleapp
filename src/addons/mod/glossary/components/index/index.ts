@@ -20,7 +20,7 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';

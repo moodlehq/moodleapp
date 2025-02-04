@@ -14,7 +14,7 @@
 
 import { Component, OnInit, Optional } from '@angular/core';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreText } from '@singletons/text';
 import { CoreUtils } from '@singletons/utils';
 import { AddonModPagePage, AddonModPage } from '../../services/page';

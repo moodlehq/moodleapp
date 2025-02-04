@@ -38,7 +38,7 @@ import {
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_GLOSSARY_COMPONENT, ADDON_MOD_GLOSSARY_ENTRY_UPDATED, ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';

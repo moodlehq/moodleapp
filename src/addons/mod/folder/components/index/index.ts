@@ -15,7 +15,7 @@
 import { Component, Input, OnInit, Optional } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { Md5 } from 'ts-md5';

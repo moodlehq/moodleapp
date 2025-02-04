@@ -31,8 +31,8 @@ import { of, firstValueFrom } from 'rxjs';
 import { zipIncludingComplete } from '@/core/utils/rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { chainRequests, WSObservable } from '@classes/sites/authenticated-site';
-import { LazyRoutesModule } from '@/app/app-routing.module';
 import { CoreSite } from '@classes/sites/site';
+import { LazyDefaultStandaloneComponent } from '@/app/app-routing.module';
 
 // Id for a course item representing all courses (for example, for course filters).
 export const ALL_COURSES_ID = -1;
@@ -431,12 +431,12 @@ export class CoreCoursesHelperProvider {
     }
 
     /**
-     * Retrieves my courses page module.
+     * Retrieves my courses page.
      *
-     * @returns My courses page module.
+     * @returns My courses page.
      */
-    getMyRouteModule(): LazyRoutesModule {
-        return import('../courses-my-lazy.module');
+    getMyPage(): LazyDefaultStandaloneComponent {
+        return import('@features/courses/pages/my/my');
     }
 
     /**

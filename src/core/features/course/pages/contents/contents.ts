@@ -58,16 +58,16 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-course-contents',
     templateUrl: 'contents.html',
     providers: [{
-            provide: CORE_REFRESH_CONTEXT,
-            useExisting: forwardRef(() => CoreCourseContentsPage),
-        }],
+        provide: CORE_REFRESH_CONTEXT,
+        useExisting: forwardRef(() => CoreCourseContentsPage),
+    }],
     standalone: true,
     imports: [
         CoreSharedModule,
         CoreCourseFormatComponent,
     ],
 })
-export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshContext {
+export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshContext {
 
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild(CoreCourseFormatComponent) formatComponent?: CoreCourseFormatComponent;

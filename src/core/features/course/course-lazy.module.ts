@@ -52,7 +52,7 @@ function buildRoutes(injector: Injector): Routes {
         },
         {
             path: ':courseId/summary',
-            loadChildren: () => CoreCourseHelper.getCourseSummaryRouteModule(),
+            loadComponent: () => CoreCourseHelper.getCourseSummaryPage(),
         },
     ];
 }

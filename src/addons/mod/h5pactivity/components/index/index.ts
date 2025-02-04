@@ -17,7 +17,7 @@ import { IonContent } from '@ionic/angular';
 import { DownloadStatus } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreH5PDisplayOptions } from '@features/h5p/classes/core';
 import { CoreH5PHelper } from '@features/h5p/classes/helper';
 import { CoreH5P } from '@features/h5p/services/h5p';

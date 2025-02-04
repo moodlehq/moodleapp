@@ -17,7 +17,7 @@ import { Params } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';

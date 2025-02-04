@@ -50,7 +50,7 @@ import {
     ADDON_MOD_FORUM_COMPONENT,
     ADDON_MOD_FORUM_NEW_DISCUSSION_EVENT,
 } from '../../constants';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';

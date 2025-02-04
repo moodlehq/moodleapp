@@ -22,7 +22,7 @@ import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreCourseModuleSummaryResult } from '../components/module-summary/module-summary';
-import { CoreCourseContentsPage } from '../pages/contents/contents';
+import CoreCourseContentsPage from '../pages/contents/contents';
 import { CoreCourse, CoreCourseModuleContentFile } from '../services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleDelegate, CoreCourseModuleMainComponent } from '../services/module-delegate';

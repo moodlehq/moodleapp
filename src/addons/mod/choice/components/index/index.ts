@@ -15,7 +15,7 @@
 import { Component, Optional, OnInit } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { IonContent } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';

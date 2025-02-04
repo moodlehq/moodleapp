@@ -16,7 +16,7 @@ import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
 
 import { resolveContentsRoutes } from '@features/course/course-contents-routing.module';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 
 /**
  * Build module routes.

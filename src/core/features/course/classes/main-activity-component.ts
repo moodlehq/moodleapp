@@ -19,7 +19,7 @@ import { CoreCourseModuleMainResourceComponent } from './main-resource-component
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourse } from '../services/course';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreCourseContentsPage } from '../pages/contents/contents';
+import CoreCourseContentsPage from '../pages/contents/contents';
 import { CoreSites } from '@services/sites';
 import { CoreSyncResult } from '@services/sync';
 import { CoreAlerts } from '@services/overlays/alerts';
