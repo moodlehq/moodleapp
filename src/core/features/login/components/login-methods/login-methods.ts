@@ -28,9 +28,9 @@ import { CoreLoginIdentityProviderComponent } from '../identity-provider/identit
     styleUrl: '../../login.scss',
     standalone: true,
     imports: [
-    CoreSharedModule,
-    CoreLoginIdentityProviderComponent,
-],
+        CoreSharedModule,
+        CoreLoginIdentityProviderComponent,
+    ],
 })
 export class CoreLoginMethodsComponent implements OnInit {
 

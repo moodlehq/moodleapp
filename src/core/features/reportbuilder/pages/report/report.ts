@@ -24,7 +24,7 @@ import { CoreReportBuilderReportDetailComponent } from '../../components/report-
     templateUrl: './report.html',
     standalone: true,
     imports: [
-    CoreSharedModule,
+        CoreSharedModule,
         CoreReportBuilderReportDetailComponent,
     ],
 })

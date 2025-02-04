@@ -51,9 +51,9 @@ import { CoreUserProfileFieldComponent } from '@features/user/components/user-pr
     styleUrl: '../../login.scss',
     standalone: true,
     imports: [
-    CoreSharedModule,
-    CoreUserProfileFieldComponent,
-],
+        CoreSharedModule,
+        CoreUserProfileFieldComponent,
+    ],
 })
 export default class CoreLoginEmailSignupPage implements OnInit {
 

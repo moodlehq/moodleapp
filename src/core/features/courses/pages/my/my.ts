@@ -44,17 +44,17 @@ import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/si
     templateUrl: 'my.html',
     styleUrl: 'my.scss',
     providers: [{
-            provide: PageLoadsManager,
-            useClass: PageLoadsManager,
-        }],
+        provide: PageLoadsManager,
+        useClass: PageLoadsManager,
+    }],
     standalone: true,
     imports: [
-    CoreSharedModule,
-    CoreSiteLogoComponent,
-    CoreMainMenuUserButtonComponent,
-    CoreBlockComponent,
-    CoreBlockSideBlocksButtonComponent,
-],
+        CoreSharedModule,
+        CoreSiteLogoComponent,
+        CoreMainMenuUserButtonComponent,
+        CoreBlockComponent,
+        CoreBlockSideBlocksButtonComponent,
+    ],
 })
 export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
 
