@@ -39,7 +39,8 @@ import { CoreMath } from '@singletons/math';
 import { CoreSwiper } from '@singletons/swiper';
 import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
-import { NgTemplateOutlet } from '@angular/common';
+import { CoreBaseModule } from '@/core/base.module';
+
 /**
  * Helper component to display swipable slides.
  */
@@ -48,7 +49,7 @@ import { NgTemplateOutlet } from '@angular/common';
     templateUrl: 'swipe-slides.html',
     styleUrl: 'swipe-slides.scss',
     standalone: true,
-    imports: [NgTemplateOutlet],
+    imports: [CoreBaseModule],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDestroy, AsyncDirective {

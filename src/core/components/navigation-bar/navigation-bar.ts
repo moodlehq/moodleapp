@@ -15,10 +15,10 @@
 import { ContextLevel } from '@/core/constants';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChange } from '@angular/core';
 import { Translate } from '@singletons';
-import { CoreProgressBarComponent } from '../progress-bar/progress-bar';
-import { CoreFaIconDirective } from '../../directives/fa-icon';
-import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
-import { IonicModule } from '@ionic/angular';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreProgressBarComponent } from '@components/progress-bar/progress-bar';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * Component to show a "bar" with arrows to navigate forward/backward and an progressbar to see the status.
@@ -35,7 +35,7 @@ import { IonicModule } from '@ionic/angular';
     styleUrl: 'navigation-bar.scss',
     standalone: true,
     imports: [
-        IonicModule,
+        CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,
         CoreFaIconDirective,
         CoreProgressBarComponent,

@@ -14,12 +14,12 @@
 
 import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRouteSnapshot } from '@angular/router';
-import { IonContent, IonRouterOutlet, IonicModule } from '@ionic/angular';
+import { IonContent, IonRouterOutlet } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { CoreBaseModule } from '@/core/base.module';
 import { CoreEmptyBoxComponent } from '../empty-box/empty-box';
-import { CoreContentDirective } from '../../directives/content';
+import { CoreContentDirective } from '@directives/content';
 
 export enum CoreSplitViewMode {
     MENU_ONLY = 'menu-only', // Hides content.
@@ -35,10 +35,9 @@ const disabledScrollClass = 'disable-scroll-y';
     styleUrl: 'split-view.scss',
     standalone: true,
     imports: [
-        IonicModule,
-        CoreContentDirective,
+        CoreBaseModule,
         CoreEmptyBoxComponent,
-        TranslateModule,
+        CoreContentDirective,
     ],
 })
 export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {

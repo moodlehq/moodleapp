@@ -22,7 +22,7 @@ import {
     SimpleChange,
     CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/core';
-import { IonRouterOutlet, IonTabs, ViewDidEnter, ViewDidLeave, IonicModule } from '@ionic/angular';
+import { IonRouterOutlet, IonTabs, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
 
 import { CoreUtils } from '@singletons/utils';
 import { Params } from '@angular/router';
@@ -32,9 +32,9 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreTabBase, CoreTabsBaseComponent } from '@classes/tabs';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CorePath } from '@singletons/path';
-import { TranslateModule } from '@ngx-translate/core';
-import { CoreFaIconDirective } from '../../directives/fa-icon';
-import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * This component displays some top scrollable tabs that will autohide on vertical scroll.
@@ -56,10 +56,9 @@ import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/updat
     styleUrl: '../tabs/tabs.scss',
     standalone: true,
     imports: [
-        IonicModule,
+        CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,
         CoreFaIconDirective,
-        TranslateModule,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

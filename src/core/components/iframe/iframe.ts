@@ -31,13 +31,11 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CoreDom } from '@singletons/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLang, CoreLangFormat } from '@services/lang';
-import { TranslateModule } from '@ngx-translate/core';
-import { CoreFaIconDirective } from '../../directives/fa-icon';
-import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
-import { IonicModule } from '@ionic/angular';
-import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
-import { NgStyle } from '@angular/common';
-import { CoreLoadingComponent } from '../loading/loading';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreLoadingComponent } from '@components/loading/loading';
+import { CoreNavBarButtonsComponent } from '@components/navbar-buttons/navbar-buttons';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 @Component({
     selector: 'core-iframe',
@@ -45,13 +43,11 @@ import { CoreLoadingComponent } from '../loading/loading';
     styleUrl: 'iframe.scss',
     standalone: true,
     imports: [
+        CoreBaseModule,
         CoreLoadingComponent,
-        NgStyle,
         CoreNavBarButtonsComponent,
-        IonicModule,
         CoreUpdateNonReactiveAttributesDirective,
         CoreFaIconDirective,
-        TranslateModule,
     ],
 })
 export class CoreIframeComponent implements OnChanges, OnDestroy {

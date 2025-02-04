@@ -30,13 +30,12 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
-import { CoreFormatDatePipe } from '../../pipes/format-date';
-import { TranslateModule } from '@ngx-translate/core';
-import { CoreFaIconDirective } from '../../directives/fa-icon';
-import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
-import { CoreDownloadRefreshComponent } from '../download-refresh/download-refresh';
-import { CoreAriaButtonClickDirective } from '../../directives/aria-button';
-import { IonicModule } from '@ionic/angular';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFormatDatePipe } from '@pipes/format-date';
+import { CoreDownloadRefreshComponent } from '@components/download-refresh/download-refresh';
+import { CoreAriaButtonClickDirective } from '@directives/aria-button';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * Component to handle a remote file. Shows the file name, icon (depending on mimetype) and a button
@@ -48,12 +47,11 @@ import { IonicModule } from '@ionic/angular';
     styleUrl: 'core-file.scss',
     standalone: true,
     imports: [
-        IonicModule,
+        CoreBaseModule,
         CoreAriaButtonClickDirective,
         CoreDownloadRefreshComponent,
         CoreUpdateNonReactiveAttributesDirective,
         CoreFaIconDirective,
-        TranslateModule,
         CoreFormatDatePipe,
     ],
 })

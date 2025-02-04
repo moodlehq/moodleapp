@@ -16,10 +16,9 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { DownloadStatus } from '@/core/constants';
 import { CoreAnimations } from '@components/animations';
 import { toBoolean } from '@/core/transforms/boolean';
-import { TranslateModule } from '@ngx-translate/core';
-import { CoreFaIconDirective } from '../../directives/fa-icon';
-import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
-import { IonicModule } from '@ionic/angular';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * Component to show a download button with refresh option, the spinner and the status of it.
@@ -35,10 +34,9 @@ import { IonicModule } from '@ionic/angular';
     animations: [CoreAnimations.SHOW_HIDE],
     standalone: true,
     imports: [
-        IonicModule,
+        CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,
         CoreFaIconDirective,
-        TranslateModule,
     ],
 })
 export class CoreDownloadRefreshComponent implements OnInit {

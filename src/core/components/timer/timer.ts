@@ -17,10 +17,8 @@ import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ElementRef }
 import { CoreUser } from '@features/user/services/user';
 
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreSecondsToHMSPipe } from '../../pipes/seconds-to-hms';
-import { TranslateModule } from '@ngx-translate/core';
-import { NgTemplateOutlet } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
 
 /**
  * This directive shows a timer in format HH:MM:SS. When the countdown reaches 0, a function is called.
@@ -34,9 +32,7 @@ import { IonicModule } from '@ionic/angular';
     styleUrl: 'timer.scss',
     standalone: true,
     imports: [
-        IonicModule,
-        NgTemplateOutlet,
-        TranslateModule,
+        CoreBaseModule,
         CoreSecondsToHMSPipe,
     ],
 })

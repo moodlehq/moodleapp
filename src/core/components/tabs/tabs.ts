@@ -24,10 +24,9 @@ import {
 import { CoreTabsBaseComponent } from '@classes/tabs';
 import { CoreTabComponent } from './tab';
 import { toBoolean } from '@/core/transforms/boolean';
-import { TranslateModule } from '@ngx-translate/core';
-import { CoreFaIconDirective } from '../../directives/fa-icon';
-import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
-import { IonicModule } from '@ionic/angular';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * This component displays some top scrollable tabs that will autohide on vertical scroll.
@@ -49,10 +48,9 @@ import { IonicModule } from '@ionic/angular';
     styleUrl: 'tabs.scss',
     standalone: true,
     imports: [
-        IonicModule,
+        CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,
         CoreFaIconDirective,
-        TranslateModule,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

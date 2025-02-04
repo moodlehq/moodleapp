@@ -17,11 +17,10 @@ import { Component, Input, OnInit, DoCheck, KeyValueDiffers } from '@angular/cor
 import { CoreFileEntry } from '@services/file-helper';
 
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { IonicModule } from '@ionic/angular';
-import { CoreLocalFileComponent } from '../local-file/local-file';
+import { CoreBaseModule } from '@/core/base.module';
 import { CoreFileComponent } from '../file/file';
-import { NgFor } from '@angular/common';
-import { CoreFormatTextDirective } from '../../directives/format-text';
+import { CoreLocalFileComponent } from '../local-file/local-file';
+import { CoreFormatTextDirective } from '@directives/format-text';
 
 /**
  * Component to render a file list.
@@ -34,11 +33,10 @@ import { CoreFormatTextDirective } from '../../directives/format-text';
     templateUrl: 'core-files.html',
     standalone: true,
     imports: [
-        CoreFormatTextDirective,
-        NgFor,
+        CoreBaseModule,
         CoreFileComponent,
         CoreLocalFileComponent,
-        IonicModule,
+        CoreFormatTextDirective,
     ],
 })
 export class CoreFilesComponent implements OnInit, DoCheck {

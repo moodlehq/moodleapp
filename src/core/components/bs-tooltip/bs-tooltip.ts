@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreBaseModule } from '@/core/base.module';
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
 
 /**
  * Component to display a Bootstrap Tooltip in a popover.
@@ -23,7 +23,7 @@ import { IonicModule } from '@ionic/angular';
     selector: 'core-bs-tooltip',
     templateUrl: 'core-bs-tooltip.html',
     standalone: true,
-    imports: [IonicModule],
+    imports: [CoreBaseModule],
 })
 export class CoreBSTooltipComponent {
 
