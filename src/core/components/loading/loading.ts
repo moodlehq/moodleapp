@@ -23,7 +23,7 @@ import { AsyncDirective } from '@classes/async-directive';
 import { CorePlatform } from '@services/platform';
 import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '@/core/transforms/boolean';
-import { IonicModule } from '@ionic/angular';
+import { CoreBaseModule } from '@/core/base.module';
 
 /**
  * Component to show a loading spinner and message while data is being loaded.
@@ -51,7 +51,7 @@ import { IonicModule } from '@ionic/angular';
     styleUrl: 'loading.scss',
     animations: [CoreAnimations.SHOW_HIDE],
     standalone: true,
-    imports: [IonicModule],
+    imports: [CoreBaseModule],
 })
 export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, AsyncDirective, OnDestroy {
 

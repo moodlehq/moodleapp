@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSites } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSite } from '@classes/sites/site';
@@ -21,6 +20,9 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 import { CoreConstants } from '@/core/constants';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreExternalContentDirective } from '@directives/external-content';
+import { CoreFormatTextDirective } from '@directives/format-text';
 
 /**
  * Component to render the current site logo.
@@ -30,7 +32,11 @@ import { CoreConstants } from '@/core/constants';
     templateUrl: 'site-logo.html',
     styleUrl: 'site-logo.scss',
     standalone: true,
-    imports: [CoreSharedModule],
+    imports: [
+        CoreBaseModule,
+        CoreExternalContentDirective,
+        CoreFormatTextDirective,
+    ],
 
 })
 export class CoreSiteLogoComponent implements OnInit, OnDestroy {

@@ -19,9 +19,8 @@ import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreOpener } from '@singletons/opener';
 import { CorePath } from '@singletons/path';
-import { TranslateModule } from '@ngx-translate/core';
-import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
-import { IonicModule } from '@ionic/angular';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * Component that allows answering a recaptcha.
@@ -31,9 +30,8 @@ import { IonicModule } from '@ionic/angular';
     templateUrl: 'core-recaptcha.html',
     standalone: true,
     imports: [
-        IonicModule,
+        CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,
-        TranslateModule,
     ],
 })
 export class CoreRecaptchaComponent implements OnInit {

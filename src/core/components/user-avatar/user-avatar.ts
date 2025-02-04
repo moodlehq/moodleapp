@@ -24,9 +24,9 @@ import { CoreUserHelper } from '@features/user/services/user-helper';
 import { CoreUrl } from '@singletons/url';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { toBoolean } from '@/core/transforms/boolean';
-import { TranslateModule } from '@ngx-translate/core';
-import { CoreAriaButtonClickDirective } from '../../directives/aria-button';
-import { CoreExternalContentDirective } from '../../directives/external-content';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreExternalContentDirective } from '@directives/external-content';
+import { CoreAriaButtonClickDirective } from '@directives/aria-button';
 
 /**
  * Component to display a "user avatar".
@@ -39,9 +39,9 @@ import { CoreExternalContentDirective } from '../../directives/external-content'
     styleUrl: 'user-avatar.scss',
     standalone: true,
     imports: [
+        CoreBaseModule,
         CoreExternalContentDirective,
         CoreAriaButtonClickDirective,
-        TranslateModule,
     ],
 })
 export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {

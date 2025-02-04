@@ -18,9 +18,7 @@ import { CoreFilter } from '@features/filter/services/filter';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
-import { TranslateModule } from '@ngx-translate/core';
-import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { CoreBaseModule } from '@/core/base.module';
 
 /**
  * Component to display a site selector. It will display a select with the list of sites. If the selected site changes,
@@ -33,11 +31,7 @@ import { IonicModule } from '@ionic/angular';
     selector: 'core-site-picker',
     templateUrl: 'core-site-picker.html',
     standalone: true,
-    imports: [
-        IonicModule,
-        FormsModule,
-        TranslateModule,
-    ],
+    imports: [CoreBaseModule],
 })
 export class CoreSitePickerComponent implements OnInit {
 

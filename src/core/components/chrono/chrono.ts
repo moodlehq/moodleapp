@@ -24,7 +24,8 @@ import {
     SimpleChange,
     ChangeDetectorRef,
 } from '@angular/core';
-import { CoreSecondsToHMSPipe } from '../../pipes/seconds-to-hms';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
 
 /**
  * This component shows a chronometer in format HH:MM:SS.
@@ -43,6 +44,7 @@ import { CoreSecondsToHMSPipe } from '../../pipes/seconds-to-hms';
     templateUrl: 'core-chrono.html',
     standalone: true,
     imports: [
+        CoreBaseModule,
         CoreSecondsToHMSPipe,
     ],
 })

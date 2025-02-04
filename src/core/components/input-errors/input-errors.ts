@@ -14,10 +14,8 @@
 
 import { Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
-import { NgIf } from '@angular/common';
-import { CoreFaIconDirective } from '../../directives/fa-icon';
-import { IonicModule } from '@ionic/angular';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
 
 /**
  * Component to show errors if an input isn't valid.
@@ -43,10 +41,8 @@ import { IonicModule } from '@ionic/angular';
     styleUrl: 'input-errors.scss',
     standalone: true,
     imports: [
-        IonicModule,
+        CoreBaseModule,
         CoreFaIconDirective,
-        NgIf,
-        TranslateModule,
     ],
 })
 export class CoreInputErrorsComponent implements OnInit, OnChanges {

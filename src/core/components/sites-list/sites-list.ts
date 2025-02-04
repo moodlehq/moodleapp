@@ -18,11 +18,10 @@ import { CoreSiteBasicInfo } from '@services/sites';
 import { CoreAccountsList } from '@features/login/services/login-helper';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CoreUserAvatarComponent } from '../user-avatar/user-avatar';
-import { CoreLinkDirective } from '../../directives/link';
-import { CoreFormatTextDirective } from '../../directives/format-text';
-import { NgTemplateOutlet } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFormatTextDirective } from '@directives/format-text';
+import { CoreUserAvatarComponent } from '@components/user-avatar/user-avatar';
+import { CoreLinkDirective } from '@directives/link';
 
 /**
  * Component to display a list of sites (accounts).
@@ -47,8 +46,7 @@ import { IonicModule } from '@ionic/angular';
     styleUrl: 'sites-list.scss',
     standalone: true,
     imports: [
-        IonicModule,
-        NgTemplateOutlet,
+        CoreBaseModule,
         CoreFormatTextDirective,
         CoreLinkDirective,
         CoreUserAvatarComponent,

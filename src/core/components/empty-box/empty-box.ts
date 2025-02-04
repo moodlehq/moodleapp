@@ -14,8 +14,8 @@
 
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, HostBinding, Input } from '@angular/core';
-import { CoreFaIconDirective } from '../../directives/fa-icon';
-import { IonicModule } from '@ionic/angular';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
 
 /**
  * Component to show an empty box message. It will show an optional icon or image and a text centered on page.
@@ -30,7 +30,10 @@ import { IonicModule } from '@ionic/angular';
     templateUrl: 'core-empty-box.html',
     styleUrl: 'empty-box.scss',
     standalone: true,
-    imports: [IonicModule, CoreFaIconDirective],
+    imports: [
+        CoreBaseModule,
+        CoreFaIconDirective,
+    ],
 })
 export class CoreEmptyBoxComponent {
 

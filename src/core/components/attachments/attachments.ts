@@ -28,15 +28,13 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CoreWSFile } from '@services/ws';
-import { TranslateModule } from '@ngx-translate/core';
-import { CoreFileComponent } from '../file/file';
-import { CoreLocalFileComponent } from '../local-file/local-file';
-import { NgFor } from '@angular/common';
-import { CoreFaIconDirective } from '../../directives/fa-icon';
-import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
-import { CoreMarkRequiredComponent } from '../mark-required/mark-required';
-import { IonicModule } from '@ionic/angular';
+import { CoreBaseModule } from '@/core/base.module';
 import { CoreLoadingComponent } from '../loading/loading';
+import { CoreLocalFileComponent } from '../local-file/local-file';
+import { CoreFileComponent } from '../file/file';
+import { CoreMarkRequiredComponent } from '@components/mark-required/mark-required';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * Component to render attachments, allow adding more and delete the current ones.
@@ -57,15 +55,13 @@ import { CoreLoadingComponent } from '../loading/loading';
     styleUrl: 'attachments.scss',
     standalone: true,
     imports: [
-        CoreLoadingComponent,
-        IonicModule,
-        CoreMarkRequiredComponent,
-        CoreUpdateNonReactiveAttributesDirective,
+        CoreBaseModule,
         CoreFaIconDirective,
-        NgFor,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreLoadingComponent,
         CoreLocalFileComponent,
         CoreFileComponent,
-        TranslateModule,
+        CoreMarkRequiredComponent,
     ],
 })
 export class CoreAttachmentsComponent implements OnInit {

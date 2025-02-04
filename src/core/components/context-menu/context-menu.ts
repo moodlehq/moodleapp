@@ -20,9 +20,9 @@ import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
-import { CoreFaIconDirective } from '../../directives/fa-icon';
-import { CoreUpdateNonReactiveAttributesDirective } from '../../directives/update-non-reactive-attributes';
-import { IonicModule } from '@ionic/angular';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * This component adds a button (usually in the navigation bar) that displays a context menu popover.
@@ -32,7 +32,7 @@ import { IonicModule } from '@ionic/angular';
     templateUrl: 'core-context-menu.html',
     standalone: true,
     imports: [
-        IonicModule,
+        CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,
         CoreFaIconDirective,
     ],
