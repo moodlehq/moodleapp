@@ -55,7 +55,7 @@ import {
     IDENTITY_PROVIDERS_FEATURE_NAME,
     IDENTITY_PROVIDER_FEATURE_NAME_PREFIX,
 } from '../constants';
-import { LazyRoutesModule } from '@/app/app-routing.module';
+import { LazyDefaultStandaloneComponent } from '@/app/app-routing.module';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -1425,8 +1425,8 @@ export class CoreLoginHelperProvider {
      *
      * @returns Reconnect page route module.
      */
-    getReconnectRouteModule(): LazyRoutesModule {
-        return import('@features/login/login-reconnect-lazy.module');
+    getReconnectPage(): LazyDefaultStandaloneComponent {
+        return import('@features/login/pages/reconnect/reconnect');
     }
 
     /**
@@ -1434,8 +1434,8 @@ export class CoreLoginHelperProvider {
      *
      * @returns Credentials page route module.
      */
-    getCredentialsRouteModule(): LazyRoutesModule {
-        return import('@features/login/login-credentials-lazy.module');
+    getCredentialsPage(): LazyDefaultStandaloneComponent {
+        return import('@features/login/pages/credentials/credentials');
     }
 
     /**

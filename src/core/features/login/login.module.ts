@@ -51,7 +51,7 @@ const appRoutes: Routes = [
             },
             {
                 path: 'credentials',
-                loadChildren: () => CoreLoginHelper.getCredentialsRouteModule(),
+                loadComponent: () => CoreLoginHelper.getCredentialsPage(),
             },
             {
                 path: 'sites',
@@ -72,7 +72,7 @@ const appRoutes: Routes = [
             },
             {
                 path: 'reconnect',
-                loadChildren: () => CoreLoginHelper.getReconnectRouteModule(),
+                loadComponent: () => CoreLoginHelper.getReconnectPage(),
             },
         ],
         canActivate: [redirectGuard],

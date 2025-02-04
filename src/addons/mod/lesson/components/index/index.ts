@@ -17,7 +17,7 @@ import { Component, Input, ViewChild, ElementRef, OnInit, OnDestroy, Optional } 
 
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreUser } from '@features/user/services/user';
 import { IonContent, IonInput } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';

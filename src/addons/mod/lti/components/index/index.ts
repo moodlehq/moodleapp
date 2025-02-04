@@ -15,7 +15,7 @@
 import { Component, Optional, OnInit } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { AddonModLti, AddonModLtiLti } from '../../services/lti';
 import { AddonModLtiHelper } from '../../services/lti-helper';
 import { ADDON_MOD_LTI_COMPONENT } from '../../constants';

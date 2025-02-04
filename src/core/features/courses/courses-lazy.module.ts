@@ -31,7 +31,7 @@ function buildRoutes(injector: Injector): Routes {
             data: {
                 mainMenuTabRoot: CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME,
             },
-            loadChildren: () => CoreCoursesHelper.getMyRouteModule(),
+            loadComponent: () => CoreCoursesHelper.getMyPage(),
         },
         {
             path: 'categories',

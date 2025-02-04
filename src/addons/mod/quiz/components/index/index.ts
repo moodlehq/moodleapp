@@ -17,7 +17,7 @@ import { isSafeNumber, safeNumber, SafeNumber } from '@/core/utils/types';
 import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';

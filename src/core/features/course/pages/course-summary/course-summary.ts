@@ -58,7 +58,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreRemindersDateComponent,
     ],
 })
-export class CoreCourseSummaryPage implements OnInit, OnDestroy {
+export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
 
     @Input() course?: CoreCourseSummaryData;
     @Input() courseId = 0;

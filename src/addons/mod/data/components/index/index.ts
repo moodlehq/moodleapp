@@ -17,7 +17,7 @@ import { Component, OnDestroy, OnInit, Optional, Type } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreCommentsProvider } from '@features/comments/services/comments';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
 import { IonContent } from '@ionic/angular';
