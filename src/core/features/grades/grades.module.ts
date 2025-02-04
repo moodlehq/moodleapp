@@ -46,10 +46,37 @@ export async function getGradesServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+const mobileRoutes: Routes = [
+    {
+        path: '',
+        loadComponent: () => import('@features/grades/pages/courses/courses'),
+    },
+    {
+        path: ':courseId',
+        loadComponent: () => import('@features/grades/pages/course/course'),
+    },
+];
+
+const tabletRoutes: Routes = [
+    {
+        path: '',
+        loadComponent: () => import('@features/grades/pages/courses/courses'),
+        children: [
+            {
+                path: ':courseId',
+                loadComponent: () => import('@features/grades/pages/course/course'),
+            },
+        ],
+    },
+];
+
 const mainMenuChildrenRoutes: Routes = [
     {
         path: GRADES_PAGE_NAME,
-        loadChildren: () => import('./grades-courses-lazy.module'),
+        children: [
+            ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+            ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+        ],
         data: { swipeManagerSource: 'courses' },
     },
     {
@@ -72,7 +99,14 @@ const courseIndexRoutes: Routes = [
     },
     {
         path: GRADES_PARTICIPANTS_PAGE_NAME,
-        loadChildren: () => import('./grades-course-participants-lazy.module'),
+        loadComponent: () => import('@features/user/pages/participants/participants'),
+        children: conditionalRoutes([
+            {
+                path: ':userId',
+                loadComponent: () => import('@features/grades/pages/course/course'),
+                data: { swipeManagerSource: 'participants' },
+            },
+        ], () => CoreScreen.isTablet),
     },
 ];
 

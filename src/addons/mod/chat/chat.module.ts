@@ -24,11 +24,55 @@ import { AddonModChatListLinkHandler } from './services/handlers/list-link';
 import { AddonModChatModuleHandler } from './services/handlers/module';
 import { getPrefetchHandlerInstance } from './services/handlers/prefetch';
 import { ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_PAGE_NAME } from './constants';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { canLeaveGuard } from '@guards/can-leave';
+import { CoreScreen } from '@services/screen';
+
+const commonRoutes: Routes = [
+    {
+        path: ':courseId/:cmId',
+        loadComponent: () => import('./pages/index/index'),
+    },
+    {
+        path: ':courseId/:cmId/chat',
+        loadComponent: () => import('./pages/chat/chat'),
+        canDeactivate: [canLeaveGuard],
+    },
+];
+
+const mobileRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/sessions',
+        loadComponent: () => import('./pages/sessions/sessions'),
+    },
+    {
+        path: ':courseId/:cmId/sessions/:sessionStart/:sessionEnd',
+        loadComponent: () => import('./pages/session-messages/session-messages'),
+    },
+];
+
+const tabletRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/sessions',
+        loadComponent: () => import('./pages/sessions/sessions'),
+        children: [
+            {
+                path: ':sessionStart/:sessionEnd',
+                loadComponent: () => import('./pages/session-messages/session-messages'),
+            },
+        ],
+    },
+];
 
 const routes: Routes = [
     {
         path: ADDON_MOD_CHAT_PAGE_NAME,
-        loadChildren: () => import('./chat-lazy.module'),
+        children: [
+            ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+            ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+        ],
     },
 ];
 

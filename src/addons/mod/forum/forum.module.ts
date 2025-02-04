@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { Routes } from '@angular/router';
+import { Route, Routes } from '@angular/router';
 
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
@@ -40,6 +40,54 @@ import { AddonModForumPushClickHandler } from './services/handlers/push-click';
 import { CORE_COURSE_CONTENTS_PATH } from '@features/course/constants';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { ADDON_MOD_FORUM_COMPONENT, ADDON_MOD_FORUM_PAGE_NAME, ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from './constants';
+import { canLeaveGuard } from '@guards/can-leave';
+
+const newDiscussionRoute: Route = {
+    loadComponent: () => import('./pages/new-discussion/new-discussion'),
+    canDeactivate: [canLeaveGuard],
+};
+
+const discussionRoute: Route = {
+    loadComponent: () => import('./pages/discussion/discussion'),
+    canDeactivate: [canLeaveGuard],
+};
+
+const mobileRoutes: Routes = [
+    {
+        path: ':courseId/:cmId',
+        loadComponent: () => import('./pages/index/index'),
+    },
+    {
+        path: ':courseId/:cmId/new/:timeCreated',
+        ...newDiscussionRoute,
+    },
+    {
+        path: ':courseId/:cmId/:discussionId',
+        ...discussionRoute,
+
+    },
+    {
+        path: 'discussion/:discussionId', // Only for discussion link handling.
+        ...discussionRoute,
+    },
+];
+
+const tabletRoutes: Routes = [
+    {
+        path: ':courseId/:cmId',
+        loadComponent: () => import('./pages/index/index'),
+        children: [
+            {
+                path: 'new/:timeCreated',
+                ...newDiscussionRoute,
+            },
+            {
+                path: ':discussionId',
+                ...discussionRoute,
+            },
+        ],
+    },
+];
 
 const mainMenuRoutes: Routes = [
     {
@@ -48,24 +96,27 @@ const mainMenuRoutes: Routes = [
     },
     {
         path: `${ADDON_MOD_FORUM_PAGE_NAME}/discussion/:discussionId`,
-        loadChildren: () => import('./forum-discussion-lazy.module'),
         data: { swipeEnabled: false },
+        ...discussionRoute,
     },
     {
         path: ADDON_MOD_FORUM_PAGE_NAME,
-        loadChildren: () => import('./forum-lazy.module'),
+        children: [
+            ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+            ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+        ],
     },
     ...conditionalRoutes(
         [
             {
                 path: `${CORE_COURSE_CONTENTS_PATH}/${ADDON_MOD_FORUM_PAGE_NAME}/new/:timeCreated`,
-                loadChildren: () => import('./forum-new-discussion-lazy.module'),
                 data: { discussionsPathPrefix: `${ADDON_MOD_FORUM_PAGE_NAME}/` },
+                ...newDiscussionRoute,
             },
             {
                 path: `${CORE_COURSE_CONTENTS_PATH}/${ADDON_MOD_FORUM_PAGE_NAME}/:discussionId`,
-                loadChildren: () => import('./forum-discussion-lazy.module'),
                 data: { discussionsPathPrefix: `${ADDON_MOD_FORUM_PAGE_NAME}/` },
+                ...discussionRoute,
             },
         ],
         () => CoreScreen.isMobile,
@@ -77,13 +128,13 @@ const courseContentsRoutes: Routes = conditionalRoutes(
     [
         {
             path: `${ADDON_MOD_FORUM_PAGE_NAME}/new/:timeCreated`,
-            loadChildren: () => import('./forum-new-discussion-lazy.module'),
+            ...newDiscussionRoute,
             data: { discussionsPathPrefix: `${ADDON_MOD_FORUM_PAGE_NAME}/` },
         },
         {
             path: `${ADDON_MOD_FORUM_PAGE_NAME}/:discussionId`,
-            loadChildren: () => import('./forum-discussion-lazy.module'),
             data: { discussionsPathPrefix: `${ADDON_MOD_FORUM_PAGE_NAME}/` },
+            ...discussionRoute,
         },
     ],
     () => CoreScreen.isTablet,
