@@ -1,13 +1,13 @@
 {
-    "app_id": "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
+    "app_id": "br.edu.ufr.ava",
+    "appname": "AVA UFR",
     "versioncode": 50000,
     "versionname": "5.0.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
     "cache_update_frequency_rarely": 43200000,
-    "default_lang": "en",
+    "default_lang": "pt-br",
     "languages": {
         "af": "Afrikaans",
         "ar": "العربية",
@@ -87,7 +87,7 @@
         "high": 120
     },
     "customurlscheme": "moodlemobile",
-    "sites": [],
+    "sites": [https://ava.ufr.edu.br/],
     "multisitesdisplay": "",
     "sitefindersettings": {},
     "onlyallowlistedsites": false,
@@ -101,7 +101,7 @@
     "showTopLogo": "hidden",
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
-        "android": "com.moodle.moodlemobile",
+        "android": "br.edu.ufr.ava",
         "ios": "id633359593"
     },
     "wsrequestqueuelimit": 10,
