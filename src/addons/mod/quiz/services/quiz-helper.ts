@@ -89,6 +89,11 @@ export class AddonModQuizHelperProvider {
             return true;
         }
 
+        if (quiz.reviewattempt === undefined) {
+            // Workaround for sites where MDL-84360 is not fixed. Allow review, the review WS will throw an error if not allowed.
+            return true;
+        }
+
         const options = AddonModQuiz.getDisplayOptionsForQuiz(quiz, AddonModQuiz.getAttemptStateDisplayOption(quiz, attempt));
 
         return options.attempt;
