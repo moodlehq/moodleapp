@@ -87,7 +87,7 @@
         "high": 120
     },
     "customurlscheme": "moodlemobile",
-    "sites": [https://ava.ufr.edu.br/],
+    "sites": [],
     "multisitesdisplay": "",
     "sitefindersettings": {},
     "onlyallowlistedsites": false,
