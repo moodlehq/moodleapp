@@ -20,7 +20,7 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 const routes: Routes = [
     {
         path: 'viewer',
-        children: [
+        loadChildren: () => [
             {
                 path: 'iframe',
                 loadComponent: () => import('@features/viewer/pages/iframe/iframe'),

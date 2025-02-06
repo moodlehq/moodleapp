@@ -106,7 +106,7 @@ const tabletRoutes: Routes = [
     {
         path: ':courseId/:cmId/submission',
         loadComponent: () => import('./pages/submission-list/submission-list'),
-        children: [
+        loadChildren: () => [
             {
                 path: ':submitId',
                 loadComponent: () => import('./pages/submission-review/submission-review'),
@@ -119,7 +119,7 @@ const tabletRoutes: Routes = [
 const routes: Routes = [
     {
         path: ADDON_MOD_ASSIGN_PAGE_NAME,
-        children: [
+        loadChildren: () => [
             ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
             ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
         ],

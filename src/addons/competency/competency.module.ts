@@ -78,7 +78,7 @@ function getCompetencyLearningPlansRoutes(): Routes {
         {
             path: '',
             loadComponent: () => import('./pages/planlist/planlist'),
-            children: [
+            loadChildren: () => [
                 {
                     path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
                     loadComponent: () => import('./pages/plan/plan'),
@@ -88,7 +88,7 @@ function getCompetencyLearningPlansRoutes(): Routes {
         {
             path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
             loadComponent: () => import('./pages/competencies/competencies'),
-            children: [
+            loadChildren: () => [
                 {
                     path: ':competencyId',
                     loadComponent: () => import('./pages/competency/competency'),
@@ -128,7 +128,7 @@ function getCompetencyCourseDetailsRoutes(): Routes {
         {
             path: '',
             loadComponent: () => import('./pages/competencies/competencies'),
-            children: [
+            loadChildren: () => [
                 {
                     path: ':competencyId',
                     loadComponent: () => import('./pages/competency/competency'),
@@ -150,15 +150,15 @@ function getCompetencyCourseDetailsRoutes(): Routes {
 const mainMenuChildrenRoutes: Routes = [
     {
         path: ADDON_COMPETENCY_LEARNING_PLANS_PAGE,
-        children: getCompetencyLearningPlansRoutes(),
+        loadChildren: () => getCompetencyLearningPlansRoutes(),
     },
     {
         path: `${CORE_COURSE_PAGE_NAME}/:courseId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
-        children: getCompetencyCourseDetailsRoutes(),
+        loadChildren: () => getCompetencyCourseDetailsRoutes(),
     },
     {
         path: `${CORE_COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
-        children: getCompetencyCourseDetailsRoutes(),
+        loadChildren: () => getCompetencyCourseDetailsRoutes(),
     },
 ];
 

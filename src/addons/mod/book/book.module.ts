@@ -31,7 +31,7 @@ import { ADDON_MOD_BOOK_PAGE_NAME } from './constants';
 const routes: Routes = [
     {
         path: ADDON_MOD_BOOK_PAGE_NAME,
-        children: [
+        loadChildren: () => [
             {
                 path: ':courseId/:cmId',
                 loadComponent: () => import('./pages/index/index'),

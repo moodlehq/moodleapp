@@ -23,7 +23,7 @@ import { CoreReportBuilderHandler, CoreReportBuilderHandlerService } from './ser
 const routes: Routes = [
     {
         path: CoreReportBuilderHandlerService.PAGE_NAME,
-        children: [
+        loadChildren: () => [
             {
                 path: '',
                 loadComponent: () => import('@features/reportbuilder/pages/list/list'),
