@@ -35,6 +35,10 @@ import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreLoginMethodsComponent, CoreLoginMethodsCurrentLogin } from '@features/login/components/login-methods/login-methods';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-logo';
+import { CoreLoginExceededAttemptsComponent } from '../../components/exceeded-attempts/exceeded-attempts';
+import { CoreLoginIdentityProviderComponent } from '../../components/identity-provider/identity-provider';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -43,8 +47,16 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-login-reconnect',
     templateUrl: 'reconnect.html',
     styleUrl: '../../login.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSiteLogoComponent,
+        CoreLoginExceededAttemptsComponent,
+        CoreLoginIdentityProviderComponent,
+        CoreLoginMethodsComponent,
+    ],
 })
-export class CoreLoginReconnectPage implements OnInit, OnDestroy {
+export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
     @ViewChild('reconnectForm') formElement?: ElementRef;
     @ViewChild(CoreLoginMethodsComponent) set loginMethods(loginMethods: CoreLoginMethodsComponent) {

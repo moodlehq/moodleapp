@@ -20,6 +20,9 @@ import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * This component adds a button (usually in the navigation bar) that displays a context menu popover.
@@ -27,6 +30,12 @@ import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 @Component({
     selector: 'core-context-menu',
     templateUrl: 'core-context-menu.html',
+    standalone: true,
+    imports: [
+        CoreBaseModule,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFaIconDirective,
+    ],
 })
 export class CoreContextMenuComponent implements OnInit, OnDestroy {
 

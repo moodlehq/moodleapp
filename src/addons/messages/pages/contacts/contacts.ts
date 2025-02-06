@@ -25,6 +25,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT, ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT } from '@addons/messages/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays contacts and contact requests.
@@ -33,8 +34,12 @@ import { Translate } from '@singletons';
     selector: 'page-addon-messages-contacts',
     templateUrl: 'contacts.html',
     styleUrl: '../../messages-common.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonMessagesContactsPage implements OnInit, OnDestroy {
+export default class AddonMessagesContactsPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 

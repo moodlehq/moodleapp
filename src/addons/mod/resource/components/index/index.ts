@@ -16,7 +16,7 @@ import { DownloadStatus } from '@/core/constants';
 import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreNetwork } from '@services/network';
@@ -36,6 +36,9 @@ import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { OpenFileAction } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a resource.
@@ -44,6 +47,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-resource-index',
     templateUrl: 'addon-mod-resource-index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 

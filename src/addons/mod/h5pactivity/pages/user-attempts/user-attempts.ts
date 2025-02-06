@@ -27,6 +27,7 @@ import {
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays user attempts of a certain user.
@@ -35,8 +36,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-h5pactivity-user-attempts',
     templateUrl: 'user-attempts.html',
     styleUrl: 'user-attempts.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModH5PActivityUserAttemptsPage implements OnInit {
+export default class AddonModH5PActivityUserAttemptsPage implements OnInit {
 
     loaded = false;
     courseId!: number;

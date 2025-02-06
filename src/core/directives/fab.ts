@@ -25,6 +25,7 @@ import { CoreDom } from '@singletons/dom';
  */
 @Directive({
     selector: 'ion-fab[core-fab]',
+    standalone: true,
 })
 export class CoreFabDirective implements OnInit, OnDestroy {
 

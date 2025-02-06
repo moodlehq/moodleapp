@@ -16,12 +16,18 @@ import { Component, ViewChild } from '@angular/core';
 
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModForumIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 @Component({
     selector: 'page-addon-mod-forum-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModForumIndexComponent,
+    ],
 })
-export class AddonModForumIndexPage extends CoreCourseModuleMainActivityPage<AddonModForumIndexComponent> {
+export default class AddonModForumIndexPage extends CoreCourseModuleMainActivityPage<AddonModForumIndexComponent> {
 
     @ViewChild(AddonModForumIndexComponent) activityComponent?: AddonModForumIndexComponent;
 

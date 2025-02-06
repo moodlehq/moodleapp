@@ -16,7 +16,7 @@ import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { CoreQuestionBehaviourButton, CoreQuestionQuestion } from '@features/question/services/question-helper';
@@ -32,7 +32,7 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCompileHtmlComponentModule,
+        CoreCompileHtmlComponent,
     ],
 })
 export class CoreSitePluginsQuestionBehaviourComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
@@ -57,7 +57,7 @@ export class CoreSitePluginsQuestionBehaviourComponent extends CoreSitePluginsCo
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         // Pass the input and output data to the component.
         this.jsData.question = this.question;
         this.jsData.component = this.component;

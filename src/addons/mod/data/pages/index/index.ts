@@ -16,6 +16,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModDataIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a data.
@@ -23,8 +24,13 @@ import { AddonModDataIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-data-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModDataIndexComponent,
+    ],
 })
-export class AddonModDataIndexPage extends CoreCourseModuleMainActivityPage<AddonModDataIndexComponent> implements OnInit {
+export default class AddonModDataIndexPage extends CoreCourseModuleMainActivityPage<AddonModDataIndexComponent> implements OnInit {
 
     @ViewChild(AddonModDataIndexComponent) activityComponent?: AddonModDataIndexComponent;
 

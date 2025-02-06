@@ -21,6 +21,7 @@ import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profi
 import { CoreUtils } from '@singletons/utils';
 import { ContextLevel } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Directive to render user profile field.
@@ -28,6 +29,10 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-user-profile-field',
     templateUrl: 'core-user-profile-field.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreUserProfileFieldComponent implements OnInit {
 

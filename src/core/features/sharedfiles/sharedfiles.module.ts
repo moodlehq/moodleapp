@@ -20,7 +20,6 @@ import { CoreFileUploaderDelegate } from '@features/fileuploader/services/fileup
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';
 import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
-import { CoreSharedFilesComponentsModule } from './components/components.module';
 import { CoreSharedFilesSettingsHandler } from './services/handlers/settings';
 import { CoreSharedFilesUploadHandler } from './services/handlers/upload';
 import { CoreSharedFiles } from './services/sharedfiles';
@@ -42,10 +41,28 @@ export async function getSharedFilesServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get the shared files routes.
+ *
+ * @returns Shared files routes.
+ */
+export function getSharedFilesRoutes(): Routes {
+    return [
+        {
+            path: 'choosesite',
+            loadComponent: () => import('@features/sharedfiles/pages/choose-site/choose-site'),
+        },
+        {
+            path: 'list/:hash',
+            loadComponent: () => import('@features/sharedfiles/pages/list/list'),
+        },
+    ];
+}
+
 const routes: Routes = [
     {
         path: SHAREDFILES_PAGE_NAME,
-        loadChildren: () => import('./sharedfiles-lazy.module'),
+        children: getSharedFilesRoutes(),
     },
 ];
 
@@ -54,7 +71,6 @@ const routes: Routes = [
         AppRoutingModule.forChild(routes),
         CoreMainMenuTabRoutingModule.forChild(routes),
         CoreSitePreferencesRoutingModule.forChild(routes),
-        CoreSharedFilesComponentsModule,
     ],
     providers: [
         {

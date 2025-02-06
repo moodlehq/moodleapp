@@ -16,7 +16,7 @@ import { DownloadStatus } from '@/core/constants';
 import { Component, Input, OnDestroy, OnInit, Optional } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
@@ -53,6 +53,9 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNetwork } from '@services/network';
 import { Subscription } from 'rxjs';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a SCORM entry page.
@@ -61,6 +64,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-scorm-index',
     templateUrl: 'addon-mod-scorm-index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

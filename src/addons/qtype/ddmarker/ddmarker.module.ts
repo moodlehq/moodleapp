@@ -14,18 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { AddonQtypeDdMarkerComponent } from './component/ddmarker';
 import { AddonQtypeDdMarkerHandler } from './services/handlers/ddmarker';
 
 @NgModule({
-    declarations: [
-        AddonQtypeDdMarkerComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -34,9 +26,6 @@ import { AddonQtypeDdMarkerHandler } from './services/handlers/ddmarker';
                 CoreQuestionDelegate.registerHandler(AddonQtypeDdMarkerHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonQtypeDdMarkerComponent,
     ],
 })
 export class AddonQtypeDdMarkerModule {}

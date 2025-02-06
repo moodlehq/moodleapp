@@ -29,6 +29,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSites } from '@services/sites';
 import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to render a notification.
@@ -37,8 +38,12 @@ import { Translate } from '@singletons';
     selector: 'page-addon-notifications-notification',
     templateUrl: 'notification.html',
     styleUrls: ['../../notifications.scss', 'notification.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
+export default class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
 
     notifications?: AddonNotificationSwipeItemsManager;
     notification?: AddonNotificationsNotificationMessageFormatted;

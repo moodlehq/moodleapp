@@ -34,6 +34,7 @@ import { AddonModQuizPushClickHandler } from './services/handlers/push-click';
 import { AddonModQuizReviewLinkHandler } from './services/handlers/review-link';
 import { AddonModQuizSyncCronHandler } from './services/handlers/sync-cron';
 import { ADDON_MOD_QUIZ_COMPONENT, ADDON_MOD_QUIZ_PAGE_NAME } from './constants';
+import { canLeaveGuard } from '@guards/can-leave';
 
 /**
  * Get mod Quiz services.
@@ -56,21 +57,24 @@ export async function getModQuizServices(): Promise<Type<unknown>[]> {
     ];
 }
 
-/**
- * Get quiz component modules.
- *
- * @returns Quiz component modules.
- */
-export async function getModQuizComponentModules(): Promise<unknown[]> {
-    const { AddonModQuizComponentsModule } = await import('@addons/mod/quiz/components/components.module');
-
-    return [AddonModQuizComponentsModule];
-}
-
 const routes: Routes = [
     {
         path: ADDON_MOD_QUIZ_PAGE_NAME,
-        loadChildren: () => import('./quiz-lazy.module'),
+        children: [
+            {
+                path: ':courseId/:cmId',
+                loadComponent: () => import('./pages/index/index'),
+            },
+            {
+                path: ':courseId/:cmId/player',
+                loadComponent: () => import('./pages/player/player'),
+                canDeactivate: [canLeaveGuard],
+            },
+            {
+                path: ':courseId/:cmId/review/:attemptId',
+                loadComponent: () => import('./pages/review/review'),
+            },
+        ],
     },
 ];
 

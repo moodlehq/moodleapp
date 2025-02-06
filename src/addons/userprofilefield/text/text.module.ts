@@ -16,16 +16,8 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { AddonUserProfileFieldTextHandler } from './services/handlers/text';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
-import { AddonUserProfileFieldTextComponent } from './component/text';
-import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldTextComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -34,9 +26,6 @@ import { CoreSharedModule } from '@/core/shared.module';
                 CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldTextHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonUserProfileFieldTextComponent,
     ],
 })
 export class AddonUserProfileFieldTextModule {}

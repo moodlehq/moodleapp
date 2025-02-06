@@ -16,18 +16,8 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { AddonUserProfileFieldTextareaHandler } from './services/handlers/textarea';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
-import { AddonUserProfileFieldTextareaComponent } from './component/textarea';
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldTextareaComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-        CoreEditorComponentsModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -36,9 +26,6 @@ import { CoreEditorComponentsModule } from '@features/editor/components/componen
                 CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldTextareaHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonUserProfileFieldTextareaComponent,
     ],
 })
 export class AddonUserProfileFieldTextareaModule {}

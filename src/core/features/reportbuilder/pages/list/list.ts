@@ -24,13 +24,18 @@ import { Translate } from '@singletons';
 import { CoreTime } from '@singletons/time';
 import { BehaviorSubject } from 'rxjs';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 @Component({
     selector: 'core-report-builder-list',
     templateUrl: './list.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreReportBuilderListPage implements AfterViewInit, OnDestroy {
+export default class CoreReportBuilderListPage implements AfterViewInit, OnDestroy {
 
     reports!: CoreListItemsManager<CoreReportBuilderReport, CoreReportBuilderReportsSource>;
 

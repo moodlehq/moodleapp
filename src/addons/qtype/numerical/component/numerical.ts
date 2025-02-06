@@ -15,6 +15,7 @@
 import { Component, ElementRef } from '@angular/core';
 
 import { AddonModQuizNumericalQuestion, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a numerical question.
@@ -23,6 +24,10 @@ import { AddonModQuizNumericalQuestion, CoreQuestionBaseComponent } from '@featu
     selector: 'numerical',
     templateUrl: 'numerical.html',
     styleUrl: 'numerical.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonQtypeNumericalComponent extends CoreQuestionBaseComponent<AddonModQuizNumericalQuestion> {
 

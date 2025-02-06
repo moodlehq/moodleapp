@@ -20,6 +20,7 @@ import { CoreModals } from '@services/overlays/modals';
 import { CoreDom } from '@singletons/dom';
 import { CoreBlockSideBlocksTourComponent } from '../side-blocks-tour/side-blocks-tour';
 import { ContextLevel } from '@/core/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a button to open blocks.
@@ -28,6 +29,10 @@ import { ContextLevel } from '@/core/constants';
     selector: 'core-block-side-blocks-button',
     templateUrl: 'side-blocks-button.html',
     styleUrl: 'side-blocks-button.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
 

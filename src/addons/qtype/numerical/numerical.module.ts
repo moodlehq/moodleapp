@@ -16,16 +16,8 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 import { AddonQtypeNumericalHandler } from './services/handlers/numerical';
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonQtypeNumericalComponent } from './component/numerical';
 
 @NgModule({
-    declarations: [
-        AddonQtypeNumericalComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -34,9 +26,6 @@ import { AddonQtypeNumericalComponent } from './component/numerical';
                 CoreQuestionDelegate.registerHandler(AddonQtypeNumericalHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonQtypeNumericalComponent,
     ],
 })
 export class AddonQtypeNumericalModule {}

@@ -16,7 +16,7 @@ import { Component, Optional, Input, OnInit, OnDestroy } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreTag, CoreTagItem } from '@features/tag/services/tag';
 import { CoreUser } from '@features/user/services/user';
@@ -60,6 +60,10 @@ import {
 import { CoreModals } from '@services/overlays/modals';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 
 /**
  * Component that displays a wiki entry page.
@@ -68,6 +72,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-wiki-index',
     templateUrl: 'addon-mod-wiki-index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreTagListComponent,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

@@ -14,12 +14,9 @@
 
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
-import { CoreSharedModule } from '@/core/shared.module';
 
 import { resolveMainMenuRoutes } from './mainmenu-routing.module';
-import { CoreMainMenuPage } from './pages/menu/menu';
 import { CoreMainMenuHomeHandlerService } from './services/handlers/mainmenu';
-import { CoreMainMenuComponentsModule } from './components/components.module';
 import { MAIN_MENU_MORE_PAGE_NAME } from './constants';
 
 /**
@@ -34,7 +31,7 @@ function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: '',
-            component: CoreMainMenuPage,
+            loadComponent: () => import('@features/mainmenu/pages/menu/menu'),
             children: [
                 {
                     path: CoreMainMenuHomeHandlerService.PAGE_NAME,
@@ -52,13 +49,6 @@ function buildRoutes(injector: Injector): Routes {
 }
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        CoreMainMenuComponentsModule,
-    ],
-    declarations: [
-        CoreMainMenuPage,
-    ],
     providers: [
         { provide: ROUTES, multi: true, useFactory: buildRoutes, deps: [Injector] },
     ],

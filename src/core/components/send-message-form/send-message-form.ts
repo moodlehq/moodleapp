@@ -21,6 +21,13 @@ import { CoreConstants } from '@/core/constants';
 import { CoreForms } from '@singletons/form';
 import { CorePlatform } from '@services/platform';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreAutoFocusDirective } from '@directives/auto-focus';
+import { CoreAutoRowsDirective } from '@directives/auto-rows';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreOnResizeDirective } from '@directives/on-resize';
+import { CoreSupressEventsDirective } from '@directives/supress-events';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * Component to display a "send message form".
@@ -36,6 +43,16 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-send-message-form',
     templateUrl: 'core-send-message-form.html',
     styleUrl: 'send-message-form.scss',
+    standalone: true,
+    imports: [
+        CoreBaseModule,
+        CoreAutoRowsDirective,
+        CoreAutoFocusDirective,
+        CoreOnResizeDirective,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreSupressEventsDirective,
+        CoreFaIconDirective,
+    ],
 })
 export class CoreSendMessageFormComponent {
 

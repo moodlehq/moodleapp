@@ -86,25 +86,40 @@ const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
  * @returns A promise that resolves to the testing component fixture.
  */
 async function renderAngularComponent<T>(component: Type<T>, config: RenderConfig): Promise<TestingComponentFixture<T>> {
-    config.declarations.push(component);
+    if (!config.standalone) {
+        config.declarations.push(component);
 
-    TestBed.configureTestingModule({
-        declarations: [
-            ...getDefaultDeclarations(),
-            ...config.declarations,
-        ],
-        providers: [
-            ...getDefaultProviders(config),
-            ...config.providers,
-        ],
-        schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        imports: [
-            BrowserModule,
-            NoopAnimationsModule,
-            TranslateModule.forChild(),
-            ...config.imports,
-        ],
-    });
+        TestBed.configureTestingModule({
+            declarations: [
+                ...config.declarations,
+            ],
+            providers: [
+                ...getDefaultProviders(config),
+                ...config.providers,
+            ],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            imports: [
+                BrowserModule,
+                NoopAnimationsModule,
+                TranslateModule.forChild(),
+                CoreExternalContentDirectiveStub,
+                ...config.imports,
+            ],
+        });
+    } else {
+        TestBed.configureTestingModule({
+            providers: [
+                ...getDefaultProviders(config),
+                ...config.providers,
+            ],
+            imports: [
+                component,
+                NoopAnimationsModule,
+                CoreExternalContentDirectiveStub,
+                ...config.imports,
+            ],
+        });
+    }
 
     testBedInitialized = true;
 
@@ -128,7 +143,13 @@ async function renderAngularComponent<T>(component: Type<T>, config: RenderConfi
  * @returns The wrapper component class.
  */
 function createWrapperComponent<U>(template: string, componentClass: Type<U>): Type<WrapperComponent<U>> {
-    @Component({ template })
+    @Component({
+        template,
+        standalone: true,
+        imports: [
+            componentClass,
+        ],
+    })
     class HostComponent extends WrapperComponent<U> {
 
         @ViewChild(componentClass) child!: U;
@@ -136,17 +157,6 @@ function createWrapperComponent<U>(template: string, componentClass: Type<U>): T
     }
 
     return HostComponent;
-}
-
-/**
- * Gets the default declarations for testing.
- *
- * @returns An array of default declarations.
- */
-function getDefaultDeclarations(): unknown[] {
-    return [
-        CoreExternalContentDirectiveStub,
-    ];
 }
 
 /**
@@ -217,6 +227,7 @@ export interface RenderConfig {
     providers: unknown[];
     imports: unknown[];
     translations?: Record<string, string>;
+    standalone?: boolean;
 }
 
 export interface RenderPageConfig extends RenderConfig {
@@ -447,8 +458,10 @@ export async function renderTemplate<T>(
     template: string,
     config: Partial<RenderConfig> = {},
 ): Promise<WrapperComponentFixture<T>> {
-    config.declarations = config.declarations ?? [];
-    config.declarations.push(component);
+    if (!config.standalone) {
+        config.declarations = config.declarations ?? [];
+        config.declarations.push(component);
+    }
 
     return renderAngularComponent(
         createWrapperComponent(template, component),

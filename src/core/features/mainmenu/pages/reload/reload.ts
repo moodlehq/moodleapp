@@ -14,6 +14,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a loading and then opens the main menu again.
@@ -21,8 +22,12 @@ import { CoreNavigator } from '@services/navigator';
 @Component({
     selector: 'page-core-mainmenu-reload',
     templateUrl: 'reload.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreMainMenuReloadPage implements OnInit {
+export default class CoreMainMenuReloadPage implements OnInit {
 
     /**
      * @inheritdoc

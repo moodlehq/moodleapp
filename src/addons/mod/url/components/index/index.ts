@@ -16,7 +16,7 @@ import { CoreConstants } from '@/core/constants';
 import { Component, OnInit, Optional } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
@@ -24,6 +24,9 @@ import { AddonModUrl, AddonModUrlDisplayOptions, AddonModUrlUrl } from '../../se
 import { AddonModUrlHelper } from '../../services/url-helper';
 import { ADDON_MOD_URL_COMPONENT } from '../../constants';
 import { CoreSites } from '@services/sites';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a url.
@@ -32,6 +35,12 @@ import { CoreSites } from '@services/sites';
     selector: 'addon-mod-url-index',
     templateUrl: 'addon-mod-url-index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 

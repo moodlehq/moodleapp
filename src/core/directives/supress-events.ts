@@ -38,6 +38,7 @@ import { CoreLogger } from '@singletons/logger';
  */
 @Directive({
     selector: '[core-suppress-events]',
+    standalone: true,
 })
 export class CoreSupressEventsDirective implements OnInit {
 

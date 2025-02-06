@@ -17,6 +17,7 @@ import { CoreConstants } from '@/core/constants';
 import { Http } from '@singletons';
 import { IonSearchbar } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Defines license info
@@ -39,8 +40,12 @@ interface CoreSettingsLicense {
 @Component({
     selector: 'page-core-app-settings-licenses',
     templateUrl: 'licenses.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreSettingsLicensesPage implements OnInit {
+export default class CoreSettingsLicensesPage implements OnInit {
 
     licensesUrl: string;
     loaded = false;

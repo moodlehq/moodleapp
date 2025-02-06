@@ -30,6 +30,12 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFormatDatePipe } from '@pipes/format-date';
+import { CoreDownloadRefreshComponent } from '@components/download-refresh/download-refresh';
+import { CoreAriaButtonClickDirective } from '@directives/aria-button';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * Component to handle a remote file. Shows the file name, icon (depending on mimetype) and a button
@@ -39,6 +45,15 @@ import { Translate } from '@singletons';
     selector: 'core-file',
     templateUrl: 'core-file.html',
     styleUrl: 'core-file.scss',
+    standalone: true,
+    imports: [
+        CoreBaseModule,
+        CoreAriaButtonClickDirective,
+        CoreDownloadRefreshComponent,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFaIconDirective,
+        CoreFormatDatePipe,
+    ],
 })
 export class CoreFileComponent implements OnInit, OnDestroy {
 

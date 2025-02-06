@@ -17,7 +17,7 @@ import { Params } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
@@ -53,6 +53,9 @@ import {
     ADDON_MOD_ASSIGN_WARN_GROUPS_REQUIRED,
 } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 
 /**
  * Component that displays an assignment.
@@ -60,6 +63,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-assign-index',
     templateUrl: 'addon-mod-assign-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModAssignSubmissionComponent,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

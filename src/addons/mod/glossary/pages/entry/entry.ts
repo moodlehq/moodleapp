@@ -38,10 +38,14 @@ import {
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_GLOSSARY_COMPONENT, ADDON_MOD_GLOSSARY_ENTRY_UPDATED, ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
+import { CoreRatingAggregateComponent } from '@features/rating/components/aggregate/aggregate';
 
 /**
  * Page that displays a glossary entry.
@@ -49,8 +53,16 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-glossary-entry',
     templateUrl: 'entry.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreTagListComponent,
+        CoreCommentsCommentsComponent,
+        CoreRatingRateComponent,
+        CoreRatingAggregateComponent,
+    ],
 })
-export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
+export default class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreCommentsCommentsComponent) comments?: CoreCommentsCommentsComponent;
 

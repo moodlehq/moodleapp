@@ -18,8 +18,6 @@ import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-dele
 import { AddonModQuizAccessDelayBetweenAttemptsHandler } from './services/handlers/delaybetweenattempts';
 
 @NgModule({
-    declarations: [
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,

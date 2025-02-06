@@ -26,6 +26,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_H5PACTIVITY_COMPONENT } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays results of an attempt.
@@ -34,8 +35,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-h5pactivity-attempt-results',
     templateUrl: 'attempt-results.html',
     styleUrl: 'attempt-results.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModH5PActivityAttemptResultsPage implements OnInit {
+export default class AddonModH5PActivityAttemptResultsPage implements OnInit {
 
     loaded = false;
     h5pActivity?: AddonModH5PActivityData;

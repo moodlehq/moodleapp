@@ -20,6 +20,7 @@ import { Translate } from '@singletons';
 import { CoreSearchHistoryDBRecord } from '../../services/search-history-db';
 import { CoreForms } from '@singletons/form';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to display a "search box".
@@ -35,6 +36,10 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-search-box',
     templateUrl: 'core-search-box.html',
     styleUrl: 'search-box.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreSearchBoxComponent implements OnInit {
 
@@ -153,7 +158,7 @@ export class CoreSearchBoxComponent implements OnInit {
     }
 
     /**
-     * @param event Focus event on input element.
+     * Search input focused.
      */
     focus(): void {
         this.historyShown.set(true);

@@ -18,6 +18,9 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleCompletionData, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreSites } from '@services/sites';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleCompletionComponent } from '../module-completion/module-completion';
+import { CoreRemindersDateComponent } from '../../../reminders/components/date/date';
 
 /**
  * Display info about a module:
@@ -33,6 +36,12 @@ import { CoreSites } from '@services/sites';
     selector: 'core-course-module-info',
     templateUrl: 'core-course-module-info.html',
     styleUrl: 'course-module-info.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleCompletionComponent,
+        CoreRemindersDateComponent,
+    ],
 })
 export class CoreCourseModuleInfoComponent implements OnInit {
 

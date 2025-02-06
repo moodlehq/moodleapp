@@ -26,6 +26,7 @@ describe('CoreIframeComponent', () => {
         const { nativeElement } = await renderTemplate(
             CoreIframeComponent,
             '<core-iframe src="https://moodle.org/"></core-iframe>',
+            { standalone: true },
         );
 
         // Assert.

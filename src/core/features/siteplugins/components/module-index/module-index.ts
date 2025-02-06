@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy, Input, ViewChild, HostBinding, Optional }
 
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCourseModuleSummaryResult } from '@features/course/components/module-summary/module-summary';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import {
@@ -31,9 +31,9 @@ import {
 import { CoreModals } from '@services/overlays/modals';
 import { CoreUtils } from '@singletons/utils';
 import { CoreSitePluginsPluginContentComponent, CoreSitePluginsPluginContentLoadedData } from '../plugin-content/plugin-content';
-import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleInfoComponent } from '../../../course/components/module-info/module-info';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 
 /**
  * Component that displays the index of a module site plugin.
@@ -45,9 +45,9 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCompileHtmlComponentModule,
-        CoreCourseComponentsModule,
         CoreSitePluginsPluginContentComponent,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
     ],
 })
 export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {

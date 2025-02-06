@@ -17,7 +17,9 @@ import { Component } from '@angular/core';
 import { NavParams } from '@ionic/angular';
 import { PopoverController } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
-import { CoreSharedModule } from '@/core/shared.module';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreLinkDirective } from '@directives/link';
 
 /**
  * Component to display a list of items received by param in a popover.
@@ -28,7 +30,9 @@ import { CoreSharedModule } from '@/core/shared.module';
     styleUrl: 'context-menu-popover.scss',
     standalone: true,
     imports: [
-        CoreSharedModule,
+        CoreBaseModule,
+        CoreFaIconDirective,
+        CoreLinkDirective,
     ],
 })
 export class CoreContextMenuPopoverComponent {

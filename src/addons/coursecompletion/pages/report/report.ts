@@ -25,6 +25,7 @@ import { CoreSites } from '@services/sites';
 import { Translate } from '@singletons';
 import { CoreTime } from '@singletons/time';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the course completion report.
@@ -32,8 +33,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-course-completion-report',
     templateUrl: 'report.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonCourseCompletionReportPage implements OnInit {
+export default class AddonCourseCompletionReportPage implements OnInit {
 
     protected userId!: number;
     protected logView: () => void;

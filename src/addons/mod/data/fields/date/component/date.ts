@@ -16,6 +16,7 @@ import { Component } from '@angular/core';
 import { CoreTimeUtils } from '@services/utils/time';
 import moment, { Moment } from 'moment-timezone';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render data date field.
@@ -23,6 +24,10 @@ import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-fiel
 @Component({
     selector: 'addon-mod-data-field-date',
     templateUrl: 'addon-mod-data-field-date.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseComponent {
 

@@ -16,6 +16,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModLessonIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the lesson entry page.
@@ -23,8 +24,14 @@ import { AddonModLessonIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-lesson-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModLessonIndexComponent,
+    ],
 })
-export class AddonModLessonIndexPage extends CoreCourseModuleMainActivityPage<AddonModLessonIndexComponent> implements OnInit {
+export default class AddonModLessonIndexPage extends CoreCourseModuleMainActivityPage<AddonModLessonIndexComponent>
+    implements OnInit {
 
     @ViewChild(AddonModLessonIndexComponent) activityComponent?: AddonModLessonIndexComponent;
 

@@ -17,6 +17,10 @@ import { Component, Input, OnInit, DoCheck, KeyValueDiffers } from '@angular/cor
 import { CoreFileEntry } from '@services/file-helper';
 
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFileComponent } from '../file/file';
+import { CoreLocalFileComponent } from '../local-file/local-file';
+import { CoreFormatTextDirective } from '@directives/format-text';
 
 /**
  * Component to render a file list.
@@ -27,6 +31,13 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 @Component({
     selector: 'core-files',
     templateUrl: 'core-files.html',
+    standalone: true,
+    imports: [
+        CoreBaseModule,
+        CoreFileComponent,
+        CoreLocalFileComponent,
+        CoreFormatTextDirective,
+    ],
 })
 export class CoreFilesComponent implements OnInit, DoCheck {
 

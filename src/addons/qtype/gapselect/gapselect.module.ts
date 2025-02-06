@@ -14,18 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { AddonQtypeGapSelectComponent } from './component/gapselect';
 import { AddonQtypeGapSelectHandler } from './services/handlers/gapselect';
 
 @NgModule({
-    declarations: [
-        AddonQtypeGapSelectComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -34,9 +26,6 @@ import { AddonQtypeGapSelectHandler } from './services/handlers/gapselect';
                 CoreQuestionDelegate.registerHandler(AddonQtypeGapSelectHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonQtypeGapSelectComponent,
     ],
 })
 export class AddonQtypeGapSelectModule {}

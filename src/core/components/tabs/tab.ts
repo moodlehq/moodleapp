@@ -19,6 +19,7 @@ import { CoreUtils } from '@singletons/utils';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 import { CoreTabsComponent } from './tabs';
+import { CoreBaseModule } from '@/core/base.module';
 
 /**
  * A tab to use inside core-tabs. The content of this tab will be displayed when the tab is selected.
@@ -42,6 +43,8 @@ import { CoreTabsComponent } from './tabs';
 @Component({
     selector: 'core-tab',
     template: '@if (loaded && template) {<ng-container [ngTemplateOutlet]="template" />}',
+    standalone: true,
+    imports: [CoreBaseModule],
 })
 export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
 

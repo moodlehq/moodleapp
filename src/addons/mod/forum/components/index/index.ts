@@ -15,7 +15,6 @@
 import { Component, Optional, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IonContent } from '@ionic/angular';
-
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import {
     AddonModForum,
@@ -27,7 +26,7 @@ import {
 } from '@addons/mod/forum/services/forum';
 import { AddonModForumOffline } from '@addons/mod/forum/services/forum-offline';
 import { Translate } from '@singletons';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 import { CoreGroupInfo } from '@services/groups';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
@@ -68,6 +67,10 @@ import { CoreToasts } from '@services/overlays/toasts';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+
 /**
  * Component that displays a forum entry page.
  */
@@ -75,6 +78,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-forum-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, AfterViewInit, OnDestroy {
 

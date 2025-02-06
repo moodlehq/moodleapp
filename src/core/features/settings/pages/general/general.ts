@@ -28,6 +28,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreAnalytics } from '@services/analytics';
 import { CoreNative } from '@features/native/services/native';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the general settings.
@@ -36,8 +37,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-app-settings-general',
     templateUrl: 'general.html',
     styleUrl: 'general.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreSettingsGeneralPage {
+export default class CoreSettingsGeneralPage {
 
     languages: { code: string; name: string }[] = [];
     selectedLanguage = '';

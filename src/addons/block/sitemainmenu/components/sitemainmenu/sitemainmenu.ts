@@ -20,7 +20,7 @@ import { CoreSiteHome, FrontPageItemNames } from '@features/sitehome/services/si
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { CoreCourseModuleComponent } from '@features/course/components/module/module';
 
 /**
  * Component to render a site main menu block.
@@ -31,7 +31,7 @@ import { CoreCourseComponentsModule } from '@features/course/components/componen
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCourseComponentsModule,
+        CoreCourseModuleComponent,
     ],
 })
 export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent implements OnInit {

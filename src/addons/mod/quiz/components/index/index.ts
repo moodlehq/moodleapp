@@ -17,7 +17,7 @@ import { isSafeNumber, safeNumber, SafeNumber } from '@/core/utils/types';
 import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
@@ -51,6 +51,11 @@ import {
 } from '../../constants';
 import { QuestionDisplayOptionsMarks } from '@features/question/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { AddonModQuizAttemptInfoComponent } from '../attempt-info/attempt-info';
+import { AddonModQuizAttemptStateComponent } from '../attempt-state/attempt-state';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a quiz entry page.
@@ -59,6 +64,14 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-quiz-index',
     templateUrl: 'addon-mod-quiz-index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+        AddonModQuizAttemptStateComponent,
+        AddonModQuizAttemptInfoComponent,
+    ],
 })
 export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

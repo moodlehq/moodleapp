@@ -46,6 +46,7 @@ import { CORE_COMMENTS_AUTO_SYNCED } from '@features/comments/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreWait } from '@singletons/wait';
 import { CoreDom } from '@singletons/dom';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays comments.
@@ -55,8 +56,12 @@ import { CoreDom } from '@singletons/dom';
     templateUrl: 'viewer.html',
     animations: [CoreAnimations.SLIDE_IN_OUT],
     styleUrls: ['../../../../../theme/components/discussion.scss', 'viewer.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterViewInit {
+export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterViewInit {
 
     @ViewChild(IonContent) content?: IonContent;
 

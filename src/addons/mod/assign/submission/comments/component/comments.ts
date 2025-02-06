@@ -17,6 +17,7 @@ import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/
 import { Component, ViewChild } from '@angular/core';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a comments submission plugin.
@@ -24,6 +25,11 @@ import { CoreComments } from '@features/comments/services/comments';
 @Component({
     selector: 'addon-mod-assign-submission-comments',
     templateUrl: 'addon-mod-assign-submission-comments.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCommentsCommentsComponent,
+    ],
 })
 export class AddonModAssignSubmissionCommentsComponent extends AddonModAssignSubmissionPluginBaseComponent {
 

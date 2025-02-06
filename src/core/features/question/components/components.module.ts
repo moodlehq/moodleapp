@@ -14,15 +14,11 @@
 
 import { NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionComponent } from './question/question';
 
 @NgModule({
-    declarations: [
-        CoreQuestionComponent,
-    ],
     imports: [
-        CoreSharedModule,
+        CoreQuestionComponent,
     ],
     exports: [
         CoreQuestionComponent,

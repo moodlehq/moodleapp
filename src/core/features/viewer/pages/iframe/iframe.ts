@@ -15,6 +15,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to display a URL in an iframe.
@@ -22,8 +23,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-viewer-iframe',
     templateUrl: 'iframe.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreViewerIframePage implements OnInit {
+export default class CoreViewerIframePage implements OnInit {
 
     title?: string; // Page title.
     url?: string; // Iframe URL.

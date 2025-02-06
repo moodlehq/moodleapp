@@ -23,6 +23,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ContextLevel } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays the count of comments.
@@ -31,6 +32,10 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-comments',
     templateUrl: 'core-comments.html',
     styleUrl: 'comments.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestroy {
 

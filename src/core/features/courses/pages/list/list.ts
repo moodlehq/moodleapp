@@ -27,6 +27,10 @@ import {
     CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT,
 } from '@features/courses/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCoursesCourseListItemComponent } from '../../components/course-list-item/course-list-item';
+import { CoreSearchBoxComponent } from '../../../search/components/search-box/search-box';
+import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';
+import { CoreSharedModule } from '@/core/shared.module';
 
 type CoreCoursesListMode = 'search' | 'all' | 'my';
 
@@ -36,8 +40,15 @@ type CoreCoursesListMode = 'search' | 'all' | 'my';
 @Component({
     selector: 'page-core-courses-list',
     templateUrl: 'list.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreMainMenuUserButtonComponent,
+        CoreSearchBoxComponent,
+        CoreCoursesCourseListItemComponent,
+    ],
 })
-export class CoreCoursesListPage implements OnInit, OnDestroy {
+export default class CoreCoursesListPage implements OnInit, OnDestroy {
 
     downloadAllCoursesEnabled = false;
 

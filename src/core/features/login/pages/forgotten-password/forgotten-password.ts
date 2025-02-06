@@ -25,6 +25,8 @@ import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest
 import { CoreSitesFactory } from '@services/sites-factory';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreLoginExceededAttemptsComponent } from '../../components/exceeded-attempts/exceeded-attempts';
 
 /**
  * Page to recover a forgotten password.
@@ -32,8 +34,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-core-login-forgotten-password',
     templateUrl: 'forgotten-password.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreLoginExceededAttemptsComponent,
+    ],
 })
-export class CoreLoginForgottenPasswordPage implements OnInit {
+export default class CoreLoginForgottenPasswordPage implements OnInit {
 
     @ViewChild('resetPasswordForm') formElement?: ElementRef;
 

@@ -27,6 +27,8 @@ import {
     CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT,
 } from '@features/courses/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCoursesCourseListItemComponent } from '../../components/course-list-item/course-list-item';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a list of categories and the courses in the current category if any.
@@ -34,8 +36,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-core-courses-categories',
     templateUrl: 'categories.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCoursesCourseListItemComponent,
+    ],
 })
-export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
+export default class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
 
     title: string;
     currentCategory?: CoreCategoryData;

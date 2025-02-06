@@ -57,6 +57,7 @@ import {
     AddonMessagesUpdateConversationAction,
 } from '@addons/messages/constants';
 import { CoreAlerts, CoreAlertsConfirmOptions } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a message discussion page.
@@ -65,8 +66,12 @@ import { CoreAlerts, CoreAlertsConfirmOptions } from '@services/overlays/alerts'
     selector: 'page-addon-messages-discussion',
     templateUrl: 'discussion.html',
     styleUrls: ['../../../../theme/components/discussion.scss', 'discussion.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterViewInit {
+export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterViewInit {
 
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild(CoreInfiniteLoadingComponent) infinite?: CoreInfiniteLoadingComponent;

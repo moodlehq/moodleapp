@@ -41,6 +41,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the competency information.
@@ -48,8 +49,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-competency-competency',
     templateUrl: 'competency.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
+export default class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
 
     competencyLoaded = false;
     competencies!: AddonCompetencyCompetenciesSwipeManager;

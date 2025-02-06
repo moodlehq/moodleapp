@@ -29,6 +29,7 @@ import { CoreObject } from '@singletons/object';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { AsyncDirective } from '@classes/async-directive';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a question.
@@ -37,6 +38,10 @@ import { AsyncDirective } from '@classes/async-directive';
     selector: 'core-question',
     templateUrl: 'core-question.html',
     styleUrl: '../../question.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreQuestionComponent implements OnInit, AsyncDirective {
 

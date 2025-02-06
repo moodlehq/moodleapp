@@ -25,6 +25,7 @@ import { Component } from '@angular/core';
     template: '',
     styles: [':host { display: block; margin: var(--spacer-vertical) var(--spacer-horizontal); \
         border-bottom: 1px solid var(--spacer-color);}'],
+    standalone: true,
 })
 export class CoreSpacerComponent {
 

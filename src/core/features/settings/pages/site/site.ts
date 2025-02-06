@@ -30,6 +30,7 @@ import { CoreConfig } from '@services/config';
 import { CoreSettingsHandlersSource } from '@features/settings/classes/settings-handlers-source';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the list of site settings pages.
@@ -37,8 +38,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-core-site-preferences',
     templateUrl: 'site.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
+export default class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 

@@ -18,8 +18,6 @@ import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-dele
 import { AddonModQuizAccessSecureWindowHandler } from './services/handlers/securewindow';
 
 @NgModule({
-    declarations: [
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,

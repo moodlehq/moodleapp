@@ -15,6 +15,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModImscpIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Imscp that displays a IMSCP.
@@ -22,8 +23,13 @@ import { AddonModImscpIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-imscp-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModImscpIndexComponent,
+    ],
 })
-export class AddonModImscpIndexPage extends CoreCourseModuleMainActivityPage<AddonModImscpIndexComponent> {
+export default class AddonModImscpIndexPage extends CoreCourseModuleMainActivityPage<AddonModImscpIndexComponent> {
 
     @ViewChild(AddonModImscpIndexComponent) activityComponent?: AddonModImscpIndexComponent;
 

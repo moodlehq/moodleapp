@@ -22,6 +22,7 @@ import { IonDatetime } from '@ionic/angular';
  */
 @Directive({
     selector: 'ion-datetime',
+    standalone: true,
 })
 export class CoreIonDatetimeDirective implements OnInit {
 

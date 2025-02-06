@@ -15,6 +15,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { AddonModQuiz } from '../../services/quiz';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays an attempt state.
@@ -23,6 +24,10 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'addon-mod-quiz-attempt-state',
     templateUrl: 'attempt-state.html',
     styleUrl: 'attempt-state.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModQuizAttemptStateComponent implements OnChanges {
 

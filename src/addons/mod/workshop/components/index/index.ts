@@ -16,7 +16,7 @@ import { Component, Input, OnDestroy, OnInit, Optional } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
@@ -59,6 +59,10 @@ import {
 } from '@addons/mod/workshop/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
+import { AddonModWorkshopSubmissionComponent } from '../submission/submission';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 
 /**
  * Component that displays a workshop index page.
@@ -66,6 +70,13 @@ import { CoreOpener } from '@singletons/opener';
 @Component({
     selector: 'addon-mod-workshop-index',
     templateUrl: 'addon-mod-workshop-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModWorkshopSubmissionComponent,
+        CoreCourseModuleNavigationComponent,
+        CoreCourseModuleInfoComponent,
+    ],
 })
 export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

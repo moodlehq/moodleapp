@@ -34,7 +34,6 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '@features/siteplugins/constants';
-import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
@@ -49,7 +48,7 @@ import { Translate } from '@singletons';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCompileHtmlComponentModule,
+        CoreCompileHtmlComponent,
     ],
 })
 export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {

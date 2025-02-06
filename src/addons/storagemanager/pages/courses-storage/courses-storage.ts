@@ -29,6 +29,7 @@ import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreErrorHelper } from '@services/error-helper';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays downloaded courses and allows the user to delete them.
@@ -37,8 +38,12 @@ import { CoreErrorHelper } from '@services/error-helper';
     selector: 'page-addon-storagemanager-courses-storage',
     templateUrl: 'courses-storage.html',
     styleUrl: 'courses-storage.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy {
+export default class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy {
 
     userCourses: CoreEnrolledCourseData[] = [];
     downloadedCourses: DownloadedCourse[] = [];

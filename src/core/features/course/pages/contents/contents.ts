@@ -49,6 +49,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the contents of a course.
@@ -60,8 +61,13 @@ import { Translate } from '@singletons';
         provide: CORE_REFRESH_CONTEXT,
         useExisting: forwardRef(() => CoreCourseContentsPage),
     }],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseFormatComponent,
+    ],
 })
-export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshContext {
+export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshContext {
 
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild(CoreCourseFormatComponent) formatComponent?: CoreCourseFormatComponent;

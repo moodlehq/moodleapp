@@ -31,6 +31,10 @@ import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { BehaviorSubject } from 'rxjs';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreRemindersDateComponent } from '../../../reminders/components/date/date';
+import { CoreCourseModuleCompletionComponent } from '../module-completion/module-completion';
+import { CoreCourseModuleCompletionLegacyComponent } from '../module-completion-legacy/module-completion-legacy';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to display a module entry in a list of modules.
@@ -43,6 +47,13 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-course-module',
     templateUrl: 'core-course-module.html',
     styleUrl: 'module.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleCompletionLegacyComponent,
+        CoreCourseModuleCompletionComponent,
+        CoreRemindersDateComponent,
+    ],
 })
 export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 

@@ -23,7 +23,6 @@ import { CoreDom } from '@singletons/dom';
 import { ContextLevel } from '@/core/constants';
 import { CoreWait } from '@singletons/wait';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreBlockComponentsModule } from '../components.module';
 import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
@@ -36,7 +35,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreBlockComponentsModule,
+        CoreBlockComponent,
     ],
 })
 export class CoreBlockSideBlocksComponent implements OnInit {

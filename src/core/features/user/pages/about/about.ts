@@ -34,6 +34,8 @@ import { CoreUrl } from '@singletons/url';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreTime } from '@singletons/time';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreUserProfileFieldComponent } from '../../components/user-profile-field/user-profile-field';
 
 /**
  * Page that displays info about a user.
@@ -42,8 +44,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-user-about',
     templateUrl: 'about.html',
     styleUrl: 'about.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreUserProfileFieldComponent,
+    ],
 })
-export class CoreUserAboutPage implements OnInit, OnDestroy {
+export default class CoreUserAboutPage implements OnInit, OnDestroy {
 
     courseId!: number;
     userLoaded = false;

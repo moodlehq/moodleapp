@@ -19,7 +19,7 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFileUtils } from '@singletons/file-utils';
 import { ModalController, Translate } from '@singletons';
-import { CoreSharedFilesComponentsModule } from '../components.module';
+import { CoreSharedFilesListComponent } from '../list/list';
 
 /**
  * Modal to display the list of shared files.
@@ -30,7 +30,7 @@ import { CoreSharedFilesComponentsModule } from '../components.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreSharedFilesComponentsModule,
+        CoreSharedFilesListComponent,
     ],
 })
 export class CoreSharedFilesListModalComponent implements OnInit {

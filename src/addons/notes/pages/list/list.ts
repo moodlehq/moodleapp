@@ -34,6 +34,7 @@ import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreModals } from '@services/overlays/modals';
 import { ADDON_NOTES_AUTO_SYNCED } from '@addons/notes/services/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a list of notes.
@@ -42,8 +43,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-notes-list-page',
     templateUrl: 'list.html',
     animations: [CoreAnimations.SLIDE_IN_OUT],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonNotesListPage implements OnInit, OnDestroy {
+export default class AddonNotesListPage implements OnInit, OnDestroy {
 
     @ViewChild(IonContent) content?: IonContent;
 

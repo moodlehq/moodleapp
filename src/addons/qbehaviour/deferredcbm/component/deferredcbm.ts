@@ -17,6 +17,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 import { CoreQuestionBehaviourButton, CoreQuestionQuestion } from '@features/question/services/question-helper';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render the deferred CBM in a question.
@@ -24,6 +25,10 @@ import { CoreQuestionBehaviourButton, CoreQuestionQuestion } from '@features/que
 @Component({
     selector: 'addon-qbehaviour-deferredcbm',
     templateUrl: 'addon-qbehaviour-deferredcbm.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonQbehaviourDeferredCBMComponent {
 

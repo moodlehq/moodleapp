@@ -50,10 +50,11 @@ import {
     ADDON_MOD_FORUM_COMPONENT,
     ADDON_MOD_FORUM_NEW_DISCUSSION_EVENT,
 } from '../../constants';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 type NewDiscussionData = {
     subject: string;
@@ -72,8 +73,13 @@ type NewDiscussionData = {
     selector: 'page-addon-mod-forum-new-discussion',
     templateUrl: 'new-discussion.html',
     styleUrl: 'new-discussion.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
+    ],
 })
-export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild('newDiscFormEl') formElement!: ElementRef;
     @ViewChild(CoreEditorRichTextEditorComponent) messageEditor!: CoreEditorRichTextEditorComponent;

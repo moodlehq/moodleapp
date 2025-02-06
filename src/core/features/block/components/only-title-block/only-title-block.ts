@@ -15,6 +15,7 @@
 import { OnInit, Component } from '@angular/core';
 import { CoreBlockBaseComponent } from '../../classes/base-block-component';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render blocks with only a title and link.
@@ -23,6 +24,10 @@ import { CoreNavigator } from '@services/navigator';
     selector: 'core-block-only-title',
     templateUrl: 'core-block-only-title.html',
     styleUrl: 'only-title-block.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreBlockOnlyTitleComponent extends CoreBlockBaseComponent implements OnInit {
 

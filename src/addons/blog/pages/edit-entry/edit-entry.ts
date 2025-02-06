@@ -27,13 +27,11 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { AddonBlogSync } from '@addons/blog/services/blog-sync';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
-import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseBasicData } from '@features/courses/services/courses';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
-import { CoreTagComponentsModule } from '@features/tag/components/components.module';
 import { CanLeave } from '@guards/can-leave';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreNavigator } from '@services/navigator';
@@ -53,10 +51,8 @@ import { CoreAlerts } from '@services/overlays/alerts';
     templateUrl: './edit-entry.html',
     standalone: true,
     imports: [
-        CoreEditorComponentsModule,
+        CoreEditorRichTextEditorComponent,
         CoreSharedModule,
-        CoreCommentsComponentsModule,
-        CoreTagComponentsModule,
     ],
 })
 export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {

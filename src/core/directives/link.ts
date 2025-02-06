@@ -34,6 +34,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
  */
 @Directive({
     selector: '[core-link]',
+    standalone: true,
 })
 export class CoreLinkDirective implements OnInit {
 

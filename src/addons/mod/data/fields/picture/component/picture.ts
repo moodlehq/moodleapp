@@ -20,6 +20,7 @@ import { CoreDom } from '@singletons/dom';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 import { CoreFile } from '@services/file';
 import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render data picture field.
@@ -27,6 +28,10 @@ import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
 @Component({
     selector: 'addon-mod-data-field-picture',
     templateUrl: 'addon-mod-data-field-picture.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginBaseComponent {
 

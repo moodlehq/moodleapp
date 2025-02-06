@@ -12,18 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
 import { CoreRemindersDateComponent } from './date/date';
 import { CoreRemindersSetButtonComponent } from './set-button/set-button';
 
 @NgModule({
-    declarations: [
+    imports: [
         CoreRemindersDateComponent,
         CoreRemindersSetButtonComponent,
-    ],
-    imports: [
-        CoreSharedModule,
     ],
     exports: [
         CoreRemindersDateComponent,

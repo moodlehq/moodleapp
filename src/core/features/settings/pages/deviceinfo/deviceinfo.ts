@@ -31,6 +31,7 @@ import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { CoreText } from '@singletons/text';
 import { GestureDetail } from '@ionic/angular';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -71,8 +72,12 @@ interface CoreSettingsDeviceInfo {
     selector: 'page-core-app-settings-deviceinfo',
     templateUrl: 'deviceinfo.html',
     styleUrl: 'deviceinfo.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreSettingsDeviceInfoPage implements OnDestroy {
+export default class CoreSettingsDeviceInfoPage implements OnDestroy {
 
     deviceInfo: CoreSettingsDeviceInfo;
     deviceOsTranslated?: string;

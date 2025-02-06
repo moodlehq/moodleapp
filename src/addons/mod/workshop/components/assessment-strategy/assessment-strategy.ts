@@ -46,6 +46,8 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays workshop assessment strategy form.
@@ -53,6 +55,11 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-workshop-assessment-strategy',
     templateUrl: 'addon-mod-workshop-assessment-strategy.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
+    ],
 })
 export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDestroy {
 

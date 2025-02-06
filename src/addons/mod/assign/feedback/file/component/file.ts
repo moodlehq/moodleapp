@@ -17,6 +17,7 @@ import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
 import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { Component, OnInit } from '@angular/core';
 import { CoreWSFile } from '@services/ws';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a file feedback plugin.
@@ -24,6 +25,10 @@ import { CoreWSFile } from '@services/ws';
 @Component({
     selector: 'addon-mod-assign-feedback-file',
     templateUrl: 'addon-mod-assign-feedback-file.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModAssignFeedbackFileComponent extends AddonModAssignFeedbackPluginBaseComponent implements OnInit {
 

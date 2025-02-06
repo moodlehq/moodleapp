@@ -35,11 +35,59 @@ import { AddonModFeedbackShowEntriesLinkHandler } from './services/handlers/show
 import { AddonModFeedbackShowNonRespondentsLinkHandler } from './services/handlers/show-non-respondents-link';
 import { AddonModFeedbackSyncCronHandler } from './services/handlers/sync-cron';
 import { ADDON_MOD_FEEDBACK_COMPONENT, ADDON_MOD_FEEDBACK_PAGE_NAME } from './constants';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { canLeaveGuard } from '@guards/can-leave';
+import { CoreScreen } from '@services/screen';
+
+const commonRoutes: Routes = [
+    {
+        path: ':courseId/:cmId',
+        loadComponent: () => import('./pages/index/index'),
+    },
+    {
+        path: ':courseId/:cmId/form',
+        loadComponent: () => import('./pages/form/form'),
+        canDeactivate: [canLeaveGuard],
+    },
+    {
+        path: ':courseId/:cmId/nonrespondents',
+        loadComponent: () => import('./pages/nonrespondents/nonrespondents'),
+    },
+];
+
+const mobileRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/attempts',
+        loadComponent: () => import('./pages/attempts/attempts'),
+    },
+    {
+        path: ':courseId/:cmId/attempts/:attemptId',
+        loadComponent: () => import('./pages/attempt/attempt'),
+    },
+];
+
+const tabletRoutes: Routes = [
+    ...commonRoutes,
+    {
+        path: ':courseId/:cmId/attempts',
+        loadComponent: () => import('./pages/attempts/attempts'),
+        children: [
+            {
+                path: ':attemptId',
+                loadComponent: () => import('./pages/attempt/attempt'),
+            },
+        ],
+    },
+];
 
 const routes: Routes = [
     {
         path: ADDON_MOD_FEEDBACK_PAGE_NAME,
-        loadChildren: () => import('./feedback-lazy.module'),
+        children: [
+            ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+            ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+        ],
     },
 ];
 

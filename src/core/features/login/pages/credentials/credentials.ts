@@ -42,6 +42,10 @@ import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreLoginMethodsComponent } from '../../components/login-methods/login-methods';
+import { CoreLoginExceededAttemptsComponent } from '../../components/exceeded-attempts/exceeded-attempts';
+import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-logo';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to enter the user credentials.
@@ -50,8 +54,15 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-login-credentials',
     templateUrl: 'credentials.html',
     styleUrl: '../../login.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSiteLogoComponent,
+        CoreLoginExceededAttemptsComponent,
+        CoreLoginMethodsComponent,
+    ],
 })
-export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
+export default class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
     @ViewChild('credentialsForm') formElement?: ElementRef<HTMLFormElement>;
 

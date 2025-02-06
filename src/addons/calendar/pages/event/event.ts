@@ -54,6 +54,7 @@ import {
 } from '@addons/calendar/constants';
 import { REMINDERS_DEFAULT_NOTIFICATION_TIME_CHANGED } from '@features/reminders/constants';
 import { CoreAlerts, CoreAlertsConfirmOptions } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a single calendar event.
@@ -62,8 +63,12 @@ import { CoreAlerts, CoreAlertsConfirmOptions } from '@services/overlays/alerts'
     selector: 'page-addon-calendar-event',
     templateUrl: 'event.html',
     styleUrls: ['../../calendar-common.scss', 'event.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonCalendarEventPage implements OnInit, OnDestroy {
+export default class AddonCalendarEventPage implements OnInit, OnDestroy {
 
     protected eventId!: number;
     protected siteHomeId: number;

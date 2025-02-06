@@ -51,6 +51,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCountries } from '@singletons/countries';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -59,8 +60,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-login-site',
     templateUrl: 'site.html',
     styleUrls: ['site.scss', '../../login.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreLoginSitePage implements OnInit {
+export default class CoreLoginSitePage implements OnInit {
 
     @ViewChild('siteFormEl') formElement?: ElementRef;
 

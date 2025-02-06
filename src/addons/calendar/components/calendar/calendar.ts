@@ -54,6 +54,7 @@ import { Translate } from '@singletons';
 import { toBoolean } from '@/core/transforms/boolean';
 import { ADDON_CALENDAR_UNDELETED_EVENT_EVENT } from '@addons/calendar/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a calendar.
@@ -62,6 +63,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-calendar-calendar',
     templateUrl: 'addon-calendar-calendar.html',
     styleUrl: 'calendar.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestroy {
 

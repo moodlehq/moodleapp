@@ -35,6 +35,7 @@ import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { COLLAPSIBLE_HEADER_UPDATED } from '@directives/collapsible-header';
 import { MAIN_MENU_VISIBILITY_UPDATED_EVENT } from '@features/mainmenu/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 const ANIMATION_DURATION = 200;
 const USER_TOURS_BACK_BUTTON_PRIORITY = 100;
@@ -49,6 +50,10 @@ const BACKDROP_DISMISS_SAFETY_TRESHOLD = 1000;
     selector: 'core-user-tours-user-tour',
     templateUrl: 'core-user-tours-user-tour.html',
     styleUrl: 'user-tour.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy {
 

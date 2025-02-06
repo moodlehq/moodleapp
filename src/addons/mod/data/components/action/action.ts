@@ -34,6 +34,9 @@ import {
     AddonModDataAction,
     AddonModDataTemplateMode,
 } from '../../constants';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
+import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a database action.
@@ -41,6 +44,12 @@ import {
 @Component({
     selector: 'addon-mod-data-action',
     templateUrl: 'addon-mod-data-action.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCommentsCommentsComponent,
+        CoreTagListComponent,
+    ],
 })
 export class AddonModDataActionComponent implements OnInit {
 

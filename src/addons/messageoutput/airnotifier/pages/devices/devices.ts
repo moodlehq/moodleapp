@@ -17,6 +17,7 @@ import { CorePushNotifications } from '@features/pushnotifications/services/push
 import { AddonMessageOutputAirnotifier, AddonMessageOutputAirnotifierDevice } from '../../services/airnotifier';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the list of devices.
@@ -24,8 +25,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-message-output-airnotifier-devices',
     templateUrl: 'devices.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestroy {
+export default class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestroy {
 
     platformDevices: AddonMessageOutputAirnotifierPlatformDevices[] = [];
     loaded = false;

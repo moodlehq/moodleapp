@@ -56,6 +56,10 @@ import {
 } from '@addons/mod/workshop/constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { AddonModWorkshopAssessmentComponent } from '../../components/assessment/assessment';
+import { AddonModWorkshopSubmissionComponent } from '../../components/submission/submission';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a workshop submission.
@@ -63,8 +67,16 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-workshop-submission-page',
     templateUrl: 'submission.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
+        AddonModWorkshopAssessmentComponent,
+        AddonModWorkshopAssessmentStrategyComponent,
+        AddonModWorkshopSubmissionComponent,
+    ],
 })
-export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(AddonModWorkshopAssessmentStrategyComponent) assessmentStrategy?: AddonModWorkshopAssessmentStrategyComponent;
 

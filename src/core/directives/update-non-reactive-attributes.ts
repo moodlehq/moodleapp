@@ -20,10 +20,11 @@ import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
  *
  * This is necessary in order to update some attributes that are not reactive, for example aria-label.
  *
- * @see https://github.com/ionic-team/ionic-framework/issues/21534
+ * @see https://github.com/ionic-team/ionic-framework/issues/20127
  */
 @Directive({
     selector: 'ion-button',
+    standalone: true,
 })
 export class CoreUpdateNonReactiveAttributesDirective implements OnInit, OnDestroy {
 

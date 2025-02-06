@@ -71,7 +71,7 @@ import { CoreRemindersPushNotificationData } from '@features/reminders/services/
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreEnrol } from '@features/enrol/services/enrol';
 import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
-import { LazyRoutesModule } from '@/app/app-routing.module';
+import { LazyDefaultStandaloneComponent } from '@/app/app-routing.module';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
 import {
@@ -1971,8 +1971,8 @@ export class CoreCourseHelperProvider {
      *
      * @returns Course summary page module.
      */
-    getCourseSummaryRouteModule(): LazyRoutesModule {
-        return import('../course-summary-lazy.module');
+    getCourseSummaryPage(): LazyDefaultStandaloneComponent {
+        return import('@features/course/pages/course-summary/course-summary');
     }
 
     /**
@@ -1981,10 +1981,10 @@ export class CoreCourseHelperProvider {
      * @param course Course selected
      */
     async openCourseSummary(course: CoreCourseWithImageAndColor & CoreCourseAnyCourseData): Promise<void> {
-        const { CoreCourseSummaryPage } = await import('../pages/course-summary/course-summary.page');
+        const page = await this.getCourseSummaryPage();
 
         CoreModals.openSideModal<void>({
-            component: CoreCourseSummaryPage,
+            component: page.default,
             componentProps: {
                 courseId: course.id,
                 course: course,

@@ -21,6 +21,7 @@ import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreCourseModuleCompletionData, CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourse } from '@features/course/services/course';
 import type { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to display single activity format. It will determine the right component to use and instantiate it.
@@ -31,6 +32,10 @@ import type { CoreCourseModuleMainActivityComponent } from '@features/course/cla
     selector: 'core-course-format-single-activity',
     templateUrl: 'core-course-format-single-activity.html',
     styleUrl: 'single-activity.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCourseFormatSingleActivityComponent implements OnChanges {
 

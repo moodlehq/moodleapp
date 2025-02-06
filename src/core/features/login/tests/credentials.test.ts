@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { findElement, mock, mockSingleton, renderPageComponent, requireElement } from '@/testing/utils';
 import { CoreLoginError } from '@classes/errors/loginerror';
-import { CoreLoginComponentsModule } from '@features/login/components/components.module';
-import { CoreLoginCredentialsPage } from '@features/login/pages/credentials/credentials';
+import CoreLoginCredentialsPage from '@features/login/pages/credentials/credentials';
 import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { Http } from '@singletons';
@@ -84,10 +82,7 @@ describe('Credentials page', () => {
         // Act.
         const fixture = await renderPageComponent(CoreLoginCredentialsPage, {
             routeParams: { siteUrl },
-            imports: [
-                CoreSharedModule,
-                CoreLoginComponentsModule,
-            ],
+            standalone: true,
         });
 
         // Assert.
@@ -137,7 +132,7 @@ describe('Credentials page', () => {
 
         const fixture = await renderPageComponent(CoreLoginCredentialsPage, {
             routeParams: { siteUrl, siteCheck },
-            imports: [CoreSharedModule, CoreLoginComponentsModule],
+            standalone: true,
         });
 
         // Act.

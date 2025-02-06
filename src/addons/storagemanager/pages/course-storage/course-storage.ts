@@ -37,6 +37,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreErrorHelper } from '@services/error-helper';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the amount of file storage used by each activity on the course, and allows
@@ -47,8 +48,12 @@ import { CoreErrorHelper } from '@services/error-helper';
     templateUrl: 'course-storage.html',
     styleUrl: 'course-storage.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
+export default class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
     courseId!: number;
     title = '';

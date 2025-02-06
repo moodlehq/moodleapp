@@ -23,6 +23,7 @@ import {
     OnDestroy,
     Optional,
     AfterViewInit,
+    CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { IonTextarea, IonContent } from '@ionic/angular';
@@ -48,6 +49,7 @@ import { CoreSwiper } from '@singletons/swiper';
 import { CoreWait } from '@singletons/wait';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreQRScan } from '@services/qrscan';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to display a rich text editor if enabled.
@@ -61,6 +63,11 @@ import { CoreQRScan } from '@services/qrscan';
     selector: 'core-rich-text-editor',
     templateUrl: 'core-editor-rich-text-editor.html',
     styleUrl: 'rich-text-editor.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 

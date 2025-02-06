@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { Component, ElementRef, Input, OnChanges } from '@angular/core';
 import { CoreDom } from '@singletons/dom';
 
@@ -31,9 +30,7 @@ import { CoreDom } from '@singletons/dom';
     selector: 'core-style',
     template: '',
     standalone: true,
-    imports: [
-        CoreSharedModule,
-    ],
+    imports: [],
 })
 export class CoreStyleComponent implements OnChanges {
 

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreBaseModule } from '@/core/base.module';
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input } from '@angular/core';
 
@@ -21,6 +22,8 @@ import { Component, Input } from '@angular/core';
 @Component({
     selector: 'core-bs-tooltip',
     templateUrl: 'core-bs-tooltip.html',
+    standalone: true,
+    imports: [CoreBaseModule],
 })
 export class CoreBSTooltipComponent {
 

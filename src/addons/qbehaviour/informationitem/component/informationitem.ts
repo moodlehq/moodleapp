@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 
@@ -24,6 +25,10 @@ import { CoreQuestionBehaviourButton, CoreQuestionQuestion } from '@features/que
 @Component({
     selector: 'addon-qbehaviour-informationitem',
     templateUrl: 'addon-qbehaviour-informationitem.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonQbehaviourInformationItemComponent {
 
