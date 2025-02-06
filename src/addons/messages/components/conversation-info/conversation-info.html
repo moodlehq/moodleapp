@@ -15,7 +15,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" placeholderType="imageandboxes">
         <ion-item class="ion-text-center" *ngIf="conversation">
             <ion-label>
                 <div class="large-avatar">
