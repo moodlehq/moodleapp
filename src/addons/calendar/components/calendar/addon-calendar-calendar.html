@@ -6,7 +6,38 @@
     </core-context-menu>
 </core-navbar-buttons>
 
-<core-loading [hideUntil]="loaded">
+<core-loading [hideUntil]="loaded" placeholderType="free">
+    <div placeholder>
+        <ion-grid class="ion-no-padding addon-calendar-navigation">
+            <ion-row class="ion-align-items-center">
+                <ion-col class="ion-text-center addon-calendar-period">
+                    <h2>
+                        <ion-skeleton-text [animated]="true" style="width: 50%;" />
+                    </h2>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+        <ion-grid class="addon-calendar-months">
+            <ion-row class="addon-calendar-week">
+                @for (k of [].constructor(7); track k) {
+                    <ion-col class="ion-text-center addon-calendar-weekday" style="width: 60px;">
+                        <ion-skeleton-text [animated]="true" class="icon" />
+                    </ion-col>
+                }
+            </ion-row>
+            @for (j of [].constructor(5); track j) {
+                <ion-row class="addon-calendar-week">
+                    @for (k of [].constructor(7); track k) {
+                        <ion-col class="ion-text-center dayblank addon-calendar-day" style="width: 60px;">
+                            <p class="addon-calendar-day-number">
+                                <ion-skeleton-text [animated]="true" class="icon" />
+                            </p>
+                        </ion-col>
+                    }
+                </ion-row>
+            }
+        </ion-grid>
+    </div>
     <div class="core-swipe-slides-container">
         <!-- Period name and arrows to navigate. -->
         <ion-grid class="ion-no-padding addon-calendar-navigation">

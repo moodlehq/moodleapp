@@ -23,7 +23,7 @@
     <ion-refresher slot="fixed" [disabled]="!categoriesLoaded" (ionRefresh)="refreshCategories($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="categoriesLoaded">
+    <core-loading [hideUntil]="categoriesLoaded" placeholderType="column" placeholderHeight="108px">
         <ion-list class="list-item-limited-width">
             <ion-item *ngIf="currentCategory" class="ion-text-wrap">
                 <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.category' | translate" />
