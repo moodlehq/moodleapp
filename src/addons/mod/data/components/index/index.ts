@@ -17,7 +17,7 @@ import { Component, OnDestroy, OnInit, Optional, Type } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreCommentsProvider } from '@features/comments/services/comments';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
 import { IonContent } from '@ionic/angular';
@@ -39,7 +39,7 @@ import {
 import { AddonModDataHelper, AddonModDatDisplayFieldsOptions } from '../../services/data-helper';
 import { AddonModDataAutoSyncData, AddonModDataSyncResult } from '../../services/data-sync';
 import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch-lazy';
-import { AddonModDataComponentsCompileModule } from '../components-compile.module';
+
 import { CoreUrl } from '@singletons/url';
 import { CoreTime } from '@singletons/time';
 import {
@@ -56,6 +56,10 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 
@@ -66,6 +70,13 @@ const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
     selector: 'addon-mod-data-index',
     templateUrl: 'addon-mod-data-index.html',
     styleUrl: '../../data.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+        CoreCompileHtmlComponent,
+    ],
 })
 export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
@@ -98,7 +109,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
     hasNextPage = false;
     entriesRendered = '';
-    extraImports: Type<unknown>[] = [AddonModDataComponentsCompileModule];
+    extraImports: Type<unknown>[] = [];
 
     jsData?: {
         fields: Record<number, AddonModDataField>;
@@ -139,6 +150,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      */
     async ngOnInit(): Promise<void> {
         await super.ngOnInit();
+
+        this.extraImports = await AddonModDataHelper.getComponentsToCompile();
 
         this.selectedGroup = this.group || 0;
 

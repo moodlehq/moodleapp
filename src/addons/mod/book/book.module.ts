@@ -31,7 +31,16 @@ import { ADDON_MOD_BOOK_PAGE_NAME } from './constants';
 const routes: Routes = [
     {
         path: ADDON_MOD_BOOK_PAGE_NAME,
-        loadChildren: () => import('./book-lazy.module'),
+        children: [
+            {
+                path: ':courseId/:cmId',
+                loadComponent: () => import('./pages/index/index'),
+            },
+            {
+                path: ':courseId/:cmId/contents',
+                loadComponent: () => import('./pages/contents/contents'),
+            },
+        ],
     },
 ];
 

@@ -14,6 +14,8 @@
 
 import { Component, ElementRef, HostBinding, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
 
 /**
  * Component to show errors if an input isn't valid.
@@ -37,6 +39,11 @@ import { FormControl } from '@angular/forms';
     selector: 'core-input-errors',
     templateUrl: 'core-input-errors.html',
     styleUrl: 'input-errors.scss',
+    standalone: true,
+    imports: [
+        CoreBaseModule,
+        CoreFaIconDirective,
+    ],
 })
 export class CoreInputErrorsComponent implements OnInit, OnChanges {
 

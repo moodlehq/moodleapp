@@ -33,6 +33,7 @@ import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a chat session.
@@ -41,8 +42,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-chat-chat',
     templateUrl: 'chat.html',
     styleUrls: ['../../../../../theme/components/discussion.scss', 'chat.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
 
     protected static readonly POLL_INTERVAL = 4000;
 

@@ -15,7 +15,7 @@
 import { Component, Input, OnInit, Optional } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { Md5 } from 'ts-md5';
@@ -23,6 +23,9 @@ import { AddonModFolder, AddonModFolderFolder } from '../../services/folder';
 import { AddonModFolderFolderFormattedData, AddonModFolderHelper } from '../../services/folder-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_MOD_FOLDER_COMPONENT, ADDON_MOD_FOLDER_PAGE_NAME } from '../../constants';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a folder.
@@ -33,6 +36,12 @@ import { ADDON_MOD_FOLDER_COMPONENT, ADDON_MOD_FOLDER_PAGE_NAME } from '../../co
 @Component({
     selector: 'addon-mod-folder-index',
     templateUrl: 'addon-mod-folder-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 

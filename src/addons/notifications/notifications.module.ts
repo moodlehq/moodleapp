@@ -54,7 +54,7 @@ const routes: Routes = [
 const preferencesRoutes: Routes = [
     {
         path: AddonNotificationsSettingsHandlerService.PAGE_NAME,
-        loadChildren: () => import('./notifications-settings-lazy.module'),
+        loadComponent: () => import('@addons/notifications/pages/settings/settings'),
     },
 ];
 

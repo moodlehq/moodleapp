@@ -17,8 +17,14 @@ import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@an
 import { CoreAnimations } from '@components/animations';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreUserWithAvatar } from '@components/user-avatar/user-avatar';
+import { CoreUserAvatarComponent, CoreUserWithAvatar } from '@components/user-avatar/user-avatar';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreFormatTextDirective } from '@directives/format-text';
+import { CoreLongPressDirective } from '@directives/long-press';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
+import { CoreFormatDatePipe } from '@pipes/format-date';
 
 /**
  * Component to handle a message in a conversation.
@@ -28,6 +34,16 @@ import { toBoolean } from '@/core/transforms/boolean';
     templateUrl: 'message.html',
     styleUrl: 'message.scss',
     animations: [CoreAnimations.SLIDE_IN_OUT],
+    standalone: true,
+    imports: [
+        CoreBaseModule,
+        CoreLongPressDirective,
+        CoreUserAvatarComponent,
+        CoreFormatTextDirective,
+        CoreFaIconDirective,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFormatDatePipe,
+    ],
 })
 export class CoreMessageComponent implements OnInit {
 

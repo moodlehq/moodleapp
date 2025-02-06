@@ -23,6 +23,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePlatform } from '@services/platform';
 import { DomSanitizer, Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render data latlong field.
@@ -30,6 +31,10 @@ import { DomSanitizer, Translate } from '@singletons';
 @Component({
     selector: 'addon-mod-data-field-latlong',
     templateUrl: 'addon-mod-data-field-latlong.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginBaseComponent {
 

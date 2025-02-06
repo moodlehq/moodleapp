@@ -47,6 +47,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays feedback form.
@@ -55,8 +56,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-feedback-form',
     templateUrl: 'form.html',
     styleUrl: 'form.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(IonContent) content?: IonContent;
 

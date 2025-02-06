@@ -132,7 +132,7 @@
                 </ion-item-divider>
                 <ng-container *ngFor="let submission of publishedSubmissions">
                     <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop.course" [module]="module"
-                        [workshop]="workshop" [access]="access" summary="true" class="core-as-item" />
+                        [workshop]="workshop" [access]="access" [summary]="true" class="core-as-item" />
                 </ng-container>
             </ion-card>
         </ng-container>
@@ -163,7 +163,7 @@
                 </ion-item>
                 <ng-container *ngFor="let assessment of (assessments || [])">
                     <addon-mod-workshop-submission [submission]="assessment.submission" [assessment]="assessment"
-                        [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" summary="true"
+                        [courseId]="workshop.course" [module]="module" [workshop]="workshop" [access]="access" [summary]="true"
                         class="core-as-item" />
                 </ng-container>
             </ion-card>
@@ -184,7 +184,7 @@
 
             <ng-container *ngFor="let submission of grades">
                 <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop.course" [module]="module"
-                    [workshop]="workshop" [access]="access" summary="true" class="core-as-item" />
+                    [workshop]="workshop" [access]="access" [summary]="true" class="core-as-item" />
             </ng-container>
 
             <ion-grid *ngIf="page > 0 || hasNextPage">

@@ -14,18 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModQuizAccessTimeLimitComponent } from './component/timelimit';
 import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-delegate';
 import { AddonModQuizAccessTimeLimitHandler } from './services/handlers/timelimit';
 
 @NgModule({
-    declarations: [
-        AddonModQuizAccessTimeLimitComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -34,9 +26,6 @@ import { AddonModQuizAccessTimeLimitHandler } from './services/handlers/timelimi
                 AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessTimeLimitHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonModQuizAccessTimeLimitComponent,
     ],
 })
 export class AddonModQuizAccessTimeLimitModule {}

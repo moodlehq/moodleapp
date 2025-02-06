@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
@@ -980,6 +980,21 @@ export class AddonModDataHelperProvider {
         }
 
         return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_DATA_COMPONENT, itemId, siteId);
+    }
+
+    /**
+     * Get data components to compile.
+     *
+     * @returns Database components to compile.
+     */
+    async getComponentsToCompile(): Promise<Type<unknown>[]> {
+        const { AddonModDataFieldPluginComponent } = await import('@addons/mod/data/components/field-plugin/field-plugin');
+        const { AddonModDataActionComponent } = await import('@addons/mod/data/components/action/action');
+
+        return [
+            AddonModDataFieldPluginComponent,
+            AddonModDataActionComponent,
+        ];
     }
 
 }

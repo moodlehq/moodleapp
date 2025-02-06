@@ -38,7 +38,7 @@ import { CoreIonDatetimeDirective } from './datetime';
 import { CoreReadingModeDirective } from './reading-mode';
 
 @NgModule({
-    declarations: [
+    imports: [
         CoreAutoFocusDirective,
         CoreAutoRowsDirective,
         CoreExternalContentDirective,

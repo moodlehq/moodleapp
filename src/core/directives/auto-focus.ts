@@ -29,6 +29,7 @@ import { toBoolean } from '../transforms/boolean';
  */
 @Directive({
     selector: '[core-auto-focus]',
+    standalone: true,
 })
 export class CoreAutoFocusDirective implements AfterViewInit {
 

@@ -20,7 +20,6 @@ import { CoreCourseFormatDelegate } from '@features/course/services/format-deleg
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
-import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -33,7 +32,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCompileHtmlComponentModule,
         CoreSitePluginsPluginContentComponent,
     ],
 })

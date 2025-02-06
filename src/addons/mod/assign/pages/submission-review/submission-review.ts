@@ -27,6 +27,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a submission.
@@ -34,8 +35,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-assign-submission-review',
     templateUrl: 'submission-review.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModAssignSubmissionComponent,
+    ],
 })
-export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
 

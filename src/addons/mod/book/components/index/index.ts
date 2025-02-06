@@ -15,11 +15,14 @@
 import { Component, Optional, OnInit, OnDestroy } from '@angular/core';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { AddonModBook, AddonModBookBookWSData, AddonModBookTocChapter } from '../../services/book';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_MOD_BOOK_PAGE_NAME, AddonModBookNumbering } from '../../constants';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 
 /**
  * Component that displays a book entry page.
@@ -27,6 +30,12 @@ import { ADDON_MOD_BOOK_PAGE_NAME, AddonModBookNumbering } from '../../constants
 @Component({
     selector: 'addon-mod-book-index',
     templateUrl: 'addon-mod-book-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 

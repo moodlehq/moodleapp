@@ -30,6 +30,7 @@ import { CoreSites } from '@services/sites';
 import { CoreTime } from '@singletons/time';
 import { ContextLevel } from '@/core/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the list of competencies of a learning plan.
@@ -37,8 +38,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-competency-competencies',
     templateUrl: 'competencies.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonCompetencyCompetenciesPage implements AfterViewInit, OnDestroy {
+export default class AddonCompetencyCompetenciesPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 

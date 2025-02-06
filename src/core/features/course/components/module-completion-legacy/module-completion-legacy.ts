@@ -26,6 +26,7 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { BehaviorSubject } from 'rxjs';
 import { ContextLevel } from '@/core/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to handle activity completion in sites previous to 3.11.
@@ -40,6 +41,10 @@ import { ContextLevel } from '@/core/constants';
     selector: 'core-course-module-completion-legacy',
     templateUrl: 'core-course-module-completion-legacy.html',
     styleUrl: 'module-completion-legacy.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleCompletionBaseComponent
     implements OnInit, OnDestroy {

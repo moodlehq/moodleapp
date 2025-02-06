@@ -38,6 +38,8 @@ import { CoreUrl } from '@singletons/url';
 import { ADDON_MOD_BOOK_COMPONENT, AddonModBookNavStyle } from '../../constants';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a book contents.
@@ -46,8 +48,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-book-contents',
     templateUrl: 'contents.html',
     styleUrl: 'contents.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreTagListComponent,
+    ],
 })
-export class AddonModBookContentsPage implements OnInit, OnDestroy {
+export default class AddonModBookContentsPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreSwipeSlidesComponent) swipeSlidesComponent?: CoreSwipeSlidesComponent;
 

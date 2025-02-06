@@ -16,24 +16,14 @@ import { NgModule } from '@angular/core';
 import { CoreComponentsModule } from '@components/components.module';
 import { CoreDirectivesModule } from '@directives/directives.module';
 import { CorePipesModule } from '@pipes/pipes.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { CoreBaseModule } from './base.module';
 
 @NgModule({
-    imports: [
-        TranslateModule.forChild(),
-    ],
     exports: [
-        CommonModule,
+        CoreBaseModule,
         CoreComponentsModule,
         CoreDirectivesModule,
         CorePipesModule,
-        FormsModule,
-        IonicModule,
-        ReactiveFormsModule,
-        TranslateModule,
     ],
 })
 export class CoreSharedModule {}

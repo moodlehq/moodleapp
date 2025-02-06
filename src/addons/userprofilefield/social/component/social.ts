@@ -15,6 +15,7 @@
 import { Component } from '@angular/core';
 
 import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-profilefield-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Directive to render a social user profile field.
@@ -22,6 +23,10 @@ import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-p
 @Component({
     selector: 'addon-user-profile-field-social',
     templateUrl: 'addon-user-profile-field-social.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonUserProfileFieldSocialComponent extends CoreUserProfileFieldBaseComponent {
 

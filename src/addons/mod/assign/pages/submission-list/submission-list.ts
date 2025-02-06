@@ -34,6 +34,7 @@ import {
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_ASSIGN_AUTO_SYNCED, ADDON_MOD_ASSIGN_GRADED_EVENT, ADDON_MOD_ASSIGN_MANUAL_SYNCED } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a list of submissions of an assignment.
@@ -41,8 +42,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-assign-submission-list',
     templateUrl: 'submission-list.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestroy {
+export default class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 

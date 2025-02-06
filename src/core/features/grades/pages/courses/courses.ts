@@ -24,6 +24,7 @@ import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays courses grades (main menu option).
@@ -31,8 +32,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-core-grades-courses',
     templateUrl: 'courses.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
+export default class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
 
     courses: CoreGradesCoursesManager;
 

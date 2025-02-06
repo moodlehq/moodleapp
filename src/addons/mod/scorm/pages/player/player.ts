@@ -44,6 +44,7 @@ import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that allows playing a SCORM.
@@ -51,8 +52,12 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'page-addon-mod-scorm-player',
     templateUrl: 'player.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModScormPlayerPage implements OnInit, OnDestroy {
+export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
     title?: string; // Title.
     scorm!: AddonModScormScorm; // The SCORM object.

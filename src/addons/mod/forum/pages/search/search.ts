@@ -32,12 +32,21 @@ import { Translate } from '@singletons';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSearchGlobalSearchResultComponent } from '@features/search/components/global-search-result/global-search-result';
 
 @Component({
     selector: 'page-addon-mod-forum-search',
     templateUrl: 'search.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSearchBoxComponent,
+        CoreSearchGlobalSearchResultComponent,
+    ],
 })
-export class AddonModForumSearchPage implements OnInit {
+export default class AddonModForumSearchPage implements OnInit {
 
     loadMoreError = false;
     searchBanner: string | null = null;

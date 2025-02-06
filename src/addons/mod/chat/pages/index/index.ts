@@ -15,6 +15,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModChatIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a chat.
@@ -22,8 +23,13 @@ import { AddonModChatIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-chat-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModChatIndexComponent,
+    ],
 })
-export class AddonModChatIndexPage extends CoreCourseModuleMainActivityPage<AddonModChatIndexComponent> {
+export default class AddonModChatIndexPage extends CoreCourseModuleMainActivityPage<AddonModChatIndexComponent> {
 
     @ViewChild(AddonModChatIndexComponent) activityComponent?: AddonModChatIndexComponent;
 

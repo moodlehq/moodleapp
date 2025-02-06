@@ -39,6 +39,8 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreUserProfileFieldComponent } from '@features/user/components/user-profile-field/user-profile-field';
 
 /**
  * Page to signup using email.
@@ -47,8 +49,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-login-email-signup',
     templateUrl: 'email-signup.html',
     styleUrl: '../../login.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreUserProfileFieldComponent,
+    ],
 })
-export class CoreLoginEmailSignupPage implements OnInit {
+export default class CoreLoginEmailSignupPage implements OnInit {
 
     // Accept A-Z in strict chars pattern to be able to differentiate it from the lowercase pattern.
     protected static readonly USERNAME_STRICT_CHARS_PATTERN = '^[A-Z-.@_a-z0-9]*$';

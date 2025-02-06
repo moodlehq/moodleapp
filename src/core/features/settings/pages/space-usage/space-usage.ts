@@ -21,6 +21,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSettingsHelper } from '../../services/settings-helper';
 import { CoreAccountsList } from '@features/login/services/login-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the space usage settings.
@@ -28,8 +29,12 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 @Component({
     selector: 'page-core-app-settings-space-usage',
     templateUrl: 'space-usage.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
+export default class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
 
     loaded = false;
     totalSpaceUsage = 0;

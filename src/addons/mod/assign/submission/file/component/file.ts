@@ -24,6 +24,7 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { CoreFileEntry } from '@services/file-helper';
 import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a file submission plugin.
@@ -31,6 +32,10 @@ import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
 @Component({
     selector: 'addon-mod-assign-submission-file',
     templateUrl: 'addon-mod-assign-submission-file.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmissionPluginBaseComponent implements OnInit {
 

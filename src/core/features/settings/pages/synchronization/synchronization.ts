@@ -26,6 +26,7 @@ import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the synchronization settings.
@@ -33,8 +34,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-core-app-settings-synchronization',
     templateUrl: 'synchronization.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
+export default class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
 
     accountsList: CoreAccountsList = {
         sameSite: [],

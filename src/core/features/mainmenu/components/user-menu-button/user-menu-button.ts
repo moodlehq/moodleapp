@@ -21,8 +21,9 @@ import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreMainMenuUserMenuTourComponent } from '../user-menu-tour/user-menu-tour';
-import { CoreMainMenuPage } from '@features/mainmenu/pages/menu/menu';
+import CoreMainMenuPage from '@features/mainmenu/pages/menu/menu';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to display an avatar on the header to open user menu.
@@ -33,6 +34,10 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-user-menu-button',
     templateUrl: 'user-menu-button.html',
     styleUrl: 'user-menu-button.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreMainMenuUserButtonComponent implements OnInit {
 

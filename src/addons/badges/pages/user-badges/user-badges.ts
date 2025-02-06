@@ -26,6 +26,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the list of calendar events.
@@ -33,8 +34,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-badges-user-badges',
     templateUrl: 'user-badges.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
+export default class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
 
     currentTime = 0;
     badges: CoreListItemsManager<AddonBadgesUserBadge, AddonBadgesUserBadgesSource>;

@@ -24,6 +24,8 @@ import {
     SimpleChange,
     ChangeDetectorRef,
 } from '@angular/core';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
 
 /**
  * This component shows a chronometer in format HH:MM:SS.
@@ -40,6 +42,11 @@ import {
 @Component({
     selector: 'core-chrono',
     templateUrl: 'core-chrono.html',
+    standalone: true,
+    imports: [
+        CoreBaseModule,
+        CoreSecondsToHMSPipe,
+    ],
 })
 export class CoreChronoComponent implements OnInit, OnChanges, OnDestroy {
 

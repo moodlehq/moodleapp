@@ -20,6 +20,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a drag-and-drop markers question.
@@ -28,6 +29,10 @@ import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
     selector: 'addon-qtype-ddmarker',
     templateUrl: 'addon-qtype-ddmarker.html',
     styleUrl: 'ddmarker.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonQtypeDdMarkerComponent
     extends CoreQuestionBaseComponent<AddonQtypeDdMarkerQuestionData>

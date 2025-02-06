@@ -12,20 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
-import { AddonQbehaviourInformationItemComponent } from './component/informationitem';
 import { AddonQbehaviourInformationItemHandler } from './services/handlers/informationitem';
 
 @NgModule({
-    declarations: [
-        AddonQbehaviourInformationItemComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -34,9 +26,6 @@ import { AddonQbehaviourInformationItemHandler } from './services/handlers/infor
                 CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourInformationItemHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonQbehaviourInformationItemComponent,
     ],
 })
 export class AddonQbehaviourInformationItemModule {}

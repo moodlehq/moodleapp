@@ -22,6 +22,10 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@singletons/utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseModuleNavigationComponent } from '../../components/module-navigation/module-navigation';
+import { CoreCourseUnsupportedModuleComponent } from '../../components/unsupported-module/unsupported-module';
+import { CoreCourseModuleInfoComponent } from '../../components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a module preview.
@@ -30,8 +34,15 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-course-module-preview',
     templateUrl: 'module-preview.html',
     styleUrl: 'module-preview.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseUnsupportedModuleComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
-export class CoreCourseModulePreviewPage implements OnInit {
+export default class CoreCourseModulePreviewPage implements OnInit {
 
     title!: string;
     module!: CoreCourseModuleData;

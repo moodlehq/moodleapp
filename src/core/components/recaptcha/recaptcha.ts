@@ -19,6 +19,8 @@ import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreOpener } from '@singletons/opener';
 import { CorePath } from '@singletons/path';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * Component that allows answering a recaptcha.
@@ -26,6 +28,11 @@ import { CorePath } from '@singletons/path';
 @Component({
     selector: 'core-recaptcha',
     templateUrl: 'core-recaptcha.html',
+    standalone: true,
+    imports: [
+        CoreBaseModule,
+        CoreUpdateNonReactiveAttributesDirective,
+    ],
 })
 export class CoreRecaptchaComponent implements OnInit {
 

@@ -20,6 +20,7 @@ import { ItemReorderEventDetail } from '@ionic/angular';
 import { Translate } from '@singletons';
 import { CoreWait } from '@singletons/wait';
 import { CorePlatform } from '@services/platform';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render an ordering question.
@@ -28,6 +29,10 @@ import { CorePlatform } from '@services/platform';
     selector: 'addon-qtype-ordering',
     templateUrl: 'addon-qtype-ordering.html',
     styleUrls: ['../../../../core/features/question/question.scss', 'ordering.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<AddonQtypeOrderingQuestionData> {
 

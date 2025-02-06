@@ -41,6 +41,8 @@ import {
     ADDON_CALENDAR_UNDELETED_EVENT_EVENT,
 } from '@addons/calendar/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/user-menu-button/user-menu-button';
 
 /**
  * Page that displays the calendar events.
@@ -48,8 +50,15 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-calendar-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonCalendarCalendarComponent,
+        AddonCalendarUpcomingEventsComponent,
+        CoreMainMenuUserButtonComponent,
+    ],
 })
-export class AddonCalendarIndexPage implements OnInit, OnDestroy {
+export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
     @ViewChild(AddonCalendarCalendarComponent) calendarComponent?: AddonCalendarCalendarComponent;
     @ViewChild(AddonCalendarUpcomingEventsComponent) upcomingEventsComponent?: AddonCalendarUpcomingEventsComponent;

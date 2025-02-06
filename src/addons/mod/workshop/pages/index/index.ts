@@ -16,6 +16,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModWorkshopIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a workshop.
@@ -23,8 +24,14 @@ import { AddonModWorkshopIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-workshop-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModWorkshopIndexComponent,
+    ],
 })
-export class AddonModWorkshopIndexPage extends CoreCourseModuleMainActivityPage<AddonModWorkshopIndexComponent> implements OnInit {
+export default class AddonModWorkshopIndexPage extends CoreCourseModuleMainActivityPage<AddonModWorkshopIndexComponent>
+    implements OnInit {
 
     @ViewChild(AddonModWorkshopIndexComponent) activityComponent?: AddonModWorkshopIndexComponent;
 

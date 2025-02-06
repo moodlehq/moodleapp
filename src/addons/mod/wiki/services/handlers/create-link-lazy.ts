@@ -86,7 +86,7 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
      */
     async handleAction(siteId: string, courseId: number, params: Record<string, string>): Promise<void> {
         const modal = await CoreLoadings.show();
-        const { AddonModWikiIndexPage } = await import('../../pages/index');
+        const AddonModWikiIndexPage = await import('../../pages/index');
 
         try {
             const route = CoreNavigator.getCurrentRoute({ pageComponent: AddonModWikiIndexPage });

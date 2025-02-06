@@ -16,7 +16,7 @@ import { Component, Input, Optional, ViewChild, OnInit, OnDestroy } from '@angul
 import { CoreError } from '@classes/errors/error';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
@@ -45,6 +45,9 @@ import {
     ADDON_MOD_FEEDBACK_PAGE_NAME,
     AddonModFeedbackIndexTabName,
 } from '../../constants';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a feedback index page.
@@ -52,6 +55,12 @@ import {
 @Component({
     selector: 'addon-mod-feedback-index',
     templateUrl: 'addon-mod-feedback-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

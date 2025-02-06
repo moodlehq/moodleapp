@@ -27,11 +27,11 @@ import {
 } from '../../services/data';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
 import { AddonModDataHelper } from '../../services/data-helper';
-import { AddonModDataComponentsCompileModule } from '../components-compile.module';
+
 import { AddonModDataSearchDataParams } from '../index';
 import { AddonModDataTemplateType } from '../../constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCompileHtmlComponentModule } from '../../../../../core/features/compile/components/compile-html/compile-html.module';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 
 /**
  * Page that displays the search modal.
@@ -43,7 +43,7 @@ import { CoreCompileHtmlComponentModule } from '../../../../../core/features/com
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCompileHtmlComponentModule,
+        CoreCompileHtmlComponent,
     ],
 })
 export class AddonModDataSearchModalComponent implements OnInit {
@@ -56,7 +56,7 @@ export class AddonModDataSearchModalComponent implements OnInit {
 
     advancedSearch = '';
     advancedIndexed: CoreFormFields = {};
-    extraImports: Type<unknown>[] = [AddonModDataComponentsCompileModule];
+    extraImports: Type<unknown>[] = [];
 
     searchForm: FormGroup;
     jsData?: {
@@ -73,7 +73,7 @@ export class AddonModDataSearchModalComponent implements OnInit {
         this.searchForm = new FormGroup({});
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.advancedIndexed = {};
         this.search.advanced?.forEach((field) => {
             if (field !== undefined) {
@@ -91,6 +91,8 @@ export class AddonModDataSearchModalComponent implements OnInit {
 
         this.fieldsArray = CoreObject.toArray(this.fields);
         this.advancedSearch = this.renderAdvancedSearchFields();
+
+        this.extraImports = await AddonModDataHelper.getComponentsToCompile();
     }
 
     /**

@@ -19,11 +19,18 @@ import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes
 import { CoreLoginHelper, CoreLoginMethod } from '@features/login/services/login-helper';
 import { CoreRedirectPayload } from '@services/navigator';
 import { CoreSitesFactory } from '@services/sites-factory';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreLoginIdentityProviderComponent } from '../identity-provider/identity-provider';
 
 @Component({
     selector: 'core-login-methods',
     templateUrl: 'login-methods.html',
     styleUrl: '../../login.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreLoginIdentityProviderComponent,
+    ],
 })
 export class CoreLoginMethodsComponent implements OnInit {
 

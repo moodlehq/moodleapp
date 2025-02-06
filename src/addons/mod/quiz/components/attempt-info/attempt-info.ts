@@ -20,6 +20,8 @@ import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { CoreDomUtils } from '@services/utils/dom';
 import { isSafeNumber } from '@/core/utils/types';
+import { AddonModQuizAttemptStateComponent } from '../attempt-state/attempt-state';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays an attempt info.
@@ -27,6 +29,11 @@ import { isSafeNumber } from '@/core/utils/types';
 @Component({
     selector: 'addon-mod-quiz-attempt-info',
     templateUrl: 'attempt-info.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModQuizAttemptStateComponent,
+    ],
 })
 export class AddonModQuizAttemptInfoComponent implements OnChanges {
 

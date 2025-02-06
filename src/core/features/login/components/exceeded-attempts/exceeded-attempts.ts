@@ -15,11 +15,16 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserSupport } from '@features/user/services/support';
+import { CoreSharedModule } from '@/core/shared.module';
 
 @Component({
     selector: 'core-login-exceeded-attempts',
     templateUrl: 'exceeded-attempts.html',
     styleUrl: './exceeded-attempts.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreLoginExceededAttemptsComponent implements OnInit {
 

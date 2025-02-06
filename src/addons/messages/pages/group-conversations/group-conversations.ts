@@ -49,6 +49,8 @@ import {
     AddonMessagesUpdateConversationAction,
 } from '@addons/messages/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/user-menu-button/user-menu-button';
 
 const enum AddonMessagesGroupConversationOptionNames {
     FAVOURITES = 'favourites',
@@ -63,8 +65,13 @@ const enum AddonMessagesGroupConversationOptionNames {
     selector: 'page-addon-messages-group-conversations',
     templateUrl: 'group-conversations.html',
     styleUrl: '../../messages-common.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreMainMenuUserButtonComponent,
+    ],
 })
-export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
+export default class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
     @ViewChild(IonContent) content?: IonContent;

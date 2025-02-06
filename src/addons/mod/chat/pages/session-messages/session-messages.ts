@@ -23,6 +23,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreTime } from '@singletons/time';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays list of chat session messages.
@@ -31,8 +32,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-chat-session-messages',
     templateUrl: 'session-messages.html',
     styleUrls: ['../../../../../theme/components/discussion.scss', 'session-messages.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModChatSessionMessagesPage implements OnInit {
+export default class AddonModChatSessionMessagesPage implements OnInit {
 
     currentUserId!: number;
     cmId!: number;

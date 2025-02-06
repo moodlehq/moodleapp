@@ -26,6 +26,8 @@ import { CorePushNotificationsDelegate } from '@features/pushnotifications/servi
 import { AddonBadgesPushClickHandler } from './services/handlers/push-click';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { AddonBadgesTagAreaHandler } from './services/handlers/tag-area';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Get badges services.
@@ -40,18 +42,51 @@ export async function getBadgesServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+const mobileRoutes: Routes = [
+    {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('./pages/user-badges/user-badges'),
+    },
+    {
+        path: ':badgeHash',
+        loadComponent: () => import('./pages/issued-badge/issued-badge'),
+        data: { usesSwipeNavigation: true },
+    },
+];
+
+const tabletRoutes: Routes = [
+    {
+        path: '',
+        loadComponent: () => import('./pages/user-badges/user-badges'),
+        children: [
+            {
+                path: ':badgeHash',
+                loadComponent: () => import('./pages/issued-badge/issued-badge'),
+                data: { usesSwipeNavigation: true },
+            },
+        ],
+    },
+];
+
+const routes: Routes = [
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+];
+
 const mainMenuRoutes: Routes = [
     {
-        path: 'badge',
-        loadChildren: () => import('./badge-lazy.module'),
+        path: 'badge/:badgeHash',
+        loadComponent: () => import('./pages/issued-badge/issued-badge'),
+        data: { usesSwipeNavigation: false },
     },
     {
         path: 'badges',
-        loadChildren: () => import('./badges-lazy.module'),
+        children: routes,
     },
     {
-        path: 'badgeclass',
-        loadChildren: () => import('./badgeclass-lazy.module'),
+        path: 'badgeclass/:badgeId',
+        loadComponent: () => import('./pages/badge-class/badge-class'),
     },
 ];
 

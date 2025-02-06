@@ -91,7 +91,7 @@ export async function getCoursesExportedObjects(): Promise<Record<string, unknow
 const mainMenuHomeChildrenRoutes: Routes = [
     {
         path: CoreDashboardHomeHandlerService.PAGE_NAME,
-        loadChildren: () => import('./courses-dashboard-lazy.module'),
+        loadComponent: () => import('@features/courses/pages/dashboard/dashboard'),
     },
 ];
 

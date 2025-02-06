@@ -21,7 +21,6 @@ import { CoreSearchMainMenuHandler, CORE_SEARCH_PAGE_NAME } from '@features/sear
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 
-import { CoreSearchComponentsModule } from './components/components.module';
 import { SITE_SCHEMA } from './services/search-history-db';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreSearchGlobalSearchLinkHandler } from '@features/search/services/handlers/global-search-link';
@@ -50,7 +49,6 @@ const mainMenuChildrenRoutes: Routes = [
 
 @NgModule({
     imports: [
-        CoreSearchComponentsModule,
         CoreMainMenuTabRoutingModule.forChild(mainMenuChildrenRoutes),
         CoreMainMenuRoutingModule.forChild({ children: mainMenuChildrenRoutes }),
     ],

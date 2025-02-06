@@ -28,6 +28,7 @@ import { CoreDataPrivacy } from '@features/dataprivacy/services/dataprivacy';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to view user acceptances.
@@ -36,8 +37,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-policy-acceptances',
     templateUrl: 'acceptances.html',
     styleUrl: 'acceptances.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
+export default class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
 
     dataLoaded = false;
     policies: ActiveSitePolicy[] = [];

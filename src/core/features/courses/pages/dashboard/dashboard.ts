@@ -27,6 +27,8 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/side-blocks-button/side-blocks-button';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the dashboard page.
@@ -34,8 +36,14 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-core-courses-dashboard',
     templateUrl: 'dashboard.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreBlockComponent,
+        CoreBlockSideBlocksButtonComponent,
+    ],
 })
-export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
+export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
     @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
 

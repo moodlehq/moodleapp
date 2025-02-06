@@ -26,7 +26,6 @@ import { AddonCalendarSyncCronHandler } from './services/handlers/sync-cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CALENDAR_SITE_SCHEMA } from './services/database/calendar';
 import { CALENDAR_OFFLINE_SITE_SCHEMA } from './services/database/calendar-offline';
-import { AddonCalendarComponentsModule } from './components/components.module';
 import { AddonCalendar } from './services/calendar';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { ADDON_CALENDAR_PAGE_NAME } from './constants';
@@ -61,7 +60,6 @@ const mainMenuChildrenRoutes: Routes = [
     imports: [
         CoreMainMenuTabRoutingModule.forChild(mainMenuChildrenRoutes),
         CoreMainMenuRoutingModule.forChild({ children: mainMenuChildrenRoutes }),
-        AddonCalendarComponentsModule,
     ],
     providers: [
         {

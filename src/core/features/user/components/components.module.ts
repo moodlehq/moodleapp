@@ -14,17 +14,13 @@
 
 import { NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreUserProfileFieldComponent } from './user-profile-field/user-profile-field';
 import { CoreUserTagAreaComponent } from './tag-area/tag-area';
 
 @NgModule({
-    declarations: [
+    imports: [
         CoreUserProfileFieldComponent,
         CoreUserTagAreaComponent,
-    ],
-    imports: [
-        CoreSharedModule,
     ],
     exports: [
         CoreUserProfileFieldComponent,

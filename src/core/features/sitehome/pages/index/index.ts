@@ -33,6 +33,9 @@ import { ContextLevel } from '@/core/constants';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleComponent } from '../../../course/components/module/module';
+import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/side-blocks-button/side-blocks-button';
 
 /**
  * Page that displays site home index.
@@ -41,8 +44,14 @@ import { Translate } from '@singletons';
     selector: 'page-core-sitehome-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleComponent,
+        CoreBlockSideBlocksButtonComponent,
+    ],
 })
-export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
+export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
     dataLoaded = false;
     section?: CoreCourseWSSection & {

@@ -15,7 +15,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { IonContent } from '@ionic/angular';
-
 import { CoreError } from '@classes/errors/error';
 import { CanLeave } from '@guards/can-leave';
 import { CoreNetwork } from '@services/network';
@@ -58,6 +57,8 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreDom } from '@singletons/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that allows attempting and reviewing a lesson.
@@ -66,8 +67,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-mod-lesson-player',
     templateUrl: 'player.html',
     styleUrl: 'player.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
+    ],
 })
-export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild('questionFormEl') formElement?: ElementRef;

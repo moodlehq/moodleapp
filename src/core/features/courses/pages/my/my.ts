@@ -31,6 +31,10 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreWait } from '@singletons/wait';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-logo';
+import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';
+import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/side-blocks-button/side-blocks-button';
 
 /**
  * Page that shows a my courses.
@@ -43,8 +47,16 @@ import { CoreAlerts } from '@services/overlays/alerts';
         provide: PageLoadsManager,
         useClass: PageLoadsManager,
     }],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSiteLogoComponent,
+        CoreMainMenuUserButtonComponent,
+        CoreBlockComponent,
+        CoreBlockSideBlocksButtonComponent,
+    ],
 })
-export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
+export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
 
     @ViewChild(CoreBlockComponent) block!: CoreBlockComponent;
 

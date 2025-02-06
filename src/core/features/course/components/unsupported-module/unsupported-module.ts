@@ -16,6 +16,7 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import type { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays info about an unsupported module.
@@ -24,6 +25,10 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
     selector: 'core-course-unsupported-module',
     templateUrl: 'core-course-unsupported-module.html',
     styleUrl: 'unsupported-module.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCourseUnsupportedModuleComponent implements OnInit {
 

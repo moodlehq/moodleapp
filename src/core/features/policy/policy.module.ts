@@ -17,7 +17,7 @@ import { Routes } from '@angular/router';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
 import { CoreEvents } from '@singletons/events';
-import { POLICY_PAGE_NAME } from './constants';
+import { ACCEPTANCES_PAGE_NAME, POLICY_PAGE_NAME, SITE_POLICY_PAGE_NAME } from './constants';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { CorePolicyUserHandler } from './services/handlers/user';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
@@ -27,7 +27,16 @@ import { CoreContentLinksDelegate } from '@features/contentlinks/services/conten
 const routes: Routes = [
     {
         path: POLICY_PAGE_NAME,
-        loadChildren: () => import('./policy-lazy.module'),
+        children: [
+            {
+                path: SITE_POLICY_PAGE_NAME,
+                loadComponent: () => import('@features/policy/pages/site-policy/site-policy'),
+            },
+            {
+                path: ACCEPTANCES_PAGE_NAME,
+                loadComponent: () => import('@features/policy/pages/acceptances/acceptances'),
+            },
+        ],
     },
 ];
 

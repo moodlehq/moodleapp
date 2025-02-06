@@ -14,17 +14,9 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { AddonModAssignSubmissionFileHandler } from './services/handler';
-import { AddonModAssignSubmissionFileComponent } from './component/file';
-import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModAssignSubmissionDelegate } from '../../services/submission-delegate';
 
 @NgModule({
-    declarations: [
-        AddonModAssignSubmissionFileComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -33,9 +25,6 @@ import { AddonModAssignSubmissionDelegate } from '../../services/submission-dele
                 AddonModAssignSubmissionDelegate.registerHandler(AddonModAssignSubmissionFileHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonModAssignSubmissionFileComponent,
     ],
 })
 export class AddonModAssignSubmissionFileModule {}

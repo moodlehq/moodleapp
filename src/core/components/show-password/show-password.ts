@@ -18,6 +18,7 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreLogger } from '@singletons/logger';
+import { CoreBaseModule } from '@/core/base.module';
 
 /**
  * This component allows to show/hide a password.
@@ -48,6 +49,8 @@ import { CoreLogger } from '@singletons/logger';
     templateUrl: 'core-show-password.html',
     styles: 'core-show-password { display: contents; }',
     encapsulation: ViewEncapsulation.None,
+    standalone: true,
+    imports: [CoreBaseModule],
 })
 export class CoreShowPasswordComponent implements AfterViewInit {
 

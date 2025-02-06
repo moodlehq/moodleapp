@@ -14,6 +14,9 @@
 
 import { Component, Input } from '@angular/core';
 import { CorePlatform } from '@services/platform';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 const enum ScrollPosition {
     START = 'start',
@@ -26,6 +29,12 @@ const enum ScrollPosition {
     selector: 'core-horizontal-scroll-controls',
     templateUrl: 'core-horizontal-scroll-controls.html',
     styleUrl: './horizontal-scroll-controls.scss',
+    standalone: true,
+    imports: [
+        CoreBaseModule,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFaIconDirective,
+    ],
 })
 export class CoreHorizontalScrollControlsComponent {
 

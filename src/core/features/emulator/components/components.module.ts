@@ -14,15 +14,11 @@
 
 import { NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEmulatorCaptureMediaComponent } from './capture-media/capture-media';
 
 @NgModule({
-    declarations: [
-        CoreEmulatorCaptureMediaComponent,
-    ],
     imports: [
-        CoreSharedModule,
+        CoreEmulatorCaptureMediaComponent,
     ],
     exports: [
         CoreEmulatorCaptureMediaComponent,

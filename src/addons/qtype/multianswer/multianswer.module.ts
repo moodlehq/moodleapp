@@ -14,18 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { AddonQtypeMultiAnswerComponent } from './component/multianswer';
 import { AddonQtypeMultiAnswerHandler } from './services/handlers/multianswer';
 
 @NgModule({
-    declarations: [
-        AddonQtypeMultiAnswerComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -34,9 +26,6 @@ import { AddonQtypeMultiAnswerHandler } from './services/handlers/multianswer';
                 CoreQuestionDelegate.registerHandler(AddonQtypeMultiAnswerHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonQtypeMultiAnswerComponent,
     ],
 })
 export class AddonQtypeMultiAnswerModule {}

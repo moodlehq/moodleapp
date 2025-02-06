@@ -20,7 +20,7 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
@@ -59,6 +59,10 @@ import {
 } from '../../constants';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a glossary entry page.
@@ -67,6 +71,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-glossary-index',
     templateUrl: 'addon-mod-glossary-index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSearchBoxComponent,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivityComponent
     implements OnInit, AfterViewInit, OnDestroy {

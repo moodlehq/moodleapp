@@ -18,6 +18,8 @@ import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreWSFile } from '@services/ws';
 import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render data number field.
@@ -25,6 +27,11 @@ import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
 @Component({
     selector: 'addon-mod-data-field-textarea',
     templateUrl: 'addon-mod-data-field-textarea.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
+    ],
 })
 export class AddonModDataFieldTextareaComponent extends AddonModDataFieldPluginBaseComponent {
 

@@ -20,6 +20,7 @@ import {
     AfterViewInit,
     ViewChild,
     SimpleChange,
+    CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/core';
 import { IonRouterOutlet, IonTabs, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
 
@@ -31,6 +32,9 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreTabBase, CoreTabsBaseComponent } from '@classes/tabs';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CorePath } from '@singletons/path';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * This component displays some top scrollable tabs that will autohide on vertical scroll.
@@ -50,6 +54,13 @@ import { CorePath } from '@singletons/path';
     selector: 'core-tabs-outlet',
     templateUrl: 'core-tabs-outlet.html',
     styleUrl: '../tabs/tabs.scss',
+    standalone: true,
+    imports: [
+        CoreBaseModule,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFaIconDirective,
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutletTabWithId>
     implements AfterViewInit, OnChanges, OnDestroy {

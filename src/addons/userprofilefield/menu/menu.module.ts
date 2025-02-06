@@ -16,16 +16,8 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { AddonUserProfileFieldMenuHandler } from './services/handlers/menu';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
-import { AddonUserProfileFieldMenuComponent } from './component/menu';
-import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldMenuComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -34,9 +26,6 @@ import { CoreSharedModule } from '@/core/shared.module';
                 CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldMenuHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonUserProfileFieldMenuComponent,
     ],
 })
 export class AddonUserProfileFieldMenuModule {}

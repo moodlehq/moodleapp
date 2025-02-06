@@ -24,6 +24,7 @@ import { AddonCompetencyPlanCompetenciesSource } from '@addons/competency/classe
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a learning plan.
@@ -31,8 +32,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-competency-plan',
     templateUrl: 'plan.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonCompetencyPlanPage implements OnInit, OnDestroy {
+export default class AddonCompetencyPlanPage implements OnInit, OnDestroy {
 
     plans!: CoreSwipeNavigationItemsManager;
     competencies!: CoreListItemsManager<AddonCompetencyDataForPlanPageCompetency, AddonCompetencyPlanCompetenciesSource>;

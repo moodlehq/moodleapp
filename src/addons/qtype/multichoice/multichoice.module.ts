@@ -14,18 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonQtypeMultichoiceComponent } from './component/multichoice';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 import { AddonQtypeMultichoiceHandler } from './services/handlers/multichoice';
 
 @NgModule({
-    declarations: [
-        AddonQtypeMultichoiceComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -34,9 +26,6 @@ import { AddonQtypeMultichoiceHandler } from './services/handlers/multichoice';
                 CoreQuestionDelegate.registerHandler(AddonQtypeMultichoiceHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonQtypeMultichoiceComponent,
     ],
 })
 export class AddonQtypeMultichoiceModule {}

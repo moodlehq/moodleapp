@@ -15,8 +15,8 @@
 import { Component, Input } from '@angular/core';
 
 import { ModalController } from '@singletons';
-import { AddonModLessonPlayerPage } from '../../pages/player/player';
 import { CoreSharedModule } from '@/core/shared.module';
+import AddonModLessonPlayerPage from '../../pages/player/player';
 
 /**
  * Modal that renders the lesson menu and media file.

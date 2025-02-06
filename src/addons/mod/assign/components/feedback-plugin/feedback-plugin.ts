@@ -26,6 +26,7 @@ import { AddonModAssignHelper, AddonModAssignPluginConfig } from '../../services
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
 import { ADDON_MOD_ASSIGN_COMPONENT } from '../../constants';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays an assignment feedback plugin.
@@ -33,6 +34,10 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'addon-mod-assign-feedback-plugin',
     templateUrl: 'addon-mod-assign-feedback-plugin.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModAssignFeedbackPluginComponent implements OnInit {
 

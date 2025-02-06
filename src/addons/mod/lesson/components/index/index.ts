@@ -17,7 +17,7 @@ import { Component, Input, ViewChild, ElementRef, OnInit, OnDestroy, Optional } 
 
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreUser } from '@features/user/services/user';
 import { IonContent, IonInput } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
@@ -52,6 +52,9 @@ import {
     ADDON_MOD_LESSON_PAGE_NAME,
 } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a lesson entry page.
@@ -59,6 +62,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-lesson-index',
     templateUrl: 'addon-mod-lesson-index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 

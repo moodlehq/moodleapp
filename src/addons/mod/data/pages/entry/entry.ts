@@ -23,7 +23,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { AddonModDataComponentsCompileModule } from '../../components/components-compile.module';
+
 import {
     AddonModData,
     AddonModDataData,
@@ -45,6 +45,10 @@ import {
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
+import { CoreRatingAggregateComponent } from '@features/rating/components/aggregate/aggregate';
 
 /**
  * Page that displays the view entry page.
@@ -53,8 +57,16 @@ import { Translate } from '@singletons';
     selector: 'page-addon-mod-data-entry',
     templateUrl: 'entry.html',
     styleUrl: '../../data.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCompileHtmlComponent,
+        CoreCommentsCommentsComponent,
+        CoreRatingRateComponent,
+        CoreRatingAggregateComponent,
+    ],
 })
-export class AddonModDataEntryPage implements OnInit, OnDestroy {
+export default class AddonModDataEntryPage implements OnInit, OnDestroy {
 
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild(CoreCommentsCommentsComponent) comments?: CoreCommentsCommentsComponent;
@@ -88,7 +100,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
     showComments = false;
     entryHtml = '';
     siteId: string;
-    extraImports: Type<unknown>[] = [AddonModDataComponentsCompileModule];
+    extraImports: Type<unknown>[] = [];
     jsData?: {
         fields: Record<number, AddonModDataField>;
         entries: Record<number, AddonModDataEntry>;
@@ -162,6 +174,8 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
 
             return;
         }
+
+        this.extraImports = await AddonModDataHelper.getComponentsToCompile();
 
         this.commentsEnabled = CoreComments.areCommentsEnabledInSite();
 

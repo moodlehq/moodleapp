@@ -17,6 +17,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '@addons/mod/quiz/services/quiz';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render the preflight for password.
@@ -24,6 +25,10 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'addon-mod-quiz-access-password',
     templateUrl: 'addon-mod-quiz-access-password.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModQuizAccessPasswordComponent implements OnInit {
 

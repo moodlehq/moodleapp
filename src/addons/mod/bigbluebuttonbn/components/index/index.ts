@@ -15,7 +15,7 @@
 import { Component, OnInit, Optional } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { IonContent } from '@ionic/angular';
 import { CoreApp } from '@services/app';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
@@ -36,6 +36,9 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreOpener } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 
 /**
  * Component that displays a Big Blue Button activity.
@@ -44,6 +47,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-bbb-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 

@@ -14,20 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 import { AddonQtypeEssayHandler } from './services/handlers/essay';
-import { AddonQtypeEssayComponent } from './component/essay';
 
 @NgModule({
-    declarations: [
-        AddonQtypeEssayComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-        CoreEditorComponentsModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -36,9 +26,6 @@ import { AddonQtypeEssayComponent } from './component/essay';
                 CoreQuestionDelegate.registerHandler(AddonQtypeEssayHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonQtypeEssayComponent,
     ],
 })
 export class AddonQtypeEssayModule {}

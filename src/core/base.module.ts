@@ -13,16 +13,21 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonCompetencyCompetenciesPage } from './competencies.page';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 
 @NgModule({
     imports: [
-        CoreSharedModule,
+        TranslateModule.forChild(),
     ],
-    declarations: [
-        AddonCompetencyCompetenciesPage,
+    exports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        ReactiveFormsModule,
+        TranslateModule,
     ],
 })
-export class AddonCompetencyCompetenciesPageModule {}
+export class CoreBaseModule {}

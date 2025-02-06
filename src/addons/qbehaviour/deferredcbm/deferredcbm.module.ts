@@ -14,18 +14,10 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
-import { AddonQbehaviourDeferredCBMComponent } from './component/deferredcbm';
 import { AddonQbehaviourDeferredCBMHandler } from './services/handlers/deferredcbm';
 
 @NgModule({
-    declarations: [
-        AddonQbehaviourDeferredCBMComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -34,9 +26,6 @@ import { AddonQbehaviourDeferredCBMHandler } from './services/handlers/deferredc
                 CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourDeferredCBMHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonQbehaviourDeferredCBMComponent,
     ],
 })
 export class AddonQbehaviourDeferredCBMModule {}

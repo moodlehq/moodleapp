@@ -30,7 +30,7 @@ import { CoreKeyboard } from '@singletons/keyboard';
 import { ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT } from '@addons/messages/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreSearchComponentsModule } from '@features/search/components/components.module';
+import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
 
 /**
  * Page that displays the list of contacts.
@@ -42,7 +42,7 @@ import { CoreSearchComponentsModule } from '@features/search/components/componen
     standalone: true,
     imports: [
         CoreSharedModule,
-        CoreSearchComponentsModule,
+        CoreSearchBoxComponent,
     ],
 })
 export default class AddonMessagesContacts35Page implements OnInit, OnDestroy {

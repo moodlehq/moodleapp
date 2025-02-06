@@ -16,6 +16,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModWikiIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a wiki page.
@@ -23,8 +24,13 @@ import { AddonModWikiIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-wiki-index',
     templateUrl: 'index.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModWikiIndexComponent,
+    ],
 })
-export class AddonModWikiIndexPage extends CoreCourseModuleMainActivityPage<AddonModWikiIndexComponent> implements OnInit {
+export default class AddonModWikiIndexPage extends CoreCourseModuleMainActivityPage<AddonModWikiIndexComponent> implements OnInit {
 
     @ViewChild(AddonModWikiIndexComponent) activityComponent?: AddonModWikiIndexComponent;
 

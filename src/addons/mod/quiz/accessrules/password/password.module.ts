@@ -12,22 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { AddonModQuizAccessPasswordComponent } from './component/password';
 import { AddonModQuizAccessPasswordHandler } from './services/handlers/password';
 import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-delegate';
 import { SITE_SCHEMA } from './services/database/password';
 
 @NgModule({
-    declarations: [
-        AddonModQuizAccessPasswordComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
@@ -41,9 +33,6 @@ import { SITE_SCHEMA } from './services/database/password';
                 AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessPasswordHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonModQuizAccessPasswordComponent,
     ],
 })
 export class AddonModQuizAccessPasswordModule {}

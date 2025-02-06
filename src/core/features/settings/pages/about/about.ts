@@ -18,6 +18,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSite } from '@classes/sites/site';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * App settings about menu page.
@@ -26,8 +27,12 @@ import { CoreSite } from '@classes/sites/site';
     selector: 'page-core-app-settings-about',
     templateUrl: 'about.html',
     styleUrl: 'about.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreSettingsAboutPage {
+export default class CoreSettingsAboutPage {
 
     appName: string;
     versionName: string;

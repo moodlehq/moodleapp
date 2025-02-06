@@ -15,16 +15,8 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 import { AddonQtypeOrderingHandler } from './services/handlers/ordering';
-import { AddonQtypeOrderingComponent } from './component/ordering';
-import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonQtypeOrderingComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -33,9 +25,6 @@ import { CoreSharedModule } from '@/core/shared.module';
                 CoreQuestionDelegate.registerHandler(AddonQtypeOrderingHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonQtypeOrderingComponent,
     ],
 })
 export class AddonQtypeOrderingModule {}

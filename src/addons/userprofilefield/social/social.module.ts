@@ -16,16 +16,8 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { AddonUserProfileFieldSocialHandler } from './services/handlers/social';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
-import { AddonUserProfileFieldSocialComponent } from './component/social';
-import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldSocialComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
         {
             provide: APP_INITIALIZER,
@@ -34,9 +26,6 @@ import { CoreSharedModule } from '@/core/shared.module';
                 CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldSocialHandler.instance);
             },
         },
-    ],
-    exports: [
-        AddonUserProfileFieldSocialComponent,
     ],
 })
 export class AddonUserProfileFieldSocialModule {}

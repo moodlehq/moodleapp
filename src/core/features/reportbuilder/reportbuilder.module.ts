@@ -23,7 +23,16 @@ import { CoreReportBuilderHandler, CoreReportBuilderHandlerService } from './ser
 const routes: Routes = [
     {
         path: CoreReportBuilderHandlerService.PAGE_NAME,
-        loadChildren: () => import('./reportbuilder-lazy.module'),
+        children: [
+            {
+                path: '',
+                loadComponent: () => import('@features/reportbuilder/pages/list/list'),
+            },
+            {
+                path: ':id',
+                loadComponent: () => import('@features/reportbuilder/pages/report/report'),
+            },
+        ],
     },
 ];
 

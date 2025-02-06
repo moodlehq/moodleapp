@@ -33,6 +33,7 @@ import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to accept a site policy.
@@ -41,8 +42,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-core-policy-site-policy',
     templateUrl: 'site-policy.html',
     styleUrl: 'site-policy.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
+export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
     @ViewChild(IonContent) content?: IonContent;
 

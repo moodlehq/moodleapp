@@ -30,6 +30,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_FEEDBACK_COMPONENT } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a feedback attempt review.
@@ -37,8 +38,12 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'page-addon-mod-feedback-attempt',
     templateUrl: 'attempt.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
+export default class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
 
     cmId: number;
     courseId: number;

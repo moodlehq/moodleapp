@@ -59,6 +59,7 @@ import {
 } from '@addons/calendar/constants';
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the calendar events for a certain day.
@@ -67,8 +68,12 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-calendar-day',
     templateUrl: 'day.html',
     styleUrls: ['../../calendar-common.scss', 'day.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonCalendarDayPage implements OnInit, OnDestroy {
+export default class AddonCalendarDayPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreSwipeSlidesComponent) swipeSlidesComponent?: CoreSwipeSlidesComponent<PreloadedDay>;
 

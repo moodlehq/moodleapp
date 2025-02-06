@@ -21,15 +21,13 @@ import { CoreBlockSideBlocksButtonComponent } from './side-blocks-button/side-bl
 import { CoreBlockSideBlocksTourComponent } from './side-blocks-tour/side-blocks-tour';
 
 @NgModule({
-    declarations: [
+    imports: [
+        CoreSharedModule,
         CoreBlockComponent,
         CoreBlockOnlyTitleComponent,
         CoreBlockPreRenderedComponent,
         CoreBlockSideBlocksButtonComponent,
         CoreBlockSideBlocksTourComponent,
-    ],
-    imports: [
-        CoreSharedModule,
     ],
     exports: [
         CoreBlockComponent,

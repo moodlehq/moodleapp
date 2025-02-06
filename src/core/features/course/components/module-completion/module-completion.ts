@@ -22,6 +22,7 @@ import { CoreUser } from '@features/user/services/user';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to handle activity completion. It shows a checkbox with the current status, and allows manually changing
@@ -36,6 +37,10 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-course-module-completion',
     templateUrl: 'core-course-module-completion.html',
     styleUrl: 'module-completion.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCourseModuleCompletionComponent
     extends CoreCourseModuleCompletionBaseComponent

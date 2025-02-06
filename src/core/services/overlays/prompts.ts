@@ -117,7 +117,7 @@ export class CorePromptsService {
      */
     async promptPassword<T extends CorePasswordModalResponse>(passwordParams?: CorePasswordModalParams): Promise<T> {
         const { CorePasswordModalComponent } =
-            await import('@/core/components/password-modal/password-modal.module');
+            await import('@/core/components/password-modal/password-modal');
 
         const modalData = await CoreModals.openModal<T>(
             {

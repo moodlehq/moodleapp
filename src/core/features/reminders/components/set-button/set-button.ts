@@ -19,6 +19,7 @@ import { Translate } from '@singletons';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreToasts } from '@services/overlays/toasts';
 import { REMINDERS_DISABLED } from '@features/reminders/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a button to set a reminder.
@@ -26,6 +27,10 @@ import { REMINDERS_DISABLED } from '@features/reminders/constants';
 @Component({
     selector: 'core-reminders-set-button',
     templateUrl: 'set-button.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreRemindersSetButtonComponent implements OnInit {
 

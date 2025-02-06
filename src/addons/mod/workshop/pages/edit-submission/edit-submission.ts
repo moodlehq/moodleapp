@@ -46,6 +46,8 @@ import {
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreDom } from '@singletons/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the workshop edit submission.
@@ -53,8 +55,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-workshop-edit-submission',
     templateUrl: 'edit-submission.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
+    ],
 })
-export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild('editFormEl') formElement!: ElementRef;
 

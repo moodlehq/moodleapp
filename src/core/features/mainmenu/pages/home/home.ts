@@ -21,6 +21,9 @@ import { CoreTabsOutletComponent, CoreTabsOutletTab } from '@components/tabs-out
 import { CoreMainMenuHomeDelegate, CoreMainMenuHomeHandlerToDisplay } from '../../services/home-delegate';
 import { CoreArray } from '@singletons/array';
 import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-logo';
+import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
 
 /**
  * Page that displays the Home.
@@ -28,8 +31,14 @@ import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/hand
 @Component({
     selector: 'page-core-mainmenu-home',
     templateUrl: 'home.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreSiteLogoComponent,
+        CoreMainMenuUserButtonComponent,
+    ],
 })
-export class CoreMainMenuHomePage implements OnInit {
+export default class CoreMainMenuHomePage implements OnInit {
 
     @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
 

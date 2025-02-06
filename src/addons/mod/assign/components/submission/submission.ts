@@ -71,6 +71,9 @@ import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { AddonModAssignFeedbackPluginComponent } from '../feedback-plugin/feedback-plugin';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 
 /**
  * Component that displays an assignment submission.
@@ -79,6 +82,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-mod-assign-submission',
     templateUrl: 'addon-mod-assign-submission.html',
     styleUrl: 'submission.scss',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        AddonModAssignSubmissionPluginComponent,
+        CoreCourseModuleNavigationComponent,
+        AddonModAssignFeedbackPluginComponent,
+    ],
 })
 export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, CanLeave {
 

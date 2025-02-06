@@ -27,6 +27,7 @@ import {
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays workshop assessment.
@@ -34,6 +35,10 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-workshop-assessment',
     templateUrl: 'addon-mod-workshop-assessment.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModWorkshopAssessmentComponent implements OnInit {
 

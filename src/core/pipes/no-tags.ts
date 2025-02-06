@@ -19,6 +19,7 @@ import { Pipe, PipeTransform } from '@angular/core';
  */
 @Pipe({
     name: 'coreNoTags',
+    standalone: true,
 })
 export class CoreNoTagsPipe implements PipeTransform {
 

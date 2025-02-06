@@ -20,11 +20,14 @@ import { CoreModals } from '@services/overlays/modals';
 import { CoreWait } from '@singletons/wait';
 import { AngularFrameworkDelegate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreBaseModule } from '@/core/base.module';
 
 @Component({
     selector: 'core-sheet-modal',
     templateUrl: 'sheet-modal.html',
     styleUrl: 'sheet-modal.scss',
+    standalone: true,
+    imports: [CoreBaseModule],
 })
 export class CoreSheetModalComponent<T extends CoreModalComponent> implements AfterViewInit {
 

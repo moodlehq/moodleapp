@@ -15,11 +15,8 @@
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
 
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
-import { CoreSharedModule } from '@/core/shared.module';
 import { resolveContentsRoutes } from '@features/course/course-contents-routing.module';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourseFormatComponent } from './components/course-format/course-format';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 
 /**
  * Build module routes.
@@ -43,14 +40,6 @@ function buildRoutes(injector: Injector): Routes {
 @NgModule({
     providers: [
         { provide: ROUTES, multi: true, useFactory: buildRoutes, deps: [Injector] },
-    ],
-    imports: [
-        CoreSharedModule,
-        CoreCourseComponentsModule,
-        CoreCourseFormatComponent,
-    ],
-    declarations: [
-        CoreCourseContentsPage,
     ],
 })
 export default class CoreCourseContentsLazyModule {}

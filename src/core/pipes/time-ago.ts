@@ -22,6 +22,7 @@ import moment from 'moment-timezone';
  */
 @Pipe({
     name: 'coreTimeAgo',
+    standalone: true,
 })
 export class CoreTimeAgoPipe implements PipeTransform {
 

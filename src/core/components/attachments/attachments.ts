@@ -28,6 +28,13 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CoreWSFile } from '@services/ws';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreLoadingComponent } from '../loading/loading';
+import { CoreLocalFileComponent } from '../local-file/local-file';
+import { CoreFileComponent } from '../file/file';
+import { CoreMarkRequiredComponent } from '@components/mark-required/mark-required';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * Component to render attachments, allow adding more and delete the current ones.
@@ -46,6 +53,16 @@ import { CoreWSFile } from '@services/ws';
     selector: 'core-attachments',
     templateUrl: 'core-attachments.html',
     styleUrl: 'attachments.scss',
+    standalone: true,
+    imports: [
+        CoreBaseModule,
+        CoreFaIconDirective,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreLoadingComponent,
+        CoreLocalFileComponent,
+        CoreFileComponent,
+        CoreMarkRequiredComponent,
+    ],
 })
 export class CoreAttachmentsComponent implements OnInit {
 

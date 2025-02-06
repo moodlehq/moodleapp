@@ -34,6 +34,8 @@ import { CoreConstants } from '@/core/constants';
 import { CorePlatform } from '@services/platform';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/user-menu-button/user-menu-button';
 
 /**
  * Page that displays the list of notifications.
@@ -42,8 +44,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-notifications-list',
     templateUrl: 'list.html',
     styleUrls: ['list.scss', '../../notifications.scss'],
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreMainMenuUserButtonComponent,
+    ],
 })
-export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
+export default class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
     notifications!: CoreListItemsManager<AddonNotificationsNotificationMessageFormatted, AddonNotificationsNotificationsSource>;

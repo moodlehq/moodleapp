@@ -41,6 +41,8 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_GLOSSARY_COMPONENT } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the edit form.
@@ -48,8 +50,13 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-glossary-edit',
     templateUrl: 'edit.html',
+    standalone: true,
+    imports: [
+        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
+    ],
 })
-export class AddonModGlossaryEditPage implements OnInit, CanLeave {
+export default class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
     @ViewChild('editFormEl') formElement?: ElementRef;
 

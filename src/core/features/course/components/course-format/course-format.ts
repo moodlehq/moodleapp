@@ -53,7 +53,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ContextLevel } from '@/core/constants';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreBlockComponentsModule } from '@features/block/components/components.module';
+import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/side-blocks-button/side-blocks-button';
 import { CoreSites } from '@services/sites';
 import {
     CORE_COURSE_ALL_SECTIONS_ID,
@@ -85,7 +85,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
     imports: [
         CoreSharedModule,
         CoreCourseSectionComponent,
-        CoreBlockComponentsModule,
+        CoreBlockSideBlocksButtonComponent,
     ],
 })
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
