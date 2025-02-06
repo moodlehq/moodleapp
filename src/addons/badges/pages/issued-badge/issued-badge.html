@@ -18,7 +18,7 @@
     <ion-refresher slot="fixed" [disabled]="!badgeLoaded" (ionRefresh)="refreshBadges($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="badgeLoaded">
+    <core-loading [hideUntil]="badgeLoaded" placeholderType="imageandboxes">
         @if (badge) {
             <ion-row class="ion-wrap list-item-limited-width">
                 <ion-col size="auto" class="ion-text-center">

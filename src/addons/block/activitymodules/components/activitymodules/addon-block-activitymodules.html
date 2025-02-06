@@ -3,7 +3,7 @@
         <h2>{{ 'addon.block_activitymodules.pluginname' | translate }}</h2>
     </ion-label>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded">
+<core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="48px" [placeholderLimit]="8">
     <ion-item class="ion-text-wrap" *ngFor="let entry of entries" [detail]="true" button (click)="gotoCoureListModType(entry)">
         <core-mod-icon slot="start" [modicon]="entry.icon" [modname]="entry.iconModName" [showAlt]="false" [colorize]="false"
             [isBranded]="entry.branded" />

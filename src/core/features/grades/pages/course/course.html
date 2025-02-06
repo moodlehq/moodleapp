@@ -12,7 +12,7 @@
     <ion-refresher slot="fixed" [disabled]="!columns || !rows" (ionRefresh)="refreshGrades($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="36px">
         @if (!rows.length) {
             <core-empty-box icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate" />
         } @else {
