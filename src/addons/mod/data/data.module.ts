@@ -40,7 +40,7 @@ import { canLeaveGuard } from '@guards/can-leave';
 const routes: Routes = [
     {
         path: ADDON_MOD_DATA_PAGE_NAME,
-        children: [
+        loadChildren: () => [
             {
                 path: ':courseId/:cmId',
                 loadComponent: () => import('./pages/index/index'),

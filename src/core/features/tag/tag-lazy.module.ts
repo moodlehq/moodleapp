@@ -47,7 +47,7 @@ function buildRoutes(injector: Injector): Routes {
         {
             path: 'index',
             loadComponent: () => import('@features/tag/pages/index/index'),
-            children: [
+            loadChildren: () => [
                 indexAreaRoute,
             ],
         },

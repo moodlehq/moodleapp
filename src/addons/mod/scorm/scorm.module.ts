@@ -36,7 +36,7 @@ import { ADDON_MOD_SCORM_COMPONENT, ADDON_MOD_SCORM_PAGE_NAME } from './constant
 const routes: Routes = [
     {
         path: ADDON_MOD_SCORM_PAGE_NAME,
-        children: [
+        loadChildren: () => [
             {
                 path: ':courseId/:cmId',
                 loadComponent: () => import('./pages/index/index'),

@@ -69,7 +69,7 @@ const appRoutes: Routes = [
 const routes: Routes = [
     {
         path: 'user',
-        children: [
+        loadChildren: () => [
             {
                 path: '',
                 redirectTo: 'profile',
@@ -100,7 +100,7 @@ const courseIndexRoutes: Routes = [
     {
         path: PARTICIPANTS_PAGE_NAME,
         loadComponent: () => import('@features/user/pages/participants/participants'),
-        children: conditionalRoutes([
+        loadChildren: () => conditionalRoutes([
             {
                 path: ':userId',
                 loadComponent: () => import('@features/user/pages/profile/profile'),

@@ -32,7 +32,7 @@ function buildRoutes(injector: Injector): Routes {
         {
             path: '',
             loadComponent: () => import('@features/mainmenu/pages/menu/menu'),
-            children: [
+            loadChildren: () => [
                 {
                     path: CoreMainMenuHomeHandlerService.PAGE_NAME,
                     loadChildren: () => import('./mainmenu-home-lazy.module'),

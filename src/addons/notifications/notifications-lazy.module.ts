@@ -32,7 +32,7 @@ function buildRoutes(injector: Injector): Routes {
             path: 'list',
             data: { mainMenuTabRoot: AddonNotificationsMainMenuHandlerService.PAGE_NAME },
             loadComponent: () => import('@addons/notifications/pages/list/list'),
-            children: conditionalRoutes([
+            loadChildren: () => conditionalRoutes([
                 {
                     path: ':id',
                     loadComponent: () => import('@addons/notifications/pages/notification/notification'),
