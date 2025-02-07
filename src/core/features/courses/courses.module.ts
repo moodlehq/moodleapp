@@ -88,6 +88,19 @@ export async function getCoursesExportedObjects(): Promise<Record<string, unknow
     /* eslint-enable @typescript-eslint/naming-convention */
 }
 
+/**
+ * Get directives and components for site plugins.
+ *
+ * @returns Returns directives and components.
+ */
+export async function getCoursesExportedDirectives(): Promise<Type<unknown>[]> {
+    const { CoreCoursesCourseListItemComponent } = await import('@features/courses/components/course-list-item/course-list-item');
+
+    return [
+        CoreCoursesCourseListItemComponent,
+    ];
+}
+
 const mainMenuHomeChildrenRoutes: Routes = [
     {
         path: CoreDashboardHomeHandlerService.PAGE_NAME,

@@ -59,6 +59,19 @@ export async function getUsersServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get directives and components for site plugins.
+ *
+ * @returns Returns directives and components.
+ */
+export async function getUsersExportedDirectives(): Promise<Type<unknown>[]> {
+    const { CoreUserProfileFieldComponent } = await import('@features/user/components/user-profile-field/user-profile-field');
+
+    return [
+        CoreUserProfileFieldComponent,
+    ];
+}
+
 const appRoutes: Routes = [
     {
         path: 'user/completeprofile',
