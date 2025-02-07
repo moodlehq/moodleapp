@@ -29,5 +29,20 @@ export async function getBlockServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get directives and components for site plugins.
+ *
+ * @returns Returns directives and components.
+ */
+export async function getBlockExportedDirectives(): Promise<Type<unknown>[]> {
+    const { CoreBlockComponent } = await import('@features/block/components/block/block');
+    const { CoreBlockSideBlocksButtonComponent } = await import('@features/block/components/side-blocks-button/side-blocks-button');
+
+    return [
+        CoreBlockComponent,
+        CoreBlockSideBlocksButtonComponent,
+    ];
+}
+
 @NgModule({})
 export class CoreBlockModule {}
