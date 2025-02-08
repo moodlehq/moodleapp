@@ -4,157 +4,157 @@
  * Place here all global variables.
  */
 
-$white:       #ffffff !default;
-$gray-100:    #f8f9fa !default;
-$gray-200:    #e9ecef !default;
-$gray-300:    #dee2e6 !default; // Stroke
-$gray-400:    #ced4da !default;
-$gray-500:    #8f959e !default; // Stroke on inputs
-$gray-600:    #6a737b !default;
-$gray-700:    #495057 !default;
-$gray-800:    #343a40 !default;
-$gray-900:    #282828 !default; // Copy text
-$black:       #000000 !default; // Avoid usage
+ $white:       #ffffff !default;
+ $gray-100:    #f8f9fa !default;
+ $gray-200:    #e9ecef !default;
+ $gray-300:    #dee2e6 !default; // Stroke
+ $gray-400:    #ced4da !default;
+ $gray-500:    #8f959e !default; // Stroke on inputs
+ $gray-600:    #6a737b !default;
+ $gray-700:    #495057 !default;
+ $gray-800:    #343a40 !default;
+ $gray-900:    #282828 !default; // Copy text
+ $black:       #000000 !default; // Avoid usage
 
-$blue:        #0f6cbf !default;
-$cyan:        #008196 !default; // Not used.
-$green:       #357a32 !default;
-$red:         #ca3120 !default;
-$yellow:      #f0ad4e !default;
+ $blue:        #0f6cbf !default;
+ $cyan:        #008196 !default; // Not used.
+ $green:       #357a32 !default;
+ $red:         #ca3120 !default;
+ $yellow:      #003cff !default;
 
-$brand-color: #f98012 !default;
+ $brand-color: #048eff !default;
 
-$text-color:               $gray-900 !default;
-$text-color-rgb:           color-to-rgb-list($text-color) !default;
-$text-color-dark:          $white !default;
-$text-color-dark-rgb:      color-to-rgb-list($text-color-dark) !default;
+ $text-color:               $gray-900 !default;
+ $text-color-rgb:           color-to-rgb-list($text-color) !default;
+ $text-color-dark:          $white !default;
+ $text-color-dark-rgb:      color-to-rgb-list($text-color-dark) !default;
 
-$background-color:          $white !default;
-$background-color-rgb:      color-to-rgb-list($background-color) !default;
-$background-color-dark:     $gray-900 !default; // #1a1a1a
-$background-color-dark-rgb: color-to-rgb-list($background-color-dark) !default;
+ $background-color:          $white !default;
+ $background-color-rgb:      color-to-rgb-list($background-color) !default;
+ $background-color-dark:     $gray-900 !default; // #1a1a1a
+ $background-color-dark-rgb: color-to-rgb-list($background-color-dark) !default;
 
-$ion-item-background:      $white !default;
-$ion-item-background-rgb:  color-to-rgb-list($ion-item-background) !default;
-$ion-item-background-dark: $gray-900 !default;
-$ion-item-background-dark-rgb: color-to-rgb-list($ion-item-background-dark) !default;
+ $ion-item-background:      $white !default;
+ $ion-item-background-rgb:  color-to-rgb-list($ion-item-background) !default;
+ $ion-item-background-dark: $gray-900 !default;
+ $ion-item-background-dark-rgb: color-to-rgb-list($ion-item-background-dark) !default;
 
-$primary:      $brand-color !default;
-$primary-dark: $brand-color !default;
-$secondary:    $gray-300 !default;
-$danger:       $red !default;
-$warning:      $yellow !default;
-$success:      $green !default;
-$info:         $blue !default;
-$light:        $gray-100 !default;
-$medium:       $gray-700 !default;
-$dark:         $gray-900 !default;
+ $primary:      $brand-color !default;
+ $primary-dark: $brand-color !default;
+ $secondary:    $gray-300 !default;
+ $danger:       $red !default;
+ $warning:      $yellow !default;
+ $success:      $green !default;
+ $info:         $blue !default;
+ $light:        $gray-100 !default;
+ $medium:       $gray-700 !default;
+ $dark:         $gray-900 !default;
 
-$colors:  (
-    primary: (light: $primary, dark: $primary-dark),
-    secondary: (light: $secondary, dark: $gray-700),
-    success: (light: $success),
-    warning: (light: $warning),
-    danger:  (light: $danger),
-    info: (light: $info),
-    light: (light: $light, dark: $dark),
-    medium: (light: $medium, dark: $gray-200),
-    dark: (light: $dark, dark: $light),
-) !default;
+ $colors:  (
+     primary: (light: $primary, dark: $primary-dark),
+     secondary: (light: $secondary, dark: $gray-700),
+     success: (light: $success),
+     warning: (light: $warning),
+     danger:  (light: $danger),
+     info: (light: $info),
+     light: (light: $light, dark: $dark),
+     medium: (light: $medium, dark: $gray-200),
+     dark: (light: $dark, dark: $light),
+ ) !default;
 
-/**
- * Layout Breakpoints
- *
- * https://ionicframework.com/docs/layout/grid#default-breakpoints
- */
+ /**
+  * Layout Breakpoints
+  *
+  * https://ionicframework.com/docs/layout/grid#default-breakpoints
+  */
 
-// The minimum dimensions at which your layout will change,
-// adapting to different screen sizes, for use in media queries
-$screen-breakpoints: (
-    xs: 0px,
-    sm: 576px,
-    md: 768px,
-    lg: 992px,
-    tablet: 992px,
-    xl: 1200px
-) !default;
+ // The minimum dimensions at which your layout will change,
+ // adapting to different screen sizes, for use in media queries
+ $screen-breakpoints: (
+     xs: 0px,
+     sm: 576px,
+     md: 768px,
+     lg: 992px,
+     tablet: 992px,
+     xl: 1200px
+ ) !default;
 
-$core-course-image-background: #81ecec, #74b9ff, #a29bfe, #dfe6e9, #00b894, #0984e3, #b2bec3, #fdcb6e, #fd79a8, #6c5ce7 !default;
-$core-dd-question-colors: #FFFFFF, #B0C4DE, #DCDCDC, #D8BFD8, #87CEFA, #DAA520, #FFD700, #F0E68C !default;
-$core-text-hightlight-background-color: lighten($blue, 40%) !default;
+ $core-course-image-background: #81ecec, #74b9ff, #a29bfe, #dfe6e9, #00b894, #0984e3, #b2bec3, #fdcb6e, #fd79a8, #6c5ce7 !default;
+ $core-dd-question-colors: #FFFFFF, #B0C4DE, #DCDCDC, #D8BFD8, #87CEFA, #DAA520, #FFD700, #F0E68C !default;
+ $core-text-hightlight-background-color: lighten($blue, 40%) !default;
 
-$core-fixed-url: false !default;
-$core-always-show-main-menu: false !default;
-$core-format-text-never-shorten: false !default;
+ $core-fixed-url: false !default;
+ $core-always-show-main-menu: false !default;
+ $core-format-text-never-shorten: false !default;
 
-$core-hide-courseimage-on-course: false !default;
-$core-hide-progress-on-course: false !default;
-$core-hide-progress-on-section-selector: false !default;
+ $core-hide-courseimage-on-course: false !default;
+ $core-hide-progress-on-course: false !default;
+ $core-hide-progress-on-section-selector: false !default;
 
-$core-course-hide-progress-on-list-items: false !default;
-$core-course-hide-thumb-on-cards: false !default;
-$core-course-thumb-on-cards-background: null !default;
-$core-course-hide-progress-on-cards: false !default;
+ $core-course-hide-progress-on-list-items: false !default;
+ $core-course-hide-thumb-on-cards: false !default;
+ $core-course-thumb-on-cards-background: null !default;
+ $core-course-hide-progress-on-cards: false !default;
 
-// Configuration options for login page.
-$core-login-button-outline: false !default;
-$core-login-button-outline-dark: $core-login-button-outline !default;
-$core-login-loading-color: false !default;
-$core-login-loading-color-dark: $text-color-dark !default;
-$core-login-hide-forgot-password: false !default;
-$core-login-hide-need-help: false !default;
-$core-login-hide-qrcode: false !default;
+ // Configuration options for login page.
+ $core-login-button-outline: false !default;
+ $core-login-button-outline-dark: $core-login-button-outline !default;
+ $core-login-loading-color: false !default;
+ $core-login-loading-color-dark: $text-color-dark !default;
+ $core-login-hide-forgot-password: false !default;
+ $core-login-hide-need-help: false !default;
+ $core-login-hide-qrcode: false !default;
 
-// Configuration options for more page. (deprecated on 4.0)
-$core-more-hide-siteinfo: false !default;
-$core-more-hide-sitename: false !default;
-$core-more-hide-siteurl: false !default;
+ // Configuration options for more page. (deprecated on 4.0)
+ $core-more-hide-siteinfo: false !default;
+ $core-more-hide-sitename: false !default;
+ $core-more-hide-siteurl: false !default;
 
-// Configuration options for user page.
-$core-user-hide-siteinfo: $core-more-hide-siteinfo !default;
-$core-user-hide-sitename: $core-more-hide-sitename !default;
-$core-user-hide-siteurl: $core-more-hide-siteurl !default;
+ // Configuration options for user page.
+ $core-user-hide-siteinfo: $core-more-hide-siteinfo !default;
+ $core-user-hide-sitename: $core-more-hide-sitename !default;
+ $core-user-hide-siteurl: $core-more-hide-siteurl !default;
 
-// Activity icon background colors. Only used on 4.0-4.3. @deprecatedonmoodle since 4.4.
-$activity-icon-background-colors: (
-    administration: #5d63f6,
-    assessment: #eb66a2,
-    collaboration: #f7634d,
-    communication: #11a676,
-    content: #399be2,
-    interface: #a378ff
-) !default;
+ // Activity icon background colors. Only used on 4.0-4.3. @deprecatedonmoodle since 4.4.
+ $activity-icon-background-colors: (
+     administration: #5d63f6,
+     assessment: #eb66a2,
+     collaboration: #f7634d,
+     communication: #11a676,
+     content: #399be2,
+     interface: #a378ff
+ ) !default;
 
-// Moodle 4.4 onwards.
-$activity-icon-colors: (
-    administration: #da58ef,
-    assessment: #f90086,
-    collaboration: #5b40ff,
-    communication: #eb6200,
-    content: #0099ad,
-    interactivecontent: #8d3d1b
-) !default;
+ // Moodle 4.4 onwards.
+ $activity-icon-colors: (
+     administration: #da58ef,
+     assessment: #f90086,
+     collaboration: #5b40ff,
+     communication: #eb6200,
+     content: #0099ad,
+     interactivecontent: #8d3d1b
+ ) !default;
 
-$activity-icon-color-filters: (
-    administration: brightness(0%) invert(45%) sepia(46%) saturate(3819%) hue-rotate(260deg) brightness(101%) contrast(87%),
-    assessment: brightness(0%) invert(36%) sepia(98%) saturate(6969%) hue-rotate(315deg) brightness(90%) contrast(119%),
-    collaboration: brightness(0%) invert(25%) sepia(54%) saturate(6226%) hue-rotate(245deg) brightness(100%) contrast(102%),
-    communication: brightness(0%) invert(48%) sepia(74%) saturate(4887%) hue-rotate(11deg) brightness(102%) contrast(101%),
-    content: brightness(0%) invert(49%) sepia(52%) saturate(4675%) hue-rotate(156deg) brightness(89%) contrast(102%),
-    interactivecontent: brightness(0%) invert(25%) sepia(63%) saturate(1152%) hue-rotate(344deg) brightness(94%) contrast(91%)
-) !default;
+ $activity-icon-color-filters: (
+     administration: brightness(0%) invert(45%) sepia(46%) saturate(3819%) hue-rotate(260deg) brightness(101%) contrast(87%),
+     assessment: brightness(0%) invert(36%) sepia(98%) saturate(6969%) hue-rotate(315deg) brightness(90%) contrast(119%),
+     collaboration: brightness(0%) invert(25%) sepia(54%) saturate(6226%) hue-rotate(245deg) brightness(100%) contrast(102%),
+     communication: brightness(0%) invert(48%) sepia(74%) saturate(4887%) hue-rotate(11deg) brightness(102%) contrast(101%),
+     content: brightness(0%) invert(49%) sepia(52%) saturate(4675%) hue-rotate(156deg) brightness(89%) contrast(102%),
+     interactivecontent: brightness(0%) invert(25%) sepia(63%) saturate(1152%) hue-rotate(344deg) brightness(94%) contrast(91%)
+ ) !default;
 
-$calendar-event-category-category: #8e24aa !default;
-$calendar-event-category-course: $red !default;
-$calendar-event-category-group: $yellow !default;
-$calendar-event-category-user: $blue !default;
-$calendar-event-category-site: $green !default;
+ $calendar-event-category-category: #8e24aa !default;
+ $calendar-event-category-course: $red !default;
+ $calendar-event-category-group: $yellow !default;
+ $calendar-event-category-user: $blue !default;
+ $calendar-event-category-site: $green !default;
 
-// Calendar event category background colors.
-$calendar-event-category-colors: (
-    category: $calendar-event-category-category,
-    course: $calendar-event-category-course,
-    group: $calendar-event-category-group,
-    user: $calendar-event-category-user,
-    site: $calendar-event-category-site,
-) !default;
+ // Calendar event category background colors.
+ $calendar-event-category-colors: (
+     category: $calendar-event-category-category,
+     course: $calendar-event-category-course,
+     group: $calendar-event-category-group,
+     user: $calendar-event-category-user,
+     site: $calendar-event-category-site,
+ ) !default;
