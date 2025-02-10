@@ -10,7 +10,7 @@
     "default_lang": "ml",
     "languages": {
         "en": "English",
-         "ml": "മലയാളം"
+        "ml": "മലയാളം"
     },
     "wsservice": "moodle_mobile_app",
     "demo_sites": {
@@ -33,7 +33,7 @@
     },
     "customurlscheme": "moodlemobile",
     "sites": [{
-        "url" : "https://dwms.ictkerala.org"
+        "url" : "https://retail.ictkerala.org"
     }],
     "multisitesdisplay": "",
     "sitefindersettings": {},
