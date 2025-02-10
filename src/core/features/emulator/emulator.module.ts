@@ -15,7 +15,6 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { CoreEmulatorHelper } from './services/emulator-helper';
-import { CoreEmulatorComponentsModule } from './components/components.module';
 
 // Ionic Native services.
 import { Camera } from '@awesome-cordova-plugins/camera/ngx';
@@ -55,9 +54,6 @@ import { CoreDbProviderMock } from '@features/emulator/services/db';
  * functions we check if the app is running in mobile or not, and then provide the right service to use.
  */
 @NgModule({
-    imports: [
-        CoreEmulatorComponentsModule,
-    ],
     providers: [
         {
             provide: Camera,

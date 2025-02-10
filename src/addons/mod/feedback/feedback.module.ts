@@ -72,7 +72,7 @@ const tabletRoutes: Routes = [
     {
         path: ':courseId/:cmId/attempts',
         loadComponent: () => import('./pages/attempts/attempts'),
-        children: [
+        loadChildren: () => [
             {
                 path: ':attemptId',
                 loadComponent: () => import('./pages/attempt/attempt'),
@@ -84,7 +84,7 @@ const tabletRoutes: Routes = [
 const routes: Routes = [
     {
         path: ADDON_MOD_FEEDBACK_PAGE_NAME,
-        children: [
+        loadChildren: () => [
             ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
             ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
         ],

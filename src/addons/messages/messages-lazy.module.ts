@@ -76,29 +76,29 @@ function buildRoutes(injector: Injector): Routes {
         {
             path: 'contacts', // 3.6 or greater.
             loadComponent: () => import('./pages/contacts/contacts'),
-            children: discussionRoutes,
+            loadChildren: () => discussionRoutes,
         },
         {
             path: 'index', // 3.5.
             data: { mainMenuTabRoot: ADDON_MESSAGES_PAGE_NAME },
             loadComponent: () => import('./pages/discussions-35/discussions'),
-            children: discussionRoutes,
+            loadChildren: () => discussionRoutes,
         },
         {
             path: 'contacts-35', // 3.5.
             loadComponent: () => import('./pages/contacts-35/contacts'),
-            children: discussionRoutes,
+            loadChildren: () => discussionRoutes,
         },
         {
             path: 'group-conversations', // 3.6 or greater.
             data: { mainMenuTabRoot: ADDON_MESSAGES_PAGE_NAME },
             loadComponent: () => import('./pages/group-conversations/group-conversations'),
-            children: discussionRoutes,
+            loadChildren: () => discussionRoutes,
         },
         {
             path: 'search',
             loadComponent: () => import('./pages/search/search'),
-            children: discussionRoutes,
+            loadChildren: () => discussionRoutes,
         },
     ];
 

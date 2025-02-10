@@ -61,7 +61,7 @@ const tabletRoutes: Routes = [
     {
         path: '',
         loadComponent: () => import('@features/grades/pages/courses/courses'),
-        children: [
+        loadChildren: () => [
             {
                 path: ':courseId',
                 loadComponent: () => import('@features/grades/pages/course/course'),
@@ -73,7 +73,7 @@ const tabletRoutes: Routes = [
 const mainMenuChildrenRoutes: Routes = [
     {
         path: GRADES_PAGE_NAME,
-        children: [
+        loadChildren: () => [
             ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
             ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
         ],
@@ -100,7 +100,7 @@ const courseIndexRoutes: Routes = [
     {
         path: GRADES_PARTICIPANTS_PAGE_NAME,
         loadComponent: () => import('@features/user/pages/participants/participants'),
-        children: conditionalRoutes([
+        loadChildren: () => conditionalRoutes([
             {
                 path: ':userId',
                 loadComponent: () => import('@features/grades/pages/course/course'),

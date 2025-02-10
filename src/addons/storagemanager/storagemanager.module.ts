@@ -14,7 +14,6 @@
 
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { Routes } from '@angular/router';
-import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';
 import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
@@ -35,7 +34,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        CoreMainMenuRoutingModule.forChild({ children: routes }),
         CoreSitePreferencesRoutingModule.forChild(routes),
     ],
     providers: [

@@ -57,7 +57,7 @@ const tabletRoutes: Routes = [
     {
         path: ':courseId/:cmId/sessions',
         loadComponent: () => import('./pages/sessions/sessions'),
-        children: [
+        loadChildren: () => [
             {
                 path: ':sessionStart/:sessionEnd',
                 loadComponent: () => import('./pages/session-messages/session-messages'),
@@ -69,7 +69,7 @@ const tabletRoutes: Routes = [
 const routes: Routes = [
     {
         path: ADDON_MOD_CHAT_PAGE_NAME,
-        children: [
+        loadChildren: () => [
             ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
             ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
         ],

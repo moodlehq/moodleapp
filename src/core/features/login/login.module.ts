@@ -39,7 +39,7 @@ export async function getLoginServices(): Promise<Type<unknown>[]> {
 const appRoutes: Routes = [
     {
         path: 'login',
-        children: [
+        loadChildren: () => [
             {
                 path: '',
                 pathMatch: 'full',

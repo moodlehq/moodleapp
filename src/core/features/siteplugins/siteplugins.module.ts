@@ -27,10 +27,18 @@ import { CORE_SITE_PLUGINS_PATH } from './constants';
  *
  * @returns Site plugins exported directives.
  */
-export async function getSitePluginsDirectives(): Promise<unknown[]> {
-    const { CoreSitePluginsDirectivesModule } = await import('./directives/directives.module');
+export async function getSitePluginsExportedDirectives(): Promise<unknown[]> {
+    const { CoreSitePluginsCallWSDirective } = await import('./directives/call-ws');
+    const { CoreSitePluginsCallWSNewContentDirective } = await import('./directives/call-ws-new-content');
+    const { CoreSitePluginsCallWSOnLoadDirective } = await import('./directives/call-ws-on-load');
+    const { CoreSitePluginsNewContentDirective } = await import('./directives/new-content');
 
-    return [CoreSitePluginsDirectivesModule];
+    return [
+        CoreSitePluginsCallWSDirective,
+        CoreSitePluginsCallWSNewContentDirective,
+        CoreSitePluginsCallWSOnLoadDirective,
+        CoreSitePluginsNewContentDirective,
+    ];
 }
 
 /**

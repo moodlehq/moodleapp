@@ -27,7 +27,7 @@ import { CoreContentLinksDelegate } from '@features/contentlinks/services/conten
 const routes: Routes = [
     {
         path: POLICY_PAGE_NAME,
-        children: [
+        loadChildren: () => [
             {
                 path: SITE_POLICY_PAGE_NAME,
                 loadComponent: () => import('@features/policy/pages/site-policy/site-policy'),
