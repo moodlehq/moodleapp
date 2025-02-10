@@ -59,6 +59,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
 
     avatarUrl?: string;
     initials = '';
+    imageError = false;
 
     // Variable to check if we consider this user online or not.
     // @todo Use setting when available (see MDL-63972) so we can use site setting.
@@ -115,10 +116,10 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Avatar image loading error handler.
+     * Avatar image loading handler.
      */
-    loadImageError(): void {
-        this.avatarUrl = undefined;
+    imageLoaded(success: boolean): void {
+        this.imageError = !success;
     }
 
     /**
