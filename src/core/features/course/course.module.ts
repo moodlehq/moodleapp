@@ -79,10 +79,13 @@ export async function getCourseExportedObjects(): Promise<Record<string, unknown
         CORE_COURSE_COMPONENT,
         CORE_COURSE_CORE_MODULES,
     } = await import('@features/course/constants');
+
+    // Export components that are used from JS code instead of in templates. E.g. when opening a modal or in a handler.
     const { CoreCourseUnsupportedModuleComponent } =
         await import ('@features/course/components/unsupported-module/unsupported-module');
     const { CoreCourseFormatSingleActivityComponent } =
         await import ('@features/course/format/singleactivity/components/singleactivity');
+    const { CoreCourseCourseIndexComponent } = await import('@features/course/components/course-index/course-index');
 
     /* eslint-disable @typescript-eslint/naming-convention */
     return {
@@ -90,6 +93,7 @@ export async function getCourseExportedObjects(): Promise<Record<string, unknown
         CoreCourseResourcePrefetchHandlerBase,
         CoreCourseUnsupportedModuleComponent,
         CoreCourseFormatSingleActivityComponent,
+        CoreCourseCourseIndexComponent,
         CoreCourseAccessDataType,
         CORE_COURSE_ALL_SECTIONS_ID,
         CORE_COURSE_STEALTH_MODULES_SECTION_ID,
@@ -102,24 +106,40 @@ export async function getCourseExportedObjects(): Promise<Record<string, unknown
 }
 
 /**
- * Get standalone components for site plugins.
+ * Get directives and components for site plugins.
  *
- * @returns Returns standalone components.
+ * @returns Returns directives and components.
  */
-export async function getCourseStandaloneComponents(): Promise<Type<unknown>[]> {
+export async function getCourseExportedDirectives(): Promise<Type<unknown>[]> {
+    const { CoreCourseFormatComponent } = await import('@features/course/components/course-format/course-format');
+    const { CoreCourseSectionComponent } = await import('@features/course/components/course-section/course-section');
+    const { CoreCourseModuleComponent } = await import('@features/course/components/module/module');
+    const { CoreCourseModuleCompletionComponent } = await import('@features/course/components/module-completion/module-completion');
+    const { CoreCourseModuleCompletionLegacyComponent } =
+        await import('@features/course/components/module-completion-legacy/module-completion-legacy');
+    const { CoreCourseModuleInfoComponent } = await import('@features/course/components/module-info/module-info');
+    const { CoreCourseModuleNavigationComponent } = await import('@features/course/components/module-navigation/module-navigation');
+
+    const { CoreCourseDownloadModuleMainFileDirective } = await import('@features/course/directives/download-module-main-file');
+
     // eslint-disable-next-line deprecation/deprecation
     const { CoreCourseModuleDescriptionComponent } =
         await import('@features/course/components/module-description/module-description');
     // eslint-disable-next-line deprecation/deprecation
     const { CoreCourseModuleManualCompletionComponent } =
         await import('@features/course/components/module-manual-completion/module-manual-completion');
-    const { CoreCourseFormatComponent } =
-        await import('@features/course/components/course-format/course-format');
 
     return [
         CoreCourseModuleDescriptionComponent,
         CoreCourseModuleManualCompletionComponent,
         CoreCourseFormatComponent,
+        CoreCourseSectionComponent,
+        CoreCourseModuleComponent,
+        CoreCourseModuleCompletionComponent,
+        CoreCourseModuleCompletionLegacyComponent,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+        CoreCourseDownloadModuleMainFileDirective,
     ];
 }
 

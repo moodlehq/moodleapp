@@ -76,7 +76,7 @@ const tabletRoutes: Routes = [
     {
         path: ':courseId/:cmId',
         loadComponent: () => import('./pages/index/index'),
-        children: [
+        loadChildren: () => [
             {
                 path: 'new/:timeCreated',
                 ...newDiscussionRoute,
@@ -101,7 +101,7 @@ const mainMenuRoutes: Routes = [
     },
     {
         path: ADDON_MOD_FORUM_PAGE_NAME,
-        children: [
+        loadChildren: () => [
             ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
             ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
         ],

@@ -38,7 +38,7 @@ function buildRoutes(injector: Injector): Routes {
         {
             path: '',
             loadComponent: () => import('@features/settings/pages/site/site'),
-            children: routes.siblings,
+            loadChildren: () => routes.siblings,
         },
     ];
 

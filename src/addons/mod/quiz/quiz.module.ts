@@ -60,7 +60,7 @@ export async function getModQuizServices(): Promise<Type<unknown>[]> {
 const routes: Routes = [
     {
         path: ADDON_MOD_QUIZ_PAGE_NAME,
-        children: [
+        loadChildren: () => [
             {
                 path: ':courseId/:cmId',
                 loadComponent: () => import('./pages/index/index'),

@@ -59,6 +59,19 @@ export async function getUsersServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get directives and components for site plugins.
+ *
+ * @returns Returns directives and components.
+ */
+export async function getUsersExportedDirectives(): Promise<Type<unknown>[]> {
+    const { CoreUserProfileFieldComponent } = await import('@features/user/components/user-profile-field/user-profile-field');
+
+    return [
+        CoreUserProfileFieldComponent,
+    ];
+}
+
 const appRoutes: Routes = [
     {
         path: 'user/completeprofile',
@@ -69,7 +82,7 @@ const appRoutes: Routes = [
 const routes: Routes = [
     {
         path: 'user',
-        children: [
+        loadChildren: () => [
             {
                 path: '',
                 redirectTo: 'profile',
@@ -100,7 +113,7 @@ const courseIndexRoutes: Routes = [
     {
         path: PARTICIPANTS_PAGE_NAME,
         loadComponent: () => import('@features/user/pages/participants/participants'),
-        children: conditionalRoutes([
+        loadChildren: () => conditionalRoutes([
             {
                 path: ':userId',
                 loadComponent: () => import('@features/user/pages/profile/profile'),

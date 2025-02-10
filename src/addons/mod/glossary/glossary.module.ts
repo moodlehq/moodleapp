@@ -53,7 +53,7 @@ const tabletRoutes: Routes = [
     {
         path: ':courseId/:cmId',
         loadComponent: () => import('./pages/index/index'),
-        children: [
+        loadChildren: () => [
             {
                 path: 'entry/:entrySlug',
                 loadComponent: () => import('./pages/entry/entry'),
@@ -77,7 +77,7 @@ const mainMenuRoutes: Routes = [
     // Course activity navigation.
     {
         path: ADDON_MOD_GLOSSARY_PAGE_NAME,
-        children: [
+        loadChildren: () => [
             {
                 path: ':courseId/:cmId/entry/new',
                 ...editRoute,

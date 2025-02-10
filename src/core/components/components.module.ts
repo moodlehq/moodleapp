@@ -57,11 +57,11 @@ import { CoreCourseImageComponent } from '@components/course-image/course-image'
 import { CoreSitesListComponent } from './sites-list/sites-list';
 
 /**
- * Get standalone components for site plugins.
+ * Get deprecated components for site plugins.
  *
- * @returns Returns core standalone components.
+ * @returns Returns core deprecated components.
  */
-export async function getCoreStandaloneComponents(): Promise<Type<unknown>[]> {
+export async function getCoreDeprecatedComponents(): Promise<Type<unknown>[]> {
     // eslint-disable-next-line deprecation/deprecation
     const { CoreStyleComponent } = await import('@components/style/style');
     // eslint-disable-next-line deprecation/deprecation

@@ -40,6 +40,22 @@ export async function getSearchServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get directives and components for site plugins.
+ *
+ * @returns Returns directives and components.
+ */
+export async function getSearchExportedDirectives(): Promise<Type<unknown>[]> {
+    const { CoreSearchBoxComponent } = await import('@features/search/components/search-box/search-box');
+    const { CoreSearchGlobalSearchResultComponent } =
+        await import('@features/search/components/global-search-result/global-search-result');
+
+    return [
+        CoreSearchBoxComponent,
+        CoreSearchGlobalSearchResultComponent,
+    ];
+}
+
 const mainMenuChildrenRoutes: Routes = [
     {
         path: CORE_SEARCH_PAGE_NAME,
