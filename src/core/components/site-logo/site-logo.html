@@ -1,7 +1,7 @@
 @if (showLogo && logoLoaded) {
     <div class="core-logo-container">
         @if (siteLogo) {
-            <img [src]="siteLogo" class="core-logo" [alt]="'core.login.logoof' | translate: { $a: siteName }" core-external-content
+            <img [url]="siteLogo" class="core-logo" [alt]="'core.login.logoof' | translate: { $a: siteName }" core-external-content
                 [siteId]="siteId" (error)="imageError()">
         } @else {
             <img [src]="fallbackLogo" class="core-logo" [alt]="'core.login.logoof' | translate: { $a: appName }">
