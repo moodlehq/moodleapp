@@ -1,6 +1,6 @@
 {
-    "app_id": "com.ictkerala.sec",
-    "appname": "Moodle Mobile",
+    "app_id": "com.ictkerala.paatshala",
+    "appname": "Paatshala",
     "versioncode": 50000,
     "versionname": "5.0.0",
     "cache_update_frequency_usually": 420000,
@@ -39,7 +39,7 @@
     "sitefindersettings": {},
     "onlyallowlistedsites": false,
     "forcedefaultlanguage": false,
-    "privacypolicy": "https://moodle.net/moodle-app-privacy/",
+    "privacypolicy": "https://ictkerala.org/en/terms-of-service/#tab-7375545a3797fc1d3b6",
     "notificoncolor": "#f98012",
     "enableanalytics": false,
     "enableonboarding": true,
@@ -48,7 +48,7 @@
     "showTopLogo": "hidden",
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
-        "android": "com.ictkerala.sec",
+        "android": "com.ictkerala.paatshala",
         "ios": "id633359593"
     },
     "wsrequestqueuelimit": 10,

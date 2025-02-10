@@ -9,24 +9,24 @@
         <framework src="com.android.installreferrer:installreferrer:2.2" />
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="SecureStorage">
-                <param name="android-package" value="com.ictkerala.sec.SecureStorage"/>
+                <param name="android-package" value="com.ictkerala.paatshala.SecureStorage"/>
             </feature>
             <feature name="InstallReferrer">
-                <param name="android-package" value="com.ictkerala.sec.InstallReferrer"/>
+                <param name="android-package" value="com.ictkerala.paatshala.InstallReferrer"/>
             </feature>
         </config-file>
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="Diagnostic">
-                <param name="android-package" value="com.ictkerala.sec.Diagnostic"/>
+                <param name="android-package" value="com.ictkerala.paatshala.Diagnostic"/>
                 <param name="onload" value="true" />
             </feature>
             <feature name="Diagnostic_Location">
-                <param name="android-package" value="com.ictkerala.sec.Diagnostic_Location"/>
+                <param name="android-package" value="com.ictkerala.paatshala.Diagnostic_Location"/>
                 <param name="onload" value="true" />
             </feature>
             <feature name="PinchToZoom">
-                <param name="android-package" value="com.ictkerala.sec.PinchToZoom"/>
+                <param name="android-package" value="com.ictkerala.paatshala.PinchToZoom"/>
                 <param name="onload" value="true" />
             </feature>
         </config-file>
