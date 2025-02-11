@@ -982,11 +982,20 @@ export class CoreQuestionHelperProvider {
             const parentElement = icon.parentElement;
             const parentIsClickable = parentElement instanceof HTMLButtonElement || parentElement instanceof HTMLAnchorElement;
 
-            if (parentElement && parentIsClickable && parentElement.dataset.toggle === 'popover') {
-                return {
-                    element: parentElement,
-                    html: parentElement?.dataset.content,
-                };
+            if (parentElement && parentIsClickable) {
+                if (parentElement.dataset.bsToggle === 'popover') {
+                    // Bootstrap 5.
+                    return {
+                        element: parentElement,
+                        html: parentElement?.dataset.bsContent,
+                    };
+                } else if (parentElement.dataset.toggle === 'popover') {
+                    // Bootstrap 4.
+                    return {
+                        element: parentElement,
+                        html: parentElement?.dataset.content,
+                    };
+                }
             }
 
             // Support legacy icons used before MDL-77856 (4.2).
