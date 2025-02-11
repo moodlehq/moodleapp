@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
-import { AddonBlockTagsComponent } from '../components/tags/tags';
 import { makeSingleton } from '@singletons';
 import { CoreTag } from '@features/tag/services/tag';
 
@@ -37,11 +36,10 @@ export class AddonBlockTagsHandlerService extends CoreBlockBaseHandler {
     }
 
     /**
-     * Returns the data needed to render the block.
-     *
-     * @returns Data or promise resolved with the data.
+     * @inheritdoc
      */
-    getDisplayData(): CoreBlockHandlerData {
+    async getDisplayData(): Promise<CoreBlockHandlerData> {
+        const { AddonBlockTagsComponent } = await import('../components/tags/tags');
 
         return {
             title: 'addon.block_tags.pluginname',

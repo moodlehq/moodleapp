@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
-import { CoreBlockPreRenderedComponent } from '@features/block/components/pre-rendered-block/pre-rendered-block';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { makeSingleton } from '@singletons';
@@ -30,12 +29,10 @@ export class AddonBlockHtmlHandlerService extends CoreBlockBaseHandler {
     blockName = 'html';
 
     /**
-     * Returns the data needed to render the block.
-     *
-     * @param block The block to render.
-     * @returns Data or promise resolved with the data.
+     * @inheritdoc
      */
-    getDisplayData(block: CoreCourseBlock): CoreBlockHandlerData {
+    async getDisplayData(block: CoreCourseBlock): Promise<CoreBlockHandlerData> {
+        const { CoreBlockPreRenderedComponent } = await import('@features/block/components/pre-rendered-block/pre-rendered-block');
 
         return {
             title: block.contents?.title || '',
