@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
-import { AddonBlockBadgesComponent } from '../components/badges/badges';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -29,11 +28,10 @@ export class AddonBlockBadgesHandlerService extends CoreBlockBaseHandler {
     blockName = 'badges';
 
     /**
-     * Returns the data needed to render the block.
-     *
-     * @returns Data or promise resolved with the data.
+     * @inheritdoc
      */
-    getDisplayData(): CoreBlockHandlerData {
+    async getDisplayData(): Promise<CoreBlockHandlerData> {
+        const { AddonBlockBadgesComponent } = await import('../components/badges/badges');
 
         return {
             title: 'addon.block_badges.pluginname',
