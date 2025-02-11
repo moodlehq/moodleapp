@@ -20,14 +20,14 @@
         [componentId]="componentId" [courseId]="courseId" />
 
     <ion-list *ngIf="contents && (contents.files.length + contents.folders.length > 0)">
-        <ng-container *ngFor="let folder of contents.folders">
+        <ion-card *ngFor="let folder of contents.folders">
             <ion-item class="ion-text-wrap item-file item-directory" (click)="openFolder(folder)" [detail]="true" button>
                 <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate" />
                 <ion-label>
                     <p class="item-heading">{{folder.filename}}</p>
                 </ion-label>
             </ion-item>
-        </ng-container>
+        </ion-card>
         <ng-container *ngFor="let file of contents.files">
             <core-file [file]="file" [component]="component" [componentId]="componentId" />
         </ng-container>
