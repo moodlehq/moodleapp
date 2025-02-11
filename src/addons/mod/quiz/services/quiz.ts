@@ -515,6 +515,7 @@ export class AddonModQuizProvider {
             cacheKey: this.getAttemptReviewCacheKey(attemptId, page),
             component: ADDON_MOD_QUIZ_COMPONENT,
             componentId: options.cmId,
+            deleteCacheIfWSError: true,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
