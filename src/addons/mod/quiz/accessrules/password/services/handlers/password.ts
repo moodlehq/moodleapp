@@ -19,7 +19,6 @@ import { makeSingleton } from '@singletons';
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '@addons/mod/quiz/services/quiz';
 import { CoreSites } from '@services/sites';
 import { AddonModQuizAccessPasswordDBRecord, PASSWORD_TABLE_NAME } from '../database/password';
-import { AddonModQuizAccessPasswordComponent } from '../../component/password';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -71,7 +70,9 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
     /**
      * @inheritdoc
      */
-    getPreflightComponent(): Type<unknown> | Promise<Type<unknown>> {
+    async getPreflightComponent(): Promise<Type<unknown>> {
+        const { AddonModQuizAccessPasswordComponent } = await import('../../component/password');
+
         return AddonModQuizAccessPasswordComponent;
     }
 

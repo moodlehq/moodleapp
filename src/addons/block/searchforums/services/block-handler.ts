@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
-import { CoreBlockOnlyTitleComponent } from '@features/block/components/only-title-block/only-title-block';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from '@addons/mod/forum/constants';
@@ -56,6 +55,8 @@ export class AddonBlockSearchForumsHandlerService extends CoreBlockBaseHandler {
         if (!searchAreas.some(({ id }) => forumSearchAreas.includes(id))) {
             return;
         }
+
+        const { CoreBlockOnlyTitleComponent } = await import('@features/block/components/only-title-block/only-title-block');
 
         return {
             title: 'addon.block_searchforums.pluginname',

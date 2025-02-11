@@ -16,7 +16,6 @@ import { Injectable, Type } from '@angular/core';
 
 import { AddonModQuizAccessRuleHandler } from '@addons/mod/quiz/services/access-rules-delegate';
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '@addons/mod/quiz/services/quiz';
-import { AddonModQuizAccessTimeLimitComponent } from '../../component/timelimit';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -31,7 +30,9 @@ export class AddonModQuizAccessTimeLimitHandlerService implements AddonModQuizAc
     /**
      * @inheritdoc
      */
-    getPreflightComponent(): Type<unknown> | Promise<Type<unknown>> {
+    async getPreflightComponent(): Promise<Type<unknown>> {
+        const { AddonModQuizAccessTimeLimitComponent } = await import('../../component/timelimit');
+
         return AddonModQuizAccessTimeLimitComponent;
     }
 

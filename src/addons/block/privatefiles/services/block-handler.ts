@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
-import { CoreBlockOnlyTitleComponent } from '@features/block/components/only-title-block/only-title-block';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { AddonPrivateFilesUserHandlerService } from '@addons/privatefiles/services/handlers/user';
 import { makeSingleton } from '@singletons';
@@ -29,11 +28,10 @@ export class AddonBlockPrivateFilesHandlerService extends CoreBlockBaseHandler {
     blockName = 'private_files';
 
     /**
-     * Returns the data needed to render the block.
-     *
-     * @returns Data or promise resolved with the data.
+     * @inheritdoc
      */
-    getDisplayData(): CoreBlockHandlerData {
+    async getDisplayData(): Promise<CoreBlockHandlerData> {
+        const { CoreBlockOnlyTitleComponent } = await import('@features/block/components/only-title-block/only-title-block');
 
         return {
             title: 'addon.block_privatefiles.pluginname',
