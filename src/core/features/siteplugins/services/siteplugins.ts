@@ -218,8 +218,8 @@ export class CoreSitePluginsProvider {
 
         // Now call the WS.
         const data: CoreSitePluginsGetContentWSParams = {
-            component: component,
-            method: method,
+            component,
+            method,
             args: CoreObject.toArrayOfObjects(argsToSend, 'name', 'value', true),
         };
 

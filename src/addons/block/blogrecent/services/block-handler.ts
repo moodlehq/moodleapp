@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
-import { AddonBlockBlogRecentComponent } from '../components/blogrecent/blogrecent';
 import { makeSingleton } from '@singletons';
 import { AddonBlog } from '@addons/blog/services/blog';
 
@@ -37,11 +36,10 @@ export class AddonBlockBlogRecentHandlerService extends CoreBlockBaseHandler {
     }
 
     /**
-     * Returns the data needed to render the block.
-     *
-     * @returns Data or promise resolved with the data.
+     * @inheritdoc
      */
-    getDisplayData(): CoreBlockHandlerData {
+    async getDisplayData(): Promise<CoreBlockHandlerData> {
+        const { AddonBlockBlogRecentComponent } = await import('../components/blogrecent/blogrecent');
 
         return {
             title: 'addon.block_blogrecent.pluginname',

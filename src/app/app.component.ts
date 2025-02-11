@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { IonRouterOutlet } from '@ionic/angular';
+import { IonRouterOutlet, IonicModule } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
 
 import { CoreLoginHelper } from '@features/login/services/login-helper';
@@ -34,6 +34,8 @@ register();
 @Component({
     selector: 'app-root',
     templateUrl: 'app.component.html',
+    standalone: true,
+    imports: [IonicModule],
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
