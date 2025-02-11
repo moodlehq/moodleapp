@@ -173,6 +173,9 @@ export default class AddonModQuizReviewPage implements OnInit {
             this.logView();
         } catch (error) {
             CoreAlerts.showError(error, { default: Translate.instant('addon.mod_quiz.errorgetquiz') });
+            if (error.errorcode === 'noreview' || error.errorcode === 'noreviewattempt') {
+                CoreNavigator.back();
+            }
         }
     }
 
