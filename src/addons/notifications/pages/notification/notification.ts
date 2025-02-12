@@ -15,7 +15,11 @@
 import { AddonLegacyNotificationsNotificationsSource } from '@addons/notifications/classes/legacy-notifications-source';
 import { AddonNotificationsNotificationsSource } from '@addons/notifications/classes/notifications-source';
 import { AddonNotificationsPushNotification } from '@addons/notifications/services/handlers/push-click';
-import { AddonNotifications, AddonNotificationsNotificationMessageFormatted } from '@addons/notifications/services/notifications';
+import {
+    AddonNotifications,
+    AddonNotificationsNotificationMessage,
+    AddonNotificationsNotificationMessageFormatted,
+} from '@addons/notifications/services/notifications';
 import {
     AddonNotificationsHelper,
 } from '@addons/notifications/services/notifications-helper';
@@ -71,12 +75,20 @@ export default class AddonNotificationsNotificationPage implements OnInit, OnDes
             return;
         }
 
-        this.notification = 'subject' in notification ?
-            notification :
-            await AddonNotifications.convertPushToMessage(notification);
+        if ('mobiletext' in notification) {
+            // Notification from WS and already formatted, just use it.
+            this.notification = notification;
+        } else if ('fullmessage' in notification) {
+            // It's a notification from WS but it isn't formatted for some reason. Format it now.
+            const notifications = await AddonNotifications.formatNotificationsData([notification]);
+            this.notification = notifications[0];
+        } else {
+            // Push notification, convert it to the right format.
+            this.notification = await AddonNotifications.convertPushToMessage(notification);
+        }
 
         await this.loadActions(this.notification);
-        AddonNotificationsHelper.markNotificationAsRead(notification);
+        AddonNotificationsHelper.markNotificationAsRead(this.notification);
 
         this.loaded = true;
 
@@ -222,4 +234,5 @@ class AddonNotificationSwipeItemsManager extends CoreSwipeNavigationItemsManager
 
 }
 
-type AddonNotificationsNotification = AddonNotificationsNotificationMessageFormatted | AddonNotificationsPushNotification;
+type AddonNotificationsNotification = AddonNotificationsNotificationMessageFormatted | AddonNotificationsPushNotification |
+    AddonNotificationsNotificationMessage;
