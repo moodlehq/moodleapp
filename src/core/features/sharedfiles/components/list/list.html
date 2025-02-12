@@ -6,20 +6,25 @@
 <core-site-picker *ngIf="showSitePicker" [hidden]="!filesLoaded" [initialSite]="siteId" (siteSelected)="changeSite($event)" />
 
 <core-loading [hideUntil]="filesLoaded" [fullscreen]="false">
-    <ion-list *ngIf="files && files.length > 0">
-        <ng-container *ngFor="let file of files; let idx = index">
-            <core-local-file *ngIf="file.isFile" [file]="file" [manage]="manage" [overrideClick]="pick" (onClick)="filePicked(file)"
-                (onDelete)="fileDeleted(idx)" (onRename)="fileRenamed(idx, $event)" />
-
-            <ion-item button *ngIf="!file.isFile" class="ion-text-wrap item-file item-directory" (click)="openFolder(file)" [detail]="true">
-                <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate" />
-                <ion-label>{{ file.name }}</ion-label>
-            </ion-item>
-        </ng-container>
-    </ion-list>
-
-    <core-empty-box *ngIf="files && !files.length && manage" icon="fas-folder" [message]="'core.sharedfiles.nosharedfiles' | translate" />
-
-    <core-empty-box *ngIf="files && !files.length && !manage" icon="fas-folder"
-        [message]="'core.sharedfiles.nosharedfilestoupload' | translate" />
+    @if (files && files.length > 0) {
+        <ion-list>
+            <ng-container *ngFor="let file of files; let idx = index">
+                @if (file.isFile) {
+                    <core-local-file [file]="file" [manage]="manage" [overrideClick]="pick" (onClick)="filePicked(file)"
+                        (onDelete)="fileDeleted(idx)" (onRename)="fileRenamed(idx, $event)" />
+                } @else {
+                    <ion-card>
+                        <ion-item button class="ion-text-wrap item-file item-directory" (click)="openFolder(file)" [detail]="true">
+                            <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate" />
+                            <ion-label>{{ file.name }}</ion-label>
+                        </ion-item>
+                    </ion-card>
+                }
+            </ng-container>
+        </ion-list>
+    } @else if (manage){
+        <core-empty-box icon="fas-folder" [message]="'core.sharedfiles.nosharedfiles' | translate" />
+    } @else {
+        <core-empty-box icon="fas-folder" [message]="'core.sharedfiles.nosharedfilestoupload' | translate" />
+    }
 </core-loading>

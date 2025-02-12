@@ -42,7 +42,7 @@
                                     <ion-icon *ngIf="row.expandable && showSummary" aria-hidden="true" slot="start" name="fas-chevron-right"
                                         class="expandable-status-icon" [class.expandable-status-icon-expanded]="row.expanded" />
                                     <ion-icon *ngIf="row.icon" name="{{row.icon}}" slot="start" [attr.aria-label]="row.iconAlt" />
-                                    <img *ngIf="row.image && !row.itemmodule" [src]="row.image" slot="start" class="core-module-icon"
+                                    <img *ngIf="row.image && !row.itemmodule" [url]="row.image" slot="start" class="core-module-icon"
                                         [alt]="row.iconAlt" core-external-content />
                                     <core-mod-icon *ngIf="row.image && row.itemmodule" [modicon]="row.image" slot="start"
                                         [modname]="row.itemmodule" [colorize]="false" />

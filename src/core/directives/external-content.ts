@@ -78,7 +78,12 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
      * @deprecated since 4.4. Use posterUrl instead.
      */
     @Input() poster?: string;
-    @Output() onLoad = new EventEmitter(); // Emitted when content is loaded. Only for images.
+
+    /**
+     * Event emitted when the content is loaded. Only for images.
+     * Will emit true if loaded, false if error.
+     */
+    @Output() onLoad = new EventEmitter<boolean>();
 
     loaded = false;
     invalid = false;
@@ -242,7 +247,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         if (!url) {
             // Ignore empty URLs.
             if (this.element.tagName === 'IMG') {
-                this.onLoad.emit();
+                this.onLoad.emit(false);
                 this.loaded = true;
             }
 
@@ -268,7 +273,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         }
 
         if (url.startsWith('data:')) {
-            this.onLoad.emit();
+            this.onLoad.emit(true);
             this.loaded = true;
         } else {
             this.loaded = false;
@@ -531,15 +536,23 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
      * Wait for the image to be loaded or error, and emit an event when it happens.
      */
     protected waitForLoad(): void {
-        const listener = (): void => {
-            this.element.removeEventListener('load', listener);
-            this.element.removeEventListener('error', listener);
-            this.onLoad.emit();
+        const loadListener = (): void => {
+            listener(true);
+        };
+
+        const errorListener = (): void => {
+            listener(false);
+        };
+
+        const listener = (success: boolean): void => {
+            this.element.removeEventListener('load', loadListener);
+            this.element.removeEventListener('error', errorListener);
+            this.onLoad.emit(success);
             this.loaded = true;
         };
 
-        this.element.addEventListener('load', listener);
-        this.element.addEventListener('error', listener);
+        this.element.addEventListener('load', loadListener);
+        this.element.addEventListener('error', errorListener);
     }
 
     /**

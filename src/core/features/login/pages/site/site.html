@@ -116,7 +116,7 @@
 <ng-template #sitelisting let-site="site">
     <ion-item button (click)="connect(site.url, $event)" [ngClass]="site.className" [attr.aria-label]="site.name" [detail]="true">
         <ion-thumbnail *ngIf="siteFinderSettings.displayimage" slot="start">
-            <img [src]="site.imageurl" *ngIf="site.imageurl" core-external-content onError="this.src='assets/icon/icon.png'" alt=""
+            <img [url]="site.imageurl" *ngIf="site.imageurl" core-external-content onError="this.src='assets/icon/icon.png'" alt=""
                 role="presentation">
             <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon" alt="" role="presentation">
         </ion-thumbnail>

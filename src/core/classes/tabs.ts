@@ -277,15 +277,17 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
         }
 
         try {
-            const selectedTab = this.calculateInitialTab();
-            if (!selectedTab) {
-                // No enabled tabs, return.
-                throw new CoreError('No enabled tabs.');
-            }
+            if (!this.firstSelectedTab) {
+                const selectedTab = this.calculateInitialTab();
+                if (!selectedTab) {
+                    // No enabled tabs, return.
+                    throw new CoreError('No enabled tabs.');
+                }
 
-            this.firstSelectedTab = selectedTab.id;
-            if (this.firstSelectedTab !== undefined) {
-                this.selectTab(this.firstSelectedTab);
+                this.firstSelectedTab = selectedTab.id;
+                if (this.firstSelectedTab !== undefined) {
+                    this.selectTab(this.firstSelectedTab);
+                }
             }
 
             // Check which arrows should be shown.
@@ -488,6 +490,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
         this.selectHistory.push(tab.id ?? '');
         this.selected = tab.id;
         this.selectedIndex = tabIndex;
+        this.swiper?.slideTo(this.selectedIndex, 0);
 
         this.ionChange.emit(tab);
     }
