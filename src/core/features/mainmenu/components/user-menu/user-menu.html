@@ -13,7 +13,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <core-loading [hideUntil]="handlersLoaded">
+    <core-loading [hideUntil]="handlersLoaded" placeholderType="column" placeholderHeight="48px">
         <ion-list>
             <!-- Site info with URL and clickable. -->
             <ion-item button class="core-usermenu-siteinfo ion-text-wrap" *ngIf="siteInfo && displaySiteUrl" lines="full" [detail]="false"

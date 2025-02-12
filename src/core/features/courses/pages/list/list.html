@@ -28,7 +28,7 @@
         [placeholder]="'core.courses.search' | translate" [searchLabel]="'core.courses.search' | translate" [autoFocus]="searchMode"
         searchArea="CoreCoursesSearch" [lengthCheck]="1" />
 
-    <core-loading [hideUntil]="loaded" [message]="loadingMessage">
+    <core-loading [hideUntil]="loaded" [message]="loadingMessage" placeholderType="column" placeholderHeight="108px">
         <ng-container *ngIf="searchMode && searchTotal > 0">
             <ion-item-divider>
                 <ion-label>

@@ -18,7 +18,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding" (keydown)="keyDown($event)" (keyup)="keyUp($event)">
-    <core-loading [hideUntil]="!showLoading">
+    <core-loading [hideUntil]="!showLoading" placeholderType="imageandboxes">
         <div class="list-item-limited-width" *ngIf="site">
             <ion-card *ngIf="!isLoggedOut" class="core-warning-card core-login-reconnect-warning">
                 <ion-item>
