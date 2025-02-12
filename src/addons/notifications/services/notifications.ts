@@ -75,7 +75,7 @@ export class AddonNotificationsProvider {
         }
 
         const notificationMessage: AddonNotificationsNotificationMessage = {
-            id: notification.id ?? 0,
+            id: notification.savedmessageid || notification.id || 0,
             useridfrom: notification.userfromid ? Number(notification.userfromid) : USER_NOREPLY_USER,
             userfromfullname: notification.userfromfullname ?? Translate.instant('core.noreplyname'),
             useridto: notification.usertoid ? Number(notification.usertoid) : (siteInfo?.userid ?? 0),
@@ -106,14 +106,14 @@ export class AddonNotificationsProvider {
      * @param notifications List of notifications.
      * @returns Promise resolved with notifications.
      */
-    protected async formatNotificationsData(
+    async formatNotificationsData(
         notifications: AddonNotificationsNotificationMessage[],
     ): Promise<AddonNotificationsNotificationMessageFormatted[]> {
 
         const promises = notifications.map(async (notificationRaw) => {
             const notification = <AddonNotificationsNotificationMessageFormatted> notificationRaw;
 
-            notification.mobiletext = notification.fullmessagehtml || notification.fullmessage || notification.smallmessage;
+            notification.mobiletext = notification.fullmessagehtml || notification.fullmessage || notification.smallmessage || '';
             notification.moodlecomponent = notification.component;
             notification.notification = 1;
             notification.notif = 1;
@@ -127,7 +127,7 @@ export class AddonNotificationsProvider {
             if (notification.customdata?.courseid) {
                 notification.courseid = <number> notification.customdata.courseid;
             } else if (!notification.courseid) {
-                const courseIdMatch = notification.fullmessagehtml.match(/course\/view\.php\?id=([^"]*)/);
+                const courseIdMatch = notification.fullmessagehtml?.match(/course\/view\.php\?id=([^"]*)/);
                 if (courseIdMatch?.[1]) {
                     notification.courseid = parseInt(courseIdMatch[1], 10);
                 }
@@ -481,10 +481,10 @@ export type AddonNotificationsNotificationMessage = {
     useridto: number; // User to id.
     subject: string; // The message subject.
     text: string; // The message text formated.
-    fullmessage: string; // The message.
-    fullmessageformat: number; // Fullmessage format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    fullmessagehtml: string; // The message in html.
-    smallmessage: string; // The shorten message.
+    fullmessage: string | null; // The message.
+    fullmessageformat: number | null; // Fullmessage format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    fullmessagehtml: string | null; // The message in html.
+    smallmessage: string | null; // The shorten message.
     notification: number; // Is a notification?.
     contexturl: string | null; // Context URL.
     contexturlname: string | null; // Context URL link name.
