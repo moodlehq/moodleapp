@@ -50,13 +50,11 @@ Feature: Notifications
     And I should find "Test 01" in the app
 
     # Receive a push notification
-    And the following "notifications" exist:
-      | subject | userfrom | userto   | timecreated | timeread   |
-      | Test 31 | student2 | student1 | 1649766631  | null       |
     When I click a push notification in the app for:
-      | username | message   | title   | subject | userfrom |
-      | student1 | Test push | Test 31 | Push 01 | student2 |
+      | username | message   | title   |
+      | student1 | Test push | Push 01 |
     Then I should find "Push 01" in the app
+    And I should find "Test push" in the app
 
     # Open notification detail
     When I go back in the app
