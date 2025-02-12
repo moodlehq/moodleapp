@@ -1,28 +1,29 @@
 @if (avatarUrl) {
 
     @if (linkProfile) {
-        <img class="userpicture" [url]="avatarUrl" [alt]="fullname" core-external-content (error)="loadImageError()"
-            (ariaButtonClick)="gotoProfile($event)" [siteId]="siteId">
+        <img class="userpicture" [url]="avatarUrl" [alt]="fullname" core-external-content (onLoad)="imageLoaded($event)"
+            (ariaButtonClick)="gotoProfile($event)" [siteId]="siteId" [hidden]="imageError">
     } @else {
         <img class="userpicture" [url]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content
-            (error)="loadImageError()" aria-hidden="true" [siteId]="siteId">
+            (onLoad)="imageLoaded($event)" aria-hidden="true" [siteId]="siteId" [hidden]="imageError">
     }
 
-} @else if (!avatarUrl && initials) {
-
-    @if (linkProfile) {
-        <div class="userinitials" [attr.aria-label]="fullname" [title]="fullname" (ariaButtonClick)="gotoProfile($event)"
-            [attr.data-initials]="initials">
-        </div>
+}
+@if (!avatarUrl || imageError){
+    @if (initials) {
+        @if (linkProfile) {
+            <div class="userinitials" [attr.aria-label]="fullname" [title]="fullname" (ariaButtonClick)="gotoProfile($event)"
+                [attr.data-initials]="initials">
+            </div>
+        } @else {
+            <div class="userinitials" [attr.aria-label]="'core.pictureof' | translate:{$a: fullname}"
+                [title]="'core.pictureof' | translate:{$a: fullname}" role="img" [attr.data-initials]="initials" aria-hidden="true">
+            </div>
+        }
     } @else {
-        <div class="userinitials" [attr.aria-label]="'core.pictureof' | translate:{$a: fullname}"
-            [title]="'core.pictureof' | translate:{$a: fullname}" role="img" [attr.data-initials]="initials" aria-hidden="true">
-        </div>
+        <!-- During loading -->
+        <img class="userpicture_loading" src="assets/img/user-avatar.png" role="presentation" aria-hidden="true" alt="">
     }
-
-} @else {
-    <!-- During loading -->
-    <img class="userpicture_loading" src="assets/img/user-avatar.png" role="presentation" aria-hidden="true" alt="">
 }
 
 @if (checkOnline && isOnline()) {

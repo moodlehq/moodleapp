@@ -81,7 +81,7 @@
                             </ion-badge>
                         </ion-label>
                         <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" slot="end" [attr.aria-label]="grade.iconAlt" />
-                        <img *ngIf="grade.image && !grade.itemmodule" [src]="grade.image" slot="end" [alt]="grade.iconAlt"
+                        <img *ngIf="grade.image && !grade.itemmodule" [url]="grade.image" slot="end" [alt]="grade.iconAlt"
                             core-external-content />
                         <ion-icon *ngIf="grade.image && grade.itemmodule" name="fas-chart-bar" slot="end"
                             [attr.aria-label]="grade.iconAlt" />
