@@ -80,6 +80,7 @@ export default class CoreMainMenuHomePage implements OnInit {
                 class: handler.class,
                 icon: handler.icon,
                 badge: handler.badge,
+                enabled: handler.enabled ?? true,
             };
         });
 
