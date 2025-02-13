@@ -19,10 +19,10 @@ import { CoreError } from '@classes/errors/error';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CanLeave } from '@guards/can-leave';
-import { CoreFileEntry } from '@services/file-helper';
+import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CoreWSError } from '@classes/errors/wserror';
 import { Translate } from '@singletons';
@@ -106,7 +106,11 @@ export default class AddonModGlossaryEditPage implements OnInit, CanLeave {
                 this.editorExtraParams.timecreated = timecreated;
                 this.handler = new AddonModGlossaryOfflineFormHandler(this, timecreated);
             } else if (entrySlug) {
-                const { entry } = await AddonModGlossary.getEntry(Number(entrySlug));
+                // Get the entry content unfiltered to edit it.
+                const { entry } = await AddonModGlossary.getEntry(Number(entrySlug), {
+                    readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
+                    filter: false,
+                });
 
                 this.entry = entry;
                 this.editorExtraParams.timecreated = entry.timecreated;
@@ -641,7 +645,10 @@ class AddonModGlossaryOnlineFormHandler extends AddonModGlossaryFormHandler {
         const data = this.page.data;
 
         data.concept = this.entry.concept;
-        data.definition = this.entry.definition || '';
+        data.definition = CoreFileHelper.replacePluginfileUrls(
+            this.entry.definition,
+            this.entry.definitioninlinefiles || [],
+        );
         data.timecreated = this.entry.timecreated;
         data.usedynalink = this.entry.usedynalink;
 
@@ -678,7 +685,10 @@ class AddonModGlossaryOnlineFormHandler extends AddonModGlossaryFormHandler {
 
         const data = this.page.data;
         const options = this.getSaveOptions(glossary);
-        const definition = CoreText.formatHtmlLines(data.definition);
+        const definition = CoreText.formatHtmlLines(CoreFileHelper.restorePluginfileUrls(
+            data.definition,
+            this.entry.definitioninlinefiles || [],
+        ));
 
         // Upload attachments, if any.
         const attachmentsId = await this.uploadAttachments();
