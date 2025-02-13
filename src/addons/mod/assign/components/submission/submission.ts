@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, ViewChild, Optional, ViewChildren, QueryList } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, Optional, ViewChildren, QueryList } from '@angular/core';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -33,7 +33,6 @@ import {
     AddonModAssignManualSyncData,
     AddonModAssignSync,
 } from '../../services/assign-sync';
-import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreTabComponent } from '@components/tabs/tab';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
@@ -92,7 +91,6 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
 })
 export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, CanLeave {
 
-    @ViewChild(CoreTabsComponent) tabs!: CoreTabsComponent;
     @ViewChildren(AddonModAssignSubmissionPluginComponent) submissionComponents!:
         QueryList<AddonModAssignSubmissionPluginComponent>;
 
@@ -102,7 +100,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     @Input() blindId?: number; // Blinded user ID (if it's blinded).
 
     loaded = false; // Whether data has been loaded.
-    selectedTab = 'submission'; // Tab selected on start.
     assign?: AddonModAssignAssign; // The assignment the submission belongs to.
     userSubmission?: AddonModAssignSubmissionFormatted; // The submission object.
     isSubmittedForGrading = false; // Whether the submission has been submitted for grading.
@@ -112,7 +109,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     submittedOffline = false; // Whether it was submitted in offline.
     removedOffline = false; // Whether the submission was removed in offline.
     fromDate?: string; // Readable date when the assign started accepting submissions.
-    currentAttempt = 0; // The current attempt number.
+    currentAttemptNumber = 0; // The current attempt number.
     maxAttemptsText: string; // The text for maximum attempts.
     blindMarking = false; // Whether blind marking is enabled.
     user?: CoreUserProfile; // The user.
@@ -132,7 +129,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     timeRemaining = ''; // Message about time remaining.
     timeRemainingClass = ''; // Class to apply to time remaining message.
     timeLimitEndTime = 0; // If time limit is enabled and submission is ongoing, the end time for the timer.
-    statusTranslated?: string; // Status.
+    statusTranslationId?: string; // Status.
     statusColor = ''; // Color to apply to the status.
     unsupportedEditPlugins: string[] = []; // List of submission plugins that don't support edit.
     grade: AddonModAssignSubmissionGrade = {
@@ -426,7 +423,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         if (!this.assign || !this.userSubmission) {
             return;
         }
-        const message = this.assign?.timelimit ?
+        const message = this.assign.timelimit ?
             'addon.mod_assign.removesubmissionconfirmwithtimelimit' :
             'addon.mod_assign.removesubmissionconfirm';
         try {
@@ -512,20 +509,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     }
 
     /**
-     * User entered the page that contains the component.
-     */
-    ionViewDidEnter(): void {
-        this.tabs?.ionViewDidEnter();
-    }
-
-    /**
-     * User left the page that contains the component.
-     */
-    ionViewDidLeave(): void {
-        this.tabs?.ionViewDidLeave();
-    }
-
-    /**
      * Invalidate and refresh data.
      *
      * @param sync Whether to try to synchronize data.
@@ -558,7 +541,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             });
         }
 
-        await CorePromiseUtils.ignoreErrors(Promise.all(promises));
+        await CorePromiseUtils.allPromisesIgnoringErrors(promises);
 
         await this.loadData(sync);
     }
@@ -584,12 +567,12 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             // Get the assignment.
             this.assign = await AddonModAssign.getAssignment(this.courseId, this.moduleId);
 
-            if (this.submitId != this.currentUserId && sync) {
+            if (this.submitId !== this.currentUserId && sync) {
                 // Teacher viewing a student submission. Try to sync the assign, there could be offline grades stored.
                 try {
                     const result = await AddonModAssignSync.syncAssign(this.assign.id);
 
-                    if (result && result.updated) {
+                    if (result?.updated) {
                         CoreEvents.trigger(ADDON_MOD_ASSIGN_MANUAL_SYNCED, {
                             assignId: this.assign.id,
                             warnings: result.warnings,
@@ -667,8 +650,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
     /**
      * Load profile of submission's user.
-     *
-     * @returns Promise resolved when done.
      */
     protected async loadSubmissionUserProfile(): Promise<void> {
         this.user = await CoreUser.getProfile(this.submitId, this.courseId);
@@ -676,8 +657,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
     /**
      * Load offline data for the submission (not the submission grade).
-     *
-     * @returns Promise resolved when done.
      */
     protected async loadSubmissionOfflineData(): Promise<void> {
         if (!this.assign) {
@@ -703,7 +682,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
      *
      * @param assign Assign data.
      * @param feedback The feedback data from the submission status.
-     * @returns Promise resolved when done.
      */
     protected async loadFeedback(assign: AddonModAssignAssign, feedback?: AddonModAssignSubmissionFeedback): Promise<void> {
         this.grade = {
@@ -747,10 +725,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 this.grade.gradebookGrade = CoreUtils.formatFloat(this.grade.grade);
                 this.originalGrades.grade = this.grade.grade;
             }
-        } else {
-            // If no feedback, always show Submission.
-            this.selectedTab = 'submission';
-            this.tabs.selectTab(this.selectedTab);
         }
 
         this.grade.gradingStatus = this.lastAttempt?.gradingstatus;
@@ -853,8 +827,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
     /**
      * Get the submission plugins that don't support editing.
-     *
-     * @returns Promise resolved when done.
      */
     protected async loadUnsupportedPlugins(): Promise<void> {
         this.unsupportedEditPlugins = await AddonModAssign.getUnsupportedEditPlugins(this.userSubmission?.plugins || []);
@@ -878,21 +850,21 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
         if (this.editedOffline || this.submittedOffline) {
             // Added, edited or submitted offline.
-            this.statusTranslated = Translate.instant('core.notsent');
+            this.statusTranslationId = 'core.notsent';
             this.statusColor = CoreIonicColorNames.WARNING;
         } else if (!this.assign.teamsubmission) {
 
             // Single submission.
             if (this.userSubmission && this.userSubmission.status != this.statusNew && !this.removedOffline) {
-                this.statusTranslated = Translate.instant('addon.mod_assign.submissionstatus_' + this.userSubmission.status);
+                this.statusTranslationId = 'addon.mod_assign.submissionstatus_' + this.userSubmission.status;
                 this.statusColor = AddonModAssign.getSubmissionStatusColor(this.userSubmission.status);
             } else {
                 if (!status.lastattempt?.submissionsenabled) {
-                    this.statusTranslated = Translate.instant('addon.mod_assign.noonlinesubmissions');
+                    this.statusTranslationId = 'addon.mod_assign.noonlinesubmissions';
                     this.statusColor =
                         AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_ONLINE_SUBMISSIONS);
                 } else {
-                    this.statusTranslated = Translate.instant('addon.mod_assign.noattempt');
+                    this.statusTranslationId = 'addon.mod_assign.noattempt';
                     this.statusColor = AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_ATTEMPT);
                 }
             }
@@ -900,18 +872,18 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
             // Team submission.
             if (!status.lastattempt?.submissiongroup && this.assign.preventsubmissionnotingroup && !this.removedOffline) {
-                this.statusTranslated = Translate.instant('addon.mod_assign.nosubmission');
+                this.statusTranslationId = 'addon.mod_assign.nosubmission';
                 this.statusColor = AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_SUBMISSION);
             } else if (this.userSubmission && this.userSubmission.status != this.statusNew && !this.removedOffline) {
-                this.statusTranslated = Translate.instant('addon.mod_assign.submissionstatus_' + this.userSubmission.status);
+                this.statusTranslationId = 'addon.mod_assign.submissionstatus_' + this.userSubmission.status;
                 this.statusColor = AddonModAssign.getSubmissionStatusColor(this.userSubmission.status);
             } else {
                 if (!status.lastattempt?.submissionsenabled) {
-                    this.statusTranslated = Translate.instant('addon.mod_assign.noonlinesubmissions');
+                    this.statusTranslationId = 'addon.mod_assign.noonlinesubmissions';
                     this.statusColor =
                         AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_ONLINE_SUBMISSIONS);
                 } else {
-                    this.statusTranslated = Translate.instant('addon.mod_assign.nosubmission');
+                    this.statusTranslationId = 'addon.mod_assign.nosubmission';
                     this.statusColor = AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_SUBMISSION);
                 }
             }
@@ -983,8 +955,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
     /**
      * Submit a grade and feedback.
-     *
-     * @returns Promise resolved when done.
      */
     async submitGrade(): Promise<void> {
         // Check if there's something to be saved.
@@ -1047,8 +1017,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 }, this.siteId);
             }
         } finally {
-            // Select submission view.
-            this.tabs.selectTab('submission');
             modal.dismiss();
         }
     }
@@ -1057,7 +1025,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
      * Treat the grade info.
      *
      * @param assign Assign info.
-     * @returns Promise resolved when done.
      */
     protected async treatGradeInfo(assign: AddonModAssignAssign): Promise<void> {
         if (!this.gradeInfo) {
@@ -1077,7 +1044,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             this.grade.method = 'simple';
         }
 
-        this.canSaveGrades = this.grade.method == 'simple'; // Grades can be saved if simple grading.
+        this.canSaveGrades = this.grade.method === 'simple'; // Grades can be saved if simple grading.
 
         const gradeNotReleased = assign.markingworkflow &&
             this.grade.gradingStatus !== AddonModAssignGradingStates.MARKING_WORKFLOW_STATE_RELEASED;
@@ -1222,7 +1189,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         this.userSubmission = AddonModAssign.getSubmissionObjectFromAttempt(this.assign, lastAttempt);
 
         if (this.assign.attemptreopenmethod != this.attemptReopenMethodNone && this.userSubmission) {
-            this.currentAttempt = this.userSubmission.attemptnumber + 1;
+            this.currentAttemptNumber = this.userSubmission.attemptnumber + 1;
         }
 
         this.setStatusNameAndClass(submissionStatus);
@@ -1241,8 +1208,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             }
 
             // Get the members that need to submit.
-            if (this.userSubmission &&
-                this.userSubmission.status != this.statusNew &&
+            if (this.userSubmission?.status !== this.statusNew &&
                 lastAttempt.submissiongroupmemberswhoneedtosubmit
             ) {
                 lastAttempt.submissiongroupmemberswhoneedtosubmit.forEach((member) => {
@@ -1304,7 +1270,6 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
      * @param tab The tab that was selected.
      */
     tabSelected(tab: CoreTabComponent): void {
-        this.selectedTab = tab.id;
         // Block sync when selecting grade tab, unblock when leaving it.
         this.setGradeSyncBlocked(tab.id === 'grade');
     }
