@@ -46,12 +46,12 @@ export class AddonModAssignFeedbackPluginBaseComponent implements IAddonModAssig
             throw new CoreError('Cannot edit feedback');
         }
 
-        const { AddonModAssignEditFeedbackModalComponent } =
-            await import('@addons/mod/assign/components/edit-feedback-modal/edit-feedback-modal');
+        const { AddonModAssignEditPluginFeedbackModalComponent } =
+            await import('@addons/mod/assign/components/edit-feedback-plugin-modal/edit-feedback-plugin-modal');
 
         // Create the navigation modal.
         const modalData = await CoreModals.openModal<AddonModAssignFeedbackCommentsTextData>({
-            component: AddonModAssignEditFeedbackModalComponent,
+            component: AddonModAssignEditPluginFeedbackModalComponent,
             componentProps: {
                 assign: this.assign,
                 submission: this.submission,

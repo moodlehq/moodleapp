@@ -27,15 +27,15 @@ import { AddonModAssignFeedbackPluginComponent } from '../feedback-plugin/feedba
  * Modal that allows editing a feedback plugin.
  */
 @Component({
-    selector: 'addon-mod-assign-edit-feedback-modal',
-    templateUrl: 'edit-feedback-modal.html',
+    selector: 'addon-mod-assign-edit-feedback-plugin-modal',
+    templateUrl: 'edit-feedback-plugin-modal.html',
     standalone: true,
     imports: [
         CoreSharedModule,
         AddonModAssignFeedbackPluginComponent,
     ],
 })
-export class AddonModAssignEditFeedbackModalComponent {
+export class AddonModAssignEditPluginFeedbackModalComponent {
 
     @Input({ required: true }) assign!: AddonModAssignAssign; // The assignment.
     @Input({ required: true }) submission!: AddonModAssignSubmission; // The submission.

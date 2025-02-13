@@ -140,20 +140,6 @@ export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDes
     }
 
     /**
-     * User entered the page.
-     */
-    ionViewDidEnter(): void {
-        this.submissionComponent?.ionViewDidEnter();
-    }
-
-    /**
-     * User left the page.
-     */
-    ionViewDidLeave(): void {
-        this.submissionComponent?.ionViewDidLeave();
-    }
-
-    /**
      * Get the submission.
      *
      * @returns Promise resolved when done.

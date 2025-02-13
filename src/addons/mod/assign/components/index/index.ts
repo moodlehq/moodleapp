@@ -381,24 +381,6 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * User entered the page that contains the component.
-     */
-    ionViewDidEnter(): void {
-        super.ionViewDidEnter();
-
-        this.submissionComponent?.ionViewDidEnter();
-    }
-
-    /**
-     * User left the page that contains the component.
-     */
-    ionViewDidLeave(): void {
-        super.ionViewDidLeave();
-
-        this.submissionComponent?.ionViewDidLeave();
-    }
-
-    /**
      * @inheritdoc
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModAssignAutoSyncData): boolean {
