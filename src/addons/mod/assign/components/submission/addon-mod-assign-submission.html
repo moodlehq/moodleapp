@@ -69,27 +69,25 @@
                     </ion-item>
                 }
 
-                @if (statusTranslationId) {
+                @if (submissionStatusBadge) {
                     <ion-item>
                         <ion-label>
                             <p class="item-heading">{{'addon.mod_assign.submissionstatus' | translate}}</p>
-                            <p><ion-badge [color]="statusColor" class="ion-text-wrap ion-text-start">
-                                    {{ statusTranslationId | translate }}
+                            <p><ion-badge [color]="submissionStatusBadge.color" class="ion-text-wrap ion-text-start">
+                                    {{ submissionStatusBadge.translationId | translate }}
                                 </ion-badge></p>
                         </ion-label>
                     </ion-item>
                 }
 
-                @if (gradingStatusTranslationId) {
+                @if (gradingStatusBadge) {
                     <ion-item>
                         <ion-label>
                             <p class="item-heading">{{'addon.mod_assign.gradingstatus' | translate}}</p>
                             <p>
-                                @if (gradingStatusTranslationId) {
-                                    <ion-badge class="ion-text-wrap ion-text-start" [color]="gradingColor">
-                                        {{ gradingStatusTranslationId | translate }}
-                                    </ion-badge>
-                                }
+                                <ion-badge class="ion-text-wrap ion-text-start" [color]="gradingStatusBadge.color">
+                                    {{ gradingStatusBadge.translationId | translate }}
+                                </ion-badge>
                             </p>
                         </ion-label>
                     </ion-item>
@@ -109,13 +107,13 @@
                     @if (fromDate) {
                         <ion-item class="ion-text-wrap">
                             <ion-label>
-                                <p>
-                                    @if (assign.intro) {
-                                        {{'addon.mod_assign.allowsubmissionsfromdatesummary' | translate: {'$a': fromDate} }}
-                                    } @else {
-                                        {{ 'addon.mod_assign.allowsubmissionsanddescriptionfromdatesummary' | translate: {'$a': fromDate} }}
-                                    }
-                                </p>
+                                @if (assign.intro) {
+                                    <p [innerHTML]="'addon.mod_assign.allowsubmissionsfromdatesummary' | translate: {'$a': fromDate}"></p>
+                                } @else {
+                                    <p
+                                        [innerHTML]="'addon.mod_assign.allowsubmissionsanddescriptionfromdatesummary' | translate: {'$a': fromDate}">
+                                    </p>
+                                }
                             </ion-label>
                         </ion-item>
                     }
@@ -159,7 +157,7 @@
                                 <core-timer [endTime]="timeLimitEndTime" mode="basic" timeUpText="00:00:00" [timeLeftClassThreshold]="-1"
                                     [underTimeClassThresholds]="[300, 900]" (finished)="timeUp()" />
                             } @else {
-                                <p>{{timeRemaining}}</p>
+                                <p [innerHTML]="timeRemaining"></p>
                             }
                         </ion-label>
                     </ion-item>
@@ -183,7 +181,7 @@
                             <p class="item-heading">{{ 'addon.mod_assign.editingstatus' | translate }}</p>
                             @if (lastAttempt.caneditowner) {
                                 <p>{{ 'addon.mod_assign.submissioneditable' | translate }}</p>
-                            } @if (!lastAttempt.caneditowner) {
+                            } @else {
                                 <p>{{ 'addon.mod_assign.submissionnoteditable' | translate }}</p>
                             }
                         </ion-label>
@@ -238,171 +236,295 @@
                             <ion-icon name="fas-pen" slot="start" aria-hidden="true" />
                             {{ 'addon.mod_assign.editsubmission' | translate }}
                         </ion-button>
-                        <ion-button *ngIf="isRemoveAvailable" fill="outline" expand="block" class="ion-margin ion-text-wrap"
-                            (click)="remove()">
-                            <ion-icon name="fas-trash" color="danger" slot="start" aria-hidden="true" />
-                            {{ 'addon.mod_assign.removesubmission' | translate }}
-                        </ion-button>
+                        @if (isRemoveAvailable) {
+                            <ion-button fill="outline" expand="block" class="ion-margin ion-text-wrap" (click)="remove()">
+                                <ion-icon name="fas-trash" color="danger" slot="start" aria-hidden="true" />
+                                {{ 'addon.mod_assign.removesubmission' | translate }}
+                            </ion-button>
+                        }
                     </div>
                 }
-
-                @if (feedback && (feedback.gradeddate || hasOfflineGrade)) {
+            </ion-card>
+            @if (feedback || workflowStatusTranslationId) {
+                <ion-card>
                     <ion-item class="divider">
                         <ion-label>
-                            <h2 class="big">{{'addon.mod_assign.grade' | translate}}</h2>
+                            <h2 class="big">{{'addon.mod_assign.feedback' | translate}}</h2>
                         </ion-label>
                     </ion-item>
 
-                    <ion-item class="ion-text-wrap core-grading-summary" *ngIf="feedback.gradefordisplay">
-                        <ion-label>
-                            <p class="item-heading">{{ 'addon.mod_assign.currentgrade' | translate }}</p>
-                            <p>
-                                <core-format-text [text]="feedback.gradefordisplay" [filter]="false" />
-                            </p>
-                        </ion-label>
-                        <ion-button slot="end" *ngIf="feedback.advancedgrade" (click)="showAdvancedGrade()"
-                            [ariaLabel]="'core.showadvanced' |translate">
-                            <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
-                        </ion-button>
-                    </ion-item>
-
-                    <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback.plugins" [assign]="assign"
-                        [submission]="userSubmission" [userId]="submitId" [plugin]="plugin" />
+                    @if (feedback && feedback.gradefordisplay) {
+                        <ion-item class="ion-text-wrap core-grading-summary">
+                            <ion-label>
+                                <p class="item-heading">{{ 'core.gradenoun' | translate }}</p>
+                                <p>
+                                    <core-format-text [text]="feedback.gradefordisplay" [filter]="false" />
+                                </p>
+                            </ion-label>
+                            @if (feedback.advancedgrade) {
+                                <ion-button slot="end" (click)="showAdvancedGrade(feedback.gradefordisplay)"
+                                    [ariaLabel]="'core.showadvanced' |translate">
+                                    <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
+                                </ion-button>
+                            }
+                        </ion-item>
+                    }
 
                     <!-- Workflow status. -->
-                    <ion-item class="ion-text-wrap" *ngIf="workflowStatusTranslationId">
-                        <ion-label>
-                            <p class="item-heading">{{ 'addon.mod_assign.markingworkflowstate' | translate }}</p>
-                            <p>{{ workflowStatusTranslationId | translate }}</p>
-                        </ion-label>
-                    </ion-item>
+                    @if (workflowStatusTranslationId) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>
+                                <p class="item-heading">{{ 'addon.mod_assign.markingworkflowstate' | translate }}</p>
+                                <p>{{ workflowStatusTranslationId | translate }}</p>
+                            </ion-label>
+                        </ion-item>
+                    }
 
-                    <!-- Data about the grader (teacher who graded). -->
-                    <ion-item class="ion-text-wrap" *ngIf="grader" core-user-link [userId]="grader.id" [courseId]="courseId"
-                        [attr.aria-label]="grader.fullname" [detail]="true">
-                        <core-user-avatar [user]="grader" slot="start" [linkProfile]="false" />
-                        <ion-label>
-                            <p class="item-heading">{{ 'addon.mod_assign.gradedby' | translate }}</p>
-                            <p class="item-heading">{{ grader.fullname }}</p>
-                            <p *ngIf="feedback.gradeddate">{{ feedback.gradeddate * 1000 | coreFormatDate }}</p>
-                        </ion-label>
-                    </ion-item>
 
-                    <!-- Grader is hidden, display only the grade date. -->
-                    <ion-item class="ion-text-wrap" *ngIf="!grader && feedback.gradeddate">
-                        <ion-label>
-                            <p class="item-heading">{{ 'addon.mod_assign.gradedon' | translate }}</p>
-                            <p>{{ feedback.gradeddate * 1000 | coreFormatDate }}</p>
-                        </ion-label>
-                    </ion-item>
-                }
-            </ion-card>
+                    @if (feedback) {
+                        @if (feedback.gradeddate && !grader) {
+                            <!-- Grader is hidden, display only the grade date. -->
+                            <ion-item class="ion-text-wrap">
+                                <ion-label>
+                                    <p class="item-heading">{{ 'addon.mod_assign.gradedon' | translate }}</p>
+                                    <p>{{ feedback.gradeddate * 1000 | coreFormatDate }}</p>
+                                </ion-label>
+                            </ion-item>
+                        } @else if (grader) {
+                            <!-- Data about the grader (teacher who graded). -->
+                            <ion-item class="ion-text-wrap grader" core-user-link [userId]="grader.id" [courseId]="courseId"
+                                [attr.aria-label]="grader.fullname" [detail]="true">
+                                <ion-label>
+                                    <p class="item-heading">{{ 'addon.mod_assign.gradedby' | translate }}</p>
+                                    <div class="flex">
+                                        <core-user-avatar [user]="grader" [linkProfile]="false" />
+                                        <div>
+                                            <p>{{ grader.fullname }}</p>
+                                            @if (feedback.gradeddate) {
+                                                <p>{{ feedback.gradeddate * 1000 | coreFormatDate }}</p>
+                                            }
+                                        </div>
+                                    </div>
+                                </ion-label>
+                            </ion-item>
+                        }
+
+                        <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback.plugins" [assign]="assign"
+                            [submission]="userSubmission" [userId]="submitId" [plugin]="plugin" />
+                    }
+                </ion-card>
+            }
+
+            @if (previousAttempts.length) {
+                <!-- List of user attempts. -->
+                <ion-card class="addon-mod_assign-attempts-summary">
+                    <ion-card-header class="ion-text-wrap">
+                        <ion-card-title>{{ 'addon.mod_assign.attempthistory' | translate }}</ion-card-title>
+                    </ion-card-header>
+                    <ion-accordion-group class="striped">
+                        @for (attempt of previousAttempts; track attempt.attemptnumber) {
+                            <ion-accordion [value]="attempt.attemptnumber" toggleIconSlot="start">
+                                <ion-item slot="header" class="ion-text-wrap addon-mod_assign-attempt-title" lines="none">
+                                    <ion-label>
+                                        <h3>{{ 'addon.mod_assign.attempt' | translate : { '$a' : attempt.attemptnumber + 1 } }}</h3>
+                                        @if (attempt.submission) {
+                                            <p>{{attempt.submission.timemodified * 1000 | coreFormatDate}}</p>
+                                        }
+                                    </ion-label>
+                                </ion-item>
+                                <div class="addon-mod_assign-attempt-details" slot="content">
+                                    @if (attempt.submission) {
+                                        @if (attempt.submissionStatusBadge) {
+                                            <ion-item>
+                                                <ion-label>
+                                                    <p class="item-heading">{{'addon.mod_assign.submissionstatus' | translate}}</p>
+                                                    <p><ion-badge [color]="attempt.submissionStatusBadge.color"
+                                                            class="ion-text-wrap ion-text-start">
+                                                            {{ attempt.submissionStatusBadge.translationId | translate }}
+                                                        </ion-badge></p>
+                                                </ion-label>
+                                            </ion-item>
+                                        }
+
+                                        <addon-mod-assign-submission-plugin *ngFor="let plugin of attempt.submission.plugins"
+                                            [assign]="assign" [submission]="attempt.submission" [plugin]="plugin" />
+                                    }
+                                    @if (attempt.grade) {
+                                        <ion-item class="divider">
+                                            <ion-label>
+                                                <h4 class="big">{{'addon.mod_assign.grade' | translate}}</h4>
+                                            </ion-label>
+                                        </ion-item>
+
+                                        @if (attempt.grade.gradefordisplay) {
+                                            <ion-item class="ion-text-wrap core-grading-summary">
+                                                <ion-label>
+                                                    <p class="item-heading">{{ 'core.gradenoun' | translate }}</p>
+                                                    <p>
+                                                        <core-format-text [text]="attempt.grade.gradefordisplay" [filter]="false" />
+                                                    </p>
+                                                </ion-label>
+                                                @if (attempt.advancedgrade) {
+                                                    <ion-button slot="end" (click)="showAdvancedGrade(attempt.grade.gradefordisplay)"
+                                                        [ariaLabel]="'core.showadvanced' |translate">
+                                                        <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
+                                                    </ion-button>
+                                                }
+                                            </ion-item>
+                                        }
+
+                                        @if (attempt.grade.timemodified && !attempt.grader) {
+                                            <!-- Grader is hidden, display only the grade date. -->
+                                            <ion-item class="ion-text-wrap">
+                                                <ion-label>
+                                                    <p class="item-heading">{{ 'addon.mod_assign.gradedon' | translate }}</p>
+                                                    <p>{{ attempt.grade.timemodified * 1000 | coreFormatDate }}</p>
+                                                </ion-label>
+                                            </ion-item>
+                                        } @else if (attempt.grader) {
+                                            <!-- Data about the grader (teacher who graded). -->
+                                            <ion-item class="ion-text-wrap grader" core-user-link [userId]="attempt.grader.id"
+                                                [courseId]="courseId" [attr.aria-label]="attempt.grader.fullname" [detail]="true">
+                                                <ion-label>
+                                                    <p class="item-heading">{{ 'addon.mod_assign.gradedby' | translate }}</p>
+                                                    <div class="flex">
+                                                        <core-user-avatar [user]="attempt.grader" [linkProfile]="false" />
+                                                        <div>
+                                                            <p class="item-heading">{{ attempt.grader.fullname }}</p>
+                                                            @if (attempt.grade.timemodified) {
+                                                                <p>{{ attempt.grade.timemodified * 1000 | coreFormatDate }}</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </ion-label>
+                                            </ion-item>
+                                        }
+
+                                        <addon-mod-assign-feedback-plugin *ngFor="let plugin of attempt.feedbackplugins" [assign]="assign"
+                                            [submission]="attempt.submission" [userId]="submitId" [plugin]="plugin" />
+                                    }
+                                </div>
+                            </ion-accordion>
+                        }
+                    </ion-accordion-group>
+                </ion-card>
+            }
         }
     </div>
 </core-loading>
 
-@if (assign && loaded && (!isSubmittedForGrading || isGrading)) {
+@if (assign && loaded && (!isSubmittedForGrading || canGrade)) {
     <!-- Add and submit buttons. -->
     <div collapsible-footer slot="fixed" appearOnBottom>
-        <div class="list-item-limited-width" *ngIf="canEdit || canSubmit || isGrading">
-            @if (isGrading) {
-                @if (canSaveGrades) {
-                    <ion-button expand="block" class="ion-text-wrap" (click)="openGrade()">
-                        {{ 'core.gradeverb' | translate }}
-                    </ion-button>
-                } @else {
-                    <!-- Warning message if cannot save grades. -->
-                    <ion-card class="core-warning-card">
-                        <ion-item>
-                            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                            <ion-label>
-                                <p>{{ 'addon.mod_assign.cannotgradefromapp' | translate }}</p>
-                                <ion-button expand="block" *ngIf="gradeUrl" [href]="gradeUrl" core-link [showBrowserWarning]="false">
-                                    {{ 'core.openinbrowser' | translate }}
-                                    <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
+        @if (canEdit || canSubmit || canGrade) {
+            <div class="list-item-limited-width">
+                @if (canGrade) {
+                    @if (canSaveGrades) {
+                        <ion-button expand="block" class="ion-text-wrap" (click)="openGrade()">
+                            {{ 'core.gradeverb' | translate }}
+                        </ion-button>
+                    } @else {
+                        <!-- Warning message if cannot save grades. -->
+                        <ion-card class="core-warning-card">
+                            <ion-item>
+                                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                                <ion-label>
+                                    <p>{{ 'addon.mod_assign.cannotgradefromapp' | translate }}</p>
+                                    @if (gradeUrl) {
+                                        <ion-button expand="block" [href]="gradeUrl" core-link [showBrowserWarning]="false">
+                                            {{ 'core.openinbrowser' | translate }}
+                                            <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
+                                        </ion-button>
+                                    }
+                                </ion-label>
+                            </ion-item>
+                        </ion-card>
+                    }
+                }
+                @if (canEdit) {
+                    @if (!unsupportedEditPlugins.length && !showErrorStatementEdit) {
+                        <div class="adaptable-buttons-row">
+                            @if (!editedOffline && (removedOffline || !userSubmission || !userSubmission!.status ||
+                            userSubmission!.status === statusNew)) {
+                                <!-- If no submission or is new, show add submission. -->
+                                <ion-button expand="block" class="ion-margin ion-text-wrap" (click)="goToEdit()">
+                                    @if (!assign.timelimit || userSubmission?.timestarted) {
+                                        {{ 'addon.mod_assign.addsubmission' | translate }}
+                                    } @else {
+                                        {{ 'addon.mod_assign.beginassignment' | translate }}
+                                    }
                                 </ion-button>
+                            } @else if (!editedOffline && !removedOffline && userSubmission?.status === statusReopened) {
+                                <!-- If reopened, show addfromprevious and addnewattempt. -->
+                                @if (!isPreviousAttemptEmpty) {
+                                    <ion-button expand="block" class="ion-margin ion-text-wrap" (click)="copyPrevious()">
+                                        {{ 'addon.mod_assign.addnewattemptfromprevious' | translate }}
+                                    </ion-button>
+                                }
+                                <ion-button expand="block" class="ion-margin ion-text-wrap" (click)="goToEdit()">
+                                    {{ 'addon.mod_assign.addnewattempt' | translate }}
+                                </ion-button>
+                            }
+                        </div>
+                    }
+                    @if ((unsupportedEditPlugins.length && !showErrorStatementEdit)|| showErrorStatementEdit) {
+                        <ion-item class="core-danger-item ion-text-wrap">
+                            <ion-label>
+                                @if (unsupportedEditPlugins.length && !showErrorStatementEdit) {
+                                    <p class="ion-padding-horizontal">
+                                        {{ 'addon.mod_assign.erroreditpluginsnotsupported' | translate }}
+                                    </p>
+                                    <ul>
+                                        <li *ngFor="let name of unsupportedEditPlugins">{{ name }}</li>
+                                    </ul>
+                                    @if (submissionUrl) {
+                                        <ion-button expand="block" [href]="submissionUrl" core-link [showBrowserWarning]="false">
+                                            {{ 'core.openinbrowser' | translate }}
+                                            <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
+                                        </ion-button>
+                                    }
+                                }
+                                @if (showErrorStatementEdit) {
+                                    <p>{{ 'addon.mod_assign.cannoteditduetostatementsubmission' | translate }}</p>
+                                }
                             </ion-label>
                         </ion-item>
-                    </ion-card>
-                }
-            }
-            @if (canEdit) {
-                <div *ngIf="!unsupportedEditPlugins.length && !showErrorStatementEdit" class="adaptable-buttons-row">
-                    @if (!editedOffline && (removedOffline || !userSubmission || !userSubmission!.status ||
-                            userSubmission!.status === statusNew)) {
-                        <!-- If no submission or is new, show add submission. -->
-                        <ion-button expand="block" class="ion-margin ion-text-wrap" (click)="goToEdit()">
-                            @if (!assign.timelimit || userSubmission?.timestarted) {
-                                {{ 'addon.mod_assign.addsubmission' | translate }}
-                            } @else {
-                                {{ 'addon.mod_assign.beginassignment' | translate }}
-                            }
-                        </ion-button>
-                    } @else if (!editedOffline && !removedOffline && userSubmission?.status === statusReopened) {
-                        <!-- If reopened, show addfromprevious and addnewattempt. -->
-                        <ion-button *ngIf="!isPreviousAttemptEmpty" expand="block" class="ion-margin ion-text-wrap"
-                            (click)="copyPrevious()">
-                            {{ 'addon.mod_assign.addnewattemptfromprevious' | translate }}
-                        </ion-button>
-                        <ion-button expand="block" class="ion-margin ion-text-wrap" (click)="goToEdit()">
-                            {{ 'addon.mod_assign.addnewattempt' | translate }}
-                        </ion-button>
                     }
-                </div>
-                <ion-item class="core-danger-item ion-text-wrap"
-                    *ngIf="(unsupportedEditPlugins.length && !showErrorStatementEdit)|| showErrorStatementEdit">
-                    <ion-label>
-                        <ng-container *ngIf="unsupportedEditPlugins && unsupportedEditPlugins.length && !showErrorStatementEdit">
-                            <p class="ion-padding-horizontal">
-                                {{ 'addon.mod_assign.erroreditpluginsnotsupported' | translate }}
-                            </p>
-                            <ul>
-                                <li *ngFor="let name of unsupportedEditPlugins">{{ name }}</li>
-                            </ul>
-                            <ion-button expand="block" *ngIf="submissionUrl" [href]="submissionUrl" core-link [showBrowserWarning]="false">
-                                {{ 'core.openinbrowser' | translate }}
-                                <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
-                            </ion-button>
+                }
 
-                        </ng-container>
-                        <ng-container *ngIf="showErrorStatementEdit">
-                            <p>{{ 'addon.mod_assign.cannoteditduetostatementsubmission' | translate }}</p>
-                        </ng-container>
-                    </ion-label>
-                </ion-item>
-            }
-
-            @if (canSubmit) {
-                <!-- Submit for grading form. -->
-                <ion-item class="ion-text-wrap" *ngIf="submissionStatement">
-                    <ion-checkbox name="submissionstatement" [(ngModel)]="acceptStatement">
-                        <core-format-text [text]="submissionStatement" [filter]="false" />
-                    </ion-checkbox>
-                </ion-item>
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-
-                        @if (!showErrorStatementSubmit) {
-                            <!-- Submit button. -->
-                            <ion-button expand="block" class="ion-text-wrap ion-no-margin ion-margin-bottom"
-                                (click)="submitForGrading(acceptStatement)">
-                                {{ 'addon.mod_assign.submitassignment' | translate }}
-                            </ion-button>
-                            <p>
-                                <ion-icon name="fas-circle-info" color="info" aria-hidden=" true" />
-                                {{ 'addon.mod_assign.submitassignment_help' | translate }}
-                            </p>
-                        } @else {
-                            <!-- Error because we lack submissions statement. -->
-                            <p class="core-danger-item">
-                                {{ 'addon.mod_assign.cannotsubmitduetostatementsubmission' | translate }}
-                            </p>
-                        }
-                    </ion-label>
-                </ion-item>
-            }
-        </div>
-        @if (!isGrading) {
+                @if (canSubmit) {
+                    <!-- Submit for grading form. -->
+                    @if (submissionStatement) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-checkbox name="submissionstatement" [(ngModel)]="acceptStatement">
+                                <core-format-text [text]="submissionStatement" [filter]="false" />
+                            </ion-checkbox>
+                        </ion-item>
+                    }
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            @if (!showErrorStatementSubmit) {
+                                <!-- Submit button. -->
+                                <ion-button expand="block" class="ion-text-wrap ion-no-margin ion-margin-bottom"
+                                    (click)="submitForGrading(acceptStatement)">
+                                    {{ 'addon.mod_assign.submitassignment' | translate }}
+                                </ion-button>
+                                <p>
+                                    <ion-icon name="fas-circle-info" color="info" aria-hidden=" true" />
+                                    {{ 'addon.mod_assign.submitassignment_help' | translate }}
+                                </p>
+                            } @else {
+                                <!-- Error because we lack submissions statement. -->
+                                <p class="core-danger-item">
+                                    {{ 'addon.mod_assign.cannotsubmitduetostatementsubmission' | translate }}
+                                </p>
+                            }
+                        </ion-label>
+                    </ion-item>
+                }
+            </div>
+        }
+        @if (!canGrade) {
             <core-course-module-navigation [courseId]="courseId" [currentModuleId]="moduleId" />
         }
     </div>

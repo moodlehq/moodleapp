@@ -88,9 +88,10 @@ Feature: Test basic usage of assignment activity in app
     Given I entered the assign activity "assignment1" on course "Course 1" as "teacher1" in the app
     When I press "Participants" in the app
     And I press "Student student" in the app
-    And I press "Grade" in the app
-    And I press "Allow another attempt" in the app
-    And I press "Done" in the app
+    And I press "Grade" "ion-button" in the app
+    Then I should find "1 out of Unlimited" in the app
+    When I press "Allow another attempt" in the app
+    And I press "Grade" "ion-button" in the app
     Then I should find "Reopened" in the app
     And I should find "Not graded" in the app
 
@@ -98,7 +99,7 @@ Feature: Test basic usage of assignment activity in app
     Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
     When I pull to refresh in the app
     Then I should find "Reopened" in the app
-    And I should find "2 out of Unlimited" in the app
+    And I should find "Attempt 2" in the app
     And I should find "Add a new attempt based on previous submission" in the app
     And I should find "Add a new attempt" in the app
 

@@ -64,7 +64,8 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
     @Input({ required: true }) moduleId!: number; // Module ID the submission belongs to.
     @Input({ required: true }) assign!: AddonModAssignAssign; // The assignment.
     @Input({ required: true }) submitId!: number; // User that did the submission. Defaults to current user
-    @Input() feedback?: AddonModAssignSubmissionFeedback; // The feedback.
+    @Input() gradingStatus?: AddonModAssignGradingStates; // Grading status of the last attempt.
+    @Input() feedback?: AddonModAssignSubmissionFeedback; // Feedback of the last attempt.
     @Input() userSubmission?: AddonModAssignSubmissionFormatted; // The submission object.
 
     grade: AddonModAssignSubmissionGrade = {
@@ -82,7 +83,7 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
     attemptReopenMethodNone = AddonModAssignAttemptReopenMethodValues.NONE;
     unlimitedAttempts = ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS;
     currentAttemptNumber = 0; // The current attempt number.
-    maxAttemptsText = Translate.instant('addon.mod_assign.unlimitedattempts'); // The text for maximum attempts.
+    maxAttemptsText = ''; // The text for maximum attempts.
 
     protected hasOfflineGrade = false;
     protected isDestroyed = false; // Whether the component has been destroyed.
@@ -130,6 +131,15 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
             applyToAll: false,
             outcomes: {},
         };
+
+        // Do not override already loaded grade.
+        if (this.feedback?.grade?.grade && !this.grade.grade) {
+            const parsedGrade = parseFloat(this.feedback.grade.grade);
+
+            this.grade.grade = parsedGrade >= 0 ? parsedGrade : undefined;
+            this.grade.gradebookGrade = CoreUtils.formatFloat(this.grade.grade);
+            this.originalGrades.grade = this.grade.grade;
+        }
 
         // Get the grade for the assign.
         this.gradeInfo = await CoreCourse.getModuleBasicGradeInfo(this.moduleId);
@@ -221,10 +231,12 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
         if (this.grade.method !== 'simple') {
             // Should not happen.
             this.closeModal();
+
+            return;
         }
 
         const gradeNotReleased = assign.markingworkflow &&
-            this.grade.gradingStatus !== AddonModAssignGradingStates.MARKING_WORKFLOW_STATE_RELEASED;
+            this.gradingStatus !== AddonModAssignGradingStates.MARKING_WORKFLOW_STATE_RELEASED;
 
         const [gradebookGrades, assignGrades] = await Promise.all([
             CoreGradesHelper.getGradeModuleItems(this.courseId, this.moduleId, this.submitId),
@@ -342,8 +354,8 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
         }
 
         // Check if numeric grade and toggles changed.
-        if (this.originalGrades.grade != this.grade.grade || this.originalGrades.addAttempt != this.grade.addAttempt ||
-                this.originalGrades.applyToAll != this.grade.applyToAll) {
+        if (this.originalGrades.grade !== this.grade.grade || this.originalGrades.addAttempt !== this.grade.addAttempt ||
+                this.originalGrades.applyToAll !== this.grade.applyToAll) {
             return true;
         }
 
@@ -423,7 +435,7 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
                     grade || 0,
                     attemptNumber,
                     this.grade.addAttempt,
-                    this.grade.gradingStatus || '',
+                    this.gradingStatus || '',
                     this.grade.applyToAll,
                     outcomes,
                     pluginData,
@@ -466,7 +478,10 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
 
         if (modified) {
             // Modified, confirm user wants to go back.
-            await CoreAlerts.confirmLeaveWithChanges();
+            const confirmed = await CorePromiseUtils.promiseWorks(CoreAlerts.confirmLeaveWithChanges());
+            if (!confirmed) {
+                return false;
+            }
 
             await this.discardDrafts();
         }
@@ -508,7 +523,6 @@ type AddonModAssignSubmissionGrade = {
     grade?: number | string;
     gradebookGrade?: string;
     modified?: number;
-    gradingStatus?: AddonModAssignGradingStates;
     addAttempt: boolean;
     applyToAll: boolean;
     scale?: CoreMenuItem<number>[];

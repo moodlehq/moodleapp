@@ -18,7 +18,6 @@ import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { CoreFileHelper } from '@services/file-helper';
 import {
     AddonModAssignFeedbackCommentsDraftData,
-    AddonModAssignFeedbackCommentsHandler,
     AddonModAssignFeedbackCommentsPluginData,
 } from '../services/handler';
 import { AddonModAssignFeedbackDelegate } from '@addons/mod/assign/services/feedback-delegate';
@@ -68,25 +67,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
         try {
             this.text = await this.getText();
 
-            if (!this.canEdit && !this.edit) {
-                // User cannot edit the comment. Show it full when clicked.
-                this.element.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    if (this.text) {
-                        // Open a new state with the text.
-                        CoreViewer.viewText(this.plugin.name, this.text, {
-                            component: this.component,
-                            componentId: this.assign.cmid,
-                            filter: true,
-                            contextLevel: ContextLevel.MODULE,
-                            instanceId: this.assign.cmid,
-                            courseId: this.assign.course,
-                        });
-                    }
-                });
-            } else if (this.edit) {
+            if (this.edit) {
                 this.control = this.fb.control(this.text, { nonNullable: true });
             }
         } finally {
@@ -95,23 +76,24 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
     }
 
     /**
-     * Edit the comment.
+     * Open the text in a modal.
+     *
+     * @param e Event.
      */
-    async editComment(): Promise<void> {
-        try {
-            const inputData = await this.editFeedback();
-            const text = AddonModAssignFeedbackCommentsHandler.getTextFromInputData(this.plugin, inputData);
+    open(e: Event): void {
+        // Not editing, see full text when clicked.
+        e.preventDefault();
+        e.stopPropagation();
 
-            // Update the text and save it as draft.
-            this.isSent = false;
-            this.text = this.replacePluginfileUrls(text || '');
-            AddonModAssignFeedbackDelegate.saveFeedbackDraft(this.assign.id, this.userId, this.plugin, {
-                text: text,
-                format: 1,
-            });
-        } catch {
-            // User cancelled, nothing to do.
-        }
+        // Open a new state with the interpolated contents.
+        CoreViewer.viewText(this.plugin.name, this.text, {
+            component: this.component,
+            componentId: this.assign.cmid,
+            filter: true,
+            contextLevel: ContextLevel.MODULE,
+            instanceId: this.assign.cmid,
+            courseId: this.assign.course,
+        });
     }
 
     /**
