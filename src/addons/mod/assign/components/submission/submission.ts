@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, Optional, ViewChildren, QueryList } from '@angular/core';
+import { Component, Input, OnInit, Optional, ViewChildren, QueryList, OnDestroy } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -26,6 +26,7 @@ import {
     AddonModAssignGradingStates,
     AddonModAssignSubmissionStatusValues,
     AddonModAssignAttemptReopenMethodValues,
+    AddonModAssignGrade,
 } from '../../services/assign';
 import {
     AddonModAssignAutoSyncData,
@@ -63,6 +64,7 @@ import { AddonModAssignFeedbackPluginComponent } from '../feedback-plugin/feedba
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreModals } from '@services/overlays/modals';
+import { CoreUtils } from '@singletons/utils';
 
 /**
  * Component that displays an assignment submission.
@@ -79,7 +81,7 @@ import { CoreModals } from '@services/overlays/modals';
         AddonModAssignFeedbackPluginComponent,
     ],
 })
-export class AddonModAssignSubmissionComponent implements OnInit {
+export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
     @ViewChildren(AddonModAssignSubmissionPluginComponent) submissionComponents!:
         QueryList<AddonModAssignSubmissionPluginComponent>;
@@ -111,20 +113,19 @@ export class AddonModAssignSubmissionComponent implements OnInit {
     submissionStatement?: string; // The submission statement.
     showErrorStatementEdit = false; // Whether to show an error in edit due to submission statement.
     showErrorStatementSubmit = false; // Whether to show an error in submit due to submission statement.
-    gradingStatusTranslationId?: string; // Key of the text to display for the grading status.
-    gradingColor = ''; // Color to apply to the grading status.
+    gradingStatus?: AddonModAssignGradingStates;
+    gradingStatusBadge?: StatusBadge;
     workflowStatusTranslationId?: string; // Key of the text to display for the workflow status.
     submissionPlugins: AddonModAssignPlugin[] = []; // List of submission plugins.
     timeRemaining = ''; // Message about time remaining.
     timeRemainingClass = ''; // Class to apply to time remaining message.
     timeLimitEndTime = 0; // If time limit is enabled and submission is ongoing, the end time for the timer.
-    statusTranslationId?: string; // Status.
-    statusColor = ''; // Color to apply to the status.
+    submissionStatusBadge?: StatusBadge;
     unsupportedEditPlugins: string[] = []; // List of submission plugins that don't support edit.
 
     grader?: CoreUserProfile; // Profile of the teacher that graded the submission.
     gradeInfo?: CoreCourseModuleGradeInfo; // Grade data for the assignment, retrieved from the server.
-    isGrading = false; // Whether the user is grading.
+    canGrade = false; // Whether the user is grading.
     canSaveGrades = false; // Whether the user can save the grades.
     gradeUrl?: string; // URL to grade in browser.
     submissionUrl?: string; // URL to add/edit a submission in browser.
@@ -136,6 +137,8 @@ export class AddonModAssignSubmissionComponent implements OnInit {
     statusNew = AddonModAssignSubmissionStatusValues.NEW;
     statusReopened = AddonModAssignSubmissionStatusValues.REOPENED;
     attemptReopenMethodNone = AddonModAssignAttemptReopenMethodValues.NONE;
+
+    previousAttempts: AddonModAssignSubmissionPreviousAttemptFormatted[] = []; // List of previous attempts.
 
     protected siteId: string; // Current site ID.
     protected currentUserId: number; // Current user ID.
@@ -157,11 +160,11 @@ export class AddonModAssignSubmissionComponent implements OnInit {
             events,
             async (data) => {
                 // Check that user is grading and this grade wasn't blocked when sync was performed.
-                if (!this.loaded || !this.isGrading || data.gradesBlocked.indexOf(this.submitId) != -1) {
+                if (!this.loaded || !this.canGrade || data.gradesBlocked.indexOf(this.submitId) !== -1) {
                     return;
                 }
 
-                if ('context' in data && data.context == 'submission' && data.submitId == this.submitId) {
+                if ('context' in data && data.context === 'submission' && data.submitId === this.submitId) {
                     // Manual sync triggered by this same submission, ignore it.
                     return;
                 }
@@ -441,9 +444,6 @@ export class AddonModAssignSubmissionComponent implements OnInit {
     protected async loadData(sync = false): Promise<void> {
         let isBlind = !!this.blindId;
 
-        this.previousAttempt = undefined;
-        this.isPreviousAttemptEmpty = true;
-
         if (!this.submitId) {
             this.submitId = this.currentUserId;
             isBlind = false;
@@ -496,19 +496,37 @@ export class AddonModAssignSubmissionComponent implements OnInit {
 
             this.submissionStatusAvailable = true;
             this.lastAttempt = submissionStatus.lastattempt;
+            this.gradingStatus = this.lastAttempt?.gradingstatus;
+
             this.membersToSubmit = [];
             this.membersToSubmitBlind = [];
 
+            this.previousAttempts = submissionStatus.previousattempts
+                ? submissionStatus.previousattempts.sort((a, b) => b.attemptnumber - a.attemptnumber)
+                : [];
+
+            const graderPromises = this.previousAttempts.map(async (attempt) => {
+                attempt.submissionStatusBadge = this.getSubmissionStatusBadge(attempt.submission?.status, this.lastAttempt);
+
+                // If we have data about the grader, get its profile.
+                attempt.grader = await this.getGrader(attempt.grade);
+                attempt.advancedgrade = this.getAdvancedGrade(attempt.grade?.gradefordisplay);
+            });
+
+            promises.push(...graderPromises);
+
             // Search the previous attempt.
-            if (submissionStatus.previousattempts && submissionStatus.previousattempts.length > 0) {
-                const previousAttempts = submissionStatus.previousattempts.sort((a, b) => a.attemptnumber - b.attemptnumber);
-                this.previousAttempt = previousAttempts[previousAttempts.length - 1];
+            if (this.previousAttempts.length > 0) {
+                this.previousAttempt = this.previousAttempts[0];
                 this.isPreviousAttemptEmpty =
                     AddonModAssignHelper.isSubmissionEmpty(this.assign, this.previousAttempt.submission);
+            } else {
+                this.previousAttempt = undefined;
+                this.isPreviousAttemptEmpty = true;
             }
 
             // Treat last attempt.
-            promises = this.treatLastAttempt(submissionStatus, this.lastAttempt);
+            promises = this.treatLastAttempt(this.lastAttempt);
 
             // Calculate the time remaining.
             this.calculateTimeRemaining(submissionStatus);
@@ -574,22 +592,11 @@ export class AddonModAssignSubmissionComponent implements OnInit {
             this.feedback = feedback;
 
             // If we have data about the grader, get its profile.
-            if (feedback.grade && feedback.grade.grader > 0) {
-                this.grader = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(feedback.grade.grader, this.courseId));
-            } else {
-                delete this.grader;
-            }
+            this.grader = await this.getGrader(feedback.grade);
 
             // Check if the grade uses advanced grading.
-            if (feedback.gradefordisplay) {
-                const position = feedback.gradefordisplay.indexOf('class="advancedgrade"');
-                if (position > -1) {
-                    this.feedback.advancedgrade = true;
-                }
-            }
+            this.feedback.advancedgrade = this.getAdvancedGrade(feedback.gradefordisplay);
         }
-
-        const gradingStatus = this.lastAttempt?.gradingstatus;
 
         // Get the grade for the assign.
         const gradeInfo = await CoreCourse.getModuleBasicGradeInfo(this.moduleId);
@@ -598,7 +605,7 @@ export class AddonModAssignSubmissionComponent implements OnInit {
             return;
         }
 
-        this.isGrading = true;
+        this.canGrade = true;
 
         // Make sure outcomes is an array.
         gradeInfo.outcomes = gradeInfo.outcomes || [];
@@ -611,24 +618,28 @@ export class AddonModAssignSubmissionComponent implements OnInit {
 
         this.canSaveGrades = method === 'simple'; // Grades can be saved if simple grading.
 
-        if (assign.markingworkflow && gradingStatus) {
+        if (assign.markingworkflow && this.gradingStatus) {
             this.workflowStatusTranslationId =
-                AddonModAssign.getSubmissionGradingStatusTranslationId(gradingStatus);
+                AddonModAssign.getSubmissionGradingStatusTranslationId(this.gradingStatus);
         }
 
-        if (
-            this.lastAttempt?.gradingstatus === AddonModAssignGradingStates.GRADED && !assign.markingworkflow &&
+        if (this.gradingStatus === AddonModAssignGradingStates.GRADED && !assign.markingworkflow &&
             this.userSubmission && feedback
         ) {
             if (feedback.gradeddate < this.userSubmission.timemodified) {
-                this.lastAttempt.gradingstatus = AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT;
+                this.gradingStatus = AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT;
 
                 // Get grading text and color.
-                this.gradingStatusTranslationId = AddonModAssign.getSubmissionGradingStatusTranslationId(
-                    this.lastAttempt.gradingstatus,
+                const translationId = AddonModAssign.getSubmissionGradingStatusTranslationId(
+                    this.gradingStatus,
                 );
-                this.gradingColor = AddonModAssign.getSubmissionGradingStatusColor(this.lastAttempt.gradingstatus);
 
+                this.gradingStatusBadge = translationId
+                    ? {
+                        translationId,
+                        color: AddonModAssign.getSubmissionGradingStatusColor(this.gradingStatus),
+                    }
+                    : undefined;
             }
         }
 
@@ -661,9 +672,27 @@ export class AddonModAssignSubmissionComponent implements OnInit {
         if (submissionGrade && (!feedback || !feedback.gradeddate || feedback.gradeddate < submissionGrade.timemodified)) {
             // If grade has been modified from gradebook, do not use offline.
             if (gradeModified < submissionGrade.timemodified) {
+                const gradeForDisplay = String(!this.gradeInfo?.scale
+                    ? CoreUtils.formatFloat(submissionGrade.grade)
+                    : submissionGrade.grade);
+
+                if (!this.feedback) {
+                    this.feedback = {
+                        gradefordisplay: gradeForDisplay,
+                        gradeddate: gradeModified,
+                    };
+                } else {
+                    this.feedback.gradefordisplay = gradeForDisplay;
+                    this.feedback.gradeddate = gradeModified;
+                }
+
+                this.grader = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(this.currentUserId, this.courseId));
+
                 this.hasOfflineGrade = true;
-                this.gradingStatusTranslationId = 'addon.mod_assign.gradenotsynced';
-                this.gradingColor = '';
+                this.gradingStatusBadge = {
+                    translationId: 'addon.mod_assign.gradenotsynced',
+                    color: CoreIonicColorNames.NONE,
+                };
             }
         }
     }
@@ -684,69 +713,89 @@ export class AddonModAssignSubmissionComponent implements OnInit {
     /**
      * Set the submission status name and class.
      *
-     * @param status Submission status.
+     * @param submissionStatus Submission status.
+     * @param lastAttempt Last attempt info.
+     * @returns Submission status translation Id and color.
      */
-    protected setStatusNameAndClass(status: AddonModAssignGetSubmissionStatusWSResponse): void {
+    protected getSubmissionStatusBadge(
+        submissionStatus?: AddonModAssignSubmissionStatusValues,
+        lastAttempt?: AddonModAssignSubmissionAttempt,
+    ): StatusBadge | undefined {
         if (!this.assign) {
             return;
         }
 
         if (this.editedOffline || this.submittedOffline) {
             // Added, edited or submitted offline.
-            this.statusTranslationId = 'core.notsent';
-            this.statusColor = CoreIonicColorNames.WARNING;
-        } else if (!this.assign.teamsubmission) {
-
-            // Single submission.
-            if (this.userSubmission && this.userSubmission.status != this.statusNew && !this.removedOffline) {
-                this.statusTranslationId = 'addon.mod_assign.submissionstatus_' + this.userSubmission.status;
-                this.statusColor = AddonModAssign.getSubmissionStatusColor(this.userSubmission.status);
-            } else {
-                if (!status.lastattempt?.submissionsenabled) {
-                    this.statusTranslationId = 'addon.mod_assign.noonlinesubmissions';
-                    this.statusColor =
-                        AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_ONLINE_SUBMISSIONS);
-                } else {
-                    this.statusTranslationId = 'addon.mod_assign.noattempt';
-                    this.statusColor = AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_ATTEMPT);
-                }
-            }
-        } else {
-
-            // Team submission.
-            if (!status.lastattempt?.submissiongroup && this.assign.preventsubmissionnotingroup && !this.removedOffline) {
-                this.statusTranslationId = 'addon.mod_assign.nosubmission';
-                this.statusColor = AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_SUBMISSION);
-            } else if (this.userSubmission && this.userSubmission.status != this.statusNew && !this.removedOffline) {
-                this.statusTranslationId = 'addon.mod_assign.submissionstatus_' + this.userSubmission.status;
-                this.statusColor = AddonModAssign.getSubmissionStatusColor(this.userSubmission.status);
-            } else {
-                if (!status.lastattempt?.submissionsenabled) {
-                    this.statusTranslationId = 'addon.mod_assign.noonlinesubmissions';
-                    this.statusColor =
-                        AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_ONLINE_SUBMISSIONS);
-                } else {
-                    this.statusTranslationId = 'addon.mod_assign.nosubmission';
-                    this.statusColor = AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_SUBMISSION);
-                }
-            }
+            return {
+                translationId: 'core.notsent',
+                color: CoreIonicColorNames.WARNING,
+            };
         }
+
+        if (!this.assign.teamsubmission) {
+            // Single submission.
+            if (submissionStatus && submissionStatus !== this.statusNew && !this.removedOffline) {
+                return {
+                    translationId: 'addon.mod_assign.submissionstatus_' + submissionStatus,
+                    color: AddonModAssign.getSubmissionStatusColor(submissionStatus),
+                };
+            }
+
+            if (!lastAttempt?.submissionsenabled) {
+                return {
+                    translationId: 'addon.mod_assign.noonlinesubmissions',
+                    color: AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_ONLINE_SUBMISSIONS),
+                };
+            }
+
+            return {
+                translationId: 'addon.mod_assign.noattempt',
+                color: AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_ATTEMPT),
+            };
+        }
+
+        // Team submission.
+        if (!lastAttempt?.submissiongroup && this.assign.preventsubmissionnotingroup && !this.removedOffline) {
+            return {
+                translationId: 'addon.mod_assign.nosubmission',
+                color: AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_SUBMISSION),
+            };
+        }
+
+        if (submissionStatus && submissionStatus !== this.statusNew && !this.removedOffline) {
+            return {
+                translationId: 'addon.mod_assign.submissionstatus_' + submissionStatus,
+                color: AddonModAssign.getSubmissionStatusColor(submissionStatus),
+            };
+        }
+        if (!lastAttempt?.submissionsenabled) {
+            return  {
+                translationId: 'addon.mod_assign.noonlinesubmissions',
+                color: AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_ONLINE_SUBMISSIONS),
+            };
+        }
+
+        return {
+            translationId: 'addon.mod_assign.nosubmission',
+            color: AddonModAssign.getSubmissionStatusColor(AddonModAssignSubmissionStatusValues.NO_SUBMISSION),
+        };
     }
 
     /**
      * Show advanced grade.
+     *
+     * @param grade Grade to show.
      */
-    showAdvancedGrade(): void {
-        if (this.feedback && this.feedback.advancedgrade) {
-            CoreViewer.viewText(
-                Translate.instant('core.grades.grade'),
-                this.feedback.gradefordisplay,
-                {
-                    component: ADDON_MOD_ASSIGN_COMPONENT,
-                    componentId: this.moduleId,
-                },
-            );
-        }
+    showAdvancedGrade(grade: string): void {
+        CoreViewer.viewText(
+            Translate.instant('core.grades.grade'),
+            grade,
+            {
+                component: ADDON_MOD_ASSIGN_COMPONENT,
+                componentId: this.moduleId,
+            },
+        );
     }
 
     /**
@@ -799,12 +848,10 @@ export class AddonModAssignSubmissionComponent implements OnInit {
     /**
      * Treat the last attempt.
      *
-     * @param submissionStatus Response of get submission status.
      * @param lastAttempt Last attempt (if any).
      * @returns Promises resolved when done.
      */
     protected treatLastAttempt(
-        submissionStatus: AddonModAssignGetSubmissionStatusWSResponse,
         lastAttempt?: AddonModAssignSubmissionAttemptFormatted,
     ): Promise<void>[] {
         const promises: Promise<void>[] =[];
@@ -823,7 +870,7 @@ export class AddonModAssignSubmissionComponent implements OnInit {
         }
 
         this.canSubmit = !this.isSubmittedForGrading && !this.submittedOffline && !this.removedOffline &&
-            (lastAttempt.cansubmit || (this.editedOffline && AddonModAssign.canSubmitOffline(this.assign, submissionStatus)));
+            (lastAttempt.cansubmit || (this.editedOffline && AddonModAssign.canSubmitOffline(this.assign, lastAttempt)));
 
         this.canEdit = !this.isSubmittedForGrading && lastAttempt.canedit &&
             (!this.submittedOffline || !this.assign.submissiondrafts);
@@ -850,7 +897,7 @@ export class AddonModAssignSubmissionComponent implements OnInit {
             this.currentAttemptNumber = this.userSubmission.attemptnumber + 1;
         }
 
-        this.setStatusNameAndClass(submissionStatus);
+        this.submissionStatusBadge = this.getSubmissionStatusBadge(this.userSubmission?.status, this.lastAttempt);
 
         if (this.assign.teamsubmission) {
             if (lastAttempt.submissiongroup) {
@@ -882,8 +929,13 @@ export class AddonModAssignSubmissionComponent implements OnInit {
         }
 
         // Get grading text and color.
-        this.gradingStatusTranslationId = AddonModAssign.getSubmissionGradingStatusTranslationId(lastAttempt.gradingstatus);
-        this.gradingColor = AddonModAssign.getSubmissionGradingStatusColor(lastAttempt.gradingstatus);
+        const translationId = AddonModAssign.getSubmissionGradingStatusTranslationId(this.gradingStatus);
+        this.gradingStatusBadge = translationId
+            ? {
+                translationId,
+                color:  AddonModAssign.getSubmissionGradingStatusColor(this.gradingStatus),
+            }
+            : undefined;
 
         // Get the submission plugins.
         if (this.userSubmission) {
@@ -926,12 +978,52 @@ export class AddonModAssignSubmissionComponent implements OnInit {
                 submitId: this.submitId,
                 feedback: this.feedback,
                 userSubmission: this.userSubmission,
+                gradingStatus: this.gradingStatus,
             },
         });
 
         if (newData === true) {
             this.invalidateAndRefresh(true);
         }
+    }
+
+    /**
+     * Get grader user info.
+     *
+     * @param grade Grade to get the grader from.
+     * @returns Promise resolved with the grader user info or undefined if not found.
+     */
+    protected async getGrader(grade?: AddonModAssignGrade): Promise<CoreUserProfile | undefined> {
+        if (!grade || grade.grader <= 0) {
+            return;
+        }
+
+        return await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(grade.grader, this.courseId));
+    }
+
+    /**
+     * Check if the grade uses advanced grading.
+     *
+     * @param gradeForDisplay Grade to check.
+     * @returns Whether it uses advanced grading.
+     */
+    protected getAdvancedGrade(gradeForDisplay?: string): boolean {
+        // Check if the grade uses advanced grading.
+        if (gradeForDisplay) {
+            const position = gradeForDisplay.indexOf('class="advancedgrade"');
+            if (position > -1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.syncObserver?.off();
     }
 
 }
@@ -948,4 +1040,15 @@ type AddonModAssignSubmissionAttemptFormatted = AddonModAssignSubmissionAttempt 
  */
 type AddonModAssignSubmissionFeedbackFormatted = AddonModAssignSubmissionFeedback & {
     advancedgrade?: boolean; // Calculated in the app. Whether it uses advanced grading.
+};
+
+type AddonModAssignSubmissionPreviousAttemptFormatted = AddonModAssignSubmissionPreviousAttempt & {
+    submissionStatusBadge?: StatusBadge;
+    grader?: CoreUserProfile;
+    advancedgrade?: boolean;
+};
+
+type StatusBadge = {
+    translationId: string; // Status translation key.
+    color: CoreIonicColorNames; // Color to apply to the badge.
 };

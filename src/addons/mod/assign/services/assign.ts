@@ -74,16 +74,16 @@ export class AddonModAssignProvider {
      * This function doesn't check if the submission is empty, it should be checked before calling this function.
      *
      * @param assign Assignment instance.
-     * @param submissionStatus Submission status returned by getSubmissionStatus.
+     * @param lastAttempt Last Attempt of the submission.
      * @returns Whether it can submit.
      */
-    canSubmitOffline(assign: AddonModAssignAssign, submissionStatus: AddonModAssignGetSubmissionStatusWSResponse): boolean {
-        if (!this.isSubmissionOpen(assign, submissionStatus)) {
+    canSubmitOffline(assign: AddonModAssignAssign, lastAttempt: AddonModAssignSubmissionAttempt): boolean {
+        if (!this.isSubmissionOpen(assign, lastAttempt)) {
             return false;
         }
 
-        const userSubmission = submissionStatus.lastattempt?.submission;
-        const teamSubmission = submissionStatus.lastattempt?.teamsubmission;
+        const userSubmission = lastAttempt?.submission;
+        const teamSubmission = lastAttempt?.teamsubmission;
 
         if (teamSubmission) {
             if (teamSubmission.status === AddonModAssignSubmissionStatusValues.SUBMITTED) {
@@ -92,7 +92,7 @@ export class AddonModAssignProvider {
             } else if (userSubmission && userSubmission.status === AddonModAssignSubmissionStatusValues.SUBMITTED) {
                 // The user has already clicked the submit button on the team submission.
                 return false;
-            } else if (assign.preventsubmissionnotingroup && !submissionStatus.lastattempt?.submissiongroup) {
+            } else if (assign.preventsubmissionnotingroup && !lastAttempt?.submissiongroup) {
                 return false;
             }
         } else if (userSubmission) {
@@ -349,9 +349,9 @@ export class AddonModAssignProvider {
             return;
         }
 
-        if (status == AddonModAssignGradingStates.GRADED
-                || status == AddonModAssignGradingStates.NOT_GRADED
-                || status == AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT) {
+        if (status === AddonModAssignGradingStates.GRADED
+                || status === AddonModAssignGradingStates.NOT_GRADED
+                || status === AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT) {
             return 'addon.mod_assign.' + status;
         }
 
@@ -813,16 +813,15 @@ export class AddonModAssignProvider {
      * Check if a submission is open. This function is based on Moodle's submissions_open.
      *
      * @param assign Assignment instance.
-     * @param submissionStatus Submission status returned by getSubmissionStatus.
+     * @param lastAttempt Last Attempt fot he submission.
      * @returns Whether submission is open.
      */
-    isSubmissionOpen(assign: AddonModAssignAssign, submissionStatus?: AddonModAssignGetSubmissionStatusWSResponse): boolean {
-        if (!assign || !submissionStatus) {
+    isSubmissionOpen(assign: AddonModAssignAssign, lastAttempt?: AddonModAssignSubmissionAttempt): boolean {
+        if (!assign || !lastAttempt) {
             return false;
         }
 
         const time = CoreTimeUtils.timestamp();
-        const lastAttempt = submissionStatus.lastattempt;
         const submission = this.getSubmissionObjectFromAttempt(assign, lastAttempt);
 
         let dateOpen = true;

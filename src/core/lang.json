@@ -147,6 +147,7 @@
     "fullnameandsitename": "{{fullname}} ({{sitename}})",
     "fullscreen": "Fullscreen",
     "goto": "Go to {{$a}}",
+    "gradenoun": "Grade",
     "gradeverb": "Grade",
     "group": "Group",
     "groupsseparate": "Separate groups",

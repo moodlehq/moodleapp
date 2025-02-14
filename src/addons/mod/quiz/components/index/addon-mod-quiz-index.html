@@ -110,14 +110,14 @@
 
             }
 
-            <ion-accordion-group>
+            <ion-accordion-group class="striped">
                 @for (attempt of attempts; track attempt.id) {
                     <ion-accordion [value]="attempt.id" toggleIconSlot="start">
                         <ion-item slot="header" class="ion-text-wrap addon-mod_quiz-attempt-title" lines="none">
                             <ion-label>
                                 <h3>{{ 'addon.mod_quiz.attempt' | translate:{ $a: attempt.attempt } }}</h3>
                             </ion-label>
-                            <div slot="end" class="addon-mod_quiz-attempt-title-info">
+                            <div slot="end" class="addon-mod_quiz-attempt-title-info hide_on_expand">
                                 <addon-mod-quiz-attempt-state [state]="attempt.state" [finishedOffline]="attempt.finishedOffline" />
                                 @if (attempt.finished && quiz.showAttemptsGrades) {
                                     @if (attempt.rescaledGrade !== undefined && attempt.rescaledGrade >= 0) {

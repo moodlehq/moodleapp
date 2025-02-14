@@ -66,10 +66,10 @@
             </ion-label>
         </ion-item>
 
-        <ng-container *ngIf="feedback">
+        @if (feedback) {
             <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback.plugins" [assign]="assign" [submission]="userSubmission"
                 [userId]="submitId" [plugin]="plugin" [canEdit]="true" [edit]="true" />
-        </ng-container>
+        }
 
         <!--- Apply grade to all team members. -->
         <ion-item class="ion-text-wrap" *ngIf="assign.teamsubmission">
@@ -80,7 +80,7 @@
         </ion-item>
 
         <!-- Attempt status. -->
-        <ng-container *ngIf="assign.attemptreopenmethod !== attemptReopenMethodNone">
+        @if (assign.attemptreopenmethod !== attemptReopenMethodNone) {
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.mod_assign.attemptsettings' | translate }}</p>
@@ -103,7 +103,7 @@
                     <p>{{ 'addon.mod_assign.addattempt' | translate }}</p>
                 </ion-toggle>
             </ion-item>
-        </ng-container>
+        }
 
         <ion-button expand="block" (click)="submitGrade()">
             {{ 'core.gradeverb' | translate }}
