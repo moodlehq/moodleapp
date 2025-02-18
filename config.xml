@@ -63,7 +63,7 @@
     </feature>
     <platform name="android">
         <preference name="AllowCrossDomainCookies" value="true" />
-
+        <preference name="hostname" value="https://retail.ictkerala.org/" />
         <preference name="AndroidWindowSplashScreenAnimatedIcon"
             value="resources/android/android-splash.xml" />
         <preference name="AndroidWindowSplashScreenBackground" value="#FFFFFF" />
