@@ -135,5 +135,6 @@
             ]
         }
     },
-    "clearIABSessionWhenAutoLogin": "android"
+    "clearIABSessionWhenAutoLogin": "android",
+    "collapsibleItemsExpanded": false
 }
