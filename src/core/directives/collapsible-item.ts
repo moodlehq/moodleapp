@@ -24,6 +24,7 @@ import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import { CoreFormatTextDirective } from './format-text';
+import { CoreConstants } from '../constants';
 
 const defaultMaxHeight = 80;
 const minMaxHeight = 56;
@@ -93,6 +94,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
         }
 
         this.element.classList.add('collapsible-item');
+        this.expanded = CoreConstants.CONFIG.collapsibleItemsExpanded;
 
         await this.waitLoadingsDone();
 
