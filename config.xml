@@ -62,8 +62,6 @@
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
     <platform name="android">
-        <preference name="scheme" value="https" />
-        <preference name="hostname" value="retail.ictkerala.org/" />
         <preference name="AllowCrossDomainCookies" value="true" />
 
         <preference name="AndroidWindowSplashScreenAnimatedIcon"
