@@ -30,6 +30,7 @@ import { CoreErrorHelper, CoreErrorObject } from './error-helper';
 import { CoreUrl } from '@singletons/url';
 import { CoreLoadings } from './overlays/loadings';
 import { CoreAlerts } from './overlays/alerts';
+import { CorePlatform } from './platform';
 
 /*
  * Provider to handle custom URL schemes.
@@ -544,6 +545,11 @@ export class CoreCustomURLSchemesProvider {
      * @returns URL.
      */
     getLastLaunchURL(): Promise<string | undefined> {
+        if (!CorePlatform.isAndroid()) {
+            // Last launch URL is only available in Android.
+            return Promise.resolve(undefined);
+        }
+
         return new Promise((resolve) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (<any> window).plugins.launchmyapp.getLastIntent(intent => resolve(intent), () => resolve(undefined));
