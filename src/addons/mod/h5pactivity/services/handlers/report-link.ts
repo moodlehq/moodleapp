@@ -104,7 +104,6 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
      * @param id Instance ID.
      * @param siteId Site ID.
      * @param userId User ID. If not defined, current user in site.
-     * @returns Promise resolved when done.
      */
     protected async openUserAttempts(cmId: number, courseId: number, id: number, siteId: string, userId?: number): Promise<void> {
         let canViewAllAttempts = false;

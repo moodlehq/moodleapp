@@ -17,8 +17,6 @@ import { ModalController, Translate } from '@singletons';
 import {
     AddonModAssign,
     AddonModAssignAssign,
-    AddonModAssignAttemptReopenMethodValues,
-    AddonModAssignGradingStates,
     AddonModAssignSavePluginData,
     AddonModAssignSubmissionFeedback,
 } from '../../services/assign';
@@ -30,6 +28,8 @@ import {
     ADDON_MOD_ASSIGN_COMPONENT,
     ADDON_MOD_ASSIGN_GRADED_EVENT,
     ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS,
+    AddonModAssignAttemptReopenMethodValues,
+    AddonModAssignGradingStates,
 } from '../../constants';
 import { CoreCourse, CoreCourseModuleGradeInfo, CoreCourseModuleGradeOutcome } from '@features/course/services/course';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../../services/assign-helper';

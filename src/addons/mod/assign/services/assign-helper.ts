@@ -24,7 +24,6 @@ import {
     AddonModAssign,
     AddonModAssignPlugin,
     AddonModAssignSavePluginData,
-    AddonModAssignSubmissionStatusValues,
 } from './assign';
 import { AddonModAssignOffline } from './assign-offline';
 import { CoreObject } from '@singletons/object';
@@ -36,7 +35,7 @@ import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 import { makeSingleton } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
-import { ADDON_MOD_ASSIGN_COMPONENT } from '../constants';
+import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY, AddonModAssignSubmissionStatusValues } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -682,7 +681,7 @@ export class AddonModAssignHelperProvider {
      * @returns Promise resolved with the itemId.
      */
     uploadFile(assignId: number, file: CoreFileEntry, itemId?: number, siteId?: string): Promise<number> {
-        return CoreFileUploader.uploadOrReuploadFile(file, itemId, ADDON_MOD_ASSIGN_COMPONENT, assignId, siteId);
+        return CoreFileUploader.uploadOrReuploadFile(file, itemId, ADDON_MOD_ASSIGN_COMPONENT_LEGACY, assignId, siteId);
     }
 
     /**
@@ -696,7 +695,7 @@ export class AddonModAssignHelperProvider {
      * @returns Promise resolved with the itemId.
      */
     uploadFiles(assignId: number, files: CoreFileEntry[], siteId?: string): Promise<number> {
-        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_ASSIGN_COMPONENT, assignId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_ASSIGN_COMPONENT_LEGACY, assignId, siteId);
     }
 
     /**
