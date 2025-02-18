@@ -25,7 +25,7 @@ import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offlin
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 import { ContextLevel } from '@/core/constants';
-import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
+import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -45,7 +45,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedbackPluginBaseComponent implements OnInit {
 
     control?: FormControl<string>;
-    component = ADDON_MOD_ASSIGN_COMPONENT;
+    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
     text = '';
     isSent = false;
     loaded = false;

@@ -1567,7 +1567,7 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      * @param module Module.
      * @param courseId Course ID the module belongs to
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
+     * @returns Promise resolved with sync data when done.
      */
     sync?(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<unknown>;
 }

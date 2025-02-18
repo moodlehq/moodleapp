@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
-import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
+import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';
 import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { Component, OnInit } from '@angular/core';
 import { CoreWSFile } from '@services/ws';
@@ -32,7 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModAssignFeedbackFileComponent extends AddonModAssignFeedbackPluginBaseComponent implements OnInit {
 
-    component = ADDON_MOD_ASSIGN_COMPONENT;
+    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
     files: CoreWSFile[] = [];
 
     /**

@@ -35,12 +35,15 @@ import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import {
-    ADDON_MOD_ASSIGN_COMPONENT,
+    ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
     ADDON_MOD_ASSIGN_GRADED_EVENT,
     ADDON_MOD_ASSIGN_STARTED_EVENT,
     ADDON_MOD_ASSIGN_SUBMISSION_REMOVED_EVENT,
     ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT,
     ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
+    AddonModAssignAttemptReopenMethodValues,
+    AddonModAssignGradingStates,
+    AddonModAssignSubmissionStatusValues,
 } from '../constants';
 
 declare module '@singletons/events' {
@@ -169,7 +172,7 @@ export class AddonModAssignProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssignmentCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_ASSIGN_COMPONENT,
+            component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -241,7 +244,7 @@ export class AddonModAssignProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssignmentUserMappingsCacheKey(assignId),
             updateFrequency: CoreCacheUpdateFrequency.OFTEN,
-            component: ADDON_MOD_ASSIGN_COMPONENT,
+            component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -287,7 +290,7 @@ export class AddonModAssignProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssignmentGradesCacheKey(assignId),
-            component: ADDON_MOD_ASSIGN_COMPONENT,
+            component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -451,7 +454,7 @@ export class AddonModAssignProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubmissionsCacheKey(assignId),
             updateFrequency: CoreCacheUpdateFrequency.OFTEN,
-            component: ADDON_MOD_ASSIGN_COMPONENT,
+            component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -519,7 +522,7 @@ export class AddonModAssignProvider {
             getCacheUsingCacheKey: true,
             filter: options.filter,
             rewriteurls: options.filter,
-            component: ADDON_MOD_ASSIGN_COMPONENT,
+            component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             componentId: options.cmId,
             // Don't cache when getting text without filters.
             // @todo Change this to support offline editing.
@@ -649,7 +652,7 @@ export class AddonModAssignProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.listParticipantsCacheKey(assignId, groupId),
             updateFrequency: CoreCacheUpdateFrequency.OFTEN,
-            component: ADDON_MOD_ASSIGN_COMPONENT,
+            component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -880,7 +883,7 @@ export class AddonModAssignProvider {
         await CoreCourseLogHelper.log(
             'mod_assign_view_submission_status',
             params,
-            ADDON_MOD_ASSIGN_COMPONENT,
+            ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             assignid,
             siteId,
         );
@@ -901,7 +904,7 @@ export class AddonModAssignProvider {
         await CoreCourseLogHelper.log(
             'mod_assign_view_grading_table',
             params,
-            ADDON_MOD_ASSIGN_COMPONENT,
+            ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             assignid,
             siteId,
         );
@@ -922,7 +925,7 @@ export class AddonModAssignProvider {
         await CoreCourseLogHelper.log(
             'mod_assign_view_assign',
             params,
-            ADDON_MOD_ASSIGN_COMPONENT,
+            ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             assignid,
             siteId,
         );
@@ -1930,41 +1933,3 @@ export type AddonModAssignGradedEventData = AddonModAssignSubmittedForGradingEve
 export type AddonModAssignStartedEventData = {
     assignmentId: number;
 };
-
-/**
- * Submission status.
- * Constants on LMS starting with ASSIGN_SUBMISSION_STATUS_
- */
-export enum AddonModAssignSubmissionStatusValues {
-    SUBMITTED = 'submitted',
-    DRAFT = 'draft',
-    NEW = 'new',
-    REOPENED = 'reopened',
-    // Added by App Statuses.
-    NO_ATTEMPT = 'noattempt',
-    NO_ONLINE_SUBMISSIONS = 'noonlinesubmissions',
-    NO_SUBMISSION = 'nosubmission',
-    GRADED_FOLLOWUP_SUBMIT = 'gradedfollowupsubmit',
-}
-
-/**
- * Grading status.
- * Constants on LMS starting with ASSIGN_GRADING_STATUS_
- */
-export enum AddonModAssignGradingStates {
-    GRADED = 'graded',
-    NOT_GRADED = 'notgraded',
-    // Added by App Statuses.
-    MARKING_WORKFLOW_STATE_RELEASED = 'released', // with ASSIGN_MARKING_WORKFLOW_STATE_RELEASED
-    GRADED_FOLLOWUP_SUBMIT = 'gradedfollowupsubmit',
-}
-
-/**
- * Reopen attempt methods.
- * Constants on LMS starting with ASSIGN_ATTEMPT_REOPEN_METHOD_
- */
-export enum AddonModAssignAttemptReopenMethodValues {
-    NONE = 'none',
-    MANUAL = 'manual',
-    UNTILPASS = 'untilpass',
-}

@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreCronHandler } from '@services/cron';
 import { makeSingleton } from '@singletons';
 import { AddonModAssignSync } from '../assign-sync';
+import { ADDON_MOD_ASSIGN_SYNC_CRON_NAME } from '../../constants';
 
 /**
  * Synchronization cron handler.
@@ -23,24 +24,17 @@ import { AddonModAssignSync } from '../assign-sync';
 @Injectable({ providedIn: 'root' })
 export class AddonModAssignSyncCronHandlerService implements CoreCronHandler {
 
-    name = 'AddonModAssignSyncCronHandler';
+    name = ADDON_MOD_ASSIGN_SYNC_CRON_NAME;
 
     /**
-     * Execute the process.
-     * Receives the ID of the site affected, undefined for all sites.
-     *
-     * @param siteId ID of the site affected, undefined for all sites.
-     * @param force Wether the execution is forced (manual sync).
-     * @returns Promise resolved when done, rejected if failure.
+     * @inheritdoc
      */
     execute(siteId?: string, force?: boolean): Promise<void> {
         return AddonModAssignSync.syncAllAssignments(siteId, force);
     }
 
     /**
-     * Get the time between consecutive executions.
-     *
-     * @returns Time between consecutive executions (in ms).
+     * @inheritdoc
      */
     getInterval(): number {
         return AddonModAssignSync.syncInterval;

@@ -23,7 +23,7 @@ import { CorePushNotificationsDelegate } from '@features/pushnotifications/servi
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModAssignFeedbackModule } from './feedback/feedback.module';
-import { OFFLINE_SITE_SCHEMA } from './services/database/assign';
+import { ADDON_MOD_ASSIGN_OFFLINE_SITE_SCHEMA } from './services/database/assign';
 import { AddonModAssignIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModAssignListLinkHandler } from './services/handlers/list-link';
 import { AddonModAssignModuleHandler } from './services/handlers/module';
@@ -31,7 +31,7 @@ import { AddonModAssignPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModAssignPushClickHandler } from './services/handlers/push-click';
 import { AddonModAssignSyncCronHandler } from './services/handlers/sync-cron';
 import { AddonModAssignSubmissionModule } from './submission/submission.module';
-import { ADDON_MOD_ASSIGN_COMPONENT, ADDON_MOD_ASSIGN_PAGE_NAME } from './constants';
+import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY, ADDON_MOD_ASSIGN_PAGE_NAME } from './constants';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { canLeaveGuard } from '@guards/can-leave';
 import { CoreScreen } from '@services/screen';
@@ -133,7 +133,7 @@ const routes: Routes = [
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
-            useValue: [OFFLINE_SITE_SCHEMA],
+            useValue: [ADDON_MOD_ASSIGN_OFFLINE_SITE_SCHEMA],
             multi: true,
         },
         {
@@ -147,7 +147,7 @@ const routes: Routes = [
                 CoreCronDelegate.register(AddonModAssignSyncCronHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonModAssignPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_ASSIGN_COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_ASSIGN_COMPONENT_LEGACY);
             },
         },
     ],

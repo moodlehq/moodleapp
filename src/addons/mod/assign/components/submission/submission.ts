@@ -23,9 +23,6 @@ import {
     AddonModAssignPlugin,
     AddonModAssign,
     AddonModAssignGetSubmissionStatusWSResponse,
-    AddonModAssignGradingStates,
-    AddonModAssignSubmissionStatusValues,
-    AddonModAssignAttemptReopenMethodValues,
     AddonModAssignGrade,
 } from '../../services/assign';
 import {
@@ -50,11 +47,15 @@ import { CoreTime } from '@singletons/time';
 import { CoreIonicColorNames } from '@singletons/colors';
 import {
     ADDON_MOD_ASSIGN_AUTO_SYNCED,
-    ADDON_MOD_ASSIGN_COMPONENT,
+    ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
     ADDON_MOD_ASSIGN_MANUAL_SYNCED,
+    ADDON_MOD_ASSIGN_MODNAME,
     ADDON_MOD_ASSIGN_PAGE_NAME,
     ADDON_MOD_ASSIGN_SUBMISSION_REMOVED_EVENT,
     ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
+    AddonModAssignAttemptReopenMethodValues,
+    AddonModAssignGradingStates,
+    AddonModAssignSubmissionStatusValues,
 } from '../../constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -378,7 +379,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             const sent = await AddonModAssign.removeSubmission(this.assign, this.userSubmission);
 
             if (sent) {
-                CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'assign' });
+                CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: ADDON_MOD_ASSIGN_MODNAME });
             }
 
             CoreEvents.trigger(
@@ -792,7 +793,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             Translate.instant('core.grades.grade'),
             grade,
             {
-                component: ADDON_MOD_ASSIGN_COMPONENT,
+                component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
                 componentId: this.moduleId,
             },
         );

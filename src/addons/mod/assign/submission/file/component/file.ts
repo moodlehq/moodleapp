@@ -19,12 +19,12 @@ import { Component, OnInit } from '@angular/core';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFileSession } from '@services/file-session';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { AddonModAssignSubmissionFileHandlerService } from '../services/handler';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { CoreFileEntry } from '@services/file-helper';
-import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
+import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';
 import { CoreSharedModule } from '@/core/shared.module';
+import { ADDON_MOD_ASSIGN_SUBMISSION_FILE_FOLDER_NAME } from '../constants';
 
 /**
  * Component to render a file submission plugin.
@@ -39,7 +39,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmissionPluginBaseComponent implements OnInit {
 
-    component = ADDON_MOD_ASSIGN_COMPONENT;
+    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
     files: CoreFileEntry[] = [];
 
     maxSize?: number;
@@ -75,7 +75,7 @@ export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmiss
                         offlineFiles = <FileEntry[]>await CorePromiseUtils.ignoreErrors(
                             AddonModAssignHelper.getStoredSubmissionFiles(
                                 this.assign.id,
-                                AddonModAssignSubmissionFileHandlerService.FOLDER_NAME,
+                                ADDON_MOD_ASSIGN_SUBMISSION_FILE_FOLDER_NAME,
                             ),
                             [],
                         );
