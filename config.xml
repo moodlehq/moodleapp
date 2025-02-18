@@ -4,7 +4,7 @@
     <description>LMS of ICTAK</description>
     <author email="info@ictkerala.org" href="http://ictkerala.org"></author>
     <content src="index.html" />
-    <access origin="https://retail.ictkerala.org" />
+    <access origin="https://*.ictkerala.org" />
     <access launch-external="yes" origin="tel:*" />
     <access launch-external="yes" origin="mailto:*" />
     <access launch-external="yes" origin="geo:*" />
