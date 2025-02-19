@@ -14,7 +14,7 @@
             }
 
             <core-format-text class="message-text" [text]="text" (afterRender)="afterRender.emit()" [contextLevel]="contextLevel"
-                [contextInstanceId]="instanceId" [courseId]="courseId" />
+                [contextInstanceId]="instanceId" [courseId]="courseId" [sanitize]="message.pending" />
         </div>
 
         <div class="extra">

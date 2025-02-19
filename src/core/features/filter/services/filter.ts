@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, SecurityContext } from '@angular/core';
 
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
@@ -20,7 +20,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreText } from '@singletons/text';
 import { CoreFilterDelegate } from './filter-delegate';
-import { makeSingleton } from '@singletons';
+import { DomSanitizer, makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -254,6 +254,10 @@ export class CoreFilterProvider {
 
         if (options.clean) {
             text = CoreText.cleanTags(text, { singleLine: options.singleLine });
+        }
+
+        if (options.sanitize) {
+            text = DomSanitizer.sanitize(SecurityContext.HTML, text) || '';
         }
 
         if (options.shortenLength && options.shortenLength > 0) {
@@ -679,6 +683,7 @@ export type CoreFilterFormatTextOptions = {
     contextLevel?: ContextLevel; // The context level where the text is.
     instanceId?: number; // The instance id related to the context.
     clean?: boolean; // If true all HTML will be removed. Default false.
+    sanitize?: boolean; // If true the text will be sanitized. Default false.
     filter?: boolean; // If true the string will be run through applicable filters as well. Default true.
     singleLine?: boolean; // If true then new lines will be removed (all the text in a single line).
     shortenLength?: number; // Number of characters to shorten the text.
