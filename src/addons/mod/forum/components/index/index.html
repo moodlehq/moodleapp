@@ -94,8 +94,8 @@
                             <ion-icon name="fas-star" class="addon-forum-star" *ngIf="discussion.starred"
                                 [attr.aria-label]="'addon.mod_forum.favourites' | translate" />
                             <span (ariaButtonClick)="discussions?.select(discussion)">
-                                <core-format-text [text]="discussion.subject" contextLevel="module"
-                                    [contextInstanceId]="module && module.id" [courseId]="courseId" />
+                                <core-format-text [text]="discussion.subject" [courseId]="courseId" contextLevel="module"
+                                    [contextInstanceId]="module && module.id" [sanitize]="isOfflineDiscussion(discussion)" />
                             </span>
                             <ion-icon name="fas-lock" *ngIf="discussion.locked" class="addon-mod-forum-locked-icon"
                                 [attr.aria-label]="'addon.mod_forum.discussionlocked' | translate" />

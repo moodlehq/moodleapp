@@ -5,7 +5,7 @@
         <p *ngIf="words">{{ 'addon.mod_assign.numwords' | translate: {'$a': words} }}</p>
         <p>
             <core-format-text [component]="component" [componentId]="assign.cmid" collapsible-item [text]="text" contextLevel="module"
-                [contextInstanceId]="assign.cmid" [courseId]="assign.course" />
+                [contextInstanceId]="assign.cmid" [courseId]="assign.course" [sanitize]="!isSent" />
         </p>
     </ion-label>
 </ion-item>

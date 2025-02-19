@@ -91,7 +91,7 @@
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <core-format-text [text]="note.content" [filter]="false" />
+                        <core-format-text [text]="note.content" [filter]="false" [sanitize]="note.offline" />
                     </ion-label>
                 </ion-item>
             </ion-card>
