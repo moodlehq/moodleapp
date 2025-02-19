@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-moodleapp" version="0.0.0">
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-moodleapp"
+    version="0.0.0">
     <name>MoodleApp</name>
     <description>Plugin with custom functionality for the Moodle App</description>
     <js-module src="www/index.js" name="moodleapp">
@@ -9,24 +10,24 @@
         <framework src="com.android.installreferrer:installreferrer:2.2" />
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="SecureStorage">
-                <param name="android-package" value="com.ictkerala.paatshala.SecureStorage"/>
+                <param name="android-package" value="com.ictkerala.ksfe.SecureStorage" />
             </feature>
             <feature name="InstallReferrer">
-                <param name="android-package" value="com.ictkerala.paatshala.InstallReferrer"/>
+                <param name="android-package" value="com.ictkerala.ksfe.InstallReferrer" />
             </feature>
         </config-file>
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="Diagnostic">
-                <param name="android-package" value="com.ictkerala.paatshala.Diagnostic"/>
+                <param name="android-package" value="com.ictkerala.ksfe.Diagnostic" />
                 <param name="onload" value="true" />
             </feature>
             <feature name="Diagnostic_Location">
-                <param name="android-package" value="com.ictkerala.paatshala.Diagnostic_Location"/>
+                <param name="android-package" value="com.ictkerala.ksfe.Diagnostic_Location" />
                 <param name="onload" value="true" />
             </feature>
             <feature name="PinchToZoom">
-                <param name="android-package" value="com.ictkerala.paatshala.PinchToZoom"/>
+                <param name="android-package" value="com.ictkerala.ksfe.PinchToZoom" />
                 <param name="onload" value="true" />
             </feature>
         </config-file>
@@ -64,7 +65,8 @@
         <header-file src="src/ios/Diagnostic.h" />
         <source-file src="src/ios/Diagnostic.m" />
 
-        <!--BEGIN_MODULE LOCATION-->
+        <!--BEGIN_MODULE
+        LOCATION-->
         <config-file target="config.xml" parent="/*">
             <feature name="Diagnostic_Location">
                 <param name="ios-package" value="Diagnostic_Location" />
@@ -77,20 +79,25 @@
 
         <framework src="CoreLocation.framework" />
 
-        <config-file target="*-Info.plist" parent="NSLocationAlwaysAndWhenInUseUsageDescription" comment="Default usage descriptions: override as necessary in .plist">
+        <config-file target="*-Info.plist" parent="NSLocationAlwaysAndWhenInUseUsageDescription"
+            comment="Default usage descriptions: override as necessary in .plist">
             <string>We need your location so you can attach it as part of your submissions.</string>
         </config-file>
 
-        <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription" comment="Default usage descriptions: override as necessary in .plist">
+        <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription"
+            comment="Default usage descriptions: override as necessary in .plist">
             <string>We need your location so you can attach it as part of your submissions.</string>
         </config-file>
 
-        <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription" comment="iOS 10">
-           <string>We need your location so you can attach it as part of your submissions.</string>
+        <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription"
+            comment="iOS 10">
+            <string>We need your location so you can attach it as part of your submissions.</string>
         </config-file>
-        <!--END_MODULE LOCATION-->
+        <!--END_MODULE
+        LOCATION-->
 
-        <!--BEGIN_MODULE MICROPHONE-->
+        <!--BEGIN_MODULE
+        MICROPHONE-->
         <config-file target="config.xml" parent="/*">
             <feature name="Diagnostic_Microphone">
                 <param name="ios-package" value="Diagnostic_Microphone" />
@@ -101,12 +108,14 @@
         <framework src="AVFoundation.framework" />
 
         <config-file target="*-Info.plist" parent="NSMicrophoneUsageDescription">
-            <string>We need microphone access to record sounds so you can attach them as part of your submissions.</string>
+            <string>We need microphone access to record sounds so you can attach them as part of
+                your submissions.</string>
         </config-file>
 
         <header-file src="src/ios/Diagnostic_Microphone.h" />
         <source-file src="src/ios/Diagnostic_Microphone.m" />
-        <!--END_MODULE MICROPHONE-->
+        <!--END_MODULE
+        MICROPHONE-->
 
     </platform>
 </plugin>

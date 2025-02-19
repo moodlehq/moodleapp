@@ -1,6 +1,6 @@
 {
-    "app_id": "com.ictkerala.paatshala",
-    "appname": "Paatshala",
+    "app_id": "com.ictkerala.ksfe",
+    "appname": "KSFE",
     "versioncode": 50000,
     "versionname": "5.0.0",
     "cache_update_frequency_usually": 420000,
@@ -48,7 +48,7 @@
     "showTopLogo": "hidden",
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
-        "android": "com.ictkerala.paatshala",
+        "android": "com.ictkerala.ksfe",
         "ios": "id633359593"
     },
     "wsrequestqueuelimit": 10,
