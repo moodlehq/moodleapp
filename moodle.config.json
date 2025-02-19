@@ -9,77 +9,15 @@
     "cache_update_frequency_rarely": 43200000,
     "default_lang": "pt-br",
     "languages": {
-        "af": "Afrikaans",
-        "ar": "العربية",
-        "az": "Azərbaycanca",
-        "bg": "Български",
-        "ca": "Català",
-        "cs": "Čeština",
-        "da": "Dansk",
-        "de": "Deutsch",
-        "de-du": "Deutsch (du)",
-        "el": "Ελληνικά",
         "en": "English",
         "en-us": "English (United States)",
         "es": "Español - Internacional",
         "es-mx": "Español - México",
-        "eu": "Euskara",
-        "fa": "فارسی",
-        "fi": "Suomi",
         "fr": "Français",
-        "gl": "Galego",
-        "he": "עברית",
-        "hi": "हिंदी",
-        "hr": "Hrvatski",
-        "hsb": "Hornjoserbsce",
-        "hu": "magyar",
-        "hy": "Հայերեն",
-        "id": "Bahasa Indonesia",
-        "it": "Italiano",
-        "ja": "日本語",
-        "km": "ខ្មែរ",
-        "kn": "ಕನ್ನಡ",
-        "ko": "한국어",
-        "lo": "ລາວ",
-        "lt": "Lietuvių",
-        "lv": "Latviešu",
-        "mn": "Монгол",
-        "mr": "मराठी",
-        "nl": "Nederlands",
-        "no": "Norsk",
-        "pl": "Polski",
-        "ps": "لیسي",
         "pt": "Português - Portugal",
-        "pt-br": "Português - Brasil",
-        "ro": "Română",
-        "ru": "Русский",
-        "sl": "Slovenščina",
-        "sq": "Shqip",
-        "sr-cr": "Српски",
-        "sr-lt": "Srpski",
-        "sv": "Svenska",
-        "szl": "Ślōnski",
-        "tg": "Тоҷикӣ",
-        "tr": "Türkçe",
-        "uk": "Українська",
-        "uz": "O'zbekcha",
-        "vi": "Vietnamese",
-        "zh-cn": "简体中文",
-        "zh-tw": "正體中文"
+        "pt-br": "Português - Brasil"
     },
     "wsservice": "moodle_mobile_app",
-    "demo_sites": {
-        "student": {
-            "url": "https://school.moodledemo.net",
-            "username": "student",
-            "password": "moodle25"
-        },
-        "teacher": {
-            "url": "https://school.moodledemo.net",
-            "username": "teacher",
-            "password": "moodle25"
-        }
-    },
     "defaultZoomLevel": "none",
     "zoomlevels": {
         "none": 100,
@@ -87,10 +25,24 @@
         "high": 120
     },
     "customurlscheme": "moodlemobile",
-    "sites": [],
+    "sites":
+    [
+        {
+            "name": "AVA Presencial UFR",
+            "url": "https://ava.ufr.edu.br"
+        },
+        {
+            "name": "AVA EaD UFR",
+            "url": "https://avacev.ufr.edu.br"
+        },
+        {
+            "name": "AVA Extensão UFR",
+            "url": "https://avaextensao.ufr.edu.br"
+        }
+    ],
     "multisitesdisplay": "",
     "sitefindersettings": {},
-    "onlyallowlistedsites": false,
+    "onlyallowlistedsites": true,
     "forcedefaultlanguage": false,
     "privacypolicy": "https://moodle.net/moodle-app-privacy/",
     "notificoncolor": "#f98012",
