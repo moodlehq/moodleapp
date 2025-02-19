@@ -80,7 +80,7 @@
         </ion-item>
 
         <!-- Attempt status. -->
-        @if (assign.attemptreopenmethod !== attemptReopenMethodNone) {
+        @if (assign.maxattempts !== 1) {
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.mod_assign.attemptsettings' | translate }}</p>

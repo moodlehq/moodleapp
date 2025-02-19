@@ -80,7 +80,6 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
     gradeInfo?: AddonModAssignGradeInfo; // Grade data for the assignment, retrieved from the server.
     allowAddAttempt = false; // Allow adding a new attempt when grading.
 
-    attemptReopenMethodNone = AddonModAssignAttemptReopenMethodValues.NONE;
     unlimitedAttempts = ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS;
     currentAttemptNumber = 0; // The current attempt number.
     maxAttemptsText = ''; // The text for maximum attempts.
@@ -150,7 +149,7 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
         await this.treatGradeInfo(assign);
 
         const isManual = assign.attemptreopenmethod == AddonModAssignAttemptReopenMethodValues.MANUAL;
-        const isUnlimited = assign.maxattempts == ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS;
+        const isUnlimited = assign.maxattempts === ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS;
         const isLessThanMaxAttempts = !!this.userSubmission && (this.userSubmission.attemptnumber < (assign.maxattempts - 1));
 
         this.allowAddAttempt = isManual && (!this.userSubmission || isUnlimited || isLessThanMaxAttempts);

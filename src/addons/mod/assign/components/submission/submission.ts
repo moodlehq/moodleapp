@@ -53,7 +53,7 @@ import {
     ADDON_MOD_ASSIGN_PAGE_NAME,
     ADDON_MOD_ASSIGN_SUBMISSION_REMOVED_EVENT,
     ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
-    AddonModAssignAttemptReopenMethodValues,
+    ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS,
     AddonModAssignGradingStates,
     AddonModAssignSubmissionStatusValues,
 } from '../../constants';
@@ -137,7 +137,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     // Some constants.
     statusNew = AddonModAssignSubmissionStatusValues.NEW;
     statusReopened = AddonModAssignSubmissionStatusValues.REOPENED;
-    attemptReopenMethodNone = AddonModAssignAttemptReopenMethodValues.NONE;
+    unlimitedAttempts = ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS;
 
     previousAttempts: AddonModAssignSubmissionPreviousAttemptFormatted[] = []; // List of previous attempts.
 
@@ -894,7 +894,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
         this.userSubmission = AddonModAssign.getSubmissionObjectFromAttempt(this.assign, lastAttempt);
 
-        if (this.assign.attemptreopenmethod !== this.attemptReopenMethodNone && this.userSubmission) {
+        if (this.assign.maxattempts !== 1 && this.userSubmission) {
             this.currentAttemptNumber = this.userSubmission.attemptnumber + 1;
         }
 

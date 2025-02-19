@@ -34,8 +34,13 @@
                 <ion-item class="divider">
                     <ion-label>
                         <h2 class="big">
-                            @if (currentAttemptNumber) {
-                                {{ 'addon.mod_assign.attempt' | translate : { '$a' : currentAttemptNumber } }}
+                            @if (assign.maxattempts !== 1 && currentAttemptNumber) {
+                                @if (assign.maxattempts === unlimitedAttempts) {
+                                    {{ 'addon.mod_assign.attempt' | translate : { '$a' : currentAttemptNumber } }}
+                                } @else {
+                                    {{ 'addon.mod_assign.attempt' | translate : { '$a' : 'addon.mod_assign.outof' | translate :
+                                                {'$a': {'current': currentAttemptNumber, 'total': assign.maxattempts} } } }}
+                                }
                             } @else {
                                 {{'addon.mod_assign.submission' | translate}}
                             }
