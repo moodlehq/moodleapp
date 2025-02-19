@@ -13,6 +13,7 @@
     "attempt": "Attempt {{$a}}",
     "attempthistory": "Previous attempts",
     "attemptnumber": "Attempt number",
+    "attemptreopenmethod_automatic": "Automatically",
     "attemptreopenmethod_manual": "Manually",
     "attemptreopenmethod_untilpass": "Automatically until pass",
     "attemptreopenmethod": "Grant attempts",

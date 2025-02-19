@@ -361,6 +361,7 @@
   "addon.mod_assign.attempthistory": "assign",
   "addon.mod_assign.attemptnumber": "assign",
   "addon.mod_assign.attemptreopenmethod": "assign",
+  "addon.mod_assign.attemptreopenmethod_automatic": "assign",
   "addon.mod_assign.attemptreopenmethod_manual": "assign",
   "addon.mod_assign.attemptreopenmethod_untilpass": "assign",
   "addon.mod_assign.attemptsettings": "assign",

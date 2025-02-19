@@ -72,8 +72,8 @@ export const enum AddonModAssignGradingStates {
  * Constants on LMS starting with ASSIGN_ATTEMPT_REOPEN_METHOD_
  */
 export const enum AddonModAssignAttemptReopenMethodValues {
-    NONE = 'none',
     MANUAL = 'manual',
+    AUTOMATIC = 'automatic',
     UNTILPASS = 'untilpass',
 }
 
