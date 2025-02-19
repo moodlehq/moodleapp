@@ -33,7 +33,7 @@
     },
     "customurlscheme": "moodlemobile",
     "sites": [{
-        "url" : "https://retail.ictkerala.org"
+        "url" : "https://dwms.ictkerala.org"
     }],
     "multisitesdisplay": "",
     "sitefindersettings": {},
