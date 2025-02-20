@@ -40,12 +40,14 @@ export class AddonModAssignFeedbackPluginBaseComponent implements IAddonModAssig
      * Open a modal to edit the feedback plugin.
      *
      * @returns Promise resolved with the input data, rejected if cancelled.
+     * @deprecated since 5.0.0. Use inline forms instead.
      */
     async editFeedback(): Promise<AddonModAssignFeedbackCommentsTextData> {
         if (!this.canEdit) {
             throw new CoreError('Cannot edit feedback');
         }
 
+        // eslint-disable-next-line deprecation/deprecation
         const { AddonModAssignEditPluginFeedbackModalComponent } =
             await import('@addons/mod/assign/components/edit-feedback-plugin-modal/edit-feedback-plugin-modal');
 

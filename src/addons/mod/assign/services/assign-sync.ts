@@ -509,6 +509,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             let promises: Promise<void | AddonModAssignGetSubmissionStatusWSResponse>[] = [];
             if (status.feedback && status.feedback.plugins) {
                 promises = status.feedback.plugins.map((plugin) =>
+                    // eslint-disable-next-line deprecation/deprecation
                     AddonModAssignFeedbackDelegate.discardPluginFeedbackData(assign.id, userId, plugin, siteId));
             }
 
