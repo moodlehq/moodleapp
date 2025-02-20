@@ -41,14 +41,13 @@ import { CoreHTMLClasses } from '@singletons/html-classes';
 import { CoreDom } from '@singletons/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { PromptButton } from '@services/overlays/prompts';
+import { CoreBoostrap } from '@singletons/bootstrap';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreDomUtilsProvider {
-
-    protected readonly INSTANCE_ID_ATTR_NAME = 'core-instance-id';
 
     // List of input types that support keyboard.
     protected readonly INPUT_SUPPORT_KEYBOARD: string[] = ['date', 'datetime', 'datetime-local', 'email', 'month', 'number',
@@ -325,41 +324,10 @@ export class CoreDomUtilsProvider {
      * Handle bootstrap tooltips in a certain element.
      *
      * @param element Element to check.
+     * @deprecated since 5.0. Use CoreBoostrap.handleBootstrapTooltipsAndPopovers instead.
      */
     handleBootstrapTooltips(element: HTMLElement): void {
-        const els = Array.from(element.querySelectorAll('[data-toggle="tooltip"]'));
-
-        els.forEach((el) => {
-            const content = el.getAttribute('title') || el.getAttribute('data-original-title');
-            const trigger = el.getAttribute('data-trigger') || 'hover focus';
-            const treated = el.getAttribute('data-bstooltip-treated');
-
-            if (!content || treated === 'true' ||
-                    (trigger.indexOf('hover') == -1 && trigger.indexOf('focus') == -1 && trigger.indexOf('click') == -1)) {
-                return;
-            }
-
-            el.setAttribute('data-bstooltip-treated', 'true'); // Mark it as treated.
-
-            // Store the title in data-original-title instead of title, like BS does.
-            el.setAttribute('data-original-title', content);
-            el.setAttribute('title', '');
-
-            el.addEventListener('click', async (ev: Event) => {
-                const html = el.getAttribute('data-html');
-
-                const { CoreBSTooltipComponent } = await import('@components/bs-tooltip/bs-tooltip');
-
-                await CorePopovers.openWithoutResult({
-                    component: CoreBSTooltipComponent,
-                    componentProps: {
-                        content,
-                        html: html === 'true',
-                    },
-                    event: ev,
-                });
-            });
-        });
+        CoreBoostrap.handleBootstrapTooltipsAndPopovers(element);
     }
 
     /**
