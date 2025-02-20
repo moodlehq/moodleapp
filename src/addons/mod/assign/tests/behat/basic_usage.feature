@@ -16,8 +16,8 @@ Feature: Test basic usage of assignment activity in app
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
     And the following "activities" exist:
-      | activity | course | idnumber | name         | intro                        | assignsubmission_onlinetext_enabled | duedate                       | attemptreopenmethod | maxattempts |
-      | assign   | C1     | assign1  | assignment1  | Test assignment description1 | 1                                   | ## 20 August 2002 12:00 PM ## | manual              | -1          |
+      | activity | course | idnumber | name         | intro                        | assignsubmission_onlinetext_enabled | assignfeedback_comments_enabled | duedate                       | attemptreopenmethod | maxattempts |
+      | assign   | C1     | assign1  | assignment1  | Test assignment description1 | 1                                   | 1                               | ## 20 August 2002 12:00 PM ## | manual              | -1          |
 
   Scenario: View assign description, due date & View list of student submissions (as teacher) & View own submission or student submission
     # Create, edit and submit as a student
@@ -81,6 +81,8 @@ Feature: Test basic usage of assignment activity in app
     When I press "Add submission" in the app
     Then I set the field "Online text submissions" to "Submission test 1st attempt" in the app
     And I press "Save" in the app
+    And I should find "Draft (not submitted)" in the app
+    And I should find "Not graded" in the app
     And I press "Submit assignment" in the app
     And I press "OK" in the app
 
@@ -91,9 +93,13 @@ Feature: Test basic usage of assignment activity in app
     And I press "Grade" "ion-button" in the app
     Then I should find "1 out of Unlimited" in the app
     When I press "Allow another attempt" in the app
+    And I set the field "Feedback comments" to "Maybe next time" in the app
     And I press "Grade" "ion-button" in the app
     Then I should find "Reopened" in the app
     And I should find "Not graded" in the app
+    And I should find "Previous attempts" in the app
+    When I press "Attempt 1" in the app
+    And I should find "Maybe next time" within "Feedback comments" "ion-item" in the app
 
     # Submit second attempt as a student
     Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
@@ -102,6 +108,10 @@ Feature: Test basic usage of assignment activity in app
     And I should find "Attempt 2" in the app
     And I should find "Add a new attempt based on previous submission" in the app
     And I should find "Add a new attempt" in the app
+    And I should find "Previous attempts" in the app
+    When I press "Attempt 1" in the app
+    Then I should find "Submission test 1st attempt" in the app
+    And I should find "Maybe next time" within "Feedback comments" "ion-item" in the app
 
     When I press "Add a new attempt based on previous submission" in the app
     And I press "OK" in the app
