@@ -86,6 +86,8 @@ export class AddonBlogProvider {
             cacheKey: this.getEntriesCacheKey(filter),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             ...CoreSites.getReadingStrategyPreSets(options?.readingStrategy),
+            filter: options?.filter !== false,
+            rewriteurls: options?.filter !== false,
         };
 
         return site.read('core_blog_get_entries', data, preSets);
@@ -318,6 +320,9 @@ export class AddonBlogProvider {
         const offlineFiles = await AddonBlogOffline.getOfflineFiles(folder);
         const optionsFiles = this.getAttachmentFilesFromOptions(options);
         const attachmentFiles = [...optionsFiles.online, ...offlineFiles];
+        const summary = entry ?
+            CoreFileHelper.replacePluginfileUrls(offlineEntry.summary, entry.summaryfiles) :
+            offlineEntry.summary;
 
         return {
             ...offlineEntry,
@@ -330,11 +335,12 @@ export class AddonBlogProvider {
             attachmentfiles: attachmentFiles,
             userid: user?.id ?? 0,
             moduleid: moduleId ?? 0,
-            summaryfiles: [],
+            summary,
+            summaryfiles: entry?.summaryfiles ?? [],
             uniquehash: '',
             module: entry?.module,
             groupid: 0,
-            content: offlineEntry.summary,
+            content: summary,
             updatedOffline: true,
         };
     }
@@ -553,6 +559,7 @@ export type AddonBlogDeleteEntryWSResponse = {
 
 export type AddonBlogGetEntriesOptions = CoreSitesCommonWSOptions & {
     page?: number;
+    filter?: boolean; // Defaults to true. If false, text won't be filtered and URLs won't be rewritten.
 };
 
 export type AddonBlogUndoDelete = { created: number } | { id: number };
