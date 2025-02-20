@@ -10,7 +10,7 @@
                             <ion-icon name="fas-star" class="addon-forum-star" [attr.aria-label]="'addon.mod_forum.favourites' | translate"
                                 *ngIf="discussion && !post.parentid && !discussion.pinned && discussion.starred" />
                             <core-format-text [text]="post.subject" contextLevel="module" [contextInstanceId]="forum && forum.cmid"
-                                [courseId]="courseId" />
+                                [courseId]="courseId" [sanitize]="!post.id || post.id < 0" />
                         </h2>
                         <ion-note *ngIf="trackPosts && post.unread" class="ion-float-end ion-padding-start ion-text-end"
                             [attr.aria-label]="'addon.mod_forum.unread' | translate">
@@ -59,7 +59,7 @@
                 <ion-note color="danger">{{ 'addon.mod_forum.postisprivatereply' | translate }}</ion-note>
             </div>
             <core-format-text [component]="component" [componentId]="componentId" [text]="post.message" contextLevel="module"
-                [contextInstanceId]="forum && forum.cmid" [courseId]="courseId" />
+                [contextInstanceId]="forum && forum.cmid" [courseId]="courseId" [sanitize]="!post.id || post.id < 0" />
             <p *ngIf="post.haswordcount && post.wordcount">
                 <em>{{ 'core.numwords' | translate: {'$a': post.wordcount} }}</em>
             </p>

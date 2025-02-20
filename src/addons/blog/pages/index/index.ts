@@ -230,6 +230,16 @@ export default class AddonBlogIndexPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Whether an entry has offline data.
+     *
+     * @param entry Entry.
+     * @returns Whether it has offline data.
+     */
+    entryHasOfflineData(entry: AddonBlogPostFormatted | AddonBlogOfflinePostFormatted): boolean {
+        return !this.isOnlineEntry(entry) || !!entry.updatedOffline;
+    }
+
+    /**
      * Fetch blog entries.
      *
      * @param refresh Empty events array first.

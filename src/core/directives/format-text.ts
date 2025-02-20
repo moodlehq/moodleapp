@@ -86,6 +86,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     @Input({ transform: toBoolean }) adaptImg = true; // Whether to adapt images to screen width.
     @Input({ transform: toBoolean }) clean = false; // Whether all the HTML tags should be removed.
     @Input({ transform: toBoolean }) singleLine = false; // Whether new lines should be removed. Only if clean=true.
+    @Input({ transform: toBoolean }) sanitize = false; // Whether to sanitize the text.
     @Input() highlight?: string; // Text to highlight.
     @Input({ transform: toBoolean }) filter?: boolean; // Whether to filter the text.
                                                        // If not defined, true if contextLevel and instanceId are set.
@@ -448,6 +449,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
         const options: CoreFilterFormatTextOptions = {
             clean: this.clean,
+            sanitize: this.sanitize,
             singleLine: this.singleLine,
             highlight: this.highlight,
             courseId: this.courseId,
