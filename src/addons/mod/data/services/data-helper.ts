@@ -223,9 +223,9 @@ export class AddonModDataHelperProvider {
             let replaceRegex = new RegExp(replace, 'gi');
 
             // Replace field by a generic directive.
-            const render = '<addon-mod-data-field-plugin [field]="fields[' + field.id + ']" [value]="entries[' + entry.id +
-                    '].contents[' + field.id + ']" mode="' + mode + '" [database]="database" (gotoEntry)="gotoEntry($event)">' +
-                    '</addon-mod-data-field-plugin>';
+            const render = `<addon-mod-data-field-plugin [field]="fields[${field.id}]" mode="${mode}" [database]="database" \
+                [value]="entries[${entry.id}].contents[${field.id}]" [recordHasOffline]="${entry.hasOffline ? 'true' : 'false'}" \
+                (gotoEntry)="gotoEntry($event)"></addon-mod-data-field-plugin>`;
 
             template = template.replace(replaceRegex, render);
 

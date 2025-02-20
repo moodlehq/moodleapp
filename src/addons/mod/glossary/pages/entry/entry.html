@@ -5,7 +5,8 @@
         </ion-buttons>
         <ion-title>
             <h1 *ngIf="entry">
-                <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId" [courseId]="courseId" />
+                <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId" [courseId]="courseId"
+                    [sanitize]="!onlineEntry" />
             </h1>
         </ion-title>
         <ion-buttons slot="end" />
@@ -30,7 +31,7 @@
                     <ion-label>
                         <h2>
                             <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId"
-                                [courseId]="courseId" />
+                                [courseId]="courseId" [sanitize]="!onlineEntry" />
                         </h2>
                         <p *ngIf="onlineEntry">{{ onlineEntry.userfullname }}</p>
                     </ion-label>
@@ -39,7 +40,8 @@
                 <ion-item class="ion-text-wrap" *ngIf="!showAuthor">
                     <ion-label>
                         <p class="item-heading">
-                            <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId" />
+                            <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId"
+                                [sanitize]="!onlineEntry" />
                         </p>
                     </ion-label>
                     <ion-note slot="end" *ngIf="showDate && onlineEntry">{{ onlineEntry.timemodified | coreDateDayOrTime }}</ion-note>
@@ -47,7 +49,7 @@
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <core-format-text [component]="component" [componentId]="componentId" [text]="entry.definition"
-                            contextLevel="module" [contextInstanceId]="componentId" [courseId]="courseId" />
+                            contextLevel="module" [contextInstanceId]="componentId" [courseId]="courseId" [sanitize]="!onlineEntry" />
                     </ion-label>
                 </ion-item>
                 <div *ngIf="onlineEntry && onlineEntry.attachment">

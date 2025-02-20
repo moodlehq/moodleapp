@@ -47,7 +47,7 @@
                     <div class="addon-mod-glossary-index--offline-entry">
                         <ion-icon name="fas-clock" class="ion-margin-end" [attr.aria-label]="'core.notsent' | translate" />
                         <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="glossary!.coursemodule"
-                            [courseId]="courseId" />
+                            [courseId]="courseId" [sanitize]="true" />
                     </div>
                 </ion-label>
             </ion-item>

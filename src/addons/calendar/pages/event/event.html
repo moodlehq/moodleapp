@@ -5,7 +5,8 @@
         </ion-buttons>
         <ion-title>
             <h1 *ngIf="event">
-                <core-format-text [text]="event.name" [contextLevel]="event.contextLevel" [contextInstanceId]="event.contextInstanceId" />
+                <core-format-text [text]="event.name" [contextLevel]="event.contextLevel" [contextInstanceId]="event.contextInstanceId"
+                    [sanitize]="event.offline" />
             </h1>
         </ion-title>
         <ion-buttons slot="end">
@@ -41,7 +42,7 @@
                     </span>
                     <h1>
                         <core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
-                            [contextInstanceId]="event.contextInstanceId" />
+                            [contextInstanceId]="event.contextInstanceId" [sanitize]="event.offline" />
                     </h1>
                 </ion-label>
             </ion-item>
@@ -96,7 +97,7 @@
                     <p class="item-heading">{{ 'core.description' | translate}}</p>
                     <p>
                         <core-format-text [text]="event.description" [contextLevel]="event.contextLevel"
-                            [contextInstanceId]="event.contextInstanceId" />
+                            [contextInstanceId]="event.contextInstanceId" [sanitize]="event.offline" />
                     </p>
                 </ion-label>
             </ion-item>
@@ -106,7 +107,7 @@
                     <p>
                         <a [href]="event.encodedLocation" core-link [autoLogin]="false">
                             <core-format-text [text]="event.location" [contextLevel]="event.contextLevel"
-                                [contextInstanceId]="event.contextInstanceId" />
+                                [contextInstanceId]="event.contextInstanceId" [sanitize]="event.offline" />
                         </a>
                     </p>
                 </ion-label>

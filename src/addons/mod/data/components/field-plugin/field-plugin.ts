@@ -21,6 +21,7 @@ import { AddonModDataData, AddonModDataField } from '../../services/data';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';
 import { AddonModDataTemplateMode } from '../../constants';
 import { CoreSharedModule } from '@/core/shared.module';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Component that displays a database field plugin.
@@ -44,6 +45,7 @@ export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
     @Input() error?: string; // Error when editing.
     @Input() form?: FormGroup; // Form where to add the form control. Just required for edit and search modes.
     @Input() searchFields?: CoreFormFields; // The search value of all fields.
+    @Input({ transform: toBoolean }) recordHasOffline = false; // Whether the record this field belongs to has offline data.
     @Output() gotoEntry = new EventEmitter<number>(); // Action to perform.
     // Output called when the field is initialized with a value and it didn't have one already.
     @Output() onFieldInit = new EventEmitter<AddonModDataEntryFieldInitialized>();
@@ -76,6 +78,7 @@ export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
                     error: this.error,
                     form: this.form,
                     searchFields: this.searchFields,
+                    recordHasOffline: this.recordHasOffline,
                     gotoEntry: this.gotoEntry,
                     onFieldInit: this.onFieldInit,
                 };
@@ -109,6 +112,7 @@ export type AddonDataFieldPluginComponentData = {
     error?: string; // Error when editing.
     form?: FormGroup; // Form where to add the form control. Just required for edit and search modes.
     searchFields?: CoreFormFields; // The search value of all fields.
+    recordHasOffline?: boolean; // Whether the record this field belongs to has offline data.
     gotoEntry: EventEmitter<number>;
     onFieldInit: EventEmitter<AddonModDataEntryFieldInitialized>;
 };

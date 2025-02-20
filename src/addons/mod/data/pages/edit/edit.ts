@@ -455,9 +455,10 @@ export default class AddonModDataEditPage implements OnInit {
             let replaceRegEx = new RegExp(replace, 'gi');
 
             // Replace field by a generic directive.
-            const render = '<addon-mod-data-field-plugin [class.has-errors]="!!errors[' + field.id + ']" mode="edit" \
-                [field]="fields[' + field.id + ']" [value]="contents[' + field.id + ']" [form]="form" [database]="database" \
-                [error]="errors[' + field.id + ']" (onFieldInit)="onFieldInit($event)"></addon-mod-data-field-plugin>';
+            const render = `<addon-mod-data-field-plugin [class.has-errors]="!!errors[${field.id}]" mode="edit" \
+                [field]="fields[${field.id}]" [value]="contents[${field.id}]" [form]="form" [database]="database" \
+                [error]="errors[${field.id}]" [recordHasOffline]="${this.entry?.hasOffline ? 'true' : 'false'}" \
+                (onFieldInit)="onFieldInit($event)"></addon-mod-data-field-plugin>`;
             template = template.replace(replaceRegEx, render);
 
             // Replace the field id tag.

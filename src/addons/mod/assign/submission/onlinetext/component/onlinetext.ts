@@ -49,6 +49,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
     wordLimitEnabled = false;
     currentUserId: number;
     wordLimit = 0;
+    isSent = false;
 
     protected wordCountTimeout?: number;
     protected element: HTMLElement;
@@ -80,10 +81,12 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
                 // Offline submission, get text if submission is not removed.
                 if (offlineData.plugindata.onlinetext_editor) {
                     this.text = (<AddonModAssignSubmissionOnlineTextPluginData>offlineData.plugindata).onlinetext_editor.text;
+                    this.isSent = false;
                 }
             } else {
                 // No offline data found, return online text.
                 this.text = AddonModAssign.getSubmissionPluginText(this.plugin);
+                this.isSent = true;
             }
 
             // Set the text.

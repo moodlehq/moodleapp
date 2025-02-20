@@ -58,11 +58,14 @@
             </ion-item>
         </ion-card>
     </div>
-    <div class="ion-padding-horizontal addon-mod_wiki-page-content">
-        <h2 *ngIf="pageTitle">{{pageTitle}}</h2>
+    <div class="ion-padding-horizontal addon-mod_wiki-page-content" *ngIf="!showLoading">
+        <h2 *ngIf="pageTitle">
+            <core-format-text [component]="component" [componentId]="componentId" [text]="pageTitle"
+                contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" [sanitize]="pageIsOffline" />
+        </h2>
         <article [ngClass]="{'addon-mod_wiki-noedit': !canEdit}">
             <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent"
-                contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
+                contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" [sanitize]="pageIsOffline" />
             <core-empty-box *ngIf="!pageContent" icon="fas-file-lines" [message]="'addon.mod_wiki.nocontent' | translate" />
         </article>
 

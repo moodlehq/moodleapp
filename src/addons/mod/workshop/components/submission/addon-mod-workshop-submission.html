@@ -5,7 +5,7 @@
             <ion-label>
                 <h2 *ngIf="submission.title">
                     <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id"
-                        [courseId]="courseId" />
+                        [courseId]="courseId" [sanitize]="submission.offline" />
                 </h2>
                 <p *ngIf="profile && profile?.fullname">{{profile.fullname}}</p>
                 <p *ngIf="showGrade(submission.grade)" [class.addon-has-overriden-grade]="showGrade(submission.gradeover)">
@@ -34,7 +34,7 @@
         <ion-item class="ion-text-wrap" *ngIf="submission.content">
             <ion-label>
                 <core-format-text [component]="component" [componentId]="componentId" [text]="submission.content" contextLevel="module"
-                    [contextInstanceId]="module.id" [courseId]="courseId" />
+                    [contextInstanceId]="module.id" [courseId]="courseId" [sanitize]="submission.offline" />
             </ion-label>
         </ion-item>
         <core-files [files]="submission.attachmentfiles" [component]="component" [componentId]="componentId" />
@@ -65,7 +65,8 @@
         <core-user-avatar [user]="profile" slot="start" [courseId]="courseId" [userId]="profile?.id" />
         <ion-label>
             <h2 *ngIf="submission.title">
-                <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
+                <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId"
+                    [sanitize]="submission.offline" />
             </h2>
             <p *ngIf="profile && profile.fullname">{{profile.fullname}}</p>
             <p *ngIf="submission.reviewedbydone">
