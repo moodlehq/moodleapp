@@ -17,10 +17,8 @@ import { FormBuilder, FormControl } from '@angular/forms';
 import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { CoreFileHelper } from '@services/file-helper';
 import {
-    AddonModAssignFeedbackCommentsDraftData,
     AddonModAssignFeedbackCommentsPluginData,
 } from '../services/handler';
-import { AddonModAssignFeedbackDelegate } from '@addons/mod/assign/services/feedback-delegate';
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
@@ -102,17 +100,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
      * @returns Promise resolved with the text.
      */
     protected async getText(): Promise<string> {
-        // Check if the user already modified the comment.
-        const draft: AddonModAssignFeedbackCommentsDraftData | undefined =
-            await AddonModAssignFeedbackDelegate.getPluginDraftData(this.assign.id, this.userId, this.plugin);
-
-        if (draft) {
-            this.isSent = false;
-
-            return this.replacePluginfileUrls(draft.text);
-        }
-
-        // There is no draft saved. Check if we have anything offline.
+        // Check if we have anything offline.
         const offlineData = await CorePromiseUtils.ignoreErrors(
             AddonModAssignOffline.getSubmissionGrade(this.assign.id, this.userId),
             undefined,
@@ -120,15 +108,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
 
         if (offlineData && offlineData.plugindata && offlineData.plugindata.assignfeedbackcomments_editor) {
             const pluginData = <AddonModAssignFeedbackCommentsPluginData>offlineData.plugindata;
-
-            // Save offline as draft.
             this.isSent = false;
-            AddonModAssignFeedbackDelegate.saveFeedbackDraft(
-                this.assign.id,
-                this.userId,
-                this.plugin,
-                pluginData.assignfeedbackcomments_editor,
-            );
 
             return this.replacePluginfileUrls(pluginData.assignfeedbackcomments_editor.text);
         }

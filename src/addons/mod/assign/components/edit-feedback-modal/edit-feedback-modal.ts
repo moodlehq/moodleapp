@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ModalController, Translate } from '@singletons';
 import {
     AddonModAssign,
@@ -45,6 +45,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreGradesHelper, CoreGradesFormattedItem } from '@features/grades/services/grades-helper';
 import { CoreLang } from '@services/lang';
 import { CoreText } from '@singletons/text';
+import { CoreFormFields, CoreForms } from '@singletons/form';
 
 /**
  * Modal that allows editing a submission feedback.
@@ -67,6 +68,8 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
     @Input() gradingStatus?: AddonModAssignGradingStates; // Grading status of the last attempt.
     @Input() feedback?: AddonModAssignSubmissionFeedback; // Feedback of the last attempt.
     @Input() userSubmission?: AddonModAssignSubmissionFormatted; // The submission object.
+
+    @ViewChild('editFeedbackForm') formElement?: ElementRef;
 
     grade: AddonModAssignSubmissionGrade = {
         method: '',
@@ -332,7 +335,7 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
     async closeModal(): Promise<void> {
         const canLeave = await this.canLeave();
         if (canLeave) {
-            ModalController.dismiss(false);
+            this.dismissModal(false);
         }
     }
 
@@ -375,11 +378,14 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
         }
 
         try {
+            const inputData = this.getInputData();
+
             return AddonModAssignHelper.hasFeedbackDataChanged(
                 this.assign,
                 this.userSubmission,
                 this.feedback,
                 this.submitId,
+                inputData,
             );
         } catch {
             // Error ocurred, consider there are no changes.
@@ -394,7 +400,7 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
         // Check if there's something to be saved.
         const modified = await this.hasDataToSave(true);
         if (!modified || !this.assign) {
-            ModalController.dismiss(false);
+            this.dismissModal(false);
 
             return;
         }
@@ -419,15 +425,18 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
             }
         });
 
+        const inputData = this.getInputData();
+
         let pluginData: AddonModAssignSavePluginData = {};
         try {
             if (this.feedback && this.feedback.plugins) {
-                pluginData = await AddonModAssignHelper.prepareFeedbackPluginData(this.assign.id, this.submitId, this.feedback);
+                pluginData =
+                    await AddonModAssignHelper.prepareFeedbackPluginData(this.assign.id, this.submitId, this.feedback, inputData);
             }
 
             try {
                 // We have all the data, now send it.
-                await AddonModAssign.submitGradingForm(
+                const online = await AddonModAssign.submitGradingForm(
                     this.assign.id,
                     this.submitId,
                     this.courseId,
@@ -442,7 +451,8 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
 
                 // Data sent, discard draft.
                 await this.discardDrafts();
-                ModalController.dismiss(true);
+
+                this.dismissModal(true, online);
             } finally {
                 CoreEvents.trigger(ADDON_MOD_ASSIGN_GRADED_EVENT, {
                     assignmentId: this.assign.id,
@@ -456,12 +466,20 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
     }
 
     /**
-     * Discard feedback drafts.
+     * Get the input data.
      *
-     * @returns Promise resolved when done.
+     * @returns Input data.
+     */
+    protected getInputData(): CoreFormFields {
+        return CoreForms.getDataFromForm(document.forms['addon-mod_assign-edit-feedback-form']);
+    }
+
+    /**
+     * Discard feedback drafts.
      */
     protected async discardDrafts(): Promise<void> {
         if (this.assign && this.feedback && this.feedback.plugins) {
+            // eslint-disable-next-line deprecation/deprecation
             await AddonModAssignHelper.discardFeedbackPluginData(this.assign.id, this.submitId, this.feedback);
         }
     }
@@ -513,6 +531,22 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
         } else {
             CoreSync.unblockOperation(ADDON_MOD_ASSIGN_COMPONENT, syncId);
         }
+    }
+
+    /**
+     * Dismiss the modal.
+     *
+     * @param savedData Whether data was saved.
+     * @param online Whether the submission was done in online or offline (only if saved data)-
+     */
+    protected dismissModal(savedData: boolean, online?: boolean): void {
+        if (savedData) {
+            CoreForms.triggerFormSubmittedEvent(this.formElement, online, CoreSites.getCurrentSiteId());
+        } else {
+            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        }
+
+        ModalController.dismiss(savedData);
     }
 
 }

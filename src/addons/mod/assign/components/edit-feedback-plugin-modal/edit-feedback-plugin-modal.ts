@@ -25,6 +25,8 @@ import { AddonModAssignFeedbackPluginComponent } from '../feedback-plugin/feedba
 
 /**
  * Modal that allows editing a feedback plugin.
+ *
+ * @deprecated since 5.0.0. Use inline forms instead.
  */
 @Component({
     selector: 'addon-mod-assign-edit-feedback-plugin-modal',
@@ -79,7 +81,7 @@ export class AddonModAssignEditPluginFeedbackModalComponent {
      * @returns Object with the data.
      */
     protected getInputData(): CoreFormFields {
-        return CoreForms.getDataFromForm(document.forms['addon-mod_assign-edit-feedback-form']);
+        return CoreForms.getDataFromForm(document.forms['addon-mod_assign-edit-feedback-plugin-form']);
     }
 
     /**

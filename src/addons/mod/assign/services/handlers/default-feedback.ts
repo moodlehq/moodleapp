@@ -129,6 +129,7 @@ export class AddonModAssignDefaultFeedbackHandler implements AddonModAssignFeedb
         userId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
         plugin: AddonModAssignPlugin, // eslint-disable-line @typescript-eslint/no-unused-vars
         pluginData: AddonModAssignSavePluginData, // eslint-disable-line @typescript-eslint/no-unused-vars
+        inputData: CoreFormFields, // eslint-disable-line @typescript-eslint/no-unused-vars
         siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): void | Promise<void> {
         // Nothing to do.

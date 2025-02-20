@@ -203,6 +203,7 @@ export class AddonModAssignHelperProvider {
      * @param feedback Feedback data.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done.
+     * @deprecated since 5.0. Feedback drafts are not needed if you show form in the grading modal.
      */
     async discardFeedbackPluginData(
         assignId: number,
@@ -213,6 +214,7 @@ export class AddonModAssignHelperProvider {
 
         const promises = feedback.plugins
             ? feedback.plugins.map((plugin) =>
+                // eslint-disable-next-line deprecation/deprecation
                 AddonModAssignFeedbackDelegate.discardPluginFeedbackData(assignId, userId, plugin, siteId))
             : [];
 
@@ -514,6 +516,7 @@ export class AddonModAssignHelperProvider {
      * @param submission The submission.
      * @param feedback Feedback data.
      * @param userId The user ID.
+     * @param inputData Data entered in the feedback form.
      * @returns Promise resolved with true if data has changed, resolved with false otherwise.
      */
     async hasFeedbackDataChanged(
@@ -521,6 +524,7 @@ export class AddonModAssignHelperProvider {
         submission: AddonModAssignSubmission | AddonModAssignSubmissionFormatted | undefined,
         feedback: AddonModAssignSubmissionFeedback,
         userId: number,
+        inputData: CoreFormFields,
     ): Promise<boolean> {
         if (!submission || !feedback.plugins) {
             return false;
@@ -529,17 +533,16 @@ export class AddonModAssignHelperProvider {
         let hasChanged = false;
 
         const promises = feedback.plugins.map((plugin) =>
-            this.prepareFeedbackPluginData(assign.id, userId, feedback).then(async (inputData) => {
-                const changed = await CorePromiseUtils.ignoreErrors(
-                    AddonModAssignFeedbackDelegate.hasPluginDataChanged(assign, submission, plugin, inputData, userId),
-                    false,
-                );
-                if (changed) {
-                    hasChanged = true;
-                }
+            AddonModAssignFeedbackDelegate.hasPluginDataChanged(assign, submission, plugin, inputData, userId)
+                .then((changed) => {
+                    if (changed) {
+                        hasChanged = true;
+                    }
 
-                return;
-            }));
+                    return;
+                }).catch(() => {
+                    // Ignore errors.
+                }));
 
         await CorePromiseUtils.allPromises(promises);
 
@@ -559,25 +562,23 @@ export class AddonModAssignHelperProvider {
         submission: AddonModAssignSubmission | undefined,
         inputData: CoreFormFields,
     ): Promise<boolean> {
-        if (!submission) {
+        if (!submission || !submission.plugins) {
             return false;
         }
 
         let hasChanged = false;
 
-        const promises = submission.plugins
-            ? submission.plugins.map((plugin) =>
-                AddonModAssignSubmissionDelegate.hasPluginDataChanged(assign, submission, plugin, inputData)
-                    .then((changed) => {
-                        if (changed) {
-                            hasChanged = true;
-                        }
+        const promises = submission.plugins.map((plugin) =>
+            AddonModAssignSubmissionDelegate.hasPluginDataChanged(assign, submission, plugin, inputData)
+                .then((changed) => {
+                    if (changed) {
+                        hasChanged = true;
+                    }
 
-                        return;
-                    }).catch(() => {
-                        // Ignore errors.
-                    }))
-            : [];
+                    return;
+                }).catch(() => {
+                    // Ignore errors.
+                }));
 
         await CorePromiseUtils.allPromises(promises);
 
@@ -590,6 +591,7 @@ export class AddonModAssignHelperProvider {
      * @param assignId Assignment Id.
      * @param userId User Id.
      * @param feedback Feedback data.
+     * @param inputData Data entered in the feedback form.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with plugin data to send to server.
      */
@@ -597,13 +599,14 @@ export class AddonModAssignHelperProvider {
         assignId: number,
         userId: number,
         feedback: AddonModAssignSubmissionFeedback,
+        inputData: CoreFormFields,
         siteId?: string,
     ): Promise<AddonModAssignSavePluginData> {
 
         const pluginData: CoreFormFields = {};
         const promises = feedback.plugins
             ? feedback.plugins.map((plugin) =>
-                AddonModAssignFeedbackDelegate.preparePluginFeedbackData(assignId, userId, plugin, pluginData, siteId))
+                AddonModAssignFeedbackDelegate.preparePluginFeedbackData(assignId, userId, plugin, pluginData, inputData, siteId))
             : [];
 
         await Promise.all(promises);
