@@ -52,7 +52,7 @@ export class CoreSitePluginsUserProfileFieldComponent extends CoreSitePluginsCom
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         // Pass the input data to the component.
         this.jsData.field = this.field;
         this.jsData.signup = this.signup;
@@ -63,7 +63,7 @@ export class CoreSitePluginsUserProfileFieldComponent extends CoreSitePluginsCom
 
         if (this.field) {
             const type = 'type' in this.field ? this.field.type : this.field.datatype;
-            this.getHandlerData(CoreUserProfileFieldDelegate.getHandlerName(type || ''));
+            await this.getHandlerData(CoreUserProfileFieldDelegate.getHandlerName(type || ''));
         }
     }
 

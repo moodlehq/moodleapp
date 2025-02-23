@@ -14,7 +14,7 @@
 
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
+import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
 import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@singletons/utils';
@@ -45,11 +45,12 @@ export default class CoreSitePluginsPluginPage implements OnInit, CanLeave {
     jsData?: Record<string, unknown>; // JS variables to pass to the plugin so they can be used in the template or JS.
     preSets?: CoreSiteWSPreSets; // The preSets for the WS call.
     ptrEnabled = false;
+    stylesPath?: string; // Styles to apply to the component.
 
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.title = CoreNavigator.getRouteParam('title');
         this.component = CoreNavigator.getRouteParam('component');
         this.method = CoreNavigator.getRouteParam('method');
@@ -58,6 +59,12 @@ export default class CoreSitePluginsPluginPage implements OnInit, CanLeave {
         this.jsData = CoreNavigator.getRouteParam('jsData');
         this.preSets = CoreNavigator.getRouteParam('preSets');
         this.ptrEnabled = !CoreUtils.isFalseOrZero(CoreNavigator.getRouteBooleanParam('ptrEnabled'));
+
+        this.stylesPath = CoreNavigator.getRouteParam('stylesPath');
+        if (!this.stylesPath) {
+            const handlerName = CoreNavigator.getRouteParam('handlerName');
+            this.stylesPath = await CoreSitePlugins.getHandlerDownloadedStyles(handlerName);
+        }
     }
 
     /**

@@ -110,6 +110,7 @@ export class CoreSitePluginsCallWSNewContentDirective extends CoreSitePluginsCal
                     jsData,
                     preSets: this.newContentPreSets,
                     ptrEnabled: this.ptrEnabled,
+                    stylesPath: this.parentContent?.stylesPath,
                 },
             });
         }
