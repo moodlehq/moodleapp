@@ -20,7 +20,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_LESSON_FEATURE_NAME, ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 
@@ -31,7 +31,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModLessonReportLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModLesson';
+    featureName = ADDON_MOD_LESSON_FEATURE_NAME;
     pattern = /\/mod\/lesson\/report\.php.*([&?]id=\d+)/;
 
     /**

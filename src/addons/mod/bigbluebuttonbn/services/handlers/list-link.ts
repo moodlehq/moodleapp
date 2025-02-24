@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_BBB_COMPONENT, ADDON_MOD_BBB_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to Big Blue Button list page.
@@ -25,7 +26,7 @@ export class AddonModBBBListLinkHandlerService extends CoreContentLinksModuleLis
     name = 'AddonModBBBListLinkHandler';
 
     constructor() {
-        super('AddonModBBB', 'bigbluebuttonbn');
+        super(ADDON_MOD_BBB_COMPONENT, ADDON_MOD_BBB_MODNAME);
     }
 
 }

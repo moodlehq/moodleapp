@@ -46,7 +46,7 @@ import {
 import {
     ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT,
     AddonModQuizAttemptStates,
-    ADDON_MOD_QUIZ_COMPONENT,
+    ADDON_MOD_QUIZ_COMPONENT_LEGACY,
     AddonModQuizGradeMethods,
     AddonModQuizDisplayOptionsAttemptStates,
     ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD,
@@ -180,7 +180,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptAccessInformationCacheKey(quizId, attemptId),
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -239,7 +239,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptDataCacheKey(attemptId, page),
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -513,7 +513,7 @@ export class AddonModQuizProvider {
         };
         const preSets = {
             cacheKey: this.getAttemptReviewCacheKey(attemptId, page),
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             deleteCacheIfWSError: true,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
@@ -563,7 +563,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptSummaryCacheKey(attemptId),
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -620,7 +620,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCombinedReviewOptionsCacheKey(quizId, userId),
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -682,7 +682,7 @@ export class AddonModQuizProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFeedbackForGradeCacheKey(quizId, grade),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -822,7 +822,7 @@ export class AddonModQuizProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuizDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -894,7 +894,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuizAccessInformationCacheKey(quizId),
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -957,7 +957,7 @@ export class AddonModQuizProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuizRequiredQtypesCacheKey(quizId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1121,7 +1121,7 @@ export class AddonModQuizProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserAttemptsCacheKey(quizId, userId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1169,7 +1169,7 @@ export class AddonModQuizProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserBestGradeCacheKey(quizId, userId),
-            component: ADDON_MOD_QUIZ_COMPONENT,
+            component: ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1676,7 +1676,7 @@ export class AddonModQuizProvider {
         return CoreCourseLogHelper.log(
             'mod_quiz_view_attempt_review',
             params,
-            ADDON_MOD_QUIZ_COMPONENT,
+            ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             quizId,
             siteId,
         );
@@ -1709,7 +1709,7 @@ export class AddonModQuizProvider {
         return CoreCourseLogHelper.log(
             'mod_quiz_view_attempt_summary',
             params,
-            ADDON_MOD_QUIZ_COMPONENT,
+            ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             quizId,
             siteId,
         );
@@ -1730,7 +1730,7 @@ export class AddonModQuizProvider {
         return CoreCourseLogHelper.log(
             'mod_quiz_view_quiz',
             params,
-            ADDON_MOD_QUIZ_COMPONENT,
+            ADDON_MOD_QUIZ_COMPONENT_LEGACY,
             id,
             siteId,
         );

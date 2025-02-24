@@ -51,7 +51,7 @@ import { AddonModLessonOffline } from '../../services/lesson-offline';
 import { AddonModLessonSync } from '../../services/lesson-sync';
 import { CoreFormFields, CoreForms } from '@singletons/form';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_LESSON_COMPONENT, AddonModLessonJumpTo } from '../../constants';
+import { ADDON_MOD_LESSON_COMPONENT_LEGACY, AddonModLessonJumpTo } from '../../constants';
 import { CoreModals } from '@services/overlays/modals';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
@@ -78,7 +78,7 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild('questionFormEl') formElement?: ElementRef;
 
-    component = ADDON_MOD_LESSON_COMPONENT;
+    component = ADDON_MOD_LESSON_COMPONENT_LEGACY;
     readonly LESSON_EOL = AddonModLessonJumpTo.EOL;
     questionForm?: FormGroup; // The FormGroup for question pages.
     title?: string; // The page title.

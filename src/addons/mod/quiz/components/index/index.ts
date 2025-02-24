@@ -45,7 +45,7 @@ import {
 import {
     ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT,
     ADDON_MOD_QUIZ_AUTO_SYNCED,
-    ADDON_MOD_QUIZ_COMPONENT,
+    ADDON_MOD_QUIZ_COMPONENT_LEGACY,
     ADDON_MOD_QUIZ_PAGE_NAME,
     AddonModQuizAttemptStates,
 } from '../../constants';
@@ -75,7 +75,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
-    component = ADDON_MOD_QUIZ_COMPONENT;
+    component = ADDON_MOD_QUIZ_COMPONENT_LEGACY;
     pluginName = 'quiz';
     quiz?: AddonModQuizQuizData; // The quiz.
     now?: number; // Current time.

@@ -26,7 +26,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModFeedback, AddonModFeedbackWSFeedback } from './feedback';
 import { AddonModFeedbackOffline, AddonModFeedbackOfflineResponse } from './feedback-offline';
-import { ADDON_MOD_FEEDBACK_AUTO_SYNCED, ADDON_MOD_FEEDBACK_COMPONENT } from '../constants';
+import { ADDON_MOD_FEEDBACK_AUTO_SYNCED, ADDON_MOD_FEEDBACK_COMPONENT_LEGACY } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -135,7 +135,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         }
 
         // Verify that feedback isn't blocked.
-        if (CoreSync.isBlocked(ADDON_MOD_FEEDBACK_COMPONENT, feedbackId, siteId)) {
+        if (CoreSync.isBlocked(ADDON_MOD_FEEDBACK_COMPONENT_LEGACY, feedbackId, siteId)) {
             this.logger.debug(`Cannot sync feedback '${feedbackId}' because it is blocked.`);
 
             throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
@@ -160,7 +160,9 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         };
 
         // Sync offline logs.
-        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_FEEDBACK_COMPONENT, feedbackId, siteId));
+        await CorePromiseUtils.ignoreErrors(
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_FEEDBACK_COMPONENT_LEGACY, feedbackId, siteId),
+        );
 
         // Get offline responses to be sent.
         const responses = await CorePromiseUtils.ignoreErrors(AddonModFeedbackOffline.getFeedbackResponses(feedbackId, siteId));

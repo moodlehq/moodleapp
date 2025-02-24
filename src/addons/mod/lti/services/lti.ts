@@ -26,7 +26,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreOpener } from '@singletons/opener';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_LTI_COMPONENT } from '../constants';
+import { ADDON_MOD_LTI_COMPONENT_LEGACY, ADDON_MOD_LTI_FEATURE_NAME } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
@@ -94,7 +94,7 @@ export class AddonModLtiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getLtiCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_LTI_COMPONENT,
+            component: ADDON_MOD_LTI_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -204,7 +204,7 @@ export class AddonModLtiProvider {
     isLaunchViaSiteDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !!site?.isFeatureDisabled('CoreCourseModuleDelegate_AddonModLti:launchViaSite');
+        return !!site?.isFeatureDisabled(ADDON_MOD_LTI_FEATURE_NAME + ':launchViaSite');
     }
 
     /**
@@ -230,7 +230,7 @@ export class AddonModLtiProvider {
     isOpenInAppBrowserDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !!site?.isFeatureDisabled('CoreCourseModuleDelegate_AddonModLti:openInAppBrowser');
+        return !!site?.isFeatureDisabled(ADDON_MOD_LTI_FEATURE_NAME + ':openInAppBrowser');
     }
 
     /**
@@ -272,7 +272,7 @@ export class AddonModLtiProvider {
         return CoreCourseLogHelper.log(
             'mod_lti_view_lti',
             params,
-            ADDON_MOD_LTI_COMPONENT,
+            ADDON_MOD_LTI_COMPONENT_LEGACY,
             id,
             siteId,
         );

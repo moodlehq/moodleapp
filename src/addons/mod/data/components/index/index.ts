@@ -43,7 +43,7 @@ import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch-la
 import { CoreUrl } from '@singletons/url';
 import {
     ADDON_MOD_DATA_AUTO_SYNCED,
-    ADDON_MOD_DATA_COMPONENT,
+    ADDON_MOD_DATA_COMPONENT_LEGACY,
     ADDON_MOD_DATA_ENTRIES_PER_PAGE,
     ADDON_MOD_DATA_ENTRY_CHANGED,
     ADDON_MOD_DATA_PAGE_NAME,
@@ -79,7 +79,7 @@ const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 })
 export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
-    component = ADDON_MOD_DATA_COMPONENT;
+    component = ADDON_MOD_DATA_COMPONENT_LEGACY;
     pluginName = 'data';
 
     access?: AddonModDataGetDataAccessInformationWSResponse;

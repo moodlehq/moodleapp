@@ -26,7 +26,7 @@ import { CoreEvents } from '@singletons/events';
 import { AddonModWikiPageDBRecord } from './database/wiki';
 import { AddonModWiki } from './wiki';
 import { AddonModWikiOffline } from './wiki-offline';
-import { ADDON_MOD_WIKI_AUTO_SYNCED, ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_MANUAL_SYNCED } from '../constants';
+import { ADDON_MOD_WIKI_AUTO_SYNCED, ADDON_MOD_WIKI_COMPONENT_LEGACY, ADDON_MOD_WIKI_MANUAL_SYNCED } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -174,7 +174,7 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider<AddonModWikiS
         }
 
         // Verify that subwiki isn't blocked.
-        if (CoreSync.isBlocked(ADDON_MOD_WIKI_COMPONENT, subwikiBlockId, siteId)) {
+        if (CoreSync.isBlocked(ADDON_MOD_WIKI_COMPONENT_LEGACY, subwikiBlockId, siteId)) {
             this.logger.debug(`Cannot sync subwiki ${subwikiBlockId} because it is blocked.`);
 
             throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
@@ -289,7 +289,7 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider<AddonModWikiS
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Sync offline logs.
-        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_WIKI_COMPONENT, wikiId, siteId));
+        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_WIKI_COMPONENT_LEGACY, wikiId, siteId));
 
         // Sync is done at subwiki level, get all the subwikis.
         const subwikis = await AddonModWiki.getSubwikis(wikiId, { cmId, siteId });

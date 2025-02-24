@@ -23,7 +23,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ADDON_MOD_URL_COMPONENT } from '../constants';
+import { ADDON_MOD_URL_COMPONENT_LEGACY } from '../constants';
 
 /**
  * Service that provides some features for urls.
@@ -119,7 +119,7 @@ export class AddonModUrlProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUrlCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_URL_COMPONENT,
+            component: ADDON_MOD_URL_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -220,7 +220,7 @@ export class AddonModUrlProvider {
         return CoreCourseLogHelper.log(
             'mod_url_view_url',
             params,
-            ADDON_MOD_URL_COMPONENT,
+            ADDON_MOD_URL_COMPONENT_LEGACY,
             id,
             siteId,
         );

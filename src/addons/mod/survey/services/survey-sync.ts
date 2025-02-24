@@ -25,7 +25,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModSurvey } from './survey';
 import { AddonModSurveyAnswersDBRecordFormatted, AddonModSurveyOffline } from './survey-offline';
-import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT } from '../constants';
+import { ADDON_MOD_SURVEY_AUTO_SYNCED, ADDON_MOD_SURVEY_COMPONENT_LEGACY } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -154,7 +154,7 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
         };
 
         // Sync offline logs.
-        CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_SURVEY_COMPONENT, surveyId, siteId));
+        CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_SURVEY_COMPONENT_LEGACY, surveyId, siteId));
 
         let answersNumber = 0;
         let data: AddonModSurveyAnswersDBRecordFormatted | undefined;

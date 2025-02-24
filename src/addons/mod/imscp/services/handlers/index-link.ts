@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { makeSingleton } from '@singletons';
 import { AddonModImscp } from '../imscp';
+import { ADDON_MOD_IMSCP_COMPONENT, ADDON_MOD_IMSCP_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to IMSCP.
@@ -26,7 +27,7 @@ export class AddonModImscpIndexLinkHandlerService extends CoreContentLinksModule
     name = 'AddonModImscpLinkHandler';
 
     constructor() {
-        super('AddonModImscp', 'imscp', 'i');
+        super(ADDON_MOD_IMSCP_COMPONENT, ADDON_MOD_IMSCP_MODNAME, 'i');
     }
 
     /**

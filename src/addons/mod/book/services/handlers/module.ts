@@ -18,7 +18,7 @@ import { CoreConstants, ModPurpose } from '@/core/constants';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
-import { ADDON_MOD_BOOK_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_BOOK_COMPONENT, ADDON_MOD_BOOK_MODNAME, ADDON_MOD_BOOK_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support book modules.
@@ -26,8 +26,8 @@ import { ADDON_MOD_BOOK_PAGE_NAME } from '../../constants';
 @Injectable({ providedIn: 'root' })
 export class AddonModBookModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    name = 'AddonModBook';
-    modName = 'book';
+    name = ADDON_MOD_BOOK_COMPONENT;
+    modName = ADDON_MOD_BOOK_MODNAME;
     protected pageName = ADDON_MOD_BOOK_PAGE_NAME;
 
     supportedFeatures = {

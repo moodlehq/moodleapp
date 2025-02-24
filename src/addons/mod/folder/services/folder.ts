@@ -21,7 +21,7 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_FOLDER_COMPONENT } from '../constants';
+import { ADDON_MOD_FOLDER_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
@@ -68,7 +68,7 @@ export class AddonModFolderProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFolderCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_FOLDER_COMPONENT,
+            component: ADDON_MOD_FOLDER_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -137,7 +137,7 @@ export class AddonModFolderProvider {
         await CoreCourseLogHelper.log(
             'mod_folder_view_folder',
             params,
-            ADDON_MOD_FOLDER_COMPONENT,
+            ADDON_MOD_FOLDER_COMPONENT_LEGACY,
             id,
             siteId,
         );
