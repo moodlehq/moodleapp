@@ -1,7 +1,7 @@
 <!-- Read only. -->
 <ion-item class="ion-text-wrap" *ngIf="files && files.length">
     <ion-label>
-        <h2>{{plugin.name}}</h2>
+        <h3>{{plugin.name}}</h3>
         <ng-container>
             <core-file *ngFor="let file of files" [file]="file" [component]="component" [componentId]="assign.cmid"
                 [alwaysDownload]="true" />
