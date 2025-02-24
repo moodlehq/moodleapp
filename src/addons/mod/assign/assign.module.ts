@@ -97,7 +97,6 @@ const mobileRoutes: Routes = [
     {
         path: ':courseId/:cmId/submission/:submitId',
         loadComponent: () => import('./pages/submission-review/submission-review'),
-        canDeactivate: [canLeaveGuard],
     },
 ];
 
@@ -110,7 +109,6 @@ const tabletRoutes: Routes = [
             {
                 path: ':submitId',
                 loadComponent: () => import('./pages/submission-review/submission-review'),
-                canDeactivate: [canLeaveGuard],
             },
         ],
     },
