@@ -287,7 +287,11 @@ class behat_app extends behat_app_helper {
 
         $this->getSession()->switchToWindow(array_pop($windowNames));
         $this->spin(function($context) {
-            $joinmodal = $context->getSession()->getPage()->find('css', 'div[role="dialog"][aria-label="How would you like to join the audio?"]');
+            $joinmodal = $context->getSession()->getPage()->find('css', implode(', ', [
+                'div[role="dialog"][aria-label="How would you like to join the audio?"]',
+                'div[role="dialog"][aria-label="There was an issue with your audio devices"]',
+            ]));
+
 
             if ($joinmodal) {
                 return true;
