@@ -17,6 +17,7 @@ import { Translate } from '@singletons';
 
 import { CoreContentLinksAction } from '../services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
 
 /**
  * Handler to handle URLs pointing to a list of a certain type of modules.
@@ -42,7 +43,7 @@ export class CoreContentLinksModuleListHandler extends CoreContentLinksHandlerBa
 
         // Match the index.php URL with an id param.
         this.pattern = new RegExp('/mod/' + modName + '/index.php.*([&?]id=\\d+)');
-        this.featureName = 'CoreCourseModuleDelegate_' + addon;
+        this.featureName = CORE_COURSE_MODULE_FEATURE_PREFIX + addon;
     }
 
     /**

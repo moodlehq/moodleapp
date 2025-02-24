@@ -46,7 +46,7 @@ import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     ADDON_MOD_H5PACTIVITY_AUTO_SYNCED,
-    ADDON_MOD_H5PACTIVITY_COMPONENT,
+    ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
     ADDON_MOD_H5PACTIVITY_PAGE_NAME,
     ADDON_MOD_H5PACTIVITY_STATE_ID,
     ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
@@ -81,7 +81,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
     @Output() onActivityFinish = new EventEmitter<boolean>();
 
-    component = ADDON_MOD_H5PACTIVITY_COMPONENT;
+    component = ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY;
     pluginName = 'h5pactivity';
 
     h5pActivity?: AddonModH5PActivityData; // The H5P activity object.
@@ -325,7 +325,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             this.h5pActivity.context,
             ADDON_MOD_H5PACTIVITY_STATE_ID,
             {
-                appComponent: ADDON_MOD_H5PACTIVITY_COMPONENT,
+                appComponent: ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
                 appComponentId: this.h5pActivity.coursemodule,
                 readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
             },

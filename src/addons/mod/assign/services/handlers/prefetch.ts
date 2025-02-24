@@ -34,7 +34,7 @@ import { AddonModAssignSync, AddonModAssignSyncResult } from '../assign-sync';
 import { CoreUser } from '@features/user/services/user';
 import { CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CoreCourses } from '@features/courses/services/courses';
-import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY, ADDON_MOD_ASSIGN_MODNAME, ADDON_MOD_ASSIGN_PREFETCH_NAME } from '../../constants';
+import { ADDON_MOD_ASSIGN_COMPONENT, ADDON_MOD_ASSIGN_COMPONENT_LEGACY, ADDON_MOD_ASSIGN_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch assigns.
@@ -42,7 +42,7 @@ import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY, ADDON_MOD_ASSIGN_MODNAME, ADDON_MOD_
 @Injectable({ providedIn: 'root' })
 export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
-    name = ADDON_MOD_ASSIGN_PREFETCH_NAME;
+    name = ADDON_MOD_ASSIGN_COMPONENT;
     modName = ADDON_MOD_ASSIGN_MODNAME;
     component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^submissions$|^grades$|^gradeitems$|^outcomes$|^comments$/;

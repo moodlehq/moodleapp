@@ -39,7 +39,7 @@ import { CorePushNotificationsDelegate } from '@features/pushnotifications/servi
 import { AddonModForumPushClickHandler } from './services/handlers/push-click';
 import { CORE_COURSE_CONTENTS_PATH } from '@features/course/constants';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { ADDON_MOD_FORUM_COMPONENT, ADDON_MOD_FORUM_PAGE_NAME, ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from './constants';
+import { ADDON_MOD_FORUM_COMPONENT_LEGACY, ADDON_MOD_FORUM_PAGE_NAME, ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from './constants';
 import { canLeaveGuard } from '@guards/can-leave';
 
 const newDiscussionRoute: Route = {
@@ -165,7 +165,7 @@ const courseContentsRoutes: Routes = conditionalRoutes(
                 CoreTagAreaDelegate.registerHandler(AddonModForumTagAreaHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonModForumPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_FORUM_COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_FORUM_COMPONENT_LEGACY);
             },
         },
     ],

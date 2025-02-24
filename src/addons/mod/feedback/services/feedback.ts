@@ -25,7 +25,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { AddonModFeedbackOffline } from './feedback-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_FEEDBACK_COMPONENT,
+    ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
     ADDON_MOD_FEEDBACK_FORM_SUBMITTED,
     ADDON_MOD_FEEDBACK_LINE_SEP,
     ADDON_MOD_FEEDBACK_MULTICHOICE_ADJUST_SEP,
@@ -322,7 +322,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAnalysisDataCacheKey(feedbackId, options.groupId),
-            component: ADDON_MOD_FEEDBACK_COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -437,7 +437,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCurrentCompletedTimeModifiedDataCacheKey(feedbackId),
-            component: ADDON_MOD_FEEDBACK_COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -484,7 +484,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCurrentValuesDataCacheKey(feedbackId),
-            component: ADDON_MOD_FEEDBACK_COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -537,7 +537,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFeedbackAccessInformationDataCacheKey(feedbackId),
-            component: ADDON_MOD_FEEDBACK_COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -598,7 +598,7 @@ export class AddonModFeedbackProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFeedbackCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_FEEDBACK_COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -656,7 +656,7 @@ export class AddonModFeedbackProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getItemsDataCacheKey(feedbackId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_FEEDBACK_COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -698,7 +698,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getNonRespondentsDataCacheKey(feedbackId, options.groupId),
-            component: ADDON_MOD_FEEDBACK_COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -874,7 +874,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getResponsesAnalysisDataCacheKey(feedbackId, options.groupId),
-            component: ADDON_MOD_FEEDBACK_COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -918,7 +918,7 @@ export class AddonModFeedbackProvider {
         };
         const preSets = {
             cacheKey: this.getResumePageDataCacheKey(feedbackId),
-            component: ADDON_MOD_FEEDBACK_COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1032,7 +1032,7 @@ export class AddonModFeedbackProvider {
      * @returns Promise resolved when the files are invalidated.
      */
     async invalidateFiles(moduleId: number, siteId?: string): Promise<void> {
-        return CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_FEEDBACK_COMPONENT, moduleId);
+        return CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_FEEDBACK_COMPONENT_LEGACY, moduleId);
     }
 
     /**
@@ -1090,7 +1090,7 @@ export class AddonModFeedbackProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCompletedDataCacheKey(feedbackId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_FEEDBACK_COMPONENT,
+            component: ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -1114,7 +1114,7 @@ export class AddonModFeedbackProvider {
         await CoreCourseLogHelper.log(
             'mod_feedback_view_feedback',
             params,
-            ADDON_MOD_FEEDBACK_COMPONENT,
+            ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
             id,
             siteId,
         );

@@ -26,6 +26,7 @@ import { CoreCourseModuleData } from './course-helper';
 import { CoreNavigationOptions } from '@services/navigator';
 import { CoreIonicColorNames } from '@singletons/colors';
 import { DownloadStatus } from '@/core/constants';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '../constants';
 
 /**
  * Interface that all course module handlers must implement.
@@ -282,7 +283,7 @@ export interface CoreCourseModuleHandlerButton {
 @Injectable({ providedIn: 'root' })
 export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModuleHandler> {
 
-    protected featurePrefix = 'CoreCourseModuleDelegate_';
+    protected featurePrefix = CORE_COURSE_MODULE_FEATURE_PREFIX;
     protected handlerNameProperty = 'modName';
 
     constructor(protected defaultHandler: CoreCourseModuleDefaultHandler) {

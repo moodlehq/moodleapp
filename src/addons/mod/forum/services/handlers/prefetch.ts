@@ -25,7 +25,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModForumSync, AddonModForumSyncResult } from '../forum-sync';
 import { makeSingleton } from '@singletons';
 import { CoreCourses } from '@features/courses/services/courses';
-import { ADDON_MOD_FORUM_COMPONENT } from '../../constants';
+import { ADDON_MOD_FORUM_COMPONENT_LEGACY } from '../../constants';
 
 /**
  * Handler to prefetch forums.
@@ -35,7 +35,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
 
     name = 'AddonModForum';
     modName = 'forum';
-    component = ADDON_MOD_FORUM_COMPONENT;
+    component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^discussions$/;
 
     /**

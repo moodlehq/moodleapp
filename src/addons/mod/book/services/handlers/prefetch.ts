@@ -20,7 +20,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModBook } from '../book';
-import { ADDON_MOD_BOOK_COMPONENT } from '../../constants';
+import { ADDON_MOD_BOOK_COMPONENT, ADDON_MOD_BOOK_COMPONENT_LEGACY, ADDON_MOD_BOOK_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch books.
@@ -28,9 +28,9 @@ import { ADDON_MOD_BOOK_COMPONENT } from '../../constants';
 @Injectable({ providedIn: 'root' })
 export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefetchHandlerBase {
 
-    name = 'AddonModBook';
-    modName = 'book';
-    component = ADDON_MOD_BOOK_COMPONENT;
+    name = ADDON_MOD_BOOK_COMPONENT;
+    modName = ADDON_MOD_BOOK_MODNAME;
+    component = ADDON_MOD_BOOK_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^entries$/;
 
     /**

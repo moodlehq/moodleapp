@@ -21,7 +21,7 @@ import { CoreSitePluginsModuleHandler } from '@features/siteplugins/classes/hand
 import { makeSingleton } from '@singletons';
 import { AddonModBBBIndexComponent } from '../../components/index';
 import { AddonModBBB } from '../bigbluebuttonbn';
-import { ADDON_MOD_BBB_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_BBB_COMPONENT, ADDON_MOD_BBB_MODNAME, ADDON_MOD_BBB_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support Big Blue Button activities.
@@ -29,8 +29,8 @@ import { ADDON_MOD_BBB_PAGE_NAME } from '../../constants';
 @Injectable({ providedIn: 'root' })
 export class AddonModBBBModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    name = 'AddonModBBB';
-    modName = 'bigbluebuttonbn';
+    name = ADDON_MOD_BBB_COMPONENT;
+    modName = ADDON_MOD_BBB_MODNAME;
     protected pageName = ADDON_MOD_BBB_PAGE_NAME;
     protected sitePluginHandler?: CoreSitePluginsModuleHandler;
 
@@ -54,7 +54,7 @@ export class AddonModBBBModuleHandlerService extends CoreModuleHandlerBase imple
 
         if (enabled) {
             delete this.sitePluginHandler;
-            this.name = 'AddonModBBB';
+            this.name = ADDON_MOD_BBB_COMPONENT;
 
             return true;
         }

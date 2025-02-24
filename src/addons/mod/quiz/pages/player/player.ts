@@ -50,7 +50,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT, AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
+import { ADDON_MOD_QUIZ_ATTEMPT_FINISHED_EVENT, AddonModQuizAttemptStates, ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '../../constants';
 import { CoreWait } from '@singletons/wait';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -81,7 +81,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
     quiz?: AddonModQuizQuizWSData; // The quiz the attempt belongs to.
     attempt?: QuizAttempt; // The attempt being attempted.
     moduleUrl?: string; // URL to the module in the site.
-    component = ADDON_MOD_QUIZ_COMPONENT; // Component to link the files to.
+    component = ADDON_MOD_QUIZ_COMPONENT_LEGACY; // Component to link the files to.
     loaded = false; // Whether data has been loaded.
     quizAborted = false; // Whether the quiz was aborted due to an error.
     offline = false; // Whether the quiz is being attempted in offline mode.
@@ -161,7 +161,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
 
         if (this.quiz) {
             // Unblock the quiz so it can be synced.
-            CoreSync.unblockOperation(ADDON_MOD_QUIZ_COMPONENT, this.quiz.id);
+            CoreSync.unblockOperation(ADDON_MOD_QUIZ_COMPONENT_LEGACY, this.quiz.id);
         }
     }
 
@@ -354,7 +354,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
         this.quiz = await AddonModQuiz.getQuiz(this.courseId, this.cmId);
 
         // Block the quiz so it cannot be synced.
-        CoreSync.blockOperation(ADDON_MOD_QUIZ_COMPONENT, this.quiz.id);
+        CoreSync.blockOperation(ADDON_MOD_QUIZ_COMPONENT_LEGACY, this.quiz.id);
 
         // Wait for any ongoing sync to finish. We won't sync a quiz while it's being played.
         await AddonModQuizSync.waitForSync(this.quiz.id);
