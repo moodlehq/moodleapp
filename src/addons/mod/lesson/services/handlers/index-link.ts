@@ -23,6 +23,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModLesson } from '../lesson';
+import { ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to lesson index.
@@ -33,7 +34,7 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
     name = 'AddonModLessonIndexLinkHandler';
 
     constructor() {
-        super('AddonModLesson', 'lesson');
+        super(ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_MODNAME);
     }
 
     /**

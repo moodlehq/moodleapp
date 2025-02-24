@@ -31,7 +31,7 @@ import { AddonModQuizAttemptDBRecord } from './database/quiz';
 import { type AddonModQuizPrefetchHandlerService } from './handlers/prefetch';
 import { AddonModQuiz, AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from './quiz';
 import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-offline';
-import { ADDON_MOD_QUIZ_AUTO_SYNCED, ADDON_MOD_QUIZ_COMPONENT } from '../constants';
+import { ADDON_MOD_QUIZ_AUTO_SYNCED, ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '../constants';
 import { AddonModQuizHelper } from './quiz-helper';
 
 /**
@@ -79,7 +79,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
                 for (const slot in options.onlineQuestions) {
                     promises.push(CoreQuestionDelegate.deleteOfflineData(
                         options.onlineQuestions[slot],
-                        ADDON_MOD_QUIZ_COMPONENT,
+                        ADDON_MOD_QUIZ_COMPONENT_LEGACY,
                         quiz.coursemodule,
                         siteId,
                     ));
@@ -207,7 +207,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             }
             quizIds[attempt.quizid] = true;
 
-            if (CoreSync.isBlocked(ADDON_MOD_QUIZ_COMPONENT, attempt.quizid, siteId)) {
+            if (CoreSync.isBlocked(ADDON_MOD_QUIZ_COMPONENT_LEGACY, attempt.quizid, siteId)) {
                 return;
             }
 
@@ -271,7 +271,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         }
 
         // Verify that quiz isn't blocked.
-        if (CoreSync.isBlocked(ADDON_MOD_QUIZ_COMPONENT, quiz.id, siteId)) {
+        if (CoreSync.isBlocked(ADDON_MOD_QUIZ_COMPONENT_LEGACY, quiz.id, siteId)) {
             this.logger.debug('Cannot sync quiz ' + quiz.id + ' because it is blocked.');
 
             throw new CoreError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
@@ -303,7 +303,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         // Sync offline logs.
         await CorePromiseUtils.ignoreErrors(
-            CoreCourseLogHelper.syncActivity(ADDON_MOD_QUIZ_COMPONENT, quiz.id, siteId),
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_QUIZ_COMPONENT_LEGACY, quiz.id, siteId),
         );
 
         // Get all the offline attempts for the quiz. It should always be 0 or 1 attempt
@@ -384,7 +384,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             await CoreQuestionDelegate.prepareSyncData(
                 onlineQuestion,
                 offlineQuestions[slot].answers,
-                ADDON_MOD_QUIZ_COMPONENT,
+                ADDON_MOD_QUIZ_COMPONENT_LEGACY,
                 quiz.coursemodule,
                 siteId,
             );

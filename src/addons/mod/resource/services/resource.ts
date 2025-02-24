@@ -22,7 +22,7 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_RESOURCE_COMPONENT } from '../constants';
+import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
@@ -67,7 +67,7 @@ export class AddonModResourceProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getResourceCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_RESOURCE_COMPONENT,
+            component: ADDON_MOD_RESOURCE_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -111,7 +111,7 @@ export class AddonModResourceProvider {
         const promises: Promise<void>[] = [];
 
         promises.push(this.invalidateResourceData(courseId, siteId));
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_RESOURCE_COMPONENT, moduleId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_RESOURCE_COMPONENT_LEGACY, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId, 'resource'));
 
         await CorePromiseUtils.allPromises(promises);
@@ -157,7 +157,7 @@ export class AddonModResourceProvider {
         await CoreCourseLogHelper.log(
             'mod_resource_view_resource',
             params,
-            ADDON_MOD_RESOURCE_COMPONENT,
+            ADDON_MOD_RESOURCE_COMPONENT_LEGACY,
             id,
             siteId,
         );

@@ -27,7 +27,7 @@ import { AddonModLessonPasswordDBRecord, PASSWORD_TABLE_NAME } from './database/
 import { AddonModLessonOffline, AddonModLessonPageAttemptRecord } from './lesson-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_LESSON_COMPONENT,
+    ADDON_MOD_LESSON_COMPONENT_LEGACY,
     ADDON_MOD_LESSON_DATA_SENT_EVENT,
     ADDON_MOD_LESSON_OTHER_ANSWERS,
     AddonModLessonJumpTo,
@@ -1161,7 +1161,7 @@ export class AddonModLessonProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAccessInformationCacheKey(lessonId),
             updateFrequency: CoreCacheUpdateFrequency.OFTEN,
-            component: ADDON_MOD_LESSON_COMPONENT,
+            component: ADDON_MOD_LESSON_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1277,7 +1277,7 @@ export class AddonModLessonProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getContentPagesViewedCacheKey(lessonId, retake),
-            component: ADDON_MOD_LESSON_COMPONENT,
+            component: ADDON_MOD_LESSON_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1410,7 +1410,7 @@ export class AddonModLessonProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getLessonDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_LESSON_COMPONENT,
+            component: ADDON_MOD_LESSON_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -1471,7 +1471,7 @@ export class AddonModLessonProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getLessonWithPasswordCacheKey(lessonId),
-            component: ADDON_MOD_LESSON_COMPONENT,
+            component: ADDON_MOD_LESSON_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1640,7 +1640,7 @@ export class AddonModLessonProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getPageDataCacheKey(lesson.id, pageId),
-            component: ADDON_MOD_LESSON_COMPONENT,
+            component: ADDON_MOD_LESSON_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1711,7 +1711,7 @@ export class AddonModLessonProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getPagesCacheKey(lessonId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_LESSON_COMPONENT,
+            component: ADDON_MOD_LESSON_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1754,7 +1754,7 @@ export class AddonModLessonProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getPagesPossibleJumpsCacheKey(lessonId),
-            component: ADDON_MOD_LESSON_COMPONENT,
+            component: ADDON_MOD_LESSON_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -2009,7 +2009,7 @@ export class AddonModLessonProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuestionsAttemptsCacheKey(lessonId, retake, userId),
-            component: ADDON_MOD_LESSON_COMPONENT,
+            component: ADDON_MOD_LESSON_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -2060,7 +2060,7 @@ export class AddonModLessonProvider {
         const preSets = {
             cacheKey: this.getRetakesOverviewCacheKey(lessonId, groupId),
             updateFrequency: CoreCacheUpdateFrequency.OFTEN,
-            component: ADDON_MOD_LESSON_COMPONENT,
+            component: ADDON_MOD_LESSON_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -2152,7 +2152,7 @@ export class AddonModLessonProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getTimersCacheKey(lessonId, userId),
-            component: ADDON_MOD_LESSON_COMPONENT,
+            component: ADDON_MOD_LESSON_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -2274,7 +2274,7 @@ export class AddonModLessonProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserRetakeCacheKey(lessonId, userId, retake),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_LESSON_COMPONENT,
+            component: ADDON_MOD_LESSON_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -2946,7 +2946,7 @@ export class AddonModLessonProvider {
         await CoreCourseLogHelper.log(
             'mod_lesson_view_lesson',
             params,
-            ADDON_MOD_LESSON_COMPONENT,
+            ADDON_MOD_LESSON_COMPONENT_LEGACY,
             id,
             siteId,
         );

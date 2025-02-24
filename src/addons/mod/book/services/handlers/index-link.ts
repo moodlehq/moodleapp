@@ -18,6 +18,7 @@ import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/class
 import { CoreNavigationOptions } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonModBook } from '../book';
+import { ADDON_MOD_BOOK_COMPONENT, ADDON_MOD_BOOK_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to book.
@@ -28,7 +29,7 @@ export class AddonModBookIndexLinkHandlerService extends CoreContentLinksModuleI
     name = 'AddonModBookLinkHandler';
 
     constructor() {
-        super('AddonModBook', 'book', 'b');
+        super(ADDON_MOD_BOOK_COMPONENT, ADDON_MOD_BOOK_MODNAME, 'b');
     }
 
     /**

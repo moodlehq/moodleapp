@@ -37,7 +37,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreArray } from '@singletons/array';
 import {
     ADDON_MOD_H5PACTIVITY_AUTO_SYNCED,
-    ADDON_MOD_H5PACTIVITY_COMPONENT,
+    ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
     ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -209,7 +209,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
 
         // Sync offline logs.
         await CorePromiseUtils.ignoreErrors(
-            CoreCourseLogHelper.syncActivity(ADDON_MOD_H5PACTIVITY_COMPONENT, h5pActivity.id, siteId),
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY, h5pActivity.id, siteId),
         );
 
         const results = await Promise.all([

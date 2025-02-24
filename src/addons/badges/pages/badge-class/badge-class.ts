@@ -57,7 +57,7 @@ export default class AddonBadgesBadgeClassPage implements OnInit {
     }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.fetchBadgeClass().finally(() => {

@@ -28,7 +28,7 @@ import { AddonModWikiPageDBRecord } from './database/wiki';
 import { AddonModWikiOffline } from './wiki-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_WIKI_COMPONENT,
+    ADDON_MOD_WIKI_COMPONENT_LEGACY,
     ADDON_MOD_WIKI_PAGE_CREATED_EVENT,
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
@@ -137,7 +137,7 @@ export class AddonModWikiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getPageContentsCacheKey(pageId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_WIKI_COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -210,7 +210,7 @@ export class AddonModWikiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubwikiFilesCacheKey(wikiId, groupId, userId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_WIKI_COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -280,7 +280,7 @@ export class AddonModWikiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubwikiPagesCacheKey(wikiId, groupId, userId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_WIKI_COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -328,7 +328,7 @@ export class AddonModWikiProvider {
         const preSets = {
             cacheKey: this.getSubwikisCacheKey(wikiId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_WIKI_COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -386,7 +386,7 @@ export class AddonModWikiProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getWikiDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_WIKI_COMPONENT,
+            component: ADDON_MOD_WIKI_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -633,7 +633,7 @@ export class AddonModWikiProvider {
         return CoreCourseLogHelper.log(
             'mod_wiki_view_page',
             params,
-            ADDON_MOD_WIKI_COMPONENT,
+            ADDON_MOD_WIKI_COMPONENT_LEGACY,
             wikiId,
             siteId,
         );
@@ -654,7 +654,7 @@ export class AddonModWikiProvider {
         return CoreCourseLogHelper.log(
             'mod_wiki_view_wiki',
             params,
-            ADDON_MOD_WIKI_COMPONENT,
+            ADDON_MOD_WIKI_COMPONENT_LEGACY,
             id,
             siteId,
         );

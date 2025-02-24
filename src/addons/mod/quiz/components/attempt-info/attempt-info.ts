@@ -15,7 +15,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { AddonModQuizAttempt, AddonModQuizQuizData } from '../../services/quiz-helper';
 import { AddonModQuiz, AddonModQuizWSAdditionalData } from '../../services/quiz';
-import { ADDON_MOD_QUIZ_COMPONENT, AddonModQuizAttemptStates } from '../../constants';
+import { ADDON_MOD_QUIZ_COMPONENT_LEGACY, AddonModQuizAttemptStates } from '../../constants';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -47,7 +47,7 @@ export class AddonModQuizAttemptInfoComponent implements OnChanges {
     timeTaken?: string;
     overTime?: string;
     gradeItemMarks: { name: string; grade: string }[] = [];
-    component = ADDON_MOD_QUIZ_COMPONENT;
+    component = ADDON_MOD_QUIZ_COMPONENT_LEGACY;
 
     /**
      * @inheritdoc

@@ -27,7 +27,7 @@ import {
 import { AddonModFeedbackAttempt, AddonModFeedbackFormItem, AddonModFeedbackHelper } from '../../services/feedback-helper';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_FEEDBACK_COMPONENT, AddonModFeedbackQuestionType } from '../../constants';
+import { ADDON_MOD_FEEDBACK_COMPONENT_LEGACY, AddonModFeedbackQuestionType } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -52,7 +52,7 @@ export default class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
     attempts: AddonModFeedbackAttemptsSwipeManager;
     anonAttempt?: AddonModFeedbackWSAnonAttempt;
     items: AddonModFeedbackAttemptItem[] = [];
-    component = ADDON_MOD_FEEDBACK_COMPONENT;
+    component = ADDON_MOD_FEEDBACK_COMPONENT_LEGACY;
     loaded = false;
 
     protected attemptId: number;

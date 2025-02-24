@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_MOD_RESOURCE_COMPONENT = 'mmaModResource';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
 
+export const ADDON_MOD_RESOURCE_COMPONENT = 'AddonModResource';
+export const ADDON_MOD_RESOURCE_COMPONENT_LEGACY = 'mmaModResource';
 export const ADDON_MOD_RESOURCE_PAGE_NAME = 'mod_resource';
+export const ADDON_MOD_RESOURCE_MODNAME = 'resource';
+
+export const ADDON_MOD_RESOURCE_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_RESOURCE_COMPONENT;

@@ -21,7 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModLesson } from '../lesson';
-import { ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_MODNAME, ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 
@@ -35,7 +35,7 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
     canReview = true;
 
     constructor() {
-        super('AddonModLesson', 'lesson');
+        super(ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_MODNAME);
     }
 
     /**

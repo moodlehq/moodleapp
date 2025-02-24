@@ -23,7 +23,7 @@ import { CoreText } from '@singletons/text';
 import { CoreObject } from '@singletons/object';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_BBB_COMPONENT } from '../constants';
+import { ADDON_MOD_BBB_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
@@ -74,7 +74,7 @@ export class AddonModBBBService {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getBBBsCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_BBB_COMPONENT,
+            component: ADDON_MOD_BBB_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -165,7 +165,7 @@ export class AddonModBBBService {
             cacheKey: this.getMeetingInfoCacheKey(id, groupId),
             getCacheUsingCacheKey: true,
             uniqueCacheKey: true,
-            component: ADDON_MOD_BBB_COMPONENT,
+            component: ADDON_MOD_BBB_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -233,7 +233,7 @@ export class AddonModBBBService {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getRecordingsCacheKey(id, groupId),
-            component: ADDON_MOD_BBB_COMPONENT,
+            component: ADDON_MOD_BBB_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -292,7 +292,7 @@ export class AddonModBBBService {
         await CoreCourseLogHelper.log(
             'mod_bigbluebuttonbn_view_bigbluebuttonbn',
             params,
-            ADDON_MOD_BBB_COMPONENT,
+            ADDON_MOD_BBB_COMPONENT_LEGACY,
             id,
             siteId,
         );

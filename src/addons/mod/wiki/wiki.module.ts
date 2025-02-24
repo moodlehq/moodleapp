@@ -32,7 +32,7 @@ import { getPageOrMapLinkHandlerInstance } from './services/handlers/page-or-map
 import { getPrefetchHandlerInstance } from './services/handlers/prefetch';
 import { getCronHandlerInstance } from './services/handlers/sync-cron';
 import { AddonModWikiTagAreaHandler } from './services/handlers/tag-area';
-import { ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_PAGE_NAME } from './constants';
+import { ADDON_MOD_WIKI_COMPONENT_LEGACY, ADDON_MOD_WIKI_PAGE_NAME } from './constants';
 import { canLeaveGuard } from '@guards/can-leave';
 
 const routes: Routes = [
@@ -81,7 +81,7 @@ const routes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonModWikiListLinkHandler.instance);
                 CoreTagAreaDelegate.registerHandler(AddonModWikiTagAreaHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_WIKI_COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_WIKI_COMPONENT_LEGACY);
             },
         },
     ],

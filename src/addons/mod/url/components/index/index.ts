@@ -22,7 +22,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
 import { AddonModUrl, AddonModUrlDisplayOptions, AddonModUrlUrl } from '../../services/url';
 import { AddonModUrlHelper } from '../../services/url-helper';
-import { ADDON_MOD_URL_COMPONENT } from '../../constants';
+import { ADDON_MOD_URL_COMPONENT_LEGACY } from '../../constants';
 import { CoreSites } from '@services/sites';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
@@ -44,7 +44,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
-    component = ADDON_MOD_URL_COMPONENT;
+    component = ADDON_MOD_URL_COMPONENT_LEGACY;
     pluginName = 'url';
 
     url?: string;

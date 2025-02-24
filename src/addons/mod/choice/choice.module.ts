@@ -28,7 +28,7 @@ import { AddonModChoiceListLinkHandler } from './services/handlers/list-link';
 import { AddonModChoiceModuleHandler } from './services/handlers/module';
 import { AddonModChoicePrefetchHandler } from './services/handlers/prefetch';
 import { AddonModChoiceSyncCronHandler } from './services/handlers/sync-cron';
-import { ADDON_MOD_CHOICE_COMPONENT, ADDON_MOD_CHOICE_PAGE_NAME } from './constants';
+import { ADDON_MOD_CHOICE_COMPONENT_LEGACY, ADDON_MOD_CHOICE_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
@@ -57,7 +57,7 @@ const routes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonModChoiceIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModChoiceListLinkHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_CHOICE_COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_CHOICE_COMPONENT_LEGACY);
             },
         },
     ],

@@ -18,7 +18,7 @@ import { CoreCourseModuleHandler } from '@features/course/services/module-delega
 import { CoreConstants, ModPurpose } from '@/core/constants';
 import { makeSingleton } from '@singletons';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
-import { ADDON_MOD_PAGE_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_PAGE_COMPONENT, ADDON_MOD_PAGE_MODNAME, ADDON_MOD_PAGE_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support page modules.
@@ -26,8 +26,8 @@ import { ADDON_MOD_PAGE_PAGE_NAME } from '../../constants';
 @Injectable({ providedIn: 'root' })
 export class AddonModPageModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    name = 'AddonModPage';
-    modName = 'page';
+    name = ADDON_MOD_PAGE_COMPONENT;
+    modName = ADDON_MOD_PAGE_MODNAME;
     protected pageName = ADDON_MOD_PAGE_PAGE_NAME;
 
     supportedFeatures = {

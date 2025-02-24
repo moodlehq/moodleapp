@@ -21,7 +21,7 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_CHAT_COMPONENT } from '../constants';
+import { ADDON_MOD_CHAT_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
@@ -49,7 +49,7 @@ export class AddonModChatProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getChatsCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_CHAT_COMPONENT,
+            component: ADDON_MOD_CHAT_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -97,7 +97,7 @@ export class AddonModChatProvider {
         await CoreCourseLogHelper.log(
             'mod_chat_view_chat',
             params,
-            ADDON_MOD_CHAT_COMPONENT,
+            ADDON_MOD_CHAT_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -124,7 +124,7 @@ export class AddonModChatProvider {
         await CoreCourseLogHelper.log(
             'mod_chat_view_sessions',
             params,
-            ADDON_MOD_CHAT_COMPONENT,
+            ADDON_MOD_CHAT_COMPONENT_LEGACY,
             id,
         );
     }
@@ -230,7 +230,7 @@ export class AddonModChatProvider {
             chatsid: sessionId,
         };
         const preSets: CoreSiteWSPreSets = {
-            component: ADDON_MOD_CHAT_COMPONENT,
+            component: ADDON_MOD_CHAT_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -263,7 +263,7 @@ export class AddonModChatProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSessionsCacheKey(chatId, groupId, showAll),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_CHAT_COMPONENT,
+            component: ADDON_MOD_CHAT_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -301,7 +301,7 @@ export class AddonModChatProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSessionMessagesCacheKey(chatId, sessionStart, groupId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_CHAT_COMPONENT,
+            component: ADDON_MOD_CHAT_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };

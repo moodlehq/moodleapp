@@ -28,7 +28,7 @@ import { AddonModResource, AddonModResourceCustomData } from './resource';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
-import { ADDON_MOD_RESOURCE_COMPONENT } from '../constants';
+import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreOpenerOpenFileOptions } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -51,7 +51,7 @@ export class AddonModResourceHelperProvider {
         const result = await CoreCourseHelper.downloadModuleWithMainFileIfNeeded(
             module,
             module.course,
-            ADDON_MOD_RESOURCE_COMPONENT,
+            ADDON_MOD_RESOURCE_COMPONENT_LEGACY,
             module.id,
             contents,
         );
@@ -192,7 +192,7 @@ export class AddonModResourceHelperProvider {
             await CoreCourseHelper.downloadModuleAndOpenFile(
                 module,
                 courseId,
-                ADDON_MOD_RESOURCE_COMPONENT,
+                ADDON_MOD_RESOURCE_COMPONENT_LEGACY,
                 module.id,
                 module.contents,
                 undefined,

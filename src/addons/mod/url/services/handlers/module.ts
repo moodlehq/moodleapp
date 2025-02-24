@@ -28,7 +28,7 @@ import { AddonModUrlHelper } from '../url-helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { ADDON_MOD_URL_ADDON_NAME, ADDON_MOD_URL_MODNAME, ADDON_MOD_URL_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_URL_COMPONENT, ADDON_MOD_URL_MODNAME, ADDON_MOD_URL_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support url modules.
@@ -36,7 +36,7 @@ import { ADDON_MOD_URL_ADDON_NAME, ADDON_MOD_URL_MODNAME, ADDON_MOD_URL_PAGE_NAM
 @Injectable({ providedIn: 'root' })
 export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    name = ADDON_MOD_URL_ADDON_NAME;
+    name = ADDON_MOD_URL_COMPONENT;
     modName = ADDON_MOD_URL_MODNAME;
     protected pageName = ADDON_MOD_URL_PAGE_NAME;
 

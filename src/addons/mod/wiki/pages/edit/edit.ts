@@ -30,7 +30,7 @@ import { AddonModWiki } from '../../services/wiki';
 import { AddonModWikiOffline } from '../../services/wiki-offline';
 import { AddonModWikiSync } from '../../services/wiki-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_PAGE_CREATED_EVENT, ADDON_MOD_WIKI_RENEW_LOCK_TIME } from '../../constants';
+import { ADDON_MOD_WIKI_COMPONENT_LEGACY, ADDON_MOD_WIKI_PAGE_CREATED_EVENT, ADDON_MOD_WIKI_RENEW_LOCK_TIME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -60,7 +60,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
     contentControl: FormControl<string>; // The FormControl for the page content.
     canEditTitle = false; // Whether title can be edited.
     loaded = false; // Whether the data has been loaded.
-    component = ADDON_MOD_WIKI_COMPONENT; // Component to link the files to.
+    component = ADDON_MOD_WIKI_COMPONENT_LEGACY; // Component to link the files to.
     wrongVersionLock = false; // Whether the page lock doesn't match the initial one.
     editorExtraParams: Record<string, unknown> = {};
 

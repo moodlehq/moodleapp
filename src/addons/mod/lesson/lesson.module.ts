@@ -32,7 +32,7 @@ import { AddonModLessonPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModLessonPushClickHandler } from './services/handlers/push-click';
 import { AddonModLessonReportLinkHandler } from './services/handlers/report-link';
 import { AddonModLessonSyncCronHandler } from './services/handlers/sync-cron';
-import { ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_PAGE_NAME } from './constants';
+import { ADDON_MOD_LESSON_COMPONENT_LEGACY, ADDON_MOD_LESSON_PAGE_NAME } from './constants';
 import { canLeaveGuard } from '@guards/can-leave';
 
 const routes: Routes = [
@@ -79,7 +79,7 @@ const routes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonModLessonReportLinkHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonModLessonPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_LESSON_COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_LESSON_COMPONENT_LEGACY);
             },
         },
     ],

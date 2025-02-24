@@ -20,7 +20,7 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_LABEL_COMPONENT } from '../constants';
+import { ADDON_MOD_LABEL_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
@@ -65,7 +65,7 @@ export class AddonModLabelProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getLabelDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_LABEL_COMPONENT,
+            component: ADDON_MOD_LABEL_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -131,7 +131,7 @@ export class AddonModLabelProvider {
         const promises: Promise<void>[] = [];
 
         promises.push(this.invalidateLabelData(courseId, siteId));
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_LABEL_COMPONENT, moduleId, true));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_LABEL_COMPONENT_LEGACY, moduleId, true));
 
         await CorePromiseUtils.allPromises(promises);
     }

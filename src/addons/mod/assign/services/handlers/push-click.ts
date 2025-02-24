@@ -20,7 +20,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
 import { AddonModAssign } from '../assign';
-import { ADDON_MOD_ASSIGN_FEATURE_NAME } from '../../constants';
+import { ADDON_MOD_ASSIGN_FEATURE_NAME, ADDON_MOD_ASSIGN_PAGE_NAME } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -38,7 +38,7 @@ export class AddonModAssignPushClickHandlerService implements CorePushNotificati
      */
     async handles(notification: NotificationData): Promise<boolean> {
         return CoreUtils.isTrueOrOne(notification.notif) &&
-            notification.moodlecomponent === 'mod_assign' &&
+            notification.moodlecomponent === ADDON_MOD_ASSIGN_PAGE_NAME &&
                 notification.name === 'assign_notification';
     }
 

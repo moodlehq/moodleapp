@@ -17,9 +17,9 @@ import { CoreCourseResourcePrefetchHandlerBase } from '@features/course/classes/
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
 import { makeSingleton } from '@singletons';
 import {
-    ADDON_MOD_URL_COMPONENT,
+    ADDON_MOD_URL_COMPONENT_LEGACY,
     ADDON_MOD_URL_MODNAME,
-    ADDON_MOD_URL_ADDON_NAME,
+    ADDON_MOD_URL_COMPONENT,
 } from '../../constants';
 
 /**
@@ -28,9 +28,9 @@ import {
 @Injectable({ providedIn: 'root' })
 export class AddonModUrlPrefetchHandlerService extends CoreCourseResourcePrefetchHandlerBase {
 
-    name = ADDON_MOD_URL_ADDON_NAME;
+    name = ADDON_MOD_URL_COMPONENT;
     modName = ADDON_MOD_URL_MODNAME;
-    component = ADDON_MOD_URL_COMPONENT;
+    component = ADDON_MOD_URL_COMPONENT_LEGACY;
 
     /**
      * @inheritdoc

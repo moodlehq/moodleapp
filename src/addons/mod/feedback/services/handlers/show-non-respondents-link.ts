@@ -19,7 +19,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_FEEDBACK_FEATURE_NAME, ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 /**
@@ -30,7 +30,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 export class AddonModFeedbackShowNonRespondentsLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModFeedbackShowNonRespondentsLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
+    featureName = ADDON_MOD_FEEDBACK_FEATURE_NAME;
     pattern = /\/mod\/feedback\/show_nonrespondents\.php.*([?&](id)=\d+)/;
 
     /**

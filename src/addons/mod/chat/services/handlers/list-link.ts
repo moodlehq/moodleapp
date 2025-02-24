@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to chat list page.
@@ -25,7 +26,7 @@ export class AddonModChatListLinkHandlerService extends CoreContentLinksModuleLi
     name = 'AddonModChatListLinkHandler';
 
     constructor() {
-        super('AddonModChat', 'chat');
+        super(ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_MODNAME);
     }
 
 }

@@ -31,7 +31,7 @@ import {
 } from './forum';
 import { AddonModForumDiscussionOptions, AddonModForumOffline, AddonModForumOfflineReply } from './forum-offline';
 import { CoreFileEntry } from '@services/file-helper';
-import { ADDON_MOD_FORUM_ALL_GROUPS, ADDON_MOD_FORUM_COMPONENT } from '../constants';
+import { ADDON_MOD_FORUM_ALL_GROUPS, ADDON_MOD_FORUM_COMPONENT_LEGACY } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 
@@ -504,7 +504,7 @@ export class AddonModForumHelperProvider {
             return this.storeNewDiscussionFiles(forumId, timecreated, files, siteId);
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT, forumId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT_LEGACY, forumId, siteId);
     }
 
     /**
@@ -546,7 +546,7 @@ export class AddonModForumHelperProvider {
             return this.storeReplyFiles(forumId, postId, files, siteId, userId);
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT, forumId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT_LEGACY, forumId, siteId);
     }
 
 }

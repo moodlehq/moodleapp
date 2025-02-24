@@ -22,7 +22,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ADDON_MOD_PAGE_COMPONENT } from '../constants';
+import { ADDON_MOD_PAGE_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
@@ -68,7 +68,7 @@ export class AddonModPageProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getPageCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_PAGE_COMPONENT,
+            component: ADDON_MOD_PAGE_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -106,7 +106,7 @@ export class AddonModPageProvider {
         const promises: Promise<void>[] = [];
 
         promises.push(this.invalidatePageData(courseId, siteId));
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_PAGE_COMPONENT, moduleId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_PAGE_COMPONENT_LEGACY, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId));
 
         return CorePromiseUtils.allPromises(promises);
@@ -152,7 +152,7 @@ export class AddonModPageProvider {
         return CoreCourseLogHelper.log(
             'mod_page_view_page',
             params,
-            ADDON_MOD_PAGE_COMPONENT,
+            ADDON_MOD_PAGE_COMPONENT_LEGACY,
             pageid,
             siteId,
         );

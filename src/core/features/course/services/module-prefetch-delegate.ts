@@ -35,6 +35,7 @@ import { CHECK_UPDATES_TIMES_TABLE, CoreCourseCheckUpdatesDBRecord } from './dat
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreCourseHelper, CoreCourseModuleData } from './course-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '../constants';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -45,7 +46,7 @@ const ROOT_CACHE_KEY = 'mmCourse:';
 export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCourseModulePrefetchHandler> {
 
     protected statusCache = new CoreCache();
-    protected featurePrefix = 'CoreCourseModuleDelegate_';
+    protected featurePrefix = CORE_COURSE_MODULE_FEATURE_PREFIX;
     protected handlerNameProperty = 'modName';
 
     // Promises for check updates, to prevent performing the same request twice at the same time.

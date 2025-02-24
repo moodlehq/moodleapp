@@ -51,7 +51,7 @@ import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { AddonModForumSharedPostFormData } from '../../pages/discussion/discussion';
 import { CoreDom } from '@singletons/dom';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, ADDON_MOD_FORUM_COMPONENT } from '../../constants';
+import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, ADDON_MOD_FORUM_COMPONENT_LEGACY } from '../../constants';
 import { CoreToasts } from '@services/overlays/toasts';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CorePopovers } from '@services/overlays/popovers';
@@ -361,7 +361,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             }
 
             this.formData.syncId = AddonModForumSync.getDiscussionSyncId(this.discussionId);
-            CoreSync.blockOperation(ADDON_MOD_FORUM_COMPONENT, this.formData.syncId);
+            CoreSync.blockOperation(ADDON_MOD_FORUM_COMPONENT_LEGACY, this.formData.syncId);
 
             this.setFormData(
                 this.post.parentid,
@@ -668,7 +668,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             return;
         }
 
-        CoreSync.unblockOperation(ADDON_MOD_FORUM_COMPONENT, this.formData.syncId);
+        CoreSync.unblockOperation(ADDON_MOD_FORUM_COMPONENT_LEGACY, this.formData.syncId);
         delete this.formData.syncId;
     }
 

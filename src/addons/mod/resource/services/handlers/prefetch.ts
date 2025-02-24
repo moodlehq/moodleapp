@@ -22,7 +22,7 @@ import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { AddonModResource } from '../resource';
 import { AddonModResourceHelper } from '../resource-helper';
-import { ADDON_MOD_RESOURCE_COMPONENT } from '../../constants';
+import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../../constants';
 
 /**
  * Handler to prefetch resources.
@@ -32,7 +32,7 @@ export class AddonModResourcePrefetchHandlerService extends CoreCourseResourcePr
 
     name = 'AddonModResource';
     modName = 'resource';
-    component = ADDON_MOD_RESOURCE_COMPONENT;
+    component = ADDON_MOD_RESOURCE_COMPONENT_LEGACY;
 
     /**
      * @inheritdoc

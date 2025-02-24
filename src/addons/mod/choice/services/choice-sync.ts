@@ -25,7 +25,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModChoice } from './choice';
 import { AddonModChoiceOffline } from './choice-offline';
-import { ADDON_MOD_CHOICE_AUTO_SYNCED, ADDON_MOD_CHOICE_COMPONENT } from '../constants';
+import { ADDON_MOD_CHOICE_AUTO_SYNCED, ADDON_MOD_CHOICE_COMPONENT_LEGACY } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 declare module '@singletons/events' {
@@ -162,7 +162,7 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
         };
 
         // Sync offline logs.
-        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_CHOICE_COMPONENT, choiceId, siteId));
+        await CorePromiseUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_CHOICE_COMPONENT_LEGACY, choiceId, siteId));
 
         const data = await CorePromiseUtils.ignoreErrors(AddonModChoiceOffline.getResponse(choiceId, siteId, userId));
 

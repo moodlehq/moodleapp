@@ -23,7 +23,7 @@ import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModChoice } from '../choice';
 import { AddonModChoiceSync, AddonModChoiceSyncResult } from '../choice-sync';
-import { ADDON_MOD_CHOICE_COMPONENT } from '../../constants';
+import { ADDON_MOD_CHOICE_COMPONENT_LEGACY } from '../../constants';
 import { CoreGroups } from '@services/groups';
 
 /**
@@ -34,7 +34,7 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
 
     name = 'AddonModChoice';
     modName = 'choice';
-    component = ADDON_MOD_CHOICE_COMPONENT;
+    component = ADDON_MOD_CHOICE_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^answers$/;
 
     /**
@@ -76,7 +76,7 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
         await Promise.all([
             AddonModChoice.getOptions(choice.id, modOptions),
             this.prefetchResults(module.id, choice.id, courseId, modOptions),
-            CoreFilepool.addFilesToQueue(siteId, introFiles, ADDON_MOD_CHOICE_COMPONENT, module.id),
+            CoreFilepool.addFilesToQueue(siteId, introFiles, ADDON_MOD_CHOICE_COMPONENT_LEGACY, module.id),
         ]);
     }
 

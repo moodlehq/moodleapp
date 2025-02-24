@@ -26,7 +26,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModImscp } from '../imscp';
-import { ADDON_MOD_IMSCP_COMPONENT } from '../../constants';
+import { ADDON_MOD_IMSCP_COMPONENT_LEGACY } from '../../constants';
 
 /**
  * Handler to prefetch IMSCPs.
@@ -36,7 +36,7 @@ export class AddonModImscpPrefetchHandlerService extends CoreCourseResourcePrefe
 
     name = 'AddonModImscp';
     modName = 'imscp';
-    component = ADDON_MOD_IMSCP_COMPONENT;
+    component = ADDON_MOD_IMSCP_COMPONENT_LEGACY;
 
     /**
      * @inheritdoc

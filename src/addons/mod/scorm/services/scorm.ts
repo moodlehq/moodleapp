@@ -31,7 +31,7 @@ import { CorePath } from '@singletons/path';
 import { AddonModScormOffline } from './scorm-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_SCORM_COMPONENT,
+    ADDON_MOD_SCORM_COMPONENT_LEGACY,
     AddonModScormForceAttempt,
     AddonModScormGradingMethod,
     AddonModScormMode,
@@ -447,7 +447,7 @@ export class AddonModScormProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAccessInformationCacheKey(scormId),
-            component: ADDON_MOD_SCORM_COMPONENT,
+            component: ADDON_MOD_SCORM_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -554,7 +554,7 @@ export class AddonModScormProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptCountCacheKey(scormId, userId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_SCORM_COMPONENT,
+            component: ADDON_MOD_SCORM_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -795,7 +795,7 @@ export class AddonModScormProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getScormUserDataCacheKey(scormId, attempt),
-            component: ADDON_MOD_SCORM_COMPONENT,
+            component: ADDON_MOD_SCORM_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -850,7 +850,7 @@ export class AddonModScormProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getScosCacheKey(scormId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_SCORM_COMPONENT,
+            component: ADDON_MOD_SCORM_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1118,7 +1118,7 @@ export class AddonModScormProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getScormDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_SCORM_COMPONENT,
+            component: ADDON_MOD_SCORM_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -1279,7 +1279,7 @@ export class AddonModScormProvider {
 
         await Promise.all([
             this.invalidateAllScormData(scorm.id, siteId, userId),
-            CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_SCORM_COMPONENT, moduleId, true),
+            CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_SCORM_COMPONENT_LEGACY, moduleId, true),
         ]);
     }
 
@@ -1439,7 +1439,7 @@ export class AddonModScormProvider {
         return CoreCourseLogHelper.log(
             'mod_scorm_launch_sco',
             params,
-            ADDON_MOD_SCORM_COMPONENT,
+            ADDON_MOD_SCORM_COMPONENT_LEGACY,
             scormId,
             siteId,
         );
@@ -1460,7 +1460,7 @@ export class AddonModScormProvider {
         return CoreCourseLogHelper.log(
             'mod_scorm_view_scorm',
             params,
-            ADDON_MOD_SCORM_COMPONENT,
+            ADDON_MOD_SCORM_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -1538,14 +1538,14 @@ export class AddonModScormProvider {
             tracks: tracks,
         };
 
-        CoreSync.blockOperation(ADDON_MOD_SCORM_COMPONENT, scormId, 'saveTracksOnline', site.id);
+        CoreSync.blockOperation(ADDON_MOD_SCORM_COMPONENT_LEGACY, scormId, 'saveTracksOnline', site.id);
 
         try {
             const response = await site.write<AddonModScormInsertScormTracksWSResponse>('mod_scorm_insert_scorm_tracks', params);
 
             return response.trackids;
         } finally {
-            CoreSync.unblockOperation(ADDON_MOD_SCORM_COMPONENT, scormId, 'saveTracksOnline', site.id);
+            CoreSync.unblockOperation(ADDON_MOD_SCORM_COMPONENT_LEGACY, scormId, 'saveTracksOnline', site.id);
         }
     }
 
@@ -1642,7 +1642,7 @@ export class AddonModScormProvider {
     async shouldDownloadMainFile(scorm: AddonModScormScorm, isOutdated?: boolean, siteId?: string): Promise<boolean> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const component = ADDON_MOD_SCORM_COMPONENT;
+        const component = ADDON_MOD_SCORM_COMPONENT_LEGACY;
 
         if (isOutdated === undefined) {
             // Calculate if it's outdated.

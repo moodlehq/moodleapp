@@ -40,7 +40,7 @@ import {
     AddonModScormSyncResult,
 } from '../../services/scorm-sync';
 import {
-    ADDON_MOD_SCORM_COMPONENT,
+    ADDON_MOD_SCORM_COMPONENT_LEGACY,
     AddonModScormForceAttempt,
     AddonModScormMode,
     AddonModScormSkipView,
@@ -75,7 +75,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
     @Input() autoPlayData?: AddonModScormAutoPlayData; // Data to use to play the SCORM automatically.
 
-    component = ADDON_MOD_SCORM_COMPONENT;
+    component = ADDON_MOD_SCORM_COMPONENT_LEGACY;
     pluginName = 'scorm';
 
     scorm?: AddonModScormScorm; // The SCORM object.
@@ -652,7 +652,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
             throw new CoreError('Cannot sync without a scorm.');
         }
 
-        if (CoreSync.isBlocked(ADDON_MOD_SCORM_COMPONENT, this.scorm.id) && retries < 5) {
+        if (CoreSync.isBlocked(ADDON_MOD_SCORM_COMPONENT_LEGACY, this.scorm.id) && retries < 5) {
             // Sync is currently blocked, this can happen when SCORM player is left. Retry in a bit.
             await CoreWait.wait(400);
 

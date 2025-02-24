@@ -27,7 +27,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreTime } from '@singletons/time';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_H5PACTIVITY_COMPONENT,
+    ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
     ADDON_MOD_H5PACTIVITY_USERS_PER_PAGE,
     AddonModH5PActivityGradeMethod,
 } from '../constants';
@@ -164,7 +164,7 @@ export class AddonModH5PActivityProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAccessInformationCacheKey(id),
             updateFrequency: CoreCacheUpdateFrequency.OFTEN,
-            component: ADDON_MOD_H5PACTIVITY_COMPONENT,
+            component: ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -268,7 +268,7 @@ export class AddonModH5PActivityProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUsersAttemptsCacheKey(id, options),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_H5PACTIVITY_COMPONENT,
+            component: ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -364,7 +364,7 @@ export class AddonModH5PActivityProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptResultsCacheKey(id, params.attemptids),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_H5PACTIVITY_COMPONENT,
+            component: ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -429,7 +429,7 @@ export class AddonModH5PActivityProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptResultsCommonCacheKey(id),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_H5PACTIVITY_COMPONENT,
+            component: ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -512,7 +512,7 @@ export class AddonModH5PActivityProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getH5PActivityDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_H5PACTIVITY_COMPONENT,
+            component: ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -590,7 +590,7 @@ export class AddonModH5PActivityProvider {
         const fileUrl = CoreFileHelper.getFileUrl(deployedFile);
 
         const missingDependencies =
-            await CoreH5P.h5pFramework.getMissingDependenciesForComponent(ADDON_MOD_H5PACTIVITY_COMPONENT, componentId, siteId);
+            await CoreH5P.h5pFramework.getMissingDependenciesForComponent(ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY, componentId, siteId);
         if (!missingDependencies.length) {
             return [];
         }
@@ -607,7 +607,7 @@ export class AddonModH5PActivityProvider {
 
         // Package has changed, delete previous missing dependencies.
         await CorePromiseUtils.ignoreErrors(
-            CoreH5P.h5pFramework.deleteMissingDependenciesForComponent(ADDON_MOD_H5PACTIVITY_COMPONENT, componentId, siteId),
+            CoreH5P.h5pFramework.deleteMissingDependenciesForComponent(ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY, componentId, siteId),
         );
 
         return [];
@@ -658,7 +658,7 @@ export class AddonModH5PActivityProvider {
             const preSets: CoreSiteWSPreSets = {
                 cacheKey: this.getUserAttemptsCacheKey(id, params.userids),
                 updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-                component: ADDON_MOD_H5PACTIVITY_COMPONENT,
+                component: ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
                 componentId: options.cmId,
                 ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             };
@@ -835,7 +835,7 @@ export class AddonModH5PActivityProvider {
         return CoreCourseLogHelper.log(
             'mod_h5pactivity_view_h5pactivity',
             params,
-            ADDON_MOD_H5PACTIVITY_COMPONENT,
+            ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -865,7 +865,7 @@ export class AddonModH5PActivityProvider {
         return CoreCourseLogHelper.log(
             'mod_h5pactivity_log_report_viewed',
             params,
-            ADDON_MOD_H5PACTIVITY_COMPONENT,
+            ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
             id,
             site.getId(),
         );

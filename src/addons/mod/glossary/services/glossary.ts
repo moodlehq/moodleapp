@@ -30,7 +30,7 @@ import { AddonModGlossaryEntryDBRecord, ENTRIES_TABLE_NAME } from './database/gl
 import { AddonModGlossaryOffline } from './glossary-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_GLOSSARY_COMPONENT,
+    ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
     ADDON_MOD_GLOSSARY_ENTRY_ADDED,
     ADDON_MOD_GLOSSARY_ENTRY_DELETED,
     ADDON_MOD_GLOSSARY_ENTRY_UPDATED,
@@ -76,7 +76,7 @@ export class AddonModGlossaryProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCourseGlossariesCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -137,7 +137,7 @@ export class AddonModGlossaryProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByAuthorCacheKey(glossaryId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -181,7 +181,7 @@ export class AddonModGlossaryProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByCategoryCacheKey(glossaryId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -251,7 +251,7 @@ export class AddonModGlossaryProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByDateCacheKey(glossaryId, order),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -309,7 +309,7 @@ export class AddonModGlossaryProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByLetterCacheKey(glossaryId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -383,7 +383,7 @@ export class AddonModGlossaryProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesBySearchCacheKey(glossaryId, query, fullSearch),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -461,7 +461,7 @@ export class AddonModGlossaryProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCategoriesCacheKey(glossaryId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -518,7 +518,7 @@ export class AddonModGlossaryProvider {
         const preSets = {
             cacheKey: this.getEntryCacheKey(entryId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             filter: options.filter !== false,
@@ -1044,7 +1044,7 @@ export class AddonModGlossaryProvider {
         await CoreCourseLogHelper.log(
             'mod_glossary_view_glossary',
             params,
-            ADDON_MOD_GLOSSARY_COMPONENT,
+            ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             glossaryId,
             siteId,
         );
@@ -1065,7 +1065,7 @@ export class AddonModGlossaryProvider {
         await CoreCourseLogHelper.log(
             'mod_glossary_view_entry',
             params,
-            ADDON_MOD_GLOSSARY_COMPONENT,
+            ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             glossaryId,
             siteId,
         );

@@ -24,7 +24,7 @@ import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWar
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModSurveyOffline } from './survey-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ADDON_MOD_SURVEY_COMPONENT } from '../constants';
+import { ADDON_MOD_SURVEY_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
@@ -53,7 +53,7 @@ export class AddonModSurveyProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuestionsCacheKey(surveyId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_SURVEY_COMPONENT,
+            component: ADDON_MOD_SURVEY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -110,7 +110,7 @@ export class AddonModSurveyProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSurveyCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_SURVEY_COMPONENT,
+            component: ADDON_MOD_SURVEY_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -174,7 +174,7 @@ export class AddonModSurveyProvider {
             return;
         }));
 
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_SURVEY_COMPONENT, moduleId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_SURVEY_COMPONENT_LEGACY, moduleId));
 
         await CorePromiseUtils.allPromises(promises);
     }
@@ -220,7 +220,7 @@ export class AddonModSurveyProvider {
         await CoreCourseLogHelper.log(
             'mod_survey_view_survey',
             params,
-            ADDON_MOD_SURVEY_COMPONENT,
+            ADDON_MOD_SURVEY_COMPONENT_LEGACY,
             id,
             siteId,
         );

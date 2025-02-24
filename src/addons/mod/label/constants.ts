@@ -12,4 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_MOD_LABEL_COMPONENT = 'mmaModLabel';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
+
+export const ADDON_MOD_LABEL_COMPONENT = 'AddonModLabel';
+export const ADDON_MOD_LABEL_COMPONENT_LEGACY = 'mmaModLabel';
+export const ADDON_MOD_LABEL_PAGE_NAME = 'mod_label';
+export const ADDON_MOD_LABEL_MODNAME = 'label';
+
+export const ADDON_MOD_LABEL_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_LABEL_COMPONENT;

@@ -33,7 +33,7 @@ import { AddonModScormHelper, AddonModScormTOCScoWithIcon } from '../../services
 import { AddonModScormSync } from '../../services/scorm-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import {
-    ADDON_MOD_SCORM_COMPONENT,
+    ADDON_MOD_SCORM_COMPONENT_LEGACY,
     AddonModScormMode,
     ADDON_MOD_SCORM_GO_OFFLINE_EVENT,
     ADDON_MOD_SCORM_LAUNCH_NEXT_SCO_EVENT,
@@ -158,7 +158,7 @@ export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
         });
 
         // Block the SCORM so it cannot be synchronized.
-        CoreSync.blockOperation(ADDON_MOD_SCORM_COMPONENT, this.scorm.id, 'player');
+        CoreSync.blockOperation(ADDON_MOD_SCORM_COMPONENT_LEGACY, this.scorm.id, 'player');
 
         // We use SCORM name at start, later we'll use the SCO title.
         this.title = this.scorm.name;
@@ -613,7 +613,7 @@ export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
         }, 500);
 
         // Unblock the SCORM so it can be synced.
-        CoreSync.unblockOperation(ADDON_MOD_SCORM_COMPONENT, this.scorm.id, 'player');
+        CoreSync.unblockOperation(ADDON_MOD_SCORM_COMPONENT_LEGACY, this.scorm.id, 'player');
     }
 
 }

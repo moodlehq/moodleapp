@@ -17,6 +17,7 @@ import { CoreContentLinksHandlerBase } from './base-handler';
 import { CoreSites } from '@services/sites';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
 
 /**
  * Handler to handle URLs pointing to the grade of a module.
@@ -48,7 +49,7 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
 
         // Match the grade.php URL with an id param.
         this.pattern = new RegExp('/mod/' + modName + '/grade.php.*([&?]id=\\d+)');
-        this.featureName = 'CoreCourseModuleDelegate_' + addon;
+        this.featureName = CORE_COURSE_MODULE_FEATURE_PREFIX + addon;
     }
 
     /**

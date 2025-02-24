@@ -19,7 +19,7 @@ import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTime } from '@singletons/time';
 import { AddonModChat, AddonModChatChat } from '../../services/chat';
-import { ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_CHAT_COMPONENT_LEGACY, ADDON_MOD_CHAT_PAGE_NAME } from '../../constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
@@ -39,7 +39,7 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
 })
 export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
-    component = ADDON_MOD_CHAT_COMPONENT;
+    component = ADDON_MOD_CHAT_COMPONENT_LEGACY;
     pluginName = 'chat';
     chat?: AddonModChatChat;
     chatTime?: string;
