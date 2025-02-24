@@ -19,7 +19,7 @@ import { CoreGradesHelper, CoreGradesMenuItem } from '@features/grades/services/
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
@@ -48,6 +48,8 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { AddonModWorkshopAssessmentStrategyComponent } from '../../components/assessment-strategy/assessment-strategy';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreNetwork } from '@services/network';
+import { CoreErrorHelper } from '@services/error-helper';
 
 /**
  * Page that displays a workshop assessment.
@@ -80,6 +82,7 @@ export default class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy
     workshop?: AddonModWorkshopData;
     strategy?: string;
     title = '';
+    loadFeedbackToEditErrorMessage?: string;
     evaluate: AddonModWorkshopAssessmentEvaluation = {
         text: '',
         grade: -1,
@@ -227,6 +230,7 @@ export default class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy
             const assessment = await AddonModWorkshopHelper.getReviewerAssessmentById(this.workshopId, this.assessmentId, {
                 userId: this.profile?.id,
                 cmId: this.workshop.coursemodule,
+                canAssess: AddonModWorkshopHelper.canEditAssessments(this.workshop, this.access),
             });
 
             this.assessment = AddonModWorkshopHelper.realGradeValue(this.workshop, assessment);
@@ -262,6 +266,8 @@ export default class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy
                     if (this.access.canoverridegrades) {
                         this.evaluate.text = this.assessment.feedbackreviewer || '';
                         this.evaluate.grade = parseInt(String(this.assessment.gradinggradeover), 10) || -1;
+
+                        await this.loadFeedbackToEdit();
                     }
                 } finally {
                     this.originalEvaluation.weight = this.evaluate.weight;
@@ -284,6 +290,36 @@ export default class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy
             CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             this.loaded = true;
+        }
+    }
+
+    /**
+     * Load assessment feedback to edit it (for teachers).
+     */
+    protected async loadFeedbackToEdit(): Promise<void> {
+        if (!this.workshop) {
+            return;
+        }
+
+        try {
+            // Retrieve the unfiltered feedback text to edit it.
+            const assessment = await AddonModWorkshopHelper.getReviewerAssessmentById(
+                this.workshopId,
+                this.assessmentId,
+                {
+                    userId: this.profile?.id,
+                    cmId: this.workshop.coursemodule,
+                    filter: false,
+                    readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
+                },
+            );
+
+            this.evaluate.text = assessment.feedbackreviewer || '';
+            this.loadFeedbackToEditErrorMessage = undefined;
+        } catch (error) {
+            this.loadFeedbackToEditErrorMessage = !CoreNetwork.isOnline() ?
+                Translate.instant('core.notavailableoffline') :
+                CoreErrorHelper.getErrorMessageFromError(error) || Translate.instant('core.networkerrormsg');
         }
     }
 
