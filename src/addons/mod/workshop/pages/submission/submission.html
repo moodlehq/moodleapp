@@ -13,9 +13,11 @@
             <ion-button *ngIf="assessmentId && access.assessingallowed" fill="clear" (click)="saveAssessment()">
                 {{ 'core.save' | translate }}
             </ion-button>
-            <ion-button *ngIf="canAddFeedback" fill="clear" (click)="saveEvaluation()">
-                {{ 'core.save' | translate }}
-            </ion-button>
+            @if (canAddFeedback && !loadFeedbackToEditErrorMessage) {
+                <ion-button fill="clear" (click)="saveEvaluation()">
+                    {{ 'core.save' | translate }}
+                </ion-button>
+            }
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
@@ -92,40 +94,58 @@
                 [assessment]="reviewer" [courseId]="courseId" [module]="module" [workshop]="workshop" [access]="access" />
         </ion-list>
 
-        <form [formGroup]="feedbackForm" *ngIf="canAddFeedback && submission" #feedbackFormEl>
-            <ion-item-divider class="ion-text-wrap">
-                <ion-label>
-                    <h2>{{ 'addon.mod_workshop.feedbackauthor' | translate }}</h2>
-                </ion-label>
-            </ion-item-divider>
-            <ion-item class="ion-text-wrap" *ngIf="access.canpublishsubmissions">
-                <ion-toggle formControlName="published">
-                    <p class="item-heading">{{ 'addon.mod_workshop.publishsubmission' | translate }}</p>
-                    <p>{{ 'addon.mod_workshop.publishsubmission_help' | translate }}</p>
-                </ion-toggle>
-            </ion-item>
+        @if (canAddFeedback && submission) {
+            @if (loadFeedbackToEditErrorMessage) {
+                <!-- Error loading the feedback to edit it, display a warning. -->
+                <ion-item-divider class="ion-text-wrap">
+                    <ion-label>
+                        <h2>{{ 'addon.mod_workshop.feedbackauthor' | translate }}</h2>
+                    </ion-label>
+                </ion-item-divider>
+                <ion-card class="core-warning-card">
+                    <ion-item>
+                        <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                        <ion-label>{{ loadFeedbackToEditErrorMessage }}</ion-label>
+                    </ion-item>
+                </ion-card>
+            } @else {
+                <form [formGroup]="feedbackForm" #feedbackFormEl>
+                    <ion-item-divider class="ion-text-wrap">
+                        <ion-label>
+                            <h2>{{ 'addon.mod_workshop.feedbackauthor' | translate }}</h2>
+                        </ion-label>
+                    </ion-item-divider>
+                    <ion-item class="ion-text-wrap" *ngIf="access.canpublishsubmissions">
+                        <ion-toggle formControlName="published">
+                            <p class="item-heading">{{ 'addon.mod_workshop.publishsubmission' | translate }}</p>
+                            <p>{{ 'addon.mod_workshop.publishsubmission_help' | translate }}</p>
+                        </ion-toggle>
+                    </ion-item>
 
-            <ion-item-divider class="ion-text-wrap">
-                <ion-label>
-                    <h3>{{ 'addon.mod_workshop.gradecalculated' | translate }}</h3>
-                    <p>{{ submission.grade }}</p>
-                </ion-label>
-            </ion-item-divider>
-            <ion-item class="ion-text-wrap">
-                <ion-select labelPlacement="stacked" formControlName="grade" interface="action-sheet"
-                    [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'addon.mod_workshop.gradeover' | translate}"
-                    [label]="'addon.mod_workshop.gradeover' | translate">
-                    <ion-select-option *ngFor="let grade of evaluationGrades" [value]="grade.value">
-                        {{grade.label}}
-                    </ion-select-option>
-                </ion-select>
-            </ion-item>
-            <ion-item>
-                <ion-label position="stacked">{{ 'addon.mod_workshop.feedbackauthor' | translate }}</ion-label>
-                <core-rich-text-editor [control]="feedbackForm.controls['text']" name="text" [autoSave]="true" contextLevel="module"
-                    [contextInstanceId]="module.id" elementId="feedbackauthor_editor" [draftExtraParams]="{id: submissionId}" />
-            </ion-item>
-        </form>
+                    <ion-item-divider class="ion-text-wrap">
+                        <ion-label>
+                            <h3>{{ 'addon.mod_workshop.gradecalculated' | translate }}</h3>
+                            <p>{{ submission.grade }}</p>
+                        </ion-label>
+                    </ion-item-divider>
+                    <ion-item class="ion-text-wrap">
+                        <ion-select labelPlacement="stacked" formControlName="grade" interface="action-sheet"
+                            [cancelText]="'core.cancel' | translate"
+                            [interfaceOptions]="{header: 'addon.mod_workshop.gradeover' | translate}"
+                            [label]="'addon.mod_workshop.gradeover' | translate">
+                            <ion-select-option *ngFor="let grade of evaluationGrades" [value]="grade.value">
+                                {{grade.label}}
+                            </ion-select-option>
+                        </ion-select>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label position="stacked">{{ 'addon.mod_workshop.feedbackauthor' | translate }}</ion-label>
+                        <core-rich-text-editor [control]="feedbackForm.controls['text']" name="text" [autoSave]="true" contextLevel="module"
+                            [contextInstanceId]="module.id" elementId="feedbackauthor_editor" [draftExtraParams]="{id: submissionId}" />
+                    </ion-item>
+                </form>
+            }
+        }
 
         <addon-mod-workshop-assessment-strategy *ngIf="assessmentId" [workshop]="workshop" [access]="access" [assessmentId]="assessmentId"
             [userId]="assessmentUserId" [strategy]="strategy" [edit]="access.assessingallowed" />
