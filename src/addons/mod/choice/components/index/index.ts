@@ -33,7 +33,6 @@ import {
     AddonModChoiceSync,
     AddonModChoiceSyncResult,
 } from '../../services/choice-sync';
-import { AddonModChoicePrefetchHandler } from '../../services/handlers/prefetch';
 import {
     ADDON_MOD_CHOICE_AUTO_SYNCED,
     ADDON_MOD_CHOICE_COMPONENT,
@@ -463,7 +462,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
 
         try {
             // The choice is downloaded, update the data.
-            await AddonModChoiceSync.prefetchAfterUpdate(AddonModChoicePrefetchHandler.instance, this.module, this.courseId);
+            await AddonModChoiceSync.prefetchModuleAfterUpdate(this.module, this.courseId);
 
             // Update the view.
             this.showLoadingAndFetch(false, false);

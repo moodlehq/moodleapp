@@ -664,7 +664,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         if (!result.updated && this.dataSent) {
             // The user sent data to server, but not in the sync process. Check if we need to fetch data.
             await CorePromiseUtils.ignoreErrors(
-                AddonModScormSync.prefetchAfterUpdate(AddonModScormPrefetchHandler.instance, this.module, this.courseId),
+                AddonModScormSync.prefetchModuleAfterUpdate(this.module, this.courseId),
             );
         }
 
