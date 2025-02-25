@@ -18,7 +18,7 @@ import { SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { makeSingleton } from '@singletons';
 import { CorePath } from '@singletons/path';
 import { AddonModAssignOutcomes, AddonModAssignSavePluginData } from './assign';
@@ -338,7 +338,7 @@ export class AddonModAssignOfflineProvider {
             });
         } catch {
             // No submission, create an empty one.
-            const now = CoreTimeUtils.timestamp();
+            const now = CoreTime.timestamp();
             submission = {
                 assignid: assignId,
                 courseid: courseId,
@@ -380,7 +380,7 @@ export class AddonModAssignOfflineProvider {
 
         userId = userId || site.getUserId();
 
-        const now = CoreTimeUtils.timestamp();
+        const now = CoreTime.timestamp();
         const entry: AddonModAssignSubmissionsDBRecord = {
             assignid: assignId,
             courseid: courseId,
@@ -426,7 +426,7 @@ export class AddonModAssignOfflineProvider {
     ): Promise<number> {
         const site = await CoreSites.getSite(siteId);
 
-        const now = CoreTimeUtils.timestamp();
+        const now = CoreTime.timestamp();
         const entry: AddonModAssignSubmissionsGradingDBRecord = {
             assignid: assignId,
             userid: userId,

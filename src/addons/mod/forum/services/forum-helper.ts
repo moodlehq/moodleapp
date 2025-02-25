@@ -34,6 +34,7 @@ import { CoreFileEntry } from '@services/file-helper';
 import { ADDON_MOD_FORUM_ALL_GROUPS, ADDON_MOD_FORUM_COMPONENT } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Service that provides some features for forums.
@@ -405,7 +406,7 @@ export class AddonModForumHelperProvider {
      * @returns If cut off date has been reached.
      */
     isCutoffDateReached(forum: AddonModForumData): boolean {
-        const now = Date.now() / 1000;
+        const now = CoreTime.timestamp();
 
         return !!forum.cutoffdate && forum.cutoffdate > 0 && forum.cutoffdate < now;
     }
@@ -417,7 +418,7 @@ export class AddonModForumHelperProvider {
      * @returns If due date has been reached.
      */
     isDueDateReached(forum: AddonModForumData): forum is AddonModForumData & { duedate: number } {
-        const now = Date.now() / 1000;
+        const now = CoreTime.timestamp();
         const duedate = forum.duedate ?? 0;
 
         return duedate > 0 && duedate < now;

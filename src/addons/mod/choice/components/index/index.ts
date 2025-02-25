@@ -18,7 +18,7 @@ import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/
 import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { IonContent } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import {
@@ -80,7 +80,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     protected userId?: number;
     protected syncEventName = ADDON_MOD_CHOICE_AUTO_SYNCED;
     protected hasAnsweredOnline = false;
-    protected now = CoreTimeUtils.timestamp();
+    protected now = CoreTime.timestamp();
 
     constructor(
         protected content?: IonContent,
@@ -133,7 +133,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
      * @inheritdoc
      */
     protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
-        this.now = CoreTimeUtils.timestamp();
+        this.now = CoreTime.timestamp();
 
         this.choice = await AddonModChoice.getChoice(this.courseId, this.module.id);
 

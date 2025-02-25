@@ -208,7 +208,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const time = CoreTimeUtils.timestamp();
+        const time = CoreTime.timestamp();
         const timeLimitEnabled = this.assign.timelimit && submissionStarted;
 
         // Define duedate as latest between due date and extension - which is a possibility...
@@ -473,7 +473,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 }
             }
 
-            const time = CoreTimeUtils.timestamp();
+            const time = CoreTime.timestamp();
             let promises: Promise<void>[] = [];
 
             if (this.assign.allowsubmissionsfromdate && this.assign.allowsubmissionsfromdate >= time) {

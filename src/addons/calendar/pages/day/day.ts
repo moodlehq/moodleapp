@@ -718,7 +718,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
 
         // Re-calculate the formatted time so it uses the device date.
         const dayTime = day.moment.unix() * 1000;
-        const currentTime = CoreTimeUtils.timestamp();
+        const currentTime = CoreTime.timestamp();
 
         const promises = preloadedDay.events.map(async (event) => {
             event.ispast = preloadedDay.isPastDay || (preloadedDay.isCurrentDay && this.isEventPast(event, currentTime));

@@ -23,7 +23,7 @@ import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreUtils } from '@singletons/utils';
 import { CoreWSFile, CoreWSFileUploadOptions, CoreWSUploadFileResult } from '@services/ws';
 import { makeSingleton, Translate, MediaCapture, Camera } from '@singletons';
@@ -249,7 +249,7 @@ export class CoreFileUploaderProvider {
             // In iOS, the pictures can have repeated names, even if they come from the album.
             // Add a timestamp to the filename to make it unique.
             const split = fileName.split('.');
-            split[0] += '_' + CoreTimeUtils.readableTimestamp();
+            split[0] += '_' + CoreTime.readableTimestamp();
 
             options.fileName = split.join('.');
         } else {
@@ -344,7 +344,7 @@ export class CoreFileUploaderProvider {
         if (!filename.match(/_\d{14}(\..*)?$/)) {
             // Add a timestamp to the filename to make it unique.
             const split = filename.split('.');
-            split[0] += '_' + CoreTimeUtils.readableTimestamp();
+            split[0] += '_' + CoreTime.readableTimestamp();
             filename = split.join('.');
         }
 

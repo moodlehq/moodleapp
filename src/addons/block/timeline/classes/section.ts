@@ -18,6 +18,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 /**
@@ -100,7 +101,7 @@ export class AddonBlockTimelineSection {
         { from, to }: AddonBlockTimelineDateRange,
     ): Promise<AddonBlockTimelineDayEvents[]> {
         const filterDates: AddonBlockTimelineFilterDates = {
-            now: CoreTimeUtils.timestamp(),
+            now: CoreTime.timestamp(),
             midnight: AddonBlockTimeline.getDayStart(),
             start: AddonBlockTimeline.getDayStart(from),
             end: typeof to === 'number' ? AddonBlockTimeline.getDayStart(to) : undefined,

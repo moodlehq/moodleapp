@@ -19,7 +19,7 @@ import { CoreCourses } from '@features/courses/services/courses';
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreObject } from '@singletons/object';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -186,7 +186,7 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
         const accessData = await AddonModData.getDatabaseAccessInformation(database.id, { cmId: module.id });
         // Check if database is restricted by time.
         if (!accessData.timeavailable) {
-            const time = CoreTimeUtils.timestamp();
+            const time = CoreTime.timestamp();
 
             // It is restricted, checking times.
             if (database.timeavailablefrom && time < database.timeavailablefrom) {
