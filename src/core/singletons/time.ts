@@ -203,6 +203,35 @@ export class CoreTime {
         return CoreTime.LEGACY_TIMEZONES[tz] ?? tz;
     }
 
+    /**
+     * Ensure the timestamp is in milliseconds.
+     *
+     * @param time Timestamp in milliseconds or seconds.
+     * @returns Timestamp in milliseconds.
+     */
+    static ensureMilliseconds(time: number): number {
+        if (time < 10000000000) { // Checking year 2286.
+            // It's a timestamp in seconds, convert it to milliseconds.
+            return time * 1000;
+        }
+
+        return time;
+    }
+
+    /**
+     * Ensure the timestamp is in seconds.
+     *
+     * @param time Timestamp in milliseconds or seconds.
+     * @returns Timestamp in seconds.
+     */
+    static ensureSeconds(time: number): number {
+        if (time > 10000000000) { // Checking year 2286.
+            // It's a timestamp in milliseconds, convert it to seconds.
+            return Math.round(time / 1000);
+        }
+
+        return time;
+    }
 
     /**
      * Return the current timestamp in a "readable" format: YYYYMMDDHHmmSS.
