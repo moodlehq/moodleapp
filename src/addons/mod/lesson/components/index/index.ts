@@ -681,8 +681,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (!result.updated && this.dataSent && this.isPrefetched()) {
             // The user sent data to server, but not in the sync process. Check if we need to fetch data.
-            await CorePromiseUtils.ignoreErrors(AddonModLessonSync.prefetchAfterUpdate(
-                AddonModLessonPrefetchHandler.instance,
+            await CorePromiseUtils.ignoreErrors(AddonModLessonSync.prefetchModuleAfterUpdate(
                 this.module,
                 this.courseId,
             ));

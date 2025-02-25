@@ -28,10 +28,11 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModQuizAttemptDBRecord } from './database/quiz';
-import { AddonModQuizPrefetchHandler } from './handlers/prefetch';
+import { type AddonModQuizPrefetchHandlerService } from './handlers/prefetch';
 import { AddonModQuiz, AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from './quiz';
 import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-offline';
 import { ADDON_MOD_QUIZ_AUTO_SYNCED, ADDON_MOD_QUIZ_COMPONENT } from '../constants';
+import { AddonModQuizHelper } from './quiz-helper';
 
 /**
  * Service to sync quizzes.
@@ -133,7 +134,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
     }
 
     /**
-     * Conveniece function to prefetch data after an update.
+     * Convenience function to prefetch data after an update.
      *
      * @param module Module.
      * @param quiz Quiz.
@@ -150,6 +151,11 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         // Get the module updates to check if the data was updated or not.
         const result = await CoreCourseModulePrefetchDelegate.getModuleUpdates(module, courseId, true, siteId);
+        const prefetchHandler =
+            CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor<AddonModQuizPrefetchHandlerService>(module.modname);
+        if (!prefetchHandler) {
+            return;
+        }
 
         if (result?.updates?.length) {
             const regex = /^.*files$/;
@@ -158,12 +164,12 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             shouldDownload = !result.updates.find((entry) => entry.name.match(regex));
 
             if (shouldDownload) {
-                await AddonModQuizPrefetchHandler.download(module, courseId, undefined, false, false);
+                await prefetchHandler.download(module, courseId, undefined, false, false);
             }
         }
 
         // Prefetch finished or not needed, set the right status.
-        await AddonModQuizPrefetchHandler.setStatusAfterPrefetch(quiz, {
+        await prefetchHandler.setStatusAfterPrefetch(quiz, {
             cmId: module.id,
             readingStrategy: shouldDownload ? CoreSitesReadingStrategy.PREFER_CACHE : undefined,
             siteId,
@@ -351,7 +357,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         // We're going to need preflightData, get it.
         const info = await AddonModQuiz.getQuizAccessInformation(quiz.id, modOptions);
 
-        const preflightData = await AddonModQuizPrefetchHandler.getPreflightData(
+        const preflightData = await AddonModQuizHelper.getPreflightDataToAttemptOffline(
             quiz,
             info,
             onlineAttempt,

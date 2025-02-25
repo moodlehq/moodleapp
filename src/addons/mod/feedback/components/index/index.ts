@@ -37,7 +37,6 @@ import {
     AddonModFeedbackSync,
     AddonModFeedbackSyncResult,
 } from '../../services/feedback-sync';
-import { AddonModFeedbackPrefetchHandler } from '../../services/handlers/prefetch';
 import {
     ADDON_MOD_FEEDBACK_AUTO_SYNCED,
     ADDON_MOD_FEEDBACK_COMPONENT,
@@ -117,8 +116,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
             // Prefetch data if needed.
             if (!data.offline && this.isPrefetched()) {
-                await CorePromiseUtils.ignoreErrors(AddonModFeedbackSync.prefetchAfterUpdate(
-                    AddonModFeedbackPrefetchHandler.instance,
+                await CorePromiseUtils.ignoreErrors(AddonModFeedbackSync.prefetchModuleAfterUpdate(
                     this.module,
                     this.courseId,
                 ));

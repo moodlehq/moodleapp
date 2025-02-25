@@ -933,8 +933,8 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @param moduleName The module name to work on.
      * @returns Prefetch handler.
      */
-    getPrefetchHandlerFor(moduleName: string): CoreCourseModulePrefetchHandler | undefined {
-        return this.getHandler(moduleName, true);
+    getPrefetchHandlerFor<T extends CoreCourseModulePrefetchHandler>(moduleName: string): T | undefined {
+        return this.getHandler(moduleName, true) as T;
     }
 
     /**
