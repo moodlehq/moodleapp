@@ -283,7 +283,7 @@ class behat_app extends behat_app_helper {
      * @When I wait for the BigBlueButton room to start
      */
     public function i_wait_bbb_room_to_start() {
-        $windowNames = $this->getSession()->getWindowNames();
+        $windowNames = $this->get_window_names();
 
         $this->getSession()->switchToWindow(array_pop($windowNames));
         $this->spin(function($context) {
@@ -989,7 +989,7 @@ class behat_app extends behat_app_helper {
      */
     public function the_app_should_have_opened_a_browser_tab(bool $not = false, ?string $urlpattern = null) {
         $this->spin(function() use ($not, $urlpattern) {
-            $windowNames = $this->getSession()->getWindowNames();
+            $windowNames = $this->get_window_names();
             $openedbrowsertab = count($windowNames) === 2;
 
             if ((!$not && !$openedbrowsertab) || ($not && $openedbrowsertab && is_null($urlpattern))) {
@@ -1096,7 +1096,7 @@ class behat_app extends behat_app_helper {
      * @throws DriverException If there aren't exactly 2 tabs open
      */
     public function i_switch_to_the_browser_tab_opened_by_the_app() {
-        $windowNames = $this->getSession()->getWindowNames();
+        $windowNames = $this->get_window_names();
         if (count($windowNames) !== 2) {
             throw new DriverException('Expected to see 2 tabs open, not ' . count($windowNames));
         }
@@ -1144,7 +1144,7 @@ class behat_app extends behat_app_helper {
      * @throws DriverException If there aren't exactly 2 tabs open
      */
     public function i_close_the_browser_tab_opened_by_the_app() {
-        $names = $this->getSession()->getWindowNames();
+        $names = $this->get_window_names();
         if (count($names) !== 2) {
             throw new DriverException('Expected to see 2 tabs open, not ' . count($names));
         }
@@ -1201,7 +1201,7 @@ class behat_app extends behat_app_helper {
     public function i_open_a_browser_tab_with_url(string $url) {
         $this->execute_script("window.open('$url', '_system');");
 
-        $windowNames = $this->getSession()->getWindowNames();
+        $windowNames = $this->get_window_names();
         $this->getSession()->switchToWindow($windowNames[1]);
     }
 

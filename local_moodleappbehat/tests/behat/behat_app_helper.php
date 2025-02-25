@@ -829,4 +829,27 @@ EOF;
         // to finish, so for now we'll just wait 300ms.
         usleep(300000);
     }
+
+    /**
+     * Get window names, excluding Chrome extensions.
+     * Workaround for bug: https://github.com/SeleniumHQ/selenium/issues/15330
+     *
+     * @return array
+     */
+    protected function get_window_names(): array {
+        $activeWindowName = $this->getSession()->getWindowName();
+
+        $windowNames = [];
+        foreach ($this->getSession()->getWindowNames() as $windowName) {
+            $this->getSession()->switchToWindow($windowName);
+            $windowUrl = $this->getSession()->getCurrentUrl();
+            if (strpos($windowUrl, 'chrome-extension://') !== 0) {
+                $windowNames[] = $windowName;
+            }
+        }
+
+        $this->getSession()->switchToWindow($activeWindowName);
+
+        return $windowNames;
+    }
 }
