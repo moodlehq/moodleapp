@@ -524,6 +524,55 @@ export class AddonModQuizHelperProvider {
         }
     }
 
+    /**
+     * Gather some preflight data for an attempt. This function will start a new attempt if needed.
+     *
+     * @param quiz Quiz.
+     * @param accessInfo Quiz access info returned by AddonModQuizProvider.getQuizAccessInformation.
+     * @param attempt Attempt to continue. Don't pass any value if the user needs to start a new attempt.
+     * @param askPreflight Whether it should ask for preflight data if needed.
+     * @param title Lang key of the title to set to preflight modal (e.g. 'addon.mod_quiz.startattempt').
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved with the preflight data.
+     */
+    async getPreflightDataToAttemptOffline(
+        quiz: AddonModQuizQuizWSData,
+        accessInfo: AddonModQuizGetQuizAccessInformationWSResponse,
+        attempt?: AddonModQuizAttemptWSData,
+        askPreflight?: boolean,
+        title?: string,
+        siteId?: string,
+    ): Promise<Record<string, string>> {
+        const preflightData: Record<string, string> = {};
+
+        if (askPreflight) {
+            // We can ask preflight, check if it's needed and get the data.
+            await AddonModQuizHelper.getAndCheckPreflightData(
+                quiz,
+                accessInfo,
+                preflightData,
+                {
+                    attempt,
+                    prefetch: true,
+                    title,
+                    siteId,
+                },
+            );
+        } else {
+            // Get some fixed preflight data from access rules (data that doesn't require user interaction).
+            const rules = accessInfo?.activerulenames || [];
+
+            await AddonModQuizAccessRuleDelegate.getFixedPreflightData(rules, quiz, preflightData, attempt, true, siteId);
+
+            if (!attempt) {
+                // We need to create a new attempt.
+                await AddonModQuiz.startAttempt(quiz.id, preflightData, false, siteId);
+            }
+        }
+
+        return preflightData;
+    }
+
 }
 
 export const AddonModQuizHelper = makeSingleton(AddonModQuizHelperProvider);

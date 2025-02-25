@@ -22,7 +22,6 @@ import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { getPrefetchHandlerInstance } from '../../services/handlers/prefetch';
 import {
     AddonModSurveySurvey,
     AddonModSurvey,
@@ -223,8 +222,7 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
             if (online && this.isPrefetched()) {
                 // The survey is downloaded, update the data.
                 try {
-                    const prefetched = await AddonModSurveySync.prefetchAfterUpdate(
-                        getPrefetchHandlerInstance(),
+                    const prefetched = await AddonModSurveySync.prefetchModuleAfterUpdate(
                         this.module,
                         this.courseId,
                     );
