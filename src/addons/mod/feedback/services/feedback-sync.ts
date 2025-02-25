@@ -26,7 +26,6 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModFeedback, AddonModFeedbackWSFeedback } from './feedback';
 import { AddonModFeedbackOffline, AddonModFeedbackOfflineResponse } from './feedback-offline';
-import { AddonModFeedbackPrefetchHandler, AddonModFeedbackPrefetchHandlerService } from './handlers/prefetch';
 import { ADDON_MOD_FEEDBACK_AUTO_SYNCED, ADDON_MOD_FEEDBACK_COMPONENT } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
@@ -45,8 +44,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
     /**
      * @inheritdoc
      */
-    prefetchAfterUpdate(
-        prefetchHandler: AddonModFeedbackPrefetchHandlerService,
+    prefetchModuleAfterUpdate(
         module: CoreCourseAnyModuleData,
         courseId: number,
         regex?: RegExp,
@@ -54,7 +52,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
     ): Promise<boolean> {
         regex = regex || /^.*files$|^timers/;
 
-        return super.prefetchAfterUpdate(prefetchHandler, module, courseId, regex, siteId);
+        return super.prefetchModuleAfterUpdate(module, courseId, regex, siteId);
     }
 
     /**
@@ -225,7 +223,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
             try {
                 const module = await CoreCourse.getModuleBasicInfoByInstance(feedbackId, 'feedback', { siteId });
 
-                await this.prefetchAfterUpdate(AddonModFeedbackPrefetchHandler.instance, module, courseId, undefined, siteId);
+                await this.prefetchModuleAfterUpdate(module, courseId, undefined, siteId);
             } catch {
                 // Ignore errors.
             }

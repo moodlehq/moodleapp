@@ -22,7 +22,6 @@ import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { AddonModScormPrefetchHandler } from './handlers/prefetch';
 import {
     AddonModScorm,
     AddonModScormAttemptCountResult,
@@ -198,7 +197,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
                 // Update downloaded data.
                 const module = await CoreCourse.getModuleBasicInfoByInstance(scorm.id, 'scorm', { siteId });
 
-                await this.prefetchAfterUpdate(AddonModScormPrefetchHandler.instance, module, scorm.course, undefined, siteId);
+                await this.prefetchModuleAfterUpdate(module, scorm.course, undefined, siteId);
             } catch {
                 // Ignore errors.
             }
