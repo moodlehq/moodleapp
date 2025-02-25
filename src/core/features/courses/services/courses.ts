@@ -484,12 +484,12 @@ export class CoreCoursesProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with the courses.
      */
-    getCoursesByField(
+    async getCoursesByField(
         field: string = '',
         value: string | number = '',
         siteId?: string,
     ): Promise<CoreCourseSearchedData[]> {
-        return firstValueFrom(this.getCoursesByFieldObservable(field, value, { siteId }));
+        return await firstValueFrom(this.getCoursesByFieldObservable(field, value, { siteId }));
     }
 
     /**
@@ -593,12 +593,12 @@ export class CoreCoursesProvider {
      * @returns Promise resolved with the list of courses.
      * @since 3.8
      */
-    getEnrolledCoursesByCustomField(
+    async getEnrolledCoursesByCustomField(
         customFieldName: string,
         customFieldValue: string,
         siteId?: string,
     ): Promise<CoreCourseSummaryData[]> {
-        return firstValueFrom(this.getEnrolledCoursesByCustomFieldObservable(customFieldName, customFieldValue, {
+        return await firstValueFrom(this.getEnrolledCoursesByCustomFieldObservable(customFieldName, customFieldValue, {
             readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
             siteId,
         }));
@@ -645,14 +645,14 @@ export class CoreCoursesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with the options for each course.
      */
-    getCoursesAdminAndNavOptions(
+    async getCoursesAdminAndNavOptions(
         courseIds: number[],
         siteId?: string,
     ): Promise<{
             navOptions: CoreCourseUserAdminOrNavOptionCourseIndexed;
             admOptions: CoreCourseUserAdminOrNavOptionCourseIndexed;
         }> {
-        return firstValueFrom(this.getCoursesAdminAndNavOptionsObservable(courseIds, { siteId }));
+        return await firstValueFrom(this.getCoursesAdminAndNavOptionsObservable(courseIds, { siteId }));
     }
 
     /**
@@ -749,11 +749,11 @@ export class CoreCoursesProvider {
      * @param options Options.
      * @returns Promise resolved with administration options for each course.
      */
-    getUserAdministrationOptions(
+    async getUserAdministrationOptions(
         courseIds: number[],
         options?: CoreSitesCommonWSOptions,
     ): Promise<CoreCourseUserAdminOrNavOptionCourseIndexed> {
-        return firstValueFrom(this.getUserAdministrationOptionsObservable(courseIds, options));
+        return await firstValueFrom(this.getUserAdministrationOptionsObservable(courseIds, options));
     }
 
     /**
@@ -819,11 +819,11 @@ export class CoreCoursesProvider {
      * @param options Options.
      * @returns Promise resolved with navigation options for each course.
      */
-    getUserNavigationOptions(
+    async getUserNavigationOptions(
         courseIds: number[],
         options?: CoreSitesCommonWSOptions,
     ): Promise<CoreCourseUserAdminOrNavOptionCourseIndexed> {
-        return firstValueFrom(this.getUserNavigationOptionsObservable(courseIds, options));
+        return await firstValueFrom(this.getUserNavigationOptionsObservable(courseIds, options));
     }
 
     /**
@@ -921,14 +921,14 @@ export class CoreCoursesProvider {
      * @param strategy Reading strategy.
      * @returns Promise resolved with the courses.
      */
-    getUserCourses(
+    async getUserCourses(
         preferCache: boolean = false,
         siteId?: string,
         strategy?: CoreSitesReadingStrategy,
     ): Promise<CoreEnrolledCourseData[]> {
         strategy = strategy ?? (preferCache ? CoreSitesReadingStrategy.PREFER_CACHE : undefined);
 
-        return firstValueFrom(this.getUserCoursesObservable({
+        return await firstValueFrom(this.getUserCoursesObservable({
             readingStrategy: strategy,
             siteId,
         }));

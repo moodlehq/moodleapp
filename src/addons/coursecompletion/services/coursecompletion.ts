@@ -136,13 +136,13 @@ export class AddonCourseCompletionProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise to be resolved when the completion is retrieved.
      */
-    getCompletion(
+    async getCompletion(
         courseId: number,
         userId?: number,
         preSets: CoreSiteWSPreSets = {},
         siteId?: string,
     ): Promise<AddonCourseCompletionCourseCompletionStatus> {
-        return firstValueFrom(this.getCompletionObservable(courseId, {
+        return await firstValueFrom(this.getCompletionObservable(courseId, {
             userId,
             preSets,
             siteId,
