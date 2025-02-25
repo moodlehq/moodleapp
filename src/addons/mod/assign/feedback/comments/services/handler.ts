@@ -23,12 +23,12 @@ import {
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
 import { AddonModAssignFeedbackHandler } from '@addons/mod/assign/services/feedback-delegate';
 import { Injectable, Type } from '@angular/core';
-import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreFileHelper } from '@services/file-helper';
+import { CoreFormFields } from '@singletons/form';
 
 /**
  * Handler for comments feedback plugin.
@@ -38,9 +38,6 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
 
     name = 'AddonModAssignFeedbackCommentsHandler';
     type = 'comments';
-
-    // Store the data in this service so it isn't lost if the user performs a PTR in the page.
-    protected drafts: { [draftId: string]: AddonModAssignFeedbackCommentsDraftData } = {};
 
     /**
      * Get the text to submit.
@@ -62,45 +59,10 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     /**
      * @inheritdoc
      */
-    discardDraft(assignId: number, userId: number, siteId?: string): void {
-        const id = this.getDraftId(assignId, userId, siteId);
-        if (this.drafts[id] !== undefined) {
-            delete this.drafts[id];
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
     async getComponent(): Promise<Type<IAddonModAssignFeedbackPluginComponent>> {
         const { AddonModAssignFeedbackCommentsComponent } = await import('../component/comments');
 
         return AddonModAssignFeedbackCommentsComponent;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getDraft(assignId: number, userId: number, siteId?: string): AddonModAssignFeedbackCommentsDraftData | undefined {
-        const id = this.getDraftId(assignId, userId, siteId);
-
-        if (this.drafts[id] !== undefined) {
-            return this.drafts[id];
-        }
-    }
-
-    /**
-     * Get a draft ID.
-     *
-     * @param assignId The assignment ID.
-     * @param userId User ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Draft ID.
-     */
-    protected getDraftId(assignId: number, userId: number, siteId?: string): string {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
-        return siteId + '#' + assignId + '#' + userId;
     }
 
     /**
@@ -145,16 +107,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
         }
 
         // Check if text has changed.
-        return initialText != newText;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    hasDraftData(assignId: number, userId: number, siteId?: string): boolean | Promise<boolean> {
-        const draft = this.getDraft(assignId, userId, siteId);
-
-        return !!draft;
+        return initialText !== newText;
     }
 
     /**
@@ -175,33 +128,17 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
         userId: number,
         plugin: AddonModAssignPlugin,
         pluginData: AddonModAssignSavePluginData,
-        siteId?: string,
+        inputData: CoreFormFields,
     ): void {
-
-        const draft = this.getDraft(assignId, userId, siteId);
-
-        if (draft) {
-            // Add some HTML to the text if needed.
-            draft.text = CoreText.formatHtmlLines(draft.text);
-
-            pluginData.assignfeedbackcomments_editor = draft;
+        if (!inputData['assignfeedbackcomments_editor']) {
+            return;
         }
-    }
 
-    /**
-     * @inheritdoc
-     */
-    saveDraft(
-        assignId: number,
-        userId: number,
-        plugin: AddonModAssignPlugin,
-        data: AddonModAssignFeedbackCommentsDraftData,
-        siteId?: string,
-    ): void {
-
-        if (data) {
-            this.drafts[this.getDraftId(assignId, userId, siteId)] = data;
-        }
+        const data: AddonModAssignFeedbackCommentsInputData = {
+            text: CoreText.formatHtmlLines(inputData['assignfeedbackcomments_editor'] as string),
+            format: CoreTextFormat.FORMAT_HTML,
+        };
+        pluginData.assignfeedbackcomments_editor = data;
     }
 
 }
@@ -212,13 +149,13 @@ export type AddonModAssignFeedbackCommentsTextData = {
     assignfeedbackcomments_editor: string; // eslint-disable-line @typescript-eslint/naming-convention
 };
 
-export type AddonModAssignFeedbackCommentsDraftData = {
+type AddonModAssignFeedbackCommentsInputData = {
     text: string; // The text for this feedback.
-    format: number; // The format for this feedback.
+    format: CoreTextFormat; // The format for this feedback.
 };
 
 export type AddonModAssignFeedbackCommentsPluginData = {
     // Editor structure.
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    assignfeedbackcomments_editor: AddonModAssignFeedbackCommentsDraftData;
+    assignfeedbackcomments_editor: AddonModAssignFeedbackCommentsInputData;
 };

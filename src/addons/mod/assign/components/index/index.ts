@@ -27,7 +27,6 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTime } from '@singletons/time';
-import { AddonModAssignListFilterName } from '../../classes/submissions-source';
 import {
     AddonModAssign,
     AddonModAssignAssign,
@@ -42,8 +41,9 @@ import {
 import { AddonModAssignSubmissionComponent } from '../submission/submission';
 import {
     ADDON_MOD_ASSIGN_AUTO_SYNCED,
-    ADDON_MOD_ASSIGN_COMPONENT,
+    ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
     ADDON_MOD_ASSIGN_GRADED_EVENT,
+    ADDON_MOD_ASSIGN_MODNAME,
     ADDON_MOD_ASSIGN_PAGE_NAME,
     ADDON_MOD_ASSIGN_STARTED_EVENT,
     ADDON_MOD_ASSIGN_SUBMISSION_REMOVED_EVENT,
@@ -51,6 +51,7 @@ import {
     ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
     ADDON_MOD_ASSIGN_WARN_GROUPS_OPTIONAL,
     ADDON_MOD_ASSIGN_WARN_GROUPS_REQUIRED,
+    AddonModAssignListFilterName,
 } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -75,8 +76,8 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
     @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
 
-    component = ADDON_MOD_ASSIGN_COMPONENT;
-    pluginName = 'assign';
+    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
+    pluginName = ADDON_MOD_ASSIGN_MODNAME;
 
     assign?: AddonModAssignAssign; // The assign object.
     canViewAllSubmissions = false; // Whether the user can view all submissions.
@@ -378,24 +379,6 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         await Promise.all(promises);
-    }
-
-    /**
-     * User entered the page that contains the component.
-     */
-    ionViewDidEnter(): void {
-        super.ionViewDidEnter();
-
-        this.submissionComponent?.ionViewDidEnter();
-    }
-
-    /**
-     * User left the page that contains the component.
-     */
-    ionViewDidLeave(): void {
-        super.ionViewDidLeave();
-
-        this.submissionComponent?.ionViewDidLeave();
     }
 
     /**

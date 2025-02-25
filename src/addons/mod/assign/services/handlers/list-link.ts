@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_ASSIGN_COMPONENT, ADDON_MOD_ASSIGN_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to assign list page.
@@ -25,7 +26,7 @@ export class AddonModAssignListLinkHandlerService extends CoreContentLinksModule
     name = 'AddonModAssignListLinkHandler';
 
     constructor() {
-        super('AddonModAssign', 'assign');
+        super(ADDON_MOD_ASSIGN_COMPONENT, ADDON_MOD_ASSIGN_MODNAME);
     }
 
 }

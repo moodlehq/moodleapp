@@ -1,10 +1,10 @@
 <!-- Read only -->
-<ion-item class="ion-text-wrap" *ngIf="!edit && text">
+<ion-item class="ion-text-wrap" *ngIf="!edit && text" button [detail]="true" (click)="open($event)">
     <ion-label>
-        <h2>{{ plugin.name }}</h2>
+        <p class="item-heading">{{ plugin.name }}</p>
         <p *ngIf="words">{{ 'addon.mod_assign.numwords' | translate: {'$a': words} }}</p>
-        <p>
-            <core-format-text [component]="component" [componentId]="assign.cmid" collapsible-item [text]="text" contextLevel="module"
+        <p class="collapse-content">
+            <core-format-text [component]="component" [componentId]="assign.cmid" [text]="text" contextLevel="module"
                 [contextInstanceId]="assign.cmid" [courseId]="assign.course" [sanitize]="!isSent" />
         </p>
     </ion-label>
@@ -14,7 +14,7 @@
 <div *ngIf="edit && loaded">
     <ion-item-divider class="ion-text-wrap" [sticky]="true">
         <ion-label>
-            <h2>{{ plugin.name }}</h2>
+            <p class="item-heading">{{ plugin.name }}</p>
         </ion-label>
     </ion-item-divider>
     <ion-item class="ion-text-wrap" *ngIf="wordLimitEnabled && words >= 0">

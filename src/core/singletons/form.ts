@@ -45,14 +45,14 @@ export class CoreForms {
             const name = element.name || '';
 
             // Ignore submit inputs.
-            if (!name || element.type == 'submit' || element.tagName == 'BUTTON') {
+            if (!name || element.type === 'submit' || element.tagName === 'BUTTON') {
                 continue;
             }
 
             // Get the value.
-            if (element.type == 'checkbox') {
+            if (element.type === 'checkbox') {
                 data[name] = !!element.checked;
-            } else if (element.type == 'radio') {
+            } else if (element.type === 'radio') {
                 if (element.checked) {
                     data[name] = element.value;
                 }

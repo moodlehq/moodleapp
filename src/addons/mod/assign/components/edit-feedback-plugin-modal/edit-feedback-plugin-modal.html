@@ -1,0 +1,18 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>
+            <h1>{{ plugin.name }}</h1>
+        </ion-title>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [ariaLabel]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true" />
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <form name="addon-mod_assign-edit-feedback-plugin-form" *ngIf="userId && plugin" #editFeedbackForm>
+        <addon-mod-assign-feedback-plugin [assign]="assign" [submission]="submission" [userId]="userId" [plugin]="plugin" [edit]="true" />
+        <ion-button expand="block" (click)="done($event)">{{ 'core.done' | translate }}</ion-button>
+    </form>
+</ion-content>
