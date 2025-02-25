@@ -42,7 +42,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 
@@ -346,7 +346,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
             }
         }
 
-        const created = this.entry?.created ?? CoreTimeUtils.timestamp();
+        const created = this.entry?.created ?? CoreTime.timestamp();
 
         try {
             if (!this.files.length) {
@@ -444,7 +444,7 @@ export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestr
                 summary,
                 summaryformat: 1,
                 options,
-                created: params.created ?? CoreTimeUtils.timestamp(),
+                created: params.created ?? CoreTime.timestamp(),
                 forceOffline: params.forceOffline,
             });
         } else {

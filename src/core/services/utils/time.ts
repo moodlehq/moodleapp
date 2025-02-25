@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 
 import moment, { LongDateFormatKey } from 'moment-timezone';
 import { makeSingleton, Translate } from '@singletons';
+import { CoreTime } from '@singletons/time';
 
 /*
  * "Utils" service with helper functions for date and time.
@@ -158,18 +159,20 @@ export class CoreTimeUtilsProvider {
      * Return the current timestamp in a "readable" format: YYYYMMDDHHmmSS.
      *
      * @returns The readable timestamp.
+     * @deprecated since 5.0. Use CoreTime.timestamp instead.
      */
     readableTimestamp(): string {
-        return moment(Date.now()).format('YYYYMMDDHHmmSS');
+        return CoreTime.readableTimestamp();
     }
 
     /**
      * Return the current timestamp (UNIX format, seconds).
      *
      * @returns The current timestamp in seconds.
+     * @deprecated since 5.0. Use CoreTime.timestamp instead.
      */
     timestamp(): number {
-        return Math.round(Date.now() / 1000);
+        return CoreTime.timestamp();
     }
 
     /**

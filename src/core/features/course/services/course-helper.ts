@@ -59,7 +59,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreFile } from '@services/file';
 import { CoreUrl } from '@singletons/url';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
@@ -1375,7 +1375,7 @@ export class CoreCourseHelperProvider {
             };
         }
 
-        const now = CoreTimeUtils.timestamp();
+        const now = CoreTime.timestamp();
         const downloadTime = packageData.downloadTime;
         let downloadTimeReadable = '';
         if (now - downloadTime < 7 * 86400) {

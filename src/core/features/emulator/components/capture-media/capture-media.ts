@@ -17,7 +17,7 @@ import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { ModalController } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCaptureError } from '@classes/errors/captureerror';
@@ -367,7 +367,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
      * @returns Path.
      */
     protected getFilePath(): string {
-        const fileName = this.type + '_' + CoreTimeUtils.readableTimestamp() + '.' + this.extension;
+        const fileName = this.type + '_' + CoreTime.readableTimestamp() + '.' + this.extension;
 
         return CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, 'media/' + fileName);
     }

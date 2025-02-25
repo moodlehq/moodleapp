@@ -562,7 +562,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
         const weekDays = AddonCalendar.getWeekDays(result.daynames[0].dayno);
         const weeks = result.weeks as AddonCalendarWeek[];
         const currentDay = moment().date();
-        const currentTime = CoreTimeUtils.timestamp();
+        const currentTime = CoreTime.timestamp();
         const dayMoment = moment(month.moment);
 
         const preloadedMonth: PreloadedMonth = {

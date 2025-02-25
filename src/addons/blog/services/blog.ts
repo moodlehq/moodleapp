@@ -21,7 +21,7 @@ import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreObject } from '@singletons/object';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -163,7 +163,7 @@ export class AddonBlogProvider {
                 summary: params.summary,
                 summaryformat: params.summaryformat,
                 userid: site.getUserId(),
-                lastmodified: CoreTimeUtils.timestamp(),
+                lastmodified: CoreTime.timestamp(),
                 options: JSON.stringify(params.options),
                 created,
             };
