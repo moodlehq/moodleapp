@@ -56,7 +56,7 @@ export class AddonModQuizAttemptInfoComponent implements OnChanges {
         if (changes.additionalData) {
             this.additionalData?.forEach((data) => {
                 // Remove help links from additional data.
-                data.content = CoreDomUtils.removeElementFromHtml(data.content, '.helptooltip, [data-toggle="popover"]');
+                data.content = CoreDomUtils.removeElementFromHtml(data.content, '.helptooltip');
             });
         }
 

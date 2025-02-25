@@ -976,60 +976,41 @@ export class CoreQuestionHelperProvider {
         contextInstanceId?: number,
         courseId?: number,
     ): void {
-        const icons = <HTMLElement[]> Array.from(element.querySelectorAll('ion-icon.questioncorrectnessicon'));
-        const title = Translate.instant('core.question.feedback');
+        const icons = <HTMLElement[]> Array.from(element.querySelectorAll('ion-icon.questioncorrectnessicon[tappable]'));
+
         const getClickableFeedback = (icon: HTMLElement) => {
             const parentElement = icon.parentElement;
-            const parentIsClickable = parentElement instanceof HTMLButtonElement || parentElement instanceof HTMLAnchorElement;
-
-            if (parentElement && parentIsClickable) {
-                if (parentElement.dataset.bsToggle === 'popover') {
-                    // Bootstrap 5.
-                    return {
-                        element: parentElement,
-                        html: parentElement?.dataset.bsContent,
-                    };
-                } else if (parentElement.dataset.toggle === 'popover') {
-                    // Bootstrap 4.
-                    return {
-                        element: parentElement,
-                        html: parentElement?.dataset.content,
-                    };
-                }
-            }
 
             // Support legacy icons used before MDL-77856 (4.2).
-            if (icon.hasAttribute('tappable')) {
-                return {
-                    element: icon,
-                    html: parentElement?.querySelector('.feedbackspan.accesshide')?.innerHTML,
-                };
-            }
-
-            return null;
+            return parentElement?.querySelector('.feedbackspan.accesshide')?.innerHTML;
         };
 
         icons.forEach(icon => {
-            const target = getClickableFeedback(icon);
+            const content = getClickableFeedback(icon);
 
-            if (!target || !target.html) {
+            if (!content) {
                 return;
             }
 
             // There's a hidden feedback, show it when the icon is clicked.
-            target.element.dataset.disabledA11yClicks = 'true';
-            target.element.addEventListener('click', event => {
+            icon.dataset.disabledA11yClicks = 'true';
+            icon.addEventListener('click', event => {
                 event.preventDefault();
                 event.stopPropagation();
+                const title = Translate.instant('core.question.feedback');
 
-                CoreViewer.viewText(title, target.html ?? '', {
-                    component: component,
-                    componentId: componentId,
-                    filter: true,
-                    contextLevel: contextLevel,
-                    instanceId: contextInstanceId,
-                    courseId: courseId,
-                });
+                CoreViewer.viewText(
+                    title,
+                    content ?? '',
+                    {
+                        component: component,
+                        componentId: componentId,
+                        filter: true,
+                        contextLevel: contextLevel,
+                        instanceId: contextInstanceId,
+                        courseId: courseId,
+                    },
+                );
             });
         });
     }
