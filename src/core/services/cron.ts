@@ -36,7 +36,7 @@ export class CoreCronDelegateService {
 
     // Constants.
     static readonly DEFAULT_INTERVAL = 3600000; // Default interval is 1 hour.
-    static readonly MIN_INTERVAL = 300000; // Minimum interval is 5 minutes.
+    static readonly MIN_INTERVAL = 240000; // Minimum interval is 4 minutes.
     static readonly MAX_TIME_PROCESS = 120000; // Max time a process can block the queue. Defaults to 2 minutes.
 
     protected logger: CoreLogger;
@@ -478,6 +478,7 @@ export interface CoreCronHandler {
 
     /**
      * Returns handler's interval in milliseconds. Defaults to CoreCronDelegateService.DEFAULT_INTERVAL.
+     * The minumum interval is CoreCronDelegateService.MIN_INTERVAL (4 minutes).
      *
      * @returns Interval time (in milliseconds).
      */
