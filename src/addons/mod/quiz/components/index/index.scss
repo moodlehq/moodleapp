@@ -47,27 +47,8 @@
         }
 
         ion-accordion-group {
-            .accordion-expanded	.addon-mod_quiz-attempt-title-info,
-            .accordion-expanding .addon-mod_quiz-attempt-title-info {
-                visibility: hidden;
-            }
-
             h3 {
                 font: var(--mdl-typography-subtitle-font-md);
-            }
-
-            hr {
-                background-color: var(--stroke);
-                height: 1px;
-                margin: 0px var(-mdl-spacing-4);
-            }
-
-            ion-accordion:nth-child(odd) {
-                --ion-item-background: var(--core-table-odd-cell-background);
-            }
-
-            ion-accordion:nth-child(even) {
-                --ion-item-background: var(--core-table-even-cell-background);
             }
         }
     }

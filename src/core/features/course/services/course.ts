@@ -424,8 +424,8 @@ export class CoreCourseProvider {
      * @returns Promise resolved with the list of blocks.
      * @since 3.7
      */
-    getCourseBlocks(courseId: number, siteId?: string): Promise<CoreCourseBlock[]> {
-        return firstValueFrom(this.getCourseBlocksObservable(courseId, { siteId }));
+    async getCourseBlocks(courseId: number, siteId?: string): Promise<CoreCourseBlock[]> {
+        return await firstValueFrom(this.getCourseBlocksObservable(courseId, { siteId }));
     }
 
     /**
@@ -922,7 +922,7 @@ export class CoreCourseProvider {
      * @param includeStealthModules Whether to include stealth modules. Defaults to true.
      * @returns The reject contains the error message, else contains the sections.
      */
-    getSections(
+    async getSections(
         courseId: number,
         excludeModules: boolean = false,
         excludeContents: boolean = false,
@@ -930,7 +930,7 @@ export class CoreCourseProvider {
         siteId?: string,
         includeStealthModules: boolean = true,
     ): Promise<CoreCourseWSSection[]> {
-        return firstValueFrom(this.getSectionsObservable(courseId, {
+        return await firstValueFrom(this.getSectionsObservable(courseId, {
             excludeModules,
             excludeContents,
             includeStealthModules,

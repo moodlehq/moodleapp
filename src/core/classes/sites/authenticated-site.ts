@@ -312,8 +312,8 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      * @returns Promise resolved with the response, rejected with CoreWSError if it fails.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    read<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<T> {
-        return firstValueFrom(this.readObservable<T>(method, data, preSets));
+    async read<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<T> {
+        return await firstValueFrom(this.readObservable<T>(method, data, preSets));
     }
 
     /**
@@ -343,8 +343,8 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      * @returns Promise resolved with the response, rejected with CoreWSError if it fails.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    write<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<T> {
-        return firstValueFrom(this.writeObservable<T>(method, data, preSets));
+    async write<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<T> {
+        return await firstValueFrom(this.writeObservable<T>(method, data, preSets));
     }
 
     /**
@@ -375,7 +375,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async request<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets): Promise<T> {
-        return firstValueFrom(this.requestObservable<T>(method, data, preSets));
+        return await firstValueFrom(this.requestObservable<T>(method, data, preSets));
     }
 
     /**
@@ -1339,7 +1339,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         // Check for an ongoing identical request.
         const ongoingRequest = this.getOngoingRequest<CoreSitePublicConfigResponse>(cacheId, cachePreSets);
         if (ongoingRequest) {
-            return firstValueFrom(ongoingRequest);
+            return await firstValueFrom(ongoingRequest);
         }
 
         const subject = new Subject<CoreSitePublicConfigResponse>();
@@ -1399,7 +1399,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 subject.error(error);
             });
 
-        return firstValueFrom(observable);
+        return await firstValueFrom(observable);
     }
 
     /**

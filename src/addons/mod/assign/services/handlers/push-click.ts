@@ -34,21 +34,16 @@ export class AddonModAssignPushClickHandlerService implements CorePushNotificati
     featureName = ADDON_MOD_ASSIGN_FEATURE_NAME;
 
     /**
-     * Check if a notification click is handled by this handler.
-     *
-     * @param notification The notification to check.
-     * @returns Whether the notification click is handled by this handler
+     * @inheritdoc
      */
     async handles(notification: NotificationData): Promise<boolean> {
-        return CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_assign' &&
-                notification.name == 'assign_notification';
+        return CoreUtils.isTrueOrOne(notification.notif) &&
+            notification.moodlecomponent === 'mod_assign' &&
+                notification.name === 'assign_notification';
     }
 
     /**
-     * Handle the notification click.
-     *
-     * @param notification The notification to check.
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     async handleClick(notification: NotificationData): Promise<void> {
         const contextUrlParams = CoreUrl.extractUrlParams(notification.contexturl);

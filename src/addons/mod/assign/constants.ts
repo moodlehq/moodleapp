@@ -14,8 +14,15 @@
 
 export const ADDON_MOD_ASSIGN_FEATURE_NAME = 'CoreCourseModuleDelegate_AddonModAssign';
 
-export const ADDON_MOD_ASSIGN_COMPONENT = 'mmaModAssign';
+export const ADDON_MOD_ASSIGN_COMPONENT_LEGACY = 'mmaModAssign';
+export const ADDON_MOD_ASSIGN_COMPONENT = 'AddonModAssign';
+
 export const ADDON_MOD_ASSIGN_PAGE_NAME = 'mod_assign';
+export const ADDON_MOD_ASSIGN_MODNAME = 'assign';
+
+export const ADDON_MOD_ASSIGN_PREFETCH_NAME = ADDON_MOD_ASSIGN_COMPONENT;
+
+export const ADDON_MOD_ASSIGN_SYNC_CRON_NAME = 'AddonModAssignSyncCronHandler';
 
 export const ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS = -1;
 
@@ -31,3 +38,51 @@ export const ADDON_MOD_ASSIGN_GRADED_EVENT = 'addon_mod_assign_graded';
 export const ADDON_MOD_ASSIGN_STARTED_EVENT = 'addon_mod_assign_started';
 export const ADDON_MOD_ASSIGN_AUTO_SYNCED = 'addon_mod_assign_autom_synced';
 export const ADDON_MOD_ASSIGN_MANUAL_SYNCED = 'addon_mod_assign_manual_synced';
+
+/**
+ * Submission status.
+ * Constants on LMS starting with ASSIGN_SUBMISSION_STATUS_
+ */
+export const enum AddonModAssignSubmissionStatusValues {
+    SUBMITTED = 'submitted',
+    DRAFT = 'draft',
+    NEW = 'new',
+    REOPENED = 'reopened',
+    // Added by App Statuses.
+    NO_ATTEMPT = 'noattempt',
+    NO_ONLINE_SUBMISSIONS = 'noonlinesubmissions',
+    NO_SUBMISSION = 'nosubmission',
+    GRADED_FOLLOWUP_SUBMIT = 'gradedfollowupsubmit',
+}
+
+/**
+ * Grading status.
+ * Constants on LMS starting with ASSIGN_GRADING_STATUS_
+ */
+export const enum AddonModAssignGradingStates {
+    GRADED = 'graded',
+    NOT_GRADED = 'notgraded',
+    // Added by App Statuses.
+    MARKING_WORKFLOW_STATE_RELEASED = 'released', // with ASSIGN_MARKING_WORKFLOW_STATE_RELEASED
+    GRADED_FOLLOWUP_SUBMIT = 'gradedfollowupsubmit',
+}
+
+/**
+ * Reopen attempt methods.
+ * Constants on LMS starting with ASSIGN_ATTEMPT_REOPEN_METHOD_
+ */
+export const enum AddonModAssignAttemptReopenMethodValues {
+    MANUAL = 'manual',
+    AUTOMATIC = 'automatic',
+    UNTILPASS = 'untilpass',
+}
+
+/**
+ * List filter by status name.
+ */
+export const enum AddonModAssignListFilterName {
+    ALL = '',
+    NEED_GRADING = 'needgrading',
+    DRAFT = 'draft',
+    SUBMITTED = 'submitted',
+}

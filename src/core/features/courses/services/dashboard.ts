@@ -56,12 +56,12 @@ export class CoreCoursesDashboardProvider {
      * @returns Promise resolved with the list of blocks.
      * @since 3.6
      */
-    getDashboardBlocksFromWS(
+    async getDashboardBlocksFromWS(
         myPage = CoreCoursesDashboardProvider.MY_PAGE_DEFAULT,
         userId?: number,
         siteId?: string,
     ): Promise<CoreCourseBlock[]> {
-        return firstValueFrom(this.getDashboardBlocksFromWSObservable({
+        return await firstValueFrom(this.getDashboardBlocksFromWSObservable({
             myPage,
             userId,
             siteId,
@@ -126,12 +126,12 @@ export class CoreCoursesDashboardProvider {
      * @param myPage What my page to return blocks of. Default MY_PAGE_DEFAULT.
      * @returns Promise resolved with the list of blocks.
      */
-    getDashboardBlocks(
+    async getDashboardBlocks(
         userId?: number,
         siteId?: string,
         myPage = CoreCoursesDashboardProvider.MY_PAGE_DEFAULT,
     ): Promise<CoreCoursesDashboardBlocks> {
-        return firstValueFrom(this.getDashboardBlocksObservable({
+        return await firstValueFrom(this.getDashboardBlocksObservable({
             myPage,
             userId,
             siteId,

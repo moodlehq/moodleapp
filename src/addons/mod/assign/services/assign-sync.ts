@@ -39,7 +39,13 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
-import { ADDON_MOD_ASSIGN_AUTO_SYNCED, ADDON_MOD_ASSIGN_COMPONENT, ADDON_MOD_ASSIGN_MANUAL_SYNCED } from '../constants';
+import {
+    ADDON_MOD_ASSIGN_AUTO_SYNCED,
+    ADDON_MOD_ASSIGN_COMPONENT,
+    ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
+    ADDON_MOD_ASSIGN_MANUAL_SYNCED,
+    ADDON_MOD_ASSIGN_MODNAME,
+} from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -48,7 +54,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 @Injectable({ providedIn: 'root' })
 export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvider<AddonModAssignSyncResult> {
 
-    protected componentTranslatableString = 'assign';
+    protected componentTranslatableString = ADDON_MOD_ASSIGN_MODNAME;
 
     constructor() {
         super('AddonModAssignSyncProvider');
@@ -191,7 +197,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
     protected async performSyncAssign(assignId: number, siteId: string): Promise<AddonModAssignSyncResult> {
         // Sync offline logs.
         await CorePromiseUtils.ignoreErrors(
-            CoreCourseLogHelper.syncActivity(ADDON_MOD_ASSIGN_COMPONENT, assignId, siteId),
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_ASSIGN_COMPONENT_LEGACY, assignId, siteId),
         );
 
         const result: AddonModAssignSyncResult = {
@@ -503,6 +509,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             let promises: Promise<void | AddonModAssignGetSubmissionStatusWSResponse>[] = [];
             if (status.feedback && status.feedback.plugins) {
                 promises = status.feedback.plugins.map((plugin) =>
+                    // eslint-disable-next-line deprecation/deprecation
                     AddonModAssignFeedbackDelegate.discardPluginFeedbackData(assign.id, userId, plugin, siteId));
             }
 

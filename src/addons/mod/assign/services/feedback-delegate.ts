@@ -41,6 +41,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param userId User ID.
      * @param siteId Site ID. If not defined, current site.
      * @returns If the function is async, it should return a Promise resolved when done.
+     * @deprecated since 5.0. Feedback drafts are not needed if you show form in the grading modal.
      */
     discardDraft?(assignId: number, userId: number, siteId?: string): void | Promise<void>;
 
@@ -62,6 +63,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param userId User ID.
      * @param siteId Site ID. If not defined, current site.
      * @returns Data (or promise resolved with the data).
+     * @deprecated since 5.0. Feedback drafts are not needed if you show form in the grading modal.
      */
     getDraft?(
         assignId: number,
@@ -119,6 +121,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param userId User ID.
      * @param siteId Site ID. If not defined, current site.
      * @returns Boolean or promise resolved with boolean: whether the plugin has draft data.
+     * @deprecated since 5.0. Feedback drafts are not needed if you show form in the grading modal.
      */
     hasDraftData?(assignId: number, userId: number, siteId?: string): boolean | Promise<boolean>;
 
@@ -146,6 +149,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param userId User ID.
      * @param plugin The plugin object.
      * @param pluginData Object where to store the data to send.
+     * @param inputData Data entered in the feedback form.
      * @param siteId Site ID. If not defined, current site.
      * @returns If the function is async, it should return a Promise resolved when done.
      */
@@ -154,6 +158,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
         userId: number,
         plugin: AddonModAssignPlugin,
         pluginData: AddonModAssignSavePluginData,
+        inputData: CoreFormFields,
         siteId?: string,
     ): void | Promise<void>;
 
@@ -166,6 +171,7 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
      * @param data The data to save.
      * @param siteId Site ID. If not defined, current site.
      * @returns If the function is async, it should return a Promise resolved when done.
+     * @deprecated since 5.0. Feedback drafts are not needed if you show form in the grading modal.
      */
     saveDraft?(
         assignId: number,
@@ -205,6 +211,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
      * @param plugin The plugin object.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done.
+     * @deprecated since 5.0. Feedback drafts are not needed if you show form in the grading modal.
      */
     async discardPluginFeedbackData(
         assignId: number,
@@ -235,6 +242,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
      * @param plugin The plugin object.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with the draft data.
+     * @deprecated since 5.0. Feedback drafts are not needed if you show form in the grading modal.
      */
     async getPluginDraftData<T>(
         assignId: number,
@@ -309,6 +317,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
      * @param plugin The plugin object.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with true if it has draft data.
+     * @deprecated since 5.0. Feedback drafts are not needed if you show form in the grading modal.
      */
     async hasPluginDraftData(
         assignId: number,
@@ -354,6 +363,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
      * @param userId User ID.
      * @param plugin The plugin object.
      * @param pluginData Object where to store the data to send.
+     * @param inputData Data entered in the feedback form.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when data has been gathered.
      */
@@ -362,13 +372,14 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         userId: number,
         plugin: AddonModAssignPlugin,
         pluginData: AddonModAssignSavePluginData,
+        inputData: CoreFormFields,
         siteId?: string,
     ): Promise<void> {
 
         return this.executeFunctionOnEnabled(
             plugin.type,
             'prepareFeedbackData',
-            [assignId, userId, plugin, pluginData, siteId],
+            [assignId, userId, plugin, pluginData, inputData, siteId],
         );
     }
 
@@ -381,6 +392,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
      * @param inputData Data to save.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when data has been saved.
+     * @deprecated since 5.0. Feedback drafts are not needed if you show form in the grading modal.
      */
     async saveFeedbackDraft(
         assignId: number,

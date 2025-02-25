@@ -550,8 +550,8 @@ export class CoreSite extends CoreAuthenticatedSite {
      */
     getConfig(name?: undefined, ignoreCache?: boolean): Promise<CoreSiteConfig>;
     getConfig(name: string, ignoreCache?: boolean): Promise<string>;
-    getConfig(name?: string, ignoreCache?: boolean): Promise<string | CoreSiteConfig> {
-        return firstValueFrom(
+    async getConfig(name?: string, ignoreCache?: boolean): Promise<string | CoreSiteConfig> {
+        return await firstValueFrom(
             this.getConfigObservable(<string> name, ignoreCache ? CoreSitesReadingStrategy.ONLY_NETWORK : undefined),
         );
     }

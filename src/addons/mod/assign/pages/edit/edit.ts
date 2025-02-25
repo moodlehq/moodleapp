@@ -30,7 +30,6 @@ import {
     AddonModAssignSubmissionStatusOptions,
     AddonModAssignGetSubmissionStatusWSResponse,
     AddonModAssignSavePluginData,
-    AddonModAssignSubmissionStatusValues,
 } from '../../services/assign';
 import { AddonModAssignHelper } from '../../services/assign-helper';
 import { AddonModAssignOffline } from '../../services/assign-offline';
@@ -40,9 +39,12 @@ import { CoreWSExternalFile } from '@services/ws';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import {
     ADDON_MOD_ASSIGN_COMPONENT,
+    ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
+    ADDON_MOD_ASSIGN_MODNAME,
     ADDON_MOD_ASSIGN_STARTED_EVENT,
     ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT,
     ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
+    AddonModAssignSubmissionStatusValues,
 } from '../../constants';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -80,7 +82,7 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
     timeLimitEndTime = 0; // If time limit is enabled, the end time for the timer.
     activityInstructions?: string; // Activity instructions.
     introAttachments?: CoreWSExternalFile[]; // Intro attachments.
-    component = ADDON_MOD_ASSIGN_COMPONENT;
+    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
 
     protected userId: number; // User doing the submission.
     protected isBlind = false; // Whether blind is used.
@@ -248,7 +250,7 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
                     contextname: this.assign.name,
                     subpage: Translate.instant('addon.mod_assign.editsubmission'),
                 }),
-                data: { id: this.assign.id, category: 'assign' },
+                data: { id: this.assign.id, category: ADDON_MOD_ASSIGN_MODNAME },
                 url: `/mod/assign/view.php?action=editsubmission&id=${this.moduleId}`,
             });
         } catch (error) {
@@ -457,7 +459,7 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
             AddonModAssignHelper.clearSubmissionPluginTmpData(this.assign!, this.userSubmission, inputData);
 
             if (sent) {
-                CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'assign' });
+                CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: ADDON_MOD_ASSIGN_MODNAME });
             }
 
             // Submission saved, trigger events.

@@ -17,16 +17,13 @@ import { FormBuilder, FormControl } from '@angular/forms';
 import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { CoreFileHelper } from '@services/file-helper';
 import {
-    AddonModAssignFeedbackCommentsDraftData,
-    AddonModAssignFeedbackCommentsHandler,
     AddonModAssignFeedbackCommentsPluginData,
 } from '../services/handler';
-import { AddonModAssignFeedbackDelegate } from '@addons/mod/assign/services/feedback-delegate';
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 import { ContextLevel } from '@/core/constants';
-import { ADDON_MOD_ASSIGN_COMPONENT } from '@addons/mod/assign/constants';
+import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -46,7 +43,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedbackPluginBaseComponent implements OnInit {
 
     control?: FormControl<string>;
-    component = ADDON_MOD_ASSIGN_COMPONENT;
+    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
     text = '';
     isSent = false;
     loaded = false;
@@ -68,25 +65,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
         try {
             this.text = await this.getText();
 
-            if (!this.canEdit && !this.edit) {
-                // User cannot edit the comment. Show it full when clicked.
-                this.element.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    if (this.text) {
-                        // Open a new state with the text.
-                        CoreViewer.viewText(this.plugin.name, this.text, {
-                            component: this.component,
-                            componentId: this.assign.cmid,
-                            filter: true,
-                            contextLevel: ContextLevel.MODULE,
-                            instanceId: this.assign.cmid,
-                            courseId: this.assign.course,
-                        });
-                    }
-                });
-            } else if (this.edit) {
+            if (this.edit) {
                 this.control = this.fb.control(this.text, { nonNullable: true });
             }
         } finally {
@@ -95,23 +74,24 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
     }
 
     /**
-     * Edit the comment.
+     * Open the text in a modal.
+     *
+     * @param e Event.
      */
-    async editComment(): Promise<void> {
-        try {
-            const inputData = await this.editFeedback();
-            const text = AddonModAssignFeedbackCommentsHandler.getTextFromInputData(this.plugin, inputData);
+    open(e: Event): void {
+        // Not editing, see full text when clicked.
+        e.preventDefault();
+        e.stopPropagation();
 
-            // Update the text and save it as draft.
-            this.isSent = false;
-            this.text = this.replacePluginfileUrls(text || '');
-            AddonModAssignFeedbackDelegate.saveFeedbackDraft(this.assign.id, this.userId, this.plugin, {
-                text: text,
-                format: 1,
-            });
-        } catch {
-            // User cancelled, nothing to do.
-        }
+        // Open a new state with the interpolated contents.
+        CoreViewer.viewText(this.plugin.name, this.text, {
+            component: this.component,
+            componentId: this.assign.cmid,
+            filter: true,
+            contextLevel: ContextLevel.MODULE,
+            instanceId: this.assign.cmid,
+            courseId: this.assign.course,
+        });
     }
 
     /**
@@ -120,17 +100,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
      * @returns Promise resolved with the text.
      */
     protected async getText(): Promise<string> {
-        // Check if the user already modified the comment.
-        const draft: AddonModAssignFeedbackCommentsDraftData | undefined =
-            await AddonModAssignFeedbackDelegate.getPluginDraftData(this.assign.id, this.userId, this.plugin);
-
-        if (draft) {
-            this.isSent = false;
-
-            return this.replacePluginfileUrls(draft.text);
-        }
-
-        // There is no draft saved. Check if we have anything offline.
+        // Check if we have anything offline.
         const offlineData = await CorePromiseUtils.ignoreErrors(
             AddonModAssignOffline.getSubmissionGrade(this.assign.id, this.userId),
             undefined,
@@ -138,15 +108,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
 
         if (offlineData && offlineData.plugindata && offlineData.plugindata.assignfeedbackcomments_editor) {
             const pluginData = <AddonModAssignFeedbackCommentsPluginData>offlineData.plugindata;
-
-            // Save offline as draft.
             this.isSent = false;
-            AddonModAssignFeedbackDelegate.saveFeedbackDraft(
-                this.assign.id,
-                this.userId,
-                this.plugin,
-                pluginData.assignfeedbackcomments_editor,
-            );
 
             return this.replacePluginfileUrls(pluginData.assignfeedbackcomments_editor.text);
         }
