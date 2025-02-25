@@ -1262,7 +1262,7 @@ export class CoreWSProvider {
                 observable = observable.pipe(timeout(angularOptions.timeout));
             }
 
-            return firstValueFrom(observable);
+            return await firstValueFrom(observable);
         }
     }
 

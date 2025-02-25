@@ -124,11 +124,11 @@ export class CoreCoursesHelperProvider {
      * @param loadCategoryNames Whether load category names or not.
      * @returns Promise resolved when done.
      */
-    loadCoursesExtraInfo(
+    async loadCoursesExtraInfo(
         courses: CoreEnrolledCourseDataWithExtraInfo[],
         loadCategoryNames: boolean = false,
     ): Promise<CoreEnrolledCourseDataWithExtraInfo[]> {
-        return firstValueFrom(this.loadCoursesExtraInfoObservable(courses, loadCategoryNames));
+        return await firstValueFrom(this.loadCoursesExtraInfoObservable(courses, loadCategoryNames));
     }
 
     /**
@@ -242,14 +242,14 @@ export class CoreCoursesHelperProvider {
      * @param options Options.
      * @returns Courses filled with options.
      */
-    getUserCoursesWithOptions(
+    async getUserCoursesWithOptions(
         sort: string = 'fullname',
         slice: number = 0,
         filter?: string,
         loadCategoryNames: boolean = false,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<CoreEnrolledCourseDataWithExtraInfoAndOptions[]> {
-        return firstValueFrom(this.getUserCoursesWithOptionsObservable({
+        return await firstValueFrom(this.getUserCoursesWithOptionsObservable({
             sort,
             slice,
             filter,
