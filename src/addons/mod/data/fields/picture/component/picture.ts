@@ -19,7 +19,7 @@ import { CoreFileSession } from '@services/file-session';
 import { CoreDom } from '@singletons/dom';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 import { CoreFile } from '@services/file';
-import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
+import { ADDON_MOD_DATA_COMPONENT_LEGACY } from '@addons/mod/data/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -88,7 +88,7 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginBa
             return;
         }
 
-        this.component = ADDON_MOD_DATA_COMPONENT;
+        this.component = ADDON_MOD_DATA_COMPONENT_LEGACY;
         this.componentId = this.database!.coursemodule;
 
         this.updateValue(this.value);

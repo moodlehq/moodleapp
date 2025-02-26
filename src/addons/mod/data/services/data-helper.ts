@@ -41,7 +41,7 @@ import { AddonModDataFieldsDelegate } from './data-fields-delegate';
 import { AddonModDataOffline, AddonModDataOfflineAction } from './data-offline';
 import { CoreFileEntry } from '@services/file-helper';
 import {
-    ADDON_MOD_DATA_COMPONENT,
+    ADDON_MOD_DATA_COMPONENT_LEGACY,
     ADDON_MOD_DATA_ENTRY_CHANGED,
     AddonModDataAction,
     AddonModDataTemplateType,
@@ -981,7 +981,7 @@ export class AddonModDataHelperProvider {
             return 0;
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_DATA_COMPONENT, itemId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_DATA_COMPONENT_LEGACY, itemId, siteId);
     }
 
     /**
