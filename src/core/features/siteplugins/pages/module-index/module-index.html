@@ -4,7 +4,9 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1>{{ title }}</h1>
+            <h1>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module?.id" [courseId]="courseId" />
+            </h1>
         </ion-title>
 
         <ion-buttons slot="end" />

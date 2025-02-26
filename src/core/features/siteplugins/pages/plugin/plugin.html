@@ -4,7 +4,10 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1 *ngIf="title">{{ title | translate }}</h1>
+            <h1 *ngIf="title">
+                <core-format-text [text]="title | translate" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                    [courseId]="courseId" />
+            </h1>
         </ion-title>
 
         <ion-buttons slot="end" />
@@ -15,5 +18,5 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-site-plugins-plugin-content [component]="component" [method]="method" [args]="args" [preSets]="preSets" [initResult]="initResult"
-        [data]="jsData" [pageTitle]="title" />
+        [data]="jsData" [pageTitle]="title" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
 </ion-content>
