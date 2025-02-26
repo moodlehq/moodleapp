@@ -108,6 +108,8 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
                             args,
                             initResult: this.initResult,
                             ptrEnabled: this.handlerSchema.ptrenabled,
+                            contextLevel: 'user',
+                            contextInstanceId: user.id,
                         },
                     },
                 );
