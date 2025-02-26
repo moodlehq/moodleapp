@@ -17,7 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_DATA_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_DATA_COMPONENT, ADDON_MOD_DATA_MODNAME, ADDON_MOD_DATA_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to support data modules.
@@ -25,8 +25,8 @@ import { ADDON_MOD_DATA_PAGE_NAME } from '../../constants';
 @Injectable({ providedIn: 'root' })
 export class AddonModDataModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    name = 'AddonModData';
-    modName = 'data';
+    name = ADDON_MOD_DATA_COMPONENT;
+    modName = ADDON_MOD_DATA_MODNAME;
     protected pageName = ADDON_MOD_DATA_PAGE_NAME;
 
     supportedFeatures = {
