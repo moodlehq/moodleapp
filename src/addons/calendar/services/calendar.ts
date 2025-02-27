@@ -17,7 +17,7 @@ import { CoreSites } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNetwork } from '@services/network';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreObject } from '@singletons/object';
 import { CoreGroups } from '@services/groups';
@@ -62,7 +62,6 @@ import {
 import { REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
 import { AddonCalendarFilter } from './calendar-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreTime } from '@singletons/time';
 
 declare module '@singletons/events' {
 
@@ -333,14 +332,14 @@ export class AddonCalendarProvider {
                 if (event.timeduration == CoreConstants.SECONDS_DAY) {
                     time = Translate.instant('addon.calendar.allday');
                 } else {
-                    time = getStartTimeHtml(CoreTimeUtils.userDate(start, format)) + ' <strong>&raquo;</strong> ' +
-                            getEndTimeHtml(CoreTimeUtils.userDate(end, format));
+                    time = getStartTimeHtml(CoreTime.userDate(start, format)) + ' <strong>&raquo;</strong> ' +
+                            getEndTimeHtml(CoreTime.userDate(end, format));
                 }
 
             } else {
                 // Event lasts more than one day.
-                const timeStart = CoreTimeUtils.userDate(start, format);
-                const timeEnd = CoreTimeUtils.userDate(end, format);
+                const timeStart = CoreTime.userDate(start, format);
+                const timeEnd = CoreTime.userDate(end, format);
                 const promises: Promise<void>[] = [];
 
                 // Don't use common words when the event lasts more than one day.
@@ -370,7 +369,7 @@ export class AddonCalendarProvider {
             }
         } else {
             // There is no time duration.
-            time = getStartTimeHtml(CoreTimeUtils.userDate(start, format));
+            time = getStartTimeHtml(CoreTime.userDate(start, format));
         }
 
         if (showTime) {
@@ -535,7 +534,7 @@ export class AddonCalendarProvider {
 
         if (!useCommonWords) {
             // We don't want words, just a date.
-            return CoreTimeUtils.userDate(time, 'core.strftimedayshort');
+            return CoreTime.userDate(time, 'core.strftimedayshort');
         }
 
         const date = moment(time);
@@ -551,7 +550,7 @@ export class AddonCalendarProvider {
             return Translate.instant('addon.calendar.tomorrow');
         }
 
-        return CoreTimeUtils.userDate(time, 'core.strftimedayshort');
+        return CoreTime.userDate(time, 'core.strftimedayshort');
     }
 
     /**

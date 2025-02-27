@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Pipe, PipeTransform } from '@angular/core';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreLogger } from '@singletons/logger';
 
 /**
@@ -65,7 +65,7 @@ export class CoreFormatDatePipe implements PipeTransform {
             convert = format.indexOf('core.df') != 0;
         }
 
-        return CoreTimeUtils.userDate(timestamp, format, convert);
+        return CoreTime.userDate(timestamp, format, convert);
     }
 
 }

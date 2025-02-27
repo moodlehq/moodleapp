@@ -22,11 +22,10 @@ import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreTime } from '@singletons/time';
 import {
     AddonModAssign,
     AddonModAssignAssign,
@@ -223,7 +222,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
                         if (this.assign.cutoffdate > time) {
                             this.lateSubmissions = Translate.instant(
                                 'addon.mod_assign.latesubmissionsaccepted',
-                                { $a: CoreTimeUtils.userDate(this.assign.cutoffdate * 1000) },
+                                { $a: CoreTime.userDate(this.assign.cutoffdate * 1000) },
                             );
                         } else {
                             this.lateSubmissions = Translate.instant('addon.mod_assign.nomoresubmissionsaccepted');

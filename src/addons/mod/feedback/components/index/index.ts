@@ -22,7 +22,7 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
@@ -297,9 +297,9 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
         if (this.access.canedititems) {
             this.overview.timeopen = (this.feedback.timeopen || 0) * 1000;
-            this.overview.openTimeReadable = this.overview.timeopen ? CoreTimeUtils.userDate(this.overview.timeopen) : '';
+            this.overview.openTimeReadable = this.overview.timeopen ? CoreTime.userDate(this.overview.timeopen) : '';
             this.overview.timeclose = (this.feedback.timeclose || 0) * 1000;
-            this.overview.closeTimeReadable = this.overview.timeclose ? CoreTimeUtils.userDate(this.overview.timeclose) : '';
+            this.overview.closeTimeReadable = this.overview.timeclose ? CoreTime.userDate(this.overview.timeclose) : '';
         }
         if (this.access.canviewanalysis) {
             // Get groups (only for teachers).

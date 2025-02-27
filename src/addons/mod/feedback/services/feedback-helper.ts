@@ -18,7 +18,7 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreUtils } from '@singletons/utils';
 import { makeSingleton, Translate } from '@singletons';
 import {
@@ -286,7 +286,7 @@ export class AddonModFeedbackHelperProvider {
 
             const rawValue = Number(formItem.rawValue);
             const tempValue = isNaN(rawValue) ? Date.now() : rawValue * 1000;
-            formItem.presentation = CoreTimeUtils.userDate(tempValue);
+            formItem.presentation = CoreTime.userDate(tempValue);
         } else {
             // Errors on item, return false.
             return undefined;

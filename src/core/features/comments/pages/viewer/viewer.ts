@@ -35,7 +35,7 @@ import { CoreText } from '@singletons/text';
 import { CoreError } from '@classes/errors/error';
 import { CoreCommentsOffline } from '@features/comments/services/comments-offline';
 import { CoreCommentsDBRecord } from '@features/comments/services/database/comments';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreNetwork } from '@services/network';
 import moment from 'moment-timezone';
 import { Subscription } from 'rxjs';
@@ -393,7 +393,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
         const modified = 'lastmodified' in comment
             ? comment.lastmodified
             : comment.timecreated;
-        const time = CoreTimeUtils.userDate(
+        const time = CoreTime.userDate(
             modified * 1000,
             'core.strftimerecentfull',
         );
