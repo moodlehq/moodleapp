@@ -97,16 +97,57 @@ export class CoreUrl {
      *
      * @param address The address.
      * @returns URL to view the address.
+     * @deprecated since 5.0. Use buildMapsURL instead, and use DomSanitizer.bypassSecurityTrustUrl to sanitize the URL if needed.
      */
     static buildAddressURL(address: string): SafeUrl {
-        const parsedUrl = CoreUrl.parse(address);
-        if (parsedUrl?.protocol) {
-            // It's already a URL, don't convert it.
-            return DomSanitizer.bypassSecurityTrustUrl(address);
+        return DomSanitizer.bypassSecurityTrustUrl(CoreUrl.buildMapsURL({ query: address }));
+    }
+
+    /**
+     * Return a URL to open a maps app/web, optionally with an address.
+     *
+     * @param options Options.
+     * @returns URL.
+     */
+    static buildMapsURL(options: CoreUrlMapsUrlOptions = {}): string {
+        if (options.coordinates && (options.coordinates.latitude !== undefined || options.coordinates.longitude !== undefined)) {
+            const latFixed = options.coordinates.latitude !== undefined ? options.coordinates.latitude.toFixed(6) : '0.0000';
+            const longFixed = options.coordinates.longitude !== undefined ? options.coordinates.longitude.toFixed(6) : '0.0000';
+
+            if (CorePlatform.isAndroid()) {
+                return `geo:${latFixed},${longFixed}`;
+            } else if (CorePlatform.isIOS()) {
+                return `https://maps.apple.com/?ll=${latFixed},${longFixed}&near=${latFixed},${longFixed}`;
+            }
+
+            return `http://maps.google.com?q=${latFixed},${longFixed}`;
         }
 
-        return DomSanitizer.bypassSecurityTrustUrl((CorePlatform.isAndroid() ? 'geo:0,0?q=' : 'http://maps.google.com?q=') +
-                encodeURIComponent(address));
+        if (options.query) {
+            const parsedUrl = CoreUrl.parse(options.query);
+            if (parsedUrl?.protocol) {
+                // The query is a URL, don't convert it to a maps URL.
+                return options.query;
+            }
+
+            const encodedQuery = encodeURIComponent(options.query ?? '');
+            if (CorePlatform.isAndroid()) {
+                return `geo:0,0?q=${encodedQuery}`;
+            } else if (CorePlatform.isIOS()) {
+                return `http://maps.apple.com?q=${encodedQuery}`;
+            }
+
+            return `http://maps.google.com?q=${encodedQuery}`;
+        }
+
+        // Return the maps URL with no specific location.
+        if (CorePlatform.isAndroid()) {
+            return 'geo:';
+        } else if (CorePlatform.isIOS()) {
+            return 'http://maps.apple.com?q';
+        }
+
+        return 'http://maps.google.com';
     }
 
     /**
@@ -1013,4 +1054,15 @@ export type CoreUrlAddParamsOptions = {
     anchor?: string; // Anchor text if needed.
     boolToNumber?: boolean; // Whether to convert bools to 1 / 0.
     checkAutoLoginUrl?: boolean; // Whether the URL could be an auto-login URL. If so, any param will be added to the urltogo.
+};
+
+/**
+ * Options for buildMapsURL.
+ */
+export type CoreUrlMapsUrlOptions = {
+    query?: string; // The query to search in the map.
+    coordinates?: {
+        latitude?: number;
+        longitude?: number;
+    };
 };

@@ -21,9 +21,9 @@ import { CoreAnyError } from '@classes/errors/error';
 import { CoreGeolocation, CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CorePlatform } from '@services/platform';
 import { DomSanitizer, Translate } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Component to render data latlong field.
@@ -74,19 +74,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginBa
      * @returns Link to maps depending on platform.
      */
     getLatLongLink(north?: number, east?: number): SafeUrl {
-        let url = '';
-        if (north !== undefined || east !== undefined) {
-            const northFixed = north ? north.toFixed(4) : '0.0000';
-            const eastFixed = east ? east.toFixed(4) : '0.0000';
-
-            if (CorePlatform.isIOS()) {
-                url = 'http://maps.apple.com/?ll=' + northFixed + ',' + eastFixed + '&near=' + northFixed + ',' + eastFixed;
-            } else {
-                url = 'geo:' + northFixed + ',' + eastFixed;
-            }
-        }
-
-        return DomSanitizer.bypassSecurityTrustUrl(url);
+        return DomSanitizer.bypassSecurityTrustUrl(CoreUrl.buildMapsURL({ coordinates: { latitude: north, longitude: east } }));
     }
 
     /**
