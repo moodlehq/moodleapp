@@ -290,6 +290,10 @@ export class CoreCompileProvider {
         instance['Validators'] = Validators;
         instance['CoreEventsProvider'] = CoreEvents;
         instance['CoreLoggerProvider'] = CoreLogger;
+        /**
+         * @deprecated since 5.0, plugins should use native Date parsing functions instead.
+         * In a near future this could be replaced by a more modern library like dayjs before final removal.
+         */
         instance['moment'] = moment;
         instance['Md5'] = Md5;
         instance['signal'] = signal;

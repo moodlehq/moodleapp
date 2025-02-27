@@ -13,6 +13,7 @@ For more information about upgrading, read the official documentation: https://m
  - Some components won't be available anymore for plugins because it didn't make much sense to have them available. For example: quiz components, core-course-course-index-tour, core-course-tag-area, etc.
  - On assignment activity Feedback plugins, the form controls are now shown in the same page and draft managing functions have been deprecated.
  - On prepareFeedbackData handler function for assignment activity Feedback plugins, a new parameter inputData has been added.
+ - moment.js has been deprecated to be used in site plugins, use native Date parsing functions instead.
 
 === 4.5.0 ===
 
