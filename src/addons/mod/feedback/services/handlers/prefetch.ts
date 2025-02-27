@@ -18,7 +18,7 @@ import { CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroups } from '@services/groups';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -95,7 +95,7 @@ export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPr
     async isDownloadable(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
         const feedback = await AddonModFeedback.getFeedback(courseId, module.id);
 
-        const now = CoreTimeUtils.timestamp();
+        const now = CoreTime.timestamp();
 
         // Check time first if available.
         if (feedback.timeopen && feedback.timeopen > now) {

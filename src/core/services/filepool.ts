@@ -25,7 +25,7 @@ import { CoreWS, CoreWSExternalFile, CoreWSFile } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CoreArray } from '@singletons/array';
 import { CoreError } from '@classes/errors/error';
@@ -3008,7 +3008,7 @@ export class CoreFilepoolProvider {
 
         if (status === DownloadStatus.DOWNLOADING) {
             // Set download time if package is now downloading.
-            downloadTime = CoreTimeUtils.timestamp();
+            downloadTime = CoreTime.timestamp();
         }
 
         let previousStatus: DownloadStatus | undefined;
@@ -3188,7 +3188,7 @@ export class CoreFilepoolProvider {
         const packageId = this.getPackageId(component, componentId);
 
         await this.packagesTables[siteId].update(
-            { downloadTime: CoreTimeUtils.timestamp() },
+            { downloadTime: CoreTime.timestamp() },
             { id: packageId },
         );
     }

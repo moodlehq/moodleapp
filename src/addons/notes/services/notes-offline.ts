@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { makeSingleton } from '@singletons';
 import { AddonNotesDBRecord, AddonNotesDeletedDBRecord, NOTES_DELETED_TABLE, NOTES_TABLE } from './database/notes';
 import { AddonNotesPublishState } from './notes';
@@ -215,7 +215,7 @@ export class AddonNotesOfflineProvider {
     ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        const now = CoreTimeUtils.timestamp();
+        const now = CoreTime.timestamp();
         const data: AddonNotesDBRecord = {
             userid: userId,
             courseid: courseId,
@@ -243,7 +243,7 @@ export class AddonNotesOfflineProvider {
         const data: AddonNotesDeletedDBRecord = {
             noteid: noteId,
             courseid: courseId,
-            deleted: CoreTimeUtils.timestamp(),
+            deleted: CoreTime.timestamp(),
         };
 
         await site.getDb().insertRecord(NOTES_DELETED_TABLE, data);

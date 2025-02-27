@@ -41,7 +41,7 @@ import { AddonModDataFieldsDelegate } from './data-fields-delegate';
 import { AddonModDataOffline, AddonModDataOfflineAction } from './data-offline';
 import { CoreFileEntry } from '@services/file-helper';
 import {
-    ADDON_MOD_DATA_COMPONENT,
+    ADDON_MOD_DATA_COMPONENT_LEGACY,
     ADDON_MOD_DATA_ENTRY_CHANGED,
     AddonModDataAction,
     AddonModDataTemplateType,
@@ -73,7 +73,7 @@ export class AddonModDataHelperProvider {
         const promises: Promise<void>[] = [];
 
         offlineActions.forEach((action) => {
-            record.timemodified = action.timemodified;
+            record.timemodified = Math.max(record.timemodified, action.timemodified);
             record.hasOffline = true;
             const offlineContents: Record<number, CoreFormFields> = {};
 
@@ -334,8 +334,8 @@ export class AddonModDataHelperProvider {
         const result: AddonModDataEntries = {
             entries: [],
             totalcount: 0,
-            offlineEntries: [],
         };
+        const offlineEntries: AddonModDataEntry[] = [];
         options.siteId = site.id;
 
         const offlinePromise = AddonModDataOffline.getDatabaseEntries(database.id, site.id).then((actions) => {
@@ -348,16 +348,16 @@ export class AddonModDataHelperProvider {
                 offlineActions[action.entryid].push(action);
 
                 // We only display new entries in the first page when not searching.
-                if (action.action == AddonModDataAction.ADD && options.page == 0 && !options.search && !options.advSearch &&
-                    (!action.groupid || !options.groupId || action.groupid == options.groupId)) {
-                    result.offlineEntries!.push({
+                if (action.action === AddonModDataAction.ADD && options.page === 0 && !options.search && !options.advSearch &&
+                    (!action.groupid || !options.groupId || action.groupid === options.groupId)) {
+                    offlineEntries.push({
                         id: action.entryid,
                         canmanageentry: true,
                         approved: !database.approval || database.manageapproved,
                         dataid: database.id,
                         groupid: action.groupid,
-                        timecreated: -action.entryid,
-                        timemodified: -action.entryid,
+                        timecreated: action.timemodified,
+                        timemodified: action.timemodified,
                         userid: site.getUserId(),
                         fullname: site.getInfo()?.fullname,
                         contents: {},
@@ -367,7 +367,7 @@ export class AddonModDataHelperProvider {
             });
 
             // Sort offline entries by creation time.
-            result.offlineEntries!.sort((a, b) => b.timecreated - a.timecreated);
+            offlineEntries.sort((a, b) => b.timecreated - a.timecreated);
 
             return;
         });
@@ -404,9 +404,11 @@ export class AddonModDataHelperProvider {
             promises.push(this.applyOfflineActions(entry, offlineActions[entry.id] || [], fields));
         });
 
-        result.offlineEntries!.forEach((entry) => {
+        offlineEntries.forEach((entry) => {
             promises.push(this.applyOfflineActions(entry, offlineActions[entry.id] || [], fields));
         });
+
+        result.offlineEntries = offlineEntries;
 
         await Promise.all(promises);
 
@@ -979,7 +981,7 @@ export class AddonModDataHelperProvider {
             return 0;
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_DATA_COMPONENT, itemId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_DATA_COMPONENT_LEGACY, itemId, siteId);
     }
 
     /**

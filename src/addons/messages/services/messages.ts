@@ -23,7 +23,7 @@ import {
     AddonMessagesOfflineConversationMessagesDBRecordFormatted,
     AddonMessagesOfflineMessagesDBRecordFormatted,
 } from './messages-offline';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreEvents } from '@singletons/events';
 import { CoreSite } from '@classes/sites/site';
 import { CoreWSExternalWarning } from '@services/ws';
@@ -2161,7 +2161,7 @@ export class AddonMessagesProvider {
 
         const params: AddonMessagesMarkMessageReadWSParams = {
             messageid: messageId,
-            timeread: CoreTimeUtils.timestamp(),
+            timeread: CoreTime.timestamp(),
         };
 
         return site.write('core_message_mark_message_read', params);

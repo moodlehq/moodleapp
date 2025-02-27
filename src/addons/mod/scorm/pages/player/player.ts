@@ -17,7 +17,7 @@ import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModScormDataModel12 } from '../../classes/data-model-12';
@@ -559,7 +559,7 @@ export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
         const tracks = [{
             element: 'x.start.time',
-            value: String(CoreTimeUtils.timestamp()),
+            value: String(CoreTime.timestamp()),
         }];
 
         await AddonModScorm.saveTracks(scoId, this.attempt, tracks, this.scorm, this.offline);

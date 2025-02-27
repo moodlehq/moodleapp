@@ -24,7 +24,7 @@ import {
     CoreWSExternalWarning,
     CoreWSUploadFileResult,
 } from '@services/ws';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreOpener, CoreOpenerOpenInBrowserOptions } from '@singletons/opener';
 import { CoreConstants } from '@/core/constants';
@@ -684,7 +684,7 @@ export class CoreSite extends CoreAuthenticatedSite {
         if (this.lastAutoLogin > 0) {
             const timeBetweenRequests = await this.getAutoLoginMinTimeBetweenRequests();
 
-            if (CoreTimeUtils.timestamp() - this.lastAutoLogin < timeBetweenRequests) {
+            if (CoreTime.timestamp() - this.lastAutoLogin < timeBetweenRequests) {
                 // Not enough time has passed since last auto login.
                 return url;
             }
@@ -709,7 +709,7 @@ export class CoreSite extends CoreAuthenticatedSite {
                 return url;
             }
 
-            this.lastAutoLogin = CoreTimeUtils.timestamp();
+            this.lastAutoLogin = CoreTime.timestamp();
 
             return data.autologinurl + '?userid=' + userId + '&key=' + data.key + '&urltogo=' + encodeURIComponent(url);
         } catch (error) {

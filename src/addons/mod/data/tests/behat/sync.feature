@@ -41,6 +41,7 @@ Feature: Users can store entries in database activities when offline and sync wh
     Then I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app
     And I should find "This Database has offline data to be synchronised" in the app
+    And I should find "## today ##%d %b %Y##" near "Last edited:" in the app
 
     When I go back in the app
     And I switch network connection to wifi
@@ -61,6 +62,7 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I press "Save" near "Web links" in the app
     Then I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app
+    And I should find "## today ##%d %b %Y##" near "Last edited:" in the app
 
     When I press "Information" in the app
     And I press "Download" in the app
@@ -78,6 +80,7 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I should find "https://moodlecloud.com/" in the app
     And I should find "Moodle Cloud" in the app
     And I should find "This Database has offline data to be synchronised" in the app
+    And I should find "## today ##%d %b %Y##" near "Last edited:" in the app
 
     When I go back in the app
     And I switch network connection to wifi

@@ -56,6 +56,7 @@ import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreObject } from '@singletons/object';
 import { CoreArray } from '@singletons/array';
+import { CoreTime } from '@singletons/time';
 
 declare module '@singletons/events' {
 
@@ -1971,7 +1972,7 @@ export class AddonModQuizProvider {
      * @returns Whether time left should be displayed.
      */
     shouldShowTimeLeft(rules: string[], attempt: AddonModQuizAttemptWSData, endTime: number): boolean {
-        const timeNow = CoreTimeUtils.timestamp();
+        const timeNow = CoreTime.timestamp();
 
         if (attempt.state !== AddonModQuizAttemptStates.IN_PROGRESS) {
             return false;

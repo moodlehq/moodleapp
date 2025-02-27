@@ -15,6 +15,7 @@
 import { Translate } from '@singletons';
 import { CoreConstants } from '../constants';
 import { CorePlatform } from '@services/platform';
+import moment from 'moment';
 
 /**
  * Singleton with helper functions for time operations.
@@ -200,6 +201,54 @@ export class CoreTime {
      */
     static translateLegacyTimezone(tz: string): string {
         return CoreTime.LEGACY_TIMEZONES[tz] ?? tz;
+    }
+
+    /**
+     * Ensure the timestamp is in milliseconds.
+     *
+     * @param time Timestamp in milliseconds or seconds.
+     * @returns Timestamp in milliseconds.
+     */
+    static ensureMilliseconds(time: number): number {
+        if (time < 10000000000) { // Checking year 2286.
+            // It's a timestamp in seconds, convert it to milliseconds.
+            return time * 1000;
+        }
+
+        return time;
+    }
+
+    /**
+     * Ensure the timestamp is in seconds.
+     *
+     * @param time Timestamp in milliseconds or seconds.
+     * @returns Timestamp in seconds.
+     */
+    static ensureSeconds(time: number): number {
+        if (time > 10000000000) { // Checking year 2286.
+            // It's a timestamp in milliseconds, convert it to seconds.
+            return Math.round(time / 1000);
+        }
+
+        return time;
+    }
+
+    /**
+     * Return the current timestamp in a "readable" format: YYYYMMDDHHmmSS.
+     *
+     * @returns The readable timestamp.
+     */
+    static readableTimestamp(): string {
+        return moment(Date.now()).format('YYYYMMDDHHmmSS');
+    }
+
+    /**
+     * Return the current timestamp (UNIX format, seconds).
+     *
+     * @returns The current timestamp in seconds.
+     */
+    static timestamp(): number {
+        return Math.round(Date.now() / 1000);
     }
 
 }

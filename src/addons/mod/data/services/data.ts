@@ -29,7 +29,7 @@ import { AddonModDataFieldsDelegate } from './data-fields-delegate';
 import { AddonModDataOffline } from './data-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_DATA_COMPONENT,
+    ADDON_MOD_DATA_COMPONENT_LEGACY,
     ADDON_MOD_DATA_ENTRIES_PER_PAGE,
     ADDON_MOD_DATA_ENTRY_CHANGED,
     AddonModDataAction,
@@ -543,7 +543,7 @@ export class AddonModDataProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getDatabaseDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_DATA_COMPONENT,
+            component: ADDON_MOD_DATA_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
         const response =
@@ -624,7 +624,7 @@ export class AddonModDataProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getDatabaseAccessInformationDataCacheKey(dataId, options.groupId),
-            component: ADDON_MOD_DATA_COMPONENT,
+            component: ADDON_MOD_DATA_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -663,7 +663,7 @@ export class AddonModDataProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesCacheKey(dataId, options.groupId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_DATA_COMPONENT,
+            component: ADDON_MOD_DATA_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -721,7 +721,7 @@ export class AddonModDataProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntryCacheKey(dataId, entryId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_DATA_COMPONENT,
+            component: ADDON_MOD_DATA_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -773,7 +773,7 @@ export class AddonModDataProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFieldsCacheKey(dataId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_DATA_COMPONENT,
+            component: ADDON_MOD_DATA_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -875,7 +875,7 @@ export class AddonModDataProvider {
      * @returns Promise resolved when the files are invalidated.
      */
     async invalidateFiles(moduleId: number, siteId?: string): Promise<void> {
-        await CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_DATA_COMPONENT, moduleId);
+        await CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_DATA_COMPONENT_LEGACY, moduleId);
     }
 
     /**
@@ -933,7 +933,7 @@ export class AddonModDataProvider {
         await CoreCourseLogHelper.log(
             'mod_data_view_database',
             params,
-            ADDON_MOD_DATA_COMPONENT,
+            ADDON_MOD_DATA_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -964,7 +964,7 @@ export class AddonModDataProvider {
             perpage: options.perPage,
         };
         const preSets: CoreSiteWSPreSets = {
-            component: ADDON_MOD_DATA_COMPONENT,
+            component: ADDON_MOD_DATA_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };

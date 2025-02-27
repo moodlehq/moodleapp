@@ -60,7 +60,7 @@ export class CoreRemindersDateComponent implements OnInit {
         }
 
         const remindersEnabled = CoreReminders.isEnabled();
-        this.showReminderButton = remindersEnabled && this.time > CoreTimeUtils.timestamp();
+        this.showReminderButton = remindersEnabled && this.time > CoreTime.timestamp();
 
         if (!this.showReminderButton) {
             return;

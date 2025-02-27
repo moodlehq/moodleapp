@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreArray } from '@singletons/array';
 import { CoreWSExternalFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -517,7 +517,7 @@ export class CoreQuestionProvider {
         timemodified?: number,
         siteId?: string,
     ): Promise<void> {
-        timemodified = timemodified || CoreTimeUtils.timestamp();
+        timemodified = timemodified || CoreTime.timestamp();
 
         const db = await CoreSites.getSiteDb(siteId);
         const promises: Promise<unknown>[] = [];

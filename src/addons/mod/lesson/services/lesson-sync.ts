@@ -22,7 +22,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
@@ -110,7 +110,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
             lessonid: lessonId,
             retake: Number(retake),
             pageid: Number(pageId),
-            timefinished: CoreTimeUtils.timestamp(),
+            timefinished: CoreTime.timestamp(),
         });
     }
 

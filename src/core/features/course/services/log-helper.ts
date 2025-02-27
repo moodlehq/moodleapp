@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreObject } from '@singletons/object';
 import { makeSingleton } from '@singletons';
 import { ACTIVITY_LOG_TABLE, CoreCourseActivityLogDBRecord } from './database/log';
@@ -265,7 +265,7 @@ export class CoreCourseLogHelperProvider {
             componentid: componentId,
             ws,
             data: CoreObject.sortAndStringify(data),
-            time: CoreTimeUtils.timestamp(),
+            time: CoreTime.timestamp(),
         };
 
         await site.getDb().insertRecord(ACTIVITY_LOG_TABLE, log);

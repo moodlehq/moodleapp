@@ -35,6 +35,8 @@ export const CORE_COURSE_CORE_MODULES = [
     'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop',
 ];
 
+export const CORE_COURSE_MODULE_FEATURE_PREFIX = 'CoreCourseModuleDelegate_';
+
 /**
  * Course Module completion status enumeration.
  */

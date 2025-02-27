@@ -17,7 +17,7 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
@@ -134,7 +134,7 @@ export class AddonModScormOfflineProvider {
             };
 
             await this.attemptsTables[site.id].updateWhere(
-                { attempt: newAttempt, timemodified: CoreTimeUtils.timestamp() },
+                { attempt: newAttempt, timemodified: CoreTime.timestamp() },
                 currentAttemptConditions,
             );
 
@@ -200,8 +200,8 @@ export class AddonModScormOfflineProvider {
             userid: userId,
             attempt,
             courseid: scorm.course,
-            timecreated: CoreTimeUtils.timestamp(),
-            timemodified: CoreTimeUtils.timestamp(),
+            timecreated: CoreTime.timestamp(),
+            timemodified: CoreTime.timestamp(),
             snapshot: null,
         };
 
@@ -662,7 +662,7 @@ export class AddonModScormOfflineProvider {
                         attempt,
                         element: 'cmi.core.lesson_status',
                         value: JSON.stringify('completed'),
-                        timemodified: CoreTimeUtils.timestamp(),
+                        timemodified: CoreTime.timestamp(),
                         synced: 0,
                     });
                 }
@@ -682,7 +682,7 @@ export class AddonModScormOfflineProvider {
                 attempt,
                 element,
                 value: value === undefined ? null : JSON.stringify(value),
-                timemodified: CoreTimeUtils.timestamp(),
+                timemodified: CoreTime.timestamp(),
                 synced: 0,
             });
         } catch (error) {
@@ -695,7 +695,7 @@ export class AddonModScormOfflineProvider {
                     attempt,
                     element: 'cmi.core.lesson_status',
                     value: JSON.stringify('incomplete'),
-                    timemodified: CoreTimeUtils.timestamp(),
+                    timemodified: CoreTime.timestamp(),
                     synced: 0,
                 });
             }
@@ -754,7 +754,7 @@ export class AddonModScormOfflineProvider {
                         attempt,
                         element: 'cmi.core.lesson_status',
                         value: JSON.stringify('completed'),
-                        timemodified: CoreTimeUtils.timestamp(),
+                        timemodified: CoreTime.timestamp(),
                         synced: 0,
                     });
                 }
@@ -773,7 +773,7 @@ export class AddonModScormOfflineProvider {
             attempt,
             element: element,
             value: value === undefined ? null : JSON.stringify(value),
-            timemodified: CoreTimeUtils.timestamp(),
+            timemodified: CoreTime.timestamp(),
             synced: 0,
         });
 
@@ -979,7 +979,7 @@ export class AddonModScormOfflineProvider {
         this.logger.debug(`Set snapshot for attempt ${attempt} in SCORM ${scormId}`);
 
         const newData: Partial<AddonModScormAttemptDBRecord> = {
-            timemodified: CoreTimeUtils.timestamp(),
+            timemodified: CoreTime.timestamp(),
             snapshot: JSON.stringify(this.removeDefaultData(userData)),
         };
 

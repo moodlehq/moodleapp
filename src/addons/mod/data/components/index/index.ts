@@ -258,7 +258,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         });
 
         if (!this.access.timeavailable) {
-            const time = CoreTimeUtils.timestamp();
+            const time = CoreTime.timestamp();
 
             this.timeAvailableFrom = this.database.timeavailablefrom && time < this.database.timeavailablefrom
                 ? this.database.timeavailablefrom * 1000

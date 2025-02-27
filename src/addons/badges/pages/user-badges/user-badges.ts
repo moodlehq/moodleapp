@@ -14,7 +14,6 @@
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -110,7 +109,7 @@ export default class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestr
      * Obtain the initial list of badges.
      */
     private async fetchInitialBadges(): Promise<void> {
-        this.currentTime = CoreTimeUtils.timestamp();
+        this.currentTime = CoreTime.timestamp();
 
         try {
             await this.badges.reload();

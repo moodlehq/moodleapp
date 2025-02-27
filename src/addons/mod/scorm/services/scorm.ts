@@ -21,7 +21,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreObject } from '@singletons/object';
 import { CoreWS, CoreWSExternalFile, CoreWSExternalWarning, CoreWSFile, CoreWSPreSets } from '@services/ws';
@@ -1362,7 +1362,7 @@ export class AddonModScormProvider {
      * @returns Whether the SCORM is closed.
      */
     isScormClosed(scorm: AddonModScormScorm): boolean {
-        return !!(scorm.timeclose && CoreTimeUtils.timestamp() > scorm.timeclose);
+        return !!(scorm.timeclose && CoreTime.timestamp() > scorm.timeclose);
     }
 
     /**
@@ -1382,7 +1382,7 @@ export class AddonModScormProvider {
      * @returns Whether the SCORM is open.
      */
     isScormOpen(scorm: AddonModScormScorm): boolean {
-        return !!(scorm.timeopen && scorm.timeopen > CoreTimeUtils.timestamp());
+        return !!(scorm.timeopen && scorm.timeopen > CoreTime.timestamp());
     }
 
     /**
