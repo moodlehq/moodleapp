@@ -60,7 +60,7 @@
     </core-navbar-buttons>
 </ion-header>
 <ion-content (ionScroll)="scrollFunction()">
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="36px">
         <!-- Load previous messages. -->
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadPrevious($event)" position="top" [error]="loadMoreError" />
 
