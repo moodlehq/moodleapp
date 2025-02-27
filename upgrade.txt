@@ -15,6 +15,7 @@ For more information about upgrading, read the official documentation: https://m
  - On prepareFeedbackData handler function for assignment activity Feedback plugins, a new parameter inputData has been added.
  - moment and moment-timezone have been removed in favour of dayjs.
  - moment has been deprecated to be used in site plugins, use native Date parsing functions instead.
+ - chart.js has been updated to 4.4.8 some breaking changes may occur when using CoreChartComponent.
 
 === 4.5.0 ===
 
