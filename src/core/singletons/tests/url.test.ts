@@ -16,57 +16,60 @@ import { mock, mockSingleton } from '@/testing/utils';
 import { CoreSite } from '@classes/sites/site';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CorePlatform } from '@services/platform';
-import { DomSanitizer } from '@singletons';
 
 describe('CoreUrl singleton', () => {
 
     const config = { platform: 'android' };
 
     beforeEach(() => {
-        mockSingleton(CorePlatform, [], { isAndroid: () => config.platform === 'android' });
-        mockSingleton(DomSanitizer, [], { bypassSecurityTrustUrl: url => url });
+        mockSingleton(CorePlatform, [], {
+            isAndroid: () => config.platform === 'android',
+            isIOS: () => config.platform === 'ios',
+        });
     });
 
-    it('builds address URL for Android platforms', () => {
+    it('builds maps URL for Android platforms', () => {
         // Arrange
         const address = 'Moodle Spain HQ';
+        const coordinates = { latitude: 41.914853, longitude: 1.6853498 };
 
         config.platform = 'android';
 
         // Act
-        const url = CoreUrl.buildAddressURL(address);
+        const defaultUrl = CoreUrl.buildMapsURL();
+        const queryUrl = CoreUrl.buildMapsURL({ query: address });
+        const coordinatesUrl = CoreUrl.buildMapsURL({ coordinates });
 
         // Assert
-        expect(url).toEqual('geo:0,0?q=Moodle%20Spain%20HQ');
-
-        expect(DomSanitizer.bypassSecurityTrustUrl).toHaveBeenCalled();
-        expect(CorePlatform.isAndroid).toHaveBeenCalled();
+        expect(defaultUrl).toEqual('geo:');
+        expect(queryUrl).toEqual('geo:0,0?q=Moodle%20Spain%20HQ');
+        expect(coordinatesUrl).toEqual('geo:41.914853,1.685350');
     });
 
-    it('builds address URL for non-Android platforms', () => {
+    it('builds maps URL for iOS platforms', () => {
         // Arrange
         const address = 'Moodle Spain HQ';
+        const coordinates = { latitude: 41.914853, longitude: 1.6853498 };
 
         config.platform = 'ios';
 
         // Act
-        const url = CoreUrl.buildAddressURL(address);
+        const defaultUrl = CoreUrl.buildMapsURL();
+        const queryUrl = CoreUrl.buildMapsURL({ query: address });
+        const coordinatesUrl = CoreUrl.buildMapsURL({ coordinates });
 
         // Assert
-        expect(url).toEqual('http://maps.google.com?q=Moodle%20Spain%20HQ');
-
-        expect(DomSanitizer.bypassSecurityTrustUrl).toHaveBeenCalled();
-        expect(CorePlatform.isAndroid).toHaveBeenCalled();
+        expect(defaultUrl).toEqual('http://maps.apple.com?q');
+        expect(queryUrl).toEqual('http://maps.apple.com?q=Moodle%20Spain%20HQ');
+        expect(coordinatesUrl).toEqual('https://maps.apple.com/?ll=41.914853,1.685350&near=41.914853,1.685350');
     });
 
-    it('doesn\'t build address if it\'s already a URL', () => {
-        const address = 'https://moodle.org';
+    it('doesn\'t build maps URL if query is already a URL', () => {
+        const query = 'https://moodle.org';
 
-        const url = CoreUrl.buildAddressURL(address);
+        const url = CoreUrl.buildMapsURL({ query });
 
-        expect(url).toEqual(address);
-
-        expect(DomSanitizer.bypassSecurityTrustUrl).toHaveBeenCalled();
+        expect(url).toEqual(query);
     });
 
     it('adds www if missing', () => {
