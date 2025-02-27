@@ -14,7 +14,7 @@
 
 import { Component, OnInit, OnDestroy, Optional, OnChanges, SimpleChanges } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import {
     CoreCourses,
@@ -470,7 +470,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 return this.refreshContent(true);
             }
 
-            course.lastaccess = CoreTimeUtils.timestamp();
+            course.lastaccess = CoreTime.timestamp();
 
             await this.invalidateCourseList();
             await this.filterCourses();

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreCourseFormatCurrentSectionData, CoreCourseFormatHandler } from '@features/course/services/format-delegate';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
@@ -45,7 +45,7 @@ export class CoreCourseFormatWeeksHandlerService implements CoreCourseFormatHand
         course: CoreCourseAnyCourseData,
         sections: CoreCourseSection[],
     ): Promise<CoreCourseFormatCurrentSectionData<CoreCourseSection>> {
-        const now = CoreTimeUtils.timestamp();
+        const now = CoreTime.timestamp();
 
         if ((course.startdate && now < course.startdate) || (course.enddate && now > course.enddate)) {
             // Course hasn't started yet or it has ended already. Return all sections.

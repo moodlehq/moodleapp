@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreSites } from '@services/sites';
 import { CoreUser } from '@features/user/services/user';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
@@ -103,7 +102,7 @@ export default class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
      */
     async fetchIssuedBadge(): Promise<void> {
         const site = CoreSites.getRequiredCurrentSite();
-        this.currentTime = CoreTimeUtils.timestamp();
+        this.currentTime = CoreTime.timestamp();
 
         try {
             // Search the badge in the user badges.

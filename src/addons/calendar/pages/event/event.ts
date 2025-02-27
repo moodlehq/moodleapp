@@ -25,7 +25,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreText } from '@singletons/text';
 import { CoreSites } from '@services/sites';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
@@ -156,9 +156,9 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
         }, this.currentSiteId);
 
         // Set and update current time. Use a 5 seconds error margin.
-        this.currentTime = CoreTimeUtils.timestamp();
+        this.currentTime = CoreTime.timestamp();
         this.updateCurrentTime = window.setInterval(() => {
-            this.currentTime = CoreTimeUtils.timestamp();
+            this.currentTime = CoreTime.timestamp();
         }, 5000);
 
         this.checkExactAlarms();

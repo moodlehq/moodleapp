@@ -17,7 +17,6 @@ import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/
 import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreTime } from '@singletons/time';
 import { AddonModChat, AddonModChatChat } from '../../services/chat';
 import { ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_PAGE_NAME } from '../../constants';
@@ -68,7 +67,7 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
         this.chat = await AddonModChat.getChat(this.courseId, this.module.id);
 
         this.description = this.chat.intro;
-        const chatTimeSeconds = (this.chat.chattime || 0) - CoreTimeUtils.timestamp();
+        const chatTimeSeconds = (this.chat.chattime || 0) - CoreTime.timestamp();
 
         this.chatTime = this.chat.schedule && chatTimeSeconds > 0
             ? CoreTime.formatTime(chatTimeSeconds)

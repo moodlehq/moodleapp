@@ -19,7 +19,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCacheUpdateFrequency, CoreConstants, DownloadStatus } from '@/core/constants';
 import { makeSingleton, Translate } from '@singletons';
@@ -1547,7 +1547,7 @@ export class CoreCourseProvider {
 
         if (status === DownloadStatus.DOWNLOADING) {
             // Set download time if course is now downloading.
-            downloadTime = CoreTimeUtils.timestamp();
+            downloadTime = CoreTime.timestamp();
         }
 
         try {

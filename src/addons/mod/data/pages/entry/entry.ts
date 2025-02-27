@@ -36,7 +36,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
 import {
     ADDON_MOD_DATA_AUTO_SYNCED,
-    ADDON_MOD_DATA_COMPONENT,
+    ADDON_MOD_DATA_COMPONENT_LEGACY,
     ADDON_MOD_DATA_ENTRIES_PER_PAGE,
     ADDON_MOD_DATA_ENTRY_CHANGED,
     AddonModDataTemplateType,
@@ -85,7 +85,7 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
     offset?: number;
     title = '';
     moduleName = 'data';
-    component = ADDON_MOD_DATA_COMPONENT;
+    component = ADDON_MOD_DATA_COMPONENT_LEGACY;
     entryLoaded = false;
     renderingEntry = false;
     loadingComments = false;

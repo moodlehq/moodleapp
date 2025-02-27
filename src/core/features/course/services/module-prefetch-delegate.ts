@@ -20,7 +20,7 @@ import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreArray } from '@singletons/array';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseModuleContentFile } from './course';
 import { CoreCache } from '@classes/cache';
@@ -285,7 +285,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             // Store the last execution of the check updates call.
             const entry: CoreCourseCheckUpdatesDBRecord = {
                 courseId: courseId,
-                time: CoreTimeUtils.timestamp(),
+                time: CoreTime.timestamp(),
             };
             CorePromiseUtils.ignoreErrors(site.getDb().insertRecord(CHECK_UPDATES_TIMES_TABLE, entry));
 

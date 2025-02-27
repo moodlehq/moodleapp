@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreUser, USER_NOREPLY_USER } from '@features/user/services/user';
 import { CoreLogger } from '@singletons/logger';
 import { Translate, makeSingleton } from '@singletons';
@@ -351,7 +351,7 @@ export class AddonNotificationsProvider {
 
         const params: CoreMessageMarkNotificationReadWSParams = {
             notificationid: notificationId,
-            timeread: CoreTimeUtils.timestamp(),
+            timeread: CoreTime.timestamp(),
         };
 
         return site.write<CoreMessageMarkNotificationReadWSResponse>('core_message_mark_notification_read', params);

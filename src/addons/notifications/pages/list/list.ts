@@ -24,7 +24,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { AddonNotificationsNotificationsSource } from '@addons/notifications/classes/notifications-source';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { AddonLegacyNotificationsNotificationsSource } from '@addons/notifications/classes/legacy-notifications-source';
@@ -202,7 +202,7 @@ export default class AddonNotificationsListPage implements AfterViewInit, OnDest
         await CorePromiseUtils.ignoreErrors(AddonNotifications.markAllNotificationsAsRead());
 
         CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {
-            time: CoreTimeUtils.timestamp(),
+            time: CoreTime.timestamp(),
         }, CoreSites.getCurrentSiteId());
 
         await this.refreshNotifications();

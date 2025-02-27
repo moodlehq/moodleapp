@@ -201,7 +201,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         // Get assignment submissions.
         const submissions = await AddonModAssign.getSubmissions(this.assign.id, { cmId: this.module.id });
-        const time = CoreTimeUtils.timestamp();
+        const time = CoreTime.timestamp();
 
         this.canViewAllSubmissions = submissions.canviewsubmissions;
 

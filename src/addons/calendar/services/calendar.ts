@@ -62,6 +62,7 @@ import {
 import { REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
 import { AddonCalendarFilter } from './calendar-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTime } from '@singletons/time';
 
 declare module '@singletons/events' {
 
@@ -834,7 +835,7 @@ export class AddonCalendarProvider {
         siteId?: string,
     ): Promise<AddonCalendarGetEventsEvent[]> {
 
-        initialTime = initialTime || CoreTimeUtils.timestamp();
+        initialTime = initialTime || CoreTime.timestamp();
 
         const site = await CoreSites.getSite(siteId);
         siteId = site.getId();

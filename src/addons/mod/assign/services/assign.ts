@@ -20,7 +20,7 @@ import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services
 import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreGrades } from '@features/grades/services/grades';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
 import { CoreNetwork } from '@services/network';
@@ -824,7 +824,7 @@ export class AddonModAssignProvider {
             return false;
         }
 
-        const time = CoreTimeUtils.timestamp();
+        const time = CoreTime.timestamp();
         const submission = this.getSubmissionObjectFromAttempt(assign, lastAttempt);
 
         let dateOpen = true;

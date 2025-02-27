@@ -18,7 +18,7 @@ import { CoreQuestionBehaviourDelegate, CoreQuestionQuestionWithAnswers } from '
 import { CoreQuestionAnswerDBRecord } from '@features/question/services/database/question';
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreSites } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
@@ -187,7 +187,7 @@ export class AddonModQuizOfflineProvider {
         siteId?: string,
     ): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
-        const now = CoreTimeUtils.timestamp();
+        const now = CoreTime.timestamp();
 
         const db = await CoreSites.getSiteDb(siteId);
 
@@ -272,7 +272,7 @@ export class AddonModQuizOfflineProvider {
         siteId?: string,
     ): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
-        timeMod = timeMod || CoreTimeUtils.timestamp();
+        timeMod = timeMod || CoreTime.timestamp();
 
         const questionsWithAnswers: Record<number, CoreQuestionQuestionWithAnswers> = {};
         const newStates: Record<number, string> = {};
