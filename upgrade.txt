@@ -16,6 +16,7 @@ For more information about upgrading, read the official documentation: https://m
  - moment and moment-timezone have been removed in favour of dayjs.
  - moment has been deprecated to be used in site plugins, use native Date parsing functions instead. Now it uses dayjs.tz when calling moment instance.
  - Location permissions have been removed from the app. Geolocation and CoreGeolocation services are now deprecated and no longer allow obtaining the location.
+ - chart.js has been updated to 4.4.8 some breaking changes may occur when using CoreChartComponent.
 
 === 4.5.0 ===
 
