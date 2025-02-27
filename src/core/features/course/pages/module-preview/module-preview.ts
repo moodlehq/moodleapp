@@ -49,7 +49,6 @@ export default class CoreCourseModulePreviewPage implements OnInit {
     courseId!: number;
     loaded = false;
     unsupported = false;
-    isDisabledInSite = false;
     showManualCompletion = false;
     displayOpenInBrowser = false;
 
@@ -93,8 +92,6 @@ export default class CoreCourseModulePreviewPage implements OnInit {
         if (!this.unsupported) {
             this.module.handlerData =
                 await CoreCourseModuleDelegate.getModuleDataFor(this.module.modname, this.module, this.courseId);
-        } else {
-            this.isDisabledInSite = CoreCourseModuleDelegate.isModuleDisabledInSite(this.module.modname);
         }
 
         this.title = this.module.name;
