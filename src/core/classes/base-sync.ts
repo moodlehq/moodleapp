@@ -16,7 +16,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
@@ -164,7 +164,7 @@ export class CoreSyncBaseProvider<T = void> {
         if (!timestamp) {
             return Translate.instant('core.never');
         } else {
-            return CoreTimeUtils.userDate(timestamp);
+            return CoreTime.userDate(timestamp);
         }
     }
 

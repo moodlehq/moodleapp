@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import moment, { Moment } from 'moment-timezone';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -49,8 +49,8 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseC
 
         let momentInstance: Moment;
 
-        this.maxDate = CoreTimeUtils.getDatetimeDefaultMax();
-        this.minDate = CoreTimeUtils.getDatetimeDefaultMin();
+        this.maxDate = CoreTime.getDatetimeDefaultMax();
+        this.minDate = CoreTime.getDatetimeDefaultMin();
 
         if (this.searchMode && this.searchFields) {
             this.addControl('f_' + this.field.id + '_z');
@@ -60,7 +60,7 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseC
                     this.searchFields['f_' + this.field.id + '_m'] + '-' + this.searchFields['f_' + this.field.id + '_d'])
                 : moment();
 
-            this.searchFields['f_' + this.field.id] = CoreTimeUtils.toDatetimeFormat(momentInstance.unix() * 1000);
+            this.searchFields['f_' + this.field.id] = CoreTime.toDatetimeFormat(momentInstance.unix() * 1000);
         } else {
             momentInstance = this.value?.content
                 ? moment(parseInt(this.value.content, 10) * 1000)
@@ -68,7 +68,7 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseC
 
         }
 
-        this.addControl('f_' + this.field.id, CoreTimeUtils.toDatetimeFormat(momentInstance.unix() * 1000));
+        this.addControl('f_' + this.field.id, CoreTime.toDatetimeFormat(momentInstance.unix() * 1000));
 
         if (!this.searchMode && !this.value?.content) {
             this.onFieldInit.emit({

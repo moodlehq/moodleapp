@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import {
     AddonCalendar,
     AddonCalendarEventToDisplay,
@@ -44,7 +44,6 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-source';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
-import { CoreTime } from '@singletons/time';
 import { CoreModals } from '@services/overlays/modals';
 import {
     ADDON_CALENDAR_AUTO_SYNCED,
@@ -295,7 +294,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
      * @param day Day viewed.
      */
     onDayViewed(day: DayBasicData): void {
-        this.periodName = CoreTimeUtils.userDate(
+        this.periodName = CoreTime.userDate(
             day.moment.unix() * 1000,
             'core.strftimedaydate',
         );

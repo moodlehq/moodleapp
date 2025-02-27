@@ -27,7 +27,7 @@ import {
 } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreArray } from '@singletons/array';
 import {
     AddonCalendar,
@@ -49,7 +49,6 @@ import { CoreSwipeSlidesDynamicItemsManager } from '@classes/items-management/sw
 import moment from 'moment-timezone';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
-import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { toBoolean } from '@/core/transforms/boolean';
 import { ADDON_CALENDAR_UNDELETED_EVENT_EVENT } from '@addons/calendar/constants';
@@ -222,7 +221,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      */
     onMonthViewed(month: MonthBasicData): void {
         // Calculate the period name. We don't use the one in result because it's in server's language.
-        this.periodName = CoreTimeUtils.userDate(
+        this.periodName = CoreTime.userDate(
             month.moment.unix() * 1000,
             'core.strftimemonthyear',
         );
@@ -575,7 +574,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
 
         await Promise.all(weeks.map(async (week) => {
             await Promise.all(week.days.map(async (day) => {
-                day.periodName = CoreTimeUtils.userDate(
+                day.periodName = CoreTime.userDate(
                     dayMoment.date(day.mday).unix() * 1000,
                     'core.strftimedaydate',
                 );

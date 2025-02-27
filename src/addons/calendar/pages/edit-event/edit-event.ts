@@ -18,7 +18,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreUtils } from '@singletons/utils';
 import { CoreCategoryData, CoreCourses, CoreCourseSearchedData, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
@@ -134,8 +134,8 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
         this.form.addControl('repeats', this.fb.control({ value: '1', disabled: true }));
         this.form.addControl('repeateditall', this.fb.control(1));
 
-        this.maxDate = CoreTimeUtils.getDatetimeDefaultMax();
-        this.minDate = CoreTimeUtils.getDatetimeDefaultMin();
+        this.maxDate = CoreTime.getDatetimeDefaultMax();
+        this.minDate = CoreTime.getDatetimeDefaultMin();
     }
 
     /**
@@ -147,7 +147,7 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
         this.title = this.eventId ? 'addon.calendar.editevent' : 'addon.calendar.newevent';
 
         const timestamp = CoreNavigator.getRouteNumberParam('timestamp');
-        const currentDate = CoreTimeUtils.toDatetimeFormat(timestamp);
+        const currentDate = CoreTime.toDatetimeFormat(timestamp);
         this.form.addControl('timestart', this.fb.control(currentDate, Validators.required));
         this.form.addControl('timedurationuntil', this.fb.control(currentDate));
         this.form.addControl('courseid', this.fb.control(this.courseId));
@@ -336,7 +336,7 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
         const courseId = isOffline ? offlineEvent.courseid : onlineEvent.course?.id;
 
         this.form.controls.name.setValue(event.name);
-        this.form.controls.timestart.setValue(CoreTimeUtils.toDatetimeFormat(event.timestart * 1000));
+        this.form.controls.timestart.setValue(CoreTime.toDatetimeFormat(event.timestart * 1000));
         this.typeControl.setValue(event.eventtype as AddonCalendarEventType);
         this.form.controls.categoryid.setValue(event.categoryid || '');
         this.form.controls.courseid.setValue(courseId || '');
@@ -349,7 +349,7 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
             // It's an offline event, use the data as it is.
             this.form.controls.duration.setValue(offlineEvent.duration);
             this.form.controls.timedurationuntil.setValue(
-                CoreTimeUtils.toDatetimeFormat(((offlineEvent.timedurationuntil || 0) * 1000) || Date.now()),
+                CoreTime.toDatetimeFormat(((offlineEvent.timedurationuntil || 0) * 1000) || Date.now()),
             );
             this.form.controls.timedurationminutes.setValue(offlineEvent.timedurationminutes || '');
             this.form.controls.repeat.setValue(!!offlineEvent.repeat);
@@ -360,13 +360,13 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
 
             if (onlineEvent.timeduration > 0) {
                 this.form.controls.duration.setValue(1);
-                this.form.controls.timedurationuntil.setValue(CoreTimeUtils.toDatetimeFormat(
+                this.form.controls.timedurationuntil.setValue(CoreTime.toDatetimeFormat(
                     (onlineEvent.timestart + onlineEvent.timeduration) * 1000,
                 ));
             } else {
                 // No duration.
                 this.form.controls.duration.setValue(0);
-                this.form.controls.timedurationuntil.setValue(CoreTimeUtils.toDatetimeFormat());
+                this.form.controls.timedurationuntil.setValue(CoreTime.toDatetimeFormat());
             }
 
             this.form.controls.timedurationminutes.setValue('');

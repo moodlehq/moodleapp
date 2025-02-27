@@ -32,7 +32,7 @@ import moment from 'moment-timezone';
 import { makeSingleton } from '@singletons';
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
 import { CoreCategoryData } from '@features/courses/services/courses';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import {
@@ -339,7 +339,7 @@ export class AddonCalendarHelperProvider {
             }
 
             if (formatted.timestamp) {
-                formatted.sublabel = CoreTimeUtils.userDate(formatted.timestamp * 1000, 'core.strftimedatetime');
+                formatted.sublabel = CoreTime.userDate(formatted.timestamp * 1000, 'core.strftimedatetime');
             }
 
             return formatted;

@@ -19,7 +19,7 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreNetwork } from '@services/network';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreUtils } from '@singletons/utils';
 import { makeSingleton, Translate } from '@singletons';
 import {
@@ -34,7 +34,6 @@ import { CoreFileEntry } from '@services/file-helper';
 import { ADDON_MOD_FORUM_ALL_GROUPS, ADDON_MOD_FORUM_COMPONENT } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreTime } from '@singletons/time';
 
 /**
  * Service that provides some features for forums.
@@ -291,13 +290,13 @@ export class AddonModForumHelperProvider {
 
         if (getDueDateMessage) {
             if (this.isDueDateReached(forum)) {
-                const dueDate = CoreTimeUtils.userDate(forum.duedate * 1000);
+                const dueDate = CoreTime.userDate(forum.duedate * 1000);
 
                 return Translate.instant('addon.mod_forum.thisforumisdue', { $a: dueDate });
             }
 
             if (forum.duedate && forum.duedate > 0) {
-                const dueDate = CoreTimeUtils.userDate(forum.duedate * 1000);
+                const dueDate = CoreTime.userDate(forum.duedate * 1000);
 
                 return Translate.instant('addon.mod_forum.thisforumhasduedate', { $a: dueDate });
             }
