@@ -15,7 +15,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import moment from 'moment-timezone';
 
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 
@@ -63,10 +63,10 @@ export class CoreDateDayOrTimePipe implements PipeTransform {
         }
 
         return moment(timestamp * 1000).calendar(null, {
-            sameDay: CoreTimeUtils.convertPHPToMoment(Translate.instant('core.strftimetime')),
+            sameDay: CoreTime.convertPHPToMoment(Translate.instant('core.strftimetime')),
             lastDay: Translate.instant('core.dflastweekdate'),
             lastWeek: Translate.instant('core.dflastweekdate'),
-            sameElse: CoreTimeUtils.convertPHPToMoment(Translate.instant('core.strftimedatefullshort')),
+            sameElse: CoreTime.convertPHPToMoment(Translate.instant('core.strftimedatefullshort')),
         });
     }
 

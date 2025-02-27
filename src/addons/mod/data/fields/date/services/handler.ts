@@ -21,7 +21,7 @@ import {
 import { AddonModDataFieldHandler } from '@addons/mod/data/services/data-fields-delegate';
 import { Injectable, Type } from '@angular/core';
 import { CoreFormFields } from '@singletons/form';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { makeSingleton, Translate } from '@singletons';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 
@@ -122,7 +122,7 @@ export class AddonModDataFieldDateHandlerService implements AddonModDataFieldHan
         const input = inputData[fieldName] && inputData[fieldName].substring(0, 10) || '';
 
         const content = (originalFieldData && originalFieldData?.content &&
-                CoreTimeUtils.toDatetimeFormat(parseInt(originalFieldData.content, 10) * 1000).substring(0, 10)) || '';
+                CoreTime.toDatetimeFormat(parseInt(originalFieldData.content, 10) * 1000).substring(0, 10)) || '';
 
         return input != content;
     }
