@@ -1,4 +1,4 @@
-@addon_competency @app @tool @tool_lp @javascript @lms_from5.0
+@addon_competency @app @tool @tool_lp @javascript
 Feature: Test competency navigation
 
   Background:
