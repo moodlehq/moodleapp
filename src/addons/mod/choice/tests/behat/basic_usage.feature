@@ -17,6 +17,7 @@ Feature: Test basic usage of choice activity in app
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
 
+  @test
   Scenario: Answer a choice (multi or single, update answer) & View results
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
@@ -32,6 +33,7 @@ Feature: Test basic usage of choice activity in app
     Then I should find "Option 1: 0" in the app
     And I should find "Option 2: 1" in the app
     And I should find "Option 3: 0" in the app
+    And the UI should match the snapshot
     But I should not find "Remove my choice" in the app
 
     When I go back in the app
@@ -44,6 +46,7 @@ Feature: Test basic usage of choice activity in app
       | \mod_choice\event\course_module_viewed | choice   | Test single choice name | Course 1 |
       | \mod_choice\event\answer_created       | choice   | Test single choice name | Course 1 |
 
+  @test
   Scenario: Answer a choice (multi or single, update answer) & View results & Delete choice
     Given the following "activities" exist:
       | activity | name                    | intro                          | course | idnumber | option                       | allowmultiple | allowupdate | showresults |
@@ -55,6 +58,7 @@ Feature: Test basic usage of choice activity in app
     Then I should find "Option 1: 1" in the app
     And I should find "Option 2: 1" in the app
     And I should find "Option 3: 0" in the app
+    And the UI should match the snapshot
     And I should find "Remove my choice" in the app
 
     When I unselect "Option 1" in the app

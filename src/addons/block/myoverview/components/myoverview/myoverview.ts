@@ -114,7 +114,6 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     protected fetchContentDefaultError = 'Error getting my overview data.';
     protected gradePeriodAfter = 0;
     protected gradePeriodBefore = 0;
-    protected today = 0;
     protected firstLoadWatcher?: PageLoadWatcher;
     protected loadsManager: PageLoadsManager;
 
@@ -577,9 +576,6 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             }
         } else {
             this.saveFilters(timeFilter);
-
-            // Update today date.
-            this.today = Date.now();
 
             // Apply filters.
             switch(timeFilter) {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import moment from 'moment-timezone';
+import dayjs from 'dayjs';
 
 import { CoreConstants } from '@/core/constants';
 
@@ -108,7 +108,7 @@ export class CoreLogger {
     private static prepareLogFn(logFn: LogFunction, className: string): LogFunction {
         // Return our own function that will call the logging function with the treated message.
         return (...args): void => {
-            const now = moment().format('l LTS');
+            const now = dayjs().format('l LTS');
             args[0] = now + ' ' + className + ': ' + args[0]; // Prepend timestamp and className to the original message.
             logFn.apply(null, args);
         };
