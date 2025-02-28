@@ -186,7 +186,7 @@ export class CoreTimeUtilsProvider {
      * @returns Readable date.
      */
     userDate(timestamp: number, format?: string, convert: boolean = true, fixDay: boolean = true, fixHour: boolean = true): string {
-        format = Translate.instant(format ? format : 'core.strftimedaydatetime') as string;
+        format = Translate.instant(format ? format : 'core.strftimedaydatetime');
 
         if (fixDay) {
             format = format.replace(/%d/g, '%e');
@@ -239,7 +239,7 @@ export class CoreTimeUtilsProvider {
      * @returns The midnight value of the user's timestamp.
      */
     getMidnightForTimestamp(timestamp?: number): number {
-        if (timestamp) {
+        if (timestamp !== undefined) {
             return moment(timestamp * 1000).startOf('day').unix();
         } else {
             return moment().startOf('day').unix();
