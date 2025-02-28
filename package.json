@@ -59,7 +59,6 @@
         "@awesome-cordova-plugins/device": "^6.9.0",
         "@awesome-cordova-plugins/file": "^6.9.0",
         "@awesome-cordova-plugins/file-opener": "^6.9.0",
-        "@awesome-cordova-plugins/geolocation": "^6.9.0",
         "@awesome-cordova-plugins/http": "^6.9.0",
         "@awesome-cordova-plugins/in-app-browser": "^6.9.0",
         "@awesome-cordova-plugins/ionic-webview": "^6.9.0",
@@ -104,7 +103,6 @@
         "cordova-plugin-customurlscheme": "^5.0.2",
         "cordova-plugin-device": "^2.1.0",
         "cordova-plugin-file": "^8.1.0",
-        "cordova-plugin-geolocation": "^5.0.0",
         "cordova-plugin-ionic-keyboard": "^2.2.0",
         "cordova-plugin-local-notification": "1.0.0",
         "cordova-plugin-network-information": "^3.0.0",
@@ -221,9 +219,6 @@
                 "ANDROID_PATHPREFIX": "/"
             },
             "cordova-plugin-device": {},
-            "cordova-plugin-geolocation": {
-                "GPS_REQUIRED": "false"
-            },
             "cordova-plugin-ionic-keyboard": {},
             "cordova-plugin-local-notification": {
                 "ANDROID_SUPPORT_V4_VERSION": "26.+"

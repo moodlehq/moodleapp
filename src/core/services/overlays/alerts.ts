@@ -305,7 +305,7 @@ export class CoreAlertsService {
             if (hasHTMLTags) {
                 // Treat all anchors so they don't override the app.
                 const alertMessageEl: HTMLElement | null = alert.querySelector('.alert-message');
-                alertMessageEl && this.treatAnchors(alertMessageEl);
+                alertMessageEl && this.treatAnchors(alertMessageEl, options.showBrowserWarningInLinks);
             }
 
             fixOverlayAriaHidden(alert);
@@ -402,7 +402,11 @@ export class CoreAlertsService {
             return null;
         }
 
-        const alertOptions: CoreAlertsShowOptions = { message, autoCloseTime: options.autoCloseTime };
+        const alertOptions: CoreAlertsShowOptions = {
+            message,
+            autoCloseTime: options.autoCloseTime,
+            showBrowserWarningInLinks: options.showBrowserWarningInLinks,
+        };
 
         if (CoreErrorHelper.isNetworkError(error)) {
             alertOptions.cssClass = 'core-alert-network-error';
@@ -461,8 +465,9 @@ export class CoreAlertsService {
      * Treat anchors inside an alert.
      *
      * @param container The HTMLElement that can contain anchors.
+     * @param showBrowserWarning Whether to show the browser warning when opening links.
      */
-    protected treatAnchors(container: HTMLElement): void {
+    protected treatAnchors(container: HTMLElement, showBrowserWarning = true): void {
         const anchors = Array.from(container.querySelectorAll('a'));
 
         anchors.forEach((anchor) => {
@@ -477,7 +482,7 @@ export class CoreAlertsService {
                     event.preventDefault();
                     event.stopPropagation();
 
-                    CoreOpener.openInBrowser(href);
+                    CoreOpener.openInBrowser(href, { showBrowserWarning });
                 }
             });
         });
@@ -519,6 +524,7 @@ export type CoreAlertsGetErrorMessageOptions = {
  */
 export type CoreAlertsShowOptions = AlertOptions & {
     autoCloseTime?: number; // Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
+    showBrowserWarningInLinks?: boolean; // Whether to show the browser warning when opening links. Defaults to true.
 };
 
 /**
@@ -527,4 +533,5 @@ export type CoreAlertsShowOptions = AlertOptions & {
 export type CoreAlertsShowErrorOptions = {
     autoCloseTime?: number; // Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
     default?: string; // Default error message to show if the error is empty.
+    showBrowserWarningInLinks?: boolean; // Whether to show the browser warning when opening links. Defaults to true.
 };

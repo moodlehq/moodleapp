@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Coordinates } from '@awesome-cordova-plugins/geolocation';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
@@ -38,7 +37,7 @@ export class CoreGeolocationProvider {
      * @returns Promise resolved with the geolocation coordinates.
      * @deprecated since 5.0. Geo location is no longer available in the app.
      */
-    async getCoordinates(): Promise<Coordinates> {
+    async getCoordinates(): Promise<void> {
         throw new CoreError(Translate.instant('core.locationnolongeravailable', {
             howToObtain: Translate.instant('core.howtoobtaincoordinates', {
                 url: CoreUrl.buildMapsURL(),
