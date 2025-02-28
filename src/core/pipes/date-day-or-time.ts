@@ -62,7 +62,7 @@ export class CoreDateDayOrTimePipe implements PipeTransform {
             timestamp = numberTimestamp;
         }
 
-        return dayjs(timestamp * 1000).calendar(null, {
+        return dayjs.tz(timestamp * 1000).calendar(null, {
             sameDay: CoreTime.convertPHPToDayJS(Translate.instant('core.strftimetime')),
             lastDay: Translate.instant('core.dflastweekdate'),
             lastWeek: Translate.instant('core.dflastweekdate'),

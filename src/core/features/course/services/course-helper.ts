@@ -1379,9 +1379,9 @@ export class CoreCourseHelperProvider {
         const downloadTime = packageData.downloadTime;
         let downloadTimeReadable = '';
         if (now - downloadTime < 7 * 86400) {
-            downloadTimeReadable = dayjs(downloadTime * 1000).fromNow();
+            downloadTimeReadable = dayjs.tz(downloadTime * 1000).fromNow();
         } else {
-            downloadTimeReadable = dayjs(downloadTime * 1000).calendar();
+            downloadTimeReadable = dayjs.tz(downloadTime * 1000).calendar();
         }
 
         return {

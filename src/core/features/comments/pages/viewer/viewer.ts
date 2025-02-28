@@ -538,7 +538,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
         }
 
         // Check if day has changed.
-        return !dayjs(comment.timecreated * 1000).isSame(prevComment.timecreated * 1000, 'day');
+        return !dayjs.tz(comment.timecreated * 1000).isSame(prevComment.timecreated * 1000, 'day');
     }
 
     /**

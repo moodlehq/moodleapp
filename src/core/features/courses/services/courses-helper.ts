@@ -402,7 +402,7 @@ export class CoreCoursesHelperProvider {
         }
 
         // Calculate the end date to use for display classification purposes, incorporating the grace period, if any.
-        const endDate = dayjs(course.enddate * 1000).add(gradePeriodAfter, 'days').valueOf();
+        const endDate = dayjs.tz(course.enddate * 1000).add(gradePeriodAfter, 'days').valueOf();
 
         return endDate < Date.now();
     }
@@ -425,7 +425,7 @@ export class CoreCoursesHelperProvider {
         }
 
         // Calculate the start date to use for display classification purposes, incorporating the grace period, if any.
-        const startDate = dayjs(course.startdate * 1000).subtract(gradePeriodBefore, 'days').valueOf();
+        const startDate = dayjs.tz(course.startdate * 1000).subtract(gradePeriodBefore, 'days').valueOf();
 
         return startDate > Date.now();
     }

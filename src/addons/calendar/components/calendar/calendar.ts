@@ -126,7 +126,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
             const params = {
                 course: this.filter?.courseId,
-                time: dayjs().unix(),
+                time: CoreTime.timestamp(),
             };
 
             CoreAnalytics.logEvent({
@@ -150,7 +150,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      * @inheritdoc
      */
     ngOnInit(): void {
-        const source = new AddonCalendarMonthSlidesItemsManagerSource(this, dayjs({
+        const source = new AddonCalendarMonthSlidesItemsManagerSource(this, dayjs.tz({
             year: this.initialYear,
             month: this.initialMonth ? this.initialMonth - 1 : undefined,
         }).startOf('month'));
@@ -288,7 +288,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      * Go to current month.
      */
     async goToCurrentMonth(): Promise<void> {
-        const current = dayjs();
+        const current = dayjs.tz();
 
         await this.viewMonth(current.month() + 1, current.year());
     }
@@ -350,7 +350,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
         this.loaded = false;
         const item = {
-            dayJS: dayjs({
+            dayJS: dayjs.tz({
                 year,
                 month: month - 1,
             }),
@@ -560,16 +560,16 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
 
         const weekDays = AddonCalendar.getWeekDays(result.daynames[0].dayno);
         const weeks = result.weeks as AddonCalendarWeek[];
-        const currentDay = dayjs().date();
+        const currentDay = dayjs.tz().date();
         const currentTime = CoreTime.timestamp();
-        const dayMoment = dayjs(month.dayJS);
+        const dayMoment = dayjs.tz(month.dayJS);
 
         const preloadedMonth: PreloadedMonth = {
             ...month,
             weeks,
             weekDays,
-            isCurrentMonth: month.dayJS.isSame(dayjs(), 'month'),
-            isPastMonth: month.dayJS.isBefore(dayjs(), 'month'),
+            isCurrentMonth: month.dayJS.isSame(dayjs.tz(), 'month'),
+            isPastMonth: month.dayJS.isBefore(dayjs.tz(), 'month'),
         };
 
         await Promise.all(weeks.map(async (week) => {

@@ -327,7 +327,7 @@ export class AddonCalendarProvider {
 
         if (event.timeduration) {
 
-            if (dayjs(start).isSame(end, 'day')) {
+            if (dayjs.tz(start).isSame(end, 'day')) {
                 // Event starts and ends the same day.
                 if (event.timeduration == CoreConstants.SECONDS_DAY) {
                     time = Translate.instant('addon.calendar.allday');
@@ -347,14 +347,14 @@ export class AddonCalendarProvider {
                 let dayEnd = this.getDayRepresentation(end, false) + ', ';
 
                 // Add links to the days if needed.
-                if (dayStart && (!seenDay || !dayjs(seenDay).isSame(start, 'day'))) {
+                if (dayStart && (!seenDay || !dayjs.tz(seenDay).isSame(start, 'day'))) {
                     promises.push(this.getViewUrl('day', event.timestart, undefined, siteId).then((url) => {
                         dayStart = CoreUrl.buildLink(url, dayStart);
 
                         return;
                     }));
                 }
-                if (dayEnd && (!seenDay || !dayjs(seenDay).isSame(end, 'day'))) {
+                if (dayEnd && (!seenDay || !dayjs.tz(seenDay).isSame(end, 'day'))) {
                     promises.push(this.getViewUrl('day', end / 1000, undefined, siteId).then((url) => {
                         dayEnd = CoreUrl.buildLink(url, dayEnd);
 
@@ -377,7 +377,7 @@ export class AddonCalendarProvider {
         }
 
         // Display day + time.
-        if (seenDay && dayjs(seenDay).isSame(start, 'day')) {
+        if (seenDay && dayjs.tz(seenDay).isSame(start, 'day')) {
             // This day is currently being displayed, don't add an link.
             return this.getDayRepresentation(start, useCommonWords) + ', ' + time;
         }
@@ -537,8 +537,8 @@ export class AddonCalendarProvider {
             return CoreTime.userDate(time, 'core.strftimedayshort');
         }
 
-        const date = dayjs(time);
-        const today = dayjs();
+        const date = dayjs.tz(time);
+        const today = dayjs.tz();
 
         if (date.isSame(today, 'day')) {
             return Translate.instant('addon.calendar.today');

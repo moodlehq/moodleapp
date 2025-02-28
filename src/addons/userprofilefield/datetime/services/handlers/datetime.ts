@@ -60,7 +60,7 @@ export class AddonUserProfileFieldDatetimeHandlerService implements CoreUserProf
             return {
                 type: 'datetime',
                 name: 'profile_field_' + field.shortname,
-                value: dayjs(<string> formValues[name]).unix(),
+                value: dayjs.tz(<string> formValues[name]).unix(),
             };
         }
     }

@@ -56,15 +56,15 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseC
             this.addControl('f_' + this.field.id + '_z');
 
             dayJSInstance = this.searchFields['f_' + this.field.id + '_y']
-                ? dayjs(this.searchFields['f_' + this.field.id + '_y'] + '-' +
+                ? dayjs.tz(this.searchFields['f_' + this.field.id + '_y'] + '-' +
                     this.searchFields['f_' + this.field.id + '_m'] + '-' + this.searchFields['f_' + this.field.id + '_d'])
-                : dayjs();
+                : dayjs.tz();
 
             this.searchFields['f_' + this.field.id] = CoreTime.toDatetimeFormat(dayJSInstance.valueOf());
         } else {
             dayJSInstance = this.value?.content
-                ? dayjs(parseInt(this.value.content, 10) * 1000)
-                : dayjs();
+                ? dayjs.tz(parseInt(this.value.content, 10) * 1000)
+                : dayjs.tz();
 
         }
 

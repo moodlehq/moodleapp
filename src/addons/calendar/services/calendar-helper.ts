@@ -131,8 +131,8 @@ export class AddonCalendarHelperProvider {
         const result = {};
 
         events.forEach((event) => {
-            const treatedDay = dayjs(event.timestart * 1000);
-            const endDay = dayjs((event.timestart + event.timeduration) * 1000);
+            const treatedDay = dayjs.tz(event.timestart * 1000);
+            const endDay = dayjs.tz((event.timestart + event.timeduration) * 1000);
 
             // Add the event to all the days it lasts.
             while (!treatedDay.isAfter(endDay, 'day')) {
@@ -415,13 +415,13 @@ export class AddonCalendarHelperProvider {
         startWeekDayStr = await CoreConfig.get(ADDON_CALENDAR_STARTING_WEEK_DAY, startWeekDayStr);
         const startWeekDay = parseInt(startWeekDayStr, 10);
 
-        const today = dayjs();
+        const today = dayjs.tz();
         const isCurrentMonth = today.year() == year && today.month() == month - 1;
         const weeks: AddonCalendarWeek[] = [];
 
-        let date = dayjs({ year, month: month - 1, date: 1 });
+        let date = dayjs.tz({ year, month: month - 1, date: 1 });
         for (let mday = 1; mday <= date.daysInMonth(); mday++) {
-            date = dayjs({ year, month: month - 1, date: mday });
+            date = dayjs.tz({ year, month: month - 1, date: mday });
 
             // Add new week and calculate prepadding.
             if (!weeks.length || date.day() == startWeekDay) {
@@ -668,7 +668,7 @@ export class AddonCalendarHelperProvider {
 
             // Fetch months and days.
             fetchTimestarts.forEach((fetchTime) => {
-                const day = dayjs(fetchTime * 1000);
+                const day = dayjs.tz(fetchTime * 1000);
 
                 const monthId = this.getMonthId(day);
                 if (!treatedMonths[monthId]) {
@@ -704,7 +704,7 @@ export class AddonCalendarHelperProvider {
 
             // Invalidate months and days.
             invalidateTimestarts.forEach((fetchTime) => {
-                const day = dayjs(fetchTime * 1000);
+                const day = dayjs.tz(fetchTime * 1000);
 
                 const monthId = this.getMonthId(day);
                 if (!treatedMonths[monthId]) {

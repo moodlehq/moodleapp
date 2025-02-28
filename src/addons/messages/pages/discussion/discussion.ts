@@ -1215,7 +1215,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
         }
 
         // Check if day has changed.
-        return !dayjs(message.timecreated).isSame(prevMessage.timecreated, 'day');
+        return !dayjs.tz(message.timecreated).isSame(prevMessage.timecreated, 'day');
     }
 
     /**

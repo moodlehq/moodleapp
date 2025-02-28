@@ -282,7 +282,7 @@ export class AddonBlockTimelineProvider {
      * @returns timestamp.
      */
     getDayStart(daysOffset = 0): number {
-        return dayjs().startOf('day').add(daysOffset, 'days').unix();
+        return dayjs.tz().startOf('day').add(daysOffset, 'days').unix();
     }
 
 }

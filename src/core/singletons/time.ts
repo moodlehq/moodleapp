@@ -142,6 +142,8 @@ export class CoreTime {
             import('dayjs/plugin/weekday'),
             import('dayjs/plugin/calendar'),
             import('dayjs/plugin/localizedFormat'),
+            import('dayjs/plugin/utc'),
+            import('dayjs/plugin/timezone'),
         ];
 
         const result = await Promise.all(plugins);
@@ -278,17 +280,6 @@ export class CoreTime {
      * Force timezone to use. Timezone is forced for automated tests.
      */
     static async forceTimezoneForTesting(): Promise<void> {
-        const plugins = [
-            import('dayjs/plugin/utc'),
-            import('dayjs/plugin/timezone'),
-        ];
-
-        const result = await Promise.all(plugins);
-
-        result.map((plugin) => {
-            dayjs.extend(plugin.default);
-        });
-
         await CoreTime.initialize();
 
         // Use the same timezone forced for LMS in tests.
@@ -349,7 +340,7 @@ export class CoreTime {
      * @returns The readable timestamp.
      */
     static readableTimestamp(): string {
-        return dayjs(Date.now()).format('YYYYMMDDHHmmss');
+        return dayjs.tz().format('YYYYMMDDHHmmss');
     }
 
     /**
@@ -358,7 +349,7 @@ export class CoreTime {
      * @returns The current timestamp in seconds.
      */
     static timestamp(): number {
-        return Math.round(Date.now() / 1000);
+        return dayjs().unix();
     }
 
     /**
@@ -476,11 +467,9 @@ export class CoreTime {
      * @returns Formatted time.
      */
     static toDatetimeFormat(timestamp?: number): string {
-        const isoString = dayjs.tz(timestamp || Date.now()).toISOString();
-
-        // Remove milliseconds and timezone for consistency with the values used by ion-datetime.
-        // ion-datetime no longer uses timezone, it always uses UTC.
-        return isoString.substring(0, isoString.indexOf('.'));
+        // See https://ionicframework.com/docs/api/datetime#iso-8601-datetime-format-yyyy-mm-ddthhmmz
+        // Do not use toISOString because it returns the date in UTC.
+        return dayjs.tz(timestamp).format('YYYY-MM-DDTHH:mm');
     }
 
     /**
@@ -516,7 +505,7 @@ export class CoreTime {
      * @returns The maximum year for datetime inputs.
      */
     static getDatetimeDefaultMax(): string {
-        return String(dayjs().year() + 20);
+        return String(dayjs.tz().year() + 20);
     }
 
     /**
@@ -525,7 +514,7 @@ export class CoreTime {
      * @returns The minimum year for datetime inputs.
      */
     static getDatetimeDefaultMin(): string {
-        return String(dayjs().year() - 20);
+        return String(dayjs.tz().year() - 20);
     }
 
 }

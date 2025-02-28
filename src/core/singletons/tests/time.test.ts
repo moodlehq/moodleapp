@@ -124,9 +124,8 @@ describe('CoreTime singleton', () => {
     });
 
     it('should convert timestamp to datetime format', () => {
-        // Using a timestamp will always return UTC time.
-        expect(CoreTime.toDatetimeFormat(1641027600000)).toEqual('2022-01-01T09:00:00');
-        expect(CoreTime.toDatetimeFormat()).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/);
+        expect(CoreTime.toDatetimeFormat(1641027600000)).toEqual('2022-01-01T17:00');
+        expect(CoreTime.toDatetimeFormat()).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/);
 
     });
 

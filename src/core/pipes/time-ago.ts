@@ -50,7 +50,7 @@ export class CoreTimeAgoPipe implements PipeTransform {
             timestamp = numberTimestamp;
         }
 
-        return Translate.instant('core.ago', { $a: dayjs(timestamp * 1000).fromNow(true) });
+        return Translate.instant('core.ago', { $a: dayjs.tz(timestamp * 1000).fromNow(true) });
     }
 
 }

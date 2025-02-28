@@ -124,7 +124,7 @@ export class AddonModChatHelperProvider {
         }
 
         // Check if day has changed.
-        return !dayjs(message.timestamp * 1000).isSame(prevMessage.timestamp * 1000, 'day');
+        return !dayjs.tz(message.timestamp * 1000).isSame(prevMessage.timestamp * 1000, 'day');
     }
 
 }

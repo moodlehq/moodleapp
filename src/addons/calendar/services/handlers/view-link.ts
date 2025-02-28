@@ -55,7 +55,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     };
                     const timestamp = params.time ? Number(params.time) * 1000 : Date.now();
 
-                    const dayJSInstance = dayjs(timestamp);
+                    const dayJSInstance = dayjs.tz(timestamp);
                     stateParams.year = dayJSInstance.year();
                     stateParams.month = dayJSInstance.month() + 1;
 
@@ -72,7 +72,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     };
                     const timestamp = params.time ? Number(params.time) * 1000 : Date.now();
 
-                    const dayJSInstance = dayjs(timestamp);
+                    const dayJSInstance = dayjs.tz(timestamp);
                     stateParams.year = dayJSInstance.year();
                     stateParams.month = dayJSInstance.month() + 1;
                     stateParams.day = dayJSInstance.date();

@@ -237,7 +237,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
         this.filter.filtered = this.filter.courseId !== undefined || types.some((name) => !this.filter[name]);
 
         const month = CoreNavigator.getRouteNumberParam('month');
-        const source = new AddonCalendarDaySlidesItemsManagerSource(this, dayjs({
+        const source = new AddonCalendarDaySlidesItemsManagerSource(this, dayjs.tz({
             year: CoreNavigator.getRouteNumberParam('year'),
             month: month ? month - 1 : undefined,
             date: CoreNavigator.getRouteNumberParam('day'),
@@ -415,7 +415,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
             const selectedDay = this.manager?.getSelectedItem();
             if (selectedDay) {
                 // Use current time but in the specified day.
-                const now = dayjs();
+                const now = dayjs.tz();
                 params.timestamp = selectedDay.dayJS.clone().set({ hour: now.hour(), minute: now.minute() }).valueOf();
             }
         }
@@ -448,7 +448,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
         }
 
         const currentDay = {
-            dayJS: dayjs(),
+            dayJS: dayjs.tz(),
         };
         this.loaded = false;
 
@@ -688,8 +688,8 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
             events: [],
             onlineEvents: [],
             filteredEvents: [],
-            isCurrentDay: day.dayJS.isSame(dayjs(), 'day'),
-            isPastDay: day.dayJS.isBefore(dayjs(), 'day'),
+            isCurrentDay: day.dayJS.isSame(dayjs.tz(), 'day'),
+            isPastDay: day.dayJS.isBefore(dayjs.tz(), 'day'),
         };
 
         if (preload) {
