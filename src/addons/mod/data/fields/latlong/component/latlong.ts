@@ -17,11 +17,7 @@ import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { SafeUrl } from '@angular/platform-browser';
-import { CoreAnyError } from '@classes/errors/error';
-import { CoreGeolocation, CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
-import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreLoadings } from '@services/overlays/loadings';
-import { DomSanitizer, Translate } from '@singletons';
+import { DomSanitizer } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreUrl } from '@singletons/url';
 
@@ -31,6 +27,7 @@ import { CoreUrl } from '@singletons/url';
 @Component({
     selector: 'addon-mod-data-field-latlong',
     templateUrl: 'addon-mod-data-field-latlong.html',
+    styleUrl: 'latlong.scss',
     standalone: true,
     imports: [
         CoreSharedModule,
@@ -40,7 +37,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginBa
 
     north?: number;
     east?: number;
-    locationServicesEnabled = false;
+    mapsUrl = '';
 
     constructor(fb: FormBuilder) {
         super(fb);
@@ -88,7 +85,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginBa
         if (this.editMode) {
             this.addControl('f_' + this.field.id + '_0', this.north);
             this.addControl('f_' + this.field.id + '_1', this.east);
-            this.locationServicesEnabled = await CoreGeolocation.canRequest();
+            this.mapsUrl = CoreUrl.buildMapsURL();
 
         } else if (this.searchMode) {
             this.addControl('f_' + this.field.id);
@@ -100,61 +97,8 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginBa
      */
     protected updateValue(value?: Partial<AddonModDataEntryField>): void {
         this.value = value;
-        this.north = (value && parseFloat(value.content!)) || undefined;
-        this.east = (value && parseFloat(value.content1!)) || undefined;
-    }
-
-    /**
-     * Get user location.
-     *
-     * @param event The event.
-     */
-    async getLocation(event: Event): Promise<void> {
-        event.preventDefault();
-
-        const modal = await CoreLoadings.show('addon.mod_data.gettinglocation', true);
-
-        try {
-            const coordinates = await CoreGeolocation.getCoordinates();
-
-            this.form?.controls['f_' + this.field.id + '_0'].setValue(coordinates.latitude);
-            this.form?.controls['f_' + this.field.id + '_1'].setValue(coordinates.longitude);
-        } catch (error) {
-            this.showLocationErrorModal(error);
-        }
-
-        modal.dismiss();
-    }
-
-    /**
-     * Show the appropriate error modal for the given error getting the location.
-     *
-     * @param error Location error.
-     */
-    protected showLocationErrorModal(error: CoreAnyError | CoreGeolocationError): void {
-        if (error instanceof CoreGeolocationError) {
-            CoreAlerts.showError(Translate.instant(this.getGeolocationErrorMessage(error)));
-
-            return;
-        }
-
-        CoreAlerts.showError(error, { default: 'Error getting location' });
-    }
-
-    /**
-     * Get error message from a geolocation error.
-     *
-     * @param error Geolocation error.
-     * @returns Geolocation message to be translated.
-     */
-    protected getGeolocationErrorMessage(error: CoreGeolocationError): string {
-        // tslint:disable-next-line: switch-default
-        switch (error.reason) {
-            case CoreGeolocationErrorReason.PERMISSION_DENIED:
-                return 'addon.mod_data.locationpermissiondenied';
-            case CoreGeolocationErrorReason.LOCATION_NOT_ENABLED:
-                return 'addon.mod_data.locationnotenabled';
-        }
+        this.north = (value && parseFloat(value.content ?? '')) || undefined;
+        this.east = (value && parseFloat(value.content1 ?? '')) || undefined;
     }
 
 }

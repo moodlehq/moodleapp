@@ -41,6 +41,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreFilepoolProvider } = await import('@services/filepool');
     const { CoreFileProvider } = await import('@services/file');
     const { CoreFileSessionProvider } = await import('@services/file-session');
+    // eslint-disable-next-line deprecation/deprecation
     const { CoreGeolocationProvider } = await import('@services/geolocation');
     const { CoreGroupsProvider } = await import('@services/groups');
     const { CoreIframeUtilsProvider } = await import('@services/utils/iframe');
