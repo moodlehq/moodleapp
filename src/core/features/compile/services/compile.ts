@@ -333,8 +333,12 @@ export class CoreCompileProvider {
         instance['CoreCache'] = CoreCache; // @deprecated since 4.4, plugins should use plain objects instead.
         instance['CoreDelegate'] = CoreDelegate;
         instance['CorePromisedValue'] = CorePromisedValue;
-        instance['CoreGeolocationError'] = CoreGeolocationError;
-        instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason;
+
+        /**
+         * @deprecated since 5.0, geolocation is deprecated and will be removed in future versions.
+         */
+        instance['CoreGeolocationError'] = CoreGeolocationError; // eslint-disable-line deprecation/deprecation
+        instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason; // eslint-disable-line deprecation/deprecation
 
         // Inject exported objects.
         for (const name in this.exportedObjects) {

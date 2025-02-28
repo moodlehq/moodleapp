@@ -14,6 +14,7 @@ For more information about upgrading, read the official documentation: https://m
  - On assignment activity Feedback plugins, the form controls are now shown in the same page and draft managing functions have been deprecated.
  - On prepareFeedbackData handler function for assignment activity Feedback plugins, a new parameter inputData has been added.
  - moment.js has been deprecated to be used in site plugins, use native Date parsing functions instead.
+ - Location permissions have been removed from the app. Geolocation and CoreGeolocation services are now deprecated and no longer allow obtaining the location.
 
 === 4.5.0 ===
 
