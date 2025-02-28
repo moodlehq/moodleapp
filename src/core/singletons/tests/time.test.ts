@@ -14,7 +14,7 @@
 
 import { mockTranslate } from '@/testing/utils';
 import { CoreTime } from '@singletons/time';
-import moment from 'moment-timezone';
+import dayjs from 'dayjs';
 
 describe('CoreTime singleton', () => {
 
@@ -76,16 +76,16 @@ describe('CoreTime singleton', () => {
         expect(testFunction).toHaveBeenCalledTimes(1);
     });
 
-    it('should convert PHP format to Moment format', () => {
-        expect(CoreTime.convertPHPToMoment('%Y-%m-%d')).toEqual('YYYY[-]MM[-]DD');
-        expect(CoreTime.convertPHPToMoment('%H:%M:%S')).toEqual('HH[:]mm[:]ss');
-        expect(CoreTime.convertPHPToMoment('%A, %B %d, %Y')).toEqual('dddd[, ]MMMM[ ]DD[, ]YYYY');
-        expect(CoreTime.convertPHPToMoment('%I:%M %p')).toEqual('hh[:]mm[ ]A');
-        expect(CoreTime.convertPHPToMoment('%d/%m/%Y')).toEqual('DD[/]MM[/]YYYY');
-        expect(CoreTime.convertPHPToMoment('%m-%d-%Y')).toEqual('MM[-]DD[-]YYYY');
-        expect(CoreTime.convertPHPToMoment('%Y/%m/%d %H:%M:%S')).toEqual('YYYY[/]MM[/]DD[ ]HH[:]mm[:]ss');
-        expect(CoreTime.convertPHPToMoment('%a, %I %p')).toEqual('ddd[, ]hh[ ]A');
-        expect(CoreTime.convertPHPToMoment(123 as any)).toEqual('');
+    it('should convert PHP format to DayJS format', () => {
+        expect(CoreTime.convertPHPToDayJS('%Y-%m-%d')).toEqual('YYYY[-]MM[-]DD');
+        expect(CoreTime.convertPHPToDayJS('%H:%M:%S')).toEqual('HH[:]mm[:]ss');
+        expect(CoreTime.convertPHPToDayJS('%A, %B %d, %Y')).toEqual('dddd[, ]MMMM[ ]DD[, ]YYYY');
+        expect(CoreTime.convertPHPToDayJS('%I:%M %p')).toEqual('hh[:]mm[ ]A');
+        expect(CoreTime.convertPHPToDayJS('%d/%m/%Y')).toEqual('DD[/]MM[/]YYYY');
+        expect(CoreTime.convertPHPToDayJS('%m-%d-%Y')).toEqual('MM[-]DD[-]YYYY');
+        expect(CoreTime.convertPHPToDayJS('%Y/%m/%d %H:%M:%S')).toEqual('YYYY[/]MM[/]DD[ ]HH[:]mm[:]ss');
+        expect(CoreTime.convertPHPToDayJS('%a, %I %p')).toEqual('ddd[, ]hh[ ]A');
+        expect(CoreTime.convertPHPToDayJS(123 as any)).toEqual('');
     });
 
     it('should fix format for ion-datetime', () => {
@@ -124,12 +124,14 @@ describe('CoreTime singleton', () => {
     });
 
     it('should convert timestamp to datetime format', () => {
-        expect(CoreTime.toDatetimeFormat(1641027600000)).toEqual('2022-01-01T17:00:00');
+        // Using a timestamp will always return UTC time.
+        expect(CoreTime.toDatetimeFormat(1641027600000)).toEqual('2022-01-01T09:00:00');
         expect(CoreTime.toDatetimeFormat()).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/);
+
     });
 
     it('should return localized date format', () => {
-        expect(CoreTime.getLocalizedDateFormat('L')).toEqual(moment.localeData().longDateFormat('L'));
+        expect(CoreTime.getLocalizedDateFormat('L')).toEqual(dayjs.localeData().longDateFormat('L'));
     });
 
     it('should return midnight for given timestamp', () => {

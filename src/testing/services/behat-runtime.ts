@@ -750,7 +750,7 @@ export class TestingBehatRuntimeService {
         if (element.tagName === 'ION-DATETIME') {
             const value = 'value' in element ? element.value : element.innerText;
 
-            // Remove seconds from the value to ensure stability on tests. It could be improved using moment parsing if needed.
+            // Remove seconds from the value to ensure stability on tests. It could be improved using DayJS parsing if needed.
             return value.substring(0, value.length - 3);
         }
 

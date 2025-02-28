@@ -14,7 +14,7 @@
 
 import { Translate } from '@singletons';
 import { CoreConstants } from '../constants';
-import moment from 'moment-timezone';
+import dayjs from 'dayjs';
 
 /**
  * Singleton with helper functions for time operations.
@@ -28,7 +28,7 @@ export class CoreTime {
         '%a': 'ddd',
         '%A': 'dddd',
         '%d': 'DD',
-        '%e': 'D', // Not exactly the same. PHP adds a space instead of leading zero, Moment doesn't.
+        '%e': 'D', // Not exactly the same. PHP adds a space instead of leading zero, DayJs doesn't.
         '%j': 'DDDD',
         '%u': 'E',
         '%w': 'e', // It might not behave exactly like PHP, the first day could be calculated differently.
@@ -39,15 +39,15 @@ export class CoreTime {
         '%B': 'MMMM',
         '%h': 'MMM',
         '%m': 'MM',
-        '%C' : '', // Not supported by Moment.
+        '%C' : '', // Not supported by DayJs.
         '%g': 'GG',
         '%G': 'GGGG',
         '%y': 'YY',
         '%Y': 'YYYY',
         '%H': 'HH',
-        '%k': 'H', // Not exactly the same. PHP adds a space instead of leading zero, Moment doesn't.
+        '%k': 'H', // Not exactly the same. PHP adds a space instead of leading zero, DayJS doesn't.
         '%I': 'hh',
-        '%l': 'h', // Not exactly the same. PHP adds a space instead of leading zero, Moment doesn't.
+        '%l': 'h', // Not exactly the same. PHP adds a space instead of leading zero, DayJS doesn't.
         '%M': 'mm',
         '%p': 'A',
         '%P': 'a',
@@ -57,7 +57,7 @@ export class CoreTime {
         '%T': 'HH:mm:ss',
         '%X': 'LTS',
         '%z': 'ZZ',
-        '%Z': 'ZZ', // Not supported by Moment, it was deprecated. Use the same as %z.
+        '%Z': 'ZZ', // Not supported by DayJS, it was deprecated. Use the same as %z.
         '%c': 'LLLL',
         '%D': 'MM/DD/YY',
         '%F': 'YYYY-MM-DD',
@@ -133,15 +133,46 @@ export class CoreTime {
     /**
      * Initialize.
      */
-    static initialize(): void {
+    static async initialize(): Promise<void> {
+        const plugins = [
+            import('dayjs/plugin/localeData'),
+            import('dayjs/plugin/objectSupport'),
+            import('dayjs/plugin/updateLocale'),
+            import('dayjs/plugin/dayOfYear'),
+            import('dayjs/plugin/weekday'),
+            import('dayjs/plugin/calendar'),
+            import('dayjs/plugin/localizedFormat'),
+        ];
+
+        const result = await Promise.all(plugins);
+        result.map((plugin) => {
+            dayjs.extend(plugin.default);
+        });
+
         // Set relative time thresholds for humanize(), otherwise for example 47 minutes were converted to 'an hour'.
-        moment.relativeTimeThreshold('s', 60);
-        moment.relativeTimeThreshold('m', 60);
-        moment.relativeTimeThreshold('h', 24);
-        moment.relativeTimeThreshold('d', 30);
-        moment.relativeTimeThreshold('M', 12);
-        moment.relativeTimeThreshold('y', 365);
-        moment.relativeTimeThreshold('ss', 0); // To display exact number of seconds instead of just "a few seconds".
+        const thresholds = [
+            { l: 'ss', r: 0 }, // To display exact number of seconds instead of just "a few seconds".
+            { l: 's', r: 1 },
+            { l: 'm', r: 1 },
+            { l: 'mm', r: 59, d: 'minute' },
+            { l: 'h', r: 1 },
+            { l: 'hh', r: 23, d: 'hour' },
+            { l: 'd', r: 1 },
+            { l: 'dd', r: 30, d: 'day' },
+            { l: 'M', r: 1 },
+            { l: 'MM', r: 11, d: 'month' },
+            { l: 'y', r: 1 },
+            { l: 'yy', d: 'year' },
+          ];
+
+        // Set relative time thresholds for humanize(), otherwise for example 47 minutes were converted to 'an hour'.
+        const  config = {
+            thresholds,
+        };
+
+        const plugin = await import('dayjs/plugin/relativeTime');
+
+        dayjs.extend(plugin.default, config);
     }
 
     /**
@@ -247,8 +278,21 @@ export class CoreTime {
      * Force timezone to use. Timezone is forced for automated tests.
      */
     static async forceTimezoneForTesting(): Promise<void> {
+        const plugins = [
+            import('dayjs/plugin/utc'),
+            import('dayjs/plugin/timezone'),
+        ];
+
+        const result = await Promise.all(plugins);
+
+        result.map((plugin) => {
+            dayjs.extend(plugin.default);
+        });
+
+        await CoreTime.initialize();
+
         // Use the same timezone forced for LMS in tests.
-        moment.tz.setDefault('Australia/Perth');
+        dayjs.tz.setDefault('Australia/Perth');
     }
 
     /**
@@ -256,7 +300,7 @@ export class CoreTime {
      */
     static resetTimezoneForTesting(): void {
         // Use the local timezone.
-        moment.tz.setDefault();
+        dayjs.tz.setDefault();
     }
 
     /**
@@ -305,7 +349,7 @@ export class CoreTime {
      * @returns The readable timestamp.
      */
     static readableTimestamp(): string {
-        return moment(Date.now()).format('YYYYMMDDHHmmss');
+        return dayjs(Date.now()).format('YYYYMMDDHHmmss');
     }
 
     /**
@@ -318,13 +362,13 @@ export class CoreTime {
     }
 
     /**
-     * Convert a PHP format to a Moment format.
+     * Convert a PHP format to a DayJS format.
      *
      * @param format PHP format.
      * @returns Converted format.
      */
-    static convertPHPToMoment(format: string): string {
-        if (typeof format != 'string') {
+    static convertPHPToDayJS(format: string): string {
+        if (typeof format !== 'string') {
             // Not valid.
             return '';
         }
@@ -335,7 +379,7 @@ export class CoreTime {
         for (let i = 0; i < format.length; i++) {
             let char = format[i];
 
-            if (char == '%') {
+            if (char === '%') {
                 // It's a PHP format, try to convert it.
                 i++;
                 char += format[i] || '';
@@ -349,7 +393,7 @@ export class CoreTime {
                 converted += CoreTime.FORMAT_REPLACEMENTS[char] !== undefined ?
                     CoreTime.FORMAT_REPLACEMENTS[char] : char;
             } else {
-                // Not a PHP format. We need to escape them, otherwise the letters could be confused with Moment formats.
+                // Not a PHP format. We need to escape them, otherwise the letters could be confused with DayJS formats.
                 if (!escaping) {
                     escaping = true;
                     converted += '[';
@@ -381,7 +425,7 @@ export class CoreTime {
         // The component ion-datetime doesn't support escaping characters ([]), so we remove them.
         let fixed = format.replace(/[[\]]/g, '');
 
-        if (fixed.indexOf('A') != -1) {
+        if (fixed.indexOf('A') !== -1) {
             // Do not use am/pm format because there is a bug in ion-datetime.
             fixed = fixed.replace(/ ?A/g, '');
             fixed = fixed.replace(/h/g, 'H');
@@ -395,7 +439,7 @@ export class CoreTime {
      *
      * @param timestamp Timestamp in milliseconds.
      * @param format The format to use (lang key). Defaults to core.strftimedaydatetime.
-     * @param convert If true (default), convert the format from PHP to Moment. Set it to false for Moment formats.
+     * @param convert If true (default), convert the format from PHP to DayJS. Set it to false for DayJS formats.
      * @param fixDay If true (default) then the leading zero from %d is removed.
      * @param fixHour If true (default) then the leading zero from %I is removed.
      * @returns Readable date.
@@ -417,12 +461,12 @@ export class CoreTime {
             format = format.replace('%I', '%l');
         }
 
-        // Format could be in PHP format, convert it to moment.
+        // Format could be in PHP format, convert it to DayJS.
         if (convert) {
-            format = CoreTime.convertPHPToMoment(format);
+            format = CoreTime.convertPHPToDayJS(format);
         }
 
-        return moment(timestamp).format(format);
+        return dayjs.tz(timestamp).format(format);
     }
 
     /**
@@ -432,7 +476,7 @@ export class CoreTime {
      * @returns Formatted time.
      */
     static toDatetimeFormat(timestamp?: number): string {
-        const isoString = moment(timestamp || Date.now()).toISOString(true);
+        const isoString = dayjs.tz(timestamp || Date.now()).toISOString();
 
         // Remove milliseconds and timezone for consistency with the values used by ion-datetime.
         // ion-datetime no longer uses timezone, it always uses UTC.
@@ -440,14 +484,15 @@ export class CoreTime {
     }
 
     /**
-     * Return the localized ISO format (i.e DDMMYY) from the localized moment format. Useful for translations.
-     * DO NOT USE this function for ion-datetime format. Moment escapes characters with [], but ion-datetime doesn't support it.
+     * Return the localized ISO format (i.e DDMMYY) from the localized DayJS format. Useful for translations.
+     * DO NOT USE this function for ion-datetime format. DayJS escapes characters with [], but ion-datetime doesn't support it.
      *
      * @param localizedFormat Format to use.
      * @returns Localized ISO format
+     * @todo Check this is used.
      */
-    static getLocalizedDateFormat(localizedFormat: LongDateFormatKey): string {
-        return moment.localeData().longDateFormat(localizedFormat);
+    static getLocalizedDateFormat(localizedFormat: string): string {
+        return dayjs.localeData().longDateFormat(localizedFormat);
     }
 
     /**
@@ -461,8 +506,8 @@ export class CoreTime {
      */
     static getMidnightForTimestamp(timestamp?: number): number {
         return timestamp === undefined
-            ? moment().startOf('day').unix()
-            : moment(timestamp * 1000).startOf('day').unix();
+            ? dayjs.tz().startOf('day').unix()
+            : dayjs.tz(timestamp * 1000).startOf('day').unix();
     }
 
     /**
@@ -471,7 +516,7 @@ export class CoreTime {
      * @returns The maximum year for datetime inputs.
      */
     static getDatetimeDefaultMax(): string {
-        return String(moment().year() + 20);
+        return String(dayjs().year() + 20);
     }
 
     /**
@@ -480,7 +525,7 @@ export class CoreTime {
      * @returns The minimum year for datetime inputs.
      */
     static getDatetimeDefaultMin(): string {
-        return String(moment().year() - 20);
+        return String(dayjs().year() - 20);
     }
 
 }
