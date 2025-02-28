@@ -14,8 +14,7 @@
 
 import { Translate } from '@singletons';
 import { CoreConstants } from '../constants';
-import { CorePlatform } from '@services/platform';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 /**
  * Singleton with helper functions for time operations.
@@ -184,13 +183,19 @@ export class CoreTime {
     }
 
     /**
-     * Returns the forced timezone to use. Timezone is forced for automated tests.
-     *
-     * @returns Timezone. Undefined to use the user's timezone.
+     * Force timezone to use. Timezone is forced for automated tests.
      */
-    static getForcedTimezone(): string | undefined {
+    static async forceTimezoneForTesting(): Promise<void> {
         // Use the same timezone forced for LMS in tests.
-        return CorePlatform.isAutomated() ? 'Australia/Perth' : undefined;
+        moment.tz.setDefault('Australia/Perth');
+    }
+
+    /**
+     * Reset timezone to use. Timezone is forced for automated tests.
+     */
+    static resetTimezoneForTesting(): void {
+        // Use the local timezone.
+        moment.tz.setDefault();
     }
 
     /**
@@ -234,12 +239,12 @@ export class CoreTime {
     }
 
     /**
-     * Return the current timestamp in a "readable" format: YYYYMMDDHHmmSS.
+     * Return the current timestamp in a "readable" format: YYYYMMDDHHmmss.
      *
      * @returns The readable timestamp.
      */
     static readableTimestamp(): string {
-        return moment(Date.now()).format('YYYYMMDDHHmmSS');
+        return moment(Date.now()).format('YYYYMMDDHHmmss');
     }
 
     /**
