@@ -16,8 +16,18 @@
             "customWebpackConfig": {
               "path": "./webpack.config.js"
             },
-            "allowedCommonJsDependencies":[
-              "chart.js"
+            "allowedCommonJsDependencies": [
+              "@videojs/xhr",
+              "global/document",
+              "global/window",
+              "keycode",
+              "mux.js/lib/tools/parse-sidx",
+              "mux.js/lib/utils/clock",
+              "safe-json-parse/tuple",
+              "videojs-vtt.js",
+              "mp3-mediarecorder/worker",
+              "dayjs",
+              "ts-md5/dist/md5"
             ],
             "outputPath": "www",
             "index": "src/index.html",
