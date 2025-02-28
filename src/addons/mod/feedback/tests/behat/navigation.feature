@@ -273,6 +273,7 @@ Feature: Test feedback navigation
       | feedback | student74 | student74 response | 1         | 74             |
       | feedback | student75 | student75 response | 1         | 75             |
 
+  @test
   Scenario: Mobile navigation
     Given I entered the course "Course 1" as "teacher1" in the app
 
