@@ -51,9 +51,10 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     @Input() component?: string; // Component.
     @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
     @Input() fileTimemodified?: number; // The timemodified of the package file.
+    @Input() autoPlay = false; // Auto-play the H5P package.
 
     showPackage = false;
-    state?: string;
+    state?: DownloadStatus;
     canDownload$ = new BehaviorSubject(false);
     calculating$ = new BehaviorSubject(true);
     displayOptions?: CoreH5PDisplayOptions;
@@ -80,15 +81,21 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
      */
     ngOnInit(): void {
         this.checkCanDownload();
+        if (this.autoPlay) {
+            this.play();
+        }
     }
 
     /**
      * Detect changes on input properties.
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
-        // If it's already playing there's no need to check if it can be downloaded.
+        // If it's already playing there's no need to check if it can be downloaded or auto-played.
         if (changes.src && !this.showPackage) {
             this.checkCanDownload();
+            if (this.autoPlay) {
+                this.play();
+            }
         }
     }
 
@@ -97,9 +104,9 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
      *
      * @param e Event.
      */
-    async play(e: MouseEvent): Promise<void> {
-        e.preventDefault();
-        e.stopPropagation();
+    async play(e?: MouseEvent): Promise<void> {
+        e?.preventDefault();
+        e?.stopPropagation();
 
         this.displayOptions = CoreH5P.h5pPlayer.getDisplayOptionsFromUrlParams(this.urlParams);
         this.showPackage = true;
