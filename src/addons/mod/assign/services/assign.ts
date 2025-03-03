@@ -18,7 +18,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreInterceptor } from '@classes/interceptor';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
+import { CoreCourseCommonModWSOptions, CoreCourseCommonModWSOptionsWithFilter } from '@features/course/services/course';
 import { CoreGrades } from '@features/grades/services/grades';
 import { CoreTime } from '@singletons/time';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -520,14 +520,13 @@ export class AddonModAssignProvider {
                 fixedParams.isBlind,
             ),
             getCacheUsingCacheKey: true,
-            filter: options.filter,
-            rewriteurls: options.filter,
             component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             componentId: options.cmId,
             // Don't cache when getting text without filters.
             // @todo Change this to support offline editing.
             saveToCache: options.filter,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+            ...CoreSites.getFilterPresets(options.filter),
         };
 
         return site.read<AddonModAssignGetSubmissionStatusWSResponse>('mod_assign_get_submission_status', params, preSets);
@@ -1437,11 +1436,10 @@ export const AddonModAssign = makeSingleton(AddonModAssignProvider);
 /**
  * Options to pass to get submission status.
  */
-export type AddonModAssignSubmissionStatusOptions = CoreCourseCommonModWSOptions & {
+export type AddonModAssignSubmissionStatusOptions = CoreCourseCommonModWSOptionsWithFilter & {
     userId?: number; // User Id (empty for current user).
     groupId?: number; // Group Id (empty for all participants).
     isBlind?: boolean; // If blind marking is enabled or not.
-    filter?: boolean; // True to filter WS response and rewrite URLs, false otherwise. Defaults to true.
 };
 
 /**

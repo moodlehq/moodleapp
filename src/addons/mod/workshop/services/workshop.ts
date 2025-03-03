@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
+import { CoreCourseCommonModWSOptions, CoreCourseCommonModWSOptionsWithFilter } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesMenuItem } from '@features/grades/services/grades-helper';
 import { CoreNetwork } from '@services/network';
@@ -413,8 +413,7 @@ export class AddonModWorkshopProvider {
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
-            filter: options?.filter !== false,
-            rewriteurls: options?.filter !== false,
+            ...CoreSites.getFilterPresets(options.filter),
             fetchOriginalToo: options.canEdit && !params.userid,
         };
 
@@ -462,8 +461,7 @@ export class AddonModWorkshopProvider {
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
-            filter: options?.filter !== false,
-            rewriteurls: options?.filter !== false,
+            ...CoreSites.getFilterPresets(options.filter),
             fetchOriginalToo: options.canEdit,
         };
 
@@ -953,8 +951,7 @@ export class AddonModWorkshopProvider {
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
-            filter: options?.filter !== false,
-            rewriteurls: options?.filter !== false,
+            ...CoreSites.getFilterPresets(options.filter),
             fetchOriginalToo: options.canAssess && !params.userid,
         };
 
@@ -1002,8 +999,7 @@ export class AddonModWorkshopProvider {
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
-            filter: options?.filter !== false,
-            rewriteurls: options?.filter !== false,
+            ...CoreSites.getFilterPresets(options.filter),
             fetchOriginalToo: options.canAssess,
         };
         const response = await site.read<AddonModWorkshopGetAssessmentWSResponse>('mod_workshop_get_assessment', params, preSets);
@@ -1909,23 +1905,14 @@ export type AddonModWorkshopGroupOptions = CoreCourseCommonModWSOptions & {
 };
 
 /**
- * Common options with an option to filter or not the content.
- */
-export type AddonModWorkshopOptionsWithFilter = CoreCourseCommonModWSOptions & {
-    filter?: boolean; // Defaults to true. If false, text won't be filtered and URLs won't be rewritten.
-};
-
-/**
  * Common options with a user ID and an option to filter or not the content.
  */
-export type AddonModWorkshopUserWithFilterOptions = AddonModWorkshopUserOptions & {
-    filter?: boolean; // Defaults to true. If false, text won't be filtered and URLs won't be rewritten.
-};
+export type AddonModWorkshopUserWithFilterOptions = CoreCourseCommonModWSOptionsWithFilter & AddonModWorkshopUserOptions;
 
 /**
  * Options to pass to getSubmission.
  */
-export type AddonModWorkshopGetSubmissionOptions = AddonModWorkshopOptionsWithFilter & {
+export type AddonModWorkshopGetSubmissionOptions = CoreCourseCommonModWSOptionsWithFilter & {
     canEdit?: boolean; // Whether the user can edit his submission.
 };
 
@@ -1939,7 +1926,7 @@ export type AddonModWorkshopGetSubmissionsOptions = AddonModWorkshopUserWithFilt
 /**
  * Options to pass to getAssessment.
  */
-export type AddonModWorkshopGetAssessmentOptions = AddonModWorkshopOptionsWithFilter & {
+export type AddonModWorkshopGetAssessmentOptions = CoreCourseCommonModWSOptionsWithFilter & {
     canAssess?: boolean; // Whether the user can edit the assessment.
 };
 

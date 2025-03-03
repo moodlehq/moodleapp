@@ -18,7 +18,7 @@ import { Params } from '@angular/router';
 import { CoreNetwork } from '@services/network';
 import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
-import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy, CoreSitesWSOptionsWithFilter } from '@services/sites';
 import { CoreTime } from '@singletons/time';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCacheUpdateFrequency, CoreConstants, DownloadStatus } from '@/core/constants';
@@ -1702,6 +1702,11 @@ export function sectionContentIsModule<Section extends CoreCourseWSSection, Modu
 export type CoreCourseCommonModWSOptions = CoreSitesCommonWSOptions & {
     cmId?: number; // Module ID.
 };
+
+/**
+ * Common options used by modules when calling a WS through CoreSite, including an option to determine if text should be filtered.
+ */
+export type CoreCourseCommonModWSOptionsWithFilter = CoreCourseCommonModWSOptions & CoreSitesWSOptionsWithFilter;
 
 /**
  * Data returned by course_summary_exporter.
