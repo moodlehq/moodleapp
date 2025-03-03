@@ -26,7 +26,7 @@ import { CoreText } from '@singletons/text';
 import { CoreSites } from '@services/sites';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreTime } from '@singletons/time';
-import { NgZone, Translate } from '@singletons';
+import { DomSanitizer, NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -303,7 +303,9 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
             if (this.event.location) {
                 // Build a link to open the address in maps.
                 this.event.location = CoreText.decodeHTML(this.event.location);
-                this.event.encodedLocation = CoreUrl.buildAddressURL(this.event.location);
+                this.event.encodedLocation = DomSanitizer.bypassSecurityTrustUrl(CoreUrl.buildMapsURL({
+                    query: this.event.location,
+                }));
             }
 
             // Check if event was deleted in offine.

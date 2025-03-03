@@ -13,49 +13,43 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Geolocation, GeolocationOptions, Geoposition } from '@awesome-cordova-plugins/geolocation/ngx';
-import { Observable, Subscriber, TeardownLogic } from 'rxjs';
+import { CoreError } from '@classes/errors/error';
+import { Translate } from '@singletons';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Emulates the Cordova Geolocation plugin in desktop apps and in browser.
+ *
+ * @deprecated since 5.0. Geo location is no longer available in the app.
  */
 @Injectable()
-export class GeolocationMock extends Geolocation {
+export class Geolocation {
 
     /**
      * Get the device's current position.
      *
-     * @param options The geolocation options.
-     * @returns Returns a Promise that resolves with the position of the device, or rejects with an error.
+     * @deprecated since 5.0. Geo location is no longer available in the app.
      */
-    getCurrentPosition(options?: GeolocationOptions): Promise<Geoposition> {
-        return new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition((position) => {
-                // Convert to unknown first because some fields are incompatible due to null values.
-                resolve(<Geoposition> <unknown> position);
-            }, reject, options);
-        });
+    async getCurrentPosition(): Promise<void> {
+        throw new CoreError(Translate.instant('core.locationnolongeravailable', {
+            howToObtain: Translate.instant('core.howtoobtaincoordinates', {
+                url: CoreUrl.buildMapsURL(),
+            }),
+        }));
     }
 
     /**
      * Watch the current device's position. Clear the watch by unsubscribing from
      * Observable changes.
      *
-     * @param options The geolocation options.
-     * @returns Returns an Observable that notifies with the position of the device, or errors.
+     * @deprecated since 5.0. Geo location is no longer available in the app.
      */
-    watchPosition(options?: GeolocationOptions): Observable<Geoposition> {
-        return new Observable<Geoposition>((subscriber: Subscriber<Geoposition>): TeardownLogic => {
-            const watchId = navigator.geolocation.watchPosition(
-                position => subscriber.next(<Geoposition> <unknown> position),
-                error => subscriber.error(error),
-                options,
-            );
-
-            return (): void => {
-                navigator.geolocation.clearWatch(watchId);
-            };
-        });
+    watchPosition(): void {
+        throw new CoreError(Translate.instant('core.locationnolongeravailable', {
+            howToObtain: Translate.instant('core.howtoobtaincoordinates', {
+                url: CoreUrl.buildMapsURL(),
+            }),
+        }));
     }
 
 }

@@ -97,6 +97,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     @Input({ transform: toBoolean }) wsNotFiltered = false; // If true it means the WS didn't filter the text for some reason.
     @Input({ transform: toBoolean }) captureLinks = true; // Whether links should tried to be opened inside the app.
     @Input({ transform: toBoolean }) openLinksInApp?: boolean; // Whether links should be opened in InAppBrowser.
+    @Input({ transform: toBoolean }) showBrowserWarningInLinks = true; // Whether to show browser warning in all links.
     @Input({ transform: toBoolean }) disabled = false; // If disabled, autoplay elements will be disabled.
 
     /**
@@ -528,6 +529,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             const linkDir = new CoreLinkDirective(new ElementRef(anchor));
             linkDir.capture = this.captureLinks ?? true;
             linkDir.inApp = this.openLinksInApp;
+            linkDir.showBrowserWarning = this.showBrowserWarningInLinks;
             linkDir.ngOnInit();
 
             this.addExternalContent(anchor);
