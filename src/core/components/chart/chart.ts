@@ -54,7 +54,7 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
 
     @Input() data: number[] = []; // Chart data.
     @Input() labels: string[] = []; // Labels of the data.
-    @Input({ required: true }) type!: keyof ChartTypeRegistry; // Type of chart.
+    @Input({ required: true }) type!: CoreChartType; // Type of chart.
     @Input() legend?: LegendOptions<ChartType>; // Legend options.
     @Input() height = 300; // Height of the chart element.
     @Input({ transform: toBoolean }) filter?: boolean; // Whether to filter labels.
@@ -222,3 +222,5 @@ type ChartWithLegend = Chart & {
         legendItems?: LegendItem[];
     };
 };
+
+export type CoreChartType = keyof ChartTypeRegistry;
