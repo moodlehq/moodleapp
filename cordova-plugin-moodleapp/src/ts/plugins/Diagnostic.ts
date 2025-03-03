@@ -11,32 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// (C) Copyright 2015 Moodle Pty Ltd.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// (C) Copyright 2015 Moodle Pty Ltd.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 
 /**
  * Checks whether device hardware features are enabled or available to the app, e.g. camera, GPS, wifi.
@@ -67,94 +41,10 @@ export class Diagnostic {
     }
 
     /**
-     * Checks if the device location setting is enabled.
-     * On iOS, returns true if Location Services is enabled.
-     * On Android, returns true if Location Mode is enabled and any mode is selected (e.g. Battery saving, Device only, ...).
-     *
-     * @returns True if location setting is enabled.
-     */
-    isLocationEnabled(): Promise<boolean> {
-        return new Promise<boolean>((resolve, reject) => cordova.exec(resolve, reject, 'Diagnostic_Location', 'isLocationEnabled'));
-    }
-
-    /**
-     * Android only. Switches to the Location page in the Settings app.
-     *
-     * @returns Promise resolved when done.
-     */
-    switchToLocationSettings(): Promise<void> {
-        if (cordova.platformId !== 'android') {
-            return Promise.resolve();
-        }
-
-        return new Promise<void>((resolve, reject) =>
-            cordova.exec(resolve, reject, 'Diagnostic_Location', 'switchToLocationSettings'));
-    }
-
-    /**
      * Opens settings page for this app.
      */
     switchToSettings(): Promise<void> {
         return new Promise<void>((resolve, reject) => cordova.exec(resolve, reject, 'Diagnostic', 'switchToSettings'));
-    }
-
-    /**
-     * Returns the location authorization status for the application.
-     *
-     * @returns Authorization status.
-     */
-    getLocationAuthorizationStatus(): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            if (cordova.platformId === 'ios') {
-                cordova.exec(resolve, reject, 'Diagnostic_Location', 'getLocationAuthorizationStatus');
-
-                return;
-            }
-
-            this.getPermissionsAuthorizationStatus([
-                permission.accessCoarseLocation,
-                permission.accessFineLocation,
-                permission.accessBackgroundLocation,
-            ]).then(statuses => {
-                const coarseStatus = statuses[permission.accessCoarseLocation];
-                const fineStatus = statuses[permission.accessFineLocation];
-                const backgroundStatus = typeof statuses[permission.accessBackgroundLocation] !== 'undefined' ?
-                    statuses[permission.accessBackgroundLocation] : true;
-
-                let status: string = permissionStatus.notRequested;
-
-                if (coarseStatus === permissionStatus.granted || fineStatus === permissionStatus.granted) {
-                    status = backgroundStatus === permissionStatus.granted ?
-                        permissionStatus.granted : permissionStatus.grantedWhenInUse;
-                } else if (coarseStatus === permissionStatus.deniedOnce || fineStatus === permissionStatus.deniedOnce) {
-                    status = permissionStatus.deniedOnce;
-                } else if (coarseStatus === permissionStatus.deniedAlways || fineStatus === permissionStatus.deniedAlways) {
-                    status = permissionStatus.deniedAlways;
-                }
-
-                resolve(status);
-
-                return;
-            }).catch(reject);
-        });
-    }
-
-    /**
-     * Requests location authorization for the application.
-     * Authorization can be requested to use location either "when in use" (only foreground) or "always" (foreground & background).
-     * Should only be called if authorization status is NOT_REQUESTED. Calling it when in any other state will have no effect.
-     *
-     * @returns Permission status.
-     */
-    requestLocationAuthorization(): Promise<string> {
-        return new Promise<string>((resolve, reject) =>
-            cordova.exec(
-                status => resolve(this.convertPermissionStatus(status)),
-                reject,
-                'Diagnostic_Location',
-                'requestLocationAuthorization',
-                [false, true],
-            ));
     }
 
     /**
@@ -271,42 +161,12 @@ export class Diagnostic {
 }
 
 const permission = {
-    acceptHandover: 'ACCEPT_HANDOVER',
-    accessBackgroundLocation: 'ACCESS_BACKGROUND_LOCATION',
-    accessCoarseLocation: 'ACCESS_COARSE_LOCATION',
-    accessFineLocation: 'ACCESS_FINE_LOCATION',
-    accessMediaLocation: 'ACCESS_MEDIA_LOCATION',
-    bodySensors: 'BODY_SENSORS',
-    bodySensorsBackground: 'BODY_SENSORS_BACKGROUND',
-    getAccounts: 'GET_ACCOUNTS',
-    readExternalStorage: 'READ_EXTERNAL_STORAGE',
-    readMediaAudio: 'READ_MEDIA_AUDIO',
-    readMediaImages: 'READ_MEDIA_IMAGES',
-    readMediaVideo: 'READ_MEDIA_VIDEO',
-    readPhoneState: 'READ_PHONE_STATE',
-    readSms: 'READ_SMS',
-    receiveMms: 'RECEIVE_MMS',
-    receiveSms: 'RECEIVE_SMS',
-    receiveWapPush: 'RECEIVE_WAP_PUSH',
     recordAudio: 'RECORD_AUDIO',
-    sendSms: 'SEND_SMS',
-    useSip: 'USE_SIP',
-    uwbRanging: 'UWB_RANGING',
-    writeExternalStorage: 'WRITE_EXTERNAL_STORAGE',
 } as const;
 
 const androidPermissionStatus = {
-    //  Location permission requested and
-    //      app build SDK/user device is Android >10 and user granted background location ("all the time") permission,
-    //      or app build SDK/user device is Android 6-9 and user granted location permission,
-    //  or non-location permission requested
-    //      and app build SDK/user device is Android >=6 and user granted permission
-    //  or app build SDK/user device is Android <6
-    granted: 'GRANTED',
-    //  Location permission requested
-    //  and app build SDK/user device is Android >10
-    //  and user granted background foreground location ("while-in-use") permission
-    grantedWhenInUse: 'authorized_when_in_use',
+    granted: 'GRANTED', // User granted access to this permission.
+    grantedWhenInUse: 'authorized_when_in_use', // User granted access to this permission only when app is in use.
     deniedOnce: 'DENIED_ONCE', // User denied access to this permission.
     deniedAlways: 'DENIED_ALWAYS', // User denied access to this permission and checked "Never Ask Again" box.
     notRequested: 'NOT_REQUESTED', // App has not yet requested access to this permission.
@@ -317,7 +177,7 @@ const iosPermissionStatus = {
     deniedAlways: 'denied_always', // User denied access to this permission
     restricted: 'restricted', // Permission is unavailable and user cannot enable it. For example, when parental controls are on.
     granted: 'authorized', //  User granted access to this permission.
-    grantedWhenInUse: 'authorized_when_in_use', //  User granted access use location permission only when app is in use
+    grantedWhenInUse: 'authorized_when_in_use', //  User granted access to this permission only when app is in use
     ephimeral: 'ephemeral', // The app is authorized to schedule or receive notifications for a limited amount of time.
     provisional: 'provisional', // The application is provisionally authorized to post non-interruptive user notifications.
     limited: 'limited', // The app has limited access to the Photo Library.
