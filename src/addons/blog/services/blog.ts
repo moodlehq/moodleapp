@@ -20,7 +20,7 @@ import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreNetwork } from '@services/network';
-import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
+import { CoreSites, CoreSitesWSOptionsWithFilter } from '@services/sites';
 import { CoreTime } from '@singletons/time';
 import { CoreObject } from '@singletons/object';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
@@ -86,8 +86,7 @@ export class AddonBlogProvider {
             cacheKey: this.getEntriesCacheKey(filter),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             ...CoreSites.getReadingStrategyPreSets(options?.readingStrategy),
-            filter: options?.filter !== false,
-            rewriteurls: options?.filter !== false,
+            ...CoreSites.getFilterPresets(options?.filter),
         };
 
         return site.read('core_blog_get_entries', data, preSets);
@@ -557,9 +556,8 @@ export type AddonBlogDeleteEntryWSResponse = {
     warnings?: CoreWSExternalWarning[];
 };
 
-export type AddonBlogGetEntriesOptions = CoreSitesCommonWSOptions & {
+export type AddonBlogGetEntriesOptions = CoreSitesWSOptionsWithFilter & {
     page?: number;
-    filter?: boolean; // Defaults to true. If false, text won't be filtered and URLs won't be rewritten.
 };
 
 export type AddonBlogUndoDelete = { created: number } | { id: number };
