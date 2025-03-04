@@ -199,7 +199,9 @@ describe('CoreUrl singleton', () => {
     it('removes protocol', () => {
         expect(CoreUrl.removeUrlParts('https://school.edu', CoreUrlPartNames.Protocol)).toEqual('school.edu');
         expect(CoreUrl.removeUrlParts('ftp://school.edu', CoreUrlPartNames.Protocol)).toEqual('school.edu');
+        expect(CoreUrl.removeUrlParts('//school.edu', CoreUrlPartNames.Protocol)).toEqual('school.edu');
         expect(CoreUrl.removeUrlParts('school.edu', CoreUrlPartNames.Protocol)).toEqual('school.edu');
+        expect(CoreUrl.removeUrlParts('wrong//school.edu', CoreUrlPartNames.Protocol)).toEqual('wrong//school.edu');
     });
 
     it('removes protocol and www', () => {
@@ -277,8 +279,12 @@ describe('CoreUrl singleton', () => {
         expect(CoreUrl.toRelativeURL('https://school.edu/', 'https://school.edu/image.png')).toBe('image.png');
         expect(CoreUrl.toRelativeURL('http://school.edu/', 'https://school.edu/image.png')).toBe('image.png');
         expect(CoreUrl.toRelativeURL('https://school.edu/', 'http://school.edu/image.png')).toBe('image.png');
+        expect(CoreUrl.toRelativeURL('https://school.edu?id=1#anchor', 'https://school.edu/image.png')).toBe('image.png');
         expect(CoreUrl.toRelativeURL('https://school.edu/foo/bar', 'https://school.edu/foo/bar/image.png')).toBe('image.png');
         expect(CoreUrl.toRelativeURL('https://school.edu', 'school.edu/image.png')).toBe('image.png');
+        expect(CoreUrl.toRelativeURL('https://school.edu/foo/bar', '/foo/bar/image.png')).toBe('image.png');
+        expect(CoreUrl.toRelativeURL('https://school.edu/foo', '/foo/bar/image.png')).toBe('bar/image.png');
+        expect(CoreUrl.toRelativeURL('https://school.edu/foo', '/bar/image.png')).toBe('/bar/image.png');
     });
 
     it('checks if it is a Vimeo video URL', () => {
