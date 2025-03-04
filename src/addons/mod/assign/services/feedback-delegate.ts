@@ -15,7 +15,13 @@
 import { Injectable, Type } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { AddonModAssignDefaultFeedbackHandler } from './handlers/default-feedback';
-import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin, AddonModAssignSavePluginData } from './assign';
+import {
+    AddonModAssignAssign,
+    AddonModAssignSubmission,
+    AddonModAssignPlugin,
+    AddonModAssignSavePluginData,
+    AddonModAssignSubmissionFeedback,
+} from './assign';
 import { makeSingleton } from '@singletons';
 import { CoreWSFile } from '@services/ws';
 import { AddonModAssignSubmissionFormatted } from './assign-helper';
@@ -180,6 +186,24 @@ export interface AddonModAssignFeedbackHandler extends CoreDelegateHandler {
         data: CoreFormFields,
         siteId?: string,
     ): void | Promise<void>;
+
+    /**
+     * Whether the plugin can be edited in offline for existing feedbck. In general, this should return false if the
+     * plugin uses Moodle filters. The reason is that the app only prefetches filtered data, and the user should edit
+     * unfiltered data.
+     *
+     * @param assign The assignment.
+     * @param submitId The submission ID.
+     * @param feedback The feedback.
+     * @param plugin The plugin object.
+     * @returns Whether it can be edited in offline.
+     */
+    canEditOffline?(
+        assign: AddonModAssignAssign,
+        submitId: number,
+        feedback: AddonModAssignSubmissionFeedback,
+        plugin: AddonModAssignPlugin,
+    ): boolean | Promise<boolean>;
 }
 
 /**
@@ -201,6 +225,24 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
      */
     async isEnabled(): Promise<boolean> {
         return !(await CoreSites.isFeatureDisabled(ADDON_MOD_ASSIGN_FEATURE_NAME));
+    }
+
+    /**
+     * Whether the plugin can be edited in offline for existing submissions.
+     *
+     * @param assign The assignment.
+     * @param submitId The submission ID.
+     * @param feedback The feedback.
+     * @param plugin The plugin object.
+     * @returns Whether it can be edited in offline.
+     */
+    async canPluginEditOffline(
+        assign: AddonModAssignAssign,
+        submitId: number,
+        feedback: AddonModAssignSubmissionFeedback,
+        plugin: AddonModAssignPlugin,
+    ): Promise<boolean | undefined> {
+        return this.executeFunctionOnEnabled(plugin.type, 'canEditOffline', [assign, submitId, feedback, plugin]);
     }
 
     /**
