@@ -36,7 +36,7 @@ import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../../s
 import { CoreError } from '@classes/errors/error';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreEvents } from '@singletons/events';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { AddonModAssignSync } from '../../services/assign-sync';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSync } from '@services/sync';
@@ -65,6 +65,7 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
     @Input({ required: true }) moduleId!: number; // Module ID the submission belongs to.
     @Input({ required: true }) assign!: AddonModAssignAssign; // The assignment.
     @Input({ required: true }) submitId!: number; // User that did the submission. Defaults to current user
+    @Input() blindId?: number; // Blinded user ID (if it's blinded).
     @Input() gradingStatus?: AddonModAssignGradingStates; // Grading status of the last attempt.
     @Input() feedback?: AddonModAssignSubmissionFeedback; // Feedback of the last attempt.
     @Input() userSubmission?: AddonModAssignSubmissionFormatted; // The submission object.
@@ -80,6 +81,7 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
         disabled: false,
     }; // Data about the grade.
 
+    loaded = false;
     gradeInfo?: AddonModAssignGradeInfo; // Grade data for the assignment, retrieved from the server.
     allowAddAttempt = false; // Allow adding a new attempt when grading.
 
@@ -115,70 +117,102 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
      * Fetch all the data required for the view.
      */
     protected async fetchData(): Promise<void> {
-        if (this.userSubmission) {
-            this.currentAttemptNumber = this.userSubmission.attemptnumber + 1;
+        try {
+            if (this.userSubmission) {
+                this.currentAttemptNumber = this.userSubmission.attemptnumber + 1;
+            }
+
+            this.grade = {
+                method: '',
+                modified: 0,
+                addAttempt : false,
+                applyToAll: false,
+                lang: '',
+                disabled: false,
+            };
+
+            this.originalGrades = {
+                addAttempt: false,
+                applyToAll: false,
+                outcomes: {},
+            };
+
+            // Do not override already loaded grade.
+            if (this.feedback?.grade?.grade && !this.grade.grade) {
+                const parsedGrade = parseFloat(this.feedback.grade.grade);
+
+                this.grade.grade = parsedGrade >= 0 ? parsedGrade : undefined;
+                this.grade.gradebookGrade = CoreUtils.formatFloat(this.grade.grade);
+                this.originalGrades.grade = this.grade.grade;
+            }
+
+            // Get the grade for the assign.
+            this.gradeInfo = await CoreCourse.getModuleBasicGradeInfo(this.moduleId);
+
+            const assign = this.assign;
+
+            // Treat the grade info.
+            await this.treatGradeInfo(assign);
+
+            const isManual = assign.attemptreopenmethod == AddonModAssignAttemptReopenMethodValues.MANUAL;
+            const isUnlimited = assign.maxattempts === ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS;
+            const isLessThanMaxAttempts = !!this.userSubmission && (this.userSubmission.attemptnumber < (assign.maxattempts - 1));
+
+            this.allowAddAttempt = isManual && (!this.userSubmission || isUnlimited || isLessThanMaxAttempts);
+
+            if (assign.teamsubmission) {
+                this.grade.applyToAll = true;
+                this.originalGrades.applyToAll = true;
+            }
+
+            await this.loadFeedbackData();
+        } catch (error) {
+            CoreAlerts.showError(error);
+            this.closeModal(true);
+        } finally {
+            this.loaded = true;
         }
+    }
 
-        this.grade = {
-            method: '',
-            modified: 0,
-            addAttempt : false,
-            applyToAll: false,
-            lang: '',
-            disabled: false,
-        };
-
-        this.originalGrades = {
-            addAttempt: false,
-            applyToAll: false,
-            outcomes: {},
-        };
-
-        // Do not override already loaded grade.
-        if (this.feedback?.grade?.grade && !this.grade.grade) {
-            const parsedGrade = parseFloat(this.feedback.grade.grade);
-
-            this.grade.grade = parsedGrade >= 0 ? parsedGrade : undefined;
-            this.grade.gradebookGrade = CoreUtils.formatFloat(this.grade.grade);
-            this.originalGrades.grade = this.grade.grade;
-        }
-
-        // Get the grade for the assign.
-        this.gradeInfo = await CoreCourse.getModuleBasicGradeInfo(this.moduleId);
-
-        const assign = this.assign;
-
-        // Treat the grade info.
-        await this.treatGradeInfo(assign);
-
-        const isManual = assign.attemptreopenmethod == AddonModAssignAttemptReopenMethodValues.MANUAL;
-        const isUnlimited = assign.maxattempts === ADDON_MOD_ASSIGN_UNLIMITED_ATTEMPTS;
-        const isLessThanMaxAttempts = !!this.userSubmission && (this.userSubmission.attemptnumber < (assign.maxattempts - 1));
-
-        this.allowAddAttempt = isManual && (!this.userSubmission || isUnlimited || isLessThanMaxAttempts);
-
-        if (assign.teamsubmission) {
-            this.grade.applyToAll = true;
-            this.originalGrades.applyToAll = true;
-        }
-
-        if (!this.feedback || !this.feedback.plugins) {
-            // Feedback plugins not present, we have to use assign configs to detect the plugins used.
-            this.feedback = AddonModAssignHelper.createEmptyFeedback();
-            this.feedback.plugins = AddonModAssignHelper.getPluginsEnabled(assign, 'assignfeedback');
-        }
+    /**
+     * Load feedback data.
+     */
+    protected async loadFeedbackData(): Promise<void> {
+        // Check if there is offline data first.
+        this.hasOfflineGrade = false;
 
         // Submission grades aren't identified by attempt number so it can retrieve the feedback for a previous attempt.
         // The app will not treat that as an special case.
         const submissionGrade = await CorePromiseUtils.ignoreErrors(
-            AddonModAssignOffline.getSubmissionGrade(assign.id, this.submitId),
+            AddonModAssignOffline.getSubmissionGrade(this.assign.id, this.submitId),
         );
 
-        this.hasOfflineGrade = false;
+        if (!submissionGrade && this.feedback) {
+            // No offline data and there is online feedback. Check if editing offline is allowed.
+            const canEditOffline = await AddonModAssignHelper.canEditFeedbackOffline(this.assign, this.submitId, this.feedback);
+
+            if (!canEditOffline) {
+                // Cannot edit offline, this usually means the feedback uses filters. Try to load the unfiltered data.
+                const submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign.id, {
+                    userId: this.submitId,
+                    isBlind: !!this.blindId,
+                    cmId: this.assign.cmid,
+                    filter: false,
+                    readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
+                });
+
+                this.feedback = submissionStatus.feedback;
+            }
+        }
+
+        if (!this.feedback) {
+            // Feedback plugins not present, we have to use assign configs to detect the plugins used.
+            this.feedback = AddonModAssignHelper.createEmptyFeedback();
+            this.feedback.plugins = AddonModAssignHelper.getPluginsEnabled(this.assign, 'assignfeedback');
+        }
 
         // Load offline grades.
-        if (submissionGrade &&
-            (!this.feedback || !this.feedback.gradeddate || this.feedback.gradeddate < submissionGrade.timemodified)) {
+        if (submissionGrade && (!this.feedback.gradeddate || this.feedback.gradeddate < submissionGrade.timemodified)) {
             // If grade has been modified from gradebook, do not use offline.
             if ((this.grade.modified || 0) < submissionGrade.timemodified) {
                 this.hasOfflineGrade = true;
@@ -214,7 +248,7 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
      */
     protected async treatGradeInfo(assign: AddonModAssignAssign): Promise<void> {
         if (!this.gradeInfo) {
-            this.closeModal();
+            this.closeModal(true);
 
             return;
         }
@@ -232,7 +266,7 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
 
         if (this.grade.method !== 'simple') {
             // Should not happen.
-            this.closeModal();
+            this.closeModal(true);
 
             return;
         }
@@ -331,9 +365,11 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
 
     /**
      * Close modal checking if there are changes first.
+     *
+     * @param force Whether to force closing the modal, without checking changes.
      */
-    async closeModal(): Promise<void> {
-        const canLeave = await this.canLeave();
+    async closeModal(force = false): Promise<void> {
+        const canLeave = force || await this.canLeave();
         if (canLeave) {
             this.dismissModal(false);
         }
