@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 
-import { LongDateFormatKey } from 'moment-timezone';
 import { makeSingleton } from '@singletons';
 import { CoreTime } from '@singletons/time';
 
@@ -27,14 +26,14 @@ import { CoreTime } from '@singletons/time';
 export class CoreTimeUtilsProvider {
 
     /**
-     * Convert a PHP format to a Moment format.
+     * Convert a PHP format to a DayJS format.
      *
      * @param format PHP format.
      * @returns Converted format.
-     * @deprecated since 5.0. Use CoreTime.convertPHPToMoment instead.
+     * @deprecated since 5.0. Use CoreTime.convertPHPToJSDateFormat instead.
      */
     convertPHPToMoment(format: string): string {
-        return CoreTime.convertPHPToMoment(format);
+        return CoreTime.convertPHPToJSDateFormat(format);
     }
 
     /**
@@ -73,7 +72,7 @@ export class CoreTimeUtilsProvider {
      *
      * @param timestamp Timestamp in milliseconds.
      * @param format The format to use (lang key). Defaults to core.strftimedaydatetime.
-     * @param convert If true (default), convert the format from PHP to Moment. Set it to false for Moment formats.
+     * @param convert If true (default), convert the format from PHP to DayJS. Set it to false for DayJS formats.
      * @param fixDay If true (default) then the leading zero from %d is removed.
      * @param fixHour If true (default) then the leading zero from %I is removed.
      * @returns Readable date.
@@ -95,14 +94,14 @@ export class CoreTimeUtilsProvider {
     }
 
     /**
-     * Return the localized ISO format (i.e DDMMYY) from the localized moment format. Useful for translations.
-     * DO NOT USE this function for ion-datetime format. Moment escapes characters with [], but ion-datetime doesn't support it.
+     * Return the localized ISO format (i.e DDMMYY) from the localized DayJS format. Useful for translations.
+     * DO NOT USE this function for ion-datetime format. DayJS escapes characters with [], but ion-datetime doesn't support it.
      *
      * @param localizedFormat Format to use.
      * @returns Localized ISO format.
      * @deprecated since 5.0. Use CoreTime.getLocalizedDateFormat instead.
      */
-    getLocalizedDateFormat(localizedFormat: LongDateFormatKey): string {
+    getLocalizedDateFormat(localizedFormat: string): string {
         return CoreTime.getLocalizedDateFormat(localizedFormat);
     }
 
