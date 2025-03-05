@@ -456,10 +456,10 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         });
 
         if (data) {
-            if (!this.showLoading && (data.action == 'refresh' || data.action == 'sync')) {
+            if (!this.showLoading && (data.action === 'refresh' || data.action === 'sync')) {
                 this.showLoading = true;
                 try {
-                    await this.doRefresh(undefined, data.action == 'sync');
+                    await this.doRefresh(undefined, data.action === 'sync');
                 } finally {
                     this.showLoading = false;
                 }
