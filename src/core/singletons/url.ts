@@ -358,20 +358,39 @@ export class CoreUrl {
     }
 
     /**
-     * Convert a URL to a relative URL (if it isn't already).
+     * Convert a URL to a relative URL (if it isn't already). It will be relative to the parentUrl's path.
+     * E.g. parentUrl is https://mysite.com/foo and url is https://mysite.com/foo/bar/img.png, the result will be bar/img.png.
      *
      * @param parentUrl The parent URL.
      * @param url The url to convert.
      * @returns Relative URL.
      */
     static toRelativeURL(parentUrl: string, url: string): string {
-        parentUrl = CoreUrl.removeUrlParts(parentUrl, CoreUrlPartNames.Protocol);
+        const parentUrlParts = CoreUrl.parse(parentUrl);
 
-        if (!url.includes(parentUrl)) {
-            return url; // Already relative URL.
+        // Remove the protocol, query and fragment if any.
+        parentUrl = CoreUrl.removeUrlParts(
+            parentUrl,
+            [CoreUrlPartNames.Protocol, CoreUrlPartNames.Query, CoreUrlPartNames.Fragment],
+        );
+
+        if (url.includes(parentUrl)) {
+            return CoreText.removeStartingSlash(CoreUrl.removeUrlParts(url, CoreUrlPartNames.Protocol).replace(parentUrl, ''));
         }
 
-        return CoreText.removeStartingSlash(CoreUrl.removeUrlParts(url, CoreUrlPartNames.Protocol).replace(parentUrl, ''));
+        if (!url.startsWith('/')) {
+            // URL doesn't include parent URL and it's not relative to the base domain. Assume it's relative to the path already.
+            return url;
+        }
+
+        // Remove the parent path from the URL if found.
+        if (!parentUrlParts?.path) {
+            return url;
+        }
+
+        const treatedUrl = url.replace(new RegExp('^' + CoreText.escapeForRegex(parentUrlParts.path), 'i'), '');
+
+        return treatedUrl !== url ? CoreText.removeStartingSlash(treatedUrl) : url;
     }
 
     /**
@@ -998,7 +1017,7 @@ export class CoreUrl {
                     break;
                 case CoreUrlPartNames.Protocol:
                     // Remove the protocol from url
-                    url = url.replace(/^.*?:\/\//, '');
+                    url = url.replace(/^(.*:)?\/\//, '');
                     break;
                 case CoreUrlPartNames.Query:
                     url = url.match(/^[^?]+/)?.[0] || '';
