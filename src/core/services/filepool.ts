@@ -372,7 +372,7 @@ export class CoreFilepoolProvider {
         fileUrl: string,
         component?: string,
         componentId?: string | number,
-        timemodified: number = 0,
+        timemodified = 0,
         filePath?: string,
         onProgress?: CoreFilepoolOnProgressCallback,
         priority: number = 0,
@@ -491,7 +491,7 @@ export class CoreFilepoolProvider {
         fileUrl: string,
         component?: string,
         componentId?: string | number,
-        timemodified: number = 0,
+        timemodified = 0,
         checkSize: boolean = true,
         downloadUnknown?: boolean,
         options: CoreFilepoolFileOptions = {},
@@ -1066,7 +1066,7 @@ export class CoreFilepoolProvider {
         ignoreStale?: boolean,
         component?: string,
         componentId?: string | number,
-        timemodified: number = 0,
+        timemodified = 0,
         onProgress?: CoreFilepoolOnProgressCallback,
         filePath?: string,
         options: CoreFilepoolFileOptions = {},
@@ -1227,7 +1227,7 @@ export class CoreFilepoolProvider {
      * @param timemodified The timemodified of the file.
      * @returns Promise resolved with the file data to use.
      */
-    async fixPluginfileURL(siteId: string, fileUrl: string, timemodified: number = 0): Promise<CoreWSFile> {
+    async fixPluginfileURL(siteId: string, fileUrl: string, timemodified = 0): Promise<CoreWSFile> {
         const file = await CorePluginFileDelegate.getDownloadableFile({ fileurl: fileUrl, timemodified });
         const site = await CoreSites.getSite(siteId);
 
@@ -1553,7 +1553,7 @@ export class CoreFilepoolProvider {
     async getFileStateByUrl(
         siteId: string,
         fileUrl: string,
-        timemodified: number = 0,
+        timemodified = 0,
         filePath?: string,
         revision?: number,
     ): Promise<DownloadStatus> {
@@ -1628,9 +1628,9 @@ export class CoreFilepoolProvider {
         fileUrl: string,
         component?: string,
         componentId?: string | number,
-        mode: string = 'url',
-        timemodified: number = 0,
-        checkSize: boolean = true,
+        mode = 'url',
+        timemodified = 0,
+        checkSize = true,
         downloadUnknown?: boolean,
         options: CoreFilepoolFileOptions = {},
         revision?: number,
@@ -2075,8 +2075,8 @@ export class CoreFilepoolProvider {
         fileUrl: string,
         component?: string,
         componentId?: string | number,
-        timemodified: number = 0,
-        checkSize: boolean = true,
+        timemodified = 0,
+        checkSize = true,
         downloadUnknown?: boolean,
         options: CoreFilepoolFileOptions = {},
         revision?: number,
@@ -2136,8 +2136,8 @@ export class CoreFilepoolProvider {
         fileUrl: string,
         component?: string,
         componentId?: string | number,
-        timemodified: number = 0,
-        checkSize: boolean = true,
+        timemodified = 0,
+        checkSize = true,
         downloadUnknown?: boolean,
         options: CoreFilepoolFileOptions = {},
         revision?: number,
@@ -2413,7 +2413,7 @@ export class CoreFilepoolProvider {
     async isFileDownloadable(
         siteId: string,
         fileUrl: string,
-        timemodified: number = 0,
+        timemodified = 0,
         filePath?: string,
         revision?: number,
     ): Promise<boolean> {
@@ -2451,12 +2451,22 @@ export class CoreFilepoolProvider {
      * @returns Whether the file is outdated.
      */
     protected isFileOutdated(entry: CoreFilepoolFileEntry, revision = 0, timemodified = 0): boolean {
+        if (entry.stale) {
+            return true;
+        }
+
         // If the entry doesn't have a timemodified, use the download time instead. This is to prevent re-downloading
         // files that haven't been updated in the server.
-        const entryTimemodified = entry.timemodified || Math.floor(entry.downloadTime / 1000);
+        // Ignore revision if timemodified is present.
+        if (timemodified > 0) {
+            const entryTimemodified = entry.timemodified || Math.floor(entry.downloadTime / 1000);
+
+            return timemodified > entryTimemodified;
+        }
+
         const entryRevision = entry.revision ?? 0;
 
-        return !!entry.stale || revision > entryRevision || timemodified > entryTimemodified;
+        return revision > entryRevision;
     }
 
     /**
