@@ -28,7 +28,7 @@ import { CorePath } from '@singletons/path';
 import { AddonModResource, AddonModResourceCustomData } from './resource';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { ADDON_MOD_RESOURCE_COMPONENT } from '../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreOpenerOpenFileOptions } from '@singletons/opener';
@@ -324,12 +324,12 @@ export class AddonModResourceHelperProvider {
             if (details.modifieddate) {
                 extra.push(Translate.instant(
                     'addon.mod_resource.modifieddate',
-                    { $a: CoreTimeUtils.userDate(details.modifieddate * 1000, 'core.strftimedatetimeshort') },
+                    { $a: CoreTime.userDate(details.modifieddate * 1000, 'core.strftimedatetimeshort') },
                 ));
             } else if (details.uploadeddate) {
                 extra.push(Translate.instant(
                     'addon.mod_resource.uploadeddate',
-                    { $a: CoreTimeUtils.userDate(details.uploadeddate * 1000, 'core.strftimedatetimeshort') },
+                    { $a: CoreTime.userDate(details.uploadeddate * 1000, 'core.strftimedatetimeshort') },
                 ));
             }
         }

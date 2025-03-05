@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreReminderDBRecord, REMINDERS_TABLE } from './database/reminders';
 import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
@@ -314,7 +314,7 @@ export class CoreRemindersService {
         const notification: ILocalNotification = {
             id: reminder.id,
             title: reminder.title,
-            text: CoreTimeUtils.userDate(reminder.time * 1000, 'core.strftimedaydatetime', true),
+            text: CoreTime.userDate(reminder.time * 1000, 'core.strftimedaydatetime', true),
             icon: 'file://assets/img/icons/calendar.png',
             trigger: {
                 at: new Date(notificationTime),

@@ -37,13 +37,12 @@ import { Translate } from '@singletons';
 import { CoreCourse, CoreCourseModuleGradeInfo } from '@features/course/services/course';
 import { AddonModAssignOffline } from '../../services/assign-offline';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { CoreGroups } from '@services/groups';
 import { AddonModAssignSubmissionPluginComponent } from '../submission-plugin/submission-plugin';
-import { CoreTime } from '@singletons/time';
 import { CoreIonicColorNames } from '@singletons/colors';
 import {
     ADDON_MOD_ASSIGN_AUTO_SYNCED,
@@ -477,7 +476,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             let promises: Promise<void>[] = [];
 
             if (this.assign.allowsubmissionsfromdate && this.assign.allowsubmissionsfromdate >= time) {
-                this.fromDate = CoreTimeUtils.userDate(this.assign.allowsubmissionsfromdate * 1000);
+                this.fromDate = CoreTime.userDate(this.assign.allowsubmissionsfromdate * 1000);
             }
 
             this.blindMarking = this.isSubmittedForGrading && !!this.assign.blindmarking && !this.assign.revealidentities;

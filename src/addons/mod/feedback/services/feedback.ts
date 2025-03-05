@@ -33,6 +33,8 @@ import {
     ADDON_MOD_FEEDBACK_MULTICHOICERATED_VALUE_SEP,
     ADDON_MOD_FEEDBACK_PER_PAGE,
     AddonModFeedbackIndexTabName,
+    AddonModFeedbackMultichoiceSubtype,
+    AddonModFeedbackQuestionType,
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
@@ -62,10 +64,10 @@ export class AddonModFeedbackProvider {
         }
 
         switch (depend.typ) {
-            case 'label':
+            case AddonModFeedbackQuestionType.LABEL:
                 return false;
-            case 'multichoice':
-            case 'multichoicerated':
+            case AddonModFeedbackQuestionType.MULTICHOICE:
+            case AddonModFeedbackQuestionType.MULTICHOICERATED:
                 return this.compareDependItemMultichoice(depend, item.dependvalue);
             default:
                 break;
@@ -83,13 +85,15 @@ export class AddonModFeedbackProvider {
      */
     protected compareDependItemMultichoice(item: AddonModFeedbackItem, dependValue: string): boolean {
         const parts = item.presentation.split(ADDON_MOD_FEEDBACK_MULTICHOICE_TYPE_SEP) || [];
-        const subtype = parts.length > 0 && parts[0] ? parts[0] : 'r';
+        const subtype = parts.length > 0 && parts[0]
+            ? parts[0] as AddonModFeedbackMultichoiceSubtype
+            : AddonModFeedbackMultichoiceSubtype.RADIO;
 
         const choicesStr = (parts[1] || '').split(ADDON_MOD_FEEDBACK_MULTICHOICE_ADJUST_SEP)[0] || '';
         const choices = choicesStr.split(ADDON_MOD_FEEDBACK_LINE_SEP) || [];
         let values: AddonModFeedbackResponseValue[];
 
-        if (subtype === 'c') {
+        if (subtype === AddonModFeedbackMultichoiceSubtype.CHECKBOX) {
             if (item.rawValue === undefined) {
                 values = [''];
             } else {
@@ -105,7 +109,7 @@ export class AddonModFeedbackProvider {
                 if (values[x] == index + 1) {
                     let value = choices[index];
 
-                    if (item.typ == 'multichoicerated') {
+                    if (item.typ === AddonModFeedbackQuestionType.MULTICHOICERATED) {
                         value = value.split(ADDON_MOD_FEEDBACK_MULTICHOICERATED_VALUE_SEP)[1] || '';
                     }
 
@@ -197,7 +201,9 @@ export class AddonModFeedbackProvider {
             }
 
             // Treat multichoice checkboxes.
-            if (item.typ === 'multichoice' && item.presentation.split(ADDON_MOD_FEEDBACK_MULTICHOICE_TYPE_SEP)[0] === 'c') {
+            if (item.typ === AddonModFeedbackQuestionType.MULTICHOICE &&
+                item.presentation.split(ADDON_MOD_FEEDBACK_MULTICHOICE_TYPE_SEP)[0] ===
+                AddonModFeedbackMultichoiceSubtype.CHECKBOX) {
 
                 offlineValues[item.id] = offlineValues[item.id].filter((value) => Number(value) > 0);
                 item.rawValue = offlineValues[item.id].join(ADDON_MOD_FEEDBACK_LINE_SEP);
@@ -777,7 +783,7 @@ export class AddonModFeedbackProvider {
                     return false;
                 }
 
-                if (item.typ == 'pagebreak') {
+                if (item.typ === AddonModFeedbackQuestionType.PAGEBREAK) {
                     currentPage++;
 
                     return false;
@@ -1300,7 +1306,7 @@ export type AddonModFeedbackWSItem = {
     name: string; // The item name.
     label: string; // The item label.
     presentation: string; // The text describing the item or the available possible answers.
-    typ: string; // The type of the item.
+    typ: AddonModFeedbackQuestionType; // The type of the item.
     hasvalue: number; // Whether it has a value or not.
     position: number; // The position in the list of questions.
     required: boolean; // Whether is a item (question) required or not.

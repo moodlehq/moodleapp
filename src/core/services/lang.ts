@@ -20,7 +20,7 @@ import { CoreConfig } from '@services/config';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { makeSingleton, Translate } from '@singletons';
 
-import moment from 'moment-timezone';
+import dayjs from 'dayjs';
 import { CoreSite } from '../classes/sites/site';
 import { CorePlatform } from '@services/platform';
 import { CoreLogger } from '@singletons/logger';
@@ -187,7 +187,7 @@ export class CoreLangProvider {
      */
     async changeCurrentLanguage(language: string): Promise<void> {
         // Use british english when parent english is loaded.
-        moment.locale(language == 'en' ? 'en-gb' : language);
+        dayjs.locale(language === 'en' ? 'en-gb' : language);
 
         const previousLanguage = this.currentLanguage ?? this.getDefaultLanguage();
 
@@ -355,7 +355,7 @@ export class CoreLangProvider {
      * @returns Translated month names.
      */
     getMonthNames(): string[] {
-        return moment.months().map(month => this.capitalize(month));
+        return dayjs.months().map(month => this.capitalize(month));
     }
 
     /**
@@ -364,7 +364,7 @@ export class CoreLangProvider {
      * @returns Translated month short names.
      */
     getMonthShortNames(): string[] {
-        return moment.monthsShort().map(month => this.capitalize(month));
+        return dayjs.monthsShort().map(month => this.capitalize(month));
     }
 
     /**
@@ -373,7 +373,7 @@ export class CoreLangProvider {
      * @returns Translated day names.
      */
     getDayNames(): string[] {
-        return moment.weekdays().map(weekDay => this.capitalize(weekDay));
+        return dayjs.weekdays().map(weekDay => this.capitalize(weekDay));
     }
 
     /**
@@ -382,7 +382,7 @@ export class CoreLangProvider {
      * @returns Translated day short names.
      */
     getDayShortNames(): string[] {
-        return moment.weekdaysShort().map(weekDay => this.capitalize(weekDay));
+        return dayjs.weekdaysShort().map(weekDay => this.capitalize(weekDay));
     }
 
     /**

@@ -21,7 +21,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@singletons/opener';
 import { CoreForms } from '@singletons/form';
 import { CorePath } from '@singletons/path';
@@ -99,7 +99,7 @@ export class CoreLocalFileComponent implements OnInit {
             this.size = CoreText.bytesToSize(metadata.size, 2);
         }
 
-        this.timemodified = CoreTimeUtils.userDate(metadata.modificationTime.getTime(), 'core.strftimedatetimeshort');
+        this.timemodified = CoreTime.userDate(metadata.modificationTime.getTime(), 'core.strftimedatetimeshort');
 
         this.isIOS = CorePlatform.isIOS();
         this.defaultIsOpenWithPicker = CoreFileHelper.defaultIsOpenWithPicker();

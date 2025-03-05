@@ -54,6 +54,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreSyncProvider } = await import('@services/sync');
     // eslint-disable-next-line deprecation/deprecation
     const { CoreTextUtilsProvider } = await import('@services/utils/text');
+    // eslint-disable-next-line deprecation/deprecation
     const { CoreTimeUtilsProvider } = await import('@services/utils/time');
     const { CoreUpdateManagerProvider } = await import('@services/update-manager');
     const { CoreUrlUtilsProvider } = await import('@services/utils/url');

@@ -18,7 +18,7 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFormFields } from '@singletons/form';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { makeSingleton, Translate } from '@singletons';
 import {
     AddonModLesson,
@@ -27,7 +27,6 @@ import {
     AddonModLessonGetPageDataWSResponse,
     AddonModLessonLessonWSData,
 } from './lesson';
-import { CoreTime } from '@singletons/time';
 import { CoreUtils } from '@singletons/utils';
 import { AddonModLessonPageSubtype } from '../constants';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
@@ -547,7 +546,7 @@ export class AddonModLessonHelperProvider {
             if (hasGrade) {
                 data.grade = Translate.instant('core.percentagenumber', { $a: retake.grade });
             }
-            data.timestart = CoreTimeUtils.userDate(retake.timestart * 1000);
+            data.timestart = CoreTime.userDate(retake.timestart * 1000);
             if (includeDuration) {
                 data.duration = CoreTime.formatTime(retake.timeend - retake.timestart);
             }
@@ -555,7 +554,7 @@ export class AddonModLessonHelperProvider {
             // The user has not completed the retake.
             data.grade = Translate.instant('addon.mod_lesson.notcompleted');
             if (retake.timestart) {
-                data.timestart = CoreTimeUtils.userDate(retake.timestart * 1000);
+                data.timestart = CoreTime.userDate(retake.timestart * 1000);
             }
         }
 

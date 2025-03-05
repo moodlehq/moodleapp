@@ -34,3 +34,52 @@ export enum AddonModFeedbackIndexTabName {
     OVERVIEW = 'overview',
     ANALYSIS = 'analysis',
 }
+
+/**
+ * Feedback question types.
+ */
+export enum AddonModFeedbackQuestionType {
+    CAPTCHA = 'captcha',
+    INFO = 'info',
+    LABEL = 'label',
+    MULTICHOICE = 'multichoice',
+    MULTICHOICERATED = 'multichoicerated',
+    NUMERIC = 'numeric',
+    PAGEBREAK = 'pagebreak',
+    TEXTAREA = 'textarea',
+    TEXTFIELD = 'textfield',
+}
+
+/**
+ * Multichoice subtypes.
+ */
+export enum AddonModFeedbackMultichoiceSubtype {
+    CHECKBOX = 'c', // Multiple answers.
+    DROPDOWN = 'd', // Single answer allowed (drop-down menu).
+    RADIO = 'r', // Single answer.
+}
+
+export const AddonModFeedbackQuestionTemplateMultichoicePrefix = 'multichoice-';
+
+/**
+ * Feedback question templates.
+ */
+export enum AddonModFeedbackQuestionTemplateNames {
+    CAPTCHA = 'captcha',
+    LABEL = 'label',
+    MULTICHOICE_CHECKBOX = AddonModFeedbackQuestionTemplateMultichoicePrefix + AddonModFeedbackMultichoiceSubtype.CHECKBOX,
+    MULTICHOICE_RADIO = AddonModFeedbackQuestionTemplateMultichoicePrefix + AddonModFeedbackMultichoiceSubtype.RADIO,
+    MULTICHOICE_DROPDOWN = AddonModFeedbackQuestionTemplateMultichoicePrefix + AddonModFeedbackMultichoiceSubtype.DROPDOWN,
+    NUMERIC = 'numeric',
+    TEXTAREA = 'textarea',
+    TEXTFIELD = 'textfield',
+}
+
+/**
+ * Feedback analysis templates.
+ */
+export enum AddonModFeedbackAnalysisTemplateNames {
+    CHART = 'chart',
+    LIST = 'list',
+    NUMERIC = 'numeric',
+}

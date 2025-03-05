@@ -14,8 +14,18 @@
 
 import { mockTranslate } from '@/testing/utils';
 import { CoreTime } from '@singletons/time';
+import dayjs from 'dayjs';
 
 describe('CoreTime singleton', () => {
+
+    beforeEach(async () => {
+        // Force timezone for automated tests.
+        await CoreTime.forceTimezoneForTesting();
+    });
+
+    afterEach(() => {
+        CoreTime.resetTimezoneForTesting();
+    });
 
     it('formats time in a human readable format', () => {
         mockTranslate({
@@ -66,4 +76,93 @@ describe('CoreTime singleton', () => {
         expect(testFunction).toHaveBeenCalledTimes(1);
     });
 
+    it('should convert PHP format to DayJS format', () => {
+        expect(CoreTime.convertPHPToJSDateFormat('%Y-%m-%d')).toEqual('YYYY[-]MM[-]DD');
+        expect(CoreTime.convertPHPToJSDateFormat('%H:%M:%S')).toEqual('HH[:]mm[:]ss');
+        expect(CoreTime.convertPHPToJSDateFormat('%A, %B %d, %Y')).toEqual('dddd[, ]MMMM[ ]DD[, ]YYYY');
+        expect(CoreTime.convertPHPToJSDateFormat('%I:%M %p')).toEqual('hh[:]mm[ ]A');
+        expect(CoreTime.convertPHPToJSDateFormat('%d/%m/%Y')).toEqual('DD[/]MM[/]YYYY');
+        expect(CoreTime.convertPHPToJSDateFormat('%m-%d-%Y')).toEqual('MM[-]DD[-]YYYY');
+        expect(CoreTime.convertPHPToJSDateFormat('%Y/%m/%d %H:%M:%S')).toEqual('YYYY[/]MM[/]DD[ ]HH[:]mm[:]ss');
+        expect(CoreTime.convertPHPToJSDateFormat('%a, %I %p')).toEqual('ddd[, ]hh[ ]A');
+        expect(CoreTime.convertPHPToJSDateFormat(123 as any)).toEqual('');
+    });
+
+    it('should fix format for ion-datetime', () => {
+        expect(CoreTime.fixFormatForDatetime('[YYYY-MM-DD]')).toEqual('YYYY-MM-DD');
+        expect(CoreTime.fixFormatForDatetime('hh:mm A')).toEqual('HH:mm');
+        expect(CoreTime.fixFormatForDatetime('')).toEqual('');
+        expect(CoreTime.fixFormatForDatetime('DD/MM/YYYY')).toEqual('DD/MM/YYYY');
+        expect(CoreTime.fixFormatForDatetime('MM-DD-YYYY')).toEqual('MM-DD-YYYY');
+        expect(CoreTime.fixFormatForDatetime('YYYY/MM/DD HH:mm:ss')).toEqual('YYYY/MM/DD HH:mm:ss');
+        expect(CoreTime.fixFormatForDatetime('ddd, hA')).toEqual('ddd, H');
+    });
+
+    it('should return readable timestamp', () => {
+        expect(Number(CoreTime.readableTimestamp())).not.toBeNaN();
+    });
+
+    it('should return current timestamp in seconds', () => {
+        expect(CoreTime.timestamp()).toBeLessThan(10000000000);
+        expect(CoreTime.timestamp()).toBeLessThan(10000000000);
+    });
+
+    it('should convert timestamp to readable date', () => {
+        mockTranslate({
+            'core.strftimedaydatetime': '%Y-%m-%d %H:%M:%S',
+            'core.strftimemonthyear': '%B %Y',
+        });
+        expect(CoreTime.userDate(1641027600000)).toEqual('2022-01-1 17:00:00');
+        expect(CoreTime.userDate(1641027600000, 'core.strftimemonthyear')).toEqual('January 2022');
+
+        expect(CoreTime.userDate(0)).toEqual('1970-01-1 08:00:00');
+        expect(CoreTime.userDate(0, 'core.strftimemonthyear')).toEqual('January 1970');
+        expect(CoreTime.userDate(946684800000)).toEqual('2000-01-1 08:00:00');
+        expect(CoreTime.userDate(946684800000, 'core.strftimemonthyear')).toEqual('January 2000');
+        expect(CoreTime.userDate(1672531199000, undefined, true, false)).toEqual('2023-01-01 07:59:59');
+        expect(CoreTime.userDate(1672531199000, 'core.strftimemonthyear')).toEqual('January 2023');
+    });
+
+    it('should convert timestamp to datetime format', () => {
+        expect(CoreTime.toDatetimeFormat(1641027600000)).toEqual('2022-01-01T17:00');
+        expect(CoreTime.toDatetimeFormat()).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/);
+
+    });
+
+    it('should return localized date format', () => {
+        expect(CoreTime.getLocalizedDateFormat('L')).toEqual(dayjs.localeData().longDateFormat('L'));
+    });
+
+    it('should return midnight for given timestamp', () => {
+        expect(CoreTime.getMidnightForTimestamp(1641027600)).toEqual(1640966400);
+        expect(CoreTime.getMidnightForTimestamp(1640966400)).toEqual(1640966400);
+        expect(CoreTime.getMidnightForTimestamp(0)).toEqual(-28800);
+        expect(CoreTime.getMidnightForTimestamp(946656000)).toEqual(946656000);
+    });
+
+    it('should return default max year for datetime inputs', () => {
+        const currentYear = new Date().getFullYear();
+        expect(CoreTime.getDatetimeDefaultMax()).toEqual(String(currentYear + 20));
+    });
+
+    it('should return default min year for datetime inputs', () => {
+        const currentYear = new Date().getFullYear();
+        expect(CoreTime.getDatetimeDefaultMin()).toEqual(String(currentYear - 20));
+    });
+
+    it('should translate legacy timezone names', () => {
+        expect(CoreTime.translateLegacyTimezone('-13.0')).toEqual('Australia/Perth');
+        expect(CoreTime.translateLegacyTimezone('5.5')).toEqual('Asia/Kolkata');
+        expect(CoreTime.translateLegacyTimezone('unknown')).toEqual('unknown');
+    });
+
+    it('should ensure timestamp is in milliseconds', () => {
+        expect(CoreTime.ensureMilliseconds(1641027600)).toEqual(1641027600000);
+        expect(CoreTime.ensureMilliseconds(1641027600000)).toEqual(1641027600000);
+    });
+
+    it('should ensure timestamp is in seconds', () => {
+        expect(CoreTime.ensureSeconds(1641027600000)).toEqual(1641027600);
+        expect(CoreTime.ensureSeconds(1641027600)).toEqual(1641027600);
+    });
 });
