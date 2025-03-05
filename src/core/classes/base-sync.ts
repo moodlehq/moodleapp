@@ -247,7 +247,7 @@ export class CoreSyncBaseProvider<T = void> {
     async setSyncTime(id: string | number, siteId?: string, time?: number): Promise<void> {
         time = time !== undefined ? time : Date.now();
 
-        await CoreSync.insertOrUpdateSyncRecord(this.component, id, { time: time }, siteId);
+        await CoreSync.insertOrUpdateSyncRecord(this.component, id, { time }, siteId);
     }
 
     /**

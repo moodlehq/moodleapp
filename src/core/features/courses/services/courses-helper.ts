@@ -26,7 +26,7 @@ import {
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
-import moment from 'moment-timezone';
+import dayjs from 'dayjs';
 import { of, firstValueFrom } from 'rxjs';
 import { zipIncludingComplete } from '@/core/utils/rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -402,7 +402,7 @@ export class CoreCoursesHelperProvider {
         }
 
         // Calculate the end date to use for display classification purposes, incorporating the grace period, if any.
-        const endDate = moment(course.enddate * 1000).add(gradePeriodAfter, 'days').valueOf();
+        const endDate = dayjs.tz(course.enddate * 1000).add(gradePeriodAfter, 'days').valueOf();
 
         return endDate < Date.now();
     }
@@ -425,7 +425,7 @@ export class CoreCoursesHelperProvider {
         }
 
         // Calculate the start date to use for display classification purposes, incorporating the grace period, if any.
-        const startDate = moment(course.startdate * 1000).subtract(gradePeriodBefore, 'days').valueOf();
+        const startDate = dayjs.tz(course.startdate * 1000).subtract(gradePeriodBefore, 'days').valueOf();
 
         return startDate > Date.now();
     }
