@@ -17,7 +17,7 @@
     <key>PLIST_VERSION</key>
     <string>1</string>
     <key>BUNDLE_ID</key>
-    <string>com.moodle.moodlemobile</string>
+    <string>com.bitkea.scholarlms</string>
     <key>PROJECT_ID</key>
     <string>moodlemobile-push</string>
     <key>STORAGE_BUCKET</key>

@@ -9,20 +9,20 @@
         <framework src="com.android.installreferrer:installreferrer:2.2" />
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="SecureStorage">
-                <param name="android-package" value="com.moodle.moodlemobile.SecureStorage"/>
+                <param name="android-package" value="com.bitkea.scholarlms.SecureStorage"/>
             </feature>
             <feature name="InstallReferrer">
-                <param name="android-package" value="com.moodle.moodlemobile.InstallReferrer"/>
+                <param name="android-package" value="com.bitkea.scholarlms.InstallReferrer"/>
             </feature>
         </config-file>
 
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="Diagnostic">
-                <param name="android-package" value="com.moodle.moodlemobile.Diagnostic"/>
+                <param name="android-package" value="com.bitkea.scholarlms.Diagnostic"/>
                 <param name="onload" value="true" />
             </feature>
             <feature name="PinchToZoom">
-                <param name="android-package" value="com.moodle.moodlemobile.PinchToZoom"/>
+                <param name="android-package" value="com.bitkea.scholarlms.PinchToZoom"/>
                 <param name="onload" value="true" />
             </feature>
         </config-file>

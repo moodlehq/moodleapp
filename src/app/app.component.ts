@@ -28,6 +28,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { register } from 'swiper/element/bundle';
 import { CoreWait } from '@singletons/wait';
 import { CoreOpener } from '@singletons/opener';
+import { CommonService } from '../slms/services/common';//<SLMS_CUSTOM_CHANGE_ANUP_06032025>
 
 register();
 
@@ -118,6 +119,9 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.logger.debug('Hide splash screen');
             SplashScreen.hide();
             this.setSystemUIColorsAfterSplash();
+            //<SLMS_CUSTOM_CHANGE_ANUP_06032025_FROM122_TO124>
+            var cs = new CommonService();
+            cs.setCustomStyles();
         });
     }
 
