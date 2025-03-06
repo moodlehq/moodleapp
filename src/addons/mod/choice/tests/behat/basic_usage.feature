@@ -167,24 +167,3 @@ Feature: Test basic usage of choice activity in app
     And I should find "Option 2: 1" in the app
     And I should find "Option 3: 0" in the app
     But I should not find "This Choice has offline data to be synchronised." in the app
-
-  # TODO remove LMS UI steps in app tests
-  Scenario: Download students choice in text format
-    # Submit answer as student
-    Given the following "activities" exist:
-      | activity | name        | intro                   | course | idnumber | option |
-      | choice   | Choice name | Test choice description | C1     | choice1  | Option 1, Option 2, Option 3 |
-    And I entered the choice activity "Choice name" on course "Course 1" as "student1" in the app
-    When I select "Option 2" in the app
-    And I press "Save my choice" in the app
-    And I press "OK" in the app
-
-    # Download answers as teacher
-    Given I entered the choice activity "Choice name" on course "Course 1" as "teacher1" in the app
-    Then I should find "Test choice description" in the app
-
-    When I open a browser tab with url "$WWWROOT"
-    And I am on the "choice1" Activity page logged in as teacher1
-    And I follow "Responses"
-    And I press "Download in text format"
-    # TODO Then I should find "..." in the downloads folder
