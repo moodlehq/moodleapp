@@ -666,7 +666,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         const appUrlElements = Array.from(div.querySelectorAll<HTMLElement>('*[data-app-url]'));
 
         appUrlElements.forEach((element) => {
-            const url = element.dataset.appUrl;
+            let url = element.dataset.appUrl;
             if (!url) {
                 return;
             }
@@ -676,10 +676,12 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
                 event.stopPropagation();
 
                 site = site || CoreSites.getCurrentSite();
-                if (!site) {
+                if (!site || !url) {
                     return;
                 }
 
+                // Try to convert the URL to absolute if needed.
+                url = CoreUrl.toAbsoluteURL(site.getURL(), url);
                 const confirmMessage = element.dataset.appUrlConfirm;
                 const openInApp = element.dataset.openIn === 'app';
                 const refreshOnResume = element.dataset.appUrlResumeAction === 'refresh';
@@ -833,7 +835,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
      * @param site Site instance.
      */
     protected async treatIframe(iframe: HTMLIFrameElement, site: CoreSite | undefined): Promise<void> {
-        const src = iframe.src;
+        const src = this.getFrameUrl(iframe, site);
         const currentSite = CoreSites.getCurrentSite();
 
         this.addMediaAdaptClass(iframe);
@@ -863,6 +865,11 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         }
 
         await CoreIframeUtils.fixIframeCookies(src);
+
+        if (src !== iframe.src) {
+            // URL was converted, update it in the iframe.
+            iframe.src = src;
+        }
 
         if (site && src) {
             let vimeoUrl = CoreUrl.getVimeoPlayerUrl(src, site);
@@ -928,6 +935,30 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     }
 
     /**
+     * Get the URL for a frame. It will be converted to absolute URL if needed.
+     *
+     * @param frame Frame element.
+     * @param site Site instance.
+     * @returns URL.
+     */
+    protected getFrameUrl(frame: FrameElement, site: CoreSite | undefined): string {
+        if (!site) {
+            // Cannot treat the URL, just return it as it is.
+            return 'src' in frame ? frame.src : frame.data;
+        }
+
+        // Use getAttribute to obtain the original URL, since src and data properties convert the URL to absolute using
+        // the current location (app's URL).
+        const url = 'src' in frame ? frame.getAttribute('src') : frame.getAttribute('data');
+        if (!url) {
+            // Attribute not found, return the property.
+            return 'src' in frame ? frame.src : frame.data;
+        }
+
+        return CoreUrl.toAbsoluteURL(site.getURL(), url);
+    }
+
+    /**
      * Replace a frame with a button to open the frame's URL in an external app.
      *
      * @param frame Frame element to replace.
@@ -936,7 +967,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
      * @returns Whether iframe was replaced.
      */
     protected replaceFrameWithButton(frame: FrameElement, site: CoreSite | undefined, label: string): boolean {
-        const url = 'src' in frame ? frame.src : frame.data;
+        const url = this.getFrameUrl(frame, site);
         if (!url) {
             return false;
         }
