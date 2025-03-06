@@ -31,7 +31,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreLogger } from '@singletons/logger';
 import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infinite-loading';
 import { Md5 } from 'ts-md5/dist/md5';
-import moment from 'moment-timezone';
+import dayjs from 'dayjs';
 import { CoreError } from '@classes/errors/error';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
@@ -1215,7 +1215,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
         }
 
         // Check if day has changed.
-        return !moment(message.timecreated).isSame(prevMessage.timecreated, 'day');
+        return !dayjs.tz(message.timecreated).isSame(prevMessage.timecreated, 'day');
     }
 
     /**

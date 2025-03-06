@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import moment from 'moment-timezone';
+import dayjs from 'dayjs';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import {
@@ -1379,9 +1379,9 @@ export class CoreCourseHelperProvider {
         const downloadTime = packageData.downloadTime;
         let downloadTimeReadable = '';
         if (now - downloadTime < 7 * 86400) {
-            downloadTimeReadable = moment(downloadTime * 1000).fromNow();
+            downloadTimeReadable = dayjs.tz(downloadTime * 1000).fromNow();
         } else {
-            downloadTimeReadable = moment(downloadTime * 1000).calendar();
+            downloadTimeReadable = dayjs.tz(downloadTime * 1000).calendar();
         }
 
         return {

@@ -1,4 +1,4 @@
-@addon_mod_choice @app @mod @mod_choice @javascript
+@addon_mod_choice @app @mod @mod_choice @javascript @chartjs
 Feature: Test basic usage of choice activity in app
   In order to participate in the choice while using the mobile app
   As a student
@@ -32,6 +32,7 @@ Feature: Test basic usage of choice activity in app
     Then I should find "Option 1: 0" in the app
     And I should find "Option 2: 1" in the app
     And I should find "Option 3: 0" in the app
+    And the UI should match the snapshot
     But I should not find "Remove my choice" in the app
 
     When I go back in the app
@@ -55,6 +56,7 @@ Feature: Test basic usage of choice activity in app
     Then I should find "Option 1: 1" in the app
     And I should find "Option 2: 1" in the app
     And I should find "Option 3: 0" in the app
+    And the UI should match the snapshot
     And I should find "Remove my choice" in the app
 
     When I unselect "Option 1" in the app

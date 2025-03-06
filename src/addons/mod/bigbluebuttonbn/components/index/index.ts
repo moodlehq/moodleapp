@@ -21,7 +21,7 @@ import { CoreApp } from '@services/app';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreArray } from '@singletons/array';
 import { Translate } from '@singletons';
 import {
@@ -173,7 +173,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
                 }
 
                 if (columnData.formatter === 'customDate' && !isNaN(Number(value))) {
-                    value = CoreTimeUtils.userDate(Number(value), 'core.strftimedaydate');
+                    value = CoreTime.userDate(Number(value), 'core.strftimedaydate');
                 } else if (columnData.allowHTML && typeof value === 'string') {
                     // If the HTML is empty, don't display it.
                     const valueElement = convertTextToHTMLElement(value);

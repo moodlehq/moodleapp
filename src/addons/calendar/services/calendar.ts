@@ -17,7 +17,7 @@ import { CoreSites } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNetwork } from '@services/network';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreObject } from '@singletons/object';
 import { CoreGroups } from '@services/groups';
@@ -26,7 +26,7 @@ import { CoreConfig } from '@services/config';
 import { AddonCalendarOffline } from './calendar-offline';
 import { CoreUser } from '@features/user/services/user';
 import { CoreWSExternalWarning, CoreWSDate } from '@services/ws';
-import moment from 'moment-timezone';
+import dayjs from 'dayjs';
 import { AddonCalendarEventDBRecord } from './database/calendar';
 import { CoreCourses } from '@features/courses/services/courses';
 import { ContextLevel, CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
@@ -62,7 +62,6 @@ import {
 import { REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
 import { AddonCalendarFilter } from './calendar-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreTime } from '@singletons/time';
 
 declare module '@singletons/events' {
 
@@ -328,19 +327,19 @@ export class AddonCalendarProvider {
 
         if (event.timeduration) {
 
-            if (moment(start).isSame(end, 'day')) {
+            if (dayjs.tz(start).isSame(end, 'day')) {
                 // Event starts and ends the same day.
                 if (event.timeduration == CoreConstants.SECONDS_DAY) {
                     time = Translate.instant('addon.calendar.allday');
                 } else {
-                    time = getStartTimeHtml(CoreTimeUtils.userDate(start, format)) + ' <strong>&raquo;</strong> ' +
-                            getEndTimeHtml(CoreTimeUtils.userDate(end, format));
+                    time = getStartTimeHtml(CoreTime.userDate(start, format)) + ' <strong>&raquo;</strong> ' +
+                            getEndTimeHtml(CoreTime.userDate(end, format));
                 }
 
             } else {
                 // Event lasts more than one day.
-                const timeStart = CoreTimeUtils.userDate(start, format);
-                const timeEnd = CoreTimeUtils.userDate(end, format);
+                const timeStart = CoreTime.userDate(start, format);
+                const timeEnd = CoreTime.userDate(end, format);
                 const promises: Promise<void>[] = [];
 
                 // Don't use common words when the event lasts more than one day.
@@ -348,14 +347,14 @@ export class AddonCalendarProvider {
                 let dayEnd = this.getDayRepresentation(end, false) + ', ';
 
                 // Add links to the days if needed.
-                if (dayStart && (!seenDay || !moment(seenDay).isSame(start, 'day'))) {
+                if (dayStart && (!seenDay || !dayjs.tz(seenDay).isSame(start, 'day'))) {
                     promises.push(this.getViewUrl('day', event.timestart, undefined, siteId).then((url) => {
                         dayStart = CoreUrl.buildLink(url, dayStart);
 
                         return;
                     }));
                 }
-                if (dayEnd && (!seenDay || !moment(seenDay).isSame(end, 'day'))) {
+                if (dayEnd && (!seenDay || !dayjs.tz(seenDay).isSame(end, 'day'))) {
                     promises.push(this.getViewUrl('day', end / 1000, undefined, siteId).then((url) => {
                         dayEnd = CoreUrl.buildLink(url, dayEnd);
 
@@ -370,7 +369,7 @@ export class AddonCalendarProvider {
             }
         } else {
             // There is no time duration.
-            time = getStartTimeHtml(CoreTimeUtils.userDate(start, format));
+            time = getStartTimeHtml(CoreTime.userDate(start, format));
         }
 
         if (showTime) {
@@ -378,7 +377,7 @@ export class AddonCalendarProvider {
         }
 
         // Display day + time.
-        if (seenDay && moment(seenDay).isSame(start, 'day')) {
+        if (seenDay && dayjs.tz(seenDay).isSame(start, 'day')) {
             // This day is currently being displayed, don't add an link.
             return this.getDayRepresentation(start, useCommonWords) + ', ' + time;
         }
@@ -535,11 +534,11 @@ export class AddonCalendarProvider {
 
         if (!useCommonWords) {
             // We don't want words, just a date.
-            return CoreTimeUtils.userDate(time, 'core.strftimedayshort');
+            return CoreTime.userDate(time, 'core.strftimedayshort');
         }
 
-        const date = moment(time);
-        const today = moment();
+        const date = dayjs.tz(time);
+        const today = dayjs.tz();
 
         if (date.isSame(today, 'day')) {
             return Translate.instant('addon.calendar.today');
@@ -551,7 +550,7 @@ export class AddonCalendarProvider {
             return Translate.instant('addon.calendar.tomorrow');
         }
 
-        return CoreTimeUtils.userDate(time, 'core.strftimedayshort');
+        return CoreTime.userDate(time, 'core.strftimedayshort');
     }
 
     /**
