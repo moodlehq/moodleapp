@@ -212,6 +212,10 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         const site = await CorePromiseUtils.ignoreErrors(CoreSites.getSite(this.siteId));
         const isSiteFile = site?.isSitePluginFileUrl(url);
 
+        // Try to convert the URL to absolute. This will only work for URLs relative to the site URL, it won't work for
+        // URLs relative to a subpath (e.g. relative to the course page URL).
+        url = site && url ? CoreUrl.toAbsoluteURL(site.getURL(), url) : url;
+
         if (!url || !url.match(/^https?:\/\//i) || CoreUrl.isLocalFileUrl(url) ||
                 (tagName === 'A' && !(isSiteFile || site?.isSiteThemeImageUrl(url) || CoreUrl.isGravatarUrl(url)))) {
 
