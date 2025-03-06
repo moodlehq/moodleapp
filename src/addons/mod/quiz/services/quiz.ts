@@ -29,7 +29,7 @@ import {
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreUtils } from '@singletons/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -56,7 +56,6 @@ import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreObject } from '@singletons/object';
 import { CoreArray } from '@singletons/array';
-import { CoreTime } from '@singletons/time';
 
 declare module '@singletons/events' {
 
@@ -306,10 +305,10 @@ export class AddonModQuizProvider {
         if (attempt.state === AddonModQuizAttemptStates.OVERDUE) {
             return Translate.instant(
                 'addon.mod_quiz.overduemustbesubmittedby',
-                { $a: CoreTimeUtils.userDate(dueDate) },
+                { $a: CoreTime.userDate(dueDate) },
             );
         } else if (dueDate) {
-            return Translate.instant('addon.mod_quiz.mustbesubmittedby', { $a: CoreTimeUtils.userDate(dueDate) });
+            return Translate.instant('addon.mod_quiz.mustbesubmittedby', { $a: CoreTime.userDate(dueDate) });
         }
     }
 

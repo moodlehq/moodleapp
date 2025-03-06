@@ -27,7 +27,7 @@ import {
 } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreArray } from '@singletons/array';
 import {
     AddonCalendar,
@@ -46,10 +46,9 @@ import {
     CoreSwipeSlidesDynamicItemsManagerSource,
 } from '@classes/items-management/swipe-slides-dynamic-items-manager-source';
 import { CoreSwipeSlidesDynamicItemsManager } from '@classes/items-management/swipe-slides-dynamic-items-manager';
-import moment from 'moment-timezone';
+import dayjs, { Dayjs } from 'dayjs';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrl } from '@singletons/url';
-import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
 import { toBoolean } from '@/core/transforms/boolean';
 import { ADDON_CALENDAR_UNDELETED_EVENT_EVENT } from '@addons/calendar/constants';
@@ -127,7 +126,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
             const params = {
                 course: this.filter?.courseId,
-                time: month.moment.unix(),
+                time: CoreTime.timestamp(),
             };
 
             CoreAnalytics.logEvent({
@@ -151,7 +150,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      * @inheritdoc
      */
     ngOnInit(): void {
-        const source = new AddonCalendarMonthSlidesItemsManagerSource(this, moment({
+        const source = new AddonCalendarMonthSlidesItemsManagerSource(this, dayjs.tz({
             year: this.initialYear,
             month: this.initialMonth ? this.initialMonth - 1 : undefined,
         }).startOf('month'));
@@ -222,8 +221,8 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      */
     onMonthViewed(month: MonthBasicData): void {
         // Calculate the period name. We don't use the one in result because it's in server's language.
-        this.periodName = CoreTimeUtils.userDate(
-            month.moment.unix() * 1000,
+        this.periodName = CoreTime.userDate(
+            month.dayJS.valueOf(),
             'core.strftimemonthyear',
         );
     }
@@ -282,16 +281,16 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
             return;
         }
 
-        this.onDayClicked.emit({ day: day, month: selectedMonth.moment.month() + 1, year: selectedMonth.moment.year() });
+        this.onDayClicked.emit({ day: day, month: selectedMonth.dayJS.month() + 1, year: selectedMonth.dayJS.year() });
     }
 
     /**
      * Go to current month.
      */
     async goToCurrentMonth(): Promise<void> {
-        const currentMoment = moment();
+        const current = dayjs.tz();
 
-        await this.viewMonth(currentMoment.month() + 1, currentMoment.year());
+        await this.viewMonth(current.month() + 1, current.year());
     }
 
     /**
@@ -351,7 +350,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
         this.loaded = false;
         const item = {
-            moment: moment({
+            dayJS: dayjs.tz({
                 year,
                 month: month - 1,
             }),
@@ -386,7 +385,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
  * Basic data to identify a month.
  */
 type MonthBasicData = {
-    moment: moment.Moment;
+    dayJS: Dayjs;
 };
 
 /**
@@ -413,8 +412,8 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
 
     protected calendarComponent: AddonCalendarCalendarComponent;
 
-    constructor(component: AddonCalendarCalendarComponent, initialMoment: moment.Moment) {
-        super({ moment: initialMoment });
+    constructor(component: AddonCalendarCalendarComponent, initialDayJS: Dayjs) {
+        super({ dayJS: initialDayJS });
 
         this.calendarComponent = component;
     }
@@ -513,7 +512,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
      * @inheritdoc
      */
     getItemId(item: MonthBasicData): string | number {
-        return AddonCalendarHelper.getMonthId(item.moment);
+        return AddonCalendarHelper.getMonthId(item.dayJS);
     }
 
     /**
@@ -521,7 +520,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
      */
     getPreviousItem(item: MonthBasicData): MonthBasicData | null {
         return {
-            moment: item.moment.clone().subtract(1, 'month'),
+            dayJS: item.dayJS.clone().subtract(1, 'month'),
         };
     }
 
@@ -530,7 +529,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
      */
     getNextItem(item: MonthBasicData): MonthBasicData | null {
         return {
-            moment: item.moment.clone().add(1, 'month'),
+            dayJS: item.dayJS.clone().add(1, 'month'),
         };
     }
 
@@ -540,8 +539,8 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
     async loadItemData(month: MonthBasicData, preload = false): Promise<PreloadedMonth | null> {
         // Load or preload the weeks.
         let result: { daynames: Partial<AddonCalendarDayName>[]; weeks: Partial<AddonCalendarWeek>[] };
-        const year = month.moment.year();
-        const monthNumber = month.moment.month() + 1;
+        const year = month.dayJS.year();
+        const monthNumber = month.dayJS.month() + 1;
 
         if (preload) {
             result = await AddonCalendarHelper.getOfflineMonthWeeks(year, monthNumber);
@@ -561,22 +560,22 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
 
         const weekDays = AddonCalendar.getWeekDays(result.daynames[0].dayno);
         const weeks = result.weeks as AddonCalendarWeek[];
-        const currentDay = moment().date();
+        const currentDay = dayjs.tz().date();
         const currentTime = CoreTime.timestamp();
-        const dayMoment = moment(month.moment);
+        const dayMoment = dayjs.tz(month.dayJS);
 
         const preloadedMonth: PreloadedMonth = {
             ...month,
             weeks,
             weekDays,
-            isCurrentMonth: month.moment.isSame(moment(), 'month'),
-            isPastMonth: month.moment.isBefore(moment(), 'month'),
+            isCurrentMonth: month.dayJS.isSame(dayjs.tz(), 'month'),
+            isPastMonth: month.dayJS.isBefore(dayjs.tz(), 'month'),
         };
 
         await Promise.all(weeks.map(async (week) => {
             await Promise.all(week.days.map(async (day) => {
-                day.periodName = CoreTimeUtils.userDate(
-                    dayMoment.date(day.mday).unix() * 1000,
+                day.periodName = CoreTime.userDate(
+                    dayMoment.date(day.mday).valueOf(),
                     'core.strftimedaydate',
                 );
                 day.eventsFormated = day.eventsFormated || [];
@@ -619,7 +618,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
      */
     mergeEvents(month: MonthBasicData, weeks: AddonCalendarWeek[]): void {
         const monthOfflineEvents: { [day: number]: AddonCalendarEventToDisplay[] } =
-            this.offlineEvents[AddonCalendarHelper.getMonthId(month.moment)];
+            this.offlineEvents[AddonCalendarHelper.getMonthId(month.dayJS)];
 
         weeks.forEach((week) => {
             week.days.forEach((day) => {
@@ -665,7 +664,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
         const promises: Promise<void>[] = [];
 
         if (selectedMonth) {
-            promises.push(AddonCalendar.invalidateMonthlyEvents(selectedMonth.moment.year(), selectedMonth.moment.month() + 1));
+            promises.push(AddonCalendar.invalidateMonthlyEvents(selectedMonth.dayJS.year(), selectedMonth.dayJS.month() + 1));
         }
         promises.push(CoreCourses.invalidateCategories(0, true));
         promises.push(AddonCalendar.invalidateTimeFormat());

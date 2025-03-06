@@ -17,7 +17,6 @@ import { AddonCalendarEvent } from '@addons/calendar/services/calendar';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreTime } from '@singletons/time';
 import { BehaviorSubject, Observable } from 'rxjs';
 
@@ -113,7 +112,7 @@ export class AddonBlockTimelineSection {
         );
 
         const eventsByDates = timelineEvents.reduce((filteredEvents, event) => {
-            const dayTimestamp = CoreTimeUtils.getMidnightForTimestamp(event.timesort);
+            const dayTimestamp = CoreTime.getMidnightForTimestamp(event.timesort);
 
             filteredEvents[dayTimestamp] = filteredEvents[dayTimestamp] ?? {
                 dayTimestamp,
@@ -147,7 +146,7 @@ export class AddonBlockTimelineSection {
 
         // Already calculated on 4.0 onwards but this will be live.
         if (event.eventtype === 'open' || event.eventtype === 'opensubmission') {
-            const dayTimestamp = CoreTimeUtils.getMidnightForTimestamp(event.timesort);
+            const dayTimestamp = CoreTime.getMidnightForTimestamp(event.timesort);
 
             return dayTimestamp > midnight;
         }

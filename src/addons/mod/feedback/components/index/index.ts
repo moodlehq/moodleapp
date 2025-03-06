@@ -22,7 +22,7 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
@@ -42,11 +42,15 @@ import {
     ADDON_MOD_FEEDBACK_COMPONENT,
     ADDON_MOD_FEEDBACK_FORM_SUBMITTED,
     ADDON_MOD_FEEDBACK_PAGE_NAME,
+    AddonModFeedbackAnalysisTemplateNames,
     AddonModFeedbackIndexTabName,
+    AddonModFeedbackMultichoiceSubtype,
+    AddonModFeedbackQuestionType,
 } from '../../constants';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreChartType } from '@components/chart/chart';
 
 /**
  * Component that displays a feedback index page.
@@ -297,9 +301,9 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
         if (this.access.canedititems) {
             this.overview.timeopen = (this.feedback.timeopen || 0) * 1000;
-            this.overview.openTimeReadable = this.overview.timeopen ? CoreTimeUtils.userDate(this.overview.timeopen) : '';
+            this.overview.openTimeReadable = this.overview.timeopen ? CoreTime.userDate(this.overview.timeopen) : '';
             this.overview.timeclose = (this.feedback.timeclose || 0) * 1000;
-            this.overview.closeTimeReadable = this.overview.timeclose ? CoreTimeUtils.userDate(this.overview.timeclose) : '';
+            this.overview.closeTimeReadable = this.overview.timeclose ? CoreTime.userDate(this.overview.timeclose) : '';
         }
         if (this.access.canviewanalysis) {
             // Get groups (only for teachers).
@@ -351,25 +355,25 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      */
     protected parseAnalysisInfo(item: AddonModFeedbackItem): AddonModFeedbackItem {
         switch (item.typ) {
-            case 'numeric':
+            case AddonModFeedbackQuestionType.NUMERIC:
                 item.average = item.data.reduce((prev, current) => prev + Number(current), 0) / item.data.length;
-                item.templateName = 'numeric';
+                item.templateName = AddonModFeedbackAnalysisTemplateNames.NUMERIC;
                 break;
 
-            case 'info':
+            case AddonModFeedbackQuestionType.INFO:
                 item.data = <string[]> item.data.map((dataItem) => {
                     const parsed = <Record<string, string>> CoreText.parseJSON(dataItem);
 
                     return parsed.show !== undefined ? parsed.show : false;
                 }).filter((dataItem) => dataItem); // Filter false entries.
 
-            case 'textfield':
-            case 'textarea':
-                item.templateName = 'list';
+            case AddonModFeedbackQuestionType.TEXTFIELD:
+            case AddonModFeedbackQuestionType.TEXTAREA:
+                item.templateName = AddonModFeedbackAnalysisTemplateNames.LIST;
                 break;
 
-            case 'multichoicerated':
-            case 'multichoice': {
+            case AddonModFeedbackQuestionType.MULTICHOICERATED:
+            case AddonModFeedbackQuestionType.MULTICHOICE: {
                 const parsedData = <Record<string, string | number>[]> item.data.map((dataItem) => {
                     const parsed = <Record<string, string | number>> CoreText.parseJSON(dataItem);
 
@@ -392,16 +396,16 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
                 item.chartData = parsedData.map((dataItem) => Number(dataItem.answercount));
 
-                if (item.typ === 'multichoicerated') {
+                if (item.typ === AddonModFeedbackQuestionType.MULTICHOICERATED) {
                     item.average = parsedData.reduce((prev, current) => prev + Number(current.avg), 0.0);
                 }
 
-                const subtype = item.presentation.charAt(0);
+                const subtype = item.presentation.charAt(0) as AddonModFeedbackMultichoiceSubtype;
 
                 // Display bar chart if there are no answers to avoid division by 0 error.
-                const single = subtype !== 'c' && item.chartData.some((count) => count > 0);
+                const single = subtype !== AddonModFeedbackMultichoiceSubtype.CHECKBOX && item.chartData.some((count) => count > 0);
                 item.chartType = single ? 'doughnut' : 'bar';
-                item.templateName = 'chart';
+                item.templateName = AddonModFeedbackAnalysisTemplateNames.CHART;
                 break;
             }
 
@@ -563,9 +567,9 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 type AddonModFeedbackItem = AddonModFeedbackWSItem & {
     data: string[];
     num: number;
-    templateName?: string;
+    templateName?: AddonModFeedbackAnalysisTemplateNames;
     average?: number;
     labels?: string[];
     chartData?: number[];
-    chartType?: string;
+    chartType?: CoreChartType;
 };

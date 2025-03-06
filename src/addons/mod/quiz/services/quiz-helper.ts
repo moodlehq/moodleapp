@@ -39,7 +39,7 @@ import {
 } from '../constants';
 import { QuestionDisplayOptionsMarks } from '@features/question/constants';
 import { CoreGroups } from '@services/groups';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
@@ -169,7 +169,7 @@ export class AddonModQuizHelperProvider {
 
         if (reviewFrom) {
             return Translate.instant('addon.mod_quiz.noreviewuntil' + (short ? 'short' : ''), {
-                $a: CoreTimeUtils.userDate(reviewFrom * 1000, short ? 'core.strftimedatetimeshort': undefined),
+                $a: CoreTime.userDate(reviewFrom * 1000, short ? 'core.strftimedatetimeshort': undefined),
             });
         } else {
             return Translate.instant('addon.mod_quiz.noreviewattempt');
