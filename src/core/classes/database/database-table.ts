@@ -205,8 +205,8 @@ export class CoreDatabaseTable<
      *
      * @returns Whether the table is empty or not.
      */
-    isEmpty(): Promise<boolean> {
-        return this.hasAny();
+    async isEmpty(): Promise<boolean> {
+        return !(await this.hasAny());
     }
 
     /**
@@ -221,7 +221,7 @@ export class CoreDatabaseTable<
             await this.getOne(conditions);
 
             return true;
-        } catch (error) {
+        } catch {
             // Couldn't get a single record.
             return false;
         }
