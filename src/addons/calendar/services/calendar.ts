@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesWSOptionsWithFilter } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNetwork } from '@services/network';
 import { CoreText } from '@singletons/text';
@@ -593,14 +593,17 @@ export class AddonCalendarProvider {
      * Get a calendar event by ID. This function returns more data than getEvent, but it isn't available in all Moodles.
      *
      * @param id Event ID.
-     * @param siteId ID of the site. If not defined, use current site.
+     * @param options Options.
      * @returns Promise resolved when the event data is retrieved.
      */
-    async getEventById(id: number, siteId?: string): Promise<AddonCalendarEvent> {
-        const site = await CoreSites.getSite(siteId);
+    async getEventById(id: number, options: CoreSitesWSOptionsWithFilter = {}): Promise<AddonCalendarEvent> {
+        const site = await CoreSites.getSite(options.siteId);
+
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEventCacheKey(id),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getFilterPresets(options.filter),
         };
         const params: AddonCalendarGetCalendarEventByIdWSParams = {
             eventid: id,
@@ -609,10 +612,15 @@ export class AddonCalendarProvider {
             const response: AddonCalendarGetCalendarEventByIdWSResponse =
                 await site.read('core_calendar_get_calendar_event_by_id', params, preSets);
 
-            this.updateLocalEvents([response.event], { siteId });
+            this.updateLocalEvents([response.event], { siteId: site.getId() });
 
             return response.event;
         } catch (error) {
+            if (options.filter === false) {
+                // Don't return data from DB when requesting unfiltered data.
+                throw error;
+            }
+
             try {
                 return (await this.getEventFromLocalDb(id)) as AddonCalendarEvent;
             } catch {

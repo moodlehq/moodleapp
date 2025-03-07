@@ -976,6 +976,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 moduleId: this.moduleId,
                 courseId: this.courseId,
                 submitId: this.submitId,
+                blindId: this.blindId,
                 feedback: this.feedback,
                 userSubmission: this.userSubmission,
                 gradingStatus: this.gradingStatus,

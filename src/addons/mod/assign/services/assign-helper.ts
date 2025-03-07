@@ -64,6 +64,36 @@ export class AddonModAssignHelperProvider {
     }
 
     /**
+     * Check if feedback can be edited in offline.
+     *
+     * @param assign Assignment.
+     * @param submitId The submission ID.
+     * @param feedback Feedback to check.
+     * @returns Whether it can be edited offline.
+     */
+    async canEditFeedbackOffline(
+        assign: AddonModAssignAssign,
+        submitId: number,
+        feedback?: AddonModAssignSubmissionFeedback,
+    ): Promise<boolean> {
+        if (!feedback) {
+            return false;
+        }
+
+        if (await CorePromiseUtils.promiseWorks(AddonModAssignOffline.getSubmissionGrade(assign.id, submitId))) {
+            // There is offline feedback, it can be edited.
+            return true;
+        }
+
+        // There is online feedback, check if plugins allow editing it.
+        const canPluginsEdit = await Promise.all((feedback.plugins ?? []).map(
+            plugin => AddonModAssignFeedbackDelegate.canPluginEditOffline(assign, submitId, feedback, plugin),
+        ));
+
+        return !canPluginsEdit.some(canEdit => !canEdit);
+    }
+
+    /**
      * Check if a submission can be edited in offline.
      *
      * @param assign Assignment.

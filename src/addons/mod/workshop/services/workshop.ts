@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
+import { CoreCourseCommonModWSOptions, CoreCourseCommonModWSOptionsWithFilter } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesMenuItem } from '@features/grades/services/grades-helper';
 import { CoreNetwork } from '@services/network';
@@ -400,9 +400,12 @@ export class AddonModWorkshopProvider {
 
         const params: AddonModWorkshopGetSubmissionsWSParams = {
             workshopid: workshopId,
-            userid: userId,
             groupid: groupId,
         };
+
+        if (options.userId && options.userId !== site.getUserId()) {
+            params.userid = options.userId;
+        }
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubmissionsDataCacheKey(workshopId, userId, groupId),
@@ -410,6 +413,8 @@ export class AddonModWorkshopProvider {
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getFilterPresets(options.filter),
+            fetchOriginalToo: options.canEdit && !params.userid,
         };
 
         const response = await site.read<AddonModWorkshopGetSubmissionsWSResponse>('mod_workshop_get_submissions', params, preSets);
@@ -443,7 +448,7 @@ export class AddonModWorkshopProvider {
     async getSubmission(
         workshopId: number,
         submissionId: number,
-        options: CoreCourseCommonModWSOptions = {},
+        options: AddonModWorkshopGetSubmissionOptions = {},
     ): Promise<AddonModWorkshopSubmissionData> {
         const site = await CoreSites.getSite(options.siteId);
 
@@ -456,6 +461,8 @@ export class AddonModWorkshopProvider {
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getFilterPresets(options.filter),
+            fetchOriginalToo: options.canEdit,
         };
 
         const response = await site.read<AddonModWorkshopGetSubmissionWSResponse>('mod_workshop_get_submission', params, preSets);
@@ -927,7 +934,7 @@ export class AddonModWorkshopProvider {
      */
     async getReviewerAssessments(
         workshopId: number,
-        options: AddonModWorkshopUserOptions = {},
+        options: AddonModWorkshopGetAssessmentsOptions = {},
     ): Promise<AddonModWorkshopSubmissionAssessmentData[]> {
         const site = await CoreSites.getSite(options.siteId);
 
@@ -935,16 +942,18 @@ export class AddonModWorkshopProvider {
             workshopid: workshopId,
         };
 
+        if (options.userId && options.userId !== site.getUserId()) {
+            params.userid = options.userId;
+        }
+
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getReviewerAssessmentsDataCacheKey(workshopId, options.userId),
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getFilterPresets(options.filter),
+            fetchOriginalToo: options.canAssess && !params.userid,
         };
-
-        if (options.userId) {
-            params.userid = options.userId;
-        }
 
         const response =
             await site.read<AddonModWorkshopGetAssessmentsWSResponse>('mod_workshop_get_reviewer_assessments', params, preSets);
@@ -977,7 +986,7 @@ export class AddonModWorkshopProvider {
     async getAssessment(
         workshopId: number,
         assessmentId: number,
-        options: CoreCourseCommonModWSOptions = {},
+        options: AddonModWorkshopGetAssessmentOptions = {},
     ): Promise<AddonModWorkshopSubmissionAssessmentData> {
         const site = await CoreSites.getSite(options.siteId);
 
@@ -990,6 +999,8 @@ export class AddonModWorkshopProvider {
             component: ADDON_MOD_WORKSHOP_COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+            ...CoreSites.getFilterPresets(options.filter),
+            fetchOriginalToo: options.canAssess,
         };
         const response = await site.read<AddonModWorkshopGetAssessmentWSResponse>('mod_workshop_get_assessment', params, preSets);
 
@@ -1894,9 +1905,37 @@ export type AddonModWorkshopGroupOptions = CoreCourseCommonModWSOptions & {
 };
 
 /**
+ * Common options with a user ID and an option to filter or not the content.
+ */
+export type AddonModWorkshopUserWithFilterOptions = CoreCourseCommonModWSOptionsWithFilter & AddonModWorkshopUserOptions;
+
+/**
+ * Options to pass to getSubmission.
+ */
+export type AddonModWorkshopGetSubmissionOptions = CoreCourseCommonModWSOptionsWithFilter & {
+    canEdit?: boolean; // Whether the user can edit his submission.
+};
+
+/**
  * Options to pass to getSubmissions.
  */
-export type AddonModWorkshopGetSubmissionsOptions = AddonModWorkshopUserOptions & AddonModWorkshopGroupOptions;
+export type AddonModWorkshopGetSubmissionsOptions = AddonModWorkshopUserWithFilterOptions & AddonModWorkshopGroupOptions & {
+    canEdit?: boolean; // Whether the user can edit his submission.
+};
+
+/**
+ * Options to pass to getAssessment.
+ */
+export type AddonModWorkshopGetAssessmentOptions = CoreCourseCommonModWSOptionsWithFilter & {
+    canAssess?: boolean; // Whether the user can edit the assessment.
+};
+
+/**
+ * Options to pass to getReviewerAssessments.
+ */
+export type AddonModWorkshopGetAssessmentsOptions = AddonModWorkshopUserWithFilterOptions & {
+    canAssess?: boolean; // Whether the user can edit the assessment.
+};
 
 /**
  * Options to pass to fetchAllGradeReports.

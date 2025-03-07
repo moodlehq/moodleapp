@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreEvents } from '@singletons/events';
 import { CoreGroup, CoreGroups } from '@services/groups';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreTime } from '@singletons/time';
 import { CoreUtils } from '@singletons/utils';
@@ -188,51 +188,8 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
             }
 
             if (this.eventId && !this.gotEventData) {
-                // Editing an event, get the event data. Wait for sync first.
-                const eventId = this.eventId;
-
-                promises.push(AddonCalendarSync.waitForSync(ADDON_CALENDAR_SYNC_ID).then(async () => {
-                    // Do not block if the scope is already destroyed.
-                    if (!this.isDestroyed && this.eventId) {
-                        CoreSync.blockOperation(ADDON_CALENDAR_COMPONENT, eventId);
-                    }
-
-                    let eventForm: AddonCalendarEvent | AddonCalendarOfflineEventDBRecord | undefined;
-
-                    // Get the event offline data if there's any.
-                    try {
-                        eventForm = await AddonCalendarOffline.getEvent(eventId);
-
-                        this.hasOffline = true;
-                    } catch {
-                        // No offline data.
-                        this.hasOffline = false;
-                    }
-
-                    if (eventId > 0) {
-                        // It's an online event. get its data from server.
-                        const event = await AddonCalendar.getEventById(eventId);
-
-                        if (!eventForm) {
-                            eventForm = event; // Use offline data first.
-                        }
-
-                        this.eventRepeatId = event?.repeatid;
-                        if (this.eventRepeatId) {
-
-                            this.otherEventsCount = event.eventcount ? event.eventcount - 1 : 0;
-                        }
-                    }
-
-                    this.gotEventData = true;
-
-                    if (eventForm) {
-                        // Load the data in the form.
-                        return this.loadEventData(eventForm, this.hasOffline);
-                    }
-
-                    return;
-                }));
+                // Editing an event, get the event data.
+                promises.push(this.fetchEventData(this.eventId));
             }
 
             if (this.types.category) {
@@ -264,10 +221,65 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
         }
     }
 
+    /**
+     * Fetch the event data to edit it.
+     *
+     * @param eventId Event ID.
+     */
+    protected async fetchEventData(eventId: number): Promise<void> {
+        // Wait for sync first.
+        await AddonCalendarSync.waitForSync(ADDON_CALENDAR_SYNC_ID);
+
+        if (!this.isDestroyed) {
+            CoreSync.blockOperation(ADDON_CALENDAR_COMPONENT, eventId);
+        }
+
+        let eventForm: AddonCalendarEvent | AddonCalendarOfflineEventDBRecord | undefined;
+
+        try {
+            // Get the event offline data if there's any.
+            eventForm = await AddonCalendarOffline.getEvent(eventId);
+
+            this.hasOffline = true;
+        } catch {
+            // No offline data.
+            this.hasOffline = false;
+        }
+
+        if (eventId > 0) {
+            // It's an online event. get its data from server.
+            // If there is no offline data, get the content unfiltered to edit it.
+            const event = await AddonCalendar.getEventById(eventId, this.hasOffline ? {} : {
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
+                filter: false,
+            });
+
+            eventForm = eventForm ?? event;
+
+            this.eventRepeatId = event?.repeatid;
+            if (this.eventRepeatId) {
+                this.otherEventsCount = event.eventcount ? event.eventcount - 1 : 0;
+            }
+        }
+
+        this.gotEventData = true;
+
+        if (eventForm) {
+            // Load the data in the form.
+            await this.loadEventData(eventForm, this.hasOffline);
+        }
+    }
+
+    /**
+     * Fetch categories.
+     */
     protected async fetchCategories(): Promise<void> {
         this.categories = await CoreCourses.getCategories(0, true);
     }
 
+    /**
+     * Fetch courses.
+     */
     protected async fetchCourses(): Promise<void> {
         // Get the courses.
         let courses = await (this.showAll ? CoreCourses.getCoursesByField() : CoreCourses.getUserCourses());
