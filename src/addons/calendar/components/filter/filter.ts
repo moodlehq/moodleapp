@@ -21,6 +21,7 @@ import { AddonCalendarFilter } from '@addons/calendar/services/calendar-helper';
 import { ALL_COURSES_ID } from '@features/courses/services/courses-helper';
 import { CoreSharedModule } from '@/core/shared.module';
 import { ADDON_CALENDAR_FILTER_CHANGED_EVENT, AddonCalendarEventIcons, AddonCalendarEventType } from '@addons/calendar/constants';
+import { CoreSites } from '@services/sites';
 
 /**
  * Component to display the events filter that includes events types and a list of courses.
@@ -52,6 +53,7 @@ export class AddonCalendarFilterComponent implements OnInit {
     typeIcons: AddonCalendarEventIcons[] = [];
     types: string[] = [];
     sortedCourses: CoreEnrolledCourseData[] = [];
+    showFullName = false;
 
     constructor() {
         CoreObject.enumKeys(AddonCalendarEventType).forEach((name) => {
@@ -66,6 +68,7 @@ export class AddonCalendarFilterComponent implements OnInit {
      * @inheritdoc
      */
     ngOnInit(): void {
+        this.showFullName = !!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.5');
         this.courseId = this.filter.courseId || ALL_COURSES_ID;
         this.sortedCourses = Array.from(this.courses).sort((a, b) => {
             if (a.id === ALL_COURSES_ID) {
