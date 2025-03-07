@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { DownloadStatus } from '@/core/constants';
 import { CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
-import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreWS } from '@services/ws';
@@ -75,12 +74,8 @@ export class AddonRemoteThemesHandlerService implements CoreStyleHandler {
             return '';
         }
 
-        let fileUrl = infos.mobilecssurl;
-
-        if (CoreFile.isAvailable()) {
-            // The file system is available. Download the file and remove old CSS files if needed.
-            fileUrl = await this.downloadFileAndRemoveOld(siteId, fileUrl);
-        }
+        // Download the file and remove old CSS files if needed.
+        const fileUrl = await this.downloadFileAndRemoveOld(siteId, infos.mobilecssurl);
 
         this.logger.debug('Loading styles from: ', fileUrl);
 

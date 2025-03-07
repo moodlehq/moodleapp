@@ -671,10 +671,6 @@ export class CoreFilepoolProvider {
         revision?: number,
         alreadyFixed?: boolean,
     ): Promise<void> {
-        if (!CoreFile.isAvailable()) {
-            throw new CoreError('File system cannot be used.');
-        }
-
         const site = await CoreSites.getSite(siteId);
         if (!site.canDownloadFiles()) {
             throw new CoreError(Translate.instant('core.cannotdownloadfiles'));
@@ -1357,10 +1353,6 @@ export class CoreFilepoolProvider {
     ): Promise<string> {
         let alreadyDownloaded = true;
 
-        if (!CoreFile.isAvailable()) {
-            throw new CoreError('File system cannot be used.');
-        }
-
         const file = await this.fixPluginfileURL(siteId, fileUrl, timemodified);
         fileUrl = CoreFileHelper.getFileUrl(file);
 
@@ -1559,10 +1551,6 @@ export class CoreFilepoolProvider {
      * @returns Resolved with the URL. Rejected otherwise.
      */
     async getDirectoryUrlByUrl(siteId: string, fileUrl: string): Promise<string> {
-        if (!CoreFile.isAvailable()) {
-            throw new CoreError('File system cannot be used.');
-        }
-
         const file = await this.fixPluginfileURL(siteId, fileUrl);
         const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
         const filePath = await this.getFilePath(siteId, fileId, '');
@@ -1984,10 +1972,6 @@ export class CoreFilepoolProvider {
      * @returns Resolved with the internal URL. Rejected otherwise.
      */
     protected async getInternalSrcById(siteId: string, fileId: string, fileUrl?: string): Promise<string> {
-        if (!CoreFile.isAvailable()) {
-            throw new CoreError('File system cannot be used.');
-        }
-
         const path = await this.getFilePath(siteId, fileId, undefined, fileUrl);
         const fileEntry = await CoreFile.getFile(path);
 
@@ -2003,10 +1987,6 @@ export class CoreFilepoolProvider {
      * @returns Resolved with the URL. Rejected otherwise.
      */
     protected async getInternalUrlById(siteId: string, fileId: string, fileUrl?: string): Promise<string> {
-        if (!CoreFile.isAvailable()) {
-            throw new CoreError('File system cannot be used.');
-        }
-
         const path = await this.getFilePath(siteId, fileId, undefined, fileUrl);
         const fileEntry = await CoreFile.getFile(path);
 
@@ -2021,10 +2001,6 @@ export class CoreFilepoolProvider {
      * @returns Resolved with the URL.
      */
     protected async getInternalUrlByPath(filePath: string): Promise<string> {
-        if (!CoreFile.isAvailable()) {
-            throw new CoreError('File system cannot be used.');
-        }
-
         const fileEntry = await CoreFile.getFile(filePath);
 
         return CoreFile.getFileEntryURL(fileEntry);
@@ -2038,10 +2014,6 @@ export class CoreFilepoolProvider {
      * @returns Src URL.
      */
     async getInternalSrcByUrl(siteId: string, fileUrl: string): Promise<string> {
-        if (!CoreFile.isAvailable()) {
-            throw new CoreError('File system cannot be used.');
-        }
-
         const file = await this.fixPluginfileURL(siteId, fileUrl);
         const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
 
@@ -2056,10 +2028,6 @@ export class CoreFilepoolProvider {
      * @returns Resolved with the URL. Rejected otherwise.
      */
     async getInternalUrlByUrl(siteId: string, fileUrl: string): Promise<string> {
-        if (!CoreFile.isAvailable()) {
-            throw new CoreError('File system cannot be used.');
-        }
-
         const file = await this.fixPluginfileURL(siteId, fileUrl);
         const fileId = this.getFileIdByUrl(CoreFileHelper.getFileUrl(file));
 
@@ -2131,10 +2099,6 @@ export class CoreFilepoolProvider {
      * @returns Resolved with the URL.
      */
     async getPackageDirUrlByUrl(siteId: string, url: string): Promise<string> {
-        if (!CoreFile.isAvailable()) {
-            throw new CoreError('File system cannot be used.');
-        }
-
         const file = await this.fixPluginfileURL(siteId, url);
         const dirName = this.getPackageDirNameByUrl(CoreFileHelper.getFileUrl(file));
         const dirPath = await this.getFilePath(siteId, dirName, '');
@@ -2966,15 +2930,13 @@ export class CoreFilepoolProvider {
         promises.push(this.linksTables[siteId].delete(conditions));
 
         // Remove the file.
-        if (CoreFile.isAvailable()) {
-            promises.push(CoreFile.removeFile(path).catch((error) => {
-                if (error && error.code == 1) {
-                    // Not found, ignore error since maybe it was deleted already.
-                } else {
-                    throw error;
-                }
-            }));
-        }
+        promises.push(CoreFile.removeFile(path).catch((error) => {
+            if (error && error.code == 1) {
+                // Not found, ignore error since maybe it was deleted already.
+            } else {
+                throw error;
+            }
+        }));
 
         await Promise.all(promises);
 
