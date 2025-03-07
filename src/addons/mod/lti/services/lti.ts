@@ -55,10 +55,6 @@ export class AddonModLtiProvider {
      * @returns Promise resolved with the file URL.
      */
     async generateLauncher(url: string, params: AddonModLtiParam[]): Promise<string> {
-        if (!CoreFile.isAvailable()) {
-            return url;
-        }
-
         // Generate a form with the params.
         let text = `<form action="${url}" name="ltiLaunchForm" method="post" encType="application/x-www-form-urlencoded">\n`;
         params.forEach((p) => {

@@ -105,12 +105,8 @@ export class CoreFileHelperProvider {
                 await CoreOpener.openOnlineFile(url);
 
                 return;
-            } catch (error) {
+            } catch {
                 // Error opening the file, some apps don't allow opening online files.
-                if (!CoreFile.isAvailable()) {
-                    throw error;
-                }
-
                 // Get the state.
                 if (!state) {
                     state = await CoreFilepool.getFileStateByUrl(siteId, fileUrl, timemodified);
@@ -162,11 +158,6 @@ export class CoreFileHelperProvider {
 
         const site = await CoreSites.getSite(siteId);
         const fixedUrl = await site.checkAndFixPluginfileURL(fileUrl);
-
-        if (!CoreFile.isAvailable()) {
-            // Use the online URL.
-            return fixedUrl;
-        }
 
         if (!state) {
             // Calculate the state.

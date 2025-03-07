@@ -203,11 +203,9 @@ export default class CoreSettingsDeviceInfoPage implements OnDestroy {
         this.displaySiteUrl = !!this.deviceInfo.siteUrl &&
             (currentSite ?? CoreSitesFactory.makeUnauthenticatedSite(this.deviceInfo.siteUrl)).shouldDisplayInformativeLinks();
 
-        if (CoreFile.isAvailable()) {
-            const basepath = await CoreFile.getBasePath();
-            this.deviceInfo.fileSystemRoot = basepath;
-            this.fsClickable = CoreFile.usesHTMLAPI();
-        }
+        const basepath = await CoreFile.getBasePath();
+        this.deviceInfo.fileSystemRoot = basepath;
+        this.fsClickable = CoreFile.usesHTMLAPI();
 
         const showDevOptionsOnConfig = await CoreConfig.get('showDevOptions', 0);
         this.devOptionsForced = CoreConstants.enableDevTools();
