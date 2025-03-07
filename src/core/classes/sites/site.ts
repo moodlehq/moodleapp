@@ -399,7 +399,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      * Deletes site's folder.
      */
     async deleteFolder(): Promise<void> {
-        if (!CoreFile.isAvailable() || !this.id) {
+        if (!this.id) {
             return;
         }
 
@@ -415,7 +415,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      * @returns Promise resolved with the site space usage (size).
      */
     async getSpaceUsage(): Promise<number> {
-        if (CoreFile.isAvailable() && this.id) {
+        if (this.id) {
             const siteFolderPath = CoreFile.getSiteFolder(this.id);
 
             return CoreFile.getDirectorySize(siteFolderPath).catch(() => 0);

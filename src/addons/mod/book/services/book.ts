@@ -23,7 +23,6 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreText } from '@singletons/text';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreFile } from '@services/file';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_BOOK_COMPONENT } from '../constants';
@@ -112,11 +111,6 @@ export class AddonModBookProvider {
         if (!indexUrl) {
             // It shouldn't happen.
             throw new CoreError('Could not locate the index chapter.');
-        }
-
-        if (!CoreFile.isAvailable()) {
-            // We return the live URL.
-            return CoreSites.getRequiredCurrentSite().checkAndFixPluginfileURL(indexUrl);
         }
 
         const siteId = CoreSites.getCurrentSiteId();

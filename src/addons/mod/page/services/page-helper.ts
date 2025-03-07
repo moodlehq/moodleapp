@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreUrl } from '@singletons/url';
-import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreFilepool } from '@services/filepool';
 import { CoreWS } from '@services/ws';
@@ -62,21 +61,14 @@ export class AddonModPageHelperProvider {
             throw new CoreError('Could not locate the index page');
         }
 
-        let url: string;
-        if (CoreFile.isAvailable()) {
-            // The file system is available.
-            url = await CoreFilepool.downloadUrl(
-                CoreSites.getCurrentSiteId(),
-                indexFile.fileurl,
-                false,
-                ADDON_MOD_PAGE_COMPONENT,
-                moduleId,
-                indexFile.timemodified,
-            );
-        } else {
-            // We return the live URL.
-            url = await CoreSites.getCurrentSite()?.checkAndFixPluginfileURL(indexFile.fileurl) || '';
-        }
+        const url = await CoreFilepool.downloadUrl(
+            CoreSites.getCurrentSiteId(),
+            indexFile.fileurl,
+            false,
+            ADDON_MOD_PAGE_COMPONENT,
+            moduleId,
+            indexFile.timemodified,
+        );
 
         const content = await CoreWS.getText(url);
 

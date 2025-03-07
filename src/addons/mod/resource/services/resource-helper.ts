@@ -18,7 +18,6 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreNetwork } from '@services/network';
-import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
@@ -104,8 +103,7 @@ export class AddonModResourceHelperProvider {
     isDisplayedEmbedded(module: CoreCourseModuleData, display: number): boolean {
         const currentSite = CoreSites.getCurrentSite();
 
-        if (!CoreFile.isAvailable() ||
-                (currentSite && !currentSite.isVersionGreaterEqualThan('3.7') && this.isNextcloudFile(module))) {
+        if (currentSite && !currentSite.isVersionGreaterEqualThan('3.7') && this.isNextcloudFile(module)) {
             return false;
         }
 
@@ -129,10 +127,6 @@ export class AddonModResourceHelperProvider {
      * @returns Whether the resource should be displayed in an iframe.
      */
     isDisplayedInIframe(module: CoreCourseModuleData): boolean {
-        if (!CoreFile.isAvailable()) {
-            return false;
-        }
-
         let mimetype: string | undefined;
 
         if (module.contentsinfo) {
