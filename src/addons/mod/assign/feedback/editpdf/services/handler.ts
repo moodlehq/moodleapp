@@ -36,6 +36,13 @@ export class AddonModAssignFeedbackEditPdfHandlerService implements AddonModAssi
     /**
      * @inheritdoc
      */
+    canEditOffline(): boolean {
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
     async getComponent(): Promise<Type<IAddonModAssignFeedbackPluginComponent>> {
         const { AddonModAssignFeedbackEditPdfComponent } = await import('../component/editpdf');
 

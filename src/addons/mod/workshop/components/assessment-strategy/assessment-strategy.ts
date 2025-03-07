@@ -19,7 +19,7 @@ import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fi
 import { CoreFile } from '@services/file';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
@@ -175,6 +175,8 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
         this.data.assessment = await AddonModWorkshopHelper.getReviewerAssessmentById(this.workshop.id, this.assessmentId, {
             userId: this.userId,
             cmId: this.workshop.coursemodule,
+            filter: this.edit ? false : undefined,
+            readingStrategy: this.edit ? CoreSitesReadingStrategy.PREFER_NETWORK : undefined,
         });
 
         if (!this.data.assessment.form) {
