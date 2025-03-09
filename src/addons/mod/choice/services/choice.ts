@@ -27,6 +27,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_CHOICE_COMPONENT, AddonModChoiceShowResults } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreSite } from '@classes/sites/site';
 
 /**
  * Service that provides some features for choices.
@@ -35,6 +36,28 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 export class AddonModChoiceProvider {
 
     protected static readonly ROOT_CACHE_KEY = 'mmaModChoice:';
+
+    /**
+     * Check if groups are supported in a site.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Whether groups are supported.
+     */
+    async areGroupsSupported(siteId?: string): Promise<boolean> {
+        const site = await CoreSites.getSite(siteId);
+
+        return this.areGroupsSupportedInSite(site);
+    }
+
+    /**
+     * Check if groups are supported in a site.
+     *
+     * @param site Site.
+     * @returns Whether groups are supported.
+     */
+    protected areGroupsSupportedInSite(site: CoreSite): boolean {
+        return site.isVersionGreaterEqualThan('5.0');
+    }
 
     /**
      * Check if results can be seen by a student. The student can see the results if:
@@ -297,12 +320,16 @@ export class AddonModChoiceProvider {
      * @param options Other options.
      * @returns Promise resolved with choice results.
      */
-    async getResults(choiceId: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModChoiceResult[]> {
+    async getResults(choiceId: number, options: AddonModChoiceGetResultsOptions = {}): Promise<AddonModChoiceResult[]> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModChoiceGetChoiceResultsWSParams = {
             choiceid: choiceId,
         };
+        if (this.areGroupsSupportedInSite(site) && options.groupId !== undefined) {
+            params.groupid = options.groupId;
+        }
+
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getChoiceOptionsCacheKey(choiceId),
             component: ADDON_MOD_CHOICE_COMPONENT,
@@ -559,6 +586,7 @@ export type AddonModChoiceOption = {
  */
 export type AddonModChoiceGetChoiceResultsWSParams = {
     choiceid: number; // Choice instance id.
+    groupid?: number; // @since 5.0. Group ID. 0 for all participants, empty for active group.
 };
 
 /**
@@ -600,4 +628,11 @@ export type AddonModChoiceViewChoiceWSParams = {
 export type AddonModChoiceSubmitChoiceResponseWSParams = {
     choiceid: number; // Choice instance id.
     responses: number[]; // Array of response ids.
+};
+
+/**
+ * Options of getResults function.
+ */
+export type AddonModChoiceGetResultsOptions = CoreCourseCommonModWSOptions & {
+    groupId?: number; // Group id.
 };
