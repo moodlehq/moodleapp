@@ -19,7 +19,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { AddonNotificationsProvider } from '../notifications';
+import { ADDONS_NOTIFICATIONS_READ_CRON_EVENT } from '@addons/notifications/constants';
 
 /**
  * Notifications cron handler.
@@ -64,7 +64,7 @@ export class AddonNotificationsCronHandlerService implements CoreCronHandler {
             return;
         }
 
-        CoreEvents.trigger(AddonNotificationsProvider.READ_CRON_EVENT, {}, CoreSites.getCurrentSiteId());
+        CoreEvents.trigger(ADDONS_NOTIFICATIONS_READ_CRON_EVENT, {}, CoreSites.getCurrentSiteId());
     }
 
 }

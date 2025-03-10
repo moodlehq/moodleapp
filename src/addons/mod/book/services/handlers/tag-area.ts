@@ -20,6 +20,7 @@ import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUrl } from '@singletons/url';
 import { makeSingleton } from '@singletons';
 import { AddonModBook } from '../book';
+import { ADDON_MOD_BOOK_MODNAME } from '../../constants';
 
 /**
  * Handler to support tags.
@@ -56,7 +57,7 @@ export class AddonModBookTagAreaHandlerService implements CoreTagAreaHandler {
 
                 const module = await CoreCourse.getModuleBasicInfoByInstance(
                     bookId,
-                    'book',
+                    ADDON_MOD_BOOK_MODNAME,
                     { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
                 );
                 item.url += '&id=' + module.id;

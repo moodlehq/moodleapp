@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_MOD_FOLDER_COMPONENT = 'mmaModFolder';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
 
+export const ADDON_MOD_FOLDER_COMPONENT = 'AddonModFolder';
+export const ADDON_MOD_FOLDER_COMPONENT_LEGACY = 'mmaModFolder';
 export const ADDON_MOD_FOLDER_PAGE_NAME = 'mod_folder';
+export const ADDON_MOD_FOLDER_MODNAME = 'folder';
+
+export const ADDON_MOD_FOLDER_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_FOLDER_COMPONENT;

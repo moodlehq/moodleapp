@@ -26,13 +26,13 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@singletons/object';
 
-const ROOT_CACHE_KEY = 'CoreRating:';
-
 /**
  * Service to handle ratings.
  */
 @Injectable( { providedIn: 'root' })
 export class CoreRatingProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'CoreRating:';
 
     static readonly AGGREGATE_NONE = 0; // No ratings.
     static readonly AGGREGATE_AVERAGE = 1;
@@ -277,7 +277,6 @@ export class CoreRatingProvider {
      * @param scaleId Scale id.
      * @param sort Sort field.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRatingItems(
         contextLevel: ContextLevel,
@@ -429,7 +428,8 @@ export class CoreRatingProvider {
         scaleId: number,
         sort: string,
     ): string {
-        return `${ROOT_CACHE_KEY}${contextLevel}:${instanceId}:${component}:${ratingArea}:${itemId}:${scaleId}:${sort}`;
+        return `${CoreRatingProvider.ROOT_CACHE_KEY}${contextLevel}:${instanceId}:` +
+            `${component}:${ratingArea}:${itemId}:${scaleId}:${sort}`;
     }
 
 }

@@ -16,8 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { makeSingleton } from '@singletons';
-
-const ROOT_CACHE_KEY = 'AddonBlockStarredCourses:';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features regarding starred courses.
@@ -25,13 +24,15 @@ const ROOT_CACHE_KEY = 'AddonBlockStarredCourses:';
 @Injectable( { providedIn: 'root' })
 export class AddonBlockStarredCoursesProvider {
 
+    protected static readonly ROOT_CACHE_KEY = 'AddonBlockStarredCourses:';
+
     /**
      * Get cache key for get starred courrses value WS call.
      *
      * @returns Cache key.
      */
     protected getStarredCoursesCacheKey(): string {
-        return ROOT_CACHE_KEY + ':starredcourses';
+        return `${AddonBlockStarredCoursesProvider.ROOT_CACHE_KEY}:starredcourses`;
     }
 
     /**
@@ -54,7 +55,6 @@ export class AddonBlockStarredCoursesProvider {
      * Invalidates get starred courrses WS call.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateStarredCourses(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -82,7 +82,7 @@ export type AddonBlockStarredCourse = {
     shortname: string; // Shortname.
     idnumber: string; // Idnumber.
     summary: string; // Summary.
-    summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    summaryformat: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     startdate: number; // Startdate.
     enddate: number; // Enddate.
     visible: boolean; // Visible.

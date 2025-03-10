@@ -23,7 +23,7 @@ import { AddonModChatIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModChatListLinkHandler } from './services/handlers/list-link';
 import { AddonModChatModuleHandler } from './services/handlers/module';
 import { getPrefetchHandlerInstance } from './services/handlers/prefetch';
-import { ADDON_MOD_CHAT_COMPONENT, ADDON_MOD_CHAT_PAGE_NAME } from './constants';
+import { ADDON_MOD_CHAT_COMPONENT_LEGACY, ADDON_MOD_CHAT_PAGE_NAME } from './constants';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { canLeaveGuard } from '@guards/can-leave';
 import { CoreScreen } from '@services/screen';
@@ -91,7 +91,7 @@ const routes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonModChatIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModChatListLinkHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_CHAT_COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_CHAT_COMPONENT_LEGACY);
             },
         },
     ],

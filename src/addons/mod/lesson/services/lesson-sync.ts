@@ -30,7 +30,7 @@ import { CoreEvents } from '@singletons/events';
 import { AddonModLessonRetakeFinishedInSyncDBRecord, RETAKES_FINISHED_SYNC_TABLE_NAME } from './database/lesson';
 import { AddonModLesson, AddonModLessonLessonWSData } from './lesson';
 import { AddonModLessonOffline, AddonModLessonPageAttemptRecord } from './lesson-offline';
-import { ADDON_MOD_LESSON_AUTO_SYNCED, ADDON_MOD_LESSON_COMPONENT } from '../constants';
+import { ADDON_MOD_LESSON_AUTO_SYNCED, ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_COMPONENT_LEGACY } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModLessonGetPasswordResult, AddonModLessonHelper } from './lesson-helper';
 
@@ -226,7 +226,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
     ): Promise<AddonModLessonSyncResult> {
         // Sync offline logs.
         await CorePromiseUtils.ignoreErrors(
-            CoreCourseLogHelper.syncActivity(ADDON_MOD_LESSON_COMPONENT, lessonId, siteId),
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_LESSON_COMPONENT_LEGACY, lessonId, siteId),
         );
 
         const result: AddonModLessonSyncResult = {

@@ -24,10 +24,11 @@ import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWar
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModChoiceOffline } from './choice-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ADDON_MOD_CHOICE_COMPONENT, AddonModChoiceShowResults } from '../constants';
+import { ADDON_MOD_CHOICE_COMPONENT_LEGACY, AddonModChoiceShowResults } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreSite } from '@classes/sites/site';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for choices.
@@ -240,7 +241,7 @@ export class AddonModChoiceProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getChoiceDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_CHOICE_COMPONENT,
+            component: ADDON_MOD_CHOICE_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -299,7 +300,7 @@ export class AddonModChoiceProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getChoiceOptionsCacheKey(choiceId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_CHOICE_COMPONENT,
+            component: ADDON_MOD_CHOICE_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -332,7 +333,7 @@ export class AddonModChoiceProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getChoiceOptionsCacheKey(choiceId),
-            component: ADDON_MOD_CHOICE_COMPONENT,
+            component: ADDON_MOD_CHOICE_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -351,7 +352,6 @@ export class AddonModChoiceProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateChoiceData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -376,7 +376,7 @@ export class AddonModChoiceProvider {
             this.invalidateChoiceData(courseId),
             this.invalidateOptions(choice.id),
             this.invalidateResults(choice.id),
-            CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_CHOICE_COMPONENT, moduleId),
+            CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_CHOICE_COMPONENT_LEGACY, moduleId),
         ]);
     }
 
@@ -385,7 +385,6 @@ export class AddonModChoiceProvider {
      *
      * @param choiceId Choice ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateOptions(choiceId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -398,7 +397,6 @@ export class AddonModChoiceProvider {
      *
      * @param choiceId Choice ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateResults(choiceId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -421,7 +419,7 @@ export class AddonModChoiceProvider {
         return CoreCourseLogHelper.log(
             'mod_choice_view_choice',
             params,
-            ADDON_MOD_CHOICE_COMPONENT,
+            ADDON_MOD_CHOICE_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -523,7 +521,7 @@ export type AddonModChoiceChoice = {
     course: number; // Course id.
     name: string; // Choice name.
     intro: string; // The choice intro.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     publish?: boolean; // If choice is published.
     showresults?: AddonModChoiceShowResults; // 0 never, 1 after answer, 2 after close, 3 always.

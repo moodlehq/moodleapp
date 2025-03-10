@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_SURVEY_COMPONENT, ADDON_MOD_SURVEY_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to survey list page.
@@ -25,7 +26,7 @@ export class AddonModSurveyListLinkHandlerService extends CoreContentLinksModule
     name = 'AddonModSurveyListLinkHandler';
 
     constructor() {
-        super('AddonModSurvey', 'survey');
+        super(ADDON_MOD_SURVEY_COMPONENT, ADDON_MOD_SURVEY_MODNAME);
     }
 
 }

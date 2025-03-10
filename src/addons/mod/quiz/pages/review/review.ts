@@ -33,7 +33,7 @@ import {
 } from '../../services/quiz';
 import { AddonModQuizHelper } from '../../services/quiz-helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_QUIZ_COMPONENT } from '../../constants';
+import { ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '../../constants';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
@@ -61,7 +61,7 @@ export default class AddonModQuizReviewPage implements OnInit {
     @ViewChild(IonContent) content?: IonContent;
 
     attempt?: AddonModQuizAttemptWSData; // The attempt being reviewed.
-    component = ADDON_MOD_QUIZ_COMPONENT; // Component to link the files to.
+    component = ADDON_MOD_QUIZ_COMPONENT_LEGACY; // Component to link the files to.
     showAll = false; // Whether to view all questions in the same page.
     numPages = 1; // Number of pages.
     showCompleted = false; // Whether to show completed time.

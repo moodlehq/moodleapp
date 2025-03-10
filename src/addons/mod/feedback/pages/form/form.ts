@@ -36,7 +36,7 @@ import { AddonModFeedbackFormItem, AddonModFeedbackHelper } from '../../services
 import { AddonModFeedbackSync } from '../../services/feedback-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import {
-    ADDON_MOD_FEEDBACK_COMPONENT,
+    ADDON_MOD_FEEDBACK_COMPONENT_LEGACY,
     ADDON_MOD_FEEDBACK_FORM_SUBMITTED,
     ADDON_MOD_FEEDBACK_PAGE_NAME,
     AddonModFeedbackIndexTabName,
@@ -79,7 +79,7 @@ export default class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanL
     courseId!: number;
     feedback?: AddonModFeedbackWSFeedback;
     completionPageContents?: string;
-    component = ADDON_MOD_FEEDBACK_COMPONENT;
+    component = ADDON_MOD_FEEDBACK_COMPONENT_LEGACY;
     offline = false;
     feedbackLoaded = false;
     access?: AddonModFeedbackGetFeedbackAccessInformationWSResponse;

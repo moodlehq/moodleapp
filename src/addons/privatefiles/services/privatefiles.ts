@@ -22,13 +22,13 @@ import { makeSingleton } from '@singletons';
 import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 
-const ROOT_CACHE_KEY = 'mmaFiles:';
-
 /**
  * Service to handle my files and site files.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonPrivateFilesProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'mmaFiles:';
 
     // Keep old names for backwards compatibility.
     static readonly PRIVATE_FILES_COMPONENT = 'mmaFilesMy';
@@ -116,7 +116,7 @@ export class AddonPrivateFilesProvider {
     protected getFilesListCacheKey(params: AddonPrivateFilesGetFilesWSParams): string {
         const root = !params.component ? 'site' : 'my';
 
-        return ROOT_CACHE_KEY + 'list:' + root + ':' + params.contextid + ':' + params.filepath;
+        return `${AddonPrivateFilesProvider.ROOT_CACHE_KEY}list:${root}:${params.contextid}:${params.filepath}`;
     }
 
     /**
@@ -185,7 +185,7 @@ export class AddonPrivateFilesProvider {
      * @returns Cache key.
      */
     protected getPrivateFilesInfoCommonCacheKey(): string {
-        return ROOT_CACHE_KEY + 'privateInfo';
+        return `${AddonPrivateFilesProvider.ROOT_CACHE_KEY}privateInfo`;
     }
 
     /**
@@ -219,7 +219,6 @@ export class AddonPrivateFilesProvider {
      * @param root Root of the directory ('my' for private files, 'site' for site files).
      * @param params Params to the directory.
      * @param siteId Site ID. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateDirectory(root?: 'my' | 'site', params?: AddonPrivateFilesGetFilesWSParams, siteId?: string): Promise<void> {
         if (!root) {
@@ -243,7 +242,6 @@ export class AddonPrivateFilesProvider {
      * Invalidates private files info for all users.
      *
      * @param siteId Site ID. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePrivateFilesInfo(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -256,7 +254,6 @@ export class AddonPrivateFilesProvider {
      *
      * @param userId User ID. If not defined, current user in the site.
      * @param siteId Site ID. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePrivateFilesInfoForUser(userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

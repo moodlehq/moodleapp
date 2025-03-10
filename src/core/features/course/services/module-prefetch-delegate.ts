@@ -35,8 +35,7 @@ import { CHECK_UPDATES_TIMES_TABLE, CoreCourseCheckUpdatesDBRecord } from './dat
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreCourseHelper, CoreCourseModuleData } from './course-helper';
 import { CorePromiseUtils } from '@singletons/promise-utils';
-
-const ROOT_CACHE_KEY = 'mmCourse:';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '../constants';
 
 /**
  * Delegate to register module prefetch handlers.
@@ -44,8 +43,10 @@ const ROOT_CACHE_KEY = 'mmCourse:';
 @Injectable({ providedIn: 'root' })
 export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCourseModulePrefetchHandler> {
 
+    protected static readonly ROOT_CACHE_KEY = 'mmCourse:';
+
     protected statusCache = new CoreCache();
-    protected featurePrefix = 'CoreCourseModuleDelegate_';
+    protected featurePrefix = CORE_COURSE_MODULE_FEATURE_PREFIX;
     protected handlerNameProperty = 'modName';
 
     // Promises for check updates, to prevent performing the same request twice at the same time.
@@ -333,7 +334,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @returns Cache key.
      */
     protected getCourseUpdatesCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'courseUpdates:' + courseId;
+        return `${CoreCourseModulePrefetchDelegateService.ROOT_CACHE_KEY}courseUpdates:${courseId}`;
     }
 
     /**
@@ -1470,7 +1471,6 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      *
      * @param moduleId The module ID.
      * @param courseId Course ID the module belongs to.
-     * @returns Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<void>;
 

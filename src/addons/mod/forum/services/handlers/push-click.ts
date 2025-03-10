@@ -24,7 +24,7 @@ import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
 
 import { isSafeNumber } from '@/core/utils/types';
-import { ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_FORUM_FEATURE_NAME, ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
@@ -35,7 +35,7 @@ export class AddonModForumPushClickHandlerService implements CorePushNotificatio
 
     name = 'AddonModForumPushClickHandler';
     priority = 200;
-    featureName = 'CoreCourseModuleDelegate_AddonModForum';
+    featureName = ADDON_MOD_FORUM_FEATURE_NAME;
 
     /**
      * Check if a notification click is handled by this handler.

@@ -355,7 +355,6 @@ export class CoreSitePluginsProvider {
      *
      * @param method WS method to use.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllCallWSForMethod(method: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -370,7 +369,6 @@ export class CoreSitePluginsProvider {
      * @param data Data to send to the WS.
      * @param preSets Extra options.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCallWS(
         method: string,
@@ -392,7 +390,6 @@ export class CoreSitePluginsProvider {
      * @param callback Method to execute in the class.
      * @param args The params for the method.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(component: string, callback: string, args?: Record<string, unknown>, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

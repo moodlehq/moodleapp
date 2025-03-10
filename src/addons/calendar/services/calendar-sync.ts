@@ -37,6 +37,7 @@ import {
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
+import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 /**
  * Service to sync calendar.
@@ -255,7 +256,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
             {
                 description: {
                     text: event.description || '',
-                    format: 1,
+                    format: DEFAULT_TEXT_FORMAT,
                     itemid: 0, // Files not supported yet.
                 },
             },

@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_GLOSSARY_COMPONENT, ADDON_MOD_GLOSSARY_MODNAME } from '../../constants';
 
 /**
  * Handler to treat links to glossary list page.
@@ -25,7 +26,7 @@ export class AddonModGlossaryListLinkHandlerService extends CoreContentLinksModu
     name = 'AddonModGlossaryListLinkHandler';
 
     constructor() {
-        super('AddonModGlossary', 'glossary');
+        super(ADDON_MOD_GLOSSARY_COMPONENT, ADDON_MOD_GLOSSARY_MODNAME);
     }
 
 }

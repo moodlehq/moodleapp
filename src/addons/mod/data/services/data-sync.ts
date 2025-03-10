@@ -32,7 +32,12 @@ import { CoreEvents } from '@singletons/events';
 import { AddonModData, AddonModDataData } from './data';
 import { AddonModDataHelper } from './data-helper';
 import { AddonModDataOffline, AddonModDataOfflineAction } from './data-offline';
-import { ADDON_MOD_DATA_AUTO_SYNCED, ADDON_MOD_DATA_COMPONENT_LEGACY, AddonModDataAction } from '../constants';
+import {
+    ADDON_MOD_DATA_AUTO_SYNCED,
+    ADDON_MOD_DATA_COMPONENT,
+    ADDON_MOD_DATA_COMPONENT_LEGACY,
+    AddonModDataAction,
+} from '../constants';
 import { CoreText } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
@@ -144,7 +149,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
         }
 
         // Verify that database isn't blocked.
-        if (CoreSync.isBlocked(ADDON_MOD_DATA_COMPONENT_LEGACY, dataId, siteId)) {
+        if (CoreSync.isBlocked(ADDON_MOD_DATA_COMPONENT, dataId, siteId)) {
             this.logger.debug(`Cannot sync database '${dataId}' because it is blocked.`);
 
             throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));

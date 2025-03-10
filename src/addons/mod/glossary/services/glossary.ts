@@ -30,7 +30,7 @@ import { AddonModGlossaryEntryDBRecord, ENTRIES_TABLE_NAME } from './database/gl
 import { AddonModGlossaryOffline } from './glossary-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_GLOSSARY_COMPONENT,
+    ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
     ADDON_MOD_GLOSSARY_ENTRY_ADDED,
     ADDON_MOD_GLOSSARY_ENTRY_DELETED,
     ADDON_MOD_GLOSSARY_ENTRY_UPDATED,
@@ -40,6 +40,7 @@ import {
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 /**
  * Service that provides some features for glossaries.
@@ -76,7 +77,7 @@ export class AddonModGlossaryProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCourseGlossariesCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -137,7 +138,7 @@ export class AddonModGlossaryProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByAuthorCacheKey(glossaryId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -181,7 +182,7 @@ export class AddonModGlossaryProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByCategoryCacheKey(glossaryId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -251,7 +252,7 @@ export class AddonModGlossaryProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByDateCacheKey(glossaryId, order),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -309,7 +310,7 @@ export class AddonModGlossaryProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesByLetterCacheKey(glossaryId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -383,7 +384,7 @@ export class AddonModGlossaryProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getEntriesBySearchCacheKey(glossaryId, query, fullSearch),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -461,7 +462,7 @@ export class AddonModGlossaryProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCategoriesCacheKey(glossaryId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -518,7 +519,7 @@ export class AddonModGlossaryProvider {
         const preSets = {
             cacheKey: this.getEntryCacheKey(entryId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_GLOSSARY_COMPONENT,
+            component: ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
             filter: options.filter !== false,
@@ -917,7 +918,7 @@ export class AddonModGlossaryProvider {
             glossaryid: glossaryId,
             concept: concept,
             definition: definition,
-            definitionformat: 1,
+            definitionformat: DEFAULT_TEXT_FORMAT,
             options: CoreObject.toArrayOfObjects(options || {}, 'name', 'value'),
         };
 
@@ -961,7 +962,7 @@ export class AddonModGlossaryProvider {
             entryid: entryId,
             concept: concept,
             definition: definition,
-            definitionformat: 1,
+            definitionformat: DEFAULT_TEXT_FORMAT,
             options: CoreObject.toArrayOfObjects(options || {}, 'name', 'value'),
         };
 
@@ -1044,7 +1045,7 @@ export class AddonModGlossaryProvider {
         await CoreCourseLogHelper.log(
             'mod_glossary_view_glossary',
             params,
-            ADDON_MOD_GLOSSARY_COMPONENT,
+            ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             glossaryId,
             siteId,
         );
@@ -1065,7 +1066,7 @@ export class AddonModGlossaryProvider {
         await CoreCourseLogHelper.log(
             'mod_glossary_view_entry',
             params,
-            ADDON_MOD_GLOSSARY_COMPONENT,
+            ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             glossaryId,
             siteId,
         );
@@ -1198,7 +1199,7 @@ export type AddonModGlossaryGlossary = {
     course: number; // Course id.
     name: string; // Glossary name.
     intro: string; // The Glossary intro.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     allowduplicatedentries: number; // If enabled, multiple entries can have the same concept name.
     displayformat: string; // Display format type.
@@ -1314,7 +1315,7 @@ export type AddonModGlossaryEntry = {
     userpictureurl: string; // Author picture.
     concept: string; // The concept.
     definition: string; // The definition.
-    definitionformat: number; // Definition format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    definitionformat: CoreTextFormat; // Definition format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     definitiontrust: boolean; // The definition trust flag.
     definitioninlinefiles?: CoreWSExternalFile[];
     attachment: boolean; // Whether or not the entry has attachments.
@@ -1400,7 +1401,7 @@ export type AddonModGlossaryAddEntryWSParams = {
     glossaryid: number; // Glossary id.
     concept: string; // Glossary concept.
     definition: string; // Glossary concept definition.
-    definitionformat: number; // Definition format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    definitionformat: CoreTextFormat; // Definition format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     options?: { // Optional settings.
         name: string; // The allowed keys (value format) are:
         // inlineattachmentsid (int); the draft file area id for inline attachments
@@ -1429,7 +1430,7 @@ export type AddonModGlossaryUpdateEntryWSParams = {
     entryid: number; // Glossary entry id to update.
     concept: string; // Glossary concept.
     definition: string; // Glossary concept definition.
-    definitionformat: number; // Definition format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    definitionformat: CoreTextFormat; // Definition format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     options?: { // Optional settings.
         name: string; // The allowed keys (value format) are:
         // inlineattachmentsid (int); the draft file area id for inline attachments

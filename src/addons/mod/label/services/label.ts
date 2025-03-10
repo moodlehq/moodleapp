@@ -20,8 +20,9 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_LABEL_COMPONENT } from '../constants';
+import { ADDON_MOD_LABEL_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for labels.
@@ -65,7 +66,7 @@ export class AddonModLabelProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getLabelDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_LABEL_COMPONENT,
+            component: ADDON_MOD_LABEL_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -109,7 +110,6 @@ export class AddonModLabelProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLabelData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -131,7 +131,7 @@ export class AddonModLabelProvider {
         const promises: Promise<void>[] = [];
 
         promises.push(this.invalidateLabelData(courseId, siteId));
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_LABEL_COMPONENT, moduleId, true));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_LABEL_COMPONENT_LEGACY, moduleId, true));
 
         await CorePromiseUtils.allPromises(promises);
     }
@@ -148,7 +148,7 @@ export type AddonModLabelLabel = {
     course: number; // Course id.
     name: string; // Label name.
     intro: string; // Label contents.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles: CoreWSExternalFile[];
     timemodified: number; // Last time the label was modified.
     section: number; // Course section id.

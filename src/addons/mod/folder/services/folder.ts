@@ -21,8 +21,9 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_FOLDER_COMPONENT } from '../constants';
+import { ADDON_MOD_FOLDER_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for folder.
@@ -68,7 +69,7 @@ export class AddonModFolderProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getFolderCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_FOLDER_COMPONENT,
+            component: ADDON_MOD_FOLDER_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -114,7 +115,6 @@ export class AddonModFolderProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateFolderData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -137,7 +137,7 @@ export class AddonModFolderProvider {
         await CoreCourseLogHelper.log(
             'mod_folder_view_folder',
             params,
-            ADDON_MOD_FOLDER_COMPONENT,
+            ADDON_MOD_FOLDER_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -155,7 +155,7 @@ export type AddonModFolderFolder = {
     course: number; // Course id.
     name: string; // Page name.
     intro: string; // Summary.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles: CoreWSExternalFile[];
     revision: number; // Incremented when after each file changes, to avoid cache.
     timemodified: number; // Last time the folder was modified.

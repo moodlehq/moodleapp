@@ -20,13 +20,13 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 
-const ROOT_CACHE_KEY = 'AddonBlockRecentlyAccessedItems:';
-
 /**
  * Service that provides some features regarding recently accessed items.
  */
 @Injectable( { providedIn: 'root' })
 export class AddonBlockRecentlyAccessedItemsProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'AddonBlockRecentlyAccessedItems:';
 
     /**
      * Get cache key for get last accessed items value WS call.
@@ -34,7 +34,7 @@ export class AddonBlockRecentlyAccessedItemsProvider {
      * @returns Cache key.
      */
     protected getRecentItemsCacheKey(): string {
-        return ROOT_CACHE_KEY + ':recentitems';
+        return `${AddonBlockRecentlyAccessedItemsProvider.ROOT_CACHE_KEY}:recentitems`;
     }
 
     /**
@@ -102,7 +102,6 @@ export class AddonBlockRecentlyAccessedItemsProvider {
      * Invalidates get last accessed items WS call.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRecentItems(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

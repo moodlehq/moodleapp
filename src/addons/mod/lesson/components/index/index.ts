@@ -47,7 +47,7 @@ import { CoreError } from '@classes/errors/error';
 import { Translate } from '@singletons';
 import {
     ADDON_MOD_LESSON_AUTO_SYNCED,
-    ADDON_MOD_LESSON_COMPONENT,
+    ADDON_MOD_LESSON_COMPONENT_LEGACY,
     ADDON_MOD_LESSON_DATA_SENT_EVENT,
     ADDON_MOD_LESSON_PAGE_NAME,
 } from '../../constants';
@@ -77,7 +77,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     @Input() group = 0; // The group to display.
     @Input() action?: string; // The "action" to display first.
 
-    component = ADDON_MOD_LESSON_COMPONENT;
+    component = ADDON_MOD_LESSON_COMPONENT_LEGACY;
     pluginName = 'lesson';
 
     lesson?: AddonModLessonLessonWSData; // The lesson.

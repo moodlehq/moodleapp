@@ -24,9 +24,10 @@ import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWar
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModSurveyOffline } from './survey-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ADDON_MOD_SURVEY_COMPONENT } from '../constants';
+import { ADDON_MOD_SURVEY_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some features for surveys.
@@ -53,7 +54,7 @@ export class AddonModSurveyProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuestionsCacheKey(surveyId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_SURVEY_COMPONENT,
+            component: ADDON_MOD_SURVEY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -110,7 +111,7 @@ export class AddonModSurveyProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSurveyCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_SURVEY_COMPONENT,
+            component: ADDON_MOD_SURVEY_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -155,7 +156,6 @@ export class AddonModSurveyProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -174,7 +174,7 @@ export class AddonModSurveyProvider {
             return;
         }));
 
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_SURVEY_COMPONENT, moduleId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_SURVEY_COMPONENT_LEGACY, moduleId));
 
         await CorePromiseUtils.allPromises(promises);
     }
@@ -184,7 +184,6 @@ export class AddonModSurveyProvider {
      *
      * @param surveyId Survey ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateQuestions(surveyId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -197,7 +196,6 @@ export class AddonModSurveyProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSurveyData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -220,7 +218,7 @@ export class AddonModSurveyProvider {
         await CoreCourseLogHelper.log(
             'mod_survey_view_survey',
             params,
-            ADDON_MOD_SURVEY_COMPONENT,
+            ADDON_MOD_SURVEY_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -318,7 +316,7 @@ export type AddonModSurveySurvey = {
     course: number; // Course id.
     name: string; // Survey name.
     intro?: string; // The Survey intro.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     template?: number; // Survey type.
     days?: number; // Days.

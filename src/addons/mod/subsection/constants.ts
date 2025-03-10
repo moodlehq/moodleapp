@@ -14,9 +14,9 @@
 
 import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
 
-export const ADDON_MOD_URL_COMPONENT = 'AddonModUrl';
-export const ADDON_MOD_URL_COMPONENT_LEGACY = 'mmaModUrl';
-export const ADDON_MOD_URL_PAGE_NAME = 'mod_url';
-export const ADDON_MOD_URL_MODNAME = 'url';
+export const ADDON_MOD_SUBSECTION_COMPONENT = 'AddonModSubsection';
+export const ADDON_MOD_SUBSECTION_COMPONENT_LEGACY = 'mmaModSubsection';
+export const ADDON_MOD_SUBSECTION_PAGE_NAME = 'mod_subsection';
+export const ADDON_MOD_SUBSECTION_MODNAME = 'subsection';
 
-export const ADDON_MOD_URL_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_URL_COMPONENT;
+export const ADDON_MOD_SUBSECTION_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_SUBSECTION_COMPONENT;

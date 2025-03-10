@@ -15,7 +15,7 @@
 import { Injectable, Type } from '@angular/core';
 
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '@features/user/services/user-profile-field-delegate';
-import { CoreText } from '@singletons/text';
+import { CoreText, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { makeSingleton } from '@singletons';
@@ -66,7 +66,7 @@ export class AddonUserProfileFieldTextareaHandlerService implements CoreUserProf
                 name: name,
                 value: JSON.stringify({
                     text: text,
-                    format: 1, // Always send this format.
+                    format: DEFAULT_TEXT_FORMAT, // Always send this format.
                 }),
             };
         }

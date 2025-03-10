@@ -21,7 +21,7 @@ import { CoreWS } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModuleContentFile } from '@features/course/services/course';
-import { ADDON_MOD_PAGE_COMPONENT } from '../constants';
+import { ADDON_MOD_PAGE_COMPONENT_LEGACY } from '../constants';
 
 /**
  * Service that provides some features for page.
@@ -65,7 +65,7 @@ export class AddonModPageHelperProvider {
             CoreSites.getCurrentSiteId(),
             indexFile.fileurl,
             false,
-            ADDON_MOD_PAGE_COMPONENT,
+            ADDON_MOD_PAGE_COMPONENT_LEGACY,
             moduleId,
             indexFile.timemodified,
         );

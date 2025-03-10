@@ -21,7 +21,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy, CoreSitesWSOptionsWithFilter } from '@services/sites';
 import { CoreTime } from '@singletons/time';
 import { CoreSite } from '@classes/sites/site';
-import { CoreCacheUpdateFrequency, CoreConstants, DownloadStatus } from '@/core/constants';
+import { CoreCacheUpdateFrequency, DownloadStatus } from '@/core/constants';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 
@@ -59,7 +59,7 @@ import { map } from 'rxjs/operators';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreArray } from '@singletons/array';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { ArrayElement } from '@/core/utils/types';
 import { CORE_COURSES_MY_COURSES_UPDATED_EVENT, CoreCoursesMyCoursesUpdatedEventAction } from '@features/courses/constants';
 import {
@@ -76,6 +76,7 @@ import {
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreObject } from '@singletons/object';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { ModFeature } from '@addons/mod/constants';
 
 export type CoreCourseProgressUpdated = { progress: number; courseId: number };
 
@@ -1123,7 +1124,6 @@ export class CoreCourseProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCourseBlocks(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1137,7 +1137,6 @@ export class CoreCourseProvider {
      * @param moduleId Module ID.
      * @param siteId Site ID. If not defined, current site.
      * @param modName Module name. E.g. 'label', 'url', ...
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateModule(moduleId: number, siteId?: string, modName?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1156,7 +1155,6 @@ export class CoreCourseProvider {
      * @param id Instance ID.
      * @param module Name of the module. E.g. 'glossary'.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateModuleByInstance(id: number, module: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1170,7 +1168,6 @@ export class CoreCourseProvider {
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined, current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSections(courseId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1383,7 +1380,7 @@ export class CoreCourseProvider {
         if ('modname' in module) {
             // noviewlink was introduced in 3.8.5, use supports feature as a fallback.
             if (module.noviewlink ||
-                CoreCourseModuleDelegate.supportsFeature(module.modname, CoreConstants.FEATURE_NO_VIEW_LINK, false)) {
+                CoreCourseModuleDelegate.supportsFeature(module.modname, ModFeature.NO_VIEW_LINK, false)) {
                 return false;
             }
         }
@@ -1717,7 +1714,7 @@ export type CoreCourseSummary = {
     shortname: string; // Shortname.
     idnumber: string; // Idnumber.
     summary: string; // Summary.
-    summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    summaryformat: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     startdate: number; // Startdate.
     enddate: number; // Enddate.
     visible: boolean; // @since 3.8. Visible.
@@ -1821,7 +1818,7 @@ export type CoreCourseBlock = {
     contents?: {
         title: string; // Block title.
         content: string; // Block contents.
-        contentformat: number; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+        contentformat: CoreTextFormat; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
         footer: string; // Block footer.
         files: CoreWSExternalFile[];
     }; // Block contents (if required).
@@ -1874,7 +1871,7 @@ type CoreCourseGetContentsWSSection = {
     name: string; // Section name.
     visible?: number; // Is the section visible.
     summary: string; // Section description.
-    summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    summaryformat: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     section?: number; // Section number inside the course.
     hiddenbynumsections?: number; // Whether is a section hidden in the course format.
     uservisible?: boolean; // Is the section visible for the user?.

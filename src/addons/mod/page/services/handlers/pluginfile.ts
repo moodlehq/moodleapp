@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CorePluginFileHandler } from '@services/plugin-file-delegate';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_PAGE_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to treat links to page.
@@ -23,26 +24,21 @@ import { makeSingleton } from '@singletons';
 export class AddonModPagePluginFileHandlerService implements CorePluginFileHandler {
 
     name = 'AddonModPagePluginFileHandler';
-    component = 'mod_page';
+    component = ADDON_MOD_PAGE_PAGE_NAME;
 
     /**
-     * Return the RegExp to match the revision on pluginfile URLs.
-     *
-     * @param args Arguments of the pluginfile URL defining component and filearea at least.
-     * @returns RegExp to match the revision on pluginfile URLs.
+     * @inheritdoc
      */
     getComponentRevisionRegExp(args: string[]): RegExp | undefined {
         // Check filearea.
-        if (args[2] == 'content') {
+        if (args[2] === 'content') {
             // Component + Filearea + Revision
             return new RegExp('/mod_page/content/([0-9]+)/');
         }
     }
 
     /**
-     * Should return the string to remove the revision on pluginfile url.
-     *
-     * @returns String to remove the revision on pluginfile url.
+     * @inheritdoc
      */
     getComponentRevisionReplace(): string {
         // Component + Filearea + Revision
@@ -50,9 +46,7 @@ export class AddonModPagePluginFileHandlerService implements CorePluginFileHandl
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @returns Whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;

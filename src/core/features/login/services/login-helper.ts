@@ -21,7 +21,7 @@ import { CoreConfig } from '@services/config';
 import { CoreEvents, CoreEventSessionExpiredData, CoreEventSiteData } from '@singletons/events';
 import { CoreSites, CoreLoginSiteInfo, CoreSiteBasicInfo } from '@services/sites';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CoreObject } from '@singletons/object';
 import { CoreConstants } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
@@ -1601,7 +1601,7 @@ export type AuthEmailSignupProfileField = {
     name?: string; // Profield field name.
     datatype?: string; // Profield field datatype.
     description?: string; // Profield field description.
-    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     categoryid?: number; // Profield field category id.
     categoryname?: string; // Profield field category name.
     sortorder?: number; // Profield field sort order.
@@ -1611,7 +1611,7 @@ export type AuthEmailSignupProfileField = {
     forceunique?: number; // Profield field unique.
     signup?: number; // Profield field in signup form.
     defaultdata?: string; // Profield field default data.
-    defaultdataformat: number; // Defaultdata format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    defaultdataformat: CoreTextFormat; // Defaultdata format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     param1?: string; // Profield field settings.
     param2?: string; // Profield field settings.
     param3?: string; // Profield field settings.

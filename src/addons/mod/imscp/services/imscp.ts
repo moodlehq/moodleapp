@@ -20,13 +20,13 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CorePath } from '@singletons/path';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ADDON_MOD_IMSCP_COMPONENT } from '../constants';
+import { ADDON_MOD_IMSCP_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 
 /**
@@ -115,7 +115,7 @@ export class AddonModImscpProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getImscpDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_IMSCP_COMPONENT,
+            component: ADDON_MOD_IMSCP_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -206,7 +206,7 @@ export class AddonModImscpProvider {
      */
     async getLastItemViewed(id: number, siteId?: string): Promise<string | undefined> {
         const site = await CoreSites.getSite(siteId);
-        const entry = await site.getLastViewed(ADDON_MOD_IMSCP_COMPONENT, id);
+        const entry = await site.getLastViewed(ADDON_MOD_IMSCP_COMPONENT_LEGACY, id);
 
         return entry?.value;
     }
@@ -225,7 +225,7 @@ export class AddonModImscpProvider {
         const promises: Promise<void>[] = [];
 
         promises.push(this.invalidateImscpData(courseId, siteId));
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_IMSCP_COMPONENT, moduleId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_IMSCP_COMPONENT_LEGACY, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId));
 
         await CorePromiseUtils.allPromises(promises);
@@ -236,7 +236,6 @@ export class AddonModImscpProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateImscpData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -282,7 +281,7 @@ export class AddonModImscpProvider {
         await CoreCourseLogHelper.log(
             'mod_imscp_view_imscp',
             params,
-            ADDON_MOD_IMSCP_COMPONENT,
+            ADDON_MOD_IMSCP_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -300,7 +299,7 @@ export class AddonModImscpProvider {
     async storeLastItemViewed(id: number, href: string, courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await site.storeLastViewed(ADDON_MOD_IMSCP_COMPONENT, id, href, { data: String(courseId) });
+        await site.storeLastViewed(ADDON_MOD_IMSCP_COMPONENT_LEGACY, id, href, { data: String(courseId) });
     }
 
 }
@@ -322,7 +321,7 @@ export type AddonModImscpImscp = {
     course: number; // Course id.
     name: string; // Activity name.
     intro?: string; // The IMSCP intro.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     revision?: number; // Revision.
     keepold?: number; // Number of old IMSCP to keep.

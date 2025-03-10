@@ -28,14 +28,15 @@ import { makeSingleton } from '@singletons';
 import { AddonBlogOffline, AddonBlogOfflineEntry } from './blog-offline';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
-
-const ROOT_CACHE_KEY = 'addonBlog:';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service to handle blog entries.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonBlogProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'addonBlog:';
 
     static readonly ENTRIES_PER_PAGE = 10;
     static readonly COMPONENT = 'blog';
@@ -63,7 +64,7 @@ export class AddonBlogProvider {
      * @returns Cache key.
      */
     getEntriesCacheKey(filter: AddonBlogFilter = {}): string {
-        return ROOT_CACHE_KEY + CoreObject.sortAndStringify(filter);
+        return AddonBlogProvider.ROOT_CACHE_KEY + CoreObject.sortAndStringify(filter);
     }
 
     /**
@@ -453,11 +454,11 @@ export interface AddonBlogPost {
     coursemoduleid: number; // Course module id where the post was created.
     subject: string; // Post subject.
     summary: string; // Post summary.
-    summaryformat?: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    summaryformat?: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     content: string; // Post content.
     uniquehash: string; // Post unique hash.
     rating: number; // Post rating.
-    format: number; // Post content format.
+    format: CoreTextFormat; // Post content format.
     attachment: string; // Post atachment.
     publishstate: AddonBlogPublishState; // Post publish state.
     lastmodified: number; // When it was last modified.
@@ -503,7 +504,7 @@ export type AddonBlogFilter = {
 export type AddonBlogAddEntryWSParams = {
     subject: string;
     summary: string;
-    summaryformat: number;
+    summaryformat: CoreTextFormat;
     options: AddonBlogAddEntryOption[];
 };
 

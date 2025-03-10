@@ -20,7 +20,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreObject } from '@singletons/object';
@@ -31,7 +31,7 @@ import { CorePath } from '@singletons/path';
 import { AddonModScormOffline } from './scorm-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
-    ADDON_MOD_SCORM_COMPONENT,
+    ADDON_MOD_SCORM_COMPONENT_LEGACY,
     AddonModScormForceAttempt,
     AddonModScormGradingMethod,
     AddonModScormMode,
@@ -41,6 +41,7 @@ import {
     ADDON_MOD_SCORM_LAUNCH_NEXT_SCO_EVENT,
     ADDON_MOD_SCORM_LAUNCH_PREV_SCO_EVENT,
     ADDON_MOD_SCORM_UPDATE_TOC_EVENT,
+    ADDON_MOD_SCORM_COMPONENT,
 } from '../constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 
@@ -447,7 +448,7 @@ export class AddonModScormProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAccessInformationCacheKey(scormId),
-            component: ADDON_MOD_SCORM_COMPONENT,
+            component: ADDON_MOD_SCORM_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -554,7 +555,7 @@ export class AddonModScormProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAttemptCountCacheKey(scormId, userId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_SCORM_COMPONENT,
+            component: ADDON_MOD_SCORM_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -795,7 +796,7 @@ export class AddonModScormProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getScormUserDataCacheKey(scormId, attempt),
-            component: ADDON_MOD_SCORM_COMPONENT,
+            component: ADDON_MOD_SCORM_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -850,7 +851,7 @@ export class AddonModScormProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getScosCacheKey(scormId),
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
-            component: ADDON_MOD_SCORM_COMPONENT,
+            component: ADDON_MOD_SCORM_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -1118,7 +1119,7 @@ export class AddonModScormProvider {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getScormDataCacheKey(courseId),
             updateFrequency: CoreCacheUpdateFrequency.RARELY,
-            component: ADDON_MOD_SCORM_COMPONENT,
+            component: ADDON_MOD_SCORM_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -1223,7 +1224,6 @@ export class AddonModScormProvider {
      *
      * @param scormId SCORM ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAccessInformation(scormId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1237,7 +1237,6 @@ export class AddonModScormProvider {
      * @param scormId SCORM ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllScormData(scormId: number, siteId?: string, userId?: number): Promise<void> {
         await Promise.all([
@@ -1254,7 +1253,6 @@ export class AddonModScormProvider {
      * @param scormId SCORM ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAttemptCount(scormId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1270,7 +1268,6 @@ export class AddonModScormProvider {
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string, userId?: number): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -1279,7 +1276,7 @@ export class AddonModScormProvider {
 
         await Promise.all([
             this.invalidateAllScormData(scorm.id, siteId, userId),
-            CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_SCORM_COMPONENT, moduleId, true),
+            CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_SCORM_COMPONENT_LEGACY, moduleId, true),
         ]);
     }
 
@@ -1288,7 +1285,6 @@ export class AddonModScormProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateScormData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1301,7 +1297,6 @@ export class AddonModScormProvider {
      *
      * @param scormId SCORM ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateScormUserData(scormId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1314,7 +1309,6 @@ export class AddonModScormProvider {
      *
      * @param scormId SCORM ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateScos(scormId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1439,7 +1433,7 @@ export class AddonModScormProvider {
         return CoreCourseLogHelper.log(
             'mod_scorm_launch_sco',
             params,
-            ADDON_MOD_SCORM_COMPONENT,
+            ADDON_MOD_SCORM_COMPONENT_LEGACY,
             scormId,
             siteId,
         );
@@ -1460,7 +1454,7 @@ export class AddonModScormProvider {
         return CoreCourseLogHelper.log(
             'mod_scorm_view_scorm',
             params,
-            ADDON_MOD_SCORM_COMPONENT,
+            ADDON_MOD_SCORM_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -1642,7 +1636,7 @@ export class AddonModScormProvider {
     async shouldDownloadMainFile(scorm: AddonModScormScorm, isOutdated?: boolean, siteId?: string): Promise<boolean> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const component = ADDON_MOD_SCORM_COMPONENT;
+        const component = ADDON_MOD_SCORM_COMPONENT_LEGACY;
 
         if (isOutdated === undefined) {
             // Calculate if it's outdated.
@@ -1905,7 +1899,7 @@ export type AddonModScormScormWSData = {
     course: number; // Course id.
     name: string; // SCORM name.
     intro: string; // The SCORM intro.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     packagesize?: number; // SCORM zip package size.
     packageurl?: string; // SCORM zip package URL.

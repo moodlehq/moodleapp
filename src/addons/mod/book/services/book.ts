@@ -21,7 +21,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreFilepool } from '@services/filepool';
-import { CoreText } from '@singletons/text';
+import { CoreText, CoreTextFormat } from '@singletons/text';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -94,7 +94,7 @@ export class AddonModBookProvider {
      * @returns Cache key.
      */
     protected getBookDataCacheKey(courseId: number): string {
-        return AddonModBookProvider.ROOT_CACHE_KEY + 'book:' + courseId;
+        return `${AddonModBookProvider.ROOT_CACHE_KEY}book:${courseId}`;
     }
 
     /**
@@ -280,7 +280,6 @@ export class AddonModBookProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateBookData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -294,9 +293,8 @@ export class AddonModBookProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
-    invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
+    async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const promises: Promise<void>[] = [];
@@ -305,7 +303,7 @@ export class AddonModBookProvider {
         promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_BOOK_COMPONENT, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId));
 
-        return CorePromiseUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -415,7 +413,7 @@ export type AddonModBookBookWSData = {
     course: number; // Course id.
     name: string; // Book name.
     intro: string; // The Book intro.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     numbering: number; // Book numbering configuration.
     navstyle: number; // Book navigation style configuration.

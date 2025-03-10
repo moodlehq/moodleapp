@@ -20,7 +20,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModLabel } from '../label';
-import { ADDON_MOD_LABEL_COMPONENT } from '../../constants';
+import { ADDON_MOD_LABEL_COMPONENT_LEGACY } from '../../constants';
 
 /**
  * Handler to prefetch labels.
@@ -30,7 +30,7 @@ export class AddonModLabelPrefetchHandlerService extends CoreCourseResourcePrefe
 
     name = 'AddonModLabel';
     modName = 'label';
-    component = ADDON_MOD_LABEL_COMPONENT;
+    component = ADDON_MOD_LABEL_COMPONENT_LEGACY;
     updatesNames = /^.*files$/;
 
     /**

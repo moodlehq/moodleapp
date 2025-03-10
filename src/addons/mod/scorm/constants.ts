@@ -12,10 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_MOD_SCORM_COMPONENT = 'mmaModScorm';
-export const ADDON_MOD_SCORM_PAGE_NAME = 'mod_scorm';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
 
-// Public constants.
+export const ADDON_MOD_SCORM_COMPONENT = 'AddonModScorm';
+export const ADDON_MOD_SCORM_COMPONENT_LEGACY = 'mmaModScorm';
+export const ADDON_MOD_SCORM_PAGE_NAME = 'mod_scorm';
+export const ADDON_MOD_SCORM_MODNAME = 'scorm';
+
+export const ADDON_MOD_SCORM_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_SCORM_COMPONENT;
+
+// Events.
+export const ADDON_MOD_SCORM_LAUNCH_NEXT_SCO_EVENT = 'addon_mod_scorm_launch_next_sco';
+export const ADDON_MOD_SCORM_LAUNCH_PREV_SCO_EVENT = 'addon_mod_scorm_launch_prev_sco';
+export const ADDON_MOD_SCORM_UPDATE_TOC_EVENT = 'addon_mod_scorm_update_toc';
+export const ADDON_MOD_SCORM_GO_OFFLINE_EVENT = 'addon_mod_scorm_go_offline';
+export const ADDON_MOD_SCORM_DATA_SENT_EVENT = 'addon_mod_scorm_data_sent';
+export const ADDON_MOD_SCORM_DATA_AUTO_SYNCED = 'addon_mod_scorm_autom_synced';
 
 /**
  * Grading method.
@@ -57,11 +69,3 @@ export const enum AddonModScormSkipView {
     FIRST = 1,
     ALWAYS = 2,
 }
-
-// Events.
-export const ADDON_MOD_SCORM_LAUNCH_NEXT_SCO_EVENT = 'addon_mod_scorm_launch_next_sco';
-export const ADDON_MOD_SCORM_LAUNCH_PREV_SCO_EVENT = 'addon_mod_scorm_launch_prev_sco';
-export const ADDON_MOD_SCORM_UPDATE_TOC_EVENT = 'addon_mod_scorm_update_toc';
-export const ADDON_MOD_SCORM_GO_OFFLINE_EVENT = 'addon_mod_scorm_go_offline';
-export const ADDON_MOD_SCORM_DATA_SENT_EVENT = 'addon_mod_scorm_data_sent';
-export const ADDON_MOD_SCORM_DATA_AUTO_SYNCED = 'addon_mod_scorm_autom_synced';

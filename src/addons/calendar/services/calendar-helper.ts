@@ -44,6 +44,7 @@ import {
 import { AddonCalendarSyncInvalidateEvent } from './calendar-sync';
 import { REMINDERS_DISABLED, REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 /**
  * Service that provides some features regarding lists of courses and categories.
@@ -171,7 +172,7 @@ export class AddonCalendarHelperProvider {
             repeatid: event.repeatid || 0,
             eventIcon: this.getEventIcon(event.eventtype),
             formattedType: AddonCalendar.getEventType(event),
-            format: 1,
+            format: DEFAULT_TEXT_FORMAT,
             visible: 1,
             offline: false,
             purpose: 'purpose' in event ? event.purpose : undefined,
@@ -244,7 +245,7 @@ export class AddonCalendarHelperProvider {
             timemodified: event.timecreated || 0,
             eventIcon: this.getEventIcon(event.eventtype),
             formattedType: event.eventtype,
-            format: 1,
+            format: DEFAULT_TEXT_FORMAT,
             visible: 1,
             offline: true,
             canedit: event.id < 0,

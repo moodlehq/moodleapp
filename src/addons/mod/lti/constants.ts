@@ -12,5 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_MOD_LTI_COMPONENT = 'mmaModLti';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
+
+export const ADDON_MOD_LTI_COMPONENT = 'AddonModLti';
+export const ADDON_MOD_LTI_COMPONENT_LEGACY = 'mmaModLti';
 export const ADDON_MOD_LTI_PAGE_NAME = 'mod_lti';
+export const ADDON_MOD_LTI_MODNAME = 'lti';
+
+export const ADDON_MOD_LTI_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_LTI_COMPONENT;

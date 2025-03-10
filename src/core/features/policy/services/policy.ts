@@ -22,6 +22,7 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { POLICY_PAGE_NAME, SITE_POLICY_PAGE_NAME } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreTextFormat } from '@singletons/text';
 
 /**
  * Service that provides some common features regarding policies.
@@ -280,9 +281,9 @@ export type CorePolicySitePolicy = {
     status: number; // The policy status. 0: draft, 1: active, 2: archived.
     name: string; // The policy name.
     summary?: string; // The policy summary.
-    summaryformat: number; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN, or 4 = MARKDOWN).
+    summaryformat: CoreTextFormat; // Summary format (1 = HTML, 0 = MOODLE, 2 = PLAIN, or 4 = MARKDOWN).
     content?: string; // The policy content.
-    contentformat: number; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN, or 4 = MARKDOWN).
+    contentformat: CoreTextFormat; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN, or 4 = MARKDOWN).
     acceptance?: CorePolicySitePolicyAcceptance; // Acceptance status for the given user.
     canaccept: boolean; // Whether the policy can be accepted.
     candecline: boolean; // Whether the policy can be declined.

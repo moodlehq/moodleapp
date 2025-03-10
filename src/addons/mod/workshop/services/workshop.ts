@@ -19,7 +19,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesMenuItem } from '@features/grades/services/grades-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreTextFormat, defaultTextFormat } from '@singletons/text';
+import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 import { CoreArray } from '@singletons/array';
 import { CoreStatusWithWarningsWSResponse, CoreWS, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -332,7 +332,6 @@ export class AddonModWorkshopProvider {
      *
      * @param workshopId Workshop ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateWorkshopAccessInformationData(workshopId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -375,7 +374,6 @@ export class AddonModWorkshopProvider {
      *
      * @param workshopId Workshop ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserPlanPhasesData(workshopId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -429,7 +427,6 @@ export class AddonModWorkshopProvider {
      * @param userId User ID.
      * @param groupId Group ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubmissionsData(workshopId: number, userId: number = 0, groupId: number = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -476,7 +473,6 @@ export class AddonModWorkshopProvider {
      * @param workshopId Workshop ID.
      * @param submissionId Submission ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubmissionData(workshopId: number, submissionId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -513,7 +509,6 @@ export class AddonModWorkshopProvider {
      *
      * @param workshopId Workshop ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateGradesData(workshopId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -610,7 +605,6 @@ export class AddonModWorkshopProvider {
      * @param workshopId Workshop ID.
      * @param groupId Group ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateGradeReportData(workshopId: number, groupId: number = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -659,7 +653,6 @@ export class AddonModWorkshopProvider {
      * @param workshopId Workshop ID.
      * @param submissionId Submission ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubmissionAssesmentsData(workshopId: number, submissionId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -967,7 +960,6 @@ export class AddonModWorkshopProvider {
      * @param workshopId Workshop ID.
      * @param userId User ID. If not defined, current user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateReviewerAssesmentsData(workshopId: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1013,7 +1005,6 @@ export class AddonModWorkshopProvider {
      * @param workshopId Workshop ID.
      * @param assessmentId Assessment ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAssessmentData(workshopId: number, assessmentId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1119,7 +1110,6 @@ export class AddonModWorkshopProvider {
      * @param assessmentId Assessment ID.
      * @param mode Mode assessment (default) or preview.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAssessmentFormData(
         workshopId: number,
@@ -1282,7 +1272,7 @@ export class AddonModWorkshopProvider {
         const params: AddonModWorkshopEvaluateSubmissionWSParams = {
             submissionid: submissionId,
             feedbacktext: feedbackText || '',
-            feedbackformat: defaultTextFormat,
+            feedbackformat: DEFAULT_TEXT_FORMAT,
             published: published,
             gradeover: gradeOver,
         };
@@ -1370,7 +1360,7 @@ export class AddonModWorkshopProvider {
         const params: AddonModWorkshopEvaluateAssessmentWSParams = {
             assessmentid: assessmentId,
             feedbacktext: feedbackText || '',
-            feedbackformat: defaultTextFormat,
+            feedbackformat: DEFAULT_TEXT_FORMAT,
             weight: weight,
             gradinggradeover: gradingGradeOver,
         };
@@ -2021,7 +2011,7 @@ type AddonModWorkshopAddSubmissionWSParams = {
     workshopid: number; // Workshop id.
     title: string; // Submission title.
     content?: string; // Submission text content.
-    contentformat?: number; // The format used for the content.
+    contentformat?: CoreTextFormat; // The format used for the content.
     inlineattachmentsid?: number; // The draft file area id for inline attachments in the content.
     attachmentsid?: number; // The draft file area id for attachments.
 };
@@ -2042,7 +2032,7 @@ type AddonModWorkshopUpdateSubmissionWSParams = {
     submissionid: number; // Submission id.
     title: string; // Submission title.
     content?: string; // Submission text content.
-    contentformat?: number; // The format used for the content.
+    contentformat?: CoreTextFormat; // The format used for the content.
     inlineattachmentsid?: number; // The draft file area id for inline attachments in the content.
     attachmentsid?: number; // The draft file area id for attachments.
 };

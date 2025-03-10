@@ -20,7 +20,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModBook } from '../book';
-import { ADDON_MOD_BOOK_COMPONENT } from '../../constants';
+import { ADDON_MOD_BOOK_COMPONENT, ADDON_MOD_BOOK_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch books.
@@ -28,8 +28,8 @@ import { ADDON_MOD_BOOK_COMPONENT } from '../../constants';
 @Injectable({ providedIn: 'root' })
 export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefetchHandlerBase {
 
-    name = 'AddonModBook';
-    modName = 'book';
+    name = ADDON_MOD_BOOK_COMPONENT;
+    modName = ADDON_MOD_BOOK_MODNAME;
     component = ADDON_MOD_BOOK_COMPONENT;
     updatesNames = /^configuration$|^.*files$|^entries$/;
 
@@ -68,7 +68,6 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
      *
      * @param moduleId The module ID.
      * @param courseId Course ID the module belongs to.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         await AddonModBook.invalidateContent(moduleId, courseId);
