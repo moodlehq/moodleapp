@@ -44,7 +44,6 @@ import {
     ADDON_MOD_ASSIGN_STARTED_EVENT,
     ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT,
     ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
-    AddonModAssignSubmissionStatusValues,
 } from '../../constants';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -75,7 +74,6 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
     courseId!: number; // Course ID the assignment belongs to.
     moduleId!: number; // Module ID the submission belongs to.
     userSubmission?: AddonModAssignSubmission; // The user submission.
-    allowOffline = false; // Whether offline is allowed.
     submissionStatement?: string; // The submission statement.
     submissionStatementAccepted = false; // Whether submission statement is accepted.
     loaded = false; // Whether data has been loaded.
@@ -166,37 +164,31 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
             // Wait for sync to be over (if any).
             await AddonModAssignSync.waitForSync(this.assign.id);
 
-            // Get submission status. Ignore cache to get the latest data.
+            // Fetch filtered submission first to be able to calculate if we need to fetch unfiltered or not.
             const options: AddonModAssignSubmissionStatusOptions = {
                 userId: this.userId,
                 isBlind: this.isBlind,
                 cmId: this.assign.cmid,
-                filter: false,
-                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
+                filter: true,
+                readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
+                checkFetchOriginal: false,
             };
+            let submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign, options);
+            const filteredSubmissionStatus = submissionStatus;
+            let userSubmission = AddonModAssign.getSubmissionObjectFromAttempt(this.assign, submissionStatus.lastattempt);
 
-            let submissionStatus: AddonModAssignGetSubmissionStatusWSResponse;
-            try {
-                submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign.id, options);
-                this.userSubmission =
-                    AddonModAssign.getSubmissionObjectFromAttempt(this.assign, submissionStatus.lastattempt);
-            } catch (error) {
-                // Cannot connect. Get cached data.
-                options.filter = true;
-                options.readingStrategy = CoreSitesReadingStrategy.PREFER_CACHE;
+            const shouldFetchUnfiltered =
+                await AddonModAssignHelper.shouldFetchUnfilteredSubmissionToEdit(this.assign, userSubmission);
 
-                submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign.id, options);
-                this.userSubmission =
-                    AddonModAssign.getSubmissionObjectFromAttempt(this.assign, submissionStatus.lastattempt);
-
-                const shouldFetchUnfiltered =
-                    await AddonModAssignHelper.shouldFetchUnfilteredSubmissionToEdit(this.assign, this.userSubmission);
-                if (shouldFetchUnfiltered) {
-                    // Cannot fetch unfiltered data in offline, throw the error.
-                    this.allowOffline = false;
-                    throw error;
-                }
+            if (shouldFetchUnfiltered) {
+                submissionStatus = await AddonModAssign.getSubmissionStatus(this.assign, {
+                    ...options,
+                    filter: false,
+                });
+                userSubmission = AddonModAssign.getSubmissionObjectFromAttempt(this.assign, submissionStatus.lastattempt);
             }
+
+            this.userSubmission = userSubmission;
 
             if (!submissionStatus.lastattempt?.canedit) {
                 // Can't edit. Reject.
@@ -205,21 +197,12 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
 
             submissionStatus = await this.startSubmissionIfNeeded(submissionStatus, options);
 
-            if (submissionStatus.assignmentdata?.activity) {
+            if (filteredSubmissionStatus.assignmentdata?.activity) {
                 // There are activity instructions. Make sure to display it with filters applied.
-                const filteredSubmissionStatus = options.filter ?
-                    submissionStatus :
-                    await AddonModAssign.getSubmissionStatus(this.assign.id, {
-                        ...options,
-                        filter: true,
-                    });
-
                 this.activityInstructions = filteredSubmissionStatus.assignmentdata?.activity;
             }
 
             this.introAttachments = submissionStatus.assignmentdata?.attachments?.intro ?? this.assign.introattachments;
-
-            this.allowOffline = true; // If offline isn't allowed we shouldn't have reached this point.
 
             // If received submission statement is empty, then it's not required.
             if(!this.assign.submissionstatement && this.assign.submissionstatement !== undefined) {
@@ -276,8 +259,7 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
             return submissionStatus;
         }
 
-        if (this.userSubmission && this.userSubmission.status !== AddonModAssignSubmissionStatusValues.NEW &&
-            this.userSubmission.status !== AddonModAssignSubmissionStatusValues.REOPENED) {
+        if (this.userSubmission && !AddonModAssign.isNewOrReopenedSubmission(this.userSubmission.status)) {
             // There is an ongoing submission, no need to start it.
             return submissionStatus;
         }
@@ -289,7 +271,7 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
         }, CoreSites.getCurrentSiteId());
 
         // Submission started, update the submission status.
-        const newSubmissionStatus = await AddonModAssign.getSubmissionStatus(this.assign.id, {
+        const newSubmissionStatus = await AddonModAssign.getSubmissionStatus(this.assign, {
             ...options,
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK, // Make sure not to use cache.
         });
@@ -351,7 +333,7 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
                 this.hasOffline,
             );
         } catch (error) {
-            if (this.allowOffline && !this.saveOffline && !CoreWSError.isWebServiceError(error)) {
+            if (!this.saveOffline && !CoreWSError.isWebServiceError(error)) {
                 // Cannot submit in online, prepare for offline usage.
                 this.saveOffline = true;
 
@@ -418,7 +400,7 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
 
         try {
             // Confirm action.
-            await CoreFileUploaderHelper.confirmUploadFile(size, true, this.allowOffline);
+            await CoreFileUploaderHelper.confirmUploadFile(size, true, true);
 
             modal = await CoreLoadings.show('core.sending', true);
 
@@ -447,7 +429,6 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
                     this.assign!.id,
                     this.courseId,
                     pluginData,
-                    this.allowOffline,
                     this.userSubmission!.timemodified,
                     !!this.assign!.submissiondrafts,
                     this.userId,
